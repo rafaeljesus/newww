@@ -1,0 +1,27 @@
+{{> header }} 
+<h1>Search Results</h1>
+ {{#if hits}} 
+ <ul class ="search-results" > 
+  {{#each hits.hits}}
+    <li class="search-result package">
+    <h2> <a href="/package/{{ fields.name }}">{{ fields.name }} </a> </h2> {{! must figure out how to fix later }} 
+      <p>{{ fields.description }}</p>
+      <p>
+      <span class="author">{{ fields.author }}</span>
+      {{#if fields.keywords}}
+      <ul class="keywords">
+        {{#each fields.keywords}}
+          <li>
+            <a href="/search?q=keywords:{{this}}">{{this}}</a>
+          </li>
+        {{/each }}
+      </ul>
+      {{/if}}
+    </p>
+  </li>
+  {{/each}}
+</ul>
+{{ else  }}
+  No results!
+{{/if}}
+{{> footer }} 

@@ -28,6 +28,9 @@ exports.server = {
       includeSubdomains: true
     },
     xframe: true
+  },
+  debug: { 
+    request: ['error']
   }
 };
 
@@ -58,6 +61,10 @@ exports.session = {
   password: 'i dunno, something secure probably?',
   cookie: 's',
   expiresIn: 14 * 24 * 60 * 60 * 1000 // 2 wks
+}
+exports.search = { 
+	url:'http://127.0.0.1:9200/npm', 
+	perPage: 20
 }
 
 exports.otherStuff = {

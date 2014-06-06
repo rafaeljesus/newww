@@ -13,6 +13,11 @@ exports.register = function Regsitry (facet, options, next) {
     method: "GET",
     handler: require('./show-package')
   });
-
+  
+  facet.route({ 
+    path:"/search", 
+    method: "GET", 
+    handler: require('./search-controller')
+  });  
   next();
 }

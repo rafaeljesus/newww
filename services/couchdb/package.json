@@ -1,10 +1,10 @@
 {
-  "name": "npm-couchdb",
+  "name": "newww-service-couchdb",
   "version": "0.0.1",
   "description": "Adds couchDB functionality to Hapi",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "lab -vC"
   },
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",

@@ -1,12 +1,14 @@
 {
-  "name": "www-hapi",
+  "name": "newww",
   "version": "0.0.3",
   "description": "A total rewrite of npm-www using hapijs",
   "main": "server.js",
   "scripts": {
-    "test": "lab -v",
+    "test": "lab -vC",
     "prestart": "node_modules/.bin/stylus stylus/index.styl --use nib --out static/css/",
-    "start": "gulp develop"
+    "start": "gulp develop",
+    "installAll": "node allPlugins.js",
+    "testAll": "node allPlugins.js t"
   },
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",

@@ -1,7 +1,7 @@
 newww
 =====
 
-We're using [Hapi](https://github.com/spumko/hapi) as a framework for the next iteration of the npm website.
+We're using [Hapi](https://github.com/spumko/hapi) as a framework for the next iteration of the npm website. We wrote all about why we chose Hapi in [a blog post](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability).
 
 ## General Layout
 
@@ -97,7 +97,9 @@ We're sticking with [Stylus](http://learnboost.github.io/stylus/) as our CSS pre
 
 ## Running the server locally
 
-For now, you'll need the `npm run dev-db` bit from the original npm-www. (We may or may not port this over. That's still TBD.) Once that's running, run `npm start`. 
+For now, you'll need the `npm run dev-db` bit from the original npm-www. (We're porting this over soon - stay tuned.) To properly install all the dependencies, run `npm run installAll` - since each facet and service has its own package.json, this script will make sure all dependencies are installed in their appropriate facet/service.
+
+Once that's running, run `npm start`. 
 
 For ease of development, we've got a Gulpfile that uses [gulp](http://gulpjs.com/). It watches appropriate directories and restarts stuff for you when other stuff changes. Fortunately, you don't have to use gulp if you don't want to; just change the `start` line in the root `package.json` to `start: "node index.js"`.
 

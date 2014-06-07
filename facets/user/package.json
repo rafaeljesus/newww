@@ -1,10 +1,10 @@
 {
-  "name": "npm-user",
+  "name": "newww-facet-user",
   "version": "0.1.0",
   "description": "User Facet - profiles, login, logout, etc",
   "main": "index.js",
   "scripts": {
-    "test": "lab -v"
+    "test": "lab -vC"
   },
   "author": "",
   "license": "ISC",

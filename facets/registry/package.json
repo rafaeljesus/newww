@@ -1,10 +1,10 @@
 {
-  "name": "npm-registry",
+  "name": "newww-facet-registry",
   "version": "0.1.0",
   "description": "Registry Facet - package pages, search, etc",
   "main": "index.js",
   "scripts": {
-    "test": "lab -v"
+    "test": "lab -vC"
   },
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",

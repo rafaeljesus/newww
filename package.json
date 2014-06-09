@@ -4,11 +4,10 @@
   "description": "A total rewrite of npm-www using hapijs",
   "main": "server.js",
   "scripts": {
-    "test": "lab -vC",
+    "test": "lab -vC; node allPlugins t",
     "prestart": "node_modules/.bin/stylus stylus/index.styl --use nib --out static/css/",
     "start": "gulp develop",
-    "installAll": "node allPlugins.js",
-    "testAll": "node allPlugins.js t"
+    "install": "node allPlugins"
   },
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",

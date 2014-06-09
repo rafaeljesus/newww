@@ -97,7 +97,7 @@ We're sticking with [Stylus](http://learnboost.github.io/stylus/) as our CSS pre
 
 ## Running the server locally
 
-For now, you'll need the `npm run dev-db` bit from the original npm-www. (We're porting this over soon - stay tuned.) To properly install all the dependencies, run `npm run installAll` - since each facet and service has its own package.json, this script will make sure all dependencies are installed in their appropriate facet/service.
+For now, you'll need the `npm run dev-db` bit from the original npm-www. (We're porting this over soon - stay tuned.)
 
 Once that's running, run `npm start`. 
 

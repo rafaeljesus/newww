@@ -21,9 +21,21 @@ describe('user is routing properly', function () {
   it('calls all the right routes', function (done) {
     var table = server.table();
 
-    expect(table).to.have.length(2);
-    expect(table[0].path).to.equal('/~');
-    expect(table[1].path).to.equal('/~{name}');
+    expect(table).to.have.length(5);
+
+    var paths = table.map(function (route) {
+      var obj = {
+        path: route.path,
+        method: route.method
+      }
+      return obj;
+    });
+
+    expect(paths).to.include({ path: '/~', method: 'get' });
+    expect(paths).to.include({ path: '/~{name}', method: 'get' });
+    expect(paths).to.include({ path: '/login', method: 'get' });
+    expect(paths).to.include({ path: '/login', method: 'post' });
+    expect(paths).to.include({ path: '/logout', method: 'get' });
 
     done();
   })

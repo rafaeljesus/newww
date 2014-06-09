@@ -26,7 +26,7 @@ server.pack.require({
   './facets/company': null,
   './facets/registry': null,
   './facets/user': config.user,
-  './services/hapi-couchdb': config.couch
+  './services/couchdb': config.couch
 }, function(err) {
     if (err) throw err;
 

@@ -1,5 +1,5 @@
 {
-  "name": "npm-couchdb",
+  "name": "newww-service-couchdb",
   "version": "0.0.1",
   "dependencies": {
     "couch-login": {

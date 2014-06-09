@@ -6,17 +6,16 @@ exports.register = function User (facet, options, next) {
     path: path.resolve(__dirname, 'templates')
   });
 
-  facet.route({
-    path: "/~",
-    method: "GET",
-    handler: require('./show-profile')(options.profileFields)
-  });
+  facet.route([
+    {path: "/~", method: "GET", handler: require('./show-profile')(options.profileFields) },
+    {path: "/profile", method: "GET", handler: require('./show-profile')(options.profileFields) }
+  ]);
 
-  facet.route({
-    path: "/~{name}",
-    method: "GET",
-    handler: require('./show-profile')(options.profileFields)
-  });
+  facet.route([
+    { path: "/~{name}", method: "GET", handler: require('./show-profile')(options.profileFields) },
+    { path: "/profile/{name}", method: "GET", handler: require('./show-profile')(options.profileFields) },
+    { path: "/~/{name}", method: "GET", handler: require('./show-profile')(options.profileFields) }
+  ]);
 
   facet.route({
     path: "/login",

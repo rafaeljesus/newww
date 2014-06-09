@@ -1,4 +1,5 @@
 var CouchLogin = require('couch-login'),
+    Hapi = require('hapi'),
     SECOND = 1000;
 
 exports.register = function Couch (service, options, next) {
@@ -33,8 +34,8 @@ exports.register = function Couch (service, options, next) {
 
   service.method('getUserFromCouch', function (name, next) {
     anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
-      if (er || cr & cr.statusCode !== 200 || !data) {
-        return next(er)
+      if (er || cr & cr.statusCode !== 200 || !data || data.error) {
+        return next(Hapi.error.notFound(name))
       }
 
       return next(null, data)

@@ -3,26 +3,31 @@ var transform = require('./presenters/profile').transform;
 
 module.exports = function (options) {
   return function (request, reply) {
-
-    var opts = {
-      user: request.auth.credentials
-    }
-
     var getUserFromCouch = request.server.methods.getUserFromCouch;
     var getBrowseData = request.server.methods.getBrowseData;
 
-    getUserFromCouch(request.params.name, function (err, showprofile) {
-      getBrowseData('userstar', request.params.name, 0, 1000, function (err, starred) {
-        getBrowseData('author', request.params.name, 0, 1000, function (err, packages) {
+    var opts = {
+      user: request.auth.credentials
+    };
+
+    var profileName = request.params.name || opts.user.name;
+
+    getUserFromCouch(profileName, function (err, showprofile) {
+      if (err) {
+        opts.name = err.output.payload.message;
+        return reply.view('profile-not-found', opts);
+      }
+
+      getBrowseData('userstar', profileName, 0, 1000, function (err, starred) {
+        getBrowseData('author', profileName, 0, 1000, function (err, packages) {
 
           opts.profile = {
             showprofile: transform(showprofile, options),
-            // profile: req.model.profile,
             fields: showprofile.fields,
             title: showprofile.name,
             // hiring: req.model.whoshiring,
-            packages: getRandomAssortment(packages, 'packages', request.params.name),
-            starred: getRandomAssortment(starred, 'starred', request.params.name)
+            packages: getRandomAssortment(packages, 'packages', profileName),
+            starred: getRandomAssortment(starred, 'starred', profileName)
           }
 
           reply.view('profile', opts)
@@ -49,7 +54,3 @@ function getRandomAssortment (items, browseKeyword, name) {
 
   return items;
 }
-
-
-
-

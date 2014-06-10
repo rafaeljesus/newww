@@ -33,8 +33,10 @@ before(function (done) {
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
-    username = source.context.profile.title;
-    u[username] = source.context.profile;
+    if (source.context.profile) {
+      username = source.context.profile.title;
+      u[username] = source.context.profile;
+    }
     next();
   });
 
@@ -43,6 +45,10 @@ before(function (done) {
 before(function (done) {
   server.methods = {
     getUserFromCouch: function (username, next) {
+      if (typeof users[username] === 'undefined') {
+        return next(Hapi.error.notFound(username));
+      }
+
       return next(null, users[username]);
     },
 
@@ -82,6 +88,17 @@ describe('Retreiving profiles from the registry', function () {
     expect(source.template).to.equal('profile');
     done();
   });
+
+  it('renders an error page with a user that doesn\'t exist', function (done) {
+    var options = {
+      url: '/~blerg'
+    }
+
+    server.inject(options, function (resp) {
+      expect(source.template).to.equal('profile-not-found');
+      done();
+    })
+  })
 
 });
 

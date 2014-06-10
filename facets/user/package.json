@@ -1,6 +1,6 @@
 {
   "name": "newww-facet-user",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "User Facet - profiles, login, logout, etc",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "gravatar": "^1.0.6",
+    "joi": "^4.6.0",
+    "npm-user-validate": "^0.1.0",
     "sanitizer": "^0.1.1"
   },
   "devDependencies": {

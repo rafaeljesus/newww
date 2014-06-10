@@ -27,7 +27,6 @@ module.exports = function login (request, reply) {
 
         request.server.app.cache.set(sid, user, 0, function (err) {
           if (err) {
-            console.error("BOOM");
             reply(err);
           }
 

@@ -12,6 +12,7 @@ exports.register = function Couch (service, options, next) {
         auth = { name: name, password: password };
 
     // the admin couch uses basic auth, or couchdb freaks out eventually
+    // 10 JUN 2014 [RV]: Do we even need this?? Is adminCouch used *anywhere*?
     adminCouch = new CouchLogin(options.registryCouch, 'basic');
     adminCouch.strictSSL = false;
     adminCouch.login(auth, function (er, cr, data) {
@@ -26,10 +27,7 @@ exports.register = function Couch (service, options, next) {
       next(er, data);
     });
   }, {
-    cache: {
-      expiresIn: 60 * SECOND,
-      segment: '##package'
-    }
+    cache: { expiresIn: 60 * SECOND, segment: '##package' }
   });
 
   service.method('getUserFromCouch', function (name, next) {
@@ -41,36 +39,27 @@ exports.register = function Couch (service, options, next) {
       return next(null, data)
     })
   }, {
-    cache: {
-      expiresIn: 60 * SECOND,
-      segment: '##session'
-    }
+    cache: { expiresIn: 60 * SECOND, segment: '##session' }
   });
 
   service.method('getBrowseData', require('./browse')(anonCouch), {
-    cache: {
-      expiresIn: 60 * SECOND,
-      segment: '##browse'
-    }
-  })
+    cache: { expiresIn: 60 * SECOND, segment: '##browse' }
+  });
 
-  service.method('loginUser', function (loginDetails, next) {
-    anonCouch.login(loginDetails, function (er, cr, couchSession) {
+  service.method('loginUser', require('./login')(service, anonCouch));
 
-      if (er) {
-        return next (new Error(er));
+  service.method('signupUser', function (acct, next) {
+    anonCouch.signup(acct, function (er, cr, data) {
+      if (er || cr && cr.statusCode >= 400 || data && data.error) {
+          var error = "Failed creating account.  CouchDB said: "
+                    + ((er && er.message) || (data && data.error))
+
+        return next(new Error(error));
       }
 
-      if (cr.statusCode !== 200) {
-        return next(new Error('Username and/or Password is wrong'));
-      }
-      // console.log(couchSession)
-      service.methods.getUserFromCouch(loginDetails.name, function (err, data) {
-        // console.log(data)
-        return next(null, data);
-      });
-    })
-  })
+      return next(null, data);
+    });
+  });
 
   next();
 }

@@ -17,6 +17,11 @@ exports.register = function User (facet, options, next) {
     { path: "/~/{name}", method: "GET", handler: require('./show-profile')(options.profileFields) }
   ]);
 
+  facet.route([
+    { path: "/signup", method: ["GET", "HEAD", "POST"], handler: require('./show-signup') },
+    { path: "/profile-edit", method: ["GET", "HEAD", "PUT", "POST"], handler: require('./show-profile-edit') }
+  ]);
+
   facet.route({
     path: "/login",
     method: ["GET", "POST"],
@@ -30,7 +35,7 @@ exports.register = function User (facet, options, next) {
       request.auth.session.clear();
       return reply().redirect('/');
     }
-  })
+  });
 
   next();
 }

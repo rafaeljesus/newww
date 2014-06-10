@@ -6,18 +6,23 @@ var Lab = require('lab'),
 
 var Hapi = require('hapi');
 var server;   
-var fakeSearch = require('./fixtures/fake.json'); 
+var fakeSearch = require('./fixtures/fake-search.json'),
+    registry = require('../');
+
+registry.name = 'registry';
+registry.version = '0.0.1';
 
 //set up server
 before(function (done) { 
   var serverOptions  = { 
-      views: {
-        engines: {hbs: 'handlebars'}, 
-        partialsPath: '../../hbs-partials', 
-        helpersPath: '../../hbs-helpers'
-      }
-}; 
+    views: {
+      engines: {hbs: 'handlebars'}, 
+      partialsPath: '../../hbs-partials', 
+      helpersPath: '../../hbs-helpers'
+    }
+  }; 
   server = Hapi.createServer(serverOptions); 
+  server.pack.register(registry, done); 
 });
 
 describe('Rendering the view', function () {
@@ -25,23 +30,27 @@ describe('Rendering the view', function () {
   it('Should use the index template to render the view', function (done) {
   //simulate a search for a given module, results are in fakeSearch  
   var options =  { 
-      url: '/search?q=' + 'express'
-    };
+    url: '/search?q=express', 
+    method: 'GET'
+  };
+ 
+  server.ext('onPreResponse', function (request, next){
+    source = request.response.source;
+    next(); 
+  });
     
-    server.ext('onPreResponse', function (request, next){
-      source = request.response.source;
-      next(); 
-     });
-    //render the template with express   
-    server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(200); 
-      expect(source.template).to.equal('index'); 
-      done(); 
+  server.inject(options, function (resp) {
+    expect(resp.statusCode).to.equal(200); 
+    expect(source.template).to.equal('search'); 
+    done(); 
     }); 
   }); 
-  
-  it('Should have the proper number of results', function (done) {
-    console.log(source.context.hits); 
-   }); 
+});
+
+describe('something', function() { 
+  it('should be true', function(done){ 
+    expect(2).to.equal(2)
+    done();
+  });
 });  
 

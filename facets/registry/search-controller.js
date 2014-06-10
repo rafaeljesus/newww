@@ -5,7 +5,6 @@ client = new elasticsearch.Client({
 });
 
 module.exports = function(request, reply){
-
   var searchQuery = {
     fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek'],
     body: { 
@@ -65,9 +64,8 @@ module.exports = function(request, reply){
     }
   }
 };
-
   client.search(searchQuery, function (error, response){
-   if (error) { 
+    if (error) { 
       reply.view("search"); 
       return;
     }

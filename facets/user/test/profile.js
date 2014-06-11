@@ -34,7 +34,7 @@ before(function (done) {
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
     if (source.context.profile) {
-      username = source.context.profile.title;
+      var username = source.context.profile.title;
       u[username] = source.context.profile;
     }
     next();

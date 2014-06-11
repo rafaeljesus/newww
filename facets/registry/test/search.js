@@ -47,10 +47,3 @@ describe('Rendering the view', function () {
   }); 
 });
 
-describe('something', function() { 
-  it('should be true', function(done){ 
-    expect(2).to.equal(2)
-    done();
-  });
-});  
-

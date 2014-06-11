@@ -24,7 +24,6 @@ before(function (done) {
       helpersPath: '../../hbs-helpers'
     }
   };
-  console.log(registry); 
   server = Hapi.createServer(serverOptions);
   server.pack.register(registry, done);
 });

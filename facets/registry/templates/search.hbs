@@ -1,27 +1,58 @@
 {{> header }} 
+
 <h1>Search Results</h1>
- {{#if hits}} 
- <ul class ="search-results" > 
+  
+  {{#if hits}} 
+  <ul class ="search-results">   
   {{#each hits.hits}}
+  {{#with fields}}
     <li class="search-result package">
-    <h2> <a href="/package/{{ fields.name }}">{{ fields.name }} </a> </h2> {{! must figure out how to fix later }} 
-      <p>{{ fields.description }}</p>
-      <p>
-      <span class="author">{{ fields.author }}</span>
-      {{#if fields.keywords}}
-      <ul class="keywords">
-        {{#each fields.keywords}}
-          <li>
-            <a href="/search?q=keywords:{{this}}">{{this}}</a>
-          </li>
-        {{/each }}
+      <h2> <a href="/package/{{ name }}">{{ name }} </a> </h2>       
+      <ul class="hud"> 
+        <li class="dlScore" title="average downlaods"><span>{{! stuff is going to be rendered here }}<span></li>
+        <li class="stars" title="number of stars by users">{{ stars }}</li> 
       </ul>
-      {{/if}}
-    </p>
-  </li>
+      <p class="description">{{ description }}</p> 
+      <div class="details"> 
+        <span class="version"> 
+          {{ version }} by 
+          <a href="/~ {{ author }}">{{ author }}</a> 
+        </span> 
+        {{#if keywords.length}} 
+        <ul class="keywords"> 
+        {{#each keywords}}                          
+          <li> <a href="browse/keyword/{{ this }}"> {{ this }} </a> </li>
+        {{/each}}
+        </ul>
+        {{/if}}
+      </div> 
+    </li>
+  {{/with}}
   {{/each}}
-</ul>
-{{ else  }}
-  No results!
-{{/if}}
+  </ul>
+
+  <p class="description"> 
+    {{#compare  obj.page '>' 0}}
+        {{#compare obj.page '===' 1}}
+          <a href="/search?q={{ obj.q }}"> previous </a>          
+          {{#compare obj.np '===' 1}}
+            Page {{ obj.nextPageNum }} <a href="/search?q={{obj.q}}&page={{obj.nextPageNum}}">  next </a>  
+          {{/compare}}
+        {{else}}
+          <a href="/search?q={{ obj.q }}&page={{obj.subPage}}"> previous </a>
+          {{#compare obj.np '===' 1}}
+            Page {{ obj.nextPageNum }} <a href="/search?q={{obj.q}}&page={{obj.nextPageNum}}">  next </a>  
+          {{/compare}}          
+        {{/compare}}
+    {{else}}
+    {{#compare obj.np '===' 1}}
+      Page {{ obj.nextPageNum }} <a href="/search?q={{obj.q}}&page={{obj.nextPageNum}}">  next </a>
+    {{/compare}}
+  {{/compare}}
+  </p> 
+ 
+  {{else}}
+    No results!
+  {{/if}}
+
 {{> footer }} 

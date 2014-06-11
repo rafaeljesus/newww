@@ -17,7 +17,7 @@ exports.register = function Regsitry (facet, options, next) {
   facet.route({ 
     path:"/search", 
     method: "GET", 
-    handler: require('./search-controller')
+    handler: require('./show-search')
   });  
   next();
 }

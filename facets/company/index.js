@@ -4,7 +4,7 @@ var internals = {};
 exports.register = function Company (facet, options, next) {
 
   facet.views({
-    engines: { hbs: 'handlebars' },
+    engines: { hbs: require('handlebars') },
     path: path.resolve(__dirname, 'templates'),
   });
 
@@ -22,4 +22,8 @@ exports.register = function Company (facet, options, next) {
   });
 
   next();
+};
+
+exports.register.attributes = {
+  pkg: require('./package.json')
 };

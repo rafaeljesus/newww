@@ -7,9 +7,6 @@ var Lab = require('lab'),
 var Hapi = require('hapi'),
     registry = require('../');
 
-registry.name = 'registry';
-registry.version = '0.0.1';
-
 var server, p;
 var fake = require('./fixtures/fake.json'),
     fakeDeps = require('./fixtures/fake-deps'),
@@ -19,7 +16,7 @@ var fake = require('./fixtures/fake.json'),
 before(function (done) {
   var serverOptions = {
     views: {
-      engines: {hbs: 'handlebars'},
+      engines: {hbs: require('handlebars')},
       partialsPath: '../../hbs-partials',
       helpersPath: '../../hbs-helpers'
     }

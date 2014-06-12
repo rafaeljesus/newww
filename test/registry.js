@@ -7,9 +7,6 @@ var Lab = require('lab')
 var Hapi = require('hapi'),
     registry = require('../facets/registry');
 
-registry.name = 'registry';
-registry.version = '0.0.1';
-
 var server;
 
 before(function (done) {

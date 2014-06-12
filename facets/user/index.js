@@ -2,7 +2,7 @@ var path = require('path')
 
 exports.register = function User (facet, options, next) {
   facet.views({
-    engines: { hbs: 'handlebars' },
+    engines: { hbs: require('handlebars') },
     path: path.resolve(__dirname, 'templates')
   });
 
@@ -17,10 +17,25 @@ exports.register = function User (facet, options, next) {
     { path: "/~/{name}", method: "GET", handler: require('./show-profile')(options.profileFields) }
   ]);
 
-  facet.route([
-    { path: "/signup", method: ["GET", "HEAD", "POST"], handler: require('./show-signup') },
-    { path: "/profile-edit", method: ["GET", "HEAD", "PUT", "POST"], handler: require('./show-profile-edit') }
-  ]);
+  facet.route({
+    path: "/signup",
+    method: ["GET", "HEAD", "POST"],
+    handler: require('./show-signup')
+  });
+
+  facet.route({
+    path: "/profile-edit",
+    method: ["GET", "HEAD", "PUT", "POST"],
+    config: {
+      handler: require('./show-profile-edit'),
+      auth: {
+        mode: 'required'
+      },
+      plugins: { 'hapi-auth-cookie': {
+        redirectTo: '/login'
+      }}
+    }
+  });
 
   facet.route({
     path: "/login",
@@ -38,4 +53,8 @@ exports.register = function User (facet, options, next) {
   });
 
   next();
-}
+};
+
+exports.register.attributes = {
+  pkg: require('./package.json')
+};

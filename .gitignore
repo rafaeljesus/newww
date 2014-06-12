@@ -3,10 +3,12 @@ node_modules/
 .vagrant
 .idea
 dev/couch/*.couch
+dev/couch/.registry_design
 dev/couch.log
 dev/elasticsearch/data
 dev/elasticsearch/logs
 dev/redis.log
+dev/redis/dump.rdb
 erl_crash.dump
 npm-debug.log
 dev/user_upload_complete.dat

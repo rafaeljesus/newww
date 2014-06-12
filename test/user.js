@@ -7,14 +7,20 @@ var Lab = require('lab')
 var Hapi = require('hapi'),
     user = require('../facets/user');
 
-user.name = 'user';
-user.version = '0.0.1';
-
 var server;
 
 before(function (done) {
   server = Hapi.createServer();
-  server.pack.register(user, done);
+
+  server.pack.register(require('hapi-auth-cookie'), function (err) {
+    if (err) throw err;
+
+    server.auth.strategy('session', 'cookie', 'try', {
+      password: '12345'
+    });
+
+    server.pack.register(user, done);
+  });
 });
 
 describe('user is routing properly', function () {

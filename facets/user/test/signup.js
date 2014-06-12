@@ -8,8 +8,6 @@ var Hapi = require('hapi'),
     config = require('../../../config').user,
     user = require('../');
 
-user.name = 'user';
-
 var server, source,
     forms = require('./fixtures/signupForms.js');
 
@@ -17,7 +15,7 @@ var server, source,
 before(function (done) {
   var serverOptions = {
     views: {
-      engines: {hbs: 'handlebars'},
+      engines: {hbs: require('handlebars')},
       partialsPath: '../../hbs-partials',
       helpersPath: '../../hbs-helpers'
     }
@@ -30,7 +28,8 @@ before(function (done) {
     next();
   });
 
-  server.pack.require({'../': config.user, 'hapi-auth-cookie': null}, function (err) {
+  server.pack.register(require('hapi-auth-cookie'), function (err) {
+    if (err) throw err;
 
     server.app.cache = server.cache('sessions', {
       expiresIn: 30
@@ -40,9 +39,15 @@ before(function (done) {
       password: '12345'
     });
 
-    // manually start the cache
-    server.app.cache._cache.connection.start(done);
-  })
+    server.pack.register({
+      plugin: user,
+      options: config
+    }, function (err) {
+
+      // manually start the cache
+      server.app.cache._cache.connection.start(done);
+    });
+  });
 });
 
 before(function (done) {

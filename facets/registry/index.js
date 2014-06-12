@@ -4,7 +4,7 @@ var internals = {};
 exports.register = function Regsitry (facet, options, next) {
 
   facet.views({
-    engines: { hbs: 'handlebars' },
+    engines: { hbs: require('handlebars') },
     path: path.resolve(__dirname, 'templates')
   });
 
@@ -13,11 +13,15 @@ exports.register = function Regsitry (facet, options, next) {
     method: "GET",
     handler: require('./show-package')
   });
-  
-  facet.route({ 
-    path:"/search", 
-    method: "GET", 
+
+  facet.route({
+    path:"/search",
+    method: "GET",
     handler: require('./show-search')
-  });  
+  });
   next();
-}
+};
+
+exports.register.attributes = {
+  pkg: require('./package.json')
+};

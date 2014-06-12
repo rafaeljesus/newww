@@ -21,44 +21,50 @@ server.route({
   }
 });
 
-server.pack.require({
-  'hapi-auth-cookie': null,
-  './facets/company': null,
-  './facets/registry': null,
-  './facets/user': config.user,
-  './services/couchdb': config.couch
-}, function(err) {
+server.pack.register(require('hapi-auth-cookie'), function (err) {
+  if (err) throw err;
+
+  var cache = server.cache('sessions', {
+    expiresIn: config.session.expiresIn
+  });
+
+  server.app.cache = cache;
+
+  server.auth.strategy('session', 'cookie', 'try', {
+    password: config.session.password,
+    appendNext: true,
+    cookie: config.session.cookie,
+    validateFunc: function (session, callback) {
+      cache.get(session.sid, function (err, cached) {
+
+        if (err) {
+          return callback(err, false);
+        }
+        if (!cached) {
+          return callback(null, false);
+        }
+
+        return callback(null, true, cached.item)
+      })
+    }
+  });
+
+  server.pack.register([
+    require('./facets/company'),
+    require('./facets/registry'),
+    {
+      plugin: require('./facets/user'),
+      options: config.user
+    },
+    {
+      plugin: require('./services/couchdb'),
+      options: config.couch
+    }
+  ], function(err) {
     if (err) throw err;
-
-    var cache = server.cache('sessions', {
-      expiresIn: config.session.expiresIn
-    });
-
-    server.app.cache = cache;
-
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: config.session.password,
-      cookie: config.session.cookie,
-      redirectTo: '/login',
-      appendNext: true,
-      validateFunc: function (session, callback) {
-        cache.get(session.sid, function (err, cached) {
-          // use this spot here to verify user is still logged into couch
-
-          if (err) {
-            return callback(err, false);
-          }
-          if (!cached) {
-            return callback(null, false);
-          }
-
-          return callback(null, true, cached.item)
-        })
-      }
-    });
 
     server.start(function() {
         console.log('Hapi server started @ ' + server.info.uri);
     });
-});
-
+  });
+})

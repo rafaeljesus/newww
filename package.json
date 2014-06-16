@@ -1,6 +1,6 @@
 {
   "name": "newww",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A total rewrite of npm-www using hapijs",
   "main": "server.js",
   "scripts": {

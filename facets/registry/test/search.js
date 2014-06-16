@@ -16,7 +16,7 @@ registry.version = '0.0.1';
 before(function (done) {
   var serverOptions  = {
     views: {
-      engines: {hbs: 'handlebars'},
+      engines: {hbs: require('handlebars')},
       partialsPath: '../../hbs-partials',
       helpersPath: '../../hbs-helpers'
     }

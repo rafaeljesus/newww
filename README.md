@@ -1,7 +1,7 @@
 newww
 =====
 
-We're using [Hapi](https://github.com/spumko/hapi) as a framework for the next iteration of the npm website. We wrote all about why we chose Hapi in [a blog post](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability).
+We're using [Hapi](https://github.com/spumko/hapi) as a framework for the next iteration of the npm website. We wrote all about why we chose Hapi in [a blog post](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability). If you'd like to contribute to this project and/or get an understanding of what the goals and roadmap of the project are, check out the [CONTRIBUTING.md](https://github.com/npm/newww/blob/master/CONTRIBUTING.md) file.
 
 ## General Layout
 
@@ -95,15 +95,94 @@ We're using [Handlebars](http://handlebarsjs.com/) as our templating engine. Thi
 
 We're sticking with [Stylus](http://learnboost.github.io/stylus/) as our CSS preprocessor. The Stylus-to-CSS conversion happens as an npm prestart script.
 
-## Running the server locally
-
-For now, you'll need the `npm run dev-db` bit from the original npm-www. (We're porting this over soon - stay tuned.)
-
-Once that's running, run `npm start`. 
-
-For ease of development, we've got a Gulpfile that uses [gulp](http://gulpjs.com/). It watches appropriate directories and restarts stuff for you when other stuff changes. Fortunately, you don't have to use gulp if you don't want to; just change the `start` line in the root `package.json` to `start: "node index.js"`.
-
 ## Code
 
 Let's bring back semi-colons and comma-last. No rhyme or reason; just cuz.
 
+## Running the server locally
+
+First, clone this repo.
+
+If you have a reasonably new machine, we strongly recommend using Virtualbox
+and Vagrant to run a pre-configured VM containing [couchdb](http://couchdb.apache.org/),
+[redis](http://redis.io/), and [elasticsearch](http://www.elasticsearch.org/),
+all ready to go. If your machine struggles to run a VM, or you are suspicious
+of VMs, you will need to install them yourself.
+
+### 1. Recommended setup: pre-built VM
+
+First [install VirtualBox](https://www.virtualbox.org/wiki/Downloads), which is
+free for personal use.
+
+Then [install Vagrant](https://www.vagrantup.com/downloads.html), also free.
+
+Now go into the root of the repo and run
+
+`vagrant up`
+
+this will download the VM image (~700MB, so go grab a cup of coffee) and start
+the VM. After this first run, the VM image will already be available on your
+machine, so vagrant up will only take a few seconds.
+
+Now get access to the machine, super simple:
+
+`vagrant ssh`
+
+You are now inside the VM! The code in the repo is linked to `/vagrant`, the
+directory you find yourself in when you login. Changes made outside the VM
+will be immediately reflected inside of it and vice versa.
+
+### 2. npm install
+
+Note that you should be *inside* the VM and at /vagrant when you do this:
+
+`npm install`
+
+Most of the dependencies are checked-in, but a few will get installed when
+you run this.
+
+### 3. Start your databases
+
+Again, from inside the VM at /vagrant, run
+
+`npm run dev`
+
+You should see couch, redis and elasticsearch all being started. This can
+take a little while, so wait until you see "STARTING DEV SITE NOW". Once it's
+running, you can see the site by going to
+
+[https://localhost:15443/](https://localhost:15443/)
+
+That's it! You are good to go. You can edit the code from outside the VM and
+the changes will be reflected in the VM. When you're done, remember to exit
+the vm and run
+
+`vagrant suspend`
+
+which will save the VM. `vagrant up` will bring it back much faster after the
+first run.
+
+### 4. Start the web server
+
+In a separate terminal from the one running vagrant, run `npm start`.
+
+For ease of development, we've got a Gulpfile that uses [gulp](http://gulpjs.com/). It watches appropriate directories and restarts stuff for you when other stuff changes. Fortunately, you don't have to use gulp if you don't want to; just change the `start` line in the root `package.json` to `start: "node index.js"`.
+
+### Under the hood
+
+All the `npm run` commands are simply running the script `dev/go.js` with
+different arguments. They dump redis and couchdb logs to stdio, and
+automatically run the server logs (which are just JSON) into bunyan, which
+parses and prints them neatly.
+
+The couchdb clones 1/256th of the published packages, and comes with a
+hard-coded set of user accounts for testing. It has a user named 'admin' with
+the password 'admin', which you can use to log in and do stuff using futon,
+by going here:
+
+[http://localhost:15984/_utils/](http://localhost:15984/_utils/)
+
+It is also running a copy of Elasticsearch, which you can hit locally if you
+want to test queries or perform admin:
+
+[http://localhost:9200/](http://localhost:9200/)

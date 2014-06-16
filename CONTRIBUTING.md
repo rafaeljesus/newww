@@ -30,27 +30,28 @@ Please remember that each piece of functionality is totally encompassed in the f
 
 **User Facet**
 
-[ ] `/profile-edit`
-[ ] `/email-edit`
-[x] `/profile/{name}` | `/profile` | `/profile/{name}`
-[x] `/~{name}`
-[ ] `/password`
-[x] `/signup`
-[ ] `/forgot`
+- [ ] `/profile-edit`
+- [ ] `/email-edit`
+- [x] `/profile/{name}` | `/profile` | `/profile/{name}`
+- [x] `/~{name}`
+- [ ] `/password`
+- [x] `/signup`
+- [ ] `/forgot`
 
 **Registry Facet**
 
-[ ] `/package/{name}/{version}`
-[ ] `/keyword/{kw}`
-[ ] `/browse/?*`
-[ ] `/star`
+- [ ] `/package/{name}/{version}`
+- [ ] `/keyword/{kw}`
+- [ ] `/browse/?*`
+- [ ] `/star`
 
 **Company Facet**
 
-[ ] `/about`
-[ ] `/whoshiring`
+- [ ] `/about`
+- [ ] `/whoshiring`
 
 **Ops Facet**
 
-[ ] Healthchecks
-[ ] csp-logs
+- [ ] Healthchecks
+- [ ] csp-logs
+

@@ -51,7 +51,10 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
 
   server.pack.register([
     require('./facets/company'),
-    require('./facets/registry'),
+    {
+      plugin: require('./facets/registry'),
+      options: config.search
+    },
     {
       plugin: require('./facets/user'),
       options: config.user

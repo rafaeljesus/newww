@@ -20,13 +20,13 @@ exports.fakeuser = {
            "name": "email",
            "value": "b@fakeuser.com",
            "title": "Email",
-           "show": "<a href=\"mailto:raquel%2B5@npmjs.com\">b@fakeuser.com</a>"
+           "show": "<a href=\"mailto:b@fakeuser.com\">b@fakeuser.com</a>"
        },
        {
            "name": "github",
-           "value": "",
-           "title": "Github",
-           "show": ""
+           "value": "abcde",
+           "title": "GitHub",
+           "show": "<a rel=\"me\" href=\"https://github.com/abcde\">abcde</a>"
        },
        {
            "name": "twitter",
@@ -67,6 +67,17 @@ exports.fakeuser = {
    "iterations": 10
 }
 
+exports.fakeuserNewProfile = {
+  _id: 'org.couchdb.user:fakeuser',
+  name: 'fakeuser',
+  fullname: 'Fake User',
+  github: 'fakeuser',
+  twitter: 'fakeuser',
+  appdotnet: '',
+  homepage: '',
+  freenode: ''
+}
+
 exports.fakeuserCli = {
    "_id": "org.couchdb.user:fakeuserCli",
    "_rev": "1-dadbd134b001443c5fe120e4444b2b0e",
@@ -81,3 +92,16 @@ exports.fakeuserCli = {
    "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
    "salt": "67bbd97d32e397ded845e279fb371ea7"
 }
+
+exports.fakeuserCliFields = [
+  { name: 'fullname', value: '', title: 'Full Name', show: '' },
+  { name: 'email',
+    value: 'f@fakeuser.me',
+    title: 'Email',
+    show: '<a href="mailto:f@fakeuser.me">f@fakeuser.me</a>' },
+  { name: 'github', value: '', title: 'GitHub', show: '' },
+  { name: 'twitter', value: '', title: 'Twitter', show: '' },
+  { name: 'appdotnet', value: '', title: 'App.net', show: '' },
+  { name: 'homepage', value: '', title: 'Homepage', show: '' },
+  { name: 'freenode', value: '', title: 'IRC Handle', show: '' }
+]

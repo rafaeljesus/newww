@@ -1,0 +1,44 @@
+{{> header this}}
+
+<h1>Edit your Profile</h1>
+
+<p>
+  <a href='/email-edit'>Edit Email Address</a> -
+  <a href='/password'>Change Password</a> -
+  <a href='/forgot'>Forgot Password</a>
+</p>
+
+{{#if error}}
+  <p class="error">{{ error }}</p>
+{{/if}}
+
+<form method='post' action='/profile-edit'>
+  {{#with user}}
+    <input type='hidden' name='_id' value="{{_id}}">
+    <input type='hidden' name='name' value="{{name}}">
+    {{#each fields}}
+      {{#compare name 'email'}}
+        <fieldset>
+          <a href="/email-edit" class="email-label">{{title}}</a>
+          <a href="/email-edit" class="email-field">
+            <input id="{{name}}" name="{{name}}"
+              value="{{value}}" disabled='disabled'>
+          </a>
+        </fieldset>
+      {{else}}
+        <fieldset>
+          <label for="{{name}}">{{title}}</label>
+          <input id="{{name}}" name="{{name}}"
+            value="{{value}}">
+        </fieldset>
+      {{/compare}}
+    {{/each}}
+  {{/with}}
+
+  <fieldset class='buttons'>
+    <button class='btn' type='submit'>Save</button>
+  </fieldset>
+{{!-- <%- csrf %> --}}
+</form>
+
+{{> footer}}

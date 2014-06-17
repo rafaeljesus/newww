@@ -56,7 +56,7 @@ module.exports = function signup (request, reply) {
 
         request.server.app.cache.set(sid, user, 0, function (err) {
           if (err) {
-            console.log(err)
+            console.log('error in signup', err)
             reply(err);
           }
 

@@ -22,13 +22,15 @@ module.exports = function (options) {
         getBrowseData('author', profileName, 0, 1000, function (err, packages) {
 
           opts.profile = {
-            showprofile: transform(showprofile, options),
-            fields: showprofile.fields,
             title: showprofile.name,
             // hiring: req.model.whoshiring,
             packages: getRandomAssortment(packages, 'packages', profileName),
-            starred: getRandomAssortment(starred, 'starred', profileName)
+            starred: getRandomAssortment(starred, 'starred', profileName),
+            isSelf: opts.user && opts.user.name && profileName === opts.user.name
           }
+
+          opts.profile.showprofile = transform(showprofile, options);
+          opts.profile.fields = opts.profile.showprofile.fields;
 
           reply.view('profile', opts)
         });

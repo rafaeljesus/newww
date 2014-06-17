@@ -2,8 +2,9 @@ var CouchLogin = require('couch-login'),
     Hapi = require('hapi'),
     SECOND = 1000;
 
+var adminCouch, anonCouch;
+
 exports.register = function Couch (service, options, next) {
-  var adminCouch, anonCouch;
 
   if (options.couchAuth) {
     var ca = options.couchAuth.split(':'),
@@ -22,23 +23,11 @@ exports.register = function Couch (service, options, next) {
 
   anonCouch = new CouchLogin(options.registryCouch, NaN);
 
-  service.method('getPackageFromCouch', function (package, next) {
-    anonCouch.get('/registry/' + package, function (er, cr, data) {
-      next(er, data);
-    });
-  }, {
+  service.method('getPackageFromCouch', getPackageFromCouch, {
     cache: { expiresIn: 60 * SECOND, segment: '##package' }
   });
 
-  service.method('getUserFromCouch', function (name, next) {
-    anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
-      if (er || cr && cr.statusCode !== 200 || !data || data.error) {
-        return next(Hapi.error.notFound(name))
-      }
-
-      return next(null, data)
-    })
-  }, {
+  service.method('getUserFromCouch', getUserFromCouch, {
     cache: { expiresIn: 60 * SECOND, segment: '##session' }
   });
 
@@ -48,18 +37,9 @@ exports.register = function Couch (service, options, next) {
 
   service.method('loginUser', require('./login')(service, anonCouch));
 
-  service.method('signupUser', function (acct, next) {
-    anonCouch.signup(acct, function (er, cr, data) {
-      if (er || cr && cr.statusCode >= 400 || data && data.error) {
-          var error = "Failed creating account.  CouchDB said: "
-                    + ((er && er.message) || (data && data.error))
+  service.method('signupUser', signupUser);
 
-        return next(new Error(error));
-      }
-
-      return next(null, data);
-    });
-  });
+  service.method('saveProfile', saveProfile);
 
   next();
 };
@@ -67,3 +47,44 @@ exports.register = function Couch (service, options, next) {
 exports.register.attributes = {
   pkg: require('./package.json')
 };
+
+//========== functions ===========
+
+function getPackageFromCouch (package, next) {
+  anonCouch.get('/registry/' + package, function (er, cr, data) {
+    next(er, data);
+  });
+}
+
+function getUserFromCouch (name, next) {
+  anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
+    if (er || cr && cr.statusCode !== 200 || !data || data.error) {
+      return next(Hapi.error.notFound(name))
+    }
+
+    return next(null, data)
+  })
+}
+
+function signupUser (acct, next) {
+  anonCouch.signup(acct, function (er, cr, data) {
+    if (er || cr && cr.statusCode >= 400 || data && data.error) {
+        var error = "Failed creating account.  CouchDB said: "
+                  + ((er && er.message) || (data && data.error))
+
+      return next(new Error(error));
+    }
+
+    return next(null, data);
+  });
+}
+
+function saveProfile (user, next) {
+  adminCouch.post('/_users/_design/scratch/_update/profile/' + user._id, user, function (er, cr, data) {
+    if (er || cr && cr.statusCode !== 201 || !data || data.error) {
+      return next(Hapi.error.internal(er || data.error));
+    }
+
+    return next(null, data);
+  });
+}

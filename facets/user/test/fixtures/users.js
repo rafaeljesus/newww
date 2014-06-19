@@ -78,6 +78,12 @@ exports.fakeuserNewProfile = {
   freenode: ''
 }
 
+exports.fakeuserChangePassword = {
+  current: '12345',
+  new: 'abcde',
+  verify: 'abcde'
+}
+
 exports.fakeuserCli = {
    "_id": "org.couchdb.user:fakeuserCli",
    "_rev": "1-dadbd134b001443c5fe120e4444b2b0e",

@@ -11,7 +11,7 @@ var Hapi = require('hapi'),
 
 var server, source, cache,
     fakeuser = require('./fixtures/users').fakeuser,
-    fakeProfile = require('./fixtures/users').fakeuserNewProfile;
+    fakeChangePass = require('./fixtures/users').fakeuserChangePassword;
 
 // prepare the server
 before(function (done) {
@@ -58,6 +58,12 @@ before(function (done) {
     saveProfile: function (user, next) {
       return next(null, "yep, it's cool");
     },
+    changePass: function (auth, next) {
+      return next(null);
+    },
+    loginUser: function (auth, next) {
+      return next(null, fakeuser)
+    },
     setSession: function (request) {
       return function (user, next) {
         var sid = murmurhash.v3(user.name, 55).toString(16);
@@ -79,10 +85,10 @@ before(function (done) {
   done();
 });
 
-describe('Getting to the profile-edit page', function () {
+describe('Getting to the password page', function () {
   it('redirects an unauthorized user to the login page', function (done) {
     var options = {
-      url: '/profile-edit'
+      url: '/password'
     }
 
     server.inject(options, function (resp) {
@@ -92,26 +98,26 @@ describe('Getting to the profile-edit page', function () {
     });
   });
 
-  it('takes authorized users to the profile-edit page', function (done) {
+  it('takes authorized users to the password page', function (done) {
     var options = {
-      url: '/profile-edit',
+      url: '/password',
       credentials: fakeuser
     };
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('profile-edit');
+      expect(source.template).to.equal('password');
       done();
     });
   });
 });
 
-describe('Modifying the profile', function () {
+describe('Changing the password', function () {
   it('redirects an unauthorized user to the login page', function (done) {
     var options = {
-      url: '/profile-edit',
-      method: 'POST',
-      payload: fakeProfile
+      url: '/password',
+      method: 'post',
+      payload: fakeChangePass
     };
 
     server.inject(options, function (resp) {
@@ -121,11 +127,11 @@ describe('Modifying the profile', function () {
     });
   });
 
-  it('allows authorized profile modifications and redirects to profile page', function (done) {
+  it('allows authorized password changes to go through', function (done) {
     var options = {
-      url: '/profile-edit',
-      method: 'POST',
-      payload: fakeProfile,
+      url: '/password',
+      method: 'post',
+      payload: fakeChangePass,
       credentials: fakeuser
     };
 
@@ -134,16 +140,6 @@ describe('Modifying the profile', function () {
       expect(resp.headers.location).to.include('profile');
       done();
     });
+
   });
-
-  it('modifies the profile properly', function (done) {
-    var cacheData = JSON.parse(cache['460002dc'].item);
-    expect(cacheData.github).to.equal(fakeProfile.github);
-    expect(cacheData.fields[3].value).to.equal(fakeProfile.twitter);
-    done();
-  })
 });
-
-
-
-

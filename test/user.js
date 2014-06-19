@@ -27,7 +27,7 @@ describe('user is routing properly', function () {
   it('calls all the right routes', function (done) {
     var table = server.table();
 
-    expect(table).to.have.length(15);
+    expect(table).to.have.length(18);
 
     var paths = table.map(function (route) {
       var obj = {
@@ -50,6 +50,9 @@ describe('user is routing properly', function () {
     expect(paths).to.include({ path: '/profile-edit', method: 'head' });
     expect(paths).to.include({ path: '/profile-edit', method: 'post' });
     expect(paths).to.include({ path: '/profile-edit', method: 'put' });
+    expect(paths).to.include({ path: '/password', method: 'get' });
+    expect(paths).to.include({ path: '/password', method: 'head' });
+    expect(paths).to.include({ path: '/password', method: 'post' });
 
     done();
   })

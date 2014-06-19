@@ -6,7 +6,8 @@ var Lab = require('lab'),
 
 var Hapi = require('hapi'),
     config = require('../../../config').user,
-    user = require('../');
+    user = require('../'),
+    murmurhash = require('murmurhash');
 
 var server, source,
     forms = require('./fixtures/signupForms');
@@ -57,6 +58,22 @@ before(function (done) {
       var user = require('./fixtures/users').fakeuserCli
 
       return next(null, user);
+    },
+    setSession: function (request) {
+      return function (user, next) {
+        var sid = murmurhash.v3(user.name, 55).toString(16);
+
+        user.sid = sid;
+
+        server.app.cache.set(sid, user, 0, function (err) {
+          if (err) {
+            return next(Hapi.error.internal('there was an error setting the cache'));
+          }
+
+          request.auth.session.set({sid: sid});
+          return next(null);
+        });
+      }
     }
   }
   done();

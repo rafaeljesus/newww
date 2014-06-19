@@ -6,9 +6,21 @@ exports.register = function User (facet, options, next) {
     path: path.resolve(__dirname, 'templates')
   });
 
+  var forceAuthConfig = function (handler) {
+    return {
+      handler: handler,
+      auth: {
+        mode: 'required'
+      },
+      plugins: { 'hapi-auth-cookie': {
+        redirectTo: '/login'
+      }}
+    };
+  };
+
   facet.route([
-    {path: "/~", method: "GET", handler: require('./show-profile')(options.profileFields) },
-    {path: "/profile", method: "GET", handler: require('./show-profile')(options.profileFields) }
+    { path: "/~", method: "GET", config: forceAuthConfig(require('./show-profile')(options.profileFields)) },
+    { path: "/profile", method: "GET", config: forceAuthConfig(require('./show-profile')(options.profileFields)) }
   ]);
 
   facet.route([
@@ -18,23 +30,19 @@ exports.register = function User (facet, options, next) {
   ]);
 
   facet.route({
-    path: "/signup",
-    method: ["GET", "HEAD", "POST"],
-    handler: require('./show-signup')
+    path: "/signup", method: ["GET", "HEAD", "POST"], handler: require('./show-signup')
   });
 
   facet.route({
     path: "/profile-edit",
     method: ["GET", "HEAD", "PUT", "POST"],
-    config: {
-      handler: require('./show-profile-edit')(options.profileFields),
-      auth: {
-        mode: 'required'
-      },
-      plugins: { 'hapi-auth-cookie': {
-        redirectTo: '/login'
-      }}
-    }
+    config: forceAuthConfig(require('./show-profile-edit')(options.profileFields))
+  });
+
+  facet.route({
+    path: "/password",
+    method: ["GET", "HEAD", "POST"],
+    config: forceAuthConfig(require('./show-password'))
   });
 
   facet.route({

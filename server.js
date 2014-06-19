@@ -49,6 +49,9 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     }
   });
 
+  // make it easier for setting sessions throughout the app
+  server.method('setSession', setSession);
+
   server.pack.register([
     require('./facets/company'),
     {
@@ -71,3 +74,24 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     });
   });
 })
+
+// ======== functions =========
+
+var murmurhash = require('murmurhash');
+
+function setSession (request) {
+  return function (user, next) {
+    var sid = murmurhash.v3(user.name, 55).toString(16);
+
+    user.sid = sid;
+
+    request.server.app.cache.set(sid, user, 0, function (err) {
+      if (err) {
+        return next(Hapi.error.internal('there was an error setting the cache'));
+      }
+
+      request.auth.session.set({sid: sid});
+      return next(null);
+    });
+  }
+}

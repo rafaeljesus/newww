@@ -13,7 +13,6 @@ exports.register = function Couch (service, options, next) {
         auth = { name: name, password: password };
 
     // the admin couch uses basic auth, or couchdb freaks out eventually
-    // 10 JUN 2014 [RV]: Do we even need this?? Is adminCouch used *anywhere*?
     adminCouch = new CouchLogin(options.registryCouch, 'basic');
     adminCouch.strictSSL = false;
     adminCouch.login(auth, function (er, cr, data) {
@@ -28,7 +27,7 @@ exports.register = function Couch (service, options, next) {
   });
 
   service.method('getUserFromCouch', getUserFromCouch, {
-    cache: { expiresIn: 60 * SECOND, segment: '##session' }
+    cache: { expiresIn: 60 * SECOND, segment: '##user' }
   });
 
   service.method('getBrowseData', require('./browse')(anonCouch), {
@@ -40,6 +39,8 @@ exports.register = function Couch (service, options, next) {
   service.method('signupUser', signupUser);
 
   service.method('saveProfile', saveProfile);
+
+  service.method('changePass', changePass);
 
   next();
 };
@@ -83,6 +84,16 @@ function saveProfile (user, next) {
   adminCouch.post('/_users/_design/scratch/_update/profile/' + user._id, user, function (er, cr, data) {
     if (er || cr && cr.statusCode !== 201 || !data || data.error) {
       return next(Hapi.error.internal(er || data.error));
+    }
+
+    return next(null, data);
+  });
+}
+
+function changePass (auth, next) {
+  adminCouch.changePass(auth, function (er, cr, data) {
+    if (er || cr.statusCode >= 400) {
+      return next(er && er.message || data && data.message)
     }
 
     return next(null, data);

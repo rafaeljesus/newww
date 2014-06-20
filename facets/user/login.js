@@ -28,6 +28,10 @@ module.exports = function login (request, reply) {
             return reply.view('error', err);
           }
 
+          if (user && user.mustChangePass) {
+            return reply.redirect('/password');
+          }
+
           return reply.redirect('/');
         });
       });

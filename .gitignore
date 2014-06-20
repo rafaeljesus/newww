@@ -4,6 +4,7 @@ node_modules/
 .idea
 dev/couch/*.couch
 dev/couch/.registry_design
+dev/couch/._users_design
 dev/couch.log
 dev/elasticsearch/data
 dev/elasticsearch/logs

@@ -108,8 +108,10 @@ function delSession (request) {
         return next(Hapi.error.internal('there was an error clearing the cache'));
       }
 
-      request.auth.session.clear();
-      return next(null);
+      request.server.methods.logoutUser(function () {
+        request.auth.session.clear();
+        return next(null);
+      });
     });
   }
 }

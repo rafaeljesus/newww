@@ -74,6 +74,22 @@ before(function (done) {
           return next(null);
         });
       }
+    },
+    delSession: function (request) {
+      return function (user, next) {
+        var sid = murmurhash.v3(user.name, 55).toString(16);
+
+        user.sid = sid;
+
+        request.server.app.cache.drop(sid, function (err) {
+          if (err) {
+            return next(Hapi.error.internal('there was an error clearing the cache'));
+          }
+
+          request.auth.session.clear();
+          return next(null);
+        });
+      }
     }
   }
   done();

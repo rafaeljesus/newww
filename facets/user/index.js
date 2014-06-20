@@ -80,4 +80,3 @@ exports.register = function User (facet, options, next) {
 exports.register.attributes = {
   pkg: require('./package.json')
 };
-

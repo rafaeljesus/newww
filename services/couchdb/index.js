@@ -38,6 +38,7 @@ exports.register = function Couch (service, options, next) {
   });
 
   service.method('loginUser', require('./login')(service, anonCouch));
+  service.method('logoutUser', logoutUser(anonCouch));
 
   service.method('signupUser', signupUser);
 
@@ -63,7 +64,7 @@ function getPackageFromCouch (package, next) {
 function getUserFromCouch (name, next) {
   anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
     if (er || cr && cr.statusCode !== 200 || !data || data.error) {
-      return next(Hapi.error.notFound(name))
+      return next(Hapi.error.notFound('Username not found: ' + name))
     }
 
     return next(null, data)
@@ -90,6 +91,12 @@ function lookupUserByEmail (email, next) {
 
     return next(null, usernames);
   })
+}
+
+function logoutUser (anonCouch) {
+  return function (next) {
+    anonCouch.logout(next);
+  };
 }
 
 function signupUser (acct, next) {

@@ -55,7 +55,7 @@ before(function (done) {
   server.methods = {
     signupUser: function (acct, next) {
 
-      var user = require('./fixtures/users').fakeuserCli
+      var user = require('./fixtures/users').fakeusercli
 
       return next(null, user);
     },

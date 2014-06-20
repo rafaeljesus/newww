@@ -31,7 +31,7 @@ exports.register = function User (facet, options, next) {
 
   facet.route({
     path: "/forgot/{token?}",
-    method: ["GET", "POST"],
+    method: ["GET", "HEAD", "POST"],
     handler: require('./show-forgot')(options.mail)
   });
 

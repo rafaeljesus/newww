@@ -54,6 +54,11 @@ exports.user = {
     homepage: [ 'Homepage', '<a rel="me" href="%s">%s</a>',
       hostmatch(/[^\.]+\.[^\.]+$/) ],
     freenode: [ 'IRC Handle', '%s' ]
+  },
+  mail: {
+    mailTransportType: null,
+    mailTransportSettings: null,
+    emailFrom: '"The npm Website Robot" <webmaster@npmjs.org>'
   }
 };
 

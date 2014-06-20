@@ -49,7 +49,7 @@ module.exports = function (request, reply) {
       if (er) {
         opts.error = 'Failed setting the password: ' + er.message;
 
-        return reply.view('er', opts).code(er.output.statusCode);
+        return reply.view('error', opts).code(er.output.statusCode);
       }
 
       loginUser(newAuth, function (er, user) {

@@ -1,6 +1,20 @@
 var Hapi = require('hapi'),
-    config = require('./config.js')
+    config = require('./config.js'),
+    uuid = require('node-uuid');
 
+// set up the logger
+var bole = require('bole'),
+    pretty = require('bistre')(),
+    log = bole('server');
+
+bole.output({
+  level: 'info',
+  stream: pretty
+});
+
+pretty.pipe(process.stdout);
+
+// set up the server
 var server = new Hapi.Server(config.host, config.port, config.server)
 
 server.route({
@@ -68,10 +82,14 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
       options: config.couch
     }
   ], function(err) {
-    if (err) throw err;
+    if (err) {
+      // actually, if there's something wrong with plugin loading,
+      // DO NOT PASS GO, DO NOT COLLECT $200. Throw the error.
+      throw err;
+    }
 
     server.start(function() {
-        console.log('Hapi server started @ ' + server.info.uri);
+      log.info('Hapi server started @ ' + server.info.uri);
     });
   });
 })
@@ -88,7 +106,9 @@ function setSession (request) {
 
     request.server.app.cache.set(sid, user, 0, function (err) {
       if (err) {
-        return next(Hapi.error.internal('there was an error setting the cache'));
+        var errId = uuid.v1();
+        log.error(errId + ' ' + Hapi.error.internal('there was an error setting the cache'));
+        return next(Hapi.error.internal(errId));
       }
 
       request.auth.session.set({sid: sid});
@@ -105,7 +125,9 @@ function delSession (request) {
 
     request.server.app.cache.drop(sid, function (err) {
       if (err) {
-        return next(Hapi.error.internal('there was an error clearing the cache'));
+        var errId = uuid.v1();
+        log.error(errId + ' ' + Hapi.error.internal('there was an error clearing the cache'));
+        return next(Hapi.error.internal(errId));
       }
 
       request.server.methods.logoutUser(function () {

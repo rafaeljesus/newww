@@ -13,6 +13,8 @@
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
   "dependencies": {
+    "bistre": "0.0.1",
+    "bole": "^0.1.0",
     "catbox": "^2.2.1",
     "catbox-redis": "^1.0.1",
     "handlebars": "^2.0.0-alpha.2",
@@ -21,6 +23,7 @@
     "joi": "^4.0.0",
     "murmurhash": "0.0.2",
     "nib": "^1.0.2",
+    "node-uuid": "^1.4.1",
     "npm2es": "git://github.com/npm/npm2es",
     "stylus": "^0.45.0"
   },

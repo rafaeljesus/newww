@@ -1,6 +1,9 @@
 var Joi = require('joi'),
     userValidate = require('npm-user-validate'),
-    murmurhash = require('murmurhash');
+    murmurhash = require('murmurhash'),
+    Hapi = require('hapi'),
+    log = require('bole')('user-signup'),
+    uuid = require('node-uuid');
 
 module.exports = function signup (request, reply) {
   var signupUser = request.server.methods.signupUser,
@@ -44,16 +47,18 @@ module.exports = function signup (request, reply) {
       }
 
       delSession(value, function (er) {
-        signupUser(value, function (er, user) {
+        if (er) {
+          return showError(request, reply, 'Unable to set the session for user ' + opts.user.name, 500, er);
+        }
 
+        signupUser(value, function (er, user) {
           if (er) {
-            opts.errors.push(er);
-            return reply.view('signup-form', opts);
+            return showError(request, reply, 'Failed to create account', 403, er);
           }
 
           setSession(user, function (err) {
             if (err) {
-              return reply.view('error', err);
+              return showError(request, reply, 'Unable to set the session for user ' + opts.user.name, 500, err);
             }
 
             return reply.redirect('/profile-edit');
@@ -71,5 +76,25 @@ module.exports = function signup (request, reply) {
 
     return reply.view('signup-form', opts);
   }
-
 };
+
+function showError (request, reply, message, code, logExtras) {
+  var errId = uuid.v1();
+
+  var opts = {
+    user: request.auth.credentials,
+    errId: errId,
+    code: code || 500
+  };
+
+  var error;
+  if (code === 403) {
+    error = Hapi.error.forbidden(message);
+  } else {
+    error = Hapi.error.internal(message);
+  }
+
+  log.error(errId + ' ' + error, logExtras);
+
+  return reply.view('error', opts).code(code || 500);
+}

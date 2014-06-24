@@ -1,4 +1,7 @@
-var murmurhash = require('murmurhash');
+var murmurhash = require('murmurhash'),
+    Hapi = require('hapi'),
+    uuid = require('node-uuid'),
+    log = require('bole')('user-login');
 
 module.exports = function login (request, reply) {
   var loginUser = request.server.methods.loginUser,
@@ -13,19 +16,27 @@ module.exports = function login (request, reply) {
   if (request.method === 'post') {
 
     if (!request.payload.name || !request.payload.password) {
-      opts.message = 'Missing username or password';
+      opts.error = {
+        type: 'missing'
+      };
     } else {
       loginUser(request.payload, function (er, user) {
 
         if (er || !user) {
-          opts.message = 'Invalid username or password';
-
-          return reply.view('login', opts);
+          var errId = uuid.v1();
+          log.error(errId + ' ' + Hapi.error.badRequest('Invalid username or password'), request.payload.name);
+          opts.error = {
+            type: 'invalid',
+            errId: errId
+          };
+          return reply.view('login', opts).code(400);
         }
 
         setSession(user, function (err) {
           if (err) {
-            return reply.view('error', err);
+            var errId = uuid.v1();
+            log.error(errId + ' ' + err)
+            return reply.view('error', {errId: errId}).code(500);
           }
 
           if (user && user.mustChangePass) {
@@ -38,8 +49,7 @@ module.exports = function login (request, reply) {
     }
   }
 
-  if (request.method === 'get' || opts.message) {
-    // console.log(opts.message)
+  if (request.method === 'get' || opts.error) {
     return reply.view('login', opts)
   }
 }

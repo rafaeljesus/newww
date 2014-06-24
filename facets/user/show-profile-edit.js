@@ -1,5 +1,8 @@
 var transform = require('./presenters/profile').transform,
-    murmurhash = require('murmurhash')
+    murmurhash = require('murmurhash'),
+    Hapi = require('hapi'),
+    log = require('bole')('user-profile-edit'),
+    uuid = require('node-uuid');
 
 module.exports = function (options) {
   return function (request, reply) {
@@ -27,7 +30,10 @@ module.exports = function (options) {
 
           setSession(opts.user, function (err) {
             if (err) {
-              return reply.view('error', err);
+              opts.errId = uuid.v1();
+              log.error(opts.errId + ' ' + Hapi.error.internal('Unable to set the session for user ' + opts.user.name), err);
+
+              return reply.view('error', opts);
             }
             return reply.redirect('/profile');
           });
@@ -40,8 +46,6 @@ module.exports = function (options) {
       opts.title = 'Edit Profile';
       return reply.view('profile-edit', opts);
     }
-
-
   }
 }
 

@@ -1,6 +1,8 @@
 var Hapi = require('hapi'),
     crypto = require('crypto'),
-    userValidate = require('npm-user-validate');
+    userValidate = require('npm-user-validate'),
+    log = require('bole')('user-password'),
+    uuid = require('node-uuid');
 
 module.exports = function (request, reply) {
   var opts = {
@@ -40,28 +42,24 @@ module.exports = function (request, reply) {
       return reply.view('password', opts).code(400);
     }
 
-    console.log('Changing password', { name: prof.name }); // replace with Bunyan logger
+    log.warn('Changing password', { name: prof.name });
 
     var newAuth = { name: prof.name, password: data.new };
     newAuth.mustChangePass = false;
 
     changePass(newAuth, function (er, data) {
       if (er) {
-        opts.error = 'Failed setting the password: ' + er.message;
-
-        return reply.view('error', opts).code(er.output.statusCode);
+        return showError(request, reply, 'Failed to set the password for ' + newAuth.name, er);
       }
 
       loginUser(newAuth, function (er, user) {
         if (er) {
-          opts.error = er;
-          return reply.view('error', opts);
+          return showError(request, reply, 'Unable to login user', er);
         }
 
         setSession(user, function (err) {
           if (err) {
-            opts.error = err;
-            return reply.view('error', opts);
+            return showError(request, reply, 'Unable to set session for ' + user.name, err);
           }
 
           return reply.redirect('/profile');
@@ -82,4 +80,18 @@ function pbkdf2 (pass, salt, iterations) {
 
 function sha (s) {
   return crypto.createHash("sha1").update(s).digest("hex")
+}
+
+function showError (request, reply, message, logExtras) {
+  var errId = uuid.v1();
+
+  var opts = {
+    user: request.auth.credentials,
+    errId: errId,
+    code: 500
+  };
+
+  log.error(errId + ' ' + Hapi.error.internal(message), logExtras);
+
+  return reply.view('error', opts).code(500);
 }

@@ -241,7 +241,7 @@ describe('Confirming an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
       expect(source.template).to.equal('error');
-      expect(source.context.error[0].message).to.equal('Token not found, or invalid');
+      expect(source.context.errId).to.exist;
       done();
     });
   });
@@ -255,7 +255,7 @@ describe('Confirming an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(403);
       expect(source.template).to.equal('error');
-      expect(source.context.error[0].message).to.equal('This request was for someone else');
+      expect(source.context.errId).to.exist;
       done();
     });
   });
@@ -309,7 +309,7 @@ describe('Reverting an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
       expect(source.template).to.equal('error');
-      expect(source.context.error[0].message).to.equal('Token not found, or invalid');
+      expect(source.context.errId).to.exist;
       done();
     });
   });
@@ -323,7 +323,7 @@ describe('Reverting an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(403);
       expect(source.template).to.equal('error');
-      expect(source.context.error[0].message).to.equal('This request was for someone else');
+      expect(source.context.errId).to.exist;
       done();
     });
   });

@@ -1,6 +1,8 @@
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    log = require('bole')('user-email-edit'),
+    uuid = require('node-uuid');
 
 var from, devMode;
 
@@ -21,8 +23,7 @@ module.exports = function (options) {
       if (process.env.NODE_ENV === 'dev') {
         devMode = true;
       } else {
-        opts.error = Hapi.error.notFound('Not implemented');
-        return reply.view('error', opts).code(404);
+        return showError(request, reply, 'Mail settings are missing!', 500);
       }
     }
 
@@ -38,7 +39,7 @@ module.exports = function (options) {
         switch (request.params.token.split('/')[0]) {
           case 'revert': return revert(request, reply);
           case 'confirm': return confirm(request, reply);
-          default: return reply.view('error', '404 - Not Found').code(404);
+          default: return showError(request, reply, 'Page not found', 404, request.url.path);
         }
       } else {
         return reply.view('email-edit', opts);
@@ -111,8 +112,7 @@ function handle (request, reply, email2) {
 
   function cb (er) {
     if (er) {
-      opts.error = [er];
-      request.reply('error', opts).code(500);
+      showError(request, reply, 'Could not set value to the cache', 500, er);
     } else if (--n == 0) {
       sendEmails(conf, rev, request, reply);
     }
@@ -129,6 +129,7 @@ function sendEmails (conf, rev, request, reply) {
       confUrl = urlStart + 'confirm/' + encodeURIComponent(conf.token),
       revUrl = urlStart + 'revert/' + encodeURIComponent(rev.token);
 
+  // we need to move the construction of these emails to somewhere else... but where?
   var confMail = {
     to: '"' + name + '" <' + conf.email2 + '>',
     from: 'user-account-bot@npmjs.org',
@@ -188,14 +189,12 @@ function sendEmails (conf, rev, request, reply) {
   // don't send the confmail until we know the revert mail was sent!
   mailer.sendMail(revMail, function (er, result) {
     if (er) {
-      opts.error = [er];
-      return reply.view('error', opts).code(500);
+      return showError(request, reply, 'Unable to send revert email', 500, er);
     }
 
     mailer.sendMail(confMail, function (er, result) {
       if (er) {
-        opts.error = [er];
-        return reply.view('error', opts).code(500);
+        return showError(request, reply, 'Unable to send confirmation email', 500, er);
       }
 
       opts.submitted = true;
@@ -214,19 +213,16 @@ function confirm (request, reply) {
 
   cache.get(confKey, function (er, cached) {
     if (er) {
-      opts.error = [Hapi.error.internal('Error getting token from Redis')];
-      return reply.view('error', opts).code(500);
+      return showError(request, reply, 'Error getting token from Redis', 500, confKey);
     }
 
     if (!cached) {
-      opts.error = [Hapi.error.notFound('Token not found, or invalid')];
-      return reply.view('error', opts).code(404);
+      return showError(request, reply, 'Token not found, or invalid', 404, confKey);
     }
 
     var name = cached.item.name;
     if (name !== opts.user.name) {
-      opts.error = [Hapi.error.forbidden('This request was for someone else')];
-      return reply.view('error', opts).code(403);
+      return showError(request, reply, 'This request was for someone else', 403, {changeEmailFor: name, loggedInAs: opts.user.name});
     }
 
     var email1 = cached.item.email1,
@@ -235,20 +231,17 @@ function confirm (request, reply) {
         hash = cached.item.hash;
 
     if (hash !== confHash) {
-      opts.error = [Hapi.error.internal('Math is broken, sorry')];
-      return reply.view('error', opts).code(500);
+      return showError(request, reply, 'Math is broken, sorry', 500, {hash: hash, confHash: confHash});
     }
 
     cache.drop(confKey, function (err) {
       if (err) {
-        opts.error = err;
-        return reply.view('error', opts).code(500);
+        return showError(request, reply, 'Unable to drop key ' + confKey, 500, err);
       }
 
       request.server.methods.changeEmail(opts.user.name, email2, function (er) {
         if (er) {
-          opts.error = er;
-          reply.view('error', opts).code(404);
+          return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email2, 500, er);
         }
 
         opts.confirmed = true;
@@ -268,19 +261,16 @@ function revert (request, reply) {
 
   cache.get(revKey, function (er, cached) {
     if (er) {
-      opts.error = [Hapi.error.internal('Error getting token from Redis')];
-      return reply.view('error', opts).code(500);
+      return showError(request, reply, 'Error getting token from Redis', 500, revKey);
     }
 
     if (!cached) {
-      opts.error = [Hapi.error.notFound('Token not found, or invalid')];
-      return reply.view('error', opts).code(404);
+      return showError(request, reply, 'Token not found, or invalid', 404, revKey);
     }
 
     var name = cached.item.name;
     if (name !== opts.user.name) {
-      opts.error = [Hapi.error.forbidden('This request was for someone else')];
-      return reply.view('error', opts).code(403);
+      return showError(request, reply, 'This request was for someone else', 403, {changeEmailFor: name, loggedInAs: opts.user.name});
     }
 
     var email1 = cached.item.email1,
@@ -290,26 +280,22 @@ function revert (request, reply) {
         hash = cached.item.hash;
 
     if (hash !== revHash) {
-      opts.error = [Hapi.error.internal('Math is broken, sorry')];
-      return reply.view('error', opts).code(500);
+      return showError(request, reply, 'Math is broken, sorry', 500, {hash: hash, confHash: confHash});
     }
 
     cache.drop(confKey, function (err) {
       if (err) {
-        opts.error = err;
-        return reply.view('error', opts).code(500);
+        return showError(request, reply, 'Unable to drop key ' + confKey, 500, err);
       }
 
       cache.drop(revKey, function (err) {
         if (err) {
-          opts.error = err;
-          return reply.view('error', opts).code(500);
+          return showError(request, reply, 'Unable to drop key ' + revKey, 500, err);
         }
 
         request.server.methods.changeEmail(opts.user.name, email1, function (er) {
           if (er) {
-            opts.error = er;
-            reply.view('error', opts).code(404);
+            return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email1, 500, er);
           }
 
           return reply.view('email-edit-confirmation', opts);
@@ -319,16 +305,31 @@ function revert (request, reply) {
   });
 }
 
-function setEmail (request, reply) {
-  var opts = { user: request.auth.credentials };
-
-  var name = opts.user.name;
-}
-
 function sha (s) {
   return crypto.createHash("sha1").update(s).digest("hex")
 }
 
 function pbkdf2 (pass, salt, iterations) {
   return crypto.pbkdf2Sync(pass, salt, iterations, 20).toString('hex')
+}
+
+function showError (request, reply, message, code, logExtras) {
+  var errId = uuid.v1();
+
+  var opts = {
+    user: request.auth.credentials,
+    errId: errId,
+    code: code || 500
+  };
+
+  var error;
+  switch (code) {
+    case 403: error = Hapi.error.forbidden(message); break;
+    case 404: error = Hapi.error.notFound(message); break;
+    default: error = Hapi.error.internal(message); break;
+  }
+
+  log.error(errId + ' ' + error, logExtras);
+
+  return reply.view('error', opts).code(code || 500);
 }

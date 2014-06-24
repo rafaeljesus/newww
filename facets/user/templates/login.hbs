@@ -2,19 +2,14 @@
 
 <h1>Login, please</h1>
 
-{{!-- <% if (locals.failed || locals.error ||
-       locals.statusCode && locals.statusCode >= 400) { %>
-  <p class=error>The information you entered was rejected for reasons.</p>
-  <p>You may try again, or <a href=/forgot>reset your password</a>
-  if you have forgotten it.</p>
-  <% if (locals.message) { %>
-  <p>The server said: <code><%= locals.message %></code></p>
-  <% } %>
-<% } %>
- --}}
-
-{{#if message}}
-  <p class='error'>{{message}}</p>
+{{#if error}}
+  {{#compare error.type 'missing'}}
+    <p class='error'>Missing username or password</p>
+  {{else}}
+    <p class='error'>Invalid username or password</p>
+    <p>If you feel that this is a mistake, please <a href="/contact">contact us</a> with the following unique error ID:</p>
+    <pre>{{error.errId}}</pre>
+  {{/compare}}
 {{/if}}
 
 <form action='' method='post' class='form'>

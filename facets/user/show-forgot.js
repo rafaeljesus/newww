@@ -1,6 +1,8 @@
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    log = require('bole')('user-forgot'),
+    uuid = require('node-uuid');
 
 var from, devMode;
 
@@ -22,8 +24,7 @@ module.exports = function (options) {
       if (process.env.NODE_ENV === 'dev') {
         devMode = true;
       } else {
-        opts.error = Hapi.error.notFound('Not implemented');
-        return reply.view('error', opts).code(404);
+        return showError(request, reply, 'Mail settings are missing!', 500);
       }
     }
 
@@ -54,17 +55,16 @@ function token (request, reply) {
   var opts = { user: request.auth.credentials },
       cache = request.server.app.cache;
   var token = request.params.token,
-      hash = sha(token);
+      hash = sha(token),
+      pwKey = 'pwrecover_' + hash;
 
-  cache.get('pwrecover_' + hash, function (err, cached) {
+  cache.get(pwKey, function (err, cached) {
     if (err) {
-      opts.error = Hapi.error.internal('Error getting token from redis');
-      return reply.view('error', opts);
+      return showError(request, reply, 'Error getting token from Redis', 500, pwKey);
     }
 
     if (!cached) {
-      opts.error = Hapi.error.notFound('Token not found, or invalid');
-      return reply.view('error', opts).code(404);
+      return showError(request, reply, 'Token not found, or invalid', 404, pwKey);
     }
 
     var name = cached.item.name,
@@ -72,8 +72,7 @@ function token (request, reply) {
         verify = cached.item.token;
 
     if (verify !== token) {
-      opts.error = Hapi.error.notFound('Token not found, or invalid');
-      return reply.view('error', opts).code(404);
+      return showError(request, reply, 'Token not found, or invalid', 404, pwKey);
     }
 
     var newPass = crypto.randomBytes(18).toString('base64'),
@@ -83,15 +82,17 @@ function token (request, reply) {
           mustChangePass: true
         };
 
-    console.warn('About to change password', { name: name }); // replace with bunyan eventually!
+    log.warn('About to change password', { name: name });
 
     request.server.methods.changePass(newAuth, function (err, data) {
       if (err) {
-        opts.error = 'Failed setting the password: ' + er.message;
-        return reply.view('error', opts).code(400)
+      return showError(request, reply, 'Failed to set password for ' + newAuth.name, 400, er);
       }
 
-      cache.drop('pwrecover_' + hash, function (err) {
+      cache.drop(pwKey, function (err) {
+        if (err) {
+          return showError(request, reply, 'Unable to drop key ' + pwKey, 500, err);
+        }
         opts.password = newPass;
         opts.user = null;
         return reply.view('password-changed', opts);
@@ -189,8 +190,7 @@ function sendEmail(name, email, request, reply) {
 
   request.server.app.cache.set(key, data, ONE_HOUR, function (err) {
     if (err) {
-      opts.error = err;
-      return reply.view('error', opts);
+      return showError(request, reply, 'Unable to set ' + key + 'to the cache', 500, err);
     }
 
     var u = request.server.info.uri + '/forgot/' + encodeURIComponent(token);
@@ -219,8 +219,7 @@ function sendEmail(name, email, request, reply) {
     } else {
       mailer.sendMail(mail, function (er, result) {
         if (er) {
-          opts.error = er;
-          return reply.view('error', opts);
+          return showError(request, reply, 'Unable to send revert email', 500, er);
         }
 
         opts.sent = true;
@@ -233,4 +232,25 @@ function sendEmail(name, email, request, reply) {
 
 function sha (token) {
   return crypto.createHash('sha1').update(token).digest('hex');
+}
+
+function showError (request, reply, message, code, logExtras) {
+  var errId = uuid.v1();
+
+  var opts = {
+    user: request.auth.credentials,
+    errId: errId,
+    code: code || 500
+  };
+
+  var error;
+  switch (code) {
+    case 400: error = Hapi.error.badRequest(message); break;
+    case 404: error = Hapi.error.notFound(message); break;
+    default: error = Hapi.error.internal(message); break;
+  }
+
+  log.error(errId + ' ' + error, logExtras);
+
+  return reply.view('error', opts).code(code || 500);
 }

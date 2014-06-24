@@ -1,4 +1,7 @@
-var path = require('path')
+var path = require('path'),
+    Hapi = require('hapi'),
+    log = require('bole')('user'),
+    uuid = require('node-uuid');
 
 exports.register = function User (facet, options, next) {
   facet.views({
@@ -55,10 +58,14 @@ exports.register = function User (facet, options, next) {
     method: "GET",
     handler: function (request, reply) {
       var delSession = request.server.methods.delSession(request);
+      var user = request.auth.credentials;
 
-      delSession(request.auth.credentials, function (er) {
+      delSession(user, function (er) {
         if (er) {
-          var opts = {error: er};
+          var errId = uuid.v1();
+          log.error(errId + ' ' + Hapi.error.internal('unable to delete session for logout'), user)
+
+          var opts = { errId: errId };
           return reply.view('error', opts).code(500);
         }
 

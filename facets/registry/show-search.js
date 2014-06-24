@@ -76,6 +76,7 @@ module.exports = function (options) {
     client.search(searchQuery, function (error, response){
       if (error) {
         console.log('error with elasticsearch')
+        console.log(error);  
         reply.view("search");
         return;
       }

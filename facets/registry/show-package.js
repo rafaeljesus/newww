@@ -1,6 +1,7 @@
 var Hapi = require('hapi'),
-    presentPackage = require('./presenters/package');
-// , metrics = require('../metrics-client.js')()
+    presentPackage = require('./presenters/package'),
+    log = require('bole')('registry-package'),
+    uuid = require('node-uuid');
 
 
 module.exports = function (request, reply) {
@@ -14,23 +15,25 @@ module.exports = function (request, reply) {
     user: request.auth.credentials
   }
 
-
   if (nameInfo.name !== encodeURIComponent(nameInfo.name)) {
-    var error = Hapi.error.badRequest('Invalid Package Name');
-    error.message = "The package you have requested is an invalid package name.\n\nTry again?"
+    opts.errorType = 'invalid';
+    opts.errId = uuid.v1();
+    opts.name = nameInfo.name;
 
-    opts.error = error;
+    log.error(opts.errId + ' ' + Hapi.error.badRequest('Invalid Package Name'), opts.name);
 
-    return reply.view('error', opts)
+    return reply.view('error', opts).code(400)
   }
 
   getPackageFromCouch(couchLookupName(nameInfo), function (er, pkg) {
     if (er || pkg.error) {
-      var error = Hapi.error.notFound('Package Not Found');
-      error.message = "This package does not exist in the registry. Would you like to claim it for yourself?"
+      opts.errorType = 'notFound';
+      opts.errId = uuid.v1();
+      opts.name = nameInfo.name;
 
-      opts.error = error;
-      return reply.view('error', opts)
+      log.error(opts.errId + ' ' + Hapi.error.notFound('Package Not Found ' + opts.name), er || pkg.error);
+
+      return reply.view('error', opts).code(404)
     }
 
     if (pkg.time && pkg.time.unpublished) {
@@ -41,9 +44,23 @@ module.exports = function (request, reply) {
     }
 
     getBrowseData('depended', nameInfo.name, 0, 1000, function (er, dependents) {
+      if (er) {
+        opts.errId = uuid.v1();
+        opts.errorType = 'internal';
+        log.error(opts.errId + ' ' + Hapi.error.internal('Unable to get depended data from couch for ' + nameInfo.name), er);
+
+        return reply.view('error', opts).code(500);
+      }
+
       pkg.dependents = dependents;
 
       presentPackage(pkg, function (er, pkg) {
+        if (er) {
+          opts.errId = uuid.v1();
+          opts.errorType = 'internal';
+          log.error(opts.errId + ' ' + Hapi.error.internal('An error occurred with presenting package ' + pkg.name), er);
+          return reply.view('error', opts).code(500);
+        }
 
         opts.package = pkg;
         opts.title = pkg.name;

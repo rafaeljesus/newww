@@ -1,30 +1,19 @@
 {{> header}}
-{{#with error}}
-<h1>{{output.payload.message}}</h1>
 
-<p>{{message}}</p>
-{{!--  <p>An error occurred.  If you feel this is a bug (which is likely),
-  you are encouraged to
-  <a href="https://github.com/npm/npm-www/issues/new?{{createIssue error.output.statusCode }}">submit an issue</a> so that it can be addressed.</p>
+<h1>Whoops! Something went wrong :(</h1>
 
-<p>If you have ideas about how this could have been handled better,
-  please share those as well.</p>
+{{#compare errorType 'invalid'}}
+  <p><strong><code>{{name}}</code></strong> is an invalid package name. Try again?</p>
+{{/compare}}
 
-<h2>Additional Debug Information</h2>
+{{#compare errorType 'notFound'}}
+  <p><strong><code>{{name}}</code></strong> does not exist in the registry. Would you like to claim it for yourself?</p>
+{{/compare}}
 
-<pre>{{locals.stack}}
+<p>If you feel this error is the result of a bug, please <a href="mailto:support@npmjs.com">email us</a>, <a href="https://twitter.com/npm_support">send us a tweet</a>, or reach out to us on IRC (#npmjs on Freenode) and reference the following unique error number:</p>
 
-headers = {{stringify locals.headers null 2}}
+<pre>{{errId}}</pre>
 
-error = {{stringify error function(k,v) {
-              if (k.match(/^domain/) && typeof v === 'object')
-                return '[object ' + v.constructor.name + ']'
-              return v
-            },2)}}
+<p>Be sure to let us know what you were doing and how you got here so we can help you as quickly as possible!</p>
 
-statusCode = {{error.output.statusCode}}
-
-stamp = {{stamp}}
-</pre> --}}
-{{/with}}
 {{> footer}}

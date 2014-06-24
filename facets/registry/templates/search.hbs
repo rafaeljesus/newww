@@ -2,7 +2,7 @@
 
 <h1>Search Results</h1>
 
-  {{#if hits}}
+  {{#if hits.hits}}
   <ul class ="search-results">
   {{#each hits.hits}}
   {{#with fields}}
@@ -52,7 +52,7 @@
   </p>
 
   {{else}}
-    No results!
+    No results - try again?
   {{/if}}
 
 {{> footer }}

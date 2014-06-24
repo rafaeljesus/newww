@@ -3,7 +3,8 @@ var marked = require('marked'),
     gravatar = require('gravatar').url,
     moment = require('moment'),
     url = require('url'),
-    ghurl = require('github-url-from-git');
+    ghurl = require('github-url-from-git'),
+    log = require('bole')('registry-package-presenter');
 
 
 module.exports = function package (data, cb) {
@@ -27,7 +28,7 @@ module.exports = function package (data, cb) {
     var v = data['dist-tags'].latest
     var t = data.time[v]
     if (!data.versions[v]) {
-      console.error('invalid package data: %s', data._id)
+      log.error('invalid package data: %s', data._id)
       return cb(new Error('invalid package: '+ data._id))
     }
     data.version = v
@@ -50,7 +51,13 @@ module.exports = function package (data, cb) {
 
   if (data.readme && !data.readmeSrc) {
     data.readmeSrc = data.readme
-    data.readme = parseReadme(data)
+    parseReadme(data, function (er, readme) {
+      if (er) {
+        return cb(er);
+      }
+
+      data.readme = readme;
+    })
   }
 
   gravatarPeople(data)
@@ -102,17 +109,17 @@ function urlPolicy (pkgData) {
   }
 }
 
-function parseReadme (data) {
+function parseReadme (data, cb) {
   var p
   if (typeof data.readmeFilename !== 'string' ||
       (data.readmeFilename.match(/\.(m?a?r?k?d?o?w?n?)$/i) &&
        !data.readmeFilename.match(/\.$/))) {
     try {
-      p = marked.parse(data.readme)
+      p = marked.parse(data.readme);
     } catch (er) {
-      return 'error parsing readme'
+      return cb(new Error('error parsing readme'));
     }
-    p = p.replace(/<([a-zA-Z]+)([^>]*)\/>/g, '<$1$2></$1>')
+    p = p.replace(/<([a-zA-Z]+)([^>]*)\/>/g, '<$1$2></$1>');
   } else {
     var p = data.readme
           .replace(/&/g, '&amp;')
@@ -120,7 +127,7 @@ function parseReadme (data) {
           .replace(/>/g, '&gt;')
     p = '<pre>' + sanitizer.sanitize(p, urlPolicy(p)) + '</pre>'
   }
-  return sanitizer.sanitize(p, urlPolicy(data))
+  return cb(null, sanitizer.sanitize(p, urlPolicy(data)));
 }
 
 function isPubInMaint (data) {

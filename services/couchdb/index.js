@@ -46,6 +46,8 @@ exports.register = function Couch (service, options, next) {
 
   service.method('changePass', changePass);
 
+  service.method('changeEmail', changeEmail);
+
   next();
 };
 
@@ -130,5 +132,27 @@ function changePass (auth, next) {
     }
 
     return next(null, data);
+  });
+}
+
+function changeEmail (name, email, next) {
+  getUserFromCouch(name, function (err, user) {
+    if (err) {
+      return next(err);
+    }
+
+    if (user.email === email) {
+      return next(null);
+    }
+
+    user.email = email;
+    adminCouch.put('/_users/org.couchdb.user:' + name, user, function (er, cr, data) {
+      if (er || data.error || cr.statusCode >= 400) {
+        er = er || new Error(data.error);
+        return next(er);
+      }
+
+      return next(null);
+    });
   });
 }

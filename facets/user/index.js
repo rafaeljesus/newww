@@ -30,12 +30,6 @@ exports.register = function User (facet, options, next) {
   ]);
 
   facet.route({
-    path: "/forgot/{token?}",
-    method: ["GET", "HEAD", "POST"],
-    handler: require('./show-forgot')(options.mail)
-  });
-
-  facet.route({
     path: "/signup", method: ["GET", "HEAD", "POST"], handler: require('./show-signup')
   });
 
@@ -45,11 +39,10 @@ exports.register = function User (facet, options, next) {
     config: forceAuthConfig(require('./show-profile-edit')(options.profileFields))
   });
 
-  facet.route({
-    path: "/password",
-    method: ["GET", "HEAD", "POST"],
-    config: forceAuthConfig(require('./show-password'))
-  });
+  facet.route([
+    { path: "/email-edit", method: ["GET", "HEAD", "PUT", "POST"], config: forceAuthConfig(require('./show-email-edit')(options.mail)) },
+    { path: "/email-edit/{token*2}", method: ["GET", "HEAD"], config: forceAuthConfig(require('./show-email-edit')(options.mail)) }
+  ]);
 
   facet.route({
     path: "/login",
@@ -72,6 +65,18 @@ exports.register = function User (facet, options, next) {
         return reply.redirect('/');
       });
     }
+  });
+
+  facet.route({
+    path: "/password",
+    method: ["GET", "HEAD", "POST"],
+    config: forceAuthConfig(require('./show-password'))
+  });
+
+  facet.route({
+    path: "/forgot/{token?}",
+    method: ["GET", "HEAD", "POST"],
+    handler: require('./show-forgot')(options.mail)
   });
 
   next();

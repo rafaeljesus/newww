@@ -94,7 +94,8 @@ exports.fakeusercli = {
    "roles": [],
    "date": "2014-04-26T00:54:43.315Z",
    "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
-   "salt": "67bbd97d32e397ded845e279fb371ea7"
+   "salt": "67bbd97d32e397ded845e279fb371ea7",
+   "mustChangePass": true
 }
 
 exports.fakeuserCliFields = [

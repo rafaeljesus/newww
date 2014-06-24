@@ -7,8 +7,7 @@
     <p class='error'>Missing username or password</p>
   {{else}}
     <p class='error'>Invalid username or password</p>
-    <p>If you feel that this is a mistake, please <a href="/contact">contact us</a> with the following unique error ID:</p>
-    <pre>{{error.errId}}</pre>
+    <p>If you feel that this is a mistake, please <a href="/contact">contact us</a> with the following unique error ID: <code>{{error.errId}}</code></p>
   {{/compare}}
 {{/if}}
 

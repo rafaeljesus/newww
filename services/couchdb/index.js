@@ -31,13 +31,13 @@ exports.register = function Couch (service, options, next) {
     cache: { expiresIn: 60 * SECOND, segment: '##user' }
   });
 
-  service.method('lookupUserByEmail', lookupUserByEmail);
+  service.method('lookupUserByEmail', require('./methods/emailLookup')(adminCouch));
 
-  service.method('getBrowseData', require('./browse')(anonCouch), {
+  service.method('getBrowseData', require('./methods/browse')(anonCouch), {
     cache: { expiresIn: 60 * SECOND, segment: '##browse' }
   });
 
-  service.method('loginUser', require('./login')(service, anonCouch));
+  service.method('loginUser', require('./methods/login')(service, anonCouch));
   service.method('logoutUser', logoutUser(anonCouch));
 
   service.method('signupUser', signupUser);
@@ -46,7 +46,7 @@ exports.register = function Couch (service, options, next) {
 
   service.method('changePass', changePass);
 
-  service.method('changeEmail', changeEmail);
+  service.method('changeEmail', require('./methods/changeEmail')(service, adminCouch));
 
   next();
 };
@@ -70,28 +70,6 @@ function getUserFromCouch (name, next) {
     }
 
     return next(null, data)
-  })
-}
-
-function lookupUserByEmail (email, next) {
-  var query = {
-        startkey: JSON.stringify([email]),
-        endkey: JSON.stringify([email, {}]),
-        group: 'true'
-      },
-      pe = '/_users/_design/_auth/_view/userByEmail?' + qs.encode(query);
-
-
-  adminCouch.get(pe, function (er, cr, data) {
-    if (er || cr && cr.statusCode >= 400 || data && data.error) {
-      return next(Hapi.error.notFound("Bad email, no user found with this email"));
-    }
-
-    var usernames = data.rows.map(function (obj) {
-      return obj.key[1];
-    });
-
-    return next(null, usernames);
   })
 }
 
@@ -132,27 +110,5 @@ function changePass (auth, next) {
     }
 
     return next(null, data);
-  });
-}
-
-function changeEmail (name, email, next) {
-  getUserFromCouch(name, function (err, user) {
-    if (err) {
-      return next(err);
-    }
-
-    if (user.email === email) {
-      return next(null);
-    }
-
-    user.email = email;
-    adminCouch.put('/_users/org.couchdb.user:' + name, user, function (er, cr, data) {
-      if (er || data.error || cr.statusCode >= 400) {
-        er = er || new Error(data.error);
-        return next(er);
-      }
-
-      return next(null);
-    });
   });
 }

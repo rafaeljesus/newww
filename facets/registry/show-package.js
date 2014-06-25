@@ -38,9 +38,11 @@ module.exports = function (request, reply) {
 
     if (pkg.time && pkg.time.unpublished) {
       // reply with unpublished package page
-      // reply.view('unpublished-package-page', {
-      //   package: pkg
-      // })
+      var t = pkg.time.unpublished.time
+      pkg.unpubFromNow = require('moment')(t).format('ddd MMM DD YYYY HH:mm:ss Z');
+
+      opts.package = pkg;
+      return reply.view('unpublished-package-page', opts);
     }
 
     getBrowseData('depended', nameInfo.name, 0, 1000, function (er, dependents) {

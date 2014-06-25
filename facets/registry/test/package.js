@@ -7,9 +7,10 @@ var Lab = require('lab'),
 var Hapi = require('hapi'),
     registry = require('../');
 
-var server, p;
+var server, p, source;
 var fake = require('./fixtures/fake.json'),
     fakeDeps = require('./fixtures/fake-deps'),
+    fakeUnpublished = require('./fixtures/fake-unpublished'),
     oriReadme = fake.readme;
 
 // prepare the server
@@ -21,38 +22,43 @@ before(function (done) {
       helpersPath: '../../hbs-helpers'
     }
   };
+
   server = Hapi.createServer(serverOptions);
+
+  server.ext('onPreResponse', function (request, next) {
+    source = request.response.source;
+    p = source.context.package;
+    next();
+  });
+
   server.pack.register(registry, done);
 });
 
+before(function (done) {
+  // mock couch call
+  server.methods.getPackageFromCouch = function (pkgName, next) {
+    if (pkgName === 'unpub') {
+      return next(null, fakeUnpublished);
+    }
+
+    return next(null, fake);
+  }
+
+  server.methods.getBrowseData = function (type, arg, skip, limit, next) {
+    return next(null, fakeDeps);
+  }
+
+  done();
+});
+
+
 describe('Retreiving packages from the registry', function () {
-  var source;
-
-  before(function (done) {
-    // mock couch call
-    server.methods.getPackageFromCouch = function (pkgName, next) {
-      return next(null, fake);
-    }
-
-    server.methods.getBrowseData = function (type, arg, skip, limit, next) {
-      return next(null, fakeDeps);
-    }
-
-    done();
-  })
-
   it('gets a package from the registry', function (done) {
     var pkgName = 'fake';
 
     var options = {
       url: '/package/' + pkgName
     }
-
-    server.ext('onPreResponse', function (request, next) {
-      source = request.response.source;
-      p = source.context.package;
-      next();
-    });
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
@@ -68,48 +74,56 @@ describe('Retreiving packages from the registry', function () {
 });
 
 describe('Modifying the package before sending to the template', function () {
-  // it('parses the name based on version', function (done) {
-
-  //   done()
-  // })
-
   it('adds publisher is in the maintainers list', function (done) {
     expect(p.publisherIsInMaintainersList).to.exist
-    done()
-  })
+    done();
+  });
 
   it('adds avatar information to author and maintainers', function (done) {
     expect(p._npmUser.avatar).to.exist
     expect(p.maintainers[0].avatar).to.exist
     expect(p._npmUser.avatar).to.include('gravatar')
-    done()
-  })
+    done();
+  });
 
   it('adds an OSS license', function (done) {
     expect(p.license).to.be.an('object')
     expect(p.license.url).to.include('opensource.org')
-    done()
-  })
+    done();
+  });
 
   it('turns the readme into HTML for viewing on the website', function (done) {
     expect(p.readme).to.not.equal(oriReadme)
     expect(p.readmeSrc).to.equal(oriReadme)
     expect(p.readme).to.include('<a href=')
-    done()
-  })
+    done();
+  });
 
   it('turns relative URLs into real URLs', function (done) {
     expect(p.readme).to.include('/blob/master')
-    done()
-  })
+    done();
+  });
 
   it('includes the dependencies', function (done) {
     expect(p.dependencies).to.exist
-    done()
-  })
+    done();
+  });
 
   it('includes the dependents', function (done) {
     expect(p.dependents).to.exist
-    done()
-  })
+    done();
+  });
+
+  it('treats unpublished packages specially', function (done) {
+    var options = {
+      url: '/package/unpub'
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      expect(source.template).to.equal('unpublished-package-page');
+      expect(source.context.package.unpubFromNow).to.exist;
+      done();
+    });
+  });
 });

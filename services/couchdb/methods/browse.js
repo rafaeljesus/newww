@@ -1,4 +1,7 @@
-var qs = require('querystring')
+var qs = require('querystring'),
+    Hapi = require('hapi'),
+    log = require('bole')('couchdb-browse'),
+    uuid = require('node-uuid');
 
 var viewNames = {
   all: 'browseAll',
@@ -71,7 +74,8 @@ module.exports = function (couchapp) {
         data = transform(type, arg, data, skip, limit)
       }
       if (er) {
-        console.error("Error fetching browse data", er)
+        var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };
+        log.error(uuid.v1() + ' ' + Hapi.error.internal('Error fetching browse data'), erObj);
         data = []
         er = null
       }
@@ -143,7 +147,7 @@ function tka (k, v) { return {
 
 function transform (type, arg, data, skip, limit) {
   if (!data.rows) {
-    console.warn('no rows?', type, arg, data, skip, limit)
+    log.warn('no rows?', type, arg, data, skip, limit)
     return []
   }
 

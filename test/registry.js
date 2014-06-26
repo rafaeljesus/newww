@@ -18,9 +18,12 @@ describe('Registry is routing properly', function () {
   it('calls all the right routes', function (done) {
     var table = server.table();
 
-    expect(table).to.have.length(2);
+    expect(table).to.have.length(4);
     expect(table[0].path).to.equal('/search');
-    expect(table[1].path).to.equal('/package/{package}');
+    expect(table[1].path).to.equal('/keyword/{kw}');
+    expect(table[2].path).to.equal('/package/{package}/{version?}');
+    expect(table[3].path).to.equal('/browse/{p*}');
+
 
     done();
   })

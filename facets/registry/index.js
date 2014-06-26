@@ -15,6 +15,20 @@ exports.register = function Regsitry (facet, options, next) {
   });
 
   facet.route({
+    path: "/browse/{p*}",
+    method: "GET",
+    handler: require('./show-browse')
+  })
+
+  facet.route({
+    path: "/keyword/{kw}",
+    method: "GET",
+    handler: function (request, reply) {
+      return reply.redirect('/browse/keyword/' + request.params.kw).code(301);
+    }
+  });
+
+  facet.route({
     path:"/search",
     method: "GET",
     handler: require('./show-search')(options)

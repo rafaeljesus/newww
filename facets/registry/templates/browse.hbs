@@ -1,0 +1,71 @@
+{{> header this}}
+
+{{#with browse}}
+  <div id="package">
+
+    {{#compare type 'all'}}
+      <h1>All Packages (alphabetically)</h1>
+    {{else}} {{#compare type 'keyword'}}
+      <h1>Browse by Keyword{{#if arg}}: {{arg}}{{/if}}</h1>
+    {{else}} {{#compare type 'author'}}
+      <h1>Browse by Author{{#if arg}}: <a href="/profile/{{arg}}">{{arg}}</a>{{/if}}</h1>
+    {{else}} {{#compare type 'updated'}}
+      <h1>All Packages (by updated date)</h1>
+    {{else}} {{#compare type 'depended'}}
+      {{#if arg}}
+        <h1>Packages depending on <a href="/package/{{arg}}">{{arg}}</a></h1>
+      {{else}}
+        <h1>Most Depended-upon Packages</h1>
+      {{/if}}
+    {{else}} {{#compare type 'star'}}
+      {{#if arg}}
+        <h1>Users who starred <a href="/package/{{arg}}">{{arg}}</a></h1>
+      {{else}}
+        <h1>Most Starred Packages</h1>
+      {{/if}}
+    {{else}} {{#compare type 'userstar'}}
+      {{#if arg}}
+        <h1>Starred Packages by User: <a href="/profile/{{arg}}">{{arg}}</a></h1>
+      {{else}}
+        <h1>Starred Packages by User</h1>
+      {{/if}}
+    {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}}
+
+    <p class="description">
+      {{#compare page '>' 1}}
+        <a href="/browse/{{browseby}}?page={{prevPage}}">&larr; previous</a>
+      {{/compare}}
+      Page {{page}}
+      {{#compare items.length '>=' pageSize}}
+        <a href="/browse/{{browseby}}?page={{nextPage}}">next &rarr;</a>
+      {{/compare}}
+    </p>
+
+    {{#each items}}
+      {{#if name}}
+        <div class="row">
+          <p>
+            <a href="{{url}}">{{name}}</a>
+            {{description}}
+          </p>
+        </div>
+      {{/if}}
+    {{else}}
+      <div class="row">
+        <p>No items found.</p>
+      </div>
+    {{/each}}
+
+    <p class="description">
+      {{#compare page '>' 1}}
+        <a href="/browse/{{browseby}}?page={{prevPage}}">&larr; previous</a>
+      {{/compare}}
+      Page {{page}}
+      {{#compare items.length '>=' pageSize}}
+        <a href="/browse/{{browseby}}?page={{nextPage}}">next &rarr;</a>
+      {{/compare}}
+    </p>
+  </div>
+{{/with}}
+
+{{> footer}}

@@ -17,6 +17,8 @@
     "sanitizer": "^0.1.1"
   },
   "devDependencies": {
+    "hapi": "^6.0.2",
+    "hapi-auth-cookie": "^1.2.0",
     "lab": "^3.2.1"
   }
 }

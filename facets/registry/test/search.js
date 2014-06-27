@@ -22,7 +22,16 @@ before(function (done) {
     }
   };
   server = Hapi.createServer(serverOptions);
-  server.pack.register(registry, done);
+
+  server.pack.register(require('hapi-auth-cookie'), function (err) {
+    if (err) throw err;
+
+    server.auth.strategy('session', 'cookie', 'try', {
+      password: '12345'
+    });
+
+    server.pack.register(registry, done);
+  });
 });
 
 describe('Rendering the view', function () {

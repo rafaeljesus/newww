@@ -4,34 +4,12 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var Hapi = require('hapi');
 var server;
-var fakeSearch = require('./fixtures/fake-search.json'),
-    registry = require('../');
-
-registry.name = 'registry';
-registry.version = '0.0.1';
+var fakeSearch = require('./fixtures/fake-search.json');
 
 //set up server
 before(function (done) {
-  var serverOptions  = {
-    views: {
-      engines: {hbs: require('handlebars')},
-      partialsPath: '../../hbs-partials',
-      helpersPath: '../../hbs-helpers'
-    }
-  };
-  server = Hapi.createServer(serverOptions);
-
-  server.pack.register(require('hapi-auth-cookie'), function (err) {
-    if (err) throw err;
-
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: '12345'
-    });
-
-    server.pack.register(registry, done);
-  });
+  server = require('./fixtures/setupServer')(done);
 });
 
 describe('Rendering the view', function () {

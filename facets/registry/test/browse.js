@@ -4,45 +4,15 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var Hapi = require('hapi'),
-    registry = require('../');
-
 var server, p, source;
 
 before(function (done) {
-  var serverOptions = {
-    views: {
-      engines: {hbs: require('handlebars')},
-      partialsPath: '../../hbs-partials',
-      helpersPath: '../../hbs-helpers'
-    }
-  };
-
-  server = Hapi.createServer(serverOptions);
+  server = require('./fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
     next();
   });
-
-  server.pack.register(require('hapi-auth-cookie'), function (err) {
-    if (err) throw err;
-
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: '12345'
-    });
-
-    server.pack.register(registry, done);
-  });
-});
-
-before(function (done) {
-  // mock couch call
-  server.methods.getBrowseData = function (type, arg, skip, limit, next) {
-    return next(null, 'stuff');
-  }
-
-  done();
 });
 
 describe('getting to the browse page', function () {

@@ -4,61 +4,19 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var Hapi = require('hapi'),
-    registry = require('../');
-
 var server, p, source;
-var fake = require('./fixtures/fake.json'),
-    fakeDeps = require('./fixtures/fake-deps'),
-    fakeUnpublished = require('./fixtures/fake-unpublished'),
-    oriReadme = fake.readme;
+var oriReadme = require('./fixtures/fake.json').readme;
 
 // prepare the server
 before(function (done) {
-  var serverOptions = {
-    views: {
-      engines: {hbs: require('handlebars')},
-      partialsPath: '../../hbs-partials',
-      helpersPath: '../../hbs-helpers'
-    }
-  };
-
-  server = Hapi.createServer(serverOptions);
+  server = require('./fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
     p = source.context.package;
     next();
   });
-
-  server.pack.register(require('hapi-auth-cookie'), function (err) {
-    if (err) throw err;
-
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: '12345'
-    });
-
-    server.pack.register(registry, done);
-  });
 });
-
-before(function (done) {
-  // mock couch call
-  server.methods.getPackageFromCouch = function (pkgName, next) {
-    if (pkgName === 'unpub') {
-      return next(null, fakeUnpublished);
-    }
-
-    return next(null, fake);
-  }
-
-  server.methods.getBrowseData = function (type, arg, skip, limit, next) {
-    return next(null, fakeDeps);
-  }
-
-  done();
-});
-
 
 describe('Retreiving packages from the registry', function () {
   it('gets a package from the registry', function (done) {

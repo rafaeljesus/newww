@@ -4,46 +4,12 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var Hapi = require('hapi'),
-    registry = require('../');
-
 var server,
     pkg = 'request',
     user = { name: 'fakeuser' };
 
 before(function (done) {
-  var serverOptions = {
-    views: {
-      engines: {hbs: require('handlebars')},
-      partialsPath: '../../hbs-partials',
-      helpersPath: '../../hbs-helpers'
-    }
-  };
-
-  server = Hapi.createServer(serverOptions);
-
-  server.pack.register(require('hapi-auth-cookie'), function (err) {
-    if (err) throw err;
-
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: '12345'
-    });
-
-    server.pack.register(registry, done);
-  });
-});
-
-before(function (done) {
-  // mock couch call
-  server.methods.star = function (package, username, next) {
-    return next(null, 'ok');
-  },
-
-  server.methods.unstar = function (package, username, next) {
-    return next(null, 'ok');
-  }
-
-  done();
+  server = require('./fixtures/setupServer')(done);
 });
 
 describe('Accessing the star page via GET', function () {

@@ -48,6 +48,9 @@ exports.register = function Couch (service, options, next) {
 
   service.method('changeEmail', require('./methods/changeEmail')(service, adminCouch));
 
+  service.method('star', star);
+  service.method('unstar', unstar);
+
   next();
 };
 
@@ -93,7 +96,7 @@ function signupUser (acct, next) {
 }
 
 function saveProfile (user, next) {
-  adminCouch.post('/_users/_design/scratch/_update/profile/' + user._id, user, function (er, cr, data) {
+  adminCouch.post('/_users/_design/_auth/_update/profile/' + user._id, user, function (er, cr, data) {
     if (er || cr && cr.statusCode !== 201 || !data || data.error) {
       return next(Hapi.error.internal(er || data.error));
     }
@@ -107,6 +110,26 @@ function changePass (auth, next) {
     if (er || cr.statusCode >= 400 || data && data.message) {
       var error = er && er.message || data && data.message;
       return next(Hapi.error.forbidden(error));
+    }
+
+    return next(null, data);
+  });
+}
+
+function star (package, username, next) {
+  adminCouch.put('/registry/_design/app/_update/star/' + package, username, function (er, cr, data) {
+    if (er || cr && cr.statusCode !== 201 || !data || data.error) {
+      return next(Hapi.error.internal(er || data.error));
+    }
+
+    return next(null, data);
+  });
+}
+
+function unstar (package, username, next) {
+  adminCouch.put('/registry/_design/app/_update/unstar/' + package, username, function (er, cr, data) {
+    if (er || cr && cr.statusCode !== 201 || !data || data.error) {
+      return next(Hapi.error.internal(er || data.error));
     }
 
     return next(null, data);

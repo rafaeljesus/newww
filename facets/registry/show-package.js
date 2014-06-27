@@ -65,9 +65,10 @@ module.exports = function (request, reply) {
           return reply.view('error', opts).code(500);
         }
 
+        pkg.isStarred = opts.user && pkg.users[opts.user.name] || false;
+
         opts.package = pkg;
         opts.title = opts.name;
-
         reply.view('package-page', opts);
       })
     })

@@ -4,11 +4,11 @@
   <div id="package">
     <header>
       <h1>{{name}}</h1>
-{{!--       {{#if users[profile.name]}}
+      {{#if isStarred}}
         <a href="#" class="star star-starred" title="click here to star/unstar this package" data-name="{{name}}"></a>
       {{else}}
- --}}        <a href="#" class="star" title="click here to star/unstar this package" data-name="{{name}}"></a>
-      {{!-- {{/if}} --}}
+        <a href="#" class="star" title="click here to star/unstar this package" data-name="{{name}}"></a>
+      {{/if}}
     </header>
 
     {{#if deprecated}}

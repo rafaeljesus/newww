@@ -9,13 +9,13 @@ function addExpiration () {
   return '; expires='+d.toGMTString()
 }
 
-function getPackages (name) {  
+function getPackages (name) {
   var packages = document.cookie.split(";")
-                  .map(function(k) { 
-                    return k.trim().split("=") 
+                  .map(function(k) {
+                    return k.trim().split("=")
                   })
-                  .reduce(function (set, kv) { 
-                    set[kv.shift()] = kv.join("="); 
+                  .reduce(function (set, kv) {
+                    set[kv.shift()] = kv.join("=");
                     return set
                   },{})
 
@@ -25,7 +25,7 @@ function getPackages (name) {
 $(document).ready(function () {
   // check if there's already a cookie
   var packageName = $('.star').data('name')
-  
+
   var starType = getPackages(packageName)
 
   if (starType) {
@@ -47,27 +47,30 @@ $(document).ready(function () {
     data.isStarred = $(this).hasClass('star-starred')
 
     $.ajax({
-      url: '/star'
-    , data: JSON.stringify(data)
-    , type: 'POST'
+      url: '/star',
+      data: JSON.stringify(data),
+      type: 'POST'
     })
     .done(function (resp) {
 
       if (data.isStarred) {
-        // console.log('no more yellow :-(')
         $('.star').removeClass('star-starred')
         document.cookie = data.name + '=nostar' + addExpiration()
       } else {
-        // console.log('make it into a star!!')
         $('.star').addClass('star-starred')
         document.cookie = data.name + '=star' + addExpiration()
       }
 
     })
-    .error(function (resp) {
-      // we're probably not logged in
-      // console.log('error: ', resp)
-      window.location = '/login?done=/package/' + data.name
+    .error(function (xhr, status, error) {
+      if (xhr.status === 403) {
+        // we're probably not logged in
+        window.location = '/login?done=/package/' + data.name
+      } else {
+        // couch is being silly...
+        console.log(xhr.responseText)
+        // eventually add the drop-toast "whoops something went wrong"
+      }
     })
   })
 

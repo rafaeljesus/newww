@@ -9,7 +9,7 @@ var Hapi = require('hapi'),
     user = require('../');
 
 var server, source,
-    forms = require('./fixtures/signupForms.js');
+    forms = require('./fixtures/signupForms');
 
 // prepare the server
 before(function (done) {

@@ -27,7 +27,7 @@ exports.register = function User (facet, options, next) {
     path: "/profile-edit",
     method: ["GET", "HEAD", "PUT", "POST"],
     config: {
-      handler: require('./show-profile-edit'),
+      handler: require('./show-profile-edit')(options.profileFields),
       auth: {
         mode: 'required'
       },
@@ -58,3 +58,4 @@ exports.register = function User (facet, options, next) {
 exports.register.attributes = {
   pkg: require('./package.json')
 };
+

@@ -126,8 +126,8 @@ describe('Modifying the profile before sending it to the template', function () 
   });
 
   it('separates the fields from the original profile', function (done) {
-    expect(u[username1].fields).to.equal(users[username1].fields);
-    expect(u[username2].fields).to.equal(users[username2].fields);
+    expect(u[username1].fields).to.deep.equal(users[username1].fields);
+    expect(u[username2].fields).to.deep.equal(users.fakeuserCliFields);
     done();
   });
 

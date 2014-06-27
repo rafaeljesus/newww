@@ -2,19 +2,19 @@
 
 {{#with profile}}
 <div id="profile">
-  {{#if showprofile.isSelf}}
+  {{#if isSelf}}
   <a href="http://en.gravatar.com/emails/"
     title="edit avatar at gravatar.com">
   {{/if}}
   <img src="{{showprofile.avatarLarge}}"
     class="avatar-large" height=248 width=248 alt="">
-  {{#if showprofile.isSelf}}
+  {{#if isSelf}}
     </a>
   {{/if}}
 
   <h1>{{showprofile.name}}</h1>
   {{!-- We'll get to this after login/logout + profile sessions gets involved --}}
-  {{#if showprofile.isSelf}}
+  {{#if isSelf}}
     <p><a href=/profile-edit>Edit Profile</a> -
       <a href=/password>Change Password</a> -
       <a href="http://gravatar.com/emails/">Change Picture</a>

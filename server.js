@@ -46,7 +46,7 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
 
   server.auth.strategy('session', 'cookie', 'try', {
     password: config.session.password,
-    appendNext: true,
+    appendNext: 'done',
     cookie: config.session.cookie,
     validateFunc: function (session, callback) {
       cache.get(session.sid, function (err, cached) {
@@ -123,14 +123,15 @@ function delSession (request) {
 
     user.sid = sid;
 
-    request.server.app.cache.drop(sid, function (err) {
-      if (err) {
-        var errId = uuid.v1();
-        log.error(errId + ' ' + Hapi.error.internal('there was an error clearing the cache'));
-        return next(Hapi.error.internal(errId));
-      }
+    request.server.methods.logoutUser(function () {
 
-      request.server.methods.logoutUser(function () {
+      request.server.app.cache.drop(sid, function (err) {
+        if (err) {
+          var errId = uuid.v1();
+          log.error(errId + ' ' + Hapi.error.internal('there was an error clearing the cache'));
+          return next(Hapi.error.internal(errId));
+        }
+
         request.auth.session.clear();
         return next(null);
       });

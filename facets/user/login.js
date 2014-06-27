@@ -1,7 +1,8 @@
 var murmurhash = require('murmurhash'),
     Hapi = require('hapi'),
     uuid = require('node-uuid'),
-    log = require('bole')('user-login');
+    log = require('bole')('user-login'),
+    url = require('url');
 
 module.exports = function login (request, reply) {
   var loginUser = request.server.methods.loginUser,
@@ -43,7 +44,14 @@ module.exports = function login (request, reply) {
             return reply.redirect('/password');
           }
 
-          return reply.redirect('/');
+          if (request.query.done) {
+            // Make sure that we don't ever leave this domain after login
+            // resolve against a fqdn, and take the resulting pathname
+            var done = url.resolveObject('https://example.com/login', request.query.done.replace(/\\/g, '/'))
+            donePath = done.pathname
+          }
+
+          return reply.redirect(donePath || '/');
         });
       });
     }

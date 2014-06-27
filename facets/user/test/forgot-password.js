@@ -5,11 +5,6 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var Hapi = require('hapi'),
-    config = require('../../../config').user,
-    user = require('../'),
-    murmurhash = require('murmurhash');
-
 var server, source, cache, tokenUrl,
     users = require('./fixtures/users'),
     fakeuser = require('./fixtures/users').fakeuser,
@@ -17,70 +12,13 @@ var server, source, cache, tokenUrl,
 
 // prepare the server
 before(function (done) {
-  process.env.NODE_ENV = 'dev';
-
-  var serverOptions = {
-    views: {
-      engines: {hbs: require('handlebars')},
-      partialsPath: '../../hbs-partials',
-      helpersPath: '../../hbs-helpers'
-    }
-  };
-
-  server = Hapi.createServer(serverOptions);
+  server = require('./fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     cache = request.server.app.cache._cache.connection.cache['|sessions'];
     source = request.response.source;
     next();
   });
-
-  server.pack.register(require('hapi-auth-cookie'), function (err) {
-    if (err) throw err;
-
-    server.app.cache = server.cache('sessions', {
-      expiresIn: 30
-    });
-
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: '12345'
-    });
-
-    server.pack.register({
-      plugin: user,
-      options: config
-    }, function (err) {
-
-      // manually start the cache
-      server.app.cache._cache.connection.start(done);
-    });
-  });
-});
-
-before(function (done) {
-  server.methods = {
-    getUserFromCouch: function (username, next) {
-      if (users[username]) {
-        return next(null, users[username]);
-      }
-
-      return next(Hapi.error.notFound('Username not found: ' + username));
-    },
-    lookupUserByEmail: function (email, next) {
-      if (email === fakeusercli.email) {
-        return next(null, ['fakeusercli']);
-      } else if (email === fakeuser.email) {
-        return next(null, ['fakeuser', 'fakeusercli']);
-      } else {
-        return next(Hapi.error.notFound("Bad email, no user found with this email"));
-      }
-    },
-    changePass: function (auth, next) {
-      return next(null);
-    },
-  };
-
-  done();
 });
 
 describe('Accessing the forgot password page', function () {

@@ -5,11 +5,6 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var Hapi = require('hapi'),
-    config = require('../../../config').user,
-    user = require('../'),
-    murmurhash = require('murmurhash');
-
 var server, source, cache, revUrl, confUrl,
     fakeuser = require('./fixtures/users').fakeuser,
     fakeusercli = require('./fixtures/users').fakeusercli,
@@ -18,59 +13,13 @@ var server, source, cache, revUrl, confUrl,
 
 // prepare the server
 before(function (done) {
-  process.env.NODE_ENV = 'dev';
-
-  var serverOptions = {
-    views: {
-      engines: {hbs: require('handlebars')},
-      partialsPath: '../../hbs-partials',
-      helpersPath: '../../hbs-helpers'
-    }
-  };
-
-  server = Hapi.createServer(serverOptions);
+  server = require('./fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     cache = request.server.app.cache._cache.connection.cache['|sessions'];
     source = request.response.source;
     next();
   });
-
-  server.pack.register(require('hapi-auth-cookie'), function (err) {
-    if (err) throw err;
-
-    server.app.cache = server.cache('sessions', {
-      expiresIn: 30
-    });
-
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: '12345'
-    });
-
-    server.pack.register({
-      plugin: user,
-      options: config
-    }, function (err) {
-
-      // manually start the cache
-      server.app.cache._cache.connection.start(done);
-    });
-  });
-});
-
-before(function (done) {
-  server.methods = {
-    changeEmail: function (name, email, next) {
-      if (name !== 'fakeuser') {
-        return next(Hapi.error.notFound('Username not found: ' + username));
-      }
-
-      fakeuser.email = email;
-      return next(null);
-    }
-  };
-
-  done();
 });
 
 describe('Accessing the email-edit page', function () {

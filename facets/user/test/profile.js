@@ -4,10 +4,6 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var Hapi = require('hapi'),
-    config = require('../../../config').user,
-    user = require('../');
-
 var server, source, u = {};
 var users = require('./fixtures/users'),
     fakeBrowse = require('./fixtures/fakeuser-browse');
@@ -17,15 +13,7 @@ var username1 = 'fakeuser',
 
 // prepare the server
 before(function (done) {
-  var serverOptions = {
-    views: {
-      engines: {hbs: require('handlebars')},
-      partialsPath: '../../hbs-partials',
-      helpersPath: '../../hbs-helpers'
-    }
-  };
-
-  server = Hapi.createServer(serverOptions);
+  server = require('./fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
@@ -35,45 +23,6 @@ before(function (done) {
     }
     next();
   });
-
-  server.pack.register(require('hapi-auth-cookie'), function (err) {
-    if (err) throw err;
-
-    server.app.cache = server.cache('sessions', {
-      expiresIn: 30
-    });
-
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: '12345'
-    });
-
-    server.pack.register({
-      plugin: user,
-      options: config
-    }, function (err) {
-
-      // manually start the cache
-      server.app.cache._cache.connection.start(done);
-    });
-  });
-});
-
-before(function (done) {
-  server.methods = {
-    getUserFromCouch: function (username, next) {
-      if (typeof users[username] === 'undefined') {
-        return next(Hapi.error.notFound(username));
-      }
-
-      return next(null, users[username]);
-    },
-
-    getBrowseData: function (type, arg, skip, limit, next) {
-      return next(null, fakeBrowse[type])
-    }
-  }
-
-  done();
 });
 
 describe('Retreiving profiles from the registry', function () {

@@ -12,7 +12,15 @@ module.exports = function (options) {
 
     var profileName = request.params.name || opts.user.name;
 
-    getUserFromCouch(profileName, function (err, showprofile) {
+    if (request.info.referrer.indexOf('profile-edit') !== -1) {
+      getUserFromCouch.cache.drop(profileName, function (er, resp) {
+        return getUserFromCouch(profileName, showProfile);
+      });
+    }
+
+    return getUserFromCouch(profileName, showProfile);
+
+    function showProfile (err, showprofile) {
       if (err) {
         opts.name = err.output.payload.message;
         return reply.view('profile-not-found', opts);
@@ -32,10 +40,10 @@ module.exports = function (options) {
           opts.profile.showprofile = transform(showprofile, options);
           opts.profile.fields = opts.profile.showprofile.fields;
 
-          reply.view('profile', opts)
+          return reply.view('profile', opts)
         });
       });
-    });
+    }
   }
 }
 

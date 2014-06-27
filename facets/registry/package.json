@@ -9,11 +9,11 @@
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
   "dependencies": {
+    "elasticsearch": "^2.2.0",
     "github-url-from-git": "^1.1.1",
     "gravatar": "^1.0.6",
     "marked": "^0.3.2",
     "moment": "^2.6.0",
-    "elasticsearch": "^2.2.0",
     "sanitizer": "^0.1.1"
   },
   "devDependencies": {

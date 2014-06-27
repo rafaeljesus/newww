@@ -1,7 +1,8 @@
 var murmurhash = require('murmurhash');
 
 module.exports = function login (request, reply) {
-  var loginUser = request.server.methods.loginUser;
+  var loginUser = request.server.methods.loginUser,
+      setSession = request.server.methods.setSession(request);
 
   if (request.auth.isAuthenticated) {
     return reply().redirect('/');
@@ -15,26 +16,21 @@ module.exports = function login (request, reply) {
       opts.message = 'Missing username or password';
     } else {
       loginUser(request.payload, function (er, user) {
-        if (!user) {
+
+        if (er || !user) {
           opts.message = 'Invalid username or password';
 
-          reply.view('login', opts);
+          return reply.view('login', opts);
         }
 
-        var sid = murmurhash.v3(user.name, 55).toString(16);
-
-        user.sid = sid;
-
-        request.server.app.cache.set(sid, user, 0, function (err) {
+        setSession(user, function (err) {
           if (err) {
-            reply(err);
+            return reply.view('error', err);
           }
 
-          request.auth.session.set({sid: sid});
-          // ?? how do we handle ?done=/blah ??
-          return reply().redirect('/');
+          return reply.redirect('/');
         });
-      })
+      });
     }
   }
 

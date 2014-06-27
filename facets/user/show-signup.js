@@ -3,7 +3,8 @@ var Joi = require('joi'),
     murmurhash = require('murmurhash');
 
 module.exports = function signup (request, reply) {
-  var signupUser = request.server.methods.signupUser;
+  var signupUser = request.server.methods.signupUser,
+      setSession = request.server.methods.setSession(request);
 
   var opts = {
     user: request.auth.credentials,
@@ -54,15 +55,12 @@ module.exports = function signup (request, reply) {
 
         user.sid = sid;
 
-        request.server.app.cache.set(sid, user, 0, function (err) {
+        setSession(user, function (err) {
           if (err) {
-            console.log('error in signup', err)
-            reply(err);
+            return reply.view('error', err);
           }
 
-          request.auth.session.set({sid: sid});
-
-          return reply().redirect('/profile-edit');
+          return reply.redirect('/profile-edit');
         });
 
       });

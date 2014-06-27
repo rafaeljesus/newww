@@ -59,8 +59,7 @@ exports.fakeuser = {
    "appdotnet": "",
    "homepage": "",
    "freenode": "",
-   "roles": [
-   ],
+   "roles": [],
    "mustChangePass": false,
    "derived_key": "a7a5bcffa127d44e214fbb0c3148b89c23100c9a",
    "password_scheme": "pbkdf2",
@@ -84,16 +83,15 @@ exports.fakeuserChangePassword = {
   verify: 'abcde'
 }
 
-exports.fakeuserCli = {
-   "_id": "org.couchdb.user:fakeuserCli",
+exports.fakeusercli = {
+   "_id": "org.couchdb.user:fakeusercli",
    "_rev": "1-dadbd134b001443c5fe120e4444b2b0e",
    "password_scheme": "pbkdf2",
    "iterations": 10,
-   "name": "fakeuserCli",
+   "name": "fakeusercli",
    "email": "f@fakeuser.me",
    "type": "user",
-   "roles": [
-   ],
+   "roles": [],
    "date": "2014-04-26T00:54:43.315Z",
    "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
    "salt": "67bbd97d32e397ded845e279fb371ea7"
@@ -111,3 +109,31 @@ exports.fakeuserCliFields = [
   { name: 'homepage', value: '', title: 'Homepage', show: '' },
   { name: 'freenode', value: '', title: 'IRC Handle', show: '' }
 ]
+
+exports.fakeusernoemail = {
+   "_id": "org.couchdb.user:fakeusernoemail",
+   "_rev": "1-dadbd134b001443c5fe120e4444b2b0e",
+   "password_scheme": "pbkdf2",
+   "iterations": 10,
+   "name": "fakeusernoemail",
+   "email": "",
+   "type": "user",
+   "roles": [],
+   "date": "2014-04-26T00:54:43.315Z",
+   "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
+   "salt": "67bbd97d32e397ded845e279fb371ea7"
+}
+
+exports.fakeuserbademail = {
+   "_id": "org.couchdb.user:fakeuserbademail",
+   "_rev": "1-dadbd134b001443c5fe120e4444b2b0e",
+   "password_scheme": "pbkdf2",
+   "iterations": 10,
+   "name": "fakeuserbademail",
+   "email": "fake@bademail",
+   "type": "user",
+   "roles": [],
+   "date": "2014-04-26T00:54:43.315Z",
+   "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
+   "salt": "67bbd97d32e397ded845e279fb371ea7"
+}

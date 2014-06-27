@@ -49,8 +49,9 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     }
   });
 
-  // make it easier for setting sessions throughout the app
+  // make it easier for setting/clearing sessions throughout the app
   server.method('setSession', setSession);
+  server.method('delSession', delSession);
 
   server.pack.register([
     require('./facets/company'),
@@ -92,6 +93,25 @@ function setSession (request) {
 
       request.auth.session.set({sid: sid});
       return next(null);
+    });
+  }
+}
+
+function delSession (request) {
+  return function (user, next) {
+    var sid = murmurhash.v3(user.name, 55).toString(16);
+
+    user.sid = sid;
+
+    request.server.app.cache.drop(sid, function (err) {
+      if (err) {
+        return next(Hapi.error.internal('there was an error clearing the cache'));
+      }
+
+      request.server.methods.logoutUser(function () {
+        request.auth.session.clear();
+        return next(null);
+      });
     });
   }
 }

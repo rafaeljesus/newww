@@ -13,7 +13,7 @@ var users = require('./fixtures/users'),
     fakeBrowse = require('./fixtures/fakeuser-browse');
 
 var username1 = 'fakeuser',
-    username2 = 'fakeuserCli';
+    username2 = 'fakeusercli';
 
 // prepare the server
 before(function (done) {

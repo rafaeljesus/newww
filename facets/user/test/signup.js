@@ -55,7 +55,7 @@ before(function (done) {
   server.methods = {
     signupUser: function (acct, next) {
 
-      var user = require('./fixtures/users').fakeuserCli
+      var user = require('./fixtures/users').fakeusercli
 
       return next(null, user);
     },
@@ -71,6 +71,22 @@ before(function (done) {
           }
 
           request.auth.session.set({sid: sid});
+          return next(null);
+        });
+      }
+    },
+    delSession: function (request) {
+      return function (user, next) {
+        var sid = murmurhash.v3(user.name, 55).toString(16);
+
+        user.sid = sid;
+
+        request.server.app.cache.drop(sid, function (err) {
+          if (err) {
+            return next(Hapi.error.internal('there was an error clearing the cache'));
+          }
+
+          request.auth.session.clear();
           return next(null);
         });
       }

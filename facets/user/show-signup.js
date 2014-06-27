@@ -4,7 +4,8 @@ var Joi = require('joi'),
 
 module.exports = function signup (request, reply) {
   var signupUser = request.server.methods.signupUser,
-      setSession = request.server.methods.setSession(request);
+      setSession = request.server.methods.setSession(request),
+      delSession = request.server.methods.delSession(request);
 
   var opts = {
     user: request.auth.credentials,
@@ -42,25 +43,21 @@ module.exports = function signup (request, reply) {
         return reply.view('signup-form', opts);
       }
 
-      request.auth.session.clear();
+      delSession(value, function (er) {
+        signupUser(value, function (er, user) {
 
-      signupUser(value, function (er, user) {
-
-        if (er) {
-          opts.errors.push(er);
-          return reply.view('signup-form', opts);
-        }
-
-        var sid = murmurhash.v3(user.name, 55).toString(16);
-
-        user.sid = sid;
-
-        setSession(user, function (err) {
-          if (err) {
-            return reply.view('error', err);
+          if (er) {
+            opts.errors.push(er);
+            return reply.view('signup-form', opts);
           }
 
-          return reply.redirect('/profile-edit');
+          setSession(user, function (err) {
+            if (err) {
+              return reply.view('error', err);
+            }
+
+            return reply.redirect('/profile-edit');
+          });
         });
 
       });

@@ -30,6 +30,12 @@ exports.register = function User (facet, options, next) {
   ]);
 
   facet.route({
+    path: "/forgot/{token?}",
+    method: ["GET", "HEAD", "POST"],
+    handler: require('./show-forgot')(options.mail)
+  });
+
+  facet.route({
     path: "/signup", method: ["GET", "HEAD", "POST"], handler: require('./show-signup')
   });
 
@@ -55,8 +61,16 @@ exports.register = function User (facet, options, next) {
     path: "/logout",
     method: "GET",
     handler: function (request, reply) {
-      request.auth.session.clear();
-      return reply().redirect('/');
+      var delSession = request.server.methods.delSession(request);
+
+      delSession(request.auth.credentials, function (er) {
+        if (er) {
+          var opts = {error: er};
+          return reply.view('error', opts).code(500);
+        }
+
+        return reply.redirect('/');
+      });
     }
   });
 
@@ -66,4 +80,3 @@ exports.register = function User (facet, options, next) {
 exports.register.attributes = {
   pkg: require('./package.json')
 };
-

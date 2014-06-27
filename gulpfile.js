@@ -12,6 +12,7 @@ gulp.task('styles', function () {
 })
 
 gulp.task('develop', function () {
+  process.env.NODE_ENV = 'dev';
   nodemon({ script: 'server.js', ext: 'hbs styl js', ignore: ['node_modules/', 'test/', 'facets/*/test/'] })
     .on('change', ['styles'])
     .on('restart', function () {

@@ -1,5 +1,6 @@
 var CouchLogin = require('couch-login'),
     Hapi = require('hapi'),
+    qs = require('querystring'),
     SECOND = 1000;
 
 var adminCouch, anonCouch;
@@ -30,11 +31,14 @@ exports.register = function Couch (service, options, next) {
     cache: { expiresIn: 60 * SECOND, segment: '##user' }
   });
 
+  service.method('lookupUserByEmail', lookupUserByEmail);
+
   service.method('getBrowseData', require('./browse')(anonCouch), {
     cache: { expiresIn: 60 * SECOND, segment: '##browse' }
   });
 
   service.method('loginUser', require('./login')(service, anonCouch));
+  service.method('logoutUser', logoutUser(anonCouch));
 
   service.method('signupUser', signupUser);
 
@@ -60,11 +64,39 @@ function getPackageFromCouch (package, next) {
 function getUserFromCouch (name, next) {
   anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
     if (er || cr && cr.statusCode !== 200 || !data || data.error) {
-      return next(Hapi.error.notFound(name))
+      return next(Hapi.error.notFound('Username not found: ' + name))
     }
 
     return next(null, data)
   })
+}
+
+function lookupUserByEmail (email, next) {
+  var query = {
+        startkey: JSON.stringify([email]),
+        endkey: JSON.stringify([email, {}]),
+        group: 'true'
+      },
+      pe = '/_users/_design/_auth/_view/userByEmail?' + qs.encode(query);
+
+
+  adminCouch.get(pe, function (er, cr, data) {
+    if (er || cr && cr.statusCode >= 400 || data && data.error) {
+      return next(Hapi.error.notFound("Bad email, no user found with this email"));
+    }
+
+    var usernames = data.rows.map(function (obj) {
+      return obj.key[1];
+    });
+
+    return next(null, usernames);
+  })
+}
+
+function logoutUser (anonCouch) {
+  return function (next) {
+    anonCouch.logout(next);
+  };
 }
 
 function signupUser (acct, next) {
@@ -73,7 +105,7 @@ function signupUser (acct, next) {
         var error = "Failed creating account.  CouchDB said: "
                   + ((er && er.message) || (data && data.error))
 
-      return next(new Error(error));
+      return next(Hapi.error.forbidden(error));
     }
 
     return next(null, data);
@@ -92,8 +124,9 @@ function saveProfile (user, next) {
 
 function changePass (auth, next) {
   adminCouch.changePass(auth, function (er, cr, data) {
-    if (er || cr.statusCode >= 400) {
-      return next(er && er.message || data && data.message)
+    if (er || cr.statusCode >= 400 || data && data.message) {
+      var error = er && er.message || data && data.message;
+      return next(Hapi.error.forbidden(error));
     }
 
     return next(null, data);

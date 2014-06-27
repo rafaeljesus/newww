@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "couch-login": {
-      "version": "1.0.0",
+      "version": "1.0.1",
       "from": "couch-login@^1.0.0",
-      "resolved": "https://registry.npmjs.org/couch-login/-/couch-login-1.0.0.tgz",
+      "resolved": "https://registry.npmjs.org/couch-login/-/couch-login-1.0.1.tgz",
       "dependencies": {
         "request": {
           "version": "2.36.0",

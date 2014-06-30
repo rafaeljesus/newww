@@ -14,6 +14,12 @@ exports.register = function Company (facet, options, next) {
     handler: require('./show-homepage')
   });
 
+  facet.route({
+    path: "/whoshiring",
+    method: "GET",
+    handler: require('./show-whoshiring')
+  });
+
   next();
 };
 

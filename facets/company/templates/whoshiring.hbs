@@ -1,0 +1,16 @@
+{{>header this}}
+
+<h1>Who's Hiring?</h1>
+
+<p>These companies are currently hiring for Node.js developers</p>
+
+<dl class="hiring">
+  {{#each companies}}
+    <dt data-id="{{id}}" class="hiring-logo"><a href="{{url}}" style="background: url('/static/img/hiring/{{id}}.png') no-repeat; background-size: 100px, 50px, contain; background-position-y: 50%;">{{name}}</a></dt>
+    <dd data-id="{{id}}">{{{description}}}</dd>
+  {{/each}}
+</dl>
+
+<p>To add your company to this list, email <a href="mailto:whoshiring@npmjs.org">whoshiring@npmjs.org</a> for pricing options.</p>
+
+{{> footer}}

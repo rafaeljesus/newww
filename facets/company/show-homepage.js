@@ -1,14 +1,17 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
 module.exports = function (request, reply) {
+
   load(request, function (err, cached) {
+
     var opts = {
       user: request.auth.credentials,
       title: 'npm',
       updated: cached.updated || [],
       depended: cached.depended || [],
       starred: cached.starred || [],
-      authors: cached.authors || []
+      authors: cached.authors || [],
+      hiring: request.server.methods.getRandomWhosHiring()
     };
 
     reply.view('index', opts);

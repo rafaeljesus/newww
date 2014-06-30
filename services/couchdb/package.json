@@ -9,6 +9,7 @@
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
   "dependencies": {
+    "async-cache": "^0.1.5",
     "couch-login": "^1.0.0"
   }
 }

@@ -37,6 +37,8 @@ exports.register = function Couch (service, options, next) {
     cache: { expiresIn: 60 * SECOND, segment: '##browse' }
   });
 
+  service.method('getRecentAuthors', require('./methods/recentAuthors')(anonCouch))
+
   service.method('loginUser', require('./methods/login')(service, anonCouch));
   service.method('logoutUser', logoutUser(anonCouch));
 

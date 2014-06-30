@@ -7,5 +7,12 @@
     "test": "lab -vC"
   },
   "author": "npm, Inc. <support@npmjs.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "stripe": "^2.7.3"
+  },
+  "devDependencies": {
+    "hapi": "^6.0.2",
+    "lab": "^3.2.1"
+  }
 }

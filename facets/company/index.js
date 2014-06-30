@@ -11,14 +11,7 @@ exports.register = function Company (facet, options, next) {
   facet.route({
     path: "/",
     method: "GET",
-    handler: function(request, reply) {
-
-      var opts = {
-        user: request.auth.credentials
-      }
-
-      reply.view('index', opts);
-    }
+    handler: require('./show-homepage')
   });
 
   next();

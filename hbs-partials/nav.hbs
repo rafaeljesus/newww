@@ -22,13 +22,13 @@
       <a href="/whoshiring">Who's Hiring</a>
     </li>
     {{#if hiring.name}}
-      <li data-id="<%= hiring.id %>" class="hiring-company">
-        <a href="<%= hiring.url %>">
+      <li data-id="{{hiring.id}}" class="hiring-company">
+        <a href="{{hiring.url}}">
           <span>{{hiring.name}}</span>
         </a>
       </li>
       <li class="hiring-more">
-        <a href="/whoshiring">+ {{hiring.numCompanies - 1}} More...</a>
+        <a href="/whoshiring">+ {{hiring.numExtraCompanies}} More...</a>
       </li>
     {{/if}}
   </ul>

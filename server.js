@@ -80,7 +80,8 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     {
       plugin: require('./services/couchdb'),
       options: config.couch
-    }
+    },
+    require('./services/whoshiring')
   ], function(err) {
     if (err) {
       // actually, if there's something wrong with plugin loading,

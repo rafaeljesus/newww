@@ -8,7 +8,8 @@ module.exports = function (request, reply) {
       unstar = request.server.methods.unstar;
 
   var opts = {
-    user: request.auth.credentials
+    user: request.auth.credentials,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   if (request.method === 'get') {

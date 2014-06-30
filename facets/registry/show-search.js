@@ -79,9 +79,10 @@ module.exports = function (options) {
 
     client.search(searchQuery, function (error, response) {
       var opts = {
-        user: request.auth.credentials
+        user: request.auth.credentials,
+        hiring: request.server.methods.getRandomWhosHiring()
       };
-        
+
       if (error) {
         opts.errId = uuid.v1();
         opts.errorType = 'internal';

@@ -11,7 +11,8 @@ var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
 module.exports = function (options) {
   return function (request, reply) {
     var opts = {
-      user: request.auth.credentials
+      user: request.auth.credentials,
+      hiring: request.server.methods.getRandomWhosHiring()
     };
 
     from = options.emailFrom;
@@ -52,8 +53,12 @@ module.exports = function (options) {
 // ======= functions =======
 
 function token (request, reply) {
-  var opts = { user: request.auth.credentials },
+  var opts = {
+        user: request.auth.credentials,
+        hiring: request.server.methods.getRandomWhosHiring()
+      },
       cache = request.server.app.cache;
+
   var token = request.params.token,
       hash = sha(token),
       pwKey = 'pwrecover_' + hash;
@@ -103,7 +108,11 @@ function token (request, reply) {
 }
 
 function handle(request, reply) {
-  var opts = { user: request.auth.credentials };
+  var opts = {
+    user: request.auth.credentials,
+    hiring: request.server.methods.getRandomWhosHiring()
+   };
+
   var data = request.payload;
 
   if (data.selected_name) {
@@ -131,7 +140,10 @@ function handle(request, reply) {
 }
 
 function lookupUserByEmail (email, request, reply) {
-  var opts = { user: request.auth.credentials };
+  var opts = {
+    user: request.auth.credentials,
+    hiring: request.server.methods.getRandomWhosHiring()
+   };
 
   request.server.methods.lookupUserByEmail(email, function (er, usernames) {
     if (er) {
@@ -149,7 +161,10 @@ function lookupUserByEmail (email, request, reply) {
 }
 
 function lookupUserByUsername (name, request, reply) {
-  var opts = { user: request.auth.credentials };
+  var opts = {
+    user: request.auth.credentials,
+    hiring: request.server.methods.getRandomWhosHiring()
+   };
 
   request.server.methods.getUserFromCouch(name, function (er, user) {
     if (er) {
@@ -174,7 +189,10 @@ function lookupUserByUsername (name, request, reply) {
 }
 
 function sendEmail(name, email, request, reply) {
-  var opts = { user: request.auth.credentials };
+  var opts = {
+    user: request.auth.credentials,
+    hiring: request.server.methods.getRandomWhosHiring()
+  };
 
   // the token needs to be url-safe
   var token = crypto.randomBytes(30).toString('base64')
@@ -240,7 +258,8 @@ function showError (request, reply, message, code, logExtras) {
   var opts = {
     user: request.auth.credentials,
     errId: errId,
-    code: code || 500
+    code: code || 500,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   var error;

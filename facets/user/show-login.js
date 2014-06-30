@@ -12,7 +12,9 @@ module.exports = function login (request, reply) {
     return reply().redirect('/');
   }
 
-  var opts = {};
+  var opts = {
+    hiring: request.server.methods.getRandomWhosHiring()
+  };
 
   if (request.method === 'post') {
 

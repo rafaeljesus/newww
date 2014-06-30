@@ -50,7 +50,7 @@ exports.register = function User (facet, options, next) {
   facet.route({
     path: "/login",
     method: ["GET", "POST"],
-    handler: require('./login')
+    handler: require('./show-login')
   });
 
   facet.route({

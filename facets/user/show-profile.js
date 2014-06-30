@@ -10,7 +10,8 @@ module.exports = function (options) {
     var getBrowseData = request.server.methods.getBrowseData;
 
     var opts = {
-      user: request.auth.credentials
+      user: request.auth.credentials,
+      hiring: request.server.methods.getRandomWhosHiring()
     };
 
     var profileName = request.params.name || opts.user.name;
@@ -87,7 +88,8 @@ function showError (request, reply, message, logExtras) {
   var opts = {
     user: request.auth.credentials,
     errId: errId,
-    code: 500
+    code: 500,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   log.error(errId + ' ' + Hapi.error.internal(message), logExtras);

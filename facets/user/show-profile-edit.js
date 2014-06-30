@@ -10,8 +10,8 @@ module.exports = function (options) {
         setSession = request.server.methods.setSession(request);
 
     var opts = {
-    // whoshiring: somethingsomething,
-      user: transform(request.auth.credentials, options)
+      user: transform(request.auth.credentials, options),
+      hiring: request.server.methods.getRandomWhosHiring()
     }
 
     if (request.method === 'post' || request.method === 'put') {

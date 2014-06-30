@@ -6,7 +6,8 @@ var Hapi = require('hapi'),
 
 module.exports = function (request, reply) {
   var opts = {
-    user: request.auth.credentials
+    user: request.auth.credentials,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   var changePass = request.server.methods.changePass,
@@ -88,7 +89,8 @@ function showError (request, reply, message, logExtras) {
   var opts = {
     user: request.auth.credentials,
     errId: errId,
-    code: 500
+    code: 500,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   log.error(errId + ' ' + Hapi.error.internal(message), logExtras);

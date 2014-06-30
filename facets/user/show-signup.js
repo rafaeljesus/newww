@@ -12,7 +12,8 @@ module.exports = function signup (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    errors: []
+    errors: [],
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   if (request.method === 'post') {
@@ -84,7 +85,8 @@ function showError (request, reply, message, code, logExtras) {
   var opts = {
     user: request.auth.credentials,
     errId: errId,
-    code: code || 500
+    code: code || 500,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   var error;

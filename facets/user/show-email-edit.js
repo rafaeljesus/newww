@@ -10,7 +10,8 @@ module.exports = function (options) {
   return function (request, reply) {
 
     var opts = {
-      user: request.auth.credentials
+      user: request.auth.credentials,
+      hiring: request.server.methods.getRandomWhosHiring()
     };
 
     from = options.emailFrom;
@@ -73,7 +74,8 @@ module.exports = function (options) {
 
 function handle (request, reply, email2) {
   var opts = {
-    user: request.auth.credentials
+    user: request.auth.credentials,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   var confTok = crypto.randomBytes(18).toString('hex'),
@@ -121,7 +123,8 @@ function handle (request, reply, email2) {
 
 function sendEmails (conf, rev, request, reply) {
   var opts = {
-    user: request.auth.credentials
+    user: request.auth.credentials,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   var name = conf.name,
@@ -204,7 +207,10 @@ function sendEmails (conf, rev, request, reply) {
 }
 
 function confirm (request, reply) {
-  var opts = { user: request.auth.credentials },
+  var opts = {
+        user: request.auth.credentials,
+        hiring: request.server.methods.getRandomWhosHiring()
+      },
       cache = request.server.app.cache;
 
   var token = request.params.token.split('/')[1],
@@ -252,7 +258,10 @@ function confirm (request, reply) {
 }
 
 function revert (request, reply) {
-  var opts = { user: request.auth.credentials },
+  var opts = {
+        user: request.auth.credentials,
+        hiring: request.server.methods.getRandomWhosHiring()
+      },
       cache = request.server.app.cache;
 
   var token = request.params.token.split('/')[1],
@@ -319,7 +328,8 @@ function showError (request, reply, message, code, logExtras) {
   var opts = {
     user: request.auth.credentials,
     errId: errId,
-    code: code || 500
+    code: code || 500,
+    hiring: request.server.methods.getRandomWhosHiring()
   };
 
   var error;

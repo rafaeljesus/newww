@@ -19,7 +19,7 @@ exports.register.attributes = {
 
 // ====== functions ======
 
-function hiring (showAll, next) {
+function hiring (showAll) {
   // we don't actually want to make this into a callback, but Hapi won't let us do it otherwise...
   return function (next) {
     var weights = {},

@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "deck": "0.0.4"
+  },
+  "devDependencies": {
+    "lab": "^3.2.1"
   }
 }

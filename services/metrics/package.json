@@ -1,0 +1,14 @@
+{
+  "name": "newww-service-metrics",
+  "version": "0.0.1",
+  "description": "metrics - handles all of our metric stuff",
+  "main": "index.js",
+  "scripts": {
+    "test": "lab -vC"
+  },
+  "author": "npm, Inc. <support@npmjs.com>",
+  "license": "ISC",
+  "dependencies": {
+    "numbat-emitter": "0.0.2"
+  }
+}

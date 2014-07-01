@@ -80,6 +80,14 @@ exports.payments = {
   }
 };
 
+exports.metrics = {
+  collector: {
+    host: 'metrics.internal.npmjs.com',
+    port: 8877
+  },
+  prefix: 'npm-www-dev'
+}
+
 exports.otherStuff = {
   "keys": [
     "these keys are for dev mode only"
@@ -100,12 +108,6 @@ exports.otherStuff = {
   },
   "downloads": {
     "url": "https://api.npmjs.org/downloads/"
-  },
-  "metrics": {
-    "collectors": [
-      "metrics.internal.npmjs.com:8877"
-    ],
-    "prefix": "npm-www-dev"
   },
   "debug": true
 }

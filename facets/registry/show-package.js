@@ -5,8 +5,9 @@ var Hapi = require('hapi'),
 
 
 module.exports = function (request, reply) {
-  var getPackageFromCouch = request.server.methods.getPackageFromCouch;
-  var getBrowseData = request.server.methods.getBrowseData;
+  var getPackageFromCouch = request.server.methods.getPackageFromCouch,
+      getBrowseData = request.server.methods.getBrowseData,
+      addMetric = request.server.methods.addMetric;
 
   if (request.params.version) {
     reply.redirect('/package/' + request.params.package)
@@ -28,7 +29,17 @@ module.exports = function (request, reply) {
     return reply.view('error', opts).code(400)
   }
 
+  var timing = {};
+  timing.start = Date.now();
   getPackageFromCouch(opts.name, function (er, pkg) {
+    timing.end = Date.now();
+    addMetric({
+      name: 'package.latency',
+      value: timing.end-timing.start,
+      time: Date.now(),
+      tags: ['package', opts.name]
+    });
+
     if (er || pkg.error) {
       opts.errorType = 'notFound';
       opts.errId = uuid.v1();

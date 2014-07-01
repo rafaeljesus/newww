@@ -1,4 +1,5 @@
-var path = require('path');
+var path = require('path'),
+    log = require('bole')('ops')
 var appVersion;
 
 exports.register = function Company (facet, options, next) {
@@ -20,6 +21,12 @@ exports.register = function Company (facet, options, next) {
     path: "/status",
     method: "GET",
     handler: status
+  });
+
+  facet.route({
+    path: "/-/csplog",
+    method: "POST",
+    handler: csplog
   });
 
   next();
@@ -47,4 +54,17 @@ function status (request, reply) {
   };
 
   return reply(info).code(200);
+}
+
+function csplog (request, reply) {
+  var data = request.payload;
+
+  try {
+    data = JSON.parse(data);
+  } catch (ex) {
+    data = {msg: data};
+  }
+
+  log.warn('content-security-policy validation', data);
+  return reply('OK').code(200);
 }

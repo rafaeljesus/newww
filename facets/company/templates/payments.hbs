@@ -1,0 +1,23 @@
+{{>header this}}
+
+<h1 class="hiring-header">Listing on npm's Who's Hiring</h1>
+
+<section class="payment">
+
+  <p>Thank you for joining the npm community!</p>
+
+  <p>There are two listing options. You can buy 1 month for $350 or 3 months for $1,000.</p>
+
+  <p>Please select the option that is right for you. Once the payment is in place, we’ll work with you to get your company’s hiring page onto the list as soon as possible.</p>
+
+  <input type="hidden" data-key="{{stripeKey}}"/>
+  <button id="one-month" class="btn">One Month for $350</button>
+  <button id="three-months" class="btn">Three Months for $1000</button>
+
+</section>
+
+<p>If you have any questions about using this form, please email us at <a href="mailto:whoshiring@npmjs.com">whoshiring@npmjs.com</a>.</p>
+
+{{> footer}}
+<script src="https://checkout.stripe.com/checkout.js"></script>
+<script src='/static/js/payments.js'></script>

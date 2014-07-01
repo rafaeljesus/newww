@@ -2,7 +2,6 @@ var path = require('path');
 var internals = {};
 
 exports.register = function Company (facet, options, next) {
-
   facet.views({
     engines: { hbs: require('handlebars') },
     path: path.resolve(__dirname, 'templates'),
@@ -18,6 +17,12 @@ exports.register = function Company (facet, options, next) {
     path: "/whoshiring",
     method: "GET",
     handler: require('./show-whoshiring')
+  });
+
+  facet.route({
+    path: "/joinwhoshiring",
+    method: ["GET", "POST"],
+    handler: require('./show-whoshiring-payments')(options.stripe)
   });
 
   next();

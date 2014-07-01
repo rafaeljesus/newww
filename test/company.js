@@ -5,20 +5,21 @@ var Lab = require('lab')
   , expect = Lab.expect;
 
 var Hapi = require('hapi'),
-    company = require('../facets/company');
+    company = require('../facets/company'),
+    config = require('../config').payments;
 
 var server;
 
 before(function (done) {
   server = Hapi.createServer();
-  server.pack.register(company, done);
+  server.pack.register({ plugin: company, options: config }, done);
 });
 
 describe('company is routing properly', function () {
   it('calls all the right routes', function (done) {
     var table = server.table();
 
-    expect(table).to.have.length(2);
+    expect(table).to.have.length(4);
 
     var paths = table.map(function (route) {
       var obj = {
@@ -30,6 +31,8 @@ describe('company is routing properly', function () {
 
     expect(paths).to.include({ path: '/', method: 'get' });
     expect(paths).to.include({ path: '/whoshiring', method: 'get' });
+    expect(paths).to.include({ path: '/joinwhoshiring', method: 'get' });
+    expect(paths).to.include({ path: '/joinwhoshiring', method: 'post' });
 
     done();
   })

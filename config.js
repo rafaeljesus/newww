@@ -73,14 +73,17 @@ exports.search = {
   perPage: 20
 };
 
+exports.payments = {
+  "stripe": {
+    "secretkey": "sk_test_bxAixWI4b6LJJZlPSmX8z6hu",
+    "publickey": "pk_test_dxl0gkFmBMdyGvhgt7Q86KwH"
+  }
+};
+
 exports.otherStuff = {
   "keys": [
     "these keys are for dev mode only"
   ],
-  "stripe": {
-    "secretkey": "sk_test_bxAixWI4b6LJJZlPSmX8z6hu",
-    "publickey": "pk_test_dxl0gkFmBMdyGvhgt7Q86KwH"
-  },
   "httpPort": 15080,
   "npm": {
     "registry": "http://127.0.0.1:15984/",

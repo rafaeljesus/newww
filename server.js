@@ -68,7 +68,10 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
   server.method('delSession', delSession);
 
   server.pack.register([
-    require('./facets/company'),
+    {
+      plugin: require('./facets/company'),
+      options: config.payments
+    },
     {
       plugin: require('./facets/registry'),
       options: config.search

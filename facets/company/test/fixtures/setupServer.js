@@ -1,5 +1,6 @@
 var Hapi = require('hapi'),
-    company = require('../../');
+    company = require('../../'),
+    config = require('../../../../config').payments;
 
 var serverOptions = {
   views: {
@@ -15,7 +16,7 @@ module.exports = function (done) {
   var server = Hapi.createServer(serverOptions);
   server.methods = require('./mock-couch-methods')(server);
 
-  server.pack.register(company, done);
+  server.pack.register({ plugin: company, options: config }, done);
 
   return server;
 }

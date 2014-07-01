@@ -81,6 +81,10 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
       options: config.user
     },
     {
+      plugin: require('./facets/ops'),
+      options: require('./package.json').version
+    },
+    {
       plugin: require('./services/couchdb'),
       options: config.couch
     },

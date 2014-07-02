@@ -102,6 +102,13 @@ queue(function (cb) {
     cb(code)
   })
 
+}, function (cb) {
+  // by now, elastic search is probably up
+  exec(process.execPath, [
+    './node_modules/numbat-collector/bin/run-server.js'
+    , 'numbat-config.js'
+  ], cb)
+
 }, function(er) {
   if(er) throw er
 })

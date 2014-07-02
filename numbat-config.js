@@ -5,7 +5,7 @@ module.exports = {
     console: true
   },
 
-  listen: { host: 'localhost', port: 3333 },
+  listen: { host: '0.0.0.0', port: 3333 },
 
   outputs: [
     {   // this one is run by us; for testing purposes

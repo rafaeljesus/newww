@@ -8,6 +8,8 @@ module.exports = function (options) {
       VALID_CHARGE_AMOUNTS = [35000, 100000];
 
   return function (request, reply) {
+    var addMetric = request.server.methods.addMetric;
+
     var opts = {
       user: request.auth.credentials,
       hiring: request.server.methods.getRandomWhosHiring(),
@@ -39,6 +41,7 @@ module.exports = function (options) {
         return reply('invalid charge amount error: ' + errId).code(403);
       }
 
+      var timer = { start: Date.now() };
       stripe.charges.create({
         amount: token.amount,
         currency: "usd",
@@ -51,6 +54,13 @@ module.exports = function (options) {
           return reply('internal stripe error - ' + errId).code(500);
         }
 
+        addMetric({
+          name: 'latency',
+          value: timer.end - timer.start,
+          type: 'stripe'
+        });
+
+        addMetric({name: 'paymentProcessed'})
         return reply('Stripe charge successful').code(200);
       });
     });

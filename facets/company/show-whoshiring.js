@@ -7,5 +7,7 @@ module.exports = function (request, reply) {
     title: 'Who\'s Hiring'
   };
 
+  request.server.methods.addMetric({name: 'whoshiring'});
+
   reply.view('whoshiring', opts);
 };

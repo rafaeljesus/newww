@@ -14,6 +14,7 @@ module.exports = function (request, reply) {
       hiring: request.server.methods.getRandomWhosHiring()
     };
 
+    request.server.methods.addMetric({name: 'homepage'});
     reply.view('index', opts);
   });
 }
@@ -22,10 +23,12 @@ module.exports = function (request, reply) {
 
 function load (request, cb) {
   var browse = request.server.methods.getBrowseData,
-      recentAuthors = request.server.methods.getRecentAuthors;
+      recentAuthors = request.server.methods.getRecentAuthors,
+      addMetric = request.server.methods.addMetric;
 
   var n = 4,
-      cached = {};
+      cached = {},
+      timer = {};
 
   browse('star', null, 0, 10, next('starred'));
   browse('depended', null, 0, 10, next('depended'));
@@ -33,7 +36,16 @@ function load (request, cb) {
   browse('updated', null, 0, 10, next('updated'));
 
   function next (which) {
+    timer.start = Date.now();
     return function (err, data) {
+      timer.end = Date.now();
+      addMetric({
+        name: 'latency',
+        value: timer.end - timer.start,
+        type: 'couchdb',
+        browse: which
+      });
+
       cached[which] = data;
       if (--n === 0) {
         return cb(null, cached);

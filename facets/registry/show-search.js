@@ -78,6 +78,10 @@ module.exports = function (options) {
     };
 
     client.search(searchQuery, function (error, response) {
+      var opts = {
+        user: request.auth.credentials
+      };
+        
       if (error) {
         opts.errId = uuid.v1();
         opts.errorType = 'internal';
@@ -85,10 +89,6 @@ module.exports = function (options) {
 
         return reply.view('error', opts).code(500);
       }
-
-      var opts = {
-        user: request.auth.credentials
-      };
 
       var page = parseInt(request.query.page) || 0,
           pageSize = parseInt(options.perPage),

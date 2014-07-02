@@ -26,7 +26,6 @@ var footerScripts = [
   "static/js/charts.js",
   "static/js/sh_main.js",
   "static/js/sh_javascript.min.js",
-  "static/js/aristotle.js",
   "static/js/scripts.js",
   "static/js/google-analytics.js",
   "https://ssl.google-analytics.com/ga.js",

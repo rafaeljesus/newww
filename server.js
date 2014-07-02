@@ -37,7 +37,13 @@ server.route({
 
 // adds CSP header :-)
 server.ext('onPreResponse', function (request, next) {
-  request.response.header('Content-Security-Policy',"default-src 'self'; img-src *; script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://checkout.stripe.com; frame-src https://checkout.stripe.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://typeahead.npmjs.com/; report-uri /-/csplog;");
+  var header = "default-src 'self'; img-src *; script-src 'self' https://ssl.google-analytics.com https://checkout.stripe.com; frame-src https://checkout.stripe.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://typeahead.npmjs.com/; report-uri /-/csplog;"
+
+  if (request.path === '/joinwhoshiring') {
+    header = "default-src 'self'; img-src *; script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://checkout.stripe.com; frame-src https://checkout.stripe.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://typeahead.npmjs.com/; report-uri /-/csplog;";
+  }
+
+  request.response.header('Content-Security-Policy',header);
 
   next();
 });

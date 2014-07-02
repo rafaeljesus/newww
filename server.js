@@ -35,6 +35,13 @@ server.route({
   }
 });
 
+// adds CSP header :-)
+server.ext('onPreResponse', function (request, next) {
+  request.response.header('Content-Security-Policy',"default-src 'self'; img-src *; script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://checkout.stripe.com; frame-src https://checkout.stripe.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://typeahead.npmjs.com/; report-uri /-/csplog;");
+
+  next();
+});
+
 server.pack.register(require('hapi-auth-cookie'), function (err) {
   if (err) throw err;
 

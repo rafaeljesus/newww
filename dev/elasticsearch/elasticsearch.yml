@@ -362,3 +362,6 @@ network.host: 0.0.0.0
 #monitor.jvm.gc.ConcurrentMarkSweep.warn: 10s
 #monitor.jvm.gc.ConcurrentMarkSweep.info: 5s
 #monitor.jvm.gc.ConcurrentMarkSweep.debug: 2s
+
+# Fix for v1.2.0 that disables dynamic scripting by default, thus breaking facets/registry/show-search query
+script.disable_dynamic: false

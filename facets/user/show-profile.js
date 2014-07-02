@@ -6,13 +6,14 @@ var transform = require('./presenters/profile').transform,
 
 module.exports = function (options) {
   return function (request, reply) {
-    var getUserFromCouch = request.server.methods.getUserFromCouch;
-    var getBrowseData = request.server.methods.getBrowseData;
+    var getUserFromCouch = request.server.methods.getUserFromCouch,
+        getBrowseData = request.server.methods.getBrowseData,
+        addMetric = request.server.methods.addMetric;
 
     var opts = {
       user: request.auth.credentials,
       hiring: request.server.methods.getRandomWhosHiring()
-    };
+    }, timer;
 
     var profileName = request.params.name || opts.user.name;
 
@@ -21,13 +22,23 @@ module.exports = function (options) {
         if (er) {
           return showError(request, reply, 'Unable to drop key ' + profileName, er);
         }
+        timer.start = Date.now();
         return getUserFromCouch(profileName, showProfile);
       });
     }
 
+    timer.start = Date.now();
     return getUserFromCouch(profileName, showProfile);
 
     function showProfile (err, showprofile) {
+      timer.end = Date.now();
+      addMetric({
+        name: 'latency',
+        value: timer.end - timer.start,
+        type: 'couchdb',
+        action: 'showProfile'
+      });
+
       if (err) {
         opts.errId = uuid.v1();
         log.error(opts.errId + Hapi.error.notFound('Profile for ' + profileName + ' not found'), err);
@@ -36,19 +47,36 @@ module.exports = function (options) {
         return reply.view('profile-not-found', opts).code(404);
       }
 
+      timer.start = Date.now();
       getBrowseData('userstar', profileName, 0, 1000, function (err, starred) {
+        timer.end = Date.now();
+        addMetric({
+          name: 'latency',
+          value: timer.end - timer.start,
+          type: 'couchdb',
+          browse: ['userstar', profileName, 0, 1000].join(', ')
+        });
+
         if (err) {
           return showError(request, reply, 'Unable to get stars for user ' + profileName, err);
         }
 
+        timer.start = Date.now();
         getBrowseData('author', profileName, 0, 1000, function (err, packages) {
+          timer.end = Date.now();
+          addMetric({
+            name: 'latency',
+            value: timer.end - timer.start,
+            type: 'couchdb',
+            browse: ['author', profileName, 0, 1000].join(', ')
+          });
+
           if (err) {
             return showError(request, reply, 'Unable to get modules by user ' + profileName, err);
           }
 
           opts.profile = {
             title: showprofile.name,
-            // hiring: req.model.whoshiring,
             packages: getRandomAssortment(packages, 'packages', profileName),
             starred: getRandomAssortment(starred, 'starred', profileName),
             isSelf: opts.user && opts.user.name && profileName === opts.user.name
@@ -56,6 +84,8 @@ module.exports = function (options) {
 
           opts.profile.showprofile = transform(showprofile, options);
           opts.profile.fields = opts.profile.showprofile.fields;
+
+          addMetric({ name: 'showProfile' });
 
           return reply.view('profile', opts)
         });

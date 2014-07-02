@@ -14,3 +14,4 @@ erl_crash.dump
 npm-debug.log
 dev/user_upload_complete.dat
 *.box
+numbat.log

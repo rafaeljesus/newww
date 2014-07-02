@@ -12,7 +12,8 @@ module.exports = function (request, reply) {
     hiring: request.server.methods.getRandomWhosHiring()
   };
 
-  var getBrowseData = request.server.methods.getBrowseData;
+  var getBrowseData = request.server.methods.getBrowseData,
+      addMetric = request.server.methods.addMetric;
 
   // the url will be something like /browse/{type?}/{arg?}/{page}
   var params = request.params.p || '',
@@ -55,7 +56,16 @@ module.exports = function (request, reply) {
   var start = page * pageSize,
       limit = pageSize;
 
+  var timer = { start: Date.now() };
   getBrowseData(type, arg, start, limit, function (err, data) {
+    timer.end = Date.now();
+    addMetric({
+      name: 'latency',
+      value: timing.end - timing.start,
+      type: 'couchdb',
+      browse: [type, arg, start, limit].join(', ')
+    });
+
     if (err) {
       opts.errId = uuid.v1();
 
@@ -64,6 +74,11 @@ module.exports = function (request, reply) {
       log.error(opts.errId + ' ' + Hapi.error.internal('There was an error when getting the browse data'), err);
       return reply.view('error', opts).code(500);
     }
+
+    addMetric({
+      name: 'browse',
+      value: [type, arg, start, limit].join(', ')
+    });
 
     opts.browse = {
       items: data,

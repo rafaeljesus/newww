@@ -207,17 +207,29 @@ function sendEmails (conf, rev, request, reply) {
 }
 
 function confirm (request, reply) {
+  var methods = request.server.methods;
+
   var opts = {
         user: request.auth.credentials,
-        hiring: request.server.methods.getRandomWhosHiring()
+        hiring: methods.getRandomWhosHiring()
       },
       cache = request.server.app.cache;
 
   var token = request.params.token.split('/')[1],
       confHash = sha(token),
-      confKey = 'email_change_conf_' + confHash;
+      confKey = 'email_change_conf_' + confHash,
+      timer = {};
 
+  timer.start = Date.now();
   cache.get(confKey, function (er, cached) {
+    timer.end = Date.now();
+    methods.addMetric({
+      name: 'latency',
+      value: timer.end - timer.start,
+      type: 'redis',
+      action: 'getConfKey'
+    });
+
     if (er) {
       return showError(request, reply, 'Error getting token from Redis', 500, confKey);
     }
@@ -245,11 +257,21 @@ function confirm (request, reply) {
         return showError(request, reply, 'Unable to drop key ' + confKey, 500, err);
       }
 
-      request.server.methods.changeEmail(opts.user.name, email2, function (er) {
+      timer.start = Date.now();
+      methods.changeEmail(opts.user.name, email2, function (er) {
+        timer.end = Date.now();
+        methods.addMetric({
+          name: 'latency',
+          value: timer.end - timer.start,
+          type: 'couch',
+          action: 'changeEmail'
+        });
+
         if (er) {
           return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email2, 500, er);
         }
 
+        methods.addMetric({ name: 'confirmEmailChange' });
         opts.confirmed = true;
         return reply.view('email-edit-confirmation', opts);
       });
@@ -258,17 +280,29 @@ function confirm (request, reply) {
 }
 
 function revert (request, reply) {
+  var methods = request.server.methods;
+
   var opts = {
         user: request.auth.credentials,
-        hiring: request.server.methods.getRandomWhosHiring()
+        hiring: methods.getRandomWhosHiring()
       },
       cache = request.server.app.cache;
 
   var token = request.params.token.split('/')[1],
       revHash = sha(token),
-      revKey = 'email_change_rev_' + revHash;
+      revKey = 'email_change_rev_' + revHash,
+      timer = {};
 
+  timer.start = Date.now();
   cache.get(revKey, function (er, cached) {
+    timer.end = Date.now();
+    methods.addMetric({
+      name: 'latency',
+      value: timer.end - timer.start,
+      type: 'redis',
+      action: 'getRevKey'
+    });
+
     if (er) {
       return showError(request, reply, 'Error getting token from Redis', 500, revKey);
     }
@@ -302,10 +336,21 @@ function revert (request, reply) {
           return showError(request, reply, 'Unable to drop key ' + revKey, 500, err);
         }
 
-        request.server.methods.changeEmail(opts.user.name, email1, function (er) {
+        timer.start = Date.now();
+        methods.changeEmail(opts.user.name, email1, function (er) {
+          timer.end = Date.now();
+          methods.addMetric({
+            name: 'latency',
+            value: timer.end - timer.start,
+            type: 'couch',
+            action: 'changeEmail'
+          });
+
           if (er) {
             return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email1, 500, er);
           }
+
+          methods.addMetric({ name: 'revertEmailChange' });
 
           return reply.view('email-edit-confirmation', opts);
         });

@@ -29,15 +29,14 @@ module.exports = function (request, reply) {
     return reply.view('error', opts).code(400)
   }
 
-  var timing = {};
-  timing.start = Date.now();
+  var timer = { start: Date.now() };
   getPackageFromCouch(opts.name, function (er, pkg) {
-    timing.end = Date.now();
+    timer.end = Date.now();
     addMetric({
-      name: 'package.latency',
-      value: timing.end-timing.start,
-      time: Date.now(),
-      tags: ['package', opts.name]
+      name: 'latency',
+      value: timer.end - timer.start,
+      type: 'couchdb',
+      package: opts.name
     });
 
     if (er || pkg.error) {
@@ -55,10 +54,21 @@ module.exports = function (request, reply) {
       pkg.unpubFromNow = require('moment')(t).format('ddd MMM DD YYYY HH:mm:ss Z');
 
       opts.package = pkg;
+
+      addMetric({ name: 'showPackage', package: request.params.package });
       return reply.view('unpublished-package-page', opts);
     }
 
+    timer.start = Date.now();
     getBrowseData('depended', opts.name, 0, 1000, function (er, dependents) {
+      timer.end = Date.now();
+      addMetric({
+        name: 'latency',
+        value: timer.end - timer.start,
+        type: 'couchdb',
+        browse: ['depended', opts.name, 0, 1000].join(', ')
+      });
+
       if (er) {
         opts.errId = uuid.v1();
         opts.errorType = 'internal';
@@ -81,6 +91,8 @@ module.exports = function (request, reply) {
 
         opts.package = pkg;
         opts.title = opts.name;
+
+        addMetric({ name: 'showPackage', package: request.params.package });
         reply.view('package-page', opts);
       })
     })

@@ -56,22 +56,7 @@ exports.register = function User (facet, options, next) {
   facet.route({
     path: "/logout",
     method: "GET",
-    handler: function (request, reply) {
-      var delSession = request.server.methods.delSession(request);
-      var user = request.auth.credentials;
-
-      delSession(user, function (er) {
-        if (er) {
-          var errId = uuid.v1();
-          log.error(errId + ' ' + Hapi.error.internal('unable to delete session for logout'), user)
-
-          var opts = { errId: errId };
-          return reply.view('error', opts).code(500);
-        }
-
-        return reply.redirect('/');
-      });
-    }
+    handler: logout
   });
 
   facet.route({
@@ -92,3 +77,33 @@ exports.register = function User (facet, options, next) {
 exports.register.attributes = {
   pkg: require('./package.json')
 };
+
+// ===== functions =====
+function logout (request, reply) {
+  var delSession = request.server.methods.delSession(request),
+      user = request.auth.credentials,
+      addMetric = request.server.methods.addMetric;
+
+  var timer = { start: Date.now() };
+  delSession(user, function (er) {
+    timer.end = Date.now();
+    request.server.methods.addMetric({
+      name: 'latency',
+      value: timer.end - timer.start,
+      type: 'redis',
+      action: 'delSession'
+    });
+
+    if (er) {
+      var errId = uuid.v1();
+      log.error(errId + ' ' + Hapi.error.internal('unable to delete session for logout'), user)
+
+      var opts = { errId: errId };
+      return reply.view('error', opts).code(500);
+    }
+
+    addMetric({ name: 'logout' });
+
+    return reply.redirect('/');
+  });
+}

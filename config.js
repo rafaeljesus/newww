@@ -82,8 +82,8 @@ exports.payments = {
 
 exports.metrics = {
   collector: {
-    host: 'metrics.internal.npmjs.com',
-    port: 8877
+    host: 'localhost',
+    port: 3333
   },
   prefix: 'npm-www-dev'
 }

@@ -9,6 +9,8 @@ module.exports = function (options) {
   });
 
   return function (request, reply) {
+    var addMetric = request.server.methods.addMetric;
+
     var page = parseInt(request.query.page || '0', 10);
     var size  = parseInt(options.perPage);
     var searchQuery = {
@@ -77,7 +79,16 @@ module.exports = function (options) {
       }
     };
 
+    var timer = { start: Date.now() };
     client.search(searchQuery, function (error, response) {
+      timer.end = Date.now();
+      addMetric({
+        name: 'latency',
+        value: timer.end - timer.start,
+        type: 'elasticsearch',
+        query: request.query.q
+      });
+
       var opts = {
         user: request.auth.credentials,
         hiring: request.server.methods.getRandomWhosHiring()
@@ -99,6 +110,9 @@ module.exports = function (options) {
       if (totalhits > (pageSize * page + pageSize)){
         nextPage = 1;
       }
+
+      addMetric({ name: 'search', search: request.query.q });
+
       reply.view("search", {
         obj: {
           page: page,

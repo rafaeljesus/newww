@@ -89,7 +89,16 @@ function token (request, reply) {
 
     log.warn('About to change password', { name: name });
 
+    var timer = { start: Date.now() };
     request.server.methods.changePass(newAuth, function (err, data) {
+      timer.end = Date.now();
+      request.server.methods.addMetric({
+        name: 'latency',
+        value: timer.end - timer.start,
+        type: 'couchdb',
+        action: 'changePassword'
+      });
+
       if (err) {
       return showError(request, reply, 'Failed to set password for ' + newAuth.name, 400, er);
       }
@@ -100,6 +109,7 @@ function token (request, reply) {
         }
         opts.password = newPass;
         opts.user = null;
+        request.server.methods.addMetric({ name: 'changePassword' });
         return reply.view('password-changed', opts);
       });
     });
@@ -145,7 +155,16 @@ function lookupUserByEmail (email, request, reply) {
     hiring: request.server.methods.getRandomWhosHiring()
    };
 
+  var timer = { start: Date.now() };
   request.server.methods.lookupUserByEmail(email, function (er, usernames) {
+    timer.end = Date.now();
+    request.server.methods.addMetric({
+      name: 'latency',
+      value: timer.end - timer.start,
+      type: 'couchdb',
+      action: 'lookupUserByEmail'
+    });
+
     if (er) {
       opts.error = er.message;
       return reply.view('password-recovery-form', opts).code(404);
@@ -156,6 +175,7 @@ function lookupUserByEmail (email, request, reply) {
       return reply.view('password-recovery-form', opts);
     }
 
+    request.server.methods.addMetric({ name: 'emailLookup' });
     return lookupUserByUsername(usernames[0].trim(), request, reply);
   })
 }
@@ -166,7 +186,16 @@ function lookupUserByUsername (name, request, reply) {
     hiring: request.server.methods.getRandomWhosHiring()
    };
 
+  var timer = { start: Date.now() };
   request.server.methods.getUserFromCouch(name, function (er, user) {
+    timer.end = Date.now();
+    request.server.methods.addMetric({
+      name: 'latency',
+      value: timer.end - timer.start,
+      type: 'couchdb',
+      action: 'getUserFromCouch'
+    });
+
     if (er) {
       opts.error = er.message;
       return reply.view('password-recovery-form', opts).code(404);
@@ -184,6 +213,7 @@ function lookupUserByUsername (name, request, reply) {
       return reply.view('password-recovery-form', opts).code(400);
     }
 
+    request.server.methods.addMetric({ name: 'getUser' });
     return sendEmail(name, email, request, reply);
   });
 }
@@ -231,6 +261,8 @@ function sendEmail(name, email, request, reply) {
       + from + "\r\nif you have questions."
       + " \r\n\r\nnpm loves you.\r\n"
     };
+
+    request.server.methods.addMetric({ name: 'sendForgotEmail' });
 
     if (devMode) {
       return reply(mail);

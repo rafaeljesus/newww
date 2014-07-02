@@ -8,7 +8,8 @@ var Joi = require('joi'),
 module.exports = function signup (request, reply) {
   var signupUser = request.server.methods.signupUser,
       setSession = request.server.methods.setSession(request),
-      delSession = request.server.methods.delSession(request);
+      delSession = request.server.methods.delSession(request),
+      addMetric = request.server.methods.addMetric;
 
   var opts = {
     user: request.auth.credentials,
@@ -47,20 +48,49 @@ module.exports = function signup (request, reply) {
         return reply.view('signup-form', opts);
       }
 
+      var timer = { start: Date.now() };
       delSession(value, function (er) {
+        timer.end = Date.now();
+        addMetric({
+          name: 'latency',
+          value: timer.end - timer.start,
+          type: 'redis',
+          action: 'delSession'
+        });
+
         if (er) {
           return showError(request, reply, 'Unable to set the session for user ' + opts.user.name, 500, er);
         }
 
+        timer.start = Date.now();
         signupUser(value, function (er, user) {
+          timer.end = Date.now();
+          addMetric({
+            name: 'latency',
+            value: timer.end - timer.start,
+            type: 'couchdb',
+            action: 'signupUser'
+          });
+
           if (er) {
             return showError(request, reply, 'Failed to create account', 403, er);
           }
 
+          timer.start = Date.now();
           setSession(user, function (err) {
+            timer.end = Date.now();
+            addMetric({
+              name: 'latency',
+              value: timer.end - timer.start,
+              type: 'redis',
+              action: 'setSession'
+            });
+
             if (err) {
               return showError(request, reply, 'Unable to set the session for user ' + opts.user.name, 500, err);
             }
+
+            addMetric({name: 'signup'});
 
             return reply.redirect('/profile-edit');
           });

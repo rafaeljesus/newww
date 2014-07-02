@@ -12,7 +12,8 @@ module.exports = function (request, reply) {
 
   var changePass = request.server.methods.changePass,
       loginUser = request.server.methods.loginUser,
-      setSession = request.server.methods.setSession(request);
+      setSession = request.server.methods.setSession(request),
+      addMetric = request.server.methods.addMetric;
 
   if (request.method === 'get' || request.method === 'head') {
     return reply.view('password', opts);
@@ -48,20 +49,49 @@ module.exports = function (request, reply) {
     var newAuth = { name: prof.name, password: data.new };
     newAuth.mustChangePass = false;
 
+    var timer = { start: Date.now() };
     changePass(newAuth, function (er, data) {
+      timer.end = Date.now();
+      request.server.methods.addMetric({
+        name: 'latency',
+        value: timer.end - timer.start,
+        type: 'couchdb',
+        action: 'changePass'
+      });
+
       if (er) {
         return showError(request, reply, 'Failed to set the password for ' + newAuth.name, er);
       }
 
+      timer.start = Date.now();
       loginUser(newAuth, function (er, user) {
+        timer.end = Date.now();
+        request.server.methods.addMetric({
+          name: 'latency',
+          value: timer.end - timer.start,
+          type: 'couchdb',
+          action: 'loginUser'
+        });
+
         if (er) {
           return showError(request, reply, 'Unable to login user', er);
         }
 
+        timer.start = Date.now();
         setSession(user, function (err) {
+          timer.end = Date.now();
+          request.server.methods.addMetric({
+            name: 'latency',
+            value: timer.end - timer.start,
+            type: 'redis',
+            action: 'setSession'
+          });
+
           if (err) {
             return showError(request, reply, 'Unable to set session for ' + user.name, err);
           }
+
+          addMetric({name: 'changePass'})
 
           return reply.redirect('/profile');
         });

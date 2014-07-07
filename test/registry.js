@@ -25,7 +25,7 @@ before(function (done) {
 describe('Registry is routing properly', function () {
   it('calls all the right routes', function (done) {
     var table = server.table();
-    expect(table).to.have.length(6);
+    expect(table).to.have.length(7);
 
     var paths = table.map(function (route) {
       var obj = {
@@ -41,7 +41,7 @@ describe('Registry is routing properly', function () {
     expect(paths).to.include({ path: '/browse/{p*}', method: 'get' });
     expect(paths).to.include({ path: '/star', method: 'get' });
     expect(paths).to.include({ path: '/star', method: 'post' });
-
+    expect(paths).to.include({ path: '/{p*}', method: '*' });
 
     done();
   })

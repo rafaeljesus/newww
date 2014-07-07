@@ -56,9 +56,37 @@ exports.register = function Regsitry (facet, options, next) {
     method: "GET",
     handler: require('./show-search')(options)
   });
+
+  facet.route({
+    method: '*',
+    path: '/{p*}',
+    handler: fallbackHandler
+  });
+
   next();
 };
 
 exports.register.attributes = {
   pkg: require('./package.json')
+};
+
+// ======= functions ========
+
+function fallbackHandler (request, reply) {
+  var name = request.params.p,
+      opts = {
+        user: request.auth.credentials
+      }
+
+  request.server.methods.getPackageFromCouch(name, function (err, package) {
+
+    if (package && !package.error) {
+      reply.redirect('/package/' + package._id);
+    }
+
+    opts.url = request.server.info.uri + request.url.path;
+
+    request.server.methods.addMetric({name: '404', url: opts.url});
+    reply.view('notfound', opts).code(404);
+  });
 };

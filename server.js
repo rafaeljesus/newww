@@ -1,6 +1,7 @@
 var Hapi = require('hapi'),
     config = require('./config.js'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    murmurhash = require('murmurhash');
 
 // set up the logger
 var bole = require('bole'),
@@ -120,8 +121,6 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
 })
 
 // ======== functions =========
-
-var murmurhash = require('murmurhash');
 
 function setSession (request) {
   return function (user, next) {

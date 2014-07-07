@@ -1,6 +1,8 @@
-var fake = require('./fake.json'),
-    fakeDeps = require('./fake-deps'),
-    fakeUnpublished = require('./fake-unpublished');
+var pkgs = {
+      fake: require('./fake.json'),
+      fakeDeps: require('./fake-deps'),
+      unpub: require('./fake-unpublished')
+    };
 
 module.exports = function (server) {
   return {
@@ -9,15 +11,15 @@ module.exports = function (server) {
     },
 
     getPackageFromCouch: function (pkgName, next) {
-      if (pkgName === 'unpub') {
-        return next(null, fakeUnpublished);
+      if (pkgs[pkgName]) {
+        return next(null, pkgs[pkgName]);
       }
 
-      return next(null, fake);
+      return next(null, {error: 'nope'});
     },
 
     getBrowseData: function (type, arg, skip, limit, next) {
-      return next(null, fakeDeps);
+      return next(null, pkgs.fakeDeps);
     },
 
     getRandomWhosHiring: function () {

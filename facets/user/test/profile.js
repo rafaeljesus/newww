@@ -62,9 +62,8 @@ describe('Retreiving profiles from the registry', function () {
     server.inject(options, function (resp) {
       expect(source.template).to.equal('profile-not-found');
       done();
-    })
-  })
-
+    });
+  });
 });
 
 describe('Modifying the profile before sending it to the template', function () {
@@ -102,5 +101,4 @@ describe('Modifying the profile before sending it to the template', function () 
     expect(u[username2].showprofile.avatar).to.contain('gravatar');
     done();
   });
-
 });

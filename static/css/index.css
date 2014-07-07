@@ -750,3 +750,9 @@ html body ul.search-results .package.search-result {
   margin: 0;
   margin-bottom: 1em;
 }
+.notfound {
+  text-align: center;
+}
+.notfound img {
+  width: 275px;
+}

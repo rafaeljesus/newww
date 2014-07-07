@@ -6,6 +6,10 @@ var murmurhash = require('murmurhash'),
 
 module.exports = function (server) {
   return {
+    addMetric: function (metric) {
+      return;
+    },
+
     changeEmail: function (name, email, next) {
       if (name !== 'fakeuser') {
         return next(Hapi.error.notFound('Username not found: ' + username));

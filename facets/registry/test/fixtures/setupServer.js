@@ -13,7 +13,7 @@ module.exports = function (done) {
   process.env.NODE_ENV = 'dev';
 
   var server = Hapi.createServer(serverOptions);
-  server.methods = require('./mock-couch-methods')(server);
+  server.methods = require('./mock-server-methods')(server);
 
   server.pack.register(require('hapi-auth-cookie'), function (err) {
     if (err) throw err;

@@ -13,7 +13,7 @@ module.exports = function (options) {
     var opts = {
       user: request.auth.credentials,
       hiring: request.server.methods.getRandomWhosHiring()
-    }, timer;
+    }, timer = {};
 
     var profileName = request.params.name || opts.user.name;
 

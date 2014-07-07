@@ -61,7 +61,7 @@ module.exports = function (request, reply) {
     timer.end = Date.now();
     addMetric({
       name: 'latency',
-      value: timing.end - timing.start,
+      value: timer.end - timer.start,
       type: 'couchdb',
       browse: [type, arg, start, limit].join(', ')
     });

@@ -4,6 +4,9 @@ var fake = require('./fake.json'),
 
 module.exports = function (server) {
   return {
+    addMetric: function (metric) {
+      return;
+    },
 
     getPackageFromCouch: function (pkgName, next) {
       if (pkgName === 'unpub') {

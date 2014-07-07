@@ -4,8 +4,9 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var server;
 var fakeSearch = require('./fixtures/fake-search.json');
+
+var server;
 
 //set up server
 before(function (done) {

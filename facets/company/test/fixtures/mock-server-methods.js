@@ -3,6 +3,9 @@ var browse = require('./browseData'),
 
 module.exports = function (server) {
   return {
+    addMetric: function (metric) {
+      return;
+    },
 
     getBrowseData: function (type, arg, skip, limit, next) {
       return next(null, browse[type]);

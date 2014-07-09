@@ -64,6 +64,24 @@ describe('Accessing the whoshiring page', function () {
     });
   });
 
+  it('renders an error if the amount is not a number', function (done) {
+    var opts = {
+      url: '/joinwhoshiring',
+      method: 'POST',
+      payload: {
+        id: 'tok_104Js54fnGb60djYLjp7ISQd',
+        email: 'boom@boom.com',
+        amount: 'two'
+      }
+    };
+
+    server.inject(opts, function (resp) {
+      expect(resp.statusCode).to.equal(403);
+      expect(resp.result).to.include('validation error');
+      done();
+    });
+  });
+
   it('renders an error if the amount is invalid', function (done) {
     var opts = {
       url: '/joinwhoshiring',
@@ -77,7 +95,7 @@ describe('Accessing the whoshiring page', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(403);
-      expect(resp.result).to.include('validation error');
+      expect(resp.result).to.include('invalid charge amount error');
       done();
     });
   });

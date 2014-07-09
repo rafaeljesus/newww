@@ -4,7 +4,8 @@ var Joi = require('joi'),
     uuid = require('node-uuid');
 
 module.exports = function (options) {
-  var stripe = require('stripe')(options.secretkey);
+  var stripe = require('stripe')(options.secretkey),
+      VALID_CHARGE_AMOUNTS = [35000, 100000];
 
   return function (request, reply) {
     var opts = {
@@ -22,7 +23,7 @@ module.exports = function (options) {
     var schema = Joi.object().keys({
       email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
       id: Joi.string().token(),
-      amount: Joi.number().valid([35000, 100000])
+      amount: Joi.number()
     });
 
     Joi.validate(request.payload, schema, function (err, token) {
@@ -30,6 +31,12 @@ module.exports = function (options) {
         var errId = uuid.v1();
         log.error(errId + ' ' + Hapi.error.badRequest('there was a validation error'), err);
         return reply('validation error: ' + errId).code(403);
+      }
+
+      if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
+        var errId = uuid.v1();
+        log.error(errId + ' ' + Hapi.error.badRequest('the charge amount of ' + token.amount + ' is invalid'), err);
+        return reply('invalid charge amount error: ' + errId).code(403);
       }
 
       stripe.charges.create({

@@ -7,7 +7,9 @@
   <p>Total Packages: {{totalPackages}}</p>
   {{/if}}
 
-  {{!-- {{> download-counts { day: dlDay, week: dlWeek, month: dlMonth } }} --}}
+  {{#if downloads.day}} {{#if downloads.week}} {{#if downloads.month}}
+  {{> download-counts downloads }}
+  {{/if}} {{/if}} {{/if}}
 
   <p><a href="https://github.com/npm/npm-www">Patches welcome!</a></p>
 

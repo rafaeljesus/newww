@@ -1,7 +1,7 @@
 {
-  "name": "newww-facet-company",
+  "name": "newww-service-downloads",
   "version": "0.0.1",
-  "description": "Company Facet - everything directly related to the company",
+  "description": "a service for accessing the downloads API",
   "main": "index.js",
   "scripts": {
     "test": "lab -vC"
@@ -9,12 +9,9 @@
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
   "dependencies": {
-    "number-grouper": "0.0.1",
-    "stripe": "^2.7.3"
+    "request": "^2.37.0"
   },
   "devDependencies": {
-    "hapi": "^6.0.2",
-    "joi": "^4.6.1",
     "lab": "^3.2.1"
   }
 }

@@ -106,6 +106,10 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     {
       plugin: require('./services/metrics'),
       options: config.metrics
+    },
+    {
+      plugin: require('./services/downloads'),
+      options: config.downloads
     }
   ], function(err) {
     if (err) {

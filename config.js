@@ -2,6 +2,7 @@ var path = require('path');
 
 exports.port = 15443;
 exports.host = "localhost";
+exports.httpPort = 15080;
 
 exports.server = {
   views: {
@@ -88,28 +89,14 @@ exports.metrics = {
   prefix: 'npm-www-dev'
 }
 
+exports.downloads = {
+  url: "https://api.npmjs.org/downloads/"
+};
+
 exports.otherStuff = {
   "keys": [
     "these keys are for dev mode only"
   ],
-  "httpPort": 15080,
-  "npm": {
-    "registry": "http://127.0.0.1:15984/",
-    "strict-ssl": false,
-    "loglevel": "warn",
-    "username": "",
-    "_password": "",
-    "_auth": "",
-    "_token": ""
-  },
-  "elasticsearch": {
-    "url": "http://127.0.0.1:9200/npm",
-    "pageSize": 20
-  },
-  "downloads": {
-    "url": "https://api.npmjs.org/downloads/"
-  },
-  "debug": true
 }
 
 function hostmatch (m) { return function (u) {

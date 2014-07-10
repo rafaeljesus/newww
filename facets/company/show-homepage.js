@@ -18,6 +18,7 @@ module.exports = function (request, reply) {
         week: commaIt(cached.dlWeek, {sep: ' '}),
         month: commaIt(cached.dlMonth, {sep: ' '}),
       },
+      totalPackages: commaIt(cached.totalPackages, {sep: ' '}),
       hiring: request.server.methods.getRandomWhosHiring()
     };
 
@@ -32,9 +33,10 @@ function load (request, cb) {
   var browse = request.server.methods.getBrowseData,
       recentAuthors = request.server.methods.getRecentAuthors,
       addMetric = request.server.methods.addMetric,
-      downloads = request.server.methods.getAllDownloads;
+      downloads = request.server.methods.getAllDownloads,
+      packagesCreated = request.server.methods.packagesCreated;
 
-  var n = 7,
+  var n = 8,
       cached = {},
       timer = {};
 
@@ -45,6 +47,7 @@ function load (request, cb) {
   downloads('last-day', 'point', next('dlDay'));
   downloads('last-week', 'point', next('dlWeek'));
   downloads('last-month', 'point', next('dlMonth'));
+  packagesCreated(next('totalPackages'));
 
   function next (which) {
     timer.start = Date.now();

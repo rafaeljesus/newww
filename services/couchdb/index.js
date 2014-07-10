@@ -53,6 +53,14 @@ exports.register = function Couch (service, options, next) {
   service.method('star', star);
   service.method('unstar', unstar);
 
+  service.method('packagesCreated', packagesCreated, {
+    cache: {
+      staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
+      staleIn: 10 * SECOND, // refresh after 10 seconds
+      segment: '##totalPackages'
+    }
+  });
+
   next();
 };
 
@@ -136,4 +144,18 @@ function unstar (package, username, next) {
 
     return next(null, data);
   });
+}
+
+function packagesCreated (next) {
+  anonCouch.get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey="name"&endkey="name"&stale=update_after', function (er, cr, data) {
+    if (er || data.error) {
+      return next(Hapi.error.internal(er || data.error));
+    }
+
+    if (data.rows && data.rows.length > 0 && data.rows[0].value) {
+      return next(null, data.rows[0].value);
+    }
+
+    return next(null, 0); // worst case scenario
+  })
 }

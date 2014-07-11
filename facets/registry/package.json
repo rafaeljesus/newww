@@ -14,6 +14,7 @@
     "gravatar": "^1.0.6",
     "marked": "^0.3.2",
     "moment": "^2.6.0",
+    "number-grouper": "0.0.1",
     "sanitizer": "^0.1.1"
   },
   "devDependencies": {

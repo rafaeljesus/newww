@@ -1,22 +1,20 @@
-{{!-- {{#if (day || week || month)}} --}}
-  <table class="downloads">
-    {{#if day}}
-    <tr>
-      <td>{{day}}</td><td> downloads in the last day</td>
-    </tr>
-    {{/if}}
+<table class="downloads">
+  {{#if day}}
+  <tr>
+    <td>{{day}}</td><td> downloads in the last day</td>
+  </tr>
+  {{/if}}
 
-    {{#if week}}
-    <tr>
-      <td>{{week}}</td><td> downloads in the last week</td>
-    </tr>
-    {{/if}}
+  {{#if week}}
+  <tr>
+    <td>{{week}}</td><td> downloads in the last week</td>
+  </tr>
+  {{/if}}
 
-    {{#if month}}
-    <tr>
-      <td>{{month}}</td><td> downloads in the last month</td>
-    </tr>
-    {{/if}}
+  {{#if month}}
+  <tr>
+    <td>{{month}}</td><td> downloads in the last month</td>
+  </tr>
+  {{/if}}
 
-  </table>
-{{!-- {{/if}} --}}
+</table>

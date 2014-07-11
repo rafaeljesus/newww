@@ -1,13 +1,16 @@
 var Hapi = require('hapi'),
     presentPackage = require('./presenters/package'),
     log = require('bole')('registry-package'),
+    commaIt = require('number-grouper'),
     uuid = require('node-uuid');
 
 
 module.exports = function (request, reply) {
   var getPackageFromCouch = request.server.methods.getPackageFromCouch,
       getBrowseData = request.server.methods.getBrowseData,
-      addMetric = request.server.methods.addMetric;
+      addMetric = request.server.methods.addMetric,
+      getDownloadsForPackage = request.server.methods.getDownloadsForPackage,
+      getAllDownloadsForPackage = request.server.methods.getAllDownloadsForPackage;
 
   if (request.params.version) {
     reply.redirect('/package/' + request.params.package)
@@ -90,10 +93,39 @@ module.exports = function (request, reply) {
         pkg.isStarred = opts.user && pkg.users[opts.user.name] || false;
 
         opts.package = pkg;
-        opts.title = opts.name;
+        opts.title = pkg.name;
 
-        addMetric({ name: 'showPackage', package: request.params.package });
-        reply.view('package-page', opts);
+        // Show download count for the last day, week, and month
+        if (opts.user) {
+          return getDownloadsForPackage('last-month', 'range', pkg.name, handleDownloads);
+        } else {
+          return getAllDownloadsForPackage(pkg.name, handleDownloads);
+        }
+
+        function handleDownloads(er, downloadData) {
+          if (er) {
+            opts.errId = uuid.v1();
+            opts.errorType = 'internal';
+            log.error(opts.errId + ' ' + Hapi.error.internal('An error occurred with getting download counts for ' + opts.name), er);
+            return reply.view('error', opts).code(500);
+          }
+
+          if (Array.isArray(downloadData)) {
+            opts.downloads = {
+              data: JSON.stringify(downloadData),
+              count: commaIt(downloadData[downloadData.length - 1].downloads, {sep: ' '})
+            };
+          } else {
+            opts.downloads = {
+              day: commaIt(downloadData.day, {sep: ' '}),
+              week: commaIt(downloadData.week, {sep: ' '}),
+              month: commaIt(downloadData.month, {sep: ' '}),
+            };
+          }
+
+          addMetric({ name: 'showPackage', package: request.params.package });
+          return reply.view('package-page', opts);
+        }
       })
     })
   })

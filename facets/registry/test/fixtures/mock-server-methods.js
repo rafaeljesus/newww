@@ -10,6 +10,20 @@ module.exports = function (server) {
       return;
     },
 
+    getAllDownloadsForPackage: function (name, next) {
+      var d = {
+        day: 0,
+        week: 0,
+        month: 0
+      };
+
+      return next(null, d);
+    },
+
+    getDownloadsForPackage: function (period, detail, package, next) {
+      return next(null, [{day: '2014-07-12', downloads: 0}, {day: '2014-07-13', downloads: 0}]);
+    },
+
     getPackageFromCouch: function (pkgName, next) {
       if (pkgs[pkgName]) {
         return next(null, pkgs[pkgName]);

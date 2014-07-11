@@ -1,0 +1,10 @@
+{{#if this}}
+
+<div class="downloads-chart">
+  <div class="graph">
+    <div id="download-chart" data-graph-points="{{data}}"></div>
+  </div>
+  <div class="day">{{count}} download{{#compare dlcount "!=" 1 }}s{{/compare}} yesterday</div>
+</div>
+
+{{/if}}

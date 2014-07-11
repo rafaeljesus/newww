@@ -1,6 +1,9 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
-var commaIt = require('number-grouper');
+var commaIt = require('number-grouper'),
+    Hapi = require('hapi'),
+    log = require('bole')('company-homepage'),
+    uuid = require('node-uuid');
 
 module.exports = function (request, reply) {
 
@@ -14,9 +17,9 @@ module.exports = function (request, reply) {
       starred: cached.starred || [],
       authors: cached.authors || [],
       downloads: {
-        day: commaIt(cached.dlDay, {sep: ' '}),
-        week: commaIt(cached.dlWeek, {sep: ' '}),
-        month: commaIt(cached.dlMonth, {sep: ' '}),
+        day: commaIt(cached.downloads.day, {sep: ' '}),
+        week: commaIt(cached.downloads.week, {sep: ' '}),
+        month: commaIt(cached.downloads.month, {sep: ' '}),
       },
       totalPackages: commaIt(cached.totalPackages, {sep: ' '}),
       hiring: request.server.methods.getRandomWhosHiring()
@@ -36,7 +39,7 @@ function load (request, cb) {
       downloads = request.server.methods.getAllDownloads,
       packagesCreated = request.server.methods.packagesCreated;
 
-  var n = 8,
+  var n = 6,
       cached = {},
       timer = {};
 
@@ -44,9 +47,7 @@ function load (request, cb) {
   browse('depended', null, 0, 10, next('depended'));
   browse('updated', null, 0, 10, next('updated'));
   recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
-  downloads('last-day', 'point', next('dlDay'));
-  downloads('last-week', 'point', next('dlWeek'));
-  downloads('last-month', 'point', next('dlMonth'));
+  downloads(next('downloads'));
   packagesCreated(next('totalPackages'));
 
   function next (which) {
@@ -59,6 +60,10 @@ function load (request, cb) {
         type: 'couchdb',
         browse: which
       });
+
+      if (err) {
+        log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);
+      }
 
       cached[which] = data;
       if (--n === 0) {

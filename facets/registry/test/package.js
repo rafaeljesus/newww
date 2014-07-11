@@ -25,7 +25,6 @@ describe('Retreiving packages from the registry', function () {
     var options = {
       url: '/package/' + pkgName
     }
-
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.context.package.name).to.equal(pkgName);
@@ -89,6 +88,41 @@ describe('Modifying the package before sending to the template', function () {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('unpublished-package-page');
       expect(source.context.package.unpubFromNow).to.exist;
+      done();
+    });
+  });
+});
+
+describe('getting package download information', function () {
+  it('sends an object of data if the user is not logged in', function (done) {
+    var options = {
+      url: '/package/fake'
+    };
+
+    server.inject(options, function (resp) {
+      expect(source.context.downloads).to.be.an('object');
+      expect(source.context.downloads).to.have.property('day');
+      expect(source.context.downloads).to.have.property('week');
+      expect(source.context.downloads).to.have.property('month');
+      done();
+    });
+  });
+
+  it('sends an array of data (for graphing) if the user is logged in', function (done) {
+    var options = {
+      url: '/package/fake',
+      credentials: {
+        user: 'fakeuser'
+      }
+    };
+
+    server.inject(options, function (resp) {
+      var data = JSON.parse(source.context.downloads.data);
+      expect(data).to.be.an('array');
+      expect(data[0]).to.have.property('downloads');
+      expect(data[0]).to.have.property('day');
+      expect(data[0]).to.not.have.property('week');
+      expect(data[0]).to.not.have.property('month');
       done();
     });
   });

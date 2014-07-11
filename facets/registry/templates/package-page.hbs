@@ -21,14 +21,16 @@
 
     <pre class="sh"><code>npm install {{name}}</code></pre>
 
-{{!--     {{#if (dlDetail == 'point')}}
-      <span class="login-for-graphs">Want to see pretty graphs? <a href="/login?done=/package/<%= package.name %>">Log in now!</a></span>
-      {{> download-counts {day: dlDay, week: dlWeek, month: dlMonth } }}
-    {{else}}
-      {{> download-graphs { month: dlMonth }}}
-    {{/if}}
- --}}
+  {{/with}}
 
+  {{#if user}}
+    {{> download-graphs downloads}}
+  {{else}}
+    <span class="login-for-graphs">Want to see pretty graphs? <a href="/login?done=/package/{{package.name}}">Log in now!</a></span>
+    {{> download-counts downloads }}
+  {{/if}}
+
+  {{#with package}}
     <table class="metadata">
       {{#if _npmUser}}
       <tr>

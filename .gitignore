@@ -16,3 +16,4 @@ dev/user_upload_complete.dat
 *.box
 numbat.log
 numbat-config.js
+config.js

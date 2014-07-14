@@ -204,7 +204,7 @@ function packagesCreated (addMetric) {
     anonCouch.get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey="name"&endkey="name"&stale=update_after', function (er, cr, data) {
 
       timer.end = Date.now();
-      metric(timer, 'packagesCreated');
+      addMetric(timer, 'packagesCreated');
 
       if (er || data.error) {
         return next(Hapi.error.internal(er || data.error));

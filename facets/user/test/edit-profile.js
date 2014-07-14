@@ -84,7 +84,3 @@ describe('Modifying the profile', function () {
     done();
   })
 });
-
-
-
-

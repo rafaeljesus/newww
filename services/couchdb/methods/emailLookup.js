@@ -27,7 +27,7 @@ module.exports = function lookupUserByEmail (adminCouch, addMetric) {
       });
 
       timer.end = Date.now();
-      addMetric(timer'lookupUserByEmail');
+      addMetric(timer, 'lookupUserByEmail');
 
       return next(null, usernames);
     });

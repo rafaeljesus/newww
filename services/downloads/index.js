@@ -71,11 +71,21 @@ function getAllDownloads (url) {
 
     function cb (which) {
       return function (err, data) {
-        log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);
+        if (err) {
+          log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);
+        }
 
-        dls[which] = data;
+        dls[which] = data || 0;
 
         if (--n === 0) {
+          timer.end = Date.now();
+          addMetric({
+            name: 'latency',
+            value: timer.end - timer.start,
+            type: 'downloads',
+            action: 'all downloads' + (package ? ' for ' + package : '')
+          });
+
           next(null, dls);
         }
 

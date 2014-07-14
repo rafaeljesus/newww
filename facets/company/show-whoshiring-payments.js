@@ -54,6 +54,7 @@ module.exports = function (options) {
           return reply('internal stripe error - ' + errId).code(500);
         }
 
+        timer.end = Date.now();
         addMetric({
           name: 'latency',
           value: timer.end - timer.start,

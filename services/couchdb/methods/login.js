@@ -2,8 +2,9 @@ var Hapi = require('hapi'),
     log = require('bole')('couchdb-login'),
     uuid = require('node-uuid');
 
-module.exports = function (service, anonCouch) {
+module.exports = function Login (service, anonCouch) {
   return function (loginDetails, next) {
+    var timer = { start: Date.now() };
     anonCouch.login(loginDetails, function (er, cr, couchSession) {
       if (er) {
         log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to log in user ' + loginDetails.name), er);
@@ -21,6 +22,9 @@ module.exports = function (service, anonCouch) {
         if (err) {
           log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + loginDetails.name + ' from couch'), er);
         }
+
+        timer.end = Date.now();
+        service.methods.addCouchLatencyMetric(timer,'login');
 
         return next(err, data);
       });

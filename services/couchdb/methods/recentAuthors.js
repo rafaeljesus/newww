@@ -3,7 +3,8 @@ var qs = require('querystring'),
     maxAge = 1000 * 60 * 60 * 24 * 365,
     day = 1000 * 60 * 60 * 24;
 
-module.exports = function (couchapp) {
+module.exports = function recentAuthors (couchapp, addMetric) {
+  var timer = {};
 
   var cache = new AC({
     max: 1000,
@@ -64,6 +65,9 @@ module.exports = function (couchapp) {
           return b.value - a.value;
         }).slice(skip, skip + limit);
 
+        timer.end = Date.now();
+        addMetric(timer,'recentAuthors');
+
         cb(null, data.rows);
       });
     }
@@ -71,6 +75,7 @@ module.exports = function (couchapp) {
 
 
   return function (age, skip, limit, cb) {
+    timer.start = Date.now();
     skip = skip || 0;
     limit = limit || 100;
     var key = JSON.stringify([age, skip, limit]);

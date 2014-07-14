@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     log = require('bole')('couchdb-lookup-email'),
     uuid = require('node-uuid');
 
-module.exports = function lookupUserByEmail (adminCouch) {
+module.exports = function lookupUserByEmail (adminCouch, addMetric) {
   return function (email, next) {
     var query = {
           startkey: JSON.stringify([email]),
@@ -11,6 +11,7 @@ module.exports = function lookupUserByEmail (adminCouch) {
         },
         pe = '/_users/_design/_auth/_view/userByEmail?' + qs.encode(query);
 
+    var timer = { start: Date.now() };
 
     adminCouch.get(pe, function (er, cr, data) {
       var er = er || cr && cr.statusCode >= 400 || data && data.error;
@@ -24,6 +25,9 @@ module.exports = function lookupUserByEmail (adminCouch) {
       var usernames = data.rows.map(function (obj) {
         return obj.key[1];
       });
+
+      timer.end = Date.now();
+      addMetric(timer'lookupUserByEmail');
 
       return next(null, usernames);
     });

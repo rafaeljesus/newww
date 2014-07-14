@@ -4,6 +4,7 @@ var Hapi = require('hapi'),
 
 module.exports = function changeEmail (service, adminCouch) {
   return function (name, email, next) {
+    var timer = { start: Date.now() };
     service.methods.getUserFromCouch(name, function (err, user) {
       if (err) {
         log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + name + ' from couch'), err);
@@ -22,6 +23,9 @@ module.exports = function changeEmail (service, adminCouch) {
           log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to put user ' + name + ' data into couch'), er);
           return next(Hapi.error.internal(er));
         }
+
+        timer.end = Date.now();
+        service.methods.addCouchLatencyMetric(timer, 'changeEmail');
 
         return next(null);
       });

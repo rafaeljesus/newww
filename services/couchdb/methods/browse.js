@@ -33,9 +33,10 @@ var groupLevelArg = {
   userstar: 3
 }
 
-module.exports = function (couchapp) {
+module.exports = function (couchapp, addMetric) {
   return function (type, arg, skip, limit, next) {
     var key = [type, arg, skip, limit].join(',')
+    var timer = { start: Date.now() };
 
     var u = '/registry/_design/app/_view/' + viewNames[type]
     var query = {}
@@ -79,8 +80,12 @@ module.exports = function (couchapp) {
         data = []
         er = null
       }
+
+      timer.end = Date.now();
+      addMetric(timer, 'browse ' + key);
+
       next(er, data)
-    })
+    });
   }
 }
 

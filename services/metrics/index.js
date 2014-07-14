@@ -14,6 +14,16 @@ exports.register = function Metrics (service, options, next) {
     return;
   });
 
+  service.method('addCouchLatencyMetric', function (timer, action) {
+    emitter.metric({
+      name: 'latency',
+      value: timer.end - timer.start,
+      type: 'couch',
+      action: action
+    });
+    return;
+  });
+
   next();
 };
 

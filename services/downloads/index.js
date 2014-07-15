@@ -4,32 +4,41 @@ var Hapi = require('hapi'),
     uuid = require('node-uuid'),
     SECOND = 1000;
 
+var timer = {};
+
 exports.register = function Downloads (service, options, next) {
 
-  service.method('getDownloadsForPackage', getDownloads(options.url), {
-    cache: {
-      staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
-      staleIn: 60 * 60 * SECOND, // refresh after an hour
-      segment: '##packagedownloads'
-    }
-  });
+  service.dependency('newww-service-metrics', after);
 
-  service.method('getAllDownloadsForPackage', getAllDownloads(options.url), {
-    cache: {
-      staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
-      staleIn: 60 * 60 * SECOND, // refresh after an hour
-      segment: '##packagedownloadsall'
-    }
-  });
+  function after (service, next) {
+    var addMetric = service.methods.addMetric;
 
-  service.method('getAllDownloads', getAllDownloads(options.url), {
-    cache: {
-      staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
-      staleIn: 60 * 60 * SECOND, // refresh after an hour
-      segment: '##alldownloads'
-    }
-  });
+    service.method('getDownloadsForPackage', getDownloads(options.url, addMetric), {
+      cache: {
+        staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
+        staleIn: 60 * 60 * SECOND, // refresh after an hour
+        segment: '##packagedownloads'
+      }
+    });
 
+    service.method('getAllDownloadsForPackage', getAllDownloads(options.url, addMetric), {
+      cache: {
+        staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
+        staleIn: 60 * 60 * SECOND, // refresh after an hour
+        segment: '##packagedownloadsall'
+      }
+    });
+
+    service.method('getAllDownloads', getAllDownloads(options.url, addMetric), {
+      cache: {
+        staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
+        staleIn: 60 * 60 * SECOND, // refresh after an hour
+        segment: '##alldownloads'
+      }
+    });
+
+    next();
+  }
   next();
 };
 
@@ -37,8 +46,9 @@ exports.register.attributes = {
   pkg: require('./package.json')
 };
 
-function getDownloads (url) {
+function getDownloads (url, addMetric) {
   return function (period, detail, package, next) {
+    timer.start = Date.now();
     var endpoint = url + detail + '/' + period + '/' + (package || '');
 
     request.get({
@@ -50,13 +60,22 @@ function getDownloads (url) {
         err = body;
       }
 
+      timer.end = Date.now();
+      addMetric({
+        name: 'latency',
+        value: timer.end - timer.start,
+        type: 'downloads',
+        action: endpoint
+      });
+
       return next(err, body.downloads || 0);
     });
   };
 }
 
-function getAllDownloads (url) {
+function getAllDownloads (url, addMetric) {
   return function (package, next) {
+    timer.start = Date.now();
     if (typeof package === 'function') {
       next = package;
       package = null;
@@ -65,9 +84,9 @@ function getAllDownloads (url) {
     var n = 3,
         dls = {};
 
-    getDownloads(url)('last-day', 'point', package, cb('day'));
-    getDownloads(url)('last-week', 'point', package, cb('week'));
-    getDownloads(url)('last-month', 'point', package, cb('month'));
+    getDownloads(url, addMetric)('last-day', 'point', package, cb('day'));
+    getDownloads(url, addMetric)('last-week', 'point', package, cb('week'));
+    getDownloads(url, addMetric)('last-month', 'point', package, cb('month'));
 
     function cb (which) {
       return function (err, data) {

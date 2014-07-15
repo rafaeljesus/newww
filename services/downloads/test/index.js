@@ -10,11 +10,16 @@ var Hapi = require('hapi'),
 var server;
 
 before(function (done) {
-  server = Hapi.createServer();
-  server.pack.register({
-    plugin: downloads,
-    options: {url: 'https://api.npmjs.org/downloads/'}
-  }, done);
+  server = Hapi.createServer('localhost', '8000');
+  server.pack.register([
+    require('./fixtures/fake-metrics'),
+    {
+      plugin: downloads,
+      options: {url: 'https://api.npmjs.org/downloads/'}
+    }
+  ], function () {
+    server.start(done);
+  });
 });
 
 describe('Getting download counts for a specific package', function () {

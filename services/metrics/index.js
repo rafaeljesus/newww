@@ -24,6 +24,16 @@ exports.register = function Metrics (service, options, next) {
     return;
   });
 
+  service.method('addPageLatencyMetric', function (timer, page) {
+    emitter.metric({
+      name: 'latency',
+      value: timer.end - timer.start,
+      type: 'pageload',
+      page: page
+    });
+    return;
+  });
+
   next();
 };
 

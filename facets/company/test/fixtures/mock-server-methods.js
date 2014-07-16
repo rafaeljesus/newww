@@ -7,6 +7,10 @@ module.exports = function (server) {
       return;
     },
 
+    addPageLatencyMetric: function (timer, page) {
+      return;
+    },
+
     getAllDownloads: function (next) {
       var d = {
         day: 0,

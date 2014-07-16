@@ -6,6 +6,7 @@ var commaIt = require('number-grouper'),
     uuid = require('node-uuid');
 
 module.exports = function (request, reply) {
+  var timer = { start: Date.now() };
 
   load(request, function (err, cached) {
 
@@ -25,6 +26,9 @@ module.exports = function (request, reply) {
       hiring: request.server.methods.getRandomWhosHiring()
     };
 
+    timer.end = Date.now();
+    request.server.methods.addPageLatencyMetric(timer, 'homepage');
+
     request.server.methods.addMetric({name: 'homepage'});
     reply.view('index', opts);
   });
@@ -40,8 +44,7 @@ function load (request, cb) {
       packagesCreated = request.server.methods.packagesCreated;
 
   var n = 6,
-      cached = {},
-      timer = {};
+      cached = {};
 
   browse('star', null, 0, 10, next('starred'));
   browse('depended', null, 0, 10, next('depended'));
@@ -51,15 +54,7 @@ function load (request, cb) {
   packagesCreated(next('totalPackages'));
 
   function next (which) {
-    timer.start = Date.now();
     return function (err, data) {
-      timer.end = Date.now();
-      addMetric({
-        name: 'latency',
-        value: timer.end - timer.start,
-        type: 'couchdb',
-        browse: which
-      });
 
       if (err) {
         log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);

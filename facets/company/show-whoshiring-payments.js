@@ -8,7 +8,9 @@ module.exports = function (options) {
       VALID_CHARGE_AMOUNTS = [35000, 100000];
 
   return function (request, reply) {
-    var addMetric = request.server.methods.addMetric;
+    var addMetric = request.server.methods.addMetric,
+        addLatencyMetric = request.server.methods.addPageLatencyMetric,
+        timer = { start: Date.now() };
 
     var opts = {
       user: request.auth.credentials,
@@ -19,6 +21,10 @@ module.exports = function (options) {
     if (request.method === 'get') {
       opts.stripeKey = options.publickey;
 
+      timer.end = Date.now();
+      addLatencyMetric(timer, 'whoshiring-payments');
+
+      addMetric({name: 'whoshiring-payments'});
       return reply.view('payments', opts);
     }
 
@@ -41,7 +47,7 @@ module.exports = function (options) {
         return reply('invalid charge amount error: ' + errId).code(403);
       }
 
-      var timer = { start: Date.now() };
+      var stripeStart = Date.now();
       stripe.charges.create({
         amount: token.amount,
         currency: "usd",
@@ -57,11 +63,13 @@ module.exports = function (options) {
         timer.end = Date.now();
         addMetric({
           name: 'latency',
-          value: timer.end - timer.start,
+          value: timer.end - stripeStart,
           type: 'stripe'
         });
 
-        addMetric({name: 'paymentProcessed'})
+        addLatencyMetric(timer, 'whoshiring-paymentProcessed');
+
+        addMetric({name: 'whoshiring-paymentProcessed'});
         return reply('Stripe charge successful').code(200);
       });
     });

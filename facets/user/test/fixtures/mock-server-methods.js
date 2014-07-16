@@ -10,6 +10,10 @@ module.exports = function (server) {
       return;
     },
 
+    addPageLatencyMetric: function (timer, page) {
+      return;
+    },
+
     changeEmail: function (name, email, next) {
       if (name !== 'fakeuser') {
         return next(Hapi.error.notFound('Username not found: ' + username));

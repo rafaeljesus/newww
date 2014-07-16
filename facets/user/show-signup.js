@@ -9,7 +9,9 @@ module.exports = function signup (request, reply) {
   var signupUser = request.server.methods.signupUser,
       setSession = request.server.methods.setSession(request),
       delSession = request.server.methods.delSession(request),
-      addMetric = request.server.methods.addMetric;
+      addMetric = request.server.methods.addMetric,
+      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+      timer = { start: Date.now() };
 
   var opts = {
     user: request.auth.credentials,
@@ -45,50 +47,34 @@ module.exports = function signup (request, reply) {
       userValidate.username(data.name) && opts.errors.push(userValidate.username(data.name));
 
       if (opts.errors.length) {
+
+        timer.end = Date.now();
+        addLatencyMetric(timer, 'signup-form-error');
+
+        addMetric({name: 'signup-form-error'});
         return reply.view('signup-form', opts);
       }
 
-      var timer = { start: Date.now() };
       delSession(value, function (er) {
-        timer.end = Date.now();
-        addMetric({
-          name: 'latency',
-          value: timer.end - timer.start,
-          type: 'redis',
-          action: 'delSession'
-        });
 
         if (er) {
           return showError(request, reply, 'Unable to set the session for user ' + opts.user.name, 500, er);
         }
 
-        timer.start = Date.now();
         signupUser(value, function (er, user) {
-          timer.end = Date.now();
-          addMetric({
-            name: 'latency',
-            value: timer.end - timer.start,
-            type: 'couchdb',
-            action: 'signupUser'
-          });
 
           if (er) {
             return showError(request, reply, 'Failed to create account', 403, er);
           }
 
-          timer.start = Date.now();
           setSession(user, function (err) {
-            timer.end = Date.now();
-            addMetric({
-              name: 'latency',
-              value: timer.end - timer.start,
-              type: 'redis',
-              action: 'setSession'
-            });
 
             if (err) {
               return showError(request, reply, 'Unable to set the session for user ' + opts.user.name, 500, err);
             }
+
+            timer.end = Date.now();
+            addLatencyMetric(timer, 'signup');
 
             addMetric({name: 'signup'});
 
@@ -105,6 +91,10 @@ module.exports = function signup (request, reply) {
   if (request.method === 'get' || request.method === 'head') {
     // opts.hiring
 
+    timer.end = Date.now();
+    addLatencyMetric(timer, 'signup-form');
+
+    addMetric({ name: 'signup-form' });
     return reply.view('signup-form', opts);
   }
 };

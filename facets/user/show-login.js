@@ -8,9 +8,13 @@ module.exports = function login (request, reply) {
   var loginUser = request.server.methods.loginUser,
       setSession = request.server.methods.setSession(request),
       addMetric = request.server.methods.addMetric,
-      timer = {};
+      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+      timer = { start: Date.now() };
 
   if (request.auth.isAuthenticated) {
+    timer.end = Date.now();
+    addLatencyMetric(timer, 'login-redirect-to-home');
+
     return reply().redirect('/');
   }
 
@@ -25,16 +29,7 @@ module.exports = function login (request, reply) {
         type: 'missing'
       };
     } else {
-      timer.start = Date.now();
       loginUser(request.payload, function (er, user) {
-        timer.end = Date.now();
-        addMetric({
-          name: 'latency',
-          value: timer.end - timer.start,
-          type: 'couch',
-          action: 'loginUser'
-        });
-
         if (er || !user) {
           var errId = uuid.v1();
           log.error(errId + ' ' + Hapi.error.badRequest('Invalid username or password'), request.payload.name);
@@ -42,28 +37,31 @@ module.exports = function login (request, reply) {
             type: 'invalid',
             errId: errId
           };
+
+          timer.end = Date.now();
+          addLatencyMetric(timer, 'login-error');
+
+          addMetric({name: 'login-error'})
           return reply.view('login', opts).code(400);
         }
 
-        timer.start = Date.now();
         setSession(user, function (err) {
-          timer.end = Date.now();
-          request.server.methods.addMetric({
-            name: 'latency',
-            value: timer.end - timer.start,
-            type: 'redis',
-            action: 'setSession'
-          });
-
           if (err) {
             var errId = uuid.v1();
             log.error(errId + ' ' + err)
+
+            timer.end = Date.now();
+            addLatencyMetric(timer, 'login-error');
+
+            addMetric({name: 'login-error'})
             return reply.view('error', {errId: errId}).code(500);
           }
 
-          addMetric({name: 'login'})
-
           if (user && user.mustChangePass) {
+            timer.end = Date.now();
+            addLatencyMetric(timer, 'login-must-change-pass');
+
+            addMetric({name: 'login-must-change-pass'})
             return reply.redirect('/password');
           }
 
@@ -75,6 +73,10 @@ module.exports = function login (request, reply) {
             donePath = done.pathname
           }
 
+          timer.end = Date.now();
+          addLatencyMetric(timer, 'login-complete');
+
+          addMetric({name: 'login-complete'})
           return reply.redirect(donePath);
         });
       });
@@ -82,6 +84,10 @@ module.exports = function login (request, reply) {
   }
 
   if (request.method === 'get' || opts.error) {
+    timer.end = Date.now();
+    addLatencyMetric(timer, 'login');
+
+    addMetric({name: 'login'})
     return reply.view('login', opts)
   }
 }

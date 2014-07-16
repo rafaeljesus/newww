@@ -4,10 +4,11 @@ var Hapi = require('hapi'),
     log = require('bole')('user-email-edit'),
     uuid = require('node-uuid');
 
-var from, devMode;
+var from, devMode, timer = {};
 
 module.exports = function (options) {
   return function (request, reply) {
+    timer.start = Date.now();
 
     var opts = {
       user: request.auth.credentials,
@@ -43,6 +44,10 @@ module.exports = function (options) {
           default: return showError(request, reply, 'Page not found', 404, request.url.path);
         }
       } else {
+        timer.end = Date.now();
+        request.server.methods.addPageLatencyMetric(timer, 'email-edit');
+
+        request.server.methods.addMetric({ name: 'email-edit' });
         return reply.view('email-edit', opts);
       }
     }
@@ -53,6 +58,11 @@ module.exports = function (options) {
 
       if (!email2 || userValidate.email(email2)) {
         opts.error = 'Must provide a valid email address';
+
+        timer.end = Date.now();
+        request.server.methods.addPageLatencyMetric(timer, 'email-edit-error');
+
+        request.server.methods.addMetric({ name: 'email-edit-error' });
         return reply.view('email-edit', opts).code(400);
       }
 
@@ -63,6 +73,11 @@ module.exports = function (options) {
 
       if (pwHash !== profHash) {
         opts.error = 'Invalid password';
+
+        timer.end = Date.now();
+        request.server.methods.addPageLatencyMetric(timer, 'email-edit-error');
+
+        request.server.methods.addMetric({ name: 'email-edit-error' });
         return reply.view('email-edit', opts).code(403);
       }
       return handle(request, reply, email2);
@@ -186,6 +201,10 @@ function sendEmails (conf, rev, request, reply) {
   };
 
   if (devMode) {
+    timer.end = Date.now();
+    request.server.methods.addPageLatencyMetric(timer, 'email-edit-send-emails');
+
+    request.server.methods.addMetric({ name: 'email-edit-send-emails' });
     return reply({confirm: confMail, revert: revMail});
   }
 
@@ -201,6 +220,10 @@ function sendEmails (conf, rev, request, reply) {
       }
 
       opts.submitted = true;
+      timer.end = Date.now();
+      request.server.methods.addPageLatencyMetric(timer, 'email-edit-send-emails');
+
+      request.server.methods.addMetric({ name: 'email-edit-send-emails' });
       return reply.view('email-edit', opts);
     });
   });
@@ -220,16 +243,7 @@ function confirm (request, reply) {
       confKey = 'email_change_conf_' + confHash,
       timer = {};
 
-  timer.start = Date.now();
   cache.get(confKey, function (er, cached) {
-    timer.end = Date.now();
-    methods.addMetric({
-      name: 'latency',
-      value: timer.end - timer.start,
-      type: 'redis',
-      action: 'getConfKey'
-    });
-
     if (er) {
       return showError(request, reply, 'Error getting token from Redis', 500, confKey);
     }
@@ -257,19 +271,13 @@ function confirm (request, reply) {
         return showError(request, reply, 'Unable to drop key ' + confKey, 500, err);
       }
 
-      timer.start = Date.now();
       methods.changeEmail(opts.user.name, email2, function (er) {
-        timer.end = Date.now();
-        methods.addMetric({
-          name: 'latency',
-          value: timer.end - timer.start,
-          type: 'couch',
-          action: 'changeEmail'
-        });
-
         if (er) {
           return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email2, 500, er);
         }
+
+        timer.end = Date.now();
+        methods.addPageLatencyMetric(timer, 'confirmEmailChange');
 
         methods.addMetric({ name: 'confirmEmailChange' });
         opts.confirmed = true;
@@ -293,16 +301,7 @@ function revert (request, reply) {
       revKey = 'email_change_rev_' + revHash,
       timer = {};
 
-  timer.start = Date.now();
   cache.get(revKey, function (er, cached) {
-    timer.end = Date.now();
-    methods.addMetric({
-      name: 'latency',
-      value: timer.end - timer.start,
-      type: 'redis',
-      action: 'getRevKey'
-    });
-
     if (er) {
       return showError(request, reply, 'Error getting token from Redis', 500, revKey);
     }
@@ -336,19 +335,13 @@ function revert (request, reply) {
           return showError(request, reply, 'Unable to drop key ' + revKey, 500, err);
         }
 
-        timer.start = Date.now();
         methods.changeEmail(opts.user.name, email1, function (er) {
-          timer.end = Date.now();
-          methods.addMetric({
-            name: 'latency',
-            value: timer.end - timer.start,
-            type: 'couch',
-            action: 'changeEmail'
-          });
-
           if (er) {
             return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email1, 500, er);
           }
+
+          timer.end = Date.now();
+          methods.addPageLatencyMetric(timer, 'revertEmailChange');
 
           methods.addMetric({ name: 'revertEmailChange' });
 

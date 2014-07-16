@@ -8,12 +8,14 @@ module.exports = function (options) {
   return function (request, reply) {
     var getUserFromCouch = request.server.methods.getUserFromCouch,
         getBrowseData = request.server.methods.getBrowseData,
-        addMetric = request.server.methods.addMetric;
+        addMetric = request.server.methods.addMetric,
+        addLatencyMetric = request.server.methods.addPageLatencyMetric,
+        timer = { start: Date.now() };
 
     var opts = {
       user: request.auth.credentials,
       hiring: request.server.methods.getRandomWhosHiring()
-    }, timer = {};
+    };
 
     var profileName = request.params.name || opts.user.name;
 
@@ -22,55 +24,32 @@ module.exports = function (options) {
         if (er) {
           return showError(request, reply, 'Unable to drop key ' + profileName, er);
         }
-        timer.start = Date.now();
         return getUserFromCouch(profileName, showProfile);
       });
     }
 
-    timer.start = Date.now();
     return getUserFromCouch(profileName, showProfile);
 
     function showProfile (err, showprofile) {
-      timer.end = Date.now();
-      addMetric({
-        name: 'latency',
-        value: timer.end - timer.start,
-        type: 'couchdb',
-        action: 'showProfile'
-      });
-
       if (err) {
         opts.errId = uuid.v1();
         log.error(opts.errId + Hapi.error.notFound('Profile for ' + profileName + ' not found'), err);
 
         opts.name = profileName;
+
+        timer.end = Date.now();
+        addLatencyMetric(timer, 'profile-not-found');
+
+        addMetric({ name: 'profile-not-found', value: opts.name });
         return reply.view('profile-not-found', opts).code(404);
       }
 
-      timer.start = Date.now();
       getBrowseData('userstar', profileName, 0, 1000, function (err, starred) {
-        timer.end = Date.now();
-        addMetric({
-          name: 'latency',
-          value: timer.end - timer.start,
-          type: 'couchdb',
-          browse: ['userstar', profileName, 0, 1000].join(', ')
-        });
-
         if (err) {
           return showError(request, reply, 'Unable to get stars for user ' + profileName, err);
         }
 
-        timer.start = Date.now();
         getBrowseData('author', profileName, 0, 1000, function (err, packages) {
-          timer.end = Date.now();
-          addMetric({
-            name: 'latency',
-            value: timer.end - timer.start,
-            type: 'couchdb',
-            browse: ['author', profileName, 0, 1000].join(', ')
-          });
-
           if (err) {
             return showError(request, reply, 'Unable to get modules by user ' + profileName, err);
           }
@@ -84,6 +63,9 @@ module.exports = function (options) {
 
           opts.profile.showprofile = transform(showprofile, options);
           opts.profile.fields = opts.profile.showprofile.fields;
+
+          timer.end = Date.now();
+          addLatencyMetric(timer, 'showProfile');
 
           addMetric({ name: 'showProfile' });
 

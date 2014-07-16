@@ -13,9 +13,14 @@ module.exports = function (request, reply) {
   var changePass = request.server.methods.changePass,
       loginUser = request.server.methods.loginUser,
       setSession = request.server.methods.setSession(request),
-      addMetric = request.server.methods.addMetric;
+      addMetric = request.server.methods.addMetric,
+      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+      timer = { start: Date.now() };
 
   if (request.method === 'get' || request.method === 'head') {
+    timer.end = Date.now();
+    addLatencyMetric(timer, 'password');
+
     return reply.view('password', opts);
   }
 
@@ -30,17 +35,32 @@ module.exports = function (request, reply) {
 
     if (hashCurrent !== hashProf) {
       opts.error = 'Invalid current password';
+
+      timer.end = Date.now();
+      addLatencyMetric(timer, 'password-error');
+
+      addMetric({ name: 'password-error' });
       return reply.view('password', opts).code(403);
     }
 
     if (data.new !== data.verify) {
       opts.error = 'Failed to verify password';
+
+      timer.end = Date.now();
+      addLatencyMetric(timer, 'password-error');
+
+      addMetric({ name: 'password-error' });
       return reply.view('password', opts).code(403);
     }
 
     var error = userValidate.pw(data.new);
     if (error) {
       opts.error = error.message;
+
+      timer.end = Date.now();
+      addLatencyMetric(timer, 'password-error');
+
+      addMetric({ name: 'password-error' });
       return reply.view('password', opts).code(400);
     }
 
@@ -49,47 +69,23 @@ module.exports = function (request, reply) {
     var newAuth = { name: prof.name, password: data.new };
     newAuth.mustChangePass = false;
 
-    var timer = { start: Date.now() };
     changePass(newAuth, function (er, data) {
-      timer.end = Date.now();
-      request.server.methods.addMetric({
-        name: 'latency',
-        value: timer.end - timer.start,
-        type: 'couchdb',
-        action: 'changePass'
-      });
-
       if (er) {
         return showError(request, reply, 'Failed to set the password for ' + newAuth.name, er);
       }
 
-      timer.start = Date.now();
       loginUser(newAuth, function (er, user) {
-        timer.end = Date.now();
-        request.server.methods.addMetric({
-          name: 'latency',
-          value: timer.end - timer.start,
-          type: 'couchdb',
-          action: 'loginUser'
-        });
-
         if (er) {
           return showError(request, reply, 'Unable to login user', er);
         }
 
-        timer.start = Date.now();
         setSession(user, function (err) {
-          timer.end = Date.now();
-          request.server.methods.addMetric({
-            name: 'latency',
-            value: timer.end - timer.start,
-            type: 'redis',
-            action: 'setSession'
-          });
-
           if (err) {
             return showError(request, reply, 'Unable to set session for ' + user.name, err);
           }
+
+          timer.end = Date.now();
+          addLatencyMetric(timer, 'changePass');
 
           addMetric({name: 'changePass'})
 

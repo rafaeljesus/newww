@@ -82,18 +82,11 @@ exports.register.attributes = {
 function logout (request, reply) {
   var delSession = request.server.methods.delSession(request),
       user = request.auth.credentials,
-      addMetric = request.server.methods.addMetric;
+      addMetric = request.server.methods.addMetric,
+      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+      timer = { start: Date.now() };
 
-  var timer = { start: Date.now() };
   delSession(user, function (er) {
-    timer.end = Date.now();
-    request.server.methods.addMetric({
-      name: 'latency',
-      value: timer.end - timer.start,
-      type: 'redis',
-      action: 'delSession'
-    });
-
     if (er) {
       var errId = uuid.v1();
       log.error(errId + ' ' + Hapi.error.internal('unable to delete session for logout'), user)
@@ -102,8 +95,10 @@ function logout (request, reply) {
       return reply.view('error', opts).code(500);
     }
 
-    addMetric({ name: 'logout' });
+    timer.end = Date.now();
+    addLatencyMetric(timer, 'logout');
 
+    addMetric({ name: 'logout' });
     return reply.redirect('/');
   });
 }

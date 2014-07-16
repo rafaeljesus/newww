@@ -8,7 +8,9 @@ module.exports = function (options) {
   return function (request, reply) {
     var saveProfile = request.server.methods.saveProfile,
         setSession = request.server.methods.setSession(request),
-        addMetric = request.server.methods.addMetric;
+        addMetric = request.server.methods.addMetric,
+        addLatencyMetric = request.server.methods.addPageLatencyMetric,
+        timer = { start: Date.now() };
 
     var opts = {
       user: transform(request.auth.credentials, options),
@@ -24,36 +26,21 @@ module.exports = function (options) {
         opts.user = applyChanges(opts.user, request.payload);
         opts.user = transform(opts.user, options);
 
-        var timer = { start: Date.now() };
         saveProfile(opts.user, function (err, data) {
-          timer.end = Date.now();
-          addMetric({
-            name: 'latency',
-            value: timer.end - timer.start,
-            type: 'couchdb',
-            action: 'saveProfile'
-          });
-
           if (err) {
             return new Error('ruh roh, something went wrong')
           }
 
-          timer.start = Date.now();
           setSession(opts.user, function (err) {
-            timer.end = Date.now();
-            addMetric({
-              name: 'latency',
-              value: timer.end - timer.start,
-              type: 'redis',
-              action: 'setSession'
-            });
-
             if (err) {
               opts.errId = uuid.v1();
               log.error(opts.errId + ' ' + Hapi.error.internal('Unable to set the session for user ' + opts.user.name), err);
 
               return reply.view('error', opts);
             }
+
+            timer.end = Date.now();
+            addLatencyMetric(timer, 'saveProfile');
 
             addMetric({ name: 'saveProfile' });
             return reply.redirect('/profile');
@@ -64,6 +51,9 @@ module.exports = function (options) {
     }
 
     if (request.method === 'head' || request.method === 'get' || opts.error) {
+      timer.end = Date.now();
+      addLatencyMetric(timer, 'profile-edit');
+
       opts.title = 'Edit Profile';
       return reply.view('profile-edit', opts);
     }

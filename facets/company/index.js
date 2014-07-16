@@ -25,6 +25,18 @@ exports.register = function Company (facet, options, next) {
     handler: require('./show-whoshiring-payments')(options.stripe)
   });
 
+  facet.route({
+    path: "/npme-beta",
+    method: "GET",
+    handler: require('./show-npme-beta')
+  });
+
+  facet.route({
+    path: "/npme-beta-thanks",
+    method: "GET",
+    handler: require('./show-npme-beta')
+  });
+
   next();
 };
 

@@ -28,8 +28,7 @@ var footerScripts = [
   "static/js/sh_javascript.min.js",
   "static/js/scripts.js",
   "static/js/google-analytics.js",
-  "https://ssl.google-analytics.com/ga.js",
-  "static/js/hiring.js"
+  "https://ssl.google-analytics.com/ga.js"
 ];
 
 gulp.task('concat', function () {

@@ -21,14 +21,6 @@ body {
   border-top: solid 6px #cc3d33;
   text-align: center;
 }
-input {
-  font-family: Georgia, serif;
-  border: solid 1px #ddd;
-  padding: 0.5em;
-}
-input:hover {
-  border-color: #bbb;
-}
 a:link,
 a:visited,
 a:active {
@@ -118,6 +110,7 @@ form .form-help {
 #wrap {
   background-color: #f4f4f2;
   padding: 49px 16px 72px;
+  min-height: 25em;
 }
 #content {
   width: 953px;
@@ -126,10 +119,19 @@ form .form-help {
 }
 #content nav {
   float: left;
+  zoom: 1;
   margin: 0 5px 0 0;
   width: 140px;
   font-size: 11px;
   text-transform: uppercase;
+}
+#content nav:before,
+#content nav:after {
+  content: "";
+  display: table;
+}
+#content nav:after {
+  clear: both;
 }
 #content nav,
 #content nav a {
@@ -271,27 +273,15 @@ form .form-help {
   color: #cc3d33;
   font-weight: bold;
 }
-#content nav ul li.hiring-company a {
+#content nav ul li.npme-group a {
   background-position: -156px -237px;
 }
-#content nav ul li.hiring-company a:hover {
+#content nav ul li.npme-group a:hover {
   background-position: -331px -237px;
   color: #000;
 }
-#content nav ul li.hiring-company.current a {
+#content nav ul li.npme-group.current a {
   background-position: 2px -237px;
-  color: #cc3d33;
-  font-weight: bold;
-}
-#content nav ul li.hiring-more a {
-  background-position: -156px -261px;
-}
-#content nav ul li.hiring-more a:hover {
-  background-position: -331px -261px;
-  color: #000;
-}
-#content nav ul li.hiring-more.current a {
-  background-position: 2px -261px;
   color: #cc3d33;
   font-weight: bold;
 }
@@ -304,6 +294,20 @@ form .form-help {
 }
 #content nav ul.hiring .hiring-company a {
   padding: 0;
+  background: none;
+}
+#content nav ul.hiring .hiring-more a {
+  background: none;
+}
+#content nav ul.npme {
+  margin-top: 3em;
+  text-transform: none;
+}
+#content nav ul.npme .npme-details a {
+  padding: 0.5em 0;
+  background: none;
+  line-height: normal;
+  text-align: center;
 }
 #content .profile {
   padding-left: 0;

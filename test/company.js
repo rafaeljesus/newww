@@ -19,7 +19,7 @@ describe('company is routing properly', function () {
   it('calls all the right routes', function (done) {
     var table = server.table();
 
-    expect(table).to.have.length(4);
+    expect(table).to.have.length(6);
 
     var paths = table.map(function (route) {
       var obj = {
@@ -33,6 +33,8 @@ describe('company is routing properly', function () {
     expect(paths).to.include({ path: '/whoshiring', method: 'get' });
     expect(paths).to.include({ path: '/joinwhoshiring', method: 'get' });
     expect(paths).to.include({ path: '/joinwhoshiring', method: 'post' });
+    expect(paths).to.include({ path: '/npme-beta', method: 'get' });
+    expect(paths).to.include({ path: '/npme-beta-thanks', method: 'get' });
 
     done();
   })

@@ -29,13 +29,6 @@ body {
   text-align: center;
 }
 
-input {
-  font-family: Georgia, serif;
-  border: solid 1px #ddd;
-  padding: 0.5em;
-  &:hover { border-color: #bbb; }
-}
-
 a:link, a:visited, a:active {
   text-decoration: none;
   color: red;
@@ -121,6 +114,7 @@ form {
 #wrap {
   background-color: #f4f4f2;
   padding: 49px 16px 72px;
+  min-height: 25em;
 }
 
 #content {
@@ -130,6 +124,7 @@ form {
 
   nav {
     float: left;
+    clearfix()
     margin: 0 5px 0 0;
     width: 140px;
     font-size: 11px;
@@ -151,7 +146,7 @@ form {
       }
       li:first-child { border-top: none; }
 
-      for link, i in home download about npm docs blog community logos jobs hiring-group hiring-company hiring-more {
+      for link, i in home download about npm docs blog community logos jobs hiring-group npme-group {
         li.{link} a {
           background-position: -156px -24*i+3px;
         }
@@ -173,7 +168,26 @@ form {
           padding: 0;
           text-align: center;
 
-          a { padding: 0; }
+          a {
+            padding: 0;
+            background: none;
+          }
+        }
+
+        .hiring-more a {
+          background: none;
+        }
+      }
+
+      &.npme {
+        margin-top: 3em;
+        text-transform: none;
+
+        .npme-details a {
+          padding: 0.5em 0;
+          background: none;
+          line-height: normal;
+          text-align: center;
         }
       }
     }

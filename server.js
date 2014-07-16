@@ -128,7 +128,8 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
 
 function setSession (request) {
   return function (user, next) {
-    var sid = murmurhash.v3(user.name, 55).toString(16);
+    var sid = murmurhash.v3(user.name, 55).toString(16),
+        timer = { start: Date.now() };
 
     user.sid = sid;
 
@@ -136,8 +137,18 @@ function setSession (request) {
       if (err) {
         var errId = uuid.v1();
         log.error(errId + ' ' + Hapi.error.internal('there was an error setting the cache'));
+
+        request.server.methods.addMetric({name: 'setSessionError'});
         return next(Hapi.error.internal(errId));
       }
+
+      timer.end = Date.now();
+      request.server.methods.addMetric({
+        name: 'latency',
+        value: timer.end - timer.start,
+        type: 'redis',
+        action: 'setSession'
+      });
 
       request.auth.session.set({sid: sid});
       return next(null);
@@ -147,7 +158,8 @@ function setSession (request) {
 
 function delSession (request) {
   return function (user, next) {
-    var sid = murmurhash.v3(user.name, 55).toString(16);
+    var sid = murmurhash.v3(user.name, 55).toString(16),
+        timer = { start: Date.now() };
 
     user.sid = sid;
 
@@ -157,8 +169,17 @@ function delSession (request) {
         if (err) {
           var errId = uuid.v1();
           log.error(errId + ' ' + Hapi.error.internal('there was an error clearing the cache'));
+          request.server.methods.addMetric({name: 'delSessionError'});
           return next(Hapi.error.internal(errId));
         }
+
+        timer.end = Date.now();
+        request.server.methods.addMetric({
+          name: 'latency',
+          value: timer.end - timer.start,
+          type: 'redis',
+          action: 'delSession'
+        });
 
         request.auth.session.clear();
         return next(null);

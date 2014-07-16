@@ -10,6 +10,10 @@ module.exports = function (server) {
       return;
     },
 
+    addPageLatencyMetric: function (timer, page) {
+      return;
+    },
+
     getAllDownloadsForPackage: function (name, next) {
       var d = {
         day: 0,

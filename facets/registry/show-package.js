@@ -9,8 +9,11 @@ module.exports = function (request, reply) {
   var getPackageFromCouch = request.server.methods.getPackageFromCouch,
       getBrowseData = request.server.methods.getBrowseData,
       addMetric = request.server.methods.addMetric,
+      addLatencyMetric = request.server.methods.addPageLatencyMetric,
       getDownloadsForPackage = request.server.methods.getDownloadsForPackage,
       getAllDownloadsForPackage = request.server.methods.getAllDownloadsForPackage;
+
+  var timer = { start: Date.now() };
 
   if (request.params.version) {
     reply.redirect('/package/' + request.params.package)
@@ -32,15 +35,7 @@ module.exports = function (request, reply) {
     return reply.view('error', opts).code(400)
   }
 
-  var timer = { start: Date.now() };
   getPackageFromCouch(opts.name, function (er, pkg) {
-    timer.end = Date.now();
-    addMetric({
-      name: 'latency',
-      value: timer.end - timer.start,
-      type: 'couchdb',
-      package: opts.name
-    });
 
     if (er || pkg.error) {
       opts.errorType = 'notFound';
@@ -57,6 +52,9 @@ module.exports = function (request, reply) {
       pkg.unpubFromNow = require('moment')(t).format('ddd MMM DD YYYY HH:mm:ss Z');
 
       opts.package = pkg;
+
+      timer.end = Date.now();
+      addLatencyMetric(timer, 'showUnpublishedPackage');
 
       addMetric({ name: 'showPackage', package: request.params.package });
       return reply.view('unpublished-package-page', opts);
@@ -122,6 +120,9 @@ module.exports = function (request, reply) {
               month: commaIt(downloadData.month, {sep: ' '}),
             };
           }
+
+          timer.end = Date.now();
+          addLatencyMetric(timer, 'showPackage');
 
           addMetric({ name: 'showPackage', package: request.params.package });
           return reply.view('package-page', opts);

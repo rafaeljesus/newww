@@ -13,7 +13,9 @@ module.exports = function (request, reply) {
   };
 
   var getBrowseData = request.server.methods.getBrowseData,
-      addMetric = request.server.methods.addMetric;
+      addMetric = request.server.methods.addMetric,
+      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+      timer = { start: Date.now() };
 
   // the url will be something like /browse/{type?}/{arg?}/{page}
   var params = request.params.p || '',
@@ -59,12 +61,6 @@ module.exports = function (request, reply) {
   var timer = { start: Date.now() };
   getBrowseData(type, arg, start, limit, function (err, data) {
     timer.end = Date.now();
-    addMetric({
-      name: 'latency',
-      value: timer.end - timer.start,
-      type: 'couchdb',
-      browse: [type, arg, start, limit].join(', ')
-    });
 
     if (err) {
       opts.errId = uuid.v1();
@@ -75,9 +71,14 @@ module.exports = function (request, reply) {
       return reply.view('error', opts).code(500);
     }
 
+    var key = [type, arg, start, limit].join(', ');
+
+    timer.end = Date.now();
+    addLatencyMetric(timer, 'browse ' + key);
+
     addMetric({
       name: 'browse',
-      value: [type, arg, start, limit].join(', ')
+      value: key
     });
 
     opts.browse = {

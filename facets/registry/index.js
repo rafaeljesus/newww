@@ -74,9 +74,8 @@ exports.register.attributes = {
 
 function fallbackHandler (request, reply) {
   var name = request.params.p,
-      opts = {
-        user: request.auth.credentials
-      }
+      opts = { user: request.auth.credentials },
+      timer = { start: Date.now() };
 
   request.server.methods.getPackageFromCouch(name, function (err, package) {
 
@@ -85,6 +84,9 @@ function fallbackHandler (request, reply) {
     }
 
     opts.url = request.server.info.uri + request.url.path;
+
+    timer.end = Date.now();
+    request.server.methods.addPageLatencyMetric(timer, '404-not-found');
 
     request.server.methods.addMetric({name: '404', url: opts.url});
     reply.view('notfound', opts).code(404);

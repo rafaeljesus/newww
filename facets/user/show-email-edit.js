@@ -150,7 +150,7 @@ function sendEmails (conf, rev, request, reply) {
   // we need to move the construction of these emails to somewhere else... but where?
   var confMail = {
     to: '"' + name + '" <' + conf.email2 + '>',
-    from: 'user-account-bot@npmjs.org',
+    from: from,
     subject: 'npm Email Confirmation',
     headers: { 'X-SMTPAPI': { category: 'email-change-confirm' } },
     text: 'You are receiving this because you have (or someone else has) '
@@ -173,7 +173,7 @@ function sendEmails (conf, rev, request, reply) {
 
   var revMail = {
     to: '"' + name + '" <' + rev.email1 + '>',
-    from: 'user-account-bot@npmjs.org',
+    from: from,
     subject: 'npm Email Change Alert',
     headers: { 'X-SMTPAPI': { category: 'email-change-revert' } },
     text: 'You are receiving this because you have (or someone else has) '

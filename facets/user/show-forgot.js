@@ -268,7 +268,7 @@ function sendEmail(name, email, request, reply) {
 
     var mail = {
       to: '"' + name + '" <' + email + '>',
-      from: 'user-account-bot@npmjs.org',
+      from: from,
       subject : "npm Password Reset",
       headers: { "X-SMTPAPI": { category: "password-reset" } },
       text: "You are receiving this because you (or someone else) have "

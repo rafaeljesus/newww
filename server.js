@@ -1,4 +1,5 @@
 var Hapi = require('hapi'),
+    Hoek = require('hoek'),
     config = require('./config.js'),
     uuid = require('node-uuid'),
     murmurhash = require('murmurhash');
@@ -36,8 +37,13 @@ server.route({
   }
 });
 
-// adds CSP header :-)
 server.ext('onPreResponse', function (request, next) {
+
+  if (request.response.variety === 'view') {
+    request.response.source.context = Hoek.applyToDefaults({stamp: config.stamp}, request.response.source.context);
+  }
+
+  // adds CSP header :-)
   var header = "default-src 'self'; img-src *; script-src 'self' https://ssl.google-analytics.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://typeahead.npmjs.com/; report-uri /-/csplog;"
 
   if (request.path === '/joinwhoshiring') {

@@ -20,6 +20,7 @@
     "handlebars": "^2.0.0-alpha.2",
     "hapi": "^6.0.0",
     "hapi-auth-cookie": "^1.0.3",
+    "hoek": "^2.3.0",
     "joi": "^4.0.0",
     "murmurhash": "0.0.2",
     "nib": "^1.0.2",

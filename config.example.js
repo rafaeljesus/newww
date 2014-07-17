@@ -1,5 +1,6 @@
 var path = require('path'),
-    fs = require('fs');
+    fs = require('fs'),
+    os = require('os');
 
 exports.port = 15443;
 exports.host = "localhost";
@@ -63,6 +64,24 @@ exports.user = {
     emailFrom: '"The npm Website Robot" <webmaster@npmjs.org>'
   }
 };
+
+// stamp data for templates
+var gitHead;
+try {
+  gitHead = fs.readFileSync('.git/HEAD', 'utf8').trim()
+  if (gitHead.match(/^ref: /)) {
+    gitHead = gitHead.replace(/^ref: /, '').trim()
+    gitHead = fs.readFileSync('.git/' + gitHead, 'utf8').trim()
+  }
+  exports.HEAD = gitHead
+} catch (_) {
+  gitHead = '(not a git repo) ' + _.message
+}
+
+exports.stamp = 'pid=' + process.pid + ' ' +
+                // 'worker=' + cluster.worker.id + ' ' +
+                gitHead + ' ' + exports.host +
+                ' ' + os.hostname() + ' ' + process.env.SMF_ZONENAME;
 
 exports.session = {
   password: 'i dunno, something secure probably?',

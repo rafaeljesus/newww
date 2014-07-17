@@ -98,7 +98,7 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
   server.pack.register([
     {
       plugin: require('./facets/company'),
-      options: config.payments
+      options: config.company
     },
     {
       plugin: require('./facets/registry'),

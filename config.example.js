@@ -37,9 +37,59 @@ exports.server = {
   }
 };
 
+// stamp data for templates
+var gitHead;
+try {
+  gitHead = fs.readFileSync('.git/HEAD', 'utf8').trim()
+  if (gitHead.match(/^ref: /)) {
+    gitHead = gitHead.replace(/^ref: /, '').trim()
+    gitHead = fs.readFileSync('.git/' + gitHead, 'utf8').trim()
+  }
+  exports.HEAD = gitHead
+} catch (_) {
+  gitHead = '(not a git repo) ' + _.message
+}
+
+exports.stamp = 'pid=' + process.pid + ' ' +
+                // 'worker=' + cluster.worker.id + ' ' +
+                gitHead + ' ' + exports.host +
+                ' ' + os.hostname() + ' ' + process.env.SMF_ZONENAME;
+
+// ===== service options =====
 exports.couch = {
   "couchAuth": "admin:admin",
   "registryCouch": "http://localhost:15984/"
+};
+
+exports.session = {
+  password: 'i dunno, something secure probably?',
+  cookie: 's',
+  expiresIn: 14 * 24 * 60 * 60 * 1000 // 2 wks
+};
+
+exports.metrics = {
+  collector: {
+    host: 'localhost',
+    port: 3333
+  },
+  prefix: 'npm-www-dev'
+}
+
+exports.downloads = {
+  url: "https://api.npmjs.org/downloads/"
+};
+
+// ==== facet options ====
+exports.company = {
+  stripe: {
+    "secretkey": "secrettestkey",
+    "publickey": "publictestkey"
+  },
+  package: require('./package.json'),
+  contributors: fs.readFileSync(__dirname + '/AUTHORS', 'utf8'),
+  registry: "http://registry.npmjs.org/",
+  registryCouch: exports.couch.registryCouch,
+  HEAD: exports.HEAD
 };
 
 exports.user = {
@@ -65,59 +115,11 @@ exports.user = {
   }
 };
 
-// stamp data for templates
-var gitHead;
-try {
-  gitHead = fs.readFileSync('.git/HEAD', 'utf8').trim()
-  if (gitHead.match(/^ref: /)) {
-    gitHead = gitHead.replace(/^ref: /, '').trim()
-    gitHead = fs.readFileSync('.git/' + gitHead, 'utf8').trim()
-  }
-  exports.HEAD = gitHead
-} catch (_) {
-  gitHead = '(not a git repo) ' + _.message
-}
-
-exports.stamp = 'pid=' + process.pid + ' ' +
-                // 'worker=' + cluster.worker.id + ' ' +
-                gitHead + ' ' + exports.host +
-                ' ' + os.hostname() + ' ' + process.env.SMF_ZONENAME;
-
-exports.session = {
-  password: 'i dunno, something secure probably?',
-  cookie: 's',
-  expiresIn: 14 * 24 * 60 * 60 * 1000 // 2 wks
-};
-
+// registry facet
 exports.search = {
   url:'http://127.0.0.1:9200/npm',
   perPage: 20
 };
-
-exports.payments = {
-  "stripe": {
-    "secretkey": "secrettestkey",
-    "publickey": "publictestkey"
-  }
-};
-
-exports.metrics = {
-  collector: {
-    host: 'localhost',
-    port: 3333
-  },
-  prefix: 'npm-www-dev'
-}
-
-exports.downloads = {
-  url: "https://api.npmjs.org/downloads/"
-};
-
-exports.otherStuff = {
-  "keys": [
-    "these keys are for dev mode only"
-  ],
-}
 
 function hostmatch (m) { return function (u) {
   return u.host && u.host.match(m)

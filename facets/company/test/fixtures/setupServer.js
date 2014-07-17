@@ -1,6 +1,6 @@
 var Hapi = require('hapi'),
     company = require('../../'),
-    config = require('../../../../config').payments;
+    config = require('../../../../config').company;
 
 var serverOptions = {
   views: {

@@ -6,7 +6,7 @@ var Lab = require('lab')
 
 var Hapi = require('hapi'),
     company = require('../facets/company'),
-    config = require('../config').payments;
+    config = require('../config').company;
 
 var server;
 
@@ -19,7 +19,7 @@ describe('company is routing properly', function () {
   it('calls all the right routes', function (done) {
     var table = server.table();
 
-    expect(table).to.have.length(6);
+    expect(table).to.have.length(7);
 
     var paths = table.map(function (route) {
       var obj = {
@@ -30,6 +30,7 @@ describe('company is routing properly', function () {
     });
 
     expect(paths).to.include({ path: '/', method: 'get' });
+    expect(paths).to.include({ path: '/about', method: 'get' });
     expect(paths).to.include({ path: '/whoshiring', method: 'get' });
     expect(paths).to.include({ path: '/joinwhoshiring', method: 'get' });
     expect(paths).to.include({ path: '/joinwhoshiring', method: 'post' });

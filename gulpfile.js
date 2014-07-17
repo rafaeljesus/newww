@@ -3,6 +3,7 @@ var gulp = require('gulp'),
     stylus = require('gulp-stylus'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
+    bistre = require('bistre'),
     nodemon = require('gulp-nodemon');
 
 gulp.task('styles', function () {
@@ -13,10 +14,21 @@ gulp.task('styles', function () {
 
 gulp.task('develop', function () {
   process.env.NODE_ENV = 'dev';
-  nodemon({ script: 'server.js', ext: 'hbs styl js', ignore: ['node_modules/', 'test/', 'facets/*/test/'] })
+  nodemon({
+    script: 'server.js',
+    ext: 'hbs styl js',
+    ignore: ['node_modules/', 'test/', 'facets/*/test/'],
+    stdout: false
+  })
     .on('change', ['styles'])
     .on('restart', function () {
       console.log('restarted!')
+    })
+    .on('readable', function () {
+      this.stdout.pipe(bistre({time: true}))
+                 .pipe(process.stdout);
+      this.stderr.pipe(bistre({time: true}))
+                 .pipe(process.stderr);
     })
 })
 

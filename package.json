@@ -13,7 +13,6 @@
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
   "dependencies": {
-    "bistre": "0.0.1",
     "bole": "^0.1.0",
     "catbox": "^2.2.1",
     "catbox-redis": "^1.0.1",
@@ -29,6 +28,7 @@
     "stylus": "^0.45.0"
   },
   "devDependencies": {
+    "bistre": "^1.0.0",
     "grunt": "^0.4.5",
     "gulp": "^3.6.2",
     "gulp-concat": "^2.2.0",

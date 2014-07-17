@@ -6,15 +6,12 @@ var Hapi = require('hapi'),
 
 // set up the logger
 var bole = require('bole'),
-    pretty = require('bistre')(),
     log = bole('server');
 
 bole.output({
   level: 'info',
-  stream: pretty
+  stream: process.stdout
 });
-
-pretty.pipe(process.stdout);
 
 // set up the server
 var server = new Hapi.Server(config.host, config.port, config.server)

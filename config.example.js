@@ -4,7 +4,6 @@ var path = require('path'),
 
 exports.port = 15443;
 exports.host = "localhost";
-exports.httpPort = 15080;
 
 exports.server = {
   views: {

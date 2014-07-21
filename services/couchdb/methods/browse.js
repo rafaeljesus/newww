@@ -63,14 +63,7 @@ module.exports = function (couchapp, addMetric) {
 
     u += '?' + qs.stringify(query)
 
-    // var timing = {}
-    // timing.start = Date.now()
-
     couchapp.get(u, function (er, cr, data) {
-
-      // timing.end = Date.now()
-      // metrics.histogram('registry-latency>browse|' + type + '|' + arg, timing.end - timing.start)
-
       if (data) {
         data = transform(type, arg, data, skip, limit)
       }

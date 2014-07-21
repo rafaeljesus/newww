@@ -1,6 +1,7 @@
 var Hapi = require('hapi'),
     log = require('bole')('couchdb-lookup-email'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    qs = require('querystring');
 
 module.exports = function lookupUserByEmail (adminCouch, addMetric) {
   return function (email, next) {

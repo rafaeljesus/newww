@@ -82,11 +82,14 @@ exports.register.attributes = {
 function getPackageFromCouch (package, next) {
   timer.start = Date.now();
   anonCouch.get('/registry/' + package, function (er, cr, data) {
-
     timer.end = Date.now();
     addMetric(timer, 'package ' + package);
 
-    return next(er, data);
+    if (er || data.error) {
+      return next(Hapi.error.notFound('Package not found: ' + package));
+    }
+
+    return next(null, data);
   });
 }
 
@@ -97,10 +100,10 @@ function getUserFromCouch (name, next) {
     addMetric(timer, 'user ' + name);
 
     if (er || cr && cr.statusCode !== 200 || !data || data.error) {
-      return next(Hapi.error.notFound('Username not found: ' + name))
+      return next(Hapi.error.notFound('Username not found: ' + name));
     }
 
-    return next(null, data)
+    return next(null, data);
   })
 }
 

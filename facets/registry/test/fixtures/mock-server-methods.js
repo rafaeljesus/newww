@@ -1,3 +1,5 @@
+var Hapi = require('hapi');
+
 var pkgs = {
       fake: require('./fake.json'),
       fakeDeps: require('./fake-deps'),
@@ -33,7 +35,7 @@ module.exports = function (server) {
         return next(null, pkgs[pkgName]);
       }
 
-      return next(null, {error: 'nope'});
+      return next(Hapi.error.notFound('Username not found: ' + pkgName));
     },
 
     getBrowseData: function (type, arg, skip, limit, next) {

@@ -1,0 +1,31 @@
+{
+  "blah": {
+     "_id": "org.couchdb.user:blah",
+     "_rev": "1-821953ad240c90ef437c0b2347bf8a00",
+     "name": "blah",
+     "roles": [
+     ],
+     "type": "user",
+     "password_scheme": "pbkdf2",
+     "derived_key": "c7bf5866f967d940eeb3142eb89f622ff6adbea9",
+     "salt": "7547cc3cc579545aede05490c636d21ce3ec46928260bee6d83d8f52003d",
+     "iterations": 10,
+     "date": "2014-06-12T00:15:19.641Z",
+     "verify": "12345",
+     "email": "raquel@npmjs.com"
+  },
+  "boom": {
+    "_id": "org.couchdb.user:boom",
+    "_rev": "1-7adf7e546de1852cec39894c0d652fb4",
+    "name": "boom",
+    "roles": [],
+    "type": "user",
+    "password_scheme": "pbkdf2",
+    "derived_key": "120282c09ab56981ae498477bf554079d230501f",
+    "salt": "85794feca38d8fa85aae809b9fa420c2bf4ed91a4e43a979f3c9e9ad60b3",
+    "iterations": 10,
+    "date": "2014-07-21T20:16:41.055Z",
+    "email": "boom@boom.com",
+    "sid": "c53f9ebc"
+  }
+}

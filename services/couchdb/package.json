@@ -11,5 +11,9 @@
   "dependencies": {
     "async-cache": "^0.1.5",
     "couch-login": "^1.0.0"
+  },
+  "devDependencies": {
+    "lab": "^3.2.1",
+    "nock": "^0.42.1"
   }
 }

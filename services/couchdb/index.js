@@ -3,7 +3,7 @@ var CouchLogin = require('couch-login'),
     qs = require('querystring'),
     SECOND = 1000;
 
-var adminCouch, anonCouch,
+var adminCouch, anonCouch, addMetric,
     timer = {};
 
 exports.register = function Couch (service, options, next) {
@@ -31,11 +31,11 @@ exports.register = function Couch (service, options, next) {
   function after (service, next) {
     addMetric = service.methods.addCouchLatencyMetric;
 
-    service.method('getPackageFromCouch', getPackageFromCouch(addMetric), {
+    service.method('getPackageFromCouch', getPackageFromCouch, {
       cache: { expiresIn: 60 * SECOND, segment: '##package' }
     });
 
-    service.method('getUserFromCouch', getUserFromCouch(addMetric), {
+    service.method('getUserFromCouch', getUserFromCouch, {
       cache: { expiresIn: 60 * SECOND, segment: '##user' }
     });
 
@@ -50,18 +50,18 @@ exports.register = function Couch (service, options, next) {
     service.method('loginUser', require('./methods/login')(service, anonCouch));
     service.method('logoutUser', logoutUser(anonCouch));
 
-    service.method('signupUser', signupUser(addMetric));
+    service.method('signupUser', signupUser);
 
-    service.method('saveProfile', saveProfile(addMetric));
+    service.method('saveProfile', saveProfile);
 
-    service.method('changePass', changePass(addMetric));
+    service.method('changePass', changePass);
 
     service.method('changeEmail', require('./methods/changeEmail')(service, adminCouch));
 
-    service.method('star', star(addMetric));
-    service.method('unstar', unstar(addMetric));
+    service.method('star', star);
+    service.method('unstar', unstar);
 
-    service.method('packagesCreated', packagesCreated(addMetric), {
+    service.method('packagesCreated', packagesCreated, {
       cache: {
         staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
         staleIn: 10 * SECOND, // refresh after 10 seconds
@@ -79,33 +79,29 @@ exports.register.attributes = {
 
 //========== functions ===========
 
-function getPackageFromCouch (addMetric) {
-  return function (package, next) {
-    timer.start = Date.now();
-    anonCouch.get('/registry/' + package, function (er, cr, data) {
+function getPackageFromCouch (package, next) {
+  timer.start = Date.now();
+  anonCouch.get('/registry/' + package, function (er, cr, data) {
 
-      timer.end = Date.now();
-      addMetric(timer, 'package ' + package);
+    timer.end = Date.now();
+    addMetric(timer, 'package ' + package);
 
-      return next(er, data);
-    });
-  };
+    return next(er, data);
+  });
 }
 
-function getUserFromCouch (addMetric) {
-  return function (name, next) {
-    timer.start = Date.now();
-    anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
-      timer.end = Date.now();
-      addMetric(timer, 'user ' + name);
+function getUserFromCouch (name, next) {
+  timer.start = Date.now();
+  anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
+    timer.end = Date.now();
+    addMetric(timer, 'user ' + name);
 
-      if (er || cr && cr.statusCode !== 200 || !data || data.error) {
-        return next(Hapi.error.notFound('Username not found: ' + name))
-      }
+    if (er || cr && cr.statusCode !== 200 || !data || data.error) {
+      return next(Hapi.error.notFound('Username not found: ' + name))
+    }
 
-      return next(null, data)
-    })
-  };
+    return next(null, data)
+  })
 }
 
 function logoutUser (anonCouch) {
@@ -114,107 +110,95 @@ function logoutUser (anonCouch) {
   };
 }
 
-function signupUser (addMetric) {
-  return function (acct, next) {
-    timer.start = Date.now();
-    anonCouch.signup(acct, function (er, cr, data) {
-      timer.end = Date.now();
-      addMetric(timer, 'signupUser');
+function signupUser (acct, next) {
+  timer.start = Date.now();
+  anonCouch.signup(acct, function (er, cr, data) {
+    timer.end = Date.now();
+    addMetric(timer, 'signupUser');
 
-      if (er || cr && cr.statusCode >= 400 || data && data.error) {
-          var error = "Failed creating account.  CouchDB said: "
-                    + ((er && er.message) || (data && data.error))
+    if (er || cr && cr.statusCode >= 400 || data && data.error) {
+        var error = "Failed creating account.  CouchDB said: "
+                  + ((er && er.message) || (data && data.error))
 
-        return next(Hapi.error.forbidden(error));
-      }
+      return next(Hapi.error.forbidden(error));
+    }
 
-      return next(null, data);
-    });
-  };
+    return next(null, data);
+  });
 }
 
-function saveProfile (addMetric) {
-  return function (user, next) {
-    timer.start = Date.now();
-    adminCouch.post('/_users/_design/_auth/_update/profile/' + user._id, user, function (er, cr, data) {
-      timer.end = Date.now();
-      addMetric(timer, 'saveProfile');
+function saveProfile (user, next) {
+  timer.start = Date.now();
+  adminCouch.post('/_users/_design/_auth/_update/profile/' + user._id, user, function (er, cr, data) {
+    timer.end = Date.now();
+    addMetric(timer, 'saveProfile');
 
-      if (er || cr && cr.statusCode !== 201 || !data || data.error) {
-        return next(Hapi.error.internal(er || data.error));
-      }
+    if (er || cr && cr.statusCode !== 201 || !data || data.error) {
+      return next(Hapi.error.internal(er || data.error));
+    }
 
-      return next(null, data);
-    });
-  };
+    return next(null, data);
+  });
 }
 
-function changePass (addMetric) {
-  return function (auth, next) {
-    timer.start = Date.now();
-    adminCouch.changePass(auth, function (er, cr, data) {
-      timer.end = Date.now();
-      addMetric(timer, 'changePass');
+function changePass (auth, next) {
+  timer.start = Date.now();
+  adminCouch.changePass(auth, function (er, cr, data) {
+    timer.end = Date.now();
+    addMetric(timer, 'changePass');
 
-      if (er || cr.statusCode >= 400 || data && data.message) {
-        var error = er && er.message || data && data.message;
-        return next(Hapi.error.forbidden(error));
-      }
+    if (er || cr.statusCode >= 400 || data && data.message) {
+      var error = er && er.message || data && data.message;
+      return next(Hapi.error.forbidden(error));
+    }
 
-      return next(null, data);
-    });
-  };
+    return next(null, data);
+  });
 }
 
-function star (addMetric) {
-  return function (package, username, next) {
-    timer.start = Date.now();
-    adminCouch.put('/registry/_design/app/_update/star/' + package, username, function (er, cr, data) {
-      timer.end = Date.now();
-      addMetric(timer, 'star');
+function star (package, username, next) {
+  timer.start = Date.now();
+  adminCouch.put('/registry/_design/app/_update/star/' + package, username, function (er, cr, data) {
+    timer.end = Date.now();
+    addMetric(timer, 'star');
 
-      if (er || cr && cr.statusCode !== 201 || !data || data.error) {
-        return next(Hapi.error.internal(er || data.error));
-      }
+    if (er || cr && cr.statusCode !== 201 || !data || data.error) {
+      return next(Hapi.error.internal(er || data.error));
+    }
 
-      return next(null, data);
-    });
-  };
+    return next(null, data);
+  });
 }
 
-function unstar (addMetric) {
-  return function (package, username, next) {
-    timer.start = Date.now();
-    adminCouch.put('/registry/_design/app/_update/unstar/' + package, username, function (er, cr, data) {
-      timer.end = Date.now();
-      addMetric(timer, 'unstar');
+function unstar (package, username, next) {
+  timer.start = Date.now();
+  adminCouch.put('/registry/_design/app/_update/unstar/' + package, username, function (er, cr, data) {
+    timer.end = Date.now();
+    addMetric(timer, 'unstar');
 
-      if (er || cr && cr.statusCode !== 201 || !data || data.error) {
-        return next(Hapi.error.internal(er || data.error));
-      }
+    if (er || cr && cr.statusCode !== 201 || !data || data.error) {
+      return next(Hapi.error.internal(er || data.error));
+    }
 
-      return next(null, data);
-    });
-  };
+    return next(null, data);
+  });
 }
 
-function packagesCreated (addMetric) {
-  return function (next) {
-    timer.start = Date.now();
-    anonCouch.get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey="name"&endkey="name"&stale=update_after', function (er, cr, data) {
+function packagesCreated (next) {
+  timer.start = Date.now();
+  anonCouch.get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey="name"&endkey="name"&stale=update_after', function (er, cr, data) {
 
-      timer.end = Date.now();
-      addMetric(timer, 'packagesCreated');
+    timer.end = Date.now();
+    addMetric(timer, 'packagesCreated');
 
-      if (er || data.error) {
-        return next(Hapi.error.internal(er || data.error));
-      }
+    if (er || data.error) {
+      return next(Hapi.error.internal(er || data.error));
+    }
 
-      if (data.rows && data.rows.length > 0 && data.rows[0].value) {
-        return next(null, data.rows[0].value);
-      }
+    if (data.rows && data.rows.length > 0 && data.rows[0].value) {
+      return next(null, data.rows[0].value);
+    }
 
-      return next(null, 0); // worst case scenario
-    });
-  };
+    return next(null, 0); // worst case scenario
+  });
 }

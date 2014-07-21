@@ -1,22 +1,29 @@
 var Lab = require('lab'),
+    sinon = require('sinon'), 
+    elasticsearch = require('elasticsearch'),
     describe = Lab.experiment,
     before = Lab.before,
     it = Lab.test,
     expect = Lab.expect;
 
-var fakeSearch = require('./fixtures/fake-search.json');
+var fakeSearch = require('./fixtures/fake-search.json'),
+    server; 
 
-var server;
-
-//set up server
 before(function (done) {
   server = require('./fixtures/setupServer')(done);
+});
+
+sinon.stub(elasticsearch, 'Client', function(){  
+  return { 
+    search: function(query, cb){ 
+      cb(null, fakeSearch)
+    }
+  }; 
 });
 
 describe('Rendering the view', function () {
   var source;
   it('Should use the index template to render the view', function (done) {
-  //simulate a search for a given module, results are in fakeSearch
   var options =  {
     url: '/search?q=express',
     method: 'GET'

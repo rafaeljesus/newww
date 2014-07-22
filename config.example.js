@@ -69,7 +69,8 @@ exports.session = {
 exports.metrics = {
   collector: {
     host: 'localhost',
-    port: 3333
+    port: 3333,
+    udp: true
   },
   prefix: 'npm-www-dev'
 }

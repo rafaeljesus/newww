@@ -6,6 +6,7 @@ exports.register = function Metrics (service, options, next) {
   var emitter = new Emitter({
     host: options.collector.host,
     port: options.collector.port,
+    udp: options.collector.udp,
     node: os.hostname()
   });
 

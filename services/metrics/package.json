@@ -9,6 +9,6 @@
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
   "dependencies": {
-    "numbat-emitter": "0.0.2"
+    "numbat-emitter": "^0.0.5"
   }
 }

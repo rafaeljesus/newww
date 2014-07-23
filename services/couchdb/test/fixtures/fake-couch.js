@@ -3,6 +3,7 @@ var nock = require('nock');
 module.exports = function (config) {
   // console.log(config.registryCouch)
   var couch = nock(config.registryCouch)
+                .filteringPath(/startkey=[^&]*/g, 'startkey=XXX')
                 // .log(console.log)
 
                 // --- get package ---
@@ -23,7 +24,7 @@ module.exports = function (config) {
                 .reply(404, {"error":"not_found","reason":"missing"})
 
                 // --- lookup user email ---
-                .get('/_users/_design/_auth/_view/userByEmail?startkey=%5B%22boom%40boom.com%22%5D&endkey=%5B%22boom%40boom.com%22%2C%7B%7D%5D&group=true')
+                .get('/_users/_design/_auth/_view/userByEmail?startkey=XXX&endkey=%5B%22boom%40boom.com%22%2C%7B%7D%5D&group=true')
                 .reply({"rows":[
                   { "key": ["boom@boom.com","boom"], "value": 1 }
                 ]})
@@ -51,7 +52,7 @@ module.exports = function (config) {
                 .reply(201, { ok: 'unstarred'})
 
                 // --- total packages ---
-                .get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey=%22name%22&endkey=%22name%22&stale=update_after')
+                .get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey=XXX&endkey=%22name%22&stale=update_after')
                 .reply(200, { rows: [ { key: 'name', value: 3681 } ] })
 
                 // --- browse ---
@@ -59,8 +60,9 @@ module.exports = function (config) {
                 .reply(200, require('./browse').stars)
 
                 // --- recent authors ---
-                .get('/registry/_design/app/_view/browseAuthorsRecent?group_level=2&startkey=%5B%222014-07-06%22%5D&stale=update_after')
+                .get('/registry/_design/app/_view/browseAuthorsRecent?group_level=2&startkey=XXX&stale=update_after').twice()
                 .reply(200, require('./browse').authors)
+
 
   return couch;
 }

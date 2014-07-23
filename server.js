@@ -94,6 +94,10 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
 
   server.pack.register([
     {
+      plugin: require('crumb'),
+      options: { isSecure: true }
+    },
+    {
       plugin: require('./facets/company'),
       options: config.company
     },

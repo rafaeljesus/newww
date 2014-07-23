@@ -89,7 +89,6 @@ module.exports = function signup (request, reply) {
 
 
   if (request.method === 'get' || request.method === 'head') {
-    // opts.hiring
 
     timer.end = Date.now();
     addLatencyMetric(timer, 'signup-form');

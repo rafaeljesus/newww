@@ -38,7 +38,7 @@
   <fieldset class='buttons'>
     <button class='btn' type='submit'>Save</button>
   </fieldset>
-{{!-- <%- csrf %> --}}
+  <input type="hidden" name="crumb" value="{{crumb}}"/>
 </form>
 
 {{> footer}}

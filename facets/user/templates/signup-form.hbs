@@ -41,7 +41,7 @@ without notice.</p>
 <fieldset class='buttons'>
 <button class='btn' type='submit'>Make it so.</button>
 </fieldset>
-{{!-- <%- csrf %> --}}
+<input type="hidden" name="crumb" value="{{crumb}}"/>
 </form>
 
 {{> footer}}

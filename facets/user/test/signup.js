@@ -4,7 +4,7 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var server, source,
+var server, source, cookieCrumb,
     forms = require('./fixtures/signupForms');
 
 // prepare the server
@@ -17,6 +17,15 @@ before(function (done) {
   });
 });
 
+var postSignup = function (payload) {
+  return {
+    url: '/signup',
+    method: 'POST',
+    payload: payload,
+    headers: { cookie: 'crumb=' + cookieCrumb }
+  }
+}
+
 describe('Signing up a new user', function () {
 
   it('renders the signup template', function (done) {
@@ -25,20 +34,34 @@ describe('Signing up a new user', function () {
     };
 
     server.inject(options, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+      forms = forms(cookieCrumb);
+
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('signup-form');
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+      done();
+    });
+  });
+
+  it('renders an error if the cookie crumb is missing', function (done) {
+    var options = {
+      url: '/signup',
+      method: 'POST',
+      payload: {}
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(403);
       done();
     });
   });
 
   it('fails validation with incomplete form fields', function (done) {
-    var options = {
-      url: '/signup',
-      method: 'POST',
-      payload: forms.incomplete
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postSignup(forms.incomplete), function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('signup-form');
       expect(source.context.errors[0][0]).to.have.deep.property('message', 'verify is required');
@@ -46,13 +69,7 @@ describe('Signing up a new user', function () {
     });  })
 
   it('fails validation with a bad email address', function (done) {
-    var options = {
-      url: '/signup',
-      method: 'POST',
-      payload: forms.badEmail
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postSignup(forms.badEmail), function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('signup-form');
       expect(source.context.errors[0][0]).to.have.deep.property('message', 'email must be a valid email');
@@ -61,13 +78,7 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with a bad username (dot)', function (done) {
-    var options = {
-      url: '/signup',
-      method: 'POST',
-      payload: forms.badUsernameDot
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postSignup(forms.badUsernameDot), function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username may not start with "."');
@@ -76,13 +87,7 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with a bad username (uppercase)', function (done) {
-    var options = {
-      url: '/signup',
-      method: 'POST',
-      payload: forms.badUsernameCaps
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postSignup(forms.badUsernameCaps), function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username must be lowercase');
@@ -91,13 +96,7 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with a bad username (encodeURI)', function (done) {
-    var options = {
-      url: '/signup',
-      method: 'POST',
-      payload: forms.badUsernameEncodeURI
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postSignup(forms.badUsernameEncodeURI), function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username may not contain non-url-safe chars');
@@ -106,13 +105,7 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with non-matching passwords', function (done) {
-    var options = {
-      url: '/signup',
-      method: 'POST',
-      payload: forms.invalidPassMatch
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postSignup(forms.invalidPassMatch), function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Passwords don\'t match');
@@ -121,13 +114,7 @@ describe('Signing up a new user', function () {
   });
 
   it('passes validation with a valid form', function (done) {
-    var options = {
-      url: '/signup',
-      method: 'POST',
-      payload: forms.good
-    }
-
-    server.inject(options, function (resp) {
+    server.inject(postSignup(forms.good), function (resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
       done();
@@ -135,13 +122,7 @@ describe('Signing up a new user', function () {
   });
 
   it('passes validation with an umlaut in the password', function (done) {
-    var options = {
-      url: '/signup',
-      method: 'POST',
-      payload: forms.goodPassWithUmlaut
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postSignup(forms.goodPassWithUmlaut), function (resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
       done();

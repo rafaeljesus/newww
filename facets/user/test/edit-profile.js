@@ -4,7 +4,7 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var server, source, cache,
+var server, source, cache, cookieCrumb,
     fakeuser = require('./fixtures/users').fakeuser,
     fakeProfile = require('./fixtures/users').fakeuserNewProfile;
 
@@ -40,8 +40,14 @@ describe('Getting to the profile-edit page', function () {
     };
 
     server.inject(options, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('profile-edit');
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });
   });
@@ -62,13 +68,30 @@ describe('Modifying the profile', function () {
     });
   });
 
-  it('allows authorized profile modifications and redirects to profile page', function (done) {
+  it('rejects profile modifications that don\'t include CSRF data', function (done) {
     var options = {
       url: '/profile-edit',
       method: 'POST',
       payload: fakeProfile,
       credentials: fakeuser
     };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(403);
+      done();
+    });
+  });
+
+  it('allows authorized profile modifications and redirects to profile page', function (done) {
+    var options = {
+      url: '/profile-edit',
+      method: 'POST',
+      payload: fakeProfile,
+      credentials: fakeuser,
+      headers: { cookie: 'crumb=' + cookieCrumb }
+    };
+
+    options.payload.crumb = cookieCrumb;
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);

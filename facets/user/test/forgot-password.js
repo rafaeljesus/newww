@@ -5,10 +5,22 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var server, source, cache, tokenUrl,
+var server, source, cache, tokenUrl, cookieCrumb,
     users = require('./fixtures/users'),
     fakeuser = require('./fixtures/users').fakeuser,
     fakeusercli = require('./fixtures/users').fakeusercli;
+
+var postName = function (name_email) {
+  return {
+    url: '/forgot',
+    method: 'POST',
+    payload: {
+      name_email: name_email,
+      crumb: cookieCrumb
+    },
+    headers: { cookie: 'crumb=' + cookieCrumb }
+  }
+};
 
 // prepare the server
 before(function (done) {
@@ -28,13 +40,19 @@ describe('Accessing the forgot password page', function () {
     };
 
     server.inject(options, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
       expect(source.template).to.equal('password-recovery-form');
       expect(resp.statusCode).to.equal(200);
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });
   });
 
-  it('renders an error if no name or email is submitted', function (done) {
+  it('renders an error if the cookie crumb is missing', function (done) {
     var options = {
       url: '/forgot',
       method: 'POST',
@@ -42,6 +60,13 @@ describe('Accessing the forgot password page', function () {
     };
 
     server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(403);
+      done();
+    });
+  });
+
+  it('renders an error if no name or email is submitted', function (done) {
+    server.inject(postName(), function (resp) {
       expect(source.template).to.equal('password-recovery-form');
       expect(source.context.error).to.equal('All fields are required');
       expect(resp.statusCode).to.equal(400);
@@ -50,15 +75,7 @@ describe('Accessing the forgot password page', function () {
   });
 
   it('renders an error if the username is invalid', function (done) {
-    var options = {
-      url: '/forgot',
-      method: 'POST',
-      payload: {
-        name_email: '.baduser'
-      }
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postName('.baduser'), function (resp) {
       expect(source.template).to.equal('password-recovery-form');
       expect(source.context.error).to.equal('Need a valid username or email address');
       expect(resp.statusCode).to.equal(400);
@@ -67,15 +84,7 @@ describe('Accessing the forgot password page', function () {
   });
 
   it('renders an error if the email is invalid', function (done) {
-    var options = {
-      url: '/forgot',
-      method: 'POST',
-      payload: {
-        name_email: 'bad@email'
-      }
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(postName('bad@email'), function (resp) {
       expect(source.template).to.equal('password-recovery-form');
       expect(source.context.error).to.equal('Need a valid username or email address');
       expect(resp.statusCode).to.equal(400);
@@ -88,15 +97,7 @@ describe('Looking up a user', function () {
   describe('by username', function () {
     it('renders an error if the username doesn\'t exist', function (done) {
       var name = 'blerg';
-      var options = {
-        url: '/forgot',
-        method: 'POST',
-        payload: {
-          name_email: name
-        }
-      };
-
-      server.inject(options, function (resp) {
+      server.inject(postName(name), function (resp) {
         expect(source.template).to.equal('password-recovery-form');
         expect(source.context.error).to.equal('Username not found: ' + name);
         expect(resp.statusCode).to.equal(404);
@@ -106,15 +107,7 @@ describe('Looking up a user', function () {
 
     it('renders an error if the user does not have an email address', function (done) {
       var name = 'fakeusernoemail';
-      var options = {
-        url: '/forgot',
-        method: 'POST',
-        payload: {
-          name_email: name
-        }
-      };
-
-      server.inject(options, function (resp) {
+      server.inject(postName(name), function (resp) {
         expect(source.template).to.equal('password-recovery-form');
         expect(source.context.error).to.equal('Username does not have an email address; please contact support');
         expect(resp.statusCode).to.equal(400);
@@ -124,15 +117,7 @@ describe('Looking up a user', function () {
 
     it('renders an error if the user\'s email address is invalid', function (done) {
       var name = 'fakeuserbademail';
-      var options = {
-        url: '/forgot',
-        method: 'POST',
-        payload: {
-          name_email: name
-        }
-      };
-
-      server.inject(options, function (resp) {
+      server.inject(postName(name), function (resp) {
         expect(source.template).to.equal('password-recovery-form');
         expect(source.context.error).to.equal('Username\'s email address is invalid; please contact support');
         expect(resp.statusCode).to.equal(400);
@@ -142,15 +127,7 @@ describe('Looking up a user', function () {
 
     it('sends an email when everything finally goes right', function (done) {
       var name = 'fakeuser';
-      var options = {
-        url: '/forgot',
-        method: 'POST',
-        payload: {
-          name_email: name
-        }
-      };
-
-      server.inject(options, function (resp) {
+      server.inject(postName(name), function (resp) {
         expect(source.to).to.include(name);
         expect(source.subject).to.equal('npm Password Reset');
         expect(resp.statusCode).to.equal(200);
@@ -161,15 +138,7 @@ describe('Looking up a user', function () {
 
   describe('by email', function () {
     it('renders an error if the email doesn\'t exist', function (done) {
-      var options = {
-        url: '/forgot',
-        method: 'POST',
-        payload: {
-          name_email: 'blah@boom.com'
-        }
-      };
-
-      server.inject(options, function (resp) {
+      server.inject(postName('blah@boom.com'), function (resp) {
         expect(source.template).to.equal('password-recovery-form');
         expect(source.context.error).to.equal('Bad email, no user found with this email');
         expect(resp.statusCode).to.equal(404);
@@ -178,15 +147,7 @@ describe('Looking up a user', function () {
     });
 
     it('renders a list of emails if the email matches more than one username', function (done) {
-      var options = {
-        url: '/forgot',
-        method: 'POST',
-        payload: {
-          name_email: fakeuser.email
-        }
-      };
-
-      server.inject(options, function (resp) {
+      server.inject(postName(fakeuser.email), function (resp) {
         expect(source.template).to.equal('password-recovery-form');
         expect(resp.statusCode).to.equal(200);
         expect(source.context.error).to.not.exist;
@@ -201,8 +162,10 @@ describe('Looking up a user', function () {
         url: '/forgot',
         method: 'POST',
         payload: {
-          selected_name: fakeusercli.name
-        }
+          selected_name: fakeusercli.name,
+          crumb: cookieCrumb
+        },
+        headers: { cookie: 'crumb=' + cookieCrumb }
       };
 
       server.inject(options, function (resp) {
@@ -214,15 +177,7 @@ describe('Looking up a user', function () {
     });
 
     it('sends an email when everything finally goes right', function (done) {
-      var options = {
-        url: '/forgot',
-        method: 'POST',
-        payload: {
-          name_email: fakeusercli.email
-        }
-      };
-
-      server.inject(options, function (resp) {
+      server.inject(postName(fakeusercli.email), function (resp) {
         tokenUrl = source.text.match(/\/forgot\/[\/\w \.-]*\/?/)[0];
         expect(source.to).to.include(fakeusercli.name);
         expect(source.subject).to.equal('npm Password Reset');

@@ -5,11 +5,22 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var server, source, cache, revUrl, confUrl,
+var server, source, cache, revUrl, confUrl, cookieCrumb,
     fakeuser = require('./fixtures/users').fakeuser,
     fakeusercli = require('./fixtures/users').fakeusercli,
     newEmail = 'new@fakeuser.com',
-    oldEmail = fakeuser.email;
+    oldEmail = fakeuser.email,
+    emailEdits = require('./fixtures/emailEdits');
+
+var postEmail = function (emailOpts) {
+  return {
+    url: '/email-edit',
+    method: 'POST',
+    credentials: fakeuser,
+    payload: emailOpts,
+    headers: { cookie: 'crumb=' + cookieCrumb }
+  }
+};
 
 // prepare the server
 before(function (done) {
@@ -42,8 +53,16 @@ describe('Accessing the email-edit page', function () {
     };
 
     server.inject(opts, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
+      emailEdits = emailEdits(cookieCrumb);
+
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('email-edit');
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });
   });
@@ -54,12 +73,7 @@ describe('Requesting an email change', function () {
     var opts = {
       url: '/email-edit',
       method: 'POST',
-      payload: {
-        _id: fakeuser._id,
-        name: fakeuser.name,
-        password: '12345',
-        email: newEmail
-      }
+      payload: emailEdits.newEmail
     };
 
     server.inject(opts, function (resp) {
@@ -69,19 +83,22 @@ describe('Requesting an email change', function () {
     });
   });
 
-  it('renders an error if an email address is not provided', function (done) {
-    var opts = {
+  it('renders an error if the cookie crumb is missing', function (done) {
+    var options = {
       url: '/email-edit',
       method: 'POST',
-      credentials: fakeuser,
-      payload: {
-        _id: fakeuser._id,
-        name: fakeuser.name,
-        password: '12345'
-      }
+      payload: {},
+      credentials: fakeuser
     };
 
-    server.inject(opts, function (resp) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(403);
+      done();
+    });
+  });
+
+  it('renders an error if an email address is not provided', function (done) {
+    server.inject(postEmail(emailEdits.missingEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('email-edit');
       expect(source.context.error).to.equal('Must provide a valid email address');
@@ -90,19 +107,7 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if an invalid email address is provided', function (done) {
-    var opts = {
-      url: '/email-edit',
-      method: 'POST',
-      credentials: fakeuser,
-      payload: {
-        _id: fakeuser._id,
-        name: fakeuser.name,
-        password: '12345',
-        email: 'blarg@boom'
-      }
-    };
-
-    server.inject(opts, function (resp) {
+    server.inject(postEmail(emailEdits.invalidEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('email-edit');
       expect(source.context.error).to.equal('Must provide a valid email address');
@@ -111,19 +116,7 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if the password is invalid', function (done) {
-    var opts = {
-      url: '/email-edit',
-      method: 'POST',
-      credentials: fakeuser,
-      payload: {
-        _id: fakeuser._id,
-        name: fakeuser.name,
-        password: 'password',
-        email: newEmail
-      }
-    };
-
-    server.inject(opts, function (resp) {
+    server.inject(postEmail(emailEdits.invalidPassword), function (resp) {
       expect(resp.statusCode).to.equal(403);
       expect(source.template).to.equal('email-edit');
       expect(source.context.error).to.equal('Invalid password');
@@ -132,22 +125,9 @@ describe('Requesting an email change', function () {
   });
 
   it('sends two emails if everything goes properly', function (done) {
-    var opts = {
-      url: '/email-edit',
-      method: 'POST',
-      credentials: fakeuser,
-      payload: {
-        _id: fakeuser._id,
-        name: fakeuser.name,
-        password: '12345',
-        email: newEmail
-      }
-    };
-
-    server.inject(opts, function (resp) {
+    server.inject(postEmail(emailEdits.newEmail), function (resp) {
       confUrl = source.confirm.text.match(/\/email-edit\/confirm\/[\/\w \.-]*\/?/)[0];
       revUrl = source.revert.text.match(/\/email-edit\/revert\/[\/\w \.-]*\/?/)[0];
-
       expect(resp.statusCode).to.equal(200);
       expect(source).to.have.deep.property('confirm.subject', 'npm Email Confirmation');
       expect(source).to.have.deep.property('revert.subject', 'npm Email Change Alert');
@@ -266,7 +246,10 @@ describe('Reverting an email change', function () {
   it('renders an error if the the wrong user is logged in', function (done) {
     var opts = {
       url: revUrl,
-      credentials: fakeusercli
+      credentials: {
+       name: "noone",
+       email: "f@boom.me",
+      }
     };
 
     server.inject(opts, function (resp) {
@@ -293,6 +276,7 @@ describe('Reverting an email change', function () {
 });
 
 after(function (done) {
+  fakeuser.email = oldEmail;
   server.app.cache._cache.connection.stop();
   done();
 });

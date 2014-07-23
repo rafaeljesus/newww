@@ -27,10 +27,10 @@ module.exports = function (done) {
       password: '12345'
     });
 
-    server.pack.register({
-      plugin: user,
-      options: config
-    }, function (err) {
+    server.pack.register([
+      { plugin: user, options: config },
+      { plugin: require('crumb'), options: { isSecure: true } }
+    ], function (err) {
 
       // manually start the cache
       server.app.cache._cache.connection.start(done);

@@ -4,7 +4,7 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var server, source, cache,
+var server, source, cache, cookieCrumb,
     fakeuser = require('./fixtures/users').fakeuser,
     fakeChangePass = require('./fixtures/users').fakeuserChangePassword;
 
@@ -39,8 +39,14 @@ describe('Getting to the password page', function () {
     };
 
     server.inject(options, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('password');
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });
   });
@@ -61,13 +67,30 @@ describe('Changing the password', function () {
     });
   });
 
+  it('renders an error if the cookie crumb is missing', function (done) {
+    var options = {
+      url: '/password',
+      method: 'POST',
+      payload: {},
+      credentials: fakeuser,
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(403);
+      done();
+    });
+  });
+
   it('allows authorized password changes to go through', function (done) {
     var options = {
       url: '/password',
       method: 'post',
       payload: fakeChangePass,
-      credentials: fakeuser
+      credentials: fakeuser,
+      headers: { cookie: 'crumb=' + cookieCrumb }
     };
+
+    options.payload.crumb = cookieCrumb;
 
     server.inject(options, function (resp) {
       // console.log(resp)

@@ -88,6 +88,6 @@ module.exports = function login (request, reply) {
     addLatencyMetric(timer, 'login');
 
     addMetric({name: 'login'})
-    return reply.view('login', opts)
+    return reply.view('login', opts).code(opts.error ? 400 : 200)
   }
 }

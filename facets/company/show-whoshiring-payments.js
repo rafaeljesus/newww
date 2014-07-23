@@ -31,7 +31,13 @@ module.exports = function (options) {
     var schema = Joi.object().keys({
       email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
       id: Joi.string().token(),
-      amount: Joi.number()
+      amount: Joi.number(),
+      livemode: Joi.string(),
+      created: Joi.string(),
+      used: Joi.string(),
+      object: Joi.string(),
+      type: Joi.string(),
+      card: Joi.object()
     });
 
     Joi.validate(request.payload, schema, function (err, token) {

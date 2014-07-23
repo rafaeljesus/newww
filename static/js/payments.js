@@ -7,11 +7,12 @@ $(document).ready(function () {
     image: '/static/img/logos/n-64.png',
     token: function(token, args) {
       token.amount = amount;
+      token.crumb = $('input[name=crumb]').val();
 
       $.ajax({
-        url: '/joinwhoshiring'
-      , data: token
-      , type: 'POST'
+        url: '/joinwhoshiring',
+        data: token,
+        type: 'POST'
       })
       .done(function (resp) {
         $('section').hide();

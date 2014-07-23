@@ -16,7 +16,10 @@ module.exports = function (done) {
   var server = Hapi.createServer(serverOptions);
   server.methods = require('./mock-server-methods')(server);
 
-  server.pack.register({ plugin: company, options: config }, done);
+  server.pack.register([
+    { plugin: company, options: config },
+    { plugin: require('crumb'), options: { isSecure: true } }
+  ], done);
 
   return server;
 }

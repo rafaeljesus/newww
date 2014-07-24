@@ -14,7 +14,7 @@ A **facet** is a mostly-self-involved piece of the website. Each facet is entire
 * Routes (in `index.js`)
 * Template controls (`show-[thing].js` for getting information from services and `presenters/[thing].js` for template-based utilities)
 * Templates (`[thing].hbs`)
-* Facet-specific tests (`test/*.js`). 
+* Facet-specific tests (`test/*.js`).
 
 Template partials are *not* housed in facets, as they are cross-facet (i.e. headers, footers, etc).
 
@@ -29,7 +29,7 @@ There are currently four facets:
 	* Business partnerships (i.e. the Who's Hiring? page)
 	* FAQ
 
-* The **user** facet focuses on all the things that users who visit the site might care about: 
+* The **user** facet focuses on all the things that users who visit the site might care about:
 	* Login/logout
 	* Editing profiles
 	* Editing email
@@ -76,7 +76,7 @@ _Then, in `facets/registry/package-page.js`:_
   getPackageFromCouch(couchLookupName(name), function (er, data) {
 
 	// stuff now that we have the package
-	
+
 	reply.view('package-page', pkg);
 
   });
@@ -85,7 +85,7 @@ _Then, in `facets/registry/package-page.js`:_
 
 ## Tests
 
-There are tests! We're using [Lab](https://github.com/spumko/lab) as our testing utility. Site-wide tests are currently located in the `test/` folder and can be run with `npm test`. Facet-specific tests are located in their respective `facet/[name]/test/` folders. 
+There are tests! We're using [Lab](https://github.com/spumko/lab) as our testing utility. Site-wide tests are currently located in the `test/` folder and can be run with `npm test`. Facet-specific tests are located in their respective `facet/[name]/test/` folders.
 
 Expect this bit to evolve as things get more complex. But for now, just having tests is a HUGE improvement.
 
@@ -102,6 +102,8 @@ Let's bring back semi-colons and comma-last. No rhyme or reason; just cuz.
 ## Running the server locally
 
 First, clone this repo.
+
+Second, copy numbat-config.example.js and config.example.js to numbat-config.js and config.js, respectively. Feel free to modify them to suit your needs.
 
 If you have a reasonably new machine, we strongly recommend using Virtualbox
 and Vagrant to run a pre-configured VM containing [couchdb](http://couchdb.apache.org/),
@@ -164,9 +166,9 @@ first run.
 
 ### 4. Start the web server
 
-In a separate terminal from the one running vagrant, run `npm start`.
+In a separate terminal outside of vagrant, run `npm start`. (You can also run `npm start` from inside vagrant, but you'll need to change your host to '0.0.0.0' in `config.js`. We recommend running it outside of vagrant, but it's totally up to you.)
 
-For ease of development, we've got a Gulpfile that uses [gulp](http://gulpjs.com/). It watches appropriate directories and restarts stuff for you when other stuff changes. Fortunately, you don't have to use gulp if you don't want to; just change the `start` line in the root `package.json` to `start: "node index.js"`.
+For ease of development, we've got a Gulpfile that uses [gulp](http://gulpjs.com/). It watches appropriate directories and restarts stuff for you when other stuff changes. Fortunately, you don't have to use gulp if you don't want to; just change the `start` line in the root `package.json` to `start: "node server.js"`.
 
 ### Under the hood
 
@@ -186,3 +188,5 @@ It is also running a copy of Elasticsearch, which you can hit locally if you
 want to test queries or perform admin:
 
 [http://localhost:9200/](http://localhost:9200/)
+
+You should also have access to both the [head](http://mobz.github.io/elasticsearch-head/) and [kopf](https://github.com/lmenezes/elasticsearch-kopf) Elasticsearch plugins, accessible at http://localhost:9200/_plugin/head/ and http://localhost:9200/_plugin/kopf/, respectively.

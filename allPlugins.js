@@ -17,7 +17,8 @@ paths.services = fs.readdirSync(path.join(root, 'services'));
 
 Object.keys(paths).forEach(function (type) {
   paths[type].forEach(function (plugin) {
-    if (todo !== 'test' || fs.existsSync(path.join(root, type, plugin, 'test'))) {
+    if (plugin !== '.DS_Store' &&
+	(todo !== 'test' || fs.existsSync(path.join(root, type, plugin, 'test'))) ) {
       process.chdir(path.join(root, type, plugin));
       exec('npm ' + todo, cb);
     }

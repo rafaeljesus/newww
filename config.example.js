@@ -5,6 +5,10 @@ var path = require('path'),
 exports.port = 15443;
 exports.host = "localhost";
 
+// uncomment this line if you want to run `npm start` inside the VM
+// fair warning: it might take a bit to get started, but it *will* work
+// exports.host = "0.0.0.0";
+
 exports.server = {
   views: {
     engines: {

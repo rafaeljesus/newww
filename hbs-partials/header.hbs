@@ -22,12 +22,14 @@
 
     <div id="page">
       <header>
-        <form action="/search" method="get">
-          {{#if search.q }}
-          <input name=q type="search" placeholder="Search Packages" value="<%= sanitize(search.q) %>" tabindex="1">
-          {{else}}
-          <input name=q type="search" placeholder="Search Packages" tabindex="1">
-          {{/if}}
+        <form id="search-container" action="/search" method="get">
+          <div id="package-search">
+            {{#if search.q }}
+            <input name=q type="search" class="typeahead search-input" placeholder="Search Packages" value="<%= sanitize(search.q) %>" tabindex="1">
+            {{else}}
+            <input name=q type="search" class="typeahead search-input" placeholder="Search Packages" tabindex="1">
+            {{/if}}
+          </div>
         </form>
         <h1>
           <a id="npm-logo" href="/">

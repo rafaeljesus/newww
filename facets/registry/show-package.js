@@ -6,7 +6,7 @@ var Hapi = require('hapi'),
 
 
 module.exports = function (request, reply) {
-  var getPackageFromCouch = request.server.methods.couch.getPackageFromCouch,
+  var getPackage = request.server.methods.couch.getPackage,
       getBrowseData = request.server.methods.couch.getBrowseData,
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
@@ -35,7 +35,7 @@ module.exports = function (request, reply) {
     return reply.view('error', opts).code(400)
   }
 
-  getPackageFromCouch(opts.name, function (er, pkg) {
+  getPackage(opts.name, function (er, pkg) {
 
     if (er || pkg.error) {
       opts.errorType = 'notFound';

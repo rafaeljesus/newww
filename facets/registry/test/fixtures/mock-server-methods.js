@@ -9,7 +9,7 @@ var pkgs = {
 module.exports = function (server) {
   return {
     couch: {
-      getPackageFromCouch: function (pkgName, next) {
+      getPackage: function (pkgName, next) {
         if (pkgs[pkgName]) {
           return next(null, pkgs[pkgName]);
         }

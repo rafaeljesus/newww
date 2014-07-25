@@ -27,7 +27,7 @@ before(function (done) {
 
 describe('getting packages from couch', function () {
   it('successfully grabs a package', function (done) {
-    server.methods.couch.getPackageFromCouch('request', function (er, pkg) {
+    server.methods.couch.getPackage('request', function (er, pkg) {
       expect(er).to.not.exist;
       expect(pkg).to.exist;
       expect(pkg.name).to.equal('request');
@@ -36,7 +36,7 @@ describe('getting packages from couch', function () {
   });
 
   it('returns an error for packages that don\'t exist', function (done) {
-    server.methods.couch.getPackageFromCouch('goober', function (er, pkg) {
+    server.methods.couch.getPackage('goober', function (er, pkg) {
       expect(er).to.exist;
       expect(er.output.statusCode).to.equal(404);
       expect(pkg).to.not.exist;
@@ -47,7 +47,7 @@ describe('getting packages from couch', function () {
 
 describe('getting user info from couch', function () {
   it('successfully grabs a user', function (done) {
-    server.methods.couch.getUserFromCouch('blah', function (er, user) {
+    server.methods.couch.getUser('blah', function (er, user) {
       expect(er).to.not.exist;
       expect(user).to.exist;
       expect(user.name).to.equal('blah');
@@ -56,7 +56,7 @@ describe('getting user info from couch', function () {
   });
 
   it('fails if the user doesn\'t exist', function (done) {
-    server.methods.couch.getUserFromCouch('boop', function (er, user) {
+    server.methods.couch.getUser('boop', function (er, user) {
       expect(er).to.exist;
       expect(er.output.statusCode).to.equal(404);
       expect(user).to.not.exist;

@@ -5,7 +5,7 @@ var Hapi = require('hapi'),
 module.exports = function changeEmail (service, adminCouch) {
   return function (name, email, next) {
     var timer = { start: Date.now() };
-    service.methods.couch.getUserFromCouch(name, function (err, user) {
+    service.methods.couch.getUser(name, function (err, user) {
       if (err) {
         log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + name + ' from couch'), err);
         return next(Hapi.error.internal(err));

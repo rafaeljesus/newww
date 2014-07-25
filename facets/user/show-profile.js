@@ -6,7 +6,7 @@ var transform = require('./presenters/profile').transform,
 
 module.exports = function (options) {
   return function (request, reply) {
-    var getUserFromCouch = request.server.methods.couch.getUserFromCouch,
+    var getUser = request.server.methods.couch.getUser,
         getBrowseData = request.server.methods.couch.getBrowseData,
         addMetric = request.server.methods.metrics.addMetric,
         addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
@@ -20,15 +20,15 @@ module.exports = function (options) {
     var profileName = request.params.name || opts.user.name;
 
     if (request.info.referrer.indexOf('profile-edit') !== -1) {
-      getUserFromCouch.cache.drop(profileName, function (er, resp) {
+      getUser.cache.drop(profileName, function (er, resp) {
         if (er) {
           return showError(request, reply, 'Unable to drop key ' + profileName, er);
         }
-        return getUserFromCouch(profileName, showProfile);
+        return getUser(profileName, showProfile);
       });
     }
 
-    return getUserFromCouch(profileName, showProfile);
+    return getUser(profileName, showProfile);
 
     function showProfile (err, showprofile) {
       if (err) {

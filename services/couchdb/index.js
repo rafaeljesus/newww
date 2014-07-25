@@ -31,11 +31,11 @@ exports.register = function Couch (service, options, next) {
   function after (service, next) {
     addMetric = service.methods.addCouchLatencyMetric;
 
-    service.method('couch.getPackageFromCouch', getPackageFromCouch, {
+    service.method('couch.getPackage', getPackage, {
       cache: { expiresIn: 60 * SECOND, segment: '##package' }
     });
 
-    service.method('couch.getUserFromCouch', getUserFromCouch, {
+    service.method('couch.getUser', getUser, {
       cache: { expiresIn: 60 * SECOND, segment: '##user' }
     });
 
@@ -79,7 +79,7 @@ exports.register.attributes = {
 
 //========== functions ===========
 
-function getPackageFromCouch (package, next) {
+function getPackage (package, next) {
   timer.start = Date.now();
   anonCouch.get('/registry/' + package, function (er, cr, data) {
     timer.end = Date.now();
@@ -93,7 +93,7 @@ function getPackageFromCouch (package, next) {
   });
 }
 
-function getUserFromCouch (name, next) {
+function getUser (name, next) {
   timer.start = Date.now();
   anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
     timer.end = Date.now();

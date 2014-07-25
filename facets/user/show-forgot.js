@@ -200,7 +200,7 @@ function lookupUserByUsername (name, request, reply) {
     hiring: request.server.methods.hiring.getRandomWhosHiring()
    };
 
-  request.server.methods.couch.getUserFromCouch(name, function (er, user) {
+  request.server.methods.couch.getUser(name, function (er, user) {
     if (er) {
       opts.error = er.message;
 

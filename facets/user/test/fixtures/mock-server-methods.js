@@ -46,7 +46,7 @@ module.exports = function (server) {
         return next(null, fakeBrowse[type])
       },
 
-      getUserFromCouch: function (username, next) {
+      getUser: function (username, next) {
         if (users[username]) {
           return next(null, users[username]);
         }

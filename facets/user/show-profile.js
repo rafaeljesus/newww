@@ -6,15 +6,15 @@ var transform = require('./presenters/profile').transform,
 
 module.exports = function (options) {
   return function (request, reply) {
-    var getUserFromCouch = request.server.methods.getUserFromCouch,
-        getBrowseData = request.server.methods.getBrowseData,
-        addMetric = request.server.methods.addMetric,
-        addLatencyMetric = request.server.methods.addPageLatencyMetric,
+    var getUserFromCouch = request.server.methods.couch.getUserFromCouch,
+        getBrowseData = request.server.methods.couch.getBrowseData,
+        addMetric = request.server.methods.metrics.addMetric,
+        addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring()
     };
 
     var profileName = request.params.name || opts.user.name;
@@ -101,7 +101,7 @@ function showError (request, reply, message, logExtras) {
     user: request.auth.credentials,
     errId: errId,
     code: 500,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
   log.error(errId + ' ' + Hapi.error.internal(message), logExtras);

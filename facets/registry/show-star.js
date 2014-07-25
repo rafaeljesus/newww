@@ -4,15 +4,15 @@ var Hapi = require('hapi'),
 
 
 module.exports = function (request, reply) {
-  var star = request.server.methods.star,
-      unstar = request.server.methods.unstar,
-      addMetric = request.server.methods.addMetric,
-      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+  var star = request.server.methods.couch.star,
+      unstar = request.server.methods.couch.unstar,
+      addMetric = request.server.methods.metrics.addMetric,
+      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
   if (request.method === 'get') {

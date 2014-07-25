@@ -23,13 +23,13 @@ module.exports = function (request, reply) {
         month: commaIt(cached.downloads.month, {sep: ' '}),
       },
       totalPackages: commaIt(cached.totalPackages, {sep: ' '}),
-      hiring: request.server.methods.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring()
     };
 
     timer.end = Date.now();
-    request.server.methods.addPageLatencyMetric(timer, 'homepage');
+    request.server.methods.metrics.addPageLatencyMetric(timer, 'homepage');
 
-    request.server.methods.addMetric({name: 'homepage'});
+    request.server.methods.metrics.addMetric({name: 'homepage'});
     reply.view('index', opts);
   });
 }
@@ -37,11 +37,11 @@ module.exports = function (request, reply) {
 // ======= functions =======
 
 function load (request, cb) {
-  var browse = request.server.methods.getBrowseData,
-      recentAuthors = request.server.methods.getRecentAuthors,
-      addMetric = request.server.methods.addMetric,
-      downloads = request.server.methods.getAllDownloads,
-      packagesCreated = request.server.methods.packagesCreated;
+  var browse = request.server.methods.couch.getBrowseData,
+      recentAuthors = request.server.methods.couch.getRecentAuthors,
+      addMetric = request.server.methods.metrics.addMetric,
+      downloads = request.server.methods.downloads.getAllDownloads,
+      packagesCreated = request.server.methods.couch.packagesCreated;
 
   var n = 6,
       cached = {};

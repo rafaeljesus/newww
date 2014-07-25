@@ -8,56 +8,65 @@ var pkgs = {
 
 module.exports = function (server) {
   return {
-    addMetric: function (metric) {
-      return;
-    },
+    couch: {
+      getPackageFromCouch: function (pkgName, next) {
+        if (pkgs[pkgName]) {
+          return next(null, pkgs[pkgName]);
+        }
 
-    addPageLatencyMetric: function (timer, page) {
-      return;
-    },
+        return next(Hapi.error.notFound('Username not found: ' + pkgName));
+      },
 
-    getAllDownloadsForPackage: function (name, next) {
-      var d = {
-        day: 0,
-        week: 0,
-        month: 0
-      };
+      getBrowseData: function (type, arg, skip, limit, next) {
+        return next(null, pkgs.fakeDeps);
+      },
 
-      return next(null, d);
-    },
+      star: function (package, username, next) {
+        return next(null, 'ok');
+      },
 
-    getDownloadsForPackage: function (period, detail, package, next) {
-      return next(null, [{day: '2014-07-12', downloads: 0}, {day: '2014-07-13', downloads: 0}]);
-    },
-
-    getPackageFromCouch: function (pkgName, next) {
-      if (pkgs[pkgName]) {
-        return next(null, pkgs[pkgName]);
+      unstar: function (package, username, next) {
+        return next(null, 'ok');
       }
 
-      return next(Hapi.error.notFound('Username not found: ' + pkgName));
     },
 
-    getBrowseData: function (type, arg, skip, limit, next) {
-      return next(null, pkgs.fakeDeps);
+    downloads: {
+      getAllDownloadsForPackage: function (name, next) {
+        var d = {
+          day: 0,
+          week: 0,
+          month: 0
+        };
+
+        return next(null, d);
+      },
+
+      getDownloadsForPackage: function (period, detail, package, next) {
+        return next(null, [{day: '2014-07-12', downloads: 0}, {day: '2014-07-13', downloads: 0}]);
+      }
     },
 
-    getRandomWhosHiring: function () {
-      return {
-        "id": "voxer",
-        "name": "Voxer",
-        "description": "Come join us at <a href='http://www.voxer.com/careers/'>Voxer</a> & work on a powerful push-to-talk service! We are looking for node.js Eng, iOS/Android Eng, Ops Eng, & more!",
-        "url": "http://www.voxer.com/careers/",
-        "show_weight": 1
-      };
+    hiring: {
+      getRandomWhosHiring: function () {
+        return {
+          "id": "voxer",
+          "name": "Voxer",
+          "description": "Come join us at <a href='http://www.voxer.com/careers/'>Voxer</a> & work on a powerful push-to-talk service! We are looking for node.js Eng, iOS/Android Eng, Ops Eng, & more!",
+          "url": "http://www.voxer.com/careers/",
+          "show_weight": 1
+        };
+      }
     },
 
-    star: function (package, username, next) {
-      return next(null, 'ok');
-    },
+    metrics: {
+      addMetric: function (metric) {
+        return;
+      },
 
-    unstar: function (package, username, next) {
-      return next(null, 'ok');
+      addPageLatencyMetric: function (timer, page) {
+        return;
+      }
     }
   }
 };

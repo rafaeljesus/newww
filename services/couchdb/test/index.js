@@ -27,7 +27,7 @@ before(function (done) {
 
 describe('getting packages from couch', function () {
   it('successfully grabs a package', function (done) {
-    server.methods.getPackageFromCouch('request', function (er, pkg) {
+    server.methods.couch.getPackageFromCouch('request', function (er, pkg) {
       expect(er).to.not.exist;
       expect(pkg).to.exist;
       expect(pkg.name).to.equal('request');
@@ -36,7 +36,7 @@ describe('getting packages from couch', function () {
   });
 
   it('returns an error for packages that don\'t exist', function (done) {
-    server.methods.getPackageFromCouch('goober', function (er, pkg) {
+    server.methods.couch.getPackageFromCouch('goober', function (er, pkg) {
       expect(er).to.exist;
       expect(er.output.statusCode).to.equal(404);
       expect(pkg).to.not.exist;
@@ -47,7 +47,7 @@ describe('getting packages from couch', function () {
 
 describe('getting user info from couch', function () {
   it('successfully grabs a user', function (done) {
-    server.methods.getUserFromCouch('blah', function (er, user) {
+    server.methods.couch.getUserFromCouch('blah', function (er, user) {
       expect(er).to.not.exist;
       expect(user).to.exist;
       expect(user.name).to.equal('blah');
@@ -56,7 +56,7 @@ describe('getting user info from couch', function () {
   });
 
   it('fails if the user doesn\'t exist', function (done) {
-    server.methods.getUserFromCouch('boop', function (er, user) {
+    server.methods.couch.getUserFromCouch('boop', function (er, user) {
       expect(er).to.exist;
       expect(er.output.statusCode).to.equal(404);
       expect(user).to.not.exist;
@@ -67,7 +67,7 @@ describe('getting user info from couch', function () {
 
 describe('signing up a user', function () {
   it('successfully creates a new account', function (done) {
-    server.methods.signupUser({
+    server.methods.couch.signupUser({
       name: 'boom',
       password: '12345',
       verify: '12345',
@@ -88,7 +88,7 @@ describe('saving a profile', function () {
       otherStuff: 'things'
     };
 
-    server.methods.saveProfile(user, function (er, data) {
+    server.methods.couch.saveProfile(user, function (er, data) {
       expect(er).to.not.exist;
       expect(data).to.exist;
       expect(data.ok).to.equal('updated profile');
@@ -99,7 +99,7 @@ describe('saving a profile', function () {
 
 describe('changing a password', function () {
   it('successfully changes a password with the proper inputs', function (done) {
-    server.methods.changePass({name: 'boom', password: '12345'}, function (er, data) {
+    server.methods.couch.changePass({name: 'boom', password: '12345'}, function (er, data) {
       expect(er).to.not.exist;
       expect(data).to.exist;
       expect(data.name).to.equal('boom');
@@ -110,7 +110,7 @@ describe('changing a password', function () {
 
 describe('changing email', function () {
   it('successfully changes a user\'s email address', function (done) {
-    server.methods.changeEmail('boom', 'boom@boom.net', function (er) {
+    server.methods.couch.changeEmail('boom', 'boom@boom.net', function (er) {
       expect(er).to.not.exist;
       done();
     });
@@ -119,7 +119,7 @@ describe('changing email', function () {
 
 describe('browsing', function () {
   it('gets the top 10 starred packages', function (done) {
-    server.methods.getBrowseData('star', null, 0, 10, function (er, data) {
+    server.methods.couch.getBrowseData('star', null, 0, 10, function (er, data) {
       expect(er).to.not.exist;
       expect(data).to.be.an.Array;
       expect(data).to.have.length(10);
@@ -135,7 +135,7 @@ describe('getting recent authors', function () {
   it('gets the top 10 recent authors', function (done) {
     var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
-    server.methods.getRecentAuthors(TWO_WEEKS, 0, 10, function (er, authors) {
+    server.methods.couch.getRecentAuthors(TWO_WEEKS, 0, 10, function (er, authors) {
       expect(er).to.not.exist;
       expect(authors).to.be.an.Array;
       expect(authors).to.have.length(10);
@@ -149,7 +149,7 @@ describe('getting recent authors', function () {
 
 describe('starring a package', function () {
   it('adds a star to a package', function (done) {
-    server.methods.star('request', 'boom', function (er, data) {
+    server.methods.couch.star('request', 'boom', function (er, data) {
       expect(er).to.not.exist;
       expect(data).to.exist;
       expect(data.ok).to.equal('starred');
@@ -160,7 +160,7 @@ describe('starring a package', function () {
 
 describe('unstarring a package', function () {
   it('removes a star from a package', function (done) {
-    server.methods.unstar('request', 'boom', function (er, data) {
+    server.methods.couch.unstar('request', 'boom', function (er, data) {
       expect(er).to.not.exist;
       expect(data).to.exist;
       expect(data.ok).to.equal('unstarred');
@@ -171,7 +171,7 @@ describe('unstarring a package', function () {
 
 describe('getting total number of packages', function () {
   it('gets the number of packages in the registry', function (done) {
-    server.methods.packagesCreated(function (er, packages) {
+    server.methods.couch.packagesCreated(function (er, packages) {
       expect(er).to.not.exist;
       expect(packages).to.be.a.number;
       expect(packages).to.be.gt(0);
@@ -182,7 +182,7 @@ describe('getting total number of packages', function () {
 
 describe('logging in and out', function () {
   it('allows a user to log in with proper credentials', function (done) {
-    server.methods.loginUser({name: 'boom', password: '12345'}, function (er, user) {
+    server.methods.couch.loginUser({name: 'boom', password: '12345'}, function (er, user) {
       expect(er).to.not.exist;
       expect(user).to.exist;
       expect(user.name).to.equal('boom');
@@ -191,7 +191,7 @@ describe('logging in and out', function () {
   });
 
   it('allows a user to log out', function (done) {
-    server.methods.logoutUser(function (er, data) {
+    server.methods.couch.logoutUser(function (er, data) {
       expect(er).to.not.exist;
       expect(data).to.exist;
       expect(data.statusCode).to.equal(200);

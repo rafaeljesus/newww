@@ -18,7 +18,7 @@ before(function (done) {
 
 describe('Getting all the whoshiring entries', function () {
   it('should be random', function (done) {
-    var all = server.methods.getAllWhosHiring();
+    var all = server.methods.hiring.getAllWhosHiring();
 
     var shuffled = all.map(function (c) {
       return c.id;
@@ -33,9 +33,9 @@ describe('Getting all the whoshiring entries', function () {
 
 describe('Getting a random whoshiring entry', function () {
   it('should yield a different one regularly', function (done) {
-    var first = server.methods.getRandomWhosHiring(),
-        second = server.methods.getRandomWhosHiring(),
-        third = server.methods.getRandomWhosHiring();
+    var first = server.methods.hiring.getRandomWhosHiring(),
+        second = server.methods.hiring.getRandomWhosHiring(),
+        third = server.methods.hiring.getRandomWhosHiring();
 
     if (first === second) {
       expect(first).to.not.eql(third);

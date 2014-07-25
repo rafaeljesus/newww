@@ -10,5 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "numbat-emitter": "^0.0.3"
+  },
+  "devDependencies": {
+    "lab": "^3.2.1"
   }
 }

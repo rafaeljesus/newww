@@ -12,7 +12,7 @@ module.exports = function (options) {
 
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring()
     };
 
     from = options.emailFrom;
@@ -45,9 +45,9 @@ module.exports = function (options) {
         }
       } else {
         timer.end = Date.now();
-        request.server.methods.addPageLatencyMetric(timer, 'email-edit');
+        request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit');
 
-        request.server.methods.addMetric({ name: 'email-edit' });
+        request.server.methods.metrics.addMetric({ name: 'email-edit' });
         return reply.view('email-edit', opts);
       }
     }
@@ -60,9 +60,9 @@ module.exports = function (options) {
         opts.error = 'Must provide a valid email address';
 
         timer.end = Date.now();
-        request.server.methods.addPageLatencyMetric(timer, 'email-edit-error');
+        request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit-error');
 
-        request.server.methods.addMetric({ name: 'email-edit-error' });
+        request.server.methods.metrics.addMetric({ name: 'email-edit-error' });
         return reply.view('email-edit', opts).code(400);
       }
 
@@ -75,9 +75,9 @@ module.exports = function (options) {
         opts.error = 'Invalid password';
 
         timer.end = Date.now();
-        request.server.methods.addPageLatencyMetric(timer, 'email-edit-error');
+        request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit-error');
 
-        request.server.methods.addMetric({ name: 'email-edit-error' });
+        request.server.methods.metrics.addMetric({ name: 'email-edit-error' });
         return reply.view('email-edit', opts).code(403);
       }
       return handle(request, reply, email2);
@@ -90,7 +90,7 @@ module.exports = function (options) {
 function handle (request, reply, email2) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
   var confTok = crypto.randomBytes(18).toString('hex'),
@@ -139,7 +139,7 @@ function handle (request, reply, email2) {
 function sendEmails (conf, rev, request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
   var name = conf.name,
@@ -202,9 +202,9 @@ function sendEmails (conf, rev, request, reply) {
 
   if (devMode) {
     timer.end = Date.now();
-    request.server.methods.addPageLatencyMetric(timer, 'email-edit-send-emails');
+    request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
 
-    request.server.methods.addMetric({ name: 'email-edit-send-emails' });
+    request.server.methods.metrics.addMetric({ name: 'email-edit-send-emails' });
     return reply({confirm: confMail, revert: revMail});
   }
 
@@ -221,9 +221,9 @@ function sendEmails (conf, rev, request, reply) {
 
       opts.submitted = true;
       timer.end = Date.now();
-      request.server.methods.addPageLatencyMetric(timer, 'email-edit-send-emails');
+      request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
 
-      request.server.methods.addMetric({ name: 'email-edit-send-emails' });
+      request.server.methods.metrics.addMetric({ name: 'email-edit-send-emails' });
       return reply.view('email-edit', opts);
     });
   });
@@ -234,7 +234,7 @@ function confirm (request, reply) {
 
   var opts = {
         user: request.auth.credentials,
-        hiring: methods.getRandomWhosHiring()
+        hiring: methods.hiring.getRandomWhosHiring()
       },
       cache = request.server.app.cache;
 
@@ -271,15 +271,15 @@ function confirm (request, reply) {
         return showError(request, reply, 'Unable to drop key ' + confKey, 500, err);
       }
 
-      methods.changeEmail(opts.user.name, email2, function (er) {
+      methods.couch.changeEmail(opts.user.name, email2, function (er) {
         if (er) {
           return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email2, 500, er);
         }
 
         timer.end = Date.now();
-        methods.addPageLatencyMetric(timer, 'confirmEmailChange');
+        methods.metrics.addPageLatencyMetric(timer, 'confirmEmailChange');
 
-        methods.addMetric({ name: 'confirmEmailChange' });
+        methods.metrics.addMetric({ name: 'confirmEmailChange' });
         opts.confirmed = true;
         return reply.view('email-edit-confirmation', opts);
       });
@@ -292,7 +292,7 @@ function revert (request, reply) {
 
   var opts = {
         user: request.auth.credentials,
-        hiring: methods.getRandomWhosHiring()
+        hiring: methods.hiring.getRandomWhosHiring()
       },
       cache = request.server.app.cache;
 
@@ -335,15 +335,15 @@ function revert (request, reply) {
           return showError(request, reply, 'Unable to drop key ' + revKey, 500, err);
         }
 
-        methods.changeEmail(opts.user.name, email1, function (er) {
+        methods.couch.changeEmail(opts.user.name, email1, function (er) {
           if (er) {
             return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email1, 500, er);
           }
 
           timer.end = Date.now();
-          methods.addPageLatencyMetric(timer, 'revertEmailChange');
+          methods.metrics.addPageLatencyMetric(timer, 'revertEmailChange');
 
-          methods.addMetric({ name: 'revertEmailChange' });
+          methods.metrics.addMetric({ name: 'revertEmailChange' });
 
           return reply.view('email-edit-confirmation', opts);
         });
@@ -367,7 +367,7 @@ function showError (request, reply, message, code, logExtras) {
     user: request.auth.credentials,
     errId: errId,
     code: code || 500,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
   var error;

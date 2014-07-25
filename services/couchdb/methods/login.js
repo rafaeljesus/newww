@@ -18,7 +18,7 @@ module.exports = function Login (service, anonCouch) {
         return next(Hapi.error.forbidden('Username and/or Password is wrong'));
       }
 
-      service.methods.getUserFromCouch(loginDetails.name, function (err, data) {
+      service.methods.couch.getUserFromCouch(loginDetails.name, function (err, data) {
         if (err) {
           log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + loginDetails.name + ' from couch'), er);
         }

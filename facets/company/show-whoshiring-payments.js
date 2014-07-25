@@ -8,13 +8,13 @@ module.exports = function (options) {
       VALID_CHARGE_AMOUNTS = [35000, 100000];
 
   return function (request, reply) {
-    var addMetric = request.server.methods.addMetric,
-        addLatencyMetric = request.server.methods.addPageLatencyMetric,
+    var addMetric = request.server.methods.metrics.addMetric,
+        addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.getRandomWhosHiring(),
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
       title: "Join the Who's Hiring Page"
     }
 

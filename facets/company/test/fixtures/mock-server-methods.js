@@ -3,42 +3,51 @@ var browse = require('./browseData'),
 
 module.exports = function (server) {
   return {
-    addMetric: function (metric) {
-      return;
+
+    couch: {
+      getBrowseData: function (type, arg, skip, limit, next) {
+        return next(null, browse[type]);
+      },
+
+      getRecentAuthors: function (arg, skip, limit, next) {
+        return next(null, browse.authors);
+      },
+
+      packagesCreated: function (next) {
+        return next(null, 0);
+      }
     },
 
-    addPageLatencyMetric: function (timer, page) {
-      return;
+    downloads: {
+      getAllDownloads: function (next) {
+        var d = {
+          day: 0,
+          week: 0,
+          month: 0
+        };
+
+        return next(null, d);
+      }
     },
 
-    getAllDownloads: function (next) {
-      var d = {
-        day: 0,
-        week: 0,
-        month: 0
-      };
+    hiring: {
+      getAllWhosHiring: function () {
+        return whosHiring.all;
+      },
 
-      return next(null, d);
+      getRandomWhosHiring: function () {
+        return whosHiring.random;
+      }
     },
 
-    getBrowseData: function (type, arg, skip, limit, next) {
-      return next(null, browse[type]);
-    },
+    metrics: {
+      addMetric: function (metric) {
+        return;
+      },
 
-    getAllWhosHiring: function () {
-      return whosHiring.all;
-    },
-
-    getRandomWhosHiring: function () {
-      return whosHiring.random;
-    },
-
-    getRecentAuthors: function (arg, skip, limit, next) {
-      return next(null, browse.authors);
-    },
-
-    packagesCreated: function (next) {
-      return next(null, 0);
+      addPageLatencyMetric: function (timer, page) {
+        return;
+      }
     }
   }
 };

@@ -77,7 +77,7 @@ function fallbackHandler (request, reply) {
       opts = { user: request.auth.credentials },
       timer = { start: Date.now() };
 
-  request.server.methods.getPackageFromCouch(name, function (err, package) {
+  request.server.methods.couch.getPackageFromCouch(name, function (err, package) {
 
     if (package && !package.error) {
       reply.redirect('/package/' + package._id);
@@ -86,9 +86,9 @@ function fallbackHandler (request, reply) {
     opts.url = request.server.info.uri + request.url.path;
 
     timer.end = Date.now();
-    request.server.methods.addPageLatencyMetric(timer, '404-not-found');
+    request.server.methods.metrics.addPageLatencyMetric(timer, '404-not-found');
 
-    request.server.methods.addMetric({name: '404', url: opts.url});
+    request.server.methods.metrics.addMetric({name: '404', url: opts.url});
     reply.view('notfound', opts).code(404);
   });
 };

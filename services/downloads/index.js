@@ -13,7 +13,7 @@ exports.register = function Downloads (service, options, next) {
   function after (service, next) {
     var addMetric = service.methods.addMetric;
 
-    service.method('getDownloadsForPackage', getDownloads(options.url, addMetric), {
+    service.method('downloads.getDownloadsForPackage', getDownloads(options.url, addMetric), {
       cache: {
         staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
         staleIn: 60 * 60 * SECOND, // refresh after an hour
@@ -21,7 +21,7 @@ exports.register = function Downloads (service, options, next) {
       }
     });
 
-    service.method('getAllDownloadsForPackage', getAllDownloads(options.url, addMetric), {
+    service.method('downloads.getAllDownloadsForPackage', getAllDownloads(options.url, addMetric), {
       cache: {
         staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
         staleIn: 60 * 60 * SECOND, // refresh after an hour
@@ -29,7 +29,7 @@ exports.register = function Downloads (service, options, next) {
       }
     });
 
-    service.method('getAllDownloads', getAllDownloads(options.url, addMetric), {
+    service.method('downloads.getAllDownloads', getAllDownloads(options.url, addMetric), {
       cache: {
         staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
         staleIn: 60 * 60 * SECOND, // refresh after an hour

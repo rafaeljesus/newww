@@ -21,7 +21,7 @@ module.exports = function About (options) {
     var opts = {
       user: request.auth.credentials,
       title: 'About',
-      hiring: request.server.methods.getRandomWhosHiring(),
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
       package: options.package,
       dependencies: deps,
       HEAD: options.HEAD,
@@ -33,8 +33,8 @@ module.exports = function About (options) {
     }
 
     timer.end = Date.now();
-    request.server.methods.addPageLatencyMetric(timer, 'about');
-    request.server.methods.addMetric({name: 'about'});
+    request.server.methods.metrics.addPageLatencyMetric(timer, 'about');
+    request.server.methods.metrics.addMetric({name: 'about'});
     reply.view('about', opts);
   };
 };

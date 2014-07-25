@@ -5,10 +5,10 @@ var murmurhash = require('murmurhash'),
     url = require('url');
 
 module.exports = function login (request, reply) {
-  var loginUser = request.server.methods.loginUser,
-      setSession = request.server.methods.setSession(request),
-      addMetric = request.server.methods.addMetric,
-      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+  var loginUser = request.server.methods.couch.loginUser,
+      setSession = request.server.methods.couch.setSession(request),
+      addMetric = request.server.methods.metrics.addMetric,
+      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   if (request.auth.isAuthenticated) {
@@ -19,7 +19,7 @@ module.exports = function login (request, reply) {
   }
 
   var opts = {
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
   if (request.method === 'post') {

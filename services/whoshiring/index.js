@@ -7,8 +7,8 @@ var whos_hiring = require('../../static/whos_hiring.json');
 
 exports.register = function (service, options, next) {
 
-  service.method('getAllWhosHiring', hiring(true));
-  service.method('getRandomWhosHiring', hiring(false));
+  service.method('hiring.getAllWhosHiring', hiring(true));
+  service.method('hiring.getRandomWhosHiring', hiring(false));
 
   next();
 }

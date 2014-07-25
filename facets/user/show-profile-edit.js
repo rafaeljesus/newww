@@ -6,15 +6,15 @@ var transform = require('./presenters/profile').transform,
 
 module.exports = function (options) {
   return function (request, reply) {
-    var saveProfile = request.server.methods.saveProfile,
-        setSession = request.server.methods.setSession(request),
-        addMetric = request.server.methods.addMetric,
-        addLatencyMetric = request.server.methods.addPageLatencyMetric,
+    var saveProfile = request.server.methods.couch.saveProfile,
+        setSession = request.server.methods.couch.setSession(request),
+        addMetric = request.server.methods.metrics.addMetric,
+        addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var opts = {
       user: transform(request.auth.credentials, options),
-      hiring: request.server.methods.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring()
     }
 
     if (request.method === 'post' || request.method === 'put') {

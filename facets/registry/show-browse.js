@@ -9,12 +9,12 @@ var possibleTypes = ['all', 'keyword', 'author', 'updated', 'depended', 'star', 
 module.exports = function (request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
-  var getBrowseData = request.server.methods.getBrowseData,
-      addMetric = request.server.methods.addMetric,
-      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+  var getBrowseData = request.server.methods.couch.getBrowseData,
+      addMetric = request.server.methods.metrics.addMetric,
+      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   // the url will be something like /browse/{type?}/{arg?}/{page}

@@ -10,12 +10,12 @@ exports.register = function Metrics (service, options, next) {
     node: os.hostname()
   });
 
-  service.method('addMetric', function (obj) {
+  service.method('metrics.addMetric', function (obj) {
     emitter.metric(obj);
     return;
   });
 
-  service.method('addCouchLatencyMetric', function (timer, action) {
+  service.method('metrics.addCouchLatencyMetric', function (timer, action) {
     emitter.metric({
       name: 'latency',
       value: timer.end - timer.start,
@@ -25,7 +25,7 @@ exports.register = function Metrics (service, options, next) {
     return;
   });
 
-  service.method('addPageLatencyMetric', function (timer, page) {
+  service.method('metrics.addPageLatencyMetric', function (timer, page) {
     emitter.metric({
       name: 'latency',
       value: timer.end - timer.start,

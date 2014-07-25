@@ -9,8 +9,8 @@ module.exports = function (options) {
   });
 
   return function (request, reply) {
-    var addMetric = request.server.methods.addMetric,
-        addLatencyMetric = request.server.methods.addPageLatencyMetric,
+    var addMetric = request.server.methods.metrics.addMetric,
+        addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var page = parseInt(request.query.page || '0', 10);
@@ -92,7 +92,7 @@ module.exports = function (options) {
 
       var opts = {
         user: request.auth.credentials,
-        hiring: request.server.methods.getRandomWhosHiring()
+        hiring: request.server.methods.hiring.getRandomWhosHiring()
       };
 
       if (error) {

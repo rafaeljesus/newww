@@ -6,12 +6,12 @@ var Hapi = require('hapi'),
 
 
 module.exports = function (request, reply) {
-  var getPackageFromCouch = request.server.methods.getPackageFromCouch,
-      getBrowseData = request.server.methods.getBrowseData,
-      addMetric = request.server.methods.addMetric,
-      addLatencyMetric = request.server.methods.addPageLatencyMetric,
-      getDownloadsForPackage = request.server.methods.getDownloadsForPackage,
-      getAllDownloadsForPackage = request.server.methods.getAllDownloadsForPackage;
+  var getPackageFromCouch = request.server.methods.couch.getPackageFromCouch,
+      getBrowseData = request.server.methods.couch.getBrowseData,
+      addMetric = request.server.methods.metrics.addMetric,
+      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+      getDownloadsForPackage = request.server.methods.downloads.getDownloadsForPackage,
+      getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;
 
   var timer = { start: Date.now() };
 
@@ -21,7 +21,7 @@ module.exports = function (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   }
 
   opts.name = request.params.package

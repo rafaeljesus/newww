@@ -7,14 +7,14 @@ var Hapi = require('hapi'),
 module.exports = function (request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
-  var changePass = request.server.methods.changePass,
-      loginUser = request.server.methods.loginUser,
-      setSession = request.server.methods.setSession(request),
-      addMetric = request.server.methods.addMetric,
-      addLatencyMetric = request.server.methods.addPageLatencyMetric,
+  var changePass = request.server.methods.couch.changePass,
+      loginUser = request.server.methods.couch.loginUser,
+      setSession = request.server.methods.couch.setSession(request),
+      addMetric = request.server.methods.metrics.addMetric,
+      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   if (request.method === 'get' || request.method === 'head') {
@@ -116,7 +116,7 @@ function showError (request, reply, message, logExtras) {
     user: request.auth.credentials,
     errId: errId,
     code: 500,
-    hiring: request.server.methods.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
   log.error(errId + ' ' + Hapi.error.internal(message), logExtras);

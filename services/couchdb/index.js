@@ -31,37 +31,37 @@ exports.register = function Couch (service, options, next) {
   function after (service, next) {
     addMetric = service.methods.addCouchLatencyMetric;
 
-    service.method('getPackageFromCouch', getPackageFromCouch, {
+    service.method('couch.getPackageFromCouch', getPackageFromCouch, {
       cache: { expiresIn: 60 * SECOND, segment: '##package' }
     });
 
-    service.method('getUserFromCouch', getUserFromCouch, {
+    service.method('couch.getUserFromCouch', getUserFromCouch, {
       cache: { expiresIn: 60 * SECOND, segment: '##user' }
     });
 
-    service.method('lookupUserByEmail', require('./methods/emailLookup')(adminCouch, addMetric));
+    service.method('couch.lookupUserByEmail', require('./methods/emailLookup')(adminCouch, addMetric));
 
-    service.method('getBrowseData', require('./methods/browse')(anonCouch, addMetric), {
+    service.method('couch.getBrowseData', require('./methods/browse')(anonCouch, addMetric), {
       cache: { expiresIn: 60 * SECOND, segment: '##browse' }
     });
 
-    service.method('getRecentAuthors', require('./methods/recentAuthors')(anonCouch, addMetric))
+    service.method('couch.getRecentAuthors', require('./methods/recentAuthors')(anonCouch, addMetric))
 
-    service.method('loginUser', require('./methods/login')(service, anonCouch));
-    service.method('logoutUser', logoutUser(anonCouch));
+    service.method('couch.loginUser', require('./methods/login')(service, anonCouch));
+    service.method('couch.logoutUser', logoutUser(anonCouch));
 
-    service.method('signupUser', signupUser);
+    service.method('couch.signupUser', signupUser);
 
-    service.method('saveProfile', saveProfile);
+    service.method('couch.saveProfile', saveProfile);
 
-    service.method('changePass', changePass);
+    service.method('couch.changePass', changePass);
 
-    service.method('changeEmail', require('./methods/changeEmail')(service, adminCouch));
+    service.method('couch.changeEmail', require('./methods/changeEmail')(service, adminCouch));
 
-    service.method('star', star);
-    service.method('unstar', unstar);
+    service.method('couch.star', star);
+    service.method('couch.unstar', unstar);
 
-    service.method('packagesCreated', packagesCreated, {
+    service.method('couch.packagesCreated', packagesCreated, {
       cache: {
         staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
         staleIn: 10 * SECOND, // refresh after 10 seconds

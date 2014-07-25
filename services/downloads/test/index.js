@@ -24,14 +24,14 @@ before(function (done) {
 
 describe('Getting download counts for a specific package', function () {
   it('fails with incorrect parameters', function (done) {
-    server.methods.getDownloadsForPackage('last-something', 'point', 'request', function (er, data) {
+    server.methods.downloads.getDownloadsForPackage('last-something', 'point', 'request', function (er, data) {
       expect(er.error).to.equal('Invalid period specified');
       done();
     });
   });
 
   it('returns null data for an invalid (non-existent) package name', function (done) {
-    server.methods.getDownloadsForPackage('last-month', 'point', 'bajskhl', function (er, data) {
+    server.methods.downloads.getDownloadsForPackage('last-month', 'point', 'bajskhl', function (er, data) {
       expect(data).to.exist;
       expect(data).to.equal(0);
       done();
@@ -39,7 +39,7 @@ describe('Getting download counts for a specific package', function () {
   });
 
   it('gets a point with valid parameters', function (done) {
-    server.methods.getDownloadsForPackage('last-month', 'point', 'request', function (er, data) {
+    server.methods.downloads.getDownloadsForPackage('last-month', 'point', 'request', function (er, data) {
       expect(er).to.be.null;
       expect(data).to.exist;
       expect(data).to.be.gt(0);
@@ -49,7 +49,7 @@ describe('Getting download counts for a specific package', function () {
   });
 
   it('gets a range with valid parameters', function (done) {
-    server.methods.getDownloadsForPackage('last-month', 'range', 'request', function (er, data) {
+    server.methods.downloads.getDownloadsForPackage('last-month', 'range', 'request', function (er, data) {
       expect(er).to.be.null;
       expect(data).to.be.an('array');
       expect(data[0]).to.have.property('day');
@@ -61,7 +61,7 @@ describe('Getting download counts for a specific package', function () {
 
 describe('Getting all download counts for a specific package', function () {
   it('returns null data for an invalid (non-existent) package name', function (done) {
-    server.methods.getAllDownloadsForPackage('bajskhl', function (er, data) {
+    server.methods.downloads.getAllDownloadsForPackage('bajskhl', function (er, data) {
       expect(data).to.exist;
       expect(data).to.have.property('day');
       expect(data).to.have.property('week');
@@ -74,7 +74,7 @@ describe('Getting all download counts for a specific package', function () {
   });
 
   it('works with valid parameters', function (done) {
-    server.methods.getAllDownloadsForPackage('request', function (er, data) {
+    server.methods.downloads.getAllDownloadsForPackage('request', function (er, data) {
       expect(data).to.exist;
       expect(data).to.have.property('day');
       expect(data).to.have.property('week');
@@ -89,7 +89,7 @@ describe('Getting all download counts for a specific package', function () {
 
 describe('Getting download counts for all packages', function () {
   it('works with valid parameters', function (done) {
-    server.methods.getAllDownloads(function (er, data) {
+    server.methods.downloads.getAllDownloads(function (er, data) {
       expect(data).to.exist;
       expect(data).to.have.property('day');
       expect(data).to.have.property('week');

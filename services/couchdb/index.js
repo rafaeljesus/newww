@@ -29,7 +29,7 @@ exports.register = function Couch (service, options, next) {
   next();
 
   function after (service, next) {
-    addMetric = service.methods.addCouchLatencyMetric;
+    addMetric = service.methods.metrics.addCouchLatencyMetric;
 
     service.method('couch.getPackage', getPackage, {
       cache: { expiresIn: 60 * SECOND, segment: '##package' }

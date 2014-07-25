@@ -24,7 +24,7 @@ module.exports = function Login (service, anonCouch) {
         }
 
         timer.end = Date.now();
-        service.methods.addCouchLatencyMetric(timer,'login');
+        service.methods.metrics.addCouchLatencyMetric(timer,'login');
 
         return next(err, data);
       });

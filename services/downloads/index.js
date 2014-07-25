@@ -11,7 +11,7 @@ exports.register = function Downloads (service, options, next) {
   service.dependency('newww-service-metrics', after);
 
   function after (service, next) {
-    var addMetric = service.methods.addMetric;
+    var addMetric = service.methods.metrics.addMetric;
 
     service.method('downloads.getDownloadsForPackage', getDownloads(options.url, addMetric), {
       cache: {

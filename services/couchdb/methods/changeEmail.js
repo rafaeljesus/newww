@@ -25,7 +25,7 @@ module.exports = function changeEmail (service, adminCouch) {
         }
 
         timer.end = Date.now();
-        service.methods.addCouchLatencyMetric(timer, 'changeEmail');
+        service.methods.metrics.addCouchLatencyMetric(timer, 'changeEmail');
 
         return next(null);
       });

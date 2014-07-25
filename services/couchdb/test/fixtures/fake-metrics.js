@@ -1,10 +1,10 @@
 exports.register = function Metrics (service, options, next) {
 
-  service.method('addMetric', function (obj) {
+  service.method('metrics.addMetric', function (obj) {
     return;
   });
 
-  service.method('addCouchLatencyMetric', function (timer, action) {
+  service.method('metrics.addCouchLatencyMetric', function (timer, action) {
     return;
   });
 

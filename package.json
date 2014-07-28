@@ -5,7 +5,6 @@
   "main": "server.js",
   "scripts": {
     "test": "lab -vC; node allPlugins t",
-    "prestart": "node_modules/.bin/stylus stylus/index.styl --use nib --out static/css/",
     "start": "gulp develop",
     "install": "node allPlugins",
     "dev": "node dev/go.js"
@@ -36,6 +35,7 @@
     "gulp": "^3.6.2",
     "gulp-concat": "^2.2.0",
     "gulp-nodemon": "^1.0.2",
+    "gulp-streamify": "0.0.5",
     "gulp-stylus": "^1.0.0",
     "gulp-uglify": "^0.3.0",
     "lab": "^3.1.1",
@@ -44,6 +44,7 @@
     "once": "^1.3.0",
     "replicate": "^0.2.0",
     "request": "^2.36.0",
-    "touch": "0.0.3"
+    "touch": "0.0.3",
+    "vinyl-source-stream": "^0.1.1"
   }
 }

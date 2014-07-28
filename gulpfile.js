@@ -3,6 +3,9 @@ var gulp = require('gulp'),
     stylus = require('gulp-stylus'),
     uglify = require('gulp-uglify'),
     concat = require('gulp-concat'),
+    browserify = require('browserify'),
+    source = require('vinyl-source-stream'),
+    streamify = require('gulp-streamify'),
     bistre = require('bistre'),
     nodemon = require('gulp-nodemon');
 
@@ -10,7 +13,33 @@ gulp.task('styles', function () {
   gulp.src('stylus/index.styl')
       .pipe(stylus({use: [nib()]}))
       .pipe(gulp.dest('static/css/'))
-})
+});
+
+gulp.task('browserify', function () {
+  browserify('./assets/js/typeahead.js')
+    .bundle()
+    .pipe(source('typeahead.min.js'))
+    .pipe(streamify(uglify()))
+    .pipe(gulp.dest('assets/js/'))
+});
+
+var footerScripts = [
+  "assets/js/jquery-2.1.0.min.js",
+  "assets/js/d3.js",
+  "assets/js/charts.js",
+  "assets/js/sh_main.js",
+  "assets/js/sh_javascript.min.js",
+  "assets/js/scripts.js",
+  "assets/js/google-analytics.js",
+  "assets/js/typeahead.min.js"
+];
+
+gulp.task('concat', function () {
+  gulp.src(footerScripts)
+      .pipe(uglify())
+      .pipe(concat('footer.min.js'))
+      .pipe(gulp.dest('static/js/'))
+});
 
 gulp.task('develop', function () {
   process.env.NODE_ENV = 'dev';
@@ -30,30 +59,7 @@ gulp.task('develop', function () {
       this.stderr.pipe(bistre({time: true}))
                  .pipe(process.stderr);
     })
-})
+});
 
-var footerScripts = [
-  "static/js/jquery-2.1.0.min.js",
-  "static/js/d3.js",
-  "static/js/charts.js",
-  "static/js/sh_main.js",
-  "static/js/sh_javascript.min.js",
-  "static/js/scripts.js",
-  "static/js/google-analytics.js",
-  "https://ssl.google-analytics.com/ga.js"
-];
-
-gulp.task('concat', function () {
-  gulp.src(footerScripts)
-      .pipe(uglify())
-      .pipe(concat('footer.min.js'))
-      .pipe(gulp.dest('static/js/'))
-})
-
-// gulp.task('watch', function () {
-//   // watch stylus files
-//   gulp.watch('stylus/*.styl', ['styles'])
-
-// })
-
-gulp.task('default', ['styles'])
+gulp.task('default', ['styles']);
+gulp.task('build', ['styles', 'browserify', 'concat']);

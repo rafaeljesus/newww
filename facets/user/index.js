@@ -80,7 +80,7 @@ exports.register.attributes = {
 
 // ===== functions =====
 function logout (request, reply) {
-  var delSession = request.server.methods.couch.delSession(request),
+  var delSession = request.server.methods.delSession(request),
       user = request.auth.credentials,
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,

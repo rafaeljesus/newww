@@ -30,6 +30,7 @@ exports.register = function Couch (service, options, next) {
 
   function after (service, next) {
     addMetric = service.methods.metrics.addCouchLatencyMetric;
+    var userMethods = require('./methods/user')(options,service)
 
     service.method('couch.getPackage', getPackage, {
       cache: { expiresIn: 60 * SECOND, segment: '##package' }
@@ -47,8 +48,8 @@ exports.register = function Couch (service, options, next) {
 
     service.method('couch.getRecentAuthors', require('./methods/recentAuthors')(anonCouch, addMetric))
 
-    service.method('couch.loginUser', require('./methods/login')(service, anonCouch));
-    service.method('couch.logoutUser', logoutUser(anonCouch));
+    service.method('couch.loginUser', userMethods.login);
+    service.method('couch.logoutUser', userMethods.logout);
 
     service.method('couch.signupUser', signupUser);
 
@@ -105,12 +106,6 @@ function getUser (name, next) {
 
     return next(null, data);
   })
-}
-
-function logoutUser (anonCouch) {
-  return function (next) {
-    return anonCouch.logout(next);
-  };
 }
 
 function signupUser (acct, next) {

@@ -153,12 +153,12 @@ function setSession (request) {
         var errId = uuid.v1();
         log.error(errId + ' ' + Hapi.error.internal('there was an error setting the cache'));
 
-        request.server.methods.addMetric({name: 'setSessionError'});
+        request.server.methods.metrics.addMetric({name: 'setSessionError'});
         return next(Hapi.error.internal(errId));
       }
 
       timer.end = Date.now();
-      request.server.methods.addMetric({
+      request.server.methods.metrics.addMetric({
         name: 'latency',
         value: timer.end - timer.start,
         type: 'redis',
@@ -178,18 +178,18 @@ function delSession (request) {
 
     user.sid = sid;
 
-    request.server.methods.logoutUser(function () {
+    request.server.methods.couch.logoutUser(user.token, function () {
 
       request.server.app.cache.drop(sid, function (err) {
         if (err) {
           var errId = uuid.v1();
           log.error(errId + ' ' + Hapi.error.internal('there was an error clearing the cache'));
-          request.server.methods.addMetric({name: 'delSessionError'});
+          request.server.methods.metrics.addMetric({name: 'delSessionError'});
           return next(Hapi.error.internal(errId));
         }
 
         timer.end = Date.now();
-        request.server.methods.addMetric({
+        request.server.methods.metrics.addMetric({
           name: 'latency',
           value: timer.end - timer.start,
           type: 'redis',

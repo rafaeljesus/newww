@@ -3,9 +3,11 @@ var Hapi = require('hapi'),
     uuid = require('node-uuid');
 
 module.exports = function Login (service, anonCouch) {
+  console.log("Logging in is happening")
   return function (loginDetails, next) {
     var timer = { start: Date.now() };
     anonCouch.login(loginDetails, function (er, cr, couchSession) {
+      console.log("anoncouch logged in as " + loginDetails.name)
       if (er) {
         log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to log in user ' + loginDetails.name), er);
 

@@ -12,7 +12,7 @@ module.exports = function (request, reply) {
 
   var changePass = request.server.methods.couch.changePass,
       loginUser = request.server.methods.couch.loginUser,
-      setSession = request.server.methods.couch.setSession(request),
+      setSession = request.server.methods.setSession(request),
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       timer = { start: Date.now() };

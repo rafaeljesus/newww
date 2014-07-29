@@ -7,8 +7,8 @@ var Joi = require('joi'),
 
 module.exports = function signup (request, reply) {
   var signupUser = request.server.methods.couch.signupUser,
-      setSession = request.server.methods.couch.setSession(request),
-      delSession = request.server.methods.couch.delSession(request),
+      setSession = request.server.methods.setSession(request),
+      delSession = request.server.methods.delSession(request),
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       timer = { start: Date.now() };

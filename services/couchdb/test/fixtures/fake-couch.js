@@ -44,6 +44,10 @@ module.exports = function (config) {
                 .post('/_session').twice()
                 .reply(200, require('./users').boom)
 
+                // --- log out ---
+                .delete('/_session')
+                .reply(200)
+
                 // --- stars ---
                 .put('/registry/_design/app/_update/star/request', 'boom')
                 .reply(201, { ok: 'starred'})
@@ -62,7 +66,6 @@ module.exports = function (config) {
                 // --- recent authors ---
                 .get('/registry/_design/app/_view/browseAuthorsRecent?group_level=2&startkey=XXX&stale=update_after').twice()
                 .reply(200, require('./browse').authors)
-
 
   return couch;
 }

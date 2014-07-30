@@ -10,8 +10,8 @@ module.exports = function(options,service) {
       var timer = { start: Date.now() };
       var loginCouch = new CouchLogin(options.registryCouch, NaN);
       loginCouch.login(loginDetails, function (er, cr, couchSession) {
-        console.log("anoncouch logged in as " + loginDetails.name)
-        console.log("token is " + couchSession.token)
+        // console.log("anoncouch logged in as " + loginDetails.name)
+        // console.log("token is " + JSON.stringify(loginCouch.token))
         if (er) {
           log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to log in user ' + loginDetails.name), er);
 
@@ -33,15 +33,16 @@ module.exports = function(options,service) {
           service.methods.metrics.addCouchLatencyMetric(timer, 'login');
 
           // attach the token to the user data so we can save it in the session
-          data.token = couchSession.token
+          data.token = loginCouch.token
 
           return next(err, data);
         });
       });
     },
+
     logout: function(token, next) {
       var logoutCouch = new CouchLogin(options.registryCouch, token);
-      logoutCouch.logout(next)
+      logoutCouch.logout(next);
     }
   };
 };

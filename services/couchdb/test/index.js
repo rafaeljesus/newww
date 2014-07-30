@@ -186,12 +186,13 @@ describe('logging in and out', function () {
       expect(er).to.not.exist;
       expect(user).to.exist;
       expect(user.name).to.equal('boom');
+      expect(user.token).to.exist;
       done();
     });
   });
 
   it('allows a user to log out', function (done) {
-    server.methods.couch.logoutUser(function (er, data) {
+    server.methods.couch.logoutUser('randomToken', function (er, data) {
       expect(er).to.not.exist;
       expect(data).to.exist;
       expect(data.statusCode).to.equal(200);

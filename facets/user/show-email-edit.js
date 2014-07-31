@@ -271,7 +271,7 @@ function confirm (request, reply) {
         return showError(request, reply, 'Unable to drop key ' + confKey, 500, err);
       }
 
-      methods.couch.changeEmail(opts.user.name, email2, function (er) {
+      methods.user.changeEmail(opts.user.name, email2, function (er) {
         if (er) {
           return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email2, 500, er);
         }
@@ -335,7 +335,7 @@ function revert (request, reply) {
           return showError(request, reply, 'Unable to drop key ' + revKey, 500, err);
         }
 
-        methods.couch.changeEmail(opts.user.name, email1, function (er) {
+        methods.user.changeEmail(opts.user.name, email1, function (er) {
           if (er) {
             return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email1, 500, er);
           }

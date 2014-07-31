@@ -1,7 +1,7 @@
 {
-  "name": "newww-service-couchdb",
+  "name": "newww-service-user",
   "version": "0.0.1",
-  "description": "Adds couchDB functionality to Hapi",
+  "description": "A service that provides methods for interacting with the couch user db",
   "main": "index.js",
   "scripts": {
     "test": "lab -vC"

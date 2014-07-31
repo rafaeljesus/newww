@@ -1,7 +1,7 @@
 var Hapi = require('hapi'),
-    anonCouch = require('../couchDB').anonCouch,
+    anonCouch = require('../../../couchDB').anonCouch,
     qs = require('querystring'),
-    log = require('bole')('couchdb-browse'),
+    log = require('bole')('registry-browse'),
     uuid = require('node-uuid');
 
 var viewNames = {

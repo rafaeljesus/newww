@@ -1,5 +1,5 @@
 var Hapi = require('hapi'),
-    adminCouch = require('../couchDB').adminCouch;
+    adminCouch = require('../../../couchDB').adminCouch;
 
 var timer = {};
 

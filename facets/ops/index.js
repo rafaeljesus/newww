@@ -43,7 +43,6 @@ function ping (request, reply) {
 }
 
 function status (request, reply) {
-  console.log(request)
   var info = {
     status:   'OK',
     pid:      process.pid,

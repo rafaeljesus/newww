@@ -10,8 +10,8 @@ module.exports = function (request, reply) {
     hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
-  var changePass = request.server.methods.couch.changePass,
-      loginUser = request.server.methods.couch.loginUser,
+  var changePass = request.server.methods.user.changePass,
+      loginUser = request.server.methods.user.loginUser,
       setSession = request.server.methods.setSession(request),
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,

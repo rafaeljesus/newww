@@ -1,6 +1,6 @@
 var Hapi = require('hapi'),
-    adminCouch = require('../couchDB').adminCouch,
-    log = require('bole')('couchdb-changeEmail'),
+    adminCouch = require('../../../couchDB').adminCouch,
+    log = require('bole')('user-changeEmail'),
     uuid = require('node-uuid');
 
 module.exports = function changeEmail (service) {
@@ -8,7 +8,7 @@ module.exports = function changeEmail (service) {
     var timer = { start: Date.now() };
 
     // this would be cleaned up by creating an atomic changeEmail update function
-    service.methods.couch.getUser(name, function (err, user) {
+    service.methods.user.getUser(name, function (err, user) {
       if (err) {
         log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + name + ' from couch'), err);
         return next(Hapi.error.internal(err));

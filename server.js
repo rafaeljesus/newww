@@ -16,6 +16,10 @@ bole.output({
 // set up the server
 var server = new Hapi.Server(config.host, config.port, config.server)
 
+// configure couch
+var couchDB = require('./couchDB');
+couchDB.init(config.couch);
+
 server.route({
   path: '/favicon.ico',
   method: 'GET',
@@ -114,9 +118,10 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
       options: require('./package.json').version
     },
     {
-      plugin: require('./services/couchdb'),
+      plugin: require('./services/user'),
       options: config.couch
     },
+    require('./services/registry'),
     require('./services/whoshiring'),
     {
       plugin: require('./services/metrics'),

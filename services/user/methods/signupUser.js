@@ -1,5 +1,5 @@
 var Hapi = require('hapi'),
-    anonCouch = require('../couchDB').anonCouch;
+    anonCouch = require('../../../couchDB').anonCouch;
 
 module.exports = function signupUser (acct, next) {
   var timer = { start: Date.now() };

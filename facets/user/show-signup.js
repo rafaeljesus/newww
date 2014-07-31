@@ -6,7 +6,7 @@ var Joi = require('joi'),
     uuid = require('node-uuid');
 
 module.exports = function signup (request, reply) {
-  var signupUser = request.server.methods.couch.signupUser,
+  var signupUser = request.server.methods.user.signupUser,
       setSession = request.server.methods.setSession(request),
       delSession = request.server.methods.delSession(request),
       addMetric = request.server.methods.metrics.addMetric,

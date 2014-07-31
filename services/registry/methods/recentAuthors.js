@@ -1,4 +1,4 @@
-var anonCouch = require('../couchDB').anonCouch,
+var anonCouch = require('../../../couchDB').anonCouch,
     qs = require('querystring'),
     AC = require('async-cache'),
     maxAge = 1000 * 60 * 60 * 24 * 365,

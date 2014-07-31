@@ -8,7 +8,7 @@ var pkgs = {
 
 module.exports = function (server) {
   return {
-    couch: {
+    registry: {
       getPackage: function (pkgName, next) {
         if (pkgs[pkgName]) {
           return next(null, pkgs[pkgName]);

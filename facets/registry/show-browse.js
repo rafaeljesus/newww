@@ -12,7 +12,7 @@ module.exports = function (request, reply) {
     hiring: request.server.methods.hiring.getRandomWhosHiring()
   };
 
-  var getBrowseData = request.server.methods.couch.getBrowseData,
+  var getBrowseData = request.server.methods.registry.getBrowseData,
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       timer = { start: Date.now() };

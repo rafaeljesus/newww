@@ -77,7 +77,7 @@ function fallbackHandler (request, reply) {
       opts = { user: request.auth.credentials },
       timer = { start: Date.now() };
 
-  request.server.methods.couch.getPackage(name, function (err, package) {
+  request.server.methods.registry.getPackage(name, function (err, package) {
 
     if (package && !package.error) {
       reply.redirect('/package/' + package._id);

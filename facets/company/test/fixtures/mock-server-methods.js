@@ -4,7 +4,7 @@ var browse = require('./browseData'),
 module.exports = function (server) {
   return {
 
-    couch: {
+    registry: {
       getBrowseData: function (type, arg, skip, limit, next) {
         return next(null, browse[type]);
       },

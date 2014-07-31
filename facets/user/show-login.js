@@ -5,7 +5,7 @@ var murmurhash = require('murmurhash'),
     url = require('url');
 
 module.exports = function login (request, reply) {
-  var loginUser = request.server.methods.couch.loginUser,
+  var loginUser = request.server.methods.user.loginUser,
       setSession = request.server.methods.setSession(request),
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
@@ -29,7 +29,7 @@ module.exports = function login (request, reply) {
         type: 'missing'
       };
     } else {
-      console.log("Post received, about to login")
+      // console.log("Post received, about to login")
       loginUser(request.payload, function (er, user) {
         if (er || !user) {
           var errId = uuid.v1();
@@ -45,11 +45,11 @@ module.exports = function login (request, reply) {
           addMetric({name: 'login-error'})
           return reply.view('login', opts).code(400);
         }
-        console.log("Login received, user available, setting session")
-        console.log("User is",user)
+        // console.log("Login received, user available, setting session")
+        // console.log("User is",user)
 
         setSession(user, function (err) {
-          console.log("session set, next...")
+          // console.log("session set, next...")
           if (err) {
             var errId = uuid.v1();
             log.error(errId + ' ' + err)
@@ -81,7 +81,7 @@ module.exports = function login (request, reply) {
           addLatencyMetric(timer, 'login-complete');
 
           addMetric({name: 'login-complete'})
-          console.log("Sending logged-in user to " + donePath)
+          // console.log("Sending logged-in user to " + donePath)
           return reply.redirect(donePath);
         });
       });

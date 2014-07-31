@@ -37,11 +37,11 @@ module.exports = function (request, reply) {
 // ======= functions =======
 
 function load (request, cb) {
-  var browse = request.server.methods.couch.getBrowseData,
-      recentAuthors = request.server.methods.couch.getRecentAuthors,
+  var browse = request.server.methods.registry.getBrowseData,
+      recentAuthors = request.server.methods.registry.getRecentAuthors,
       addMetric = request.server.methods.metrics.addMetric,
       downloads = request.server.methods.downloads.getAllDownloads,
-      packagesCreated = request.server.methods.couch.packagesCreated;
+      packagesCreated = request.server.methods.registry.packagesCreated;
 
   var n = 6,
       cached = {};

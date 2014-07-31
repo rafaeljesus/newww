@@ -6,7 +6,7 @@ var transform = require('./presenters/profile').transform,
 
 module.exports = function (options) {
   return function (request, reply) {
-    var saveProfile = request.server.methods.couch.saveProfile,
+    var saveProfile = request.server.methods.user.saveProfile,
         setSession = request.server.methods.setSession(request),
         addMetric = request.server.methods.metrics.addMetric,
         addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,

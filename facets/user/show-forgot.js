@@ -94,7 +94,7 @@ function token (request, reply) {
 
     log.warn('About to change password', { name: name });
 
-    request.server.methods.couch.changePass(newAuth, function (err, data) {
+    request.server.methods.user.changePass(newAuth, function (err, data) {
       if (err) {
       return showError(request, reply, 'Failed to set password for ' + newAuth.name, 400, er);
       }
@@ -165,7 +165,7 @@ function lookupUserByEmail (email, request, reply) {
     hiring: request.server.methods.hiring.getRandomWhosHiring()
    };
 
-  request.server.methods.couch.lookupUserByEmail(email, function (er, usernames) {
+  request.server.methods.user.lookupUserByEmail(email, function (er, usernames) {
     if (er) {
       opts.error = er.message;
 
@@ -200,7 +200,7 @@ function lookupUserByUsername (name, request, reply) {
     hiring: request.server.methods.hiring.getRandomWhosHiring()
    };
 
-  request.server.methods.couch.getUser(name, function (er, user) {
+  request.server.methods.user.getUser(name, function (er, user) {
     if (er) {
       opts.error = er.message;
 

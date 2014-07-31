@@ -6,8 +6,8 @@ var Hapi = require('hapi'),
 
 
 module.exports = function (request, reply) {
-  var getPackage = request.server.methods.couch.getPackage,
-      getBrowseData = request.server.methods.couch.getBrowseData,
+  var getPackage = request.server.methods.registry.getPackage,
+      getBrowseData = request.server.methods.registry.getBrowseData,
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       getDownloadsForPackage = request.server.methods.downloads.getDownloadsForPackage,

@@ -40,7 +40,13 @@ module.exports = function (server) {
       }
     },
 
-    couch: {
+    registry : {
+      getBrowseData: function (type, arg, skip, limit, next) {
+        return next(null, fakeBrowse[type])
+      }
+    },
+
+    user: {
       changeEmail: function (name, email, next) {
         if (name !== 'fakeuser') {
           return next(Hapi.error.notFound('Username not found: ' + username));
@@ -57,10 +63,6 @@ module.exports = function (server) {
 
         users[auth.name].derived_key = passHash(auth);
         return next(null);
-      },
-
-      getBrowseData: function (type, arg, skip, limit, next) {
-        return next(null, fakeBrowse[type])
       },
 
       getUser: function (username, next) {

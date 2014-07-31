@@ -6,8 +6,8 @@ var transform = require('./presenters/profile').transform,
 
 module.exports = function (options) {
   return function (request, reply) {
-    var getUser = request.server.methods.couch.getUser,
-        getBrowseData = request.server.methods.couch.getBrowseData,
+    var getUser = request.server.methods.user.getUser,
+        getBrowseData = request.server.methods.registry.getBrowseData,
         addMetric = request.server.methods.metrics.addMetric,
         addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
         timer = { start: Date.now() };

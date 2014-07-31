@@ -125,6 +125,45 @@ exports.search = {
   perPage: 20
 };
 
+// all those plugins
+exports.plugins = [
+  {
+    plugin: require('crumb'),
+    options: { isSecure: true }
+  },
+  {
+    plugin: require('./facets/company'),
+    options: exports.company
+  },
+  {
+    plugin: require('./facets/registry'),
+    options: exports.search
+  },
+  {
+    plugin: require('./facets/user'),
+    options: exports.user
+  },
+  {
+    plugin: require('./facets/ops'),
+    options: require('./package.json').version
+  },
+  {
+    plugin: require('./services/user'),
+    options: exports.couch
+  },
+  require('./services/registry'),
+  require('./services/whoshiring'),
+  {
+    plugin: require('./services/metrics'),
+    options: exports.metrics
+  },
+  {
+    plugin: require('./services/downloads'),
+    options: exports.downloads
+  }
+];
+
+
 function hostmatch (m) { return function (u) {
   return u.host && u.host.match(m)
 } }

@@ -75,57 +75,22 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     password: config.session.password,
     appendNext: 'done',
     cookie: config.session.cookie,
-    validateFunc: function (session, callback) {
+    validateFunc: function (session, cb) {
       cache.get(session.sid, function (err, cached) {
 
         if (err) {
-          return callback(err, false);
+          return cb(err, false);
         }
         if (!cached) {
-          return callback(null, false);
+          return cb(null, false);
         }
 
-        return callback(null, true, cached.item)
+        return cb(null, true, cached.item)
       })
     }
   });
 
-  server.pack.register([
-    {
-      plugin: require('crumb'),
-      options: { isSecure: true }
-    },
-    {
-      plugin: require('./facets/company'),
-      options: config.company
-    },
-    {
-      plugin: require('./facets/registry'),
-      options: config.search
-    },
-    {
-      plugin: require('./facets/user'),
-      options: config.user
-    },
-    {
-      plugin: require('./facets/ops'),
-      options: require('./package.json').version
-    },
-    {
-      plugin: require('./services/user'),
-      options: config.couch
-    },
-    require('./services/registry'),
-    require('./services/whoshiring'),
-    {
-      plugin: require('./services/metrics'),
-      options: config.metrics
-    },
-    {
-      plugin: require('./services/downloads'),
-      options: config.downloads
-    }
-  ], function(err) {
+  server.pack.register(config.plugins, function(err) {
     if (err) {
       // actually, if there's something wrong with plugin loading,
       // DO NOT PASS GO, DO NOT COLLECT $200. Throw the error.

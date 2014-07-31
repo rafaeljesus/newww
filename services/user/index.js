@@ -21,6 +21,11 @@ exports.register = function User (service, options, next) {
 
   service.method('user.changeEmail', require('./methods/changeEmail')(service));
 
+  var sessionMethods = require('./methods/sessions');
+
+  service.method('user.setSession', sessionMethods.set);
+  service.method('user.delSession', sessionMethods.del);
+
   next();
 };
 

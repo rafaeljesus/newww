@@ -101,6 +101,47 @@ describe('changing email', function () {
   });
 });
 
+describe('setting and deleting sessions', function () {
+  var request = {
+    auth: {
+      session: {
+        set: function () {},
+        clear: function () {}
+      }
+    },
+    server: {
+      app: {
+        cache: {
+          set: function (id, user, ttl, next) { return next(null); },
+          drop: function (id, next) { return next(null); }
+        }
+      },
+      methods: {
+        user: {
+          logoutUser: function (token, next) { return next(null); }
+        },
+        metrics: {
+          addMetric: function () {}
+        }
+      }
+    }
+  }
+
+  it('sets a session', function (done) {
+    server.methods.user.setSession(request)({name: 'boom'}, function (er) {
+      expect(er).to.be.null;
+      done();
+    });
+  });
+
+  it('deletes a session', function (done) {
+    server.methods.user.delSession(request)({name: 'boom'}, function (er) {
+      expect(er).to.be.null;
+      done();
+    })
+  });
+});
+
 describe('logging in and out', function () {
   it('allows a user to log in with proper credentials', function (done) {
     server.methods.user.loginUser({name: 'boom', password: '12345'}, function (er, user) {

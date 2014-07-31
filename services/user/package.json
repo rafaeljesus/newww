@@ -10,7 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "async-cache": "^0.1.5",
-    "couch-login": "^1.0.0"
+    "couch-login": "^1.0.0",
+    "murmurhash": "0.0.2"
   },
   "devDependencies": {
     "lab": "^3.2.1",

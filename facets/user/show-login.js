@@ -6,7 +6,7 @@ var murmurhash = require('murmurhash'),
 
 module.exports = function login (request, reply) {
   var loginUser = request.server.methods.user.loginUser,
-      setSession = request.server.methods.setSession(request),
+      setSession = request.server.methods.user.setSession(request),
       addMetric = request.server.methods.metrics.addMetric,
       addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
       timer = { start: Date.now() };

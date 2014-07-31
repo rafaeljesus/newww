@@ -1,8 +1,6 @@
 var Hapi = require('hapi'),
     Hoek = require('hoek'),
-    config = require('./config.js'),
-    uuid = require('node-uuid'),
-    murmurhash = require('murmurhash');
+    config = require('./config.js');
 
 // set up the logger
 var bole = require('bole'),
@@ -92,10 +90,6 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     }
   });
 
-  // make it easier for setting/clearing sessions throughout the app
-  server.method('setSession', setSession);
-  server.method('delSession', delSession);
-
   server.pack.register([
     {
       plugin: require('crumb'),
@@ -142,68 +136,4 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
       log.info('Hapi server started @ ' + server.info.uri);
     });
   });
-})
-
-// ======== functions =========
-
-function setSession (request) {
-  return function (user, next) {
-    var sid = murmurhash.v3(user.name, 55).toString(16),
-        timer = { start: Date.now() };
-
-    user.sid = sid;
-
-    request.server.app.cache.set(sid, user, 0, function (err) {
-      if (err) {
-        var errId = uuid.v1();
-        log.error(errId + ' ' + Hapi.error.internal('there was an error setting the cache'));
-
-        request.server.methods.metrics.addMetric({name: 'setSessionError'});
-        return next(Hapi.error.internal(errId));
-      }
-
-      timer.end = Date.now();
-      request.server.methods.metrics.addMetric({
-        name: 'latency',
-        value: timer.end - timer.start,
-        type: 'redis',
-        action: 'setSession'
-      });
-
-      request.auth.session.set({sid: sid});
-      return next(null);
-    });
-  }
-}
-
-function delSession (request) {
-  return function (user, next) {
-    var sid = murmurhash.v3(user.name, 55).toString(16),
-        timer = { start: Date.now() };
-
-    user.sid = sid;
-
-    request.server.methods.couch.logoutUser(user.token, function () {
-
-      request.server.app.cache.drop(sid, function (err) {
-        if (err) {
-          var errId = uuid.v1();
-          log.error(errId + ' ' + Hapi.error.internal('there was an error clearing the cache'));
-          request.server.methods.metrics.addMetric({name: 'delSessionError'});
-          return next(Hapi.error.internal(errId));
-        }
-
-        timer.end = Date.now();
-        request.server.methods.metrics.addMetric({
-          name: 'latency',
-          value: timer.end - timer.start,
-          type: 'redis',
-          action: 'delSession'
-        });
-
-        request.auth.session.clear();
-        return next(null);
-      });
-    });
-  }
-}
+});

@@ -1,10 +1,16 @@
-var qs = require('querystring'),
+var anonCouch = require('../couchDB').anonCouch,
+    qs = require('querystring'),
     AC = require('async-cache'),
     maxAge = 1000 * 60 * 60 * 24 * 365,
     day = 1000 * 60 * 60 * 24;
 
-module.exports = function recentAuthors (couchapp, addMetric) {
+module.exports = function recentAuthors (age, skip, limit, cb) {
   var timer = {};
+
+  timer.start = Date.now();
+  skip = skip || 0;
+  limit = limit || 100;
+  var key = JSON.stringify([age, skip, limit]);
 
   var cache = new AC({
     max: 1000,
@@ -32,7 +38,7 @@ module.exports = function recentAuthors (couchapp, addMetric) {
       query.stale = 'update_after';
 
       u += qs.stringify(query);
-      couchapp.get(u, function (er, cr, data) {
+      anonCouch.get(u, function (er, cr, data) {
         if (!er && !data.rows) {
           var er = new Error('no data returned');
           er.code = er.status = 404;
@@ -66,19 +72,12 @@ module.exports = function recentAuthors (couchapp, addMetric) {
         }).slice(skip, skip + limit);
 
         timer.end = Date.now();
-        addMetric(timer,'recentAuthors');
+        // addMetric(timer,'recentAuthors');
 
         cb(null, data.rows);
       });
     }
   });
 
-
-  return function (age, skip, limit, cb) {
-    timer.start = Date.now();
-    skip = skip || 0;
-    limit = limit || 100;
-    var key = JSON.stringify([age, skip, limit]);
-    return cache.get(key, cb);
-  }
+  return cache.get(key, cb);
 }

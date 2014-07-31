@@ -1,10 +1,13 @@
 var Hapi = require('hapi'),
+    adminCouch = require('../couchDB').adminCouch,
     log = require('bole')('couchdb-changeEmail'),
     uuid = require('node-uuid');
 
-module.exports = function changeEmail (service, adminCouch) {
+module.exports = function changeEmail (service) {
   return function (name, email, next) {
     var timer = { start: Date.now() };
+
+    // this would be cleaned up by creating an atomic changeEmail update function
     service.methods.couch.getUser(name, function (err, user) {
       if (err) {
         log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + name + ' from couch'), err);
@@ -25,7 +28,7 @@ module.exports = function changeEmail (service, adminCouch) {
         }
 
         timer.end = Date.now();
-        service.methods.metrics.addCouchLatencyMetric(timer, 'changeEmail');
+        // service.methods.metrics.addCouchLatencyMetric(timer, 'changeEmail');
 
         return next(null);
       });

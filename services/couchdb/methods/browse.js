@@ -1,5 +1,6 @@
-var qs = require('querystring'),
-    Hapi = require('hapi'),
+var Hapi = require('hapi'),
+    anonCouch = require('../couchDB').anonCouch,
+    qs = require('querystring'),
     log = require('bole')('couchdb-browse'),
     uuid = require('node-uuid');
 
@@ -33,53 +34,51 @@ var groupLevelArg = {
   userstar: 3
 }
 
-module.exports = function (couchapp, addMetric) {
-  return function (type, arg, skip, limit, next) {
-    var key = [type, arg, skip, limit].join(',')
-    var timer = { start: Date.now() };
+module.exports = function (type, arg, skip, limit, next) {
+  var key = [type, arg, skip, limit].join(',')
+  var timer = { start: Date.now() };
 
-    var u = '/registry/_design/app/_view/' + viewNames[type]
-    var query = {}
-    query.group_level = (arg ? groupLevelArg : groupLevel)[type]
-    if (arg) {
-      query.startkey = JSON.stringify([arg])
-      query.endkey = JSON.stringify([arg, {}])
-    }
-
-    // if it normally has an arg, but not today,
-    // fetch everything, and sort in descending order by value
-    // manually, since couchdb can't do this.
-    // otherwise, just fetch paginatedly
-    if (arg || !transformKeyArg[type]) {
-      query.skip = skip
-      query.limit = limit
-    }
-
-    if (type === 'updated') query.descending = true
-
-    // We are always ok with getting stale data, rather than wait for
-    // couch to generate new view data.
-    query.stale = 'update_after'
-
-    u += '?' + qs.stringify(query)
-
-    couchapp.get(u, function (er, cr, data) {
-      if (data) {
-        data = transform(type, arg, data, skip, limit)
-      }
-      if (er) {
-        var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };
-        log.error(uuid.v1() + ' ' + Hapi.error.internal('Error fetching browse data'), erObj);
-        data = []
-        er = null
-      }
-
-      timer.end = Date.now();
-      addMetric(timer, 'browse ' + key);
-
-      next(er, data)
-    });
+  var u = '/registry/_design/app/_view/' + viewNames[type]
+  var query = {}
+  query.group_level = (arg ? groupLevelArg : groupLevel)[type]
+  if (arg) {
+    query.startkey = JSON.stringify([arg])
+    query.endkey = JSON.stringify([arg, {}])
   }
+
+  // if it normally has an arg, but not today,
+  // fetch everything, and sort in descending order by value
+  // manually, since couchdb can't do this.
+  // otherwise, just fetch paginatedly
+  if (arg || !transformKeyArg[type]) {
+    query.skip = skip
+    query.limit = limit
+  }
+
+  if (type === 'updated') query.descending = true
+
+  // We are always ok with getting stale data, rather than wait for
+  // couch to generate new view data.
+  query.stale = 'update_after'
+
+  u += '?' + qs.stringify(query)
+
+  anonCouch.get(u, function (er, cr, data) {
+    if (data) {
+      data = transform(type, arg, data, skip, limit)
+    }
+    if (er) {
+      var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };
+      log.error(uuid.v1() + ' ' + Hapi.error.internal('Error fetching browse data'), erObj);
+      data = []
+      er = null
+    }
+
+    timer.end = Date.now();
+    // addMetric(timer, 'browse ' + key);
+
+    next(er, data)
+  });
 }
 
 

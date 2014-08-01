@@ -14,7 +14,7 @@ var couchdb = require('./fixtures/fake-couch')(config),
 
 before(function (done) {
   // configure couch
-  var couchDB = require('../../../couchDB');
+  var couchDB = require('../../../adapters/couchDB');
   couchDB.init(config);
 
   server = Hapi.createServer('localhost', '8000');

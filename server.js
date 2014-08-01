@@ -17,7 +17,7 @@ bole.output({
 var server = new Hapi.Server(config.host, config.port, config.server)
 
 // configure couch
-var couchDB = require('./couchDB');
+var couchDB = require('./adapters/couchDB');
 couchDB.init(config.couch);
 
 server.route({

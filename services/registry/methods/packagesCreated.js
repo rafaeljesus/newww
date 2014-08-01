@@ -1,5 +1,5 @@
 var Hapi = require('hapi'),
-    anonCouch = require('../../../couchDB').anonCouch;
+    anonCouch = require('../../../adapters/couchDB').anonCouch;
 
 module.exports = function packagesCreated (next) {
   var timer = { start: Date.now() };

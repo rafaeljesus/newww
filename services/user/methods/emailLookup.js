@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     log = require('bole')('user-lookup-email'),
     uuid = require('node-uuid'),
     qs = require('querystring'),
-    adminCouch = require('../../../couchDB').adminCouch;
+    adminCouch = require('../../../adapters/couchDB').adminCouch;
 
 module.exports = function lookupUserByEmail (email, next) {
   var query = {

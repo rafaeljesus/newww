@@ -38,25 +38,9 @@ server.route({
 
 server.ext('onPreResponse', function (request, next) {
 
+  // adds the server info stamp to the bottom of each template
   if (request.response.variety === 'view') {
     request.response.source.context = Hoek.applyToDefaults({stamp: config.stamp}, request.response.source.context);
-  }
-
-  // adds CSP header :-)
-  var header = "default-src 'self'; img-src *; script-src 'self' https://ssl.google-analytics.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://typeahead.npmjs.com/; report-uri /-/csplog;"
-
-  if (request.path === '/joinwhoshiring') {
-    header = "default-src 'self'; img-src *; script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://checkout.stripe.com; frame-src https://checkout.stripe.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://typeahead.npmjs.com/; report-uri /-/csplog;";
-  }
-
-  if (request.path === '/npme-beta') {
-    header = "default-src 'self'; img-src *; script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com https://js.hs-analytics.net https://js.hsforms.net/forms/current.js https://forms.hubspot.com https://internal.hubapi.com https://api.hubapi.com;; style-src 'self' 'unsafe-inline'; connect-src 'self' https://typeahead.npmjs.com/; report-uri /-/csplog;";
-  }
-
-  if (request.response.isBoom) {
-    request.response.output.headers['Content-Security-Policy'] = header;
-  } else {
-    request.response.header('Content-Security-Policy',header);
   }
 
   next();

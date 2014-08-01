@@ -40,6 +40,20 @@ exports.server = {
   }
 };
 
+exports.csp = {
+  defaultSrc: 'self',
+  scriptSrc: ['self', 'https://ssl.google-analytics.com'],
+  styleSrc: ['self', 'unsafe-inline'],
+  imgSrc: '*',
+  connectSrc: ['self', 'https://typeahead.npmjs.com/'],
+  // fontSrc:
+  // objectSrc: Values for the object-src directive.
+  // mediaSrc: Values for the media-src directive.
+  // frameSrc: Values for the frame-src directive.
+  // sandbox: Values for the sandbox directive.
+  reportUri: '/-/csplog'
+}
+
 // stamp data for templates
 var gitHead;
 try {
@@ -131,6 +145,11 @@ exports.plugins = [
     plugin: require('crumb'),
     options: { isSecure: true }
   },
+  require('scooter'),
+  {
+    plugin: require('blankie'),
+    options: exports.csp
+  },
   {
     plugin: require('./facets/company'),
     options: exports.company
@@ -162,7 +181,6 @@ exports.plugins = [
     options: exports.downloads
   }
 ];
-
 
 function hostmatch (m) { return function (u) {
   return u.host && u.host.match(m)

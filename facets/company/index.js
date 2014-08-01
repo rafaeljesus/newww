@@ -28,13 +28,28 @@ exports.register = function Company (facet, options, next) {
   facet.route({
     path: "/joinwhoshiring",
     method: ["GET", "POST"],
-    handler: require('./show-whoshiring-payments')(options.stripe)
+    config: {
+      handler: require('./show-whoshiring-payments')(options.stripe),
+      plugins: {
+        blankie: {
+          scriptSrc: ['self', 'unsafe-eval', 'https://ssl.google-analytics.com', 'https://checkout.stripe.com'],
+          frameSrc: 'https://checkout.stripe.com'
+        }
+      }
+    }
   });
 
   facet.route({
     path: "/npme-beta",
     method: "GET",
-    handler: require('./show-npme-beta')
+    config: {
+      handler: require('./show-npme-beta'),
+      plugins: {
+        blankie: {
+          scriptSrc: ['self', 'unsafe-eval', 'https://ssl.google-analytics.com', 'https://js.hs-analytics.net', 'https://js.hsforms.net/forms/current.js', 'https://forms.hubspot.com', 'https://internal.hubapi.com', 'https://api.hubapi.com']
+        }
+      }
+    }
   });
 
   facet.route({

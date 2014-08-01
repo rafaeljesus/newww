@@ -17,6 +17,7 @@
     "url": "https://github.com/npm/newww"
   },
   "dependencies": {
+    "blankie": "^0.1.2",
     "bole": "^0.1.0",
     "catbox": "^2.2.1",
     "catbox-redis": "^1.0.1",
@@ -32,6 +33,7 @@
     "node-uuid": "^1.4.1",
     "npm-typeahead": "^0.2.0",
     "npm2es": "git://github.com/npm/npm2es",
+    "scooter": "^1.2.0",
     "stylus": "^0.45.0"
   },
   "devDependencies": {

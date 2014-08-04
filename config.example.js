@@ -173,10 +173,6 @@ exports.plugins = [
   require('./services/registry'),
   require('./services/whoshiring'),
   {
-    plugin: require('./services/metrics'),
-    options: exports.metrics
-  },
-  {
     plugin: require('./services/downloads'),
     options: exports.downloads
   }

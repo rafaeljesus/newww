@@ -1,6 +1,7 @@
 var Hapi = require('hapi'),
     Hoek = require('hoek'),
-    config = require('./config.js');
+    config = require('./config.js'),
+    MetricsClient = require('./adapters/metrics');
 
 // set up the logger
 var bole = require('bole'),
@@ -17,6 +18,9 @@ var server = new Hapi.Server(config.host, config.port, config.server)
 // configure couch
 var couchDB = require('./adapters/couchDB');
 couchDB.init(config.couch);
+
+// configure metrics
+var metrics = new MetricsClient(config.metrics);
 
 server.route({
   path: '/favicon.ico',

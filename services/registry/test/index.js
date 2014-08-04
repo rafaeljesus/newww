@@ -1,13 +1,15 @@
-var Lab = require('lab')
-  , describe = Lab.experiment
-  , before = Lab.before
-  , it = Lab.test
-  , expect = Lab.expect;
+var Lab = require('lab'),
+    describe = Lab.experiment,
+    before = Lab.before,
+    it = Lab.test,
+    expect = Lab.expect;
 
 var Hapi = require('hapi'),
     nock = require('nock'),
     config = require('../../../config').couch,
-    couch = require('../index.js');
+    metricsConfig = require('../../../config').metrics,
+    couch = require('../index.js'),
+    MetricsClient = require('../../../adapters/metrics');
 
 var couchdb = require('./fixtures/fake-couch')(config),
     server;
@@ -17,9 +19,10 @@ before(function (done) {
   var couchDB = require('../../../adapters/couchDB');
   couchDB.init(config);
 
+  var metrics = new MetricsClient(metricsConfig);
+
   server = Hapi.createServer('localhost', '8000');
   server.pack.register([
-    require('./fixtures/fake-metrics'),
     {
       plugin: couch,
       options: config

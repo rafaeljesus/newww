@@ -1,18 +1,22 @@
-var Lab = require('lab')
-  , describe = Lab.experiment
-  , before = Lab.before
-  , it = Lab.test
-  , expect = Lab.expect;
+var Lab = require('lab'),
+    describe = Lab.experiment,
+    before = Lab.before,
+    it = Lab.test,
+    expect = Lab.expect;
 
 var Hapi = require('hapi'),
-    downloads = require('../index.js');
+    downloads = require('../index.js'),
+    config = require('../../../config').metrics,
+    MetricsClient = require('../../../adapters/metrics');
 
 var server;
 
 before(function (done) {
   server = Hapi.createServer('localhost', '8000');
+
+  var metrics = new MetricsClient(config);
+
   server.pack.register([
-    require('./fixtures/fake-metrics'),
     {
       plugin: downloads,
       options: {url: 'https://api.npmjs.org/downloads/'}

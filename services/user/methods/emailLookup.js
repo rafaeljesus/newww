@@ -2,7 +2,8 @@ var Hapi = require('hapi'),
     log = require('bole')('user-lookup-email'),
     uuid = require('node-uuid'),
     qs = require('querystring'),
-    adminCouch = require('../../../adapters/couchDB').adminCouch;
+    adminCouch = require('../../../adapters/couchDB').adminCouch,
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function lookupUserByEmail (email, next) {
   var query = {
@@ -28,7 +29,7 @@ module.exports = function lookupUserByEmail (email, next) {
     });
 
     timer.end = Date.now();
-    // addMetric(timer, 'lookupUserByEmail');
+    metrics.addCouchLatencyMetric(timer, 'lookupUserByEmail');
 
     return next(null, usernames);
   });

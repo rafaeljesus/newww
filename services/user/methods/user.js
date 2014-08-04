@@ -1,7 +1,8 @@
 var CouchLogin = require('couch-login'),
     Hapi = require('hapi'),
     log = require('bole')('user-login'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function (options, service) {
 
@@ -30,7 +31,7 @@ module.exports = function (options, service) {
           }
 
           timer.end = Date.now();
-          service.methods.metrics.addCouchLatencyMetric(timer, 'login');
+          metrics.addCouchLatencyMetric(timer, 'login');
 
           // attach the token to the user data so we can save it in the session
           data.token = loginCouch.token

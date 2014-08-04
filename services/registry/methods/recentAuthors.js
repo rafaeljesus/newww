@@ -1,4 +1,5 @@
 var anonCouch = require('../../../adapters/couchDB').anonCouch,
+    metrics = require('../../../adapters/metrics')(),
     qs = require('querystring'),
     AC = require('async-cache'),
     maxAge = 1000 * 60 * 60 * 24 * 365,
@@ -72,7 +73,7 @@ module.exports = function recentAuthors (age, skip, limit, cb) {
         }).slice(skip, skip + limit);
 
         timer.end = Date.now();
-        // addMetric(timer,'recentAuthors');
+        metrics.addCouchLatencyMetric(timer,'recentAuthors');
 
         cb(null, data.rows);
       });

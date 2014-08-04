@@ -2,7 +2,8 @@ var Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
     qs = require('querystring'),
     log = require('bole')('registry-browse'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../../adapters/metrics')();
 
 var viewNames = {
   all: 'browseAll',
@@ -75,7 +76,7 @@ module.exports = function (type, arg, skip, limit, next) {
     }
 
     timer.end = Date.now();
-    // addMetric(timer, 'browse ' + key);
+    metrics.addCouchLatencyMetric(timer, 'browse ' + key);
 
     next(er, data)
   });

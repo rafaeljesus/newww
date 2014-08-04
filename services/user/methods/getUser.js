@@ -1,5 +1,6 @@
 var Hapi = require('hapi'),
-    anonCouch = require('../../../adapters/couchDB').anonCouch;
+    anonCouch = require('../../../adapters/couchDB').anonCouch,
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function getUser (name, next) {
 
@@ -7,7 +8,7 @@ module.exports = function getUser (name, next) {
 
   anonCouch.get('/_users/org.couchdb.user:' + name, function (er, cr, data) {
     timer.end = Date.now();
-    // addMetric(timer, 'user ' + name);
+    metrics.addCouchLatencyMetric(timer, 'user ' + name);
 
     if (er || cr && cr.statusCode !== 200 || !data || data.error) {
       return next(Hapi.error.notFound('Username not found: ' + name));

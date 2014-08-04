@@ -1,7 +1,8 @@
 var Hapi = require('hapi'),
     log = require('bole')('user-login'),
     uuid = require('node-uuid'),
-    murmurhash = require('murmurhash');
+    murmurhash = require('murmurhash'),
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = {
   set: function set (request) {
@@ -16,12 +17,12 @@ module.exports = {
           var errId = uuid.v1();
           log.error(errId + ' ' + Hapi.error.internal('there was an error setting the cache'));
 
-          request.server.methods.metrics.addMetric({name: 'setSessionError'});
+          metrics.addMetric({name: 'setSessionError'});
           return next(Hapi.error.internal(errId));
         }
 
         timer.end = Date.now();
-        request.server.methods.metrics.addMetric({
+        metrics.addMetric({
           name: 'latency',
           value: timer.end - timer.start,
           type: 'redis',
@@ -47,12 +48,12 @@ module.exports = {
           if (err) {
             var errId = uuid.v1();
             log.error(errId + ' ' + Hapi.error.internal('there was an error clearing the cache'));
-            request.server.methods.metrics.addMetric({name: 'delSessionError'});
+            metrics.addMetric({name: 'delSessionError'});
             return next(Hapi.error.internal(errId));
           }
 
           timer.end = Date.now();
-          request.server.methods.metrics.addMetric({
+          metrics.addMetric({
             name: 'latency',
             value: timer.end - timer.start,
             type: 'redis',

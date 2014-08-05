@@ -5,11 +5,15 @@ var Lab = require('lab')
   , expect = Lab.expect;
 
 var Hapi = require('hapi'),
-    user = require('../facets/user');
+    user = require('../facets/user'),
+    metricsConfig = require('../config').metrics,
+    MetricsClient = require('../adapters/metrics');
 
 var server;
 
 before(function (done) {
+  var metrics = new MetricsClient(metricsConfig);
+
   server = Hapi.createServer();
 
   server.pack.register(require('hapi-auth-cookie'), function (err) {

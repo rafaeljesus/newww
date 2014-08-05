@@ -6,11 +6,15 @@ var Lab = require('lab')
 
 var Hapi = require('hapi'),
     company = require('../facets/company'),
-    config = require('../config').company;
+    config = require('../config').company,
+    metricsConfig = require('../config').metrics,
+    MetricsClient = require('../adapters/metrics');
 
 var server;
 
 before(function (done) {
+  var metrics = new MetricsClient(metricsConfig);
+
   server = Hapi.createServer();
   server.pack.register({ plugin: company, options: config }, done);
 });

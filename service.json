@@ -1,0 +1,46 @@
+{
+  "newww": {
+    "module": "newww",
+    "description": "A total rewrite of npm-www using hapijs",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "env": {
+      "PORT": "8081"
+    },
+    "args": {}
+  },
+  "newww2": {
+    "module": "newww",
+    "description": "A total rewrite of npm-www using hapijs",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "env": {
+      "PORT": "8082"
+    },
+    "args": {}
+  },
+  "newww3": {
+    "module": "newww",
+    "description": "A total rewrite of npm-www using hapijs",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "env": {
+      "PORT": "8083"
+    },
+    "args": {}
+  },
+  "newww4": {
+    "module": "newww",
+    "description": "A total rewrite of npm-www using hapijs",
+    "scripts": {
+      "start": "node server.js"
+    },
+    "env": {
+      "PORT": "8084"
+    },
+    "args": {}
+  }
+}

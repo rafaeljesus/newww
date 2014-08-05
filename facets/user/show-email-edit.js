@@ -2,7 +2,8 @@ var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
     crypto = require('crypto'),
     log = require('bole')('user-email-edit'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 var from, devMode, timer = {};
 
@@ -45,9 +46,9 @@ module.exports = function (options) {
         }
       } else {
         timer.end = Date.now();
-        request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit');
+        metrics.addPageLatencyMetric(timer, 'email-edit');
 
-        request.server.methods.metrics.addMetric({ name: 'email-edit' });
+        metrics.addMetric({ name: 'email-edit' });
         return reply.view('email-edit', opts);
       }
     }
@@ -60,9 +61,9 @@ module.exports = function (options) {
         opts.error = 'Must provide a valid email address';
 
         timer.end = Date.now();
-        request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit-error');
+        metrics.addPageLatencyMetric(timer, 'email-edit-error');
 
-        request.server.methods.metrics.addMetric({ name: 'email-edit-error' });
+        metrics.addMetric({ name: 'email-edit-error' });
         return reply.view('email-edit', opts).code(400);
       }
 
@@ -75,9 +76,9 @@ module.exports = function (options) {
         opts.error = 'Invalid password';
 
         timer.end = Date.now();
-        request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit-error');
+        metrics.addPageLatencyMetric(timer, 'email-edit-error');
 
-        request.server.methods.metrics.addMetric({ name: 'email-edit-error' });
+        metrics.addMetric({ name: 'email-edit-error' });
         return reply.view('email-edit', opts).code(403);
       }
       return handle(request, reply, email2);
@@ -202,9 +203,9 @@ function sendEmails (conf, rev, request, reply) {
 
   if (devMode) {
     timer.end = Date.now();
-    request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
+    metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
 
-    request.server.methods.metrics.addMetric({ name: 'email-edit-send-emails' });
+    metrics.addMetric({ name: 'email-edit-send-emails' });
     return reply({confirm: confMail, revert: revMail});
   }
 
@@ -221,9 +222,9 @@ function sendEmails (conf, rev, request, reply) {
 
       opts.submitted = true;
       timer.end = Date.now();
-      request.server.methods.metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
+      metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
 
-      request.server.methods.metrics.addMetric({ name: 'email-edit-send-emails' });
+      metrics.addMetric({ name: 'email-edit-send-emails' });
       return reply.view('email-edit', opts);
     });
   });
@@ -277,9 +278,9 @@ function confirm (request, reply) {
         }
 
         timer.end = Date.now();
-        methods.metrics.addPageLatencyMetric(timer, 'confirmEmailChange');
+        metrics.addPageLatencyMetric(timer, 'confirmEmailChange');
 
-        methods.metrics.addMetric({ name: 'confirmEmailChange' });
+        metrics.addMetric({ name: 'confirmEmailChange' });
         opts.confirmed = true;
         return reply.view('email-edit-confirmation', opts);
       });
@@ -341,9 +342,9 @@ function revert (request, reply) {
           }
 
           timer.end = Date.now();
-          methods.metrics.addPageLatencyMetric(timer, 'revertEmailChange');
+          metrics.addPageLatencyMetric(timer, 'revertEmailChange');
 
-          methods.metrics.addMetric({ name: 'revertEmailChange' });
+          metrics.addMetric({ name: 'revertEmailChange' });
 
           return reply.view('email-edit-confirmation', opts);
         });

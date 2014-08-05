@@ -1,8 +1,10 @@
+var metrics = require('../../adapters/metrics')();
+
 module.exports = function logout (request, reply) {
   var delSession = request.server.methods.user.delSession(request),
       user = request.auth.credentials,
-      addMetric = request.server.methods.metrics.addMetric,
-      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+      addMetric = metrics.addMetric,
+      addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   delSession(user, function (er) {

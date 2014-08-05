@@ -1,3 +1,5 @@
+var metrics = require('../../adapters/metrics')();
+
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };
 
@@ -9,9 +11,9 @@ module.exports = function (request, reply) {
   };
 
   timer.end = Date.now();
-  request.server.methods.metrics.addPageLatencyMetric(timer, 'whoshiring');
+  metrics.addPageLatencyMetric(timer, 'whoshiring');
 
-  request.server.methods.metrics.addMetric({name: 'whoshiring'});
+  metrics.addMetric({name: 'whoshiring'});
 
   reply.view('whoshiring', opts);
 };

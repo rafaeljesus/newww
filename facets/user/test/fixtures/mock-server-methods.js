@@ -103,10 +103,6 @@ module.exports = function (server) {
       }
     },
 
-    downloads: {
-
-    },
-
     hiring: {
       getRandomWhosHiring: function () {
         return {
@@ -116,16 +112,6 @@ module.exports = function (server) {
           "url": "http://www.voxer.com/careers/",
           "show_weight": 1
         };
-      }
-    },
-
-    metrics: {
-      addMetric: function (metric) {
-        return;
-      },
-
-      addPageLatencyMetric: function (timer, page) {
-        return;
       }
     }
   }

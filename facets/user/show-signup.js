@@ -3,14 +3,15 @@ var Joi = require('joi'),
     murmurhash = require('murmurhash'),
     Hapi = require('hapi'),
     log = require('bole')('user-signup'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function signup (request, reply) {
   var signupUser = request.server.methods.user.signupUser,
       setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request),
-      addMetric = request.server.methods.metrics.addMetric,
-      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+      addMetric = metrics.addMetric,
+      addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   var opts = {

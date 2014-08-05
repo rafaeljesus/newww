@@ -57,16 +57,6 @@ module.exports = function (server) {
           "show_weight": 1
         };
       }
-    },
-
-    metrics: {
-      addMetric: function (metric) {
-        return;
-      },
-
-      addPageLatencyMetric: function (timer, page) {
-        return;
-      }
     }
   }
 };

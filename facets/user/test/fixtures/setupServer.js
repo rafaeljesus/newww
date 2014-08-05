@@ -1,6 +1,8 @@
 var Hapi = require('hapi'),
     config = require('../../../../config').user,
-    user = require('../../');
+    metricsConfig = require('../../../../config').metrics,
+    user = require('../../'),
+    MetricsClient = require('../../../../adapters/metrics');
 
 var serverOptions = {
   views: {
@@ -12,6 +14,8 @@ var serverOptions = {
 
 module.exports = function (done) {
   process.env.NODE_ENV = 'dev';
+
+  var metrics = new MetricsClient(metricsConfig);
 
   var server = Hapi.createServer(serverOptions);
   server.methods = require('./mock-server-methods')(server);

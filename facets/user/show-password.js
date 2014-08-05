@@ -2,7 +2,8 @@ var Hapi = require('hapi'),
     crypto = require('crypto'),
     userValidate = require('npm-user-validate'),
     log = require('bole')('user-password'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function (request, reply) {
   var opts = {
@@ -13,8 +14,8 @@ module.exports = function (request, reply) {
   var changePass = request.server.methods.user.changePass,
       loginUser = request.server.methods.user.loginUser,
       setSession = request.server.methods.user.setSession(request),
-      addMetric = request.server.methods.metrics.addMetric,
-      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+      addMetric = metrics.addMetric,
+      addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   if (request.method === 'get' || request.method === 'head') {

@@ -1,15 +1,16 @@
 var Joi = require('joi'),
     Hapi = require('hapi'),
     log = require('bole')('company-whoshiring-payments'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function (options) {
   var stripe = require('stripe')(options.secretkey),
       VALID_CHARGE_AMOUNTS = [35000, 100000];
 
   return function (request, reply) {
-    var addMetric = request.server.methods.metrics.addMetric,
-        addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+    var addMetric = metrics.addMetric,
+        addLatencyMetric = metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var opts = {

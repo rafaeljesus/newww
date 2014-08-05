@@ -1,3 +1,5 @@
+var metrics = require('../../adapters/metrics')();
+
 module.exports = function About (options) {
   return function (request, reply) {
     var timer = { start: Date.now() };
@@ -33,8 +35,8 @@ module.exports = function About (options) {
     }
 
     timer.end = Date.now();
-    request.server.methods.metrics.addPageLatencyMetric(timer, 'about');
-    request.server.methods.metrics.addMetric({name: 'about'});
+    metrics.addPageLatencyMetric(timer, 'about');
+    metrics.addMetric({name: 'about'});
     reply.view('about', opts);
   };
 };

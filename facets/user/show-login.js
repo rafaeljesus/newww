@@ -2,13 +2,14 @@ var murmurhash = require('murmurhash'),
     Hapi = require('hapi'),
     uuid = require('node-uuid'),
     log = require('bole')('user-login'),
-    url = require('url');
+    url = require('url'),
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function login (request, reply) {
   var loginUser = request.server.methods.user.loginUser,
       setSession = request.server.methods.user.setSession(request),
-      addMetric = request.server.methods.metrics.addMetric,
-      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+      addMetric = metrics.addMetric,
+      addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   if (request.auth.isAuthenticated) {

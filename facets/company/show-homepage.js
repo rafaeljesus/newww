@@ -3,7 +3,8 @@ var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 var commaIt = require('number-grouper'),
     Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };
@@ -27,9 +28,9 @@ module.exports = function (request, reply) {
     };
 
     timer.end = Date.now();
-    request.server.methods.metrics.addPageLatencyMetric(timer, 'homepage');
+    metrics.addPageLatencyMetric(timer, 'homepage');
 
-    request.server.methods.metrics.addMetric({name: 'homepage'});
+    metrics.addMetric({name: 'homepage'});
     reply.view('index', opts);
   });
 }
@@ -39,7 +40,7 @@ module.exports = function (request, reply) {
 function load (request, cb) {
   var browse = request.server.methods.registry.getBrowseData,
       recentAuthors = request.server.methods.registry.getRecentAuthors,
-      addMetric = request.server.methods.metrics.addMetric,
+      addMetric = metrics.addMetric,
       downloads = request.server.methods.downloads.getAllDownloads,
       packagesCreated = request.server.methods.registry.packagesCreated;
 

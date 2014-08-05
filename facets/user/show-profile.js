@@ -1,15 +1,15 @@
 var transform = require('./presenters/profile').transform,
     Hapi = require('hapi'),
     log = require('bole')('user-profile'),
-    uuid = require('node-uuid');
-
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function (options) {
   return function (request, reply) {
     var getUser = request.server.methods.user.getUser,
         getBrowseData = request.server.methods.registry.getBrowseData,
-        addMetric = request.server.methods.metrics.addMetric,
-        addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+        addMetric = metrics.addMetric,
+        addLatencyMetric = metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var opts = {

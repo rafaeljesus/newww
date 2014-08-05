@@ -1,7 +1,8 @@
 var sanitizer = require('sanitizer'),
     Hapi = require('hapi'),
     log = require('bole')('registry-browse'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 var pageSize = 100;
 var possibleTypes = ['all', 'keyword', 'author', 'updated', 'depended', 'star', 'userstar'];
@@ -13,8 +14,8 @@ module.exports = function (request, reply) {
   };
 
   var getBrowseData = request.server.methods.registry.getBrowseData,
-      addMetric = request.server.methods.metrics.addMetric,
-      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+      addMetric = metrics.addMetric,
+      addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   // the url will be something like /browse/{type?}/{arg?}/{page}

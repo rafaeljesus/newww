@@ -1,7 +1,8 @@
 var elasticsearch = require('elasticsearch'),
     Hapi = require('hapi'),
     log = require('bole')('registry-search'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function (options) {
   var client = new elasticsearch.Client({
@@ -9,8 +10,8 @@ module.exports = function (options) {
   });
 
   return function (request, reply) {
-    var addMetric = request.server.methods.metrics.addMetric,
-        addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+    var addMetric = metrics.addMetric,
+        addLatencyMetric = metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var page = parseInt(request.query.page || '0', 10);

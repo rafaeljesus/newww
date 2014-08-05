@@ -38,16 +38,6 @@ module.exports = function (server) {
       getRandomWhosHiring: function () {
         return whosHiring.random;
       }
-    },
-
-    metrics: {
-      addMetric: function (metric) {
-        return;
-      },
-
-      addPageLatencyMetric: function (timer, page) {
-        return;
-      }
     }
   }
 };

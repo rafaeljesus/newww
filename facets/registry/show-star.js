@@ -1,13 +1,13 @@
 var Hapi = require('hapi'),
     log = require('bole')('registry-star'),
-    uuid = require('node-uuid');
-
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function (request, reply) {
   var star = request.server.methods.registry.star,
       unstar = request.server.methods.registry.unstar,
-      addMetric = request.server.methods.metrics.addMetric,
-      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+      addMetric = metrics.addMetric,
+      addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
 
   var opts = {

@@ -2,14 +2,15 @@ var Hapi = require('hapi'),
     presentPackage = require('./presenters/package'),
     log = require('bole')('registry-package'),
     commaIt = require('number-grouper'),
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    metrics = require('../../adapters/metrics')();
 
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
       getBrowseData = request.server.methods.registry.getBrowseData,
-      addMetric = request.server.methods.metrics.addMetric,
-      addLatencyMetric = request.server.methods.metrics.addPageLatencyMetric,
+      addMetric = metrics.addMetric,
+      addLatencyMetric = metrics.addPageLatencyMetric,
       getDownloadsForPackage = request.server.methods.downloads.getDownloadsForPackage,
       getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;
 

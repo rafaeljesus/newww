@@ -12,6 +12,10 @@
   },
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/npm/newww"
+  },
   "dependencies": {
     "bole": "^0.1.0",
     "catbox": "^2.2.1",

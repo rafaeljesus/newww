@@ -812,3 +812,13 @@ html body ul.search-results .package.search-result {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
   filter: alpha(opacity=40);
 }
+#preview-banner {
+  background-color: #cc3d33;
+  position: fixed;
+  top: 0;
+  left: 0;
+  color: #fff;
+  width: 100%;
+  padding: 0.25em 0;
+  text-align: center;
+}

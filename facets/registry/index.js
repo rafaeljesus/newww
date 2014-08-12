@@ -33,7 +33,12 @@ exports.register = function Regsitry (facet, options, next) {
     method: "POST",
     config: {
       handler: require('./show-star'),
-      payload: { parse: false }
+      plugins: {
+        crumb: {
+          source: 'payload',
+          restful: true
+        }
+      }
     }
   });
 

@@ -20,11 +20,12 @@ module.exports = function (request, reply) {
   }
 
   if (typeof opts.user === 'undefined') {
+    log.error(uuid.v1() + 'user isn\'t logged in');
     return reply('user isn\'t logged in').code(403);
   }
 
   var username = opts.user.name,
-      body = JSON.parse(request.payload),
+      body = request.payload,
       pkg = body.name,
       starIt = !body.isStarred;
 

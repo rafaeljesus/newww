@@ -4,7 +4,7 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var server, p, source;
+var server, p, source, cookieCrumb;
 var oriReadme = require('./fixtures/fake.json').readme;
 
 // prepare the server
@@ -26,8 +26,14 @@ describe('Retreiving packages from the registry', function () {
       url: '/package/' + pkgName
     }
     server.inject(options, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
       expect(resp.statusCode).to.equal(200);
       expect(source.context.package.name).to.equal(pkgName);
+      expect(resp.result).to.include('data-crumb="' + cookieCrumb + '"');
       done();
     });
   });

@@ -26,7 +26,15 @@ module.exports = function (done) {
       password: '12345'
     });
 
-    server.pack.register(registry, done);
+    server.pack.register([
+      registry,
+      {
+        plugin: require('crumb'),
+        options: { cookieOptions: { isSecure: true } }
+      }
+    ], done);
+
+    // server.pack.register(registry, done);
   });
 
   return server;

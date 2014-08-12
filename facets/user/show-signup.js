@@ -59,7 +59,7 @@ module.exports = function signup (request, reply) {
       delSession(value, function (er) {
 
         if (er) {
-          return showError(request, reply, 'Unable to set the session for user ' + opts.user.name, 500, er);
+          return showError(request, reply, 'Unable to set the session for user ' + data.name, 500, er);
         }
 
         signupUser(value, function (er, user) {

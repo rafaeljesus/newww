@@ -5,9 +5,9 @@
     <header>
       <h1>{{name}}</h1>
       {{#if isStarred}}
-        <a href="#" class="star star-starred" title="click here to star/unstar this package" data-name="{{name}}"></a>
+        <a href="#" class="star star-starred" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
       {{else}}
-        <a href="#" class="star" title="click here to star/unstar this package" data-name="{{name}}"></a>
+        <a href="#" class="star" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
       {{/if}}
     </header>
 

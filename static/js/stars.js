@@ -45,13 +45,16 @@ $(document).ready(function () {
     var data = {}
     data.name = $(this).data('name')
     data.isStarred = $(this).hasClass('star-starred')
+    data.crumb = $('.star').data('crumb')
 
     $.ajax({
       url: '/star',
-      data: JSON.stringify(data),
-      type: 'POST'
+      data: data,
+      type: 'POST',
+      headers: { 'x-csrf-token': data.crumb }
     })
     .done(function (resp) {
+      // console.log('success!', resp)
 
       if (data.isStarred) {
         $('.star').removeClass('star-starred')
@@ -63,6 +66,7 @@ $(document).ready(function () {
 
     })
     .error(function (xhr, status, error) {
+      console.log('whoops!', xhr, xhr.status, xhr.responseText, status)
       if (xhr.status === 403) {
         // we're probably not logged in
         window.location = '/login?done=/package/' + data.name

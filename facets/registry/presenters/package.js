@@ -225,7 +225,7 @@ function gravatarPerson (p) {
 }
 
 function getRandomAssortment (items, urlRoot, name) {
-  var l = items.length;
+  var l = items.length || 0;
   var MAX_SHOW = 20;
 
   if (l > MAX_SHOW) {

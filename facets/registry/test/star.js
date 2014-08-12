@@ -4,8 +4,8 @@ var Lab = require('lab'),
     it = Lab.test,
     expect = Lab.expect;
 
-var server,
-    pkg = 'request',
+var server, cookieCrumb,
+    pkg = 'fake',
     user = { name: 'fakeuser' };
 
 before(function (done) {
@@ -40,14 +40,43 @@ describe('Accessing the star page via GET', function () {
 });
 
 describe('Accessing the star functionality via AJAX (POST)', function () {
-  it('should send a 403 if the user is unauthorized', function (done) {
+  before(function (done) {
+    server.inject({url: '/package/' + pkg}, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+      done();
+    });
+  })
+
+  it('should reject stars when CSRF data is missing', function (done) {
     var opts = {
       url: '/star',
       method: 'POST',
       payload: {
         name: pkg,
         isStarred: true
-      }
+      },
+      credentials: user
+    };
+
+    server.inject(opts, function (resp) {
+      expect(resp.statusCode).to.equal(403);
+      done();
+    });
+  });
+
+  it('should send a 403 if the user is not logged in', function (done) {
+    var opts = {
+      url: '/star',
+      method: 'POST',
+      payload: {
+        name: pkg,
+        isStarred: true,
+        crumb: cookieCrumb
+      },
+      headers: { cookie: 'crumb=' + cookieCrumb }
     };
 
     server.inject(opts, function (resp) {
@@ -63,9 +92,11 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       method: 'POST',
       payload: {
         name: pkg,
-        isStarred: false
+        isStarred: false,
+        crumb: cookieCrumb
       },
-      credentials: user
+      credentials: user,
+      headers: { cookie: 'crumb=' + cookieCrumb }
     };
 
     server.inject(opts, function (resp) {
@@ -81,9 +112,11 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       method: 'POST',
       payload: {
         name: pkg,
-        isStarred: true
+        isStarred: true,
+        crumb: cookieCrumb
       },
-      credentials: user
+      credentials: user,
+      headers: { cookie: 'crumb=' + cookieCrumb }
     };
 
     server.inject(opts, function (resp) {

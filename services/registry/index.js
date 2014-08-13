@@ -10,7 +10,9 @@ exports.register = function Registry (service, options, next) {
     cache: { expiresIn: 60 * SECOND, segment: '##browse' }
   });
 
-  service.method('registry.getRecentAuthors', require('./methods/recentAuthors'));
+  service.method('registry.getRecentAuthors', require('./methods/recentAuthors'), {
+    cache: { expiresIn: 60 * SECOND, segment: '##authors' }
+  });
 
   service.method('registry.star', require('./methods/stars').star);
   service.method('registry.unstar', require('./methods/stars').unstar);

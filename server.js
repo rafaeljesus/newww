@@ -78,7 +78,8 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     }
   });
 
-  server.pack.register(config.plugins, function(err) {
+  var plugins = require('./adapters/plugins');
+  server.pack.register(plugins, function(err) {
     if (err) {
       // actually, if there's something wrong with plugin loading,
       // DO NOT PASS GO, DO NOT COLLECT $200. Throw the error.

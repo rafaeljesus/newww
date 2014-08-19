@@ -25,9 +25,10 @@ module.exports = function (options, service) {
           return next(Hapi.error.forbidden('Username and/or Password is wrong'));
         }
 
-        service.methods.user.getUser(loginDetails.name, function (err, data) {
+        // get the official details from loginCouch, not anonCouch
+        loginCouch.get('/_users/org.couchdb.user:' + loginDetails.name, function (err, cr, data) {
           if (err) {
-            log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + loginDetails.name + ' from couch'), er);
+            log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + loginDetails.name + ' from couch'), err);
           }
 
           timer.end = Date.now();

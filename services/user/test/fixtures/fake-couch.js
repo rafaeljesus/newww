@@ -30,7 +30,7 @@ module.exports = function (config) {
                 ]})
 
                 // --- modify user ---
-                .put('/_users/org.couchdb.user:boom').twice()
+                .put('/_users/org.couchdb.user:boom')
                 .reply(201, require('./users').boom)
 
                 .put('/_users/org.couchdb.user:boom?rev=1-7adf7e546de1852cec39894c0d652fb4')
@@ -39,6 +39,10 @@ module.exports = function (config) {
                 // --- modify profile ---
                 .post('/_users/_design/_auth/_update/profile/blah')
                 .reply(201, { ok: 'updated profile' })
+
+                // --- modify email ---
+                .post('/_users/_design/_auth/_update/email/org.couchdb.user:boom')
+                .reply(201, { ok: 'updated email address' })
 
                 // --- log in ---
                 .post('/_session').twice()

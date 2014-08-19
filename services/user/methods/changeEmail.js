@@ -4,35 +4,21 @@ var Hapi = require('hapi'),
     uuid = require('node-uuid'),
     metrics = require('../../../adapters/metrics')();
 
-module.exports = function changeEmail (service) {
-  return function (name, email, next) {
-    var timer = { start: Date.now() };
+module.exports = function changeEmail (name, email, next) {
+  var timer = { start: Date.now() };
 
-    // this would be cleaned up by creating an atomic changeEmail update function
-    service.methods.user.getUser(name, function (err, user) {
-      if (err) {
-        log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + name + ' from couch'), err);
-        return next(Hapi.error.internal(err));
-      }
+  var user = { email: email };
 
-      if (user.email === email) {
-        return next(null);
-      }
+  adminCouch.post('/_users/_design/_auth/_update/email/org.couchdb.user:' + name, user, function (er, cr, data) {
+    if (er || data.error || cr.statusCode >= 400) {
+      er = er || new Error(data.error);
 
-      user.email = email;
-      adminCouch.put('/_users/org.couchdb.user:' + name, user, function (er, cr, data) {
-        if (er || data.error || cr.statusCode >= 400) {
-          er = er || new Error(data.error);
+      log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to update email for user ' + name + ' in couch'), er);
+      return next(Hapi.error.internal(er));
+    }
 
-          log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to put user ' + name + ' data into couch'), er);
-          return next(Hapi.error.internal(er));
-        }
-
-        timer.end = Date.now();
-        metrics.addCouchLatencyMetric(timer, 'changeEmail');
-
-        return next(null);
-      });
-    });
-  };
+    timer.end = Date.now();
+    metrics.addCouchLatencyMetric(timer, 'changeEmail');
+    return next(null);
+  });
 };

@@ -73,7 +73,6 @@ queue(function (cb) {
   // start elasticsearch
   exec('elasticsearch', [
     '-Des.config=dev/elasticsearch/elasticsearch.yml'
-    , '-f'
   ], 5000, cb)
 
 }, function (cb) {

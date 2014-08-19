@@ -819,6 +819,7 @@ html body ul.search-results .package.search-result {
   left: 0;
   color: #fff;
   width: 100%;
-  padding: 0.25em 0;
+  padding: 0.5em 0;
   text-align: center;
+  z-index: 101;
 }

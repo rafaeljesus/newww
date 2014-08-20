@@ -1,0 +1,124 @@
+.red
+	color npmred
+
+a
+	color npmred
+
+	&.view-all
+		font-size 14px
+		font-weight 600
+		position relative
+		z-index 1
+
+		strong
+			font-weight 700
+
+		&.icon-arrow-right:before
+			content ""
+		&.icon-arrow-right:after
+			font-family icomoon
+			content "\e603"
+			float right
+			font-size 7px
+			margin 0 0 0 6px
+
+
+h2
+	margin 0 0 25px
+	letter-spacing -.03em
+	font 700 24px/29px fonts
+	color text-color
+
+	span
+		font-weight 400
+
+	&[class^="icon-"], &[class*=" icon-"]
+		line-height 45px
+		margin 0 0 35px
+
+	&:before
+		font-size 45px
+		float left
+		margin-right 10px
+
+	form &
+		color npmred
+
+h3
+	margin 0 0 15px
+	font 700 16px/21px fonts
+	color h3-color
+
+h4
+	margin 0 0 10px
+	letter-spacing -.03em
+	font 600 16px/16px fonts
+	color h3-color
+
+	span
+		font-weight 400
+
+p
+	margin 0 0 25px
+
+	a
+		text-decoration underline
+
+		&:hover
+			text-decoration none
+
+strong
+	&.code
+		font-family codefonts
+
+.btn
+	display inline-block
+	height 47px
+	padding 0 50px
+	color background-color
+	font-weight 600
+	line-height 47px
+	text-align center
+	border-radius 4px
+	background npmred
+
+	&:hover
+		background gray2
+
+	&.gray
+		margin-right 10px
+		background c
+
+		&:hover
+			background gray2
+
+ul
+	margin 25px 0 25px 35px
+
+	li
+		list-style disc
+
+	&.sortable
+		margin 25px 0
+		border-top 1px solid gray5
+
+		li
+			list-style none
+			border-bottom 1px solid gray5
+			height 45px
+			line-height 45px
+			padding-left 30px
+			background url(../img/sortable-handle.png) no-repeat 0 50%
+
+a .icon-add:before
+	float left
+	color background-color
+	border-radius 2px
+	display inline-block
+	width 16px
+	height 16px
+	line-height 17px
+	font-size 9px
+	text-align center
+	margin 0 6px 0 0
+	background npmred

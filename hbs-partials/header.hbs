@@ -2,27 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title> {{#if title }} {{title}} {{else}} npm {{/if}} </title>
+  <title>{{#if title }} {{title}} {{else}} npm {{/if}}</title>
 </head>
   <link rel="canonical" href="{{canonicalURL}}">
-  <link type="text/css" rel="stylesheet" media="all"
-    href="/static/css/normalize.css">
-  <link type="text/css" rel="stylesheet" media="all"
-    href="/static/css/index.css">
-  <link type="text/css" rel="stylesheet" media="all"
-    href="/static/css/sh.css">
-  <link type="text/css" rel="stylesheet" media="all"
-        href="/static/css/charts.css">
   <link rel="search" type="application/opensearchdescription+xml"
     href="/static/opensearch.xml" title="Search Packages" />
 <body>
   <div id="wrap">
   <div id="preview-banner">This is the <strong>preview</strong> site. Your password will not work.</div>
+
   <div id="content">
+
     {{> nav}}
     {{> login-aside this}}
 
     <div id="page">
+
       <header>
         <form id="search-container" action="/search" method="get">
           <div id="package-search">
@@ -39,5 +34,3 @@
           </a>
         </h1>
       </header>
-
-

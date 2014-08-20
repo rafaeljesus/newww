@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>{{#if title }} {{title}} {{else}} npm {{/if}}</title>
+
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="lOptimized" content="width" />
+  <meta http-equiv="cleartype" content="on" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1,user-scalable=yes">
+
+  <link type="text/css" rel="stylesheet" media="all" href="/static/css/index.css">
+  <link rel="search" type="application/opensearchdescription+xml" href="/static/opensearch.xml" title="Search Packages">
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700|Source+Code+Pro:400,600,700' rel='stylesheet' type='text/css'>
+
+  <script async src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script async src="/assets/js/prism.min.js"></script>
+  <script async src="/assets/js/jquery.sortable.min.js"></script>
+  <script async src="/assets/js/jquery.customSelect.min.js"></script>
+  <script async src="/assets/js/color-thief.min.js"></script>
+  <script async src="/assets/js/script.js"></script>
+</head>
+<body>
+
+  <nav>
+    <div class="container">
+      <h2>node package manager</h2>
+      <a href="#" id="mobile-home">home</a>
+      <a href="#">packages</a>
+      <a href="#">collections</a>
+      <a href="#">ecosystems</a>
+      <a href="#">authors</a>
+      <a href="#">resources</a>
+      <a href="#">npm Enterprise</a>
+      <a href="#">documentation</a>
+    </div> <!-- / .container -->
+  </nav>
+
+  <header class="no-nav">
+    <div class="container">
+      <a href="/" id="npm-logo"><img src="/assets/img/npm-logo.png" alt="npm logo" /></a>
+      <a href="#" id="mobile-menu">menu</a>
+      <form id="npm-search">
+        <input type="text" id="site-search" placeholder="search packages" />
+        <input type="submit" id="site-search-submit" />
+      </form>
+      <div id="user-info" class="logged-out">
+        <img src="/assets/img/wombat-avatar.png" id="user-avatar" />
+        <a href="#">create account</a> |
+        <a href="#">login</a>
+      </div> <!-- / #user-info -->
+      <h1><%- current.source.replace(/-/g, ' ') %></h1>
+    </div> <!-- / .container -->
+  </header>
+
+  {{{ content }}}
+
+  <footer>
+    <div class="container">
+      <img src="/assets/img/npm-footer-logo.png" id="footer-logo" />
+      <p>
+        <span>npm stuff</span>
+        <a href="#">faq</a>
+        <a href="#">readme</a>
+        <a href="#">npm bugs</a>
+        <a href="#">website bugs</a>
+        <a href="#">node.js home</a>
+        <a href="#">blog</a>
+        <a href="#">mailing list</a>
+        <a href="#">more about this site</a>
+      </p>
+      <p>
+        <span>legal stuff</span>
+        <a href="#">privacy policy</a>
+        <a href="#">terms &amp; conditions</a>
+        <a href="#">handling disputes</a>
+        <a href="#">license</a>
+        <a href="#">website issues</a>
+        <a href="#">status</a>
+      </p>
+      <a href="#" id="npm-loves-you">npm loves you</a>
+    </div> <!-- / .container -->
+
+  </footer>
+
+</body>
+</html>
+
+<!-- {{stamp}} -->

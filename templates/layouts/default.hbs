@@ -21,6 +21,7 @@
   <script async src="/assets/js/jquery.customSelect.min.js"></script>
   <script async src="/assets/js/color-thief.min.js"></script>
   <script async src="/assets/js/script.js"></script>
+
 </head>
 <body>
 
@@ -35,31 +36,33 @@
       <a href="#">resources</a>
       <a href="#">npm Enterprise</a>
       <a href="#">documentation</a>
-    </div> <!-- / .container -->
+    </div>
   </nav>
 
   <header class="no-nav">
     <div class="container">
-      <a href="/" id="npm-logo"><img src="/assets/img/npm-logo.png" alt="npm logo" /></a>
+      <a href="/" id="npm-logo"><img src="/static/img/npm-logo.png" alt="npm logo" /></a>
       <a href="#" id="mobile-menu">menu</a>
       <form id="npm-search">
         <input type="text" id="site-search" placeholder="search packages" />
         <input type="submit" id="site-search-submit" />
       </form>
       <div id="user-info" class="logged-out">
-        <img src="/assets/img/wombat-avatar.png" id="user-avatar" />
+        <img src="/static/img/wombat-avatar.png" id="user-avatar" />
         <a href="#">create account</a> |
         <a href="#">login</a>
-      </div> <!-- / #user-info -->
-      <h1><%- current.source.replace(/-/g, ' ') %></h1>
-    </div> <!-- / .container -->
+      </div>
+      <h1>page</h1>
+    </div>
   </header>
 
-  {{{ content }}}
+  <div class="container">
+    {{{ content }}}
+  </div>
 
   <footer>
     <div class="container">
-      <img src="/assets/img/npm-footer-logo.png" id="footer-logo" />
+      <img src="/static/img/npm-footer-logo.png" id="footer-logo" />
       <p>
         <span>npm stuff</span>
         <a href="#">faq</a>
@@ -81,7 +84,7 @@
         <a href="#">status</a>
       </p>
       <a href="#" id="npm-loves-you">npm loves you</a>
-    </div> <!-- / .container -->
+    </div>
 
   </footer>
 

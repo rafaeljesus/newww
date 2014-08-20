@@ -103,7 +103,7 @@ Let's bring back semi-colons and comma-last. No rhyme or reason; just cuz.
 
 First, clone this repo.
 
-Second, copy numbat-config.example.js and config.example.js to numbat-config.js and config.js, respectively. Feel free to modify them to suit your needs.
+Second, copy numbat-config.example.js to numbat-config.js. Feel free to modify it to suit your needs. You can also create a config.admin.js to override any of the config.js values.
 
 If you have a reasonably new machine, we strongly recommend using Virtualbox
 and Vagrant to run a pre-configured VM containing [couchdb](http://couchdb.apache.org/),

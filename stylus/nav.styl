@@ -1,0 +1,199 @@
+nav
+	height 38px
+	color background-color
+	font-size 14px
+	font-weight 600
+	line-height 39px
+	text-align right
+	border-bottom 1px solid darken(npmred, 10%)
+	background npmred
+
+	@media only screen and (max-width: 767px)
+		display none
+		position absolute
+		top 86px
+		left 0
+		right 0
+		border-bottom 0
+		background gray6
+		z-index 12
+
+	a
+		display inline-block
+		height 36px
+		margin 0 0 0 16px
+		opacity .6
+		color background-color
+
+		&:hover, &.active
+			opacity 1
+			border-bottom: 3px solid white
+
+		@media only screen and (max-width: 767px)
+			display block
+			text-align center
+			margin 0
+			background npmred
+			opacity 1
+			border-bottom 1px solid white
+
+			&:hover
+				color npmred
+				background gray6
+				border-bottom 1px solid white
+
+		&#mobile-home
+			visibility hidden
+
+			@media only screen and (max-width: 767px)
+				visibility visible
+
+	h2
+		float left
+		font 400 14px/39px fonts
+		color background-color
+
+		@media only screen and (max-width: 767px)
+			display none
+
+	.container
+		@media only screen and (max-width: 767px)
+			padding 0
+
+#mobile-menu
+	display none
+	position absolute
+	top -3px
+	right 20px
+	width 50px
+	height 36px
+	text-indent -9999em
+	background url(../img/ico-mobile-menu.png) no-repeat top right
+
+	@media only screen and (max-width: 767px)
+		display block
+
+	@media only screen and (-webkit-min-device-pixel-ratio : 1.5)
+		background url(../img/ico-mobile-menu@2x.png) no-repeat top right
+		background-size 26px 18px
+
+// Secondary Nav
+
+#secondary-nav
+	min-height 65px
+	margin 0 0 75px
+	background url(../img/secondary-nav-bg.png) repeat-x bottom left
+
+	@media only screen and (max-width: 767px)
+		min-height 45px
+
+	a
+		display inline-block
+		height 63px
+		margin 0 30px 0 0
+		line-height 65px
+		font 600 16px/65px fonts
+		color text-color-subdued
+
+		@media only screen and (max-width: 767px)
+			font 600 13px/45px fonts
+			height 43px
+			margin 0 15px 0 0
+
+		&:hover, &.active
+			color gray2
+			border-bottom 2px solid npmred
+
+//  Profile Nav
+
+#profile-nav
+	min-height 67px
+	margin 0 0 95px
+	background url(../img/secondary-nav-bg.png) repeat-x bottom left
+
+	@media only screen and (max-width: 767px)
+		position relative
+		margin 0 0 50px
+		background none
+
+	.container
+		padding-left 170px
+		max-width 1010px
+
+		@media only screen and (max-width: 767px)
+			padding-left 0
+			position absolute
+			top -80px
+			left 105px
+
+	a
+		display inline-block
+		height 67px
+		margin 0 30px 0 0
+		font 600 16px/67px fonts
+		color text-color-subdued
+
+		&:before
+			margin-right 8px
+			float left
+			line-height 69px
+
+			@media only screen and (max-width: 767px)
+				line-height 15px
+
+		@media only screen and (max-width: 767px)
+			display inline-block
+			height auto
+			margin 0 10px 0 0
+			font 600 13px/15px fonts
+			color rgba(255,255,255,.4)
+
+		&:hover
+			color gray2
+
+//  Package Nav
+
+#package-nav
+	position relative
+	min-height 33px
+	margin 0 0 95px
+	padding 17px 0
+	background url(../img/secondary-nav-bg.png) repeat-x bottom left
+
+	@media only screen and (max-width: 767px)
+		background none
+		margin 0 0 50px
+
+	.container
+		padding-left 170px
+		max-width 1010px
+
+		@media only screen and (max-width: 767px)
+			padding-left 105px
+
+
+		h4
+			color npmred
+			margin 8px 0 0
+
+			@media only screen and (max-width: 767px)
+				position absolute
+				top -90px
+
+		h5
+			font 600 13px/13px codefonts
+			color text-color-subdued
+			margin 0 0 5px
+
+			@media only screen and (max-width: 767px)
+				position absolute
+				top -90px
+
+		p
+			margin 0
+			font 600 14px/14px fonts
+			color gray2
+
+			@media only screen and (max-width: 767px)
+				position absolute
+				top -70px

@@ -1,175 +1,199 @@
-{{> header}}
-
-  {{#with package}}
-  <div id="package">
-    <header>
-      <h1>{{name}}</h1>
-      {{#if isStarred}}
-        <a href="#" class="star star-starred" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
-      {{else}}
-        <a href="#" class="star" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
-      {{/if}}
-    </header>
-
-    {{#if deprecated}}
-      <p class="deprecated">{{deprecated}}</p>
+{{#with package}}
+  <div class="layout-left">
+    {{#if readme}}
+    <section id="readme">
+    {{{readme}}}
+    </section>
     {{/if}}
 
-    {{#if description}}
-      <p class="description">{{description}}</p>
+<!-- <pre><code class="language-js">
+// this is js
+alert('hi');
+</code></pre>
+
+<pre><code class="language-javascript">
+// this is javascript
+alert('hi');
+</code></pre> -->
+
+  </div>
+
+  <div class="layout-right">
+  </div>
+
+{{/with}}
+
+<!--
+{{#with package}}
+<div id="package">
+  <header>
+    <h1>{{name}}</h1>
+    {{#if isStarred}}
+      <a href="#" class="star star-starred" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
+    {{else}}
+      <a href="#" class="star" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
     {{/if}}
+  </header>
 
-    <pre class="sh"><code>npm install {{name}}</code></pre>
-
-  {{/with}}
-
-  {{#if user}}
-    {{> download-graphs downloads}}
-  {{else}}
-    <span class="login-for-graphs">Want to see pretty graphs? <a href="/login?done=/package/{{package.name}}">Log in now!</a></span>
-    {{> download-counts downloads }}
+  {{#if deprecated}}
+    <p class="deprecated">{{deprecated}}</p>
   {{/if}}
 
-  {{#with package}}
-    <table class="metadata">
-      {{#if _npmUser}}
-      <tr>
-        <th>Last Published By</th>
-        <td>
-          <div class="user">
-            <a class="username" href="/~{{_npmUser.name}}">
-              {{#if _npmUser.avatar}}
-              <img src="{{_npmUser.avatar}}" class="avatar">
-              {{/if}}
-              {{_npmUser.name}}
-            </a>
-          </div>
-        </td>
-      </tr>
-      {{/if}}
-      {{#if showMaintainers}}
-      <tr>
-        <th>Maintainers</th>
-        <td>
-        {{#each maintainers}}
-          <div class="user">
-          <a class="username" href="/~{{name}}">
-            {{#if avatar}}
-            <img src="{{avatar}}" class="avatar">
-            {{/if}}{{name}}</a>
-          </div>
-        {{/each}}
-        </td>
-      </tr>
-      {{/if}}
-      <tr>
-        <th>Version</th>
-        <td>
-          <b>
-          {{version}}
-          </b>
-          {{#if fromNow}}
-          last updated
-          {{fromNow}}
-          {{/if}}
-        </td>
-      </tr>
-      {{#if license}}
-      <tr>
-        <th>License</th>
-        <td>
-            <a href="{{license.url}}">{{license.name}}</a>
-        </td>
-      </tr>
-      {{/if}}
-      {{#if keywords}}
-      <tr>
-        <th>Keywords</th>
-        <td>{{{packageKeywords keywords}}}</td>
-      </tr>
-      {{/if}}
-      {{#if repository}}
-      <tr>
-        <th>Repository</th>
-        <td>{{{packageRepository repository}}}</td>
-      </tr>
-      {{/if}}
-      {{#if homepage}}
-        <tr>
-          <th>Homepage</th>
-          <td>
-            <a href="{{homepage}}">{{homepage}}</a>
-          </td>
-        </tr>
-      {{/if}}
-      {{#if bugs.url}}
-      <tr>
-        <th>Bugs</th>
-        <td>
-          <a href="{{bugs.url}}">{{bugs.url}}</a>
-        </td>
-      </tr>
-      {{/if}}
-      <tr>
-        <th>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</th>
-        <td>
-        {{#if dependencies}}
-          {{#each dependencies}}
-            {{#unless @last}}
-              <a href="/package/{{this}}">{{this}}</a>,
-            {{else}}
-              {{#unless noHref}}
-                <a href="/package/{{this}}">{{this}}</a>
-              {{else}}
-                <a>{{text}}</a>
-              {{/unless}}
-            {{/unless}}
-          {{~/each}}
-        {{else}}
-          None
+  {{#if description}}
+    <p class="description">{{description}}</p>
+  {{/if}}
+
+  <pre class="sh"><code>npm install {{name}}</code></pre>
+
+{{/with}}
+
+{{#if user}}
+  {{> download-graphs downloads}}
+{{else}}
+  <span class="login-for-graphs">Want to see pretty graphs? <a href="/login?done=/package/{{package.name}}">Log in now!</a></span>
+  {{> download-counts downloads }}
+{{/if}}
+
+{{#with package}}
+  <table class="metadata">
+    {{#if _npmUser}}
+    <tr>
+      <th>Last Published By</th>
+      <td>
+        <div class="user">
+          <a class="username" href="/~{{_npmUser.name}}">
+            {{#if _npmUser.avatar}}
+            <img src="{{_npmUser.avatar}}" class="avatar">
+            {{/if}}
+            {{_npmUser.name}}
+          </a>
+        </div>
+      </td>
+    </tr>
+    {{/if}}
+    {{#if showMaintainers}}
+    <tr>
+      <th>Maintainers</th>
+      <td>
+      {{#each maintainers}}
+        <div class="user">
+        <a class="username" href="/~{{name}}">
+          {{#if avatar}}
+          <img src="{{avatar}}" class="avatar">
+          {{/if}}{{name}}</a>
+        </div>
+      {{/each}}
+      </td>
+    </tr>
+    {{/if}}
+    <tr>
+      <th>Version</th>
+      <td>
+        <b>
+        {{version}}
+        </b>
+        {{#if fromNow}}
+        last updated
+        {{fromNow}}
         {{/if}}
+      </td>
+    </tr>
+    {{#if license}}
+    <tr>
+      <th>License</th>
+      <td>
+          <a href="{{license.url}}">{{license.name}}</a>
+      </td>
+    </tr>
+    {{/if}}
+    {{#if keywords}}
+    <tr>
+      <th>Keywords</th>
+      <td>{{{packageKeywords keywords}}}</td>
+    </tr>
+    {{/if}}
+    {{#if repository}}
+    <tr>
+      <th>Repository</th>
+      <td>{{{packageRepository repository}}}</td>
+    </tr>
+    {{/if}}
+    {{#if homepage}}
+      <tr>
+        <th>Homepage</th>
+        <td>
+          <a href="{{homepage}}">{{homepage}}</a>
         </td>
       </tr>
-      {{#if dependents}}
-      <tr>
-        <th>Dependents {{#if dependents}}({{dependents.length}}){{/if}}</th>
-        <td>
-        {{#each dependents}}
-          <a href="{{url}}">{{name}}</a>{{#unless @last}},{{/unless}}
-        {{/each}}
-        </td>
-      </tr>
-      {{/if}}
-      {{#if starredBy}}
-      <tr>
-        <th>Starred by {{#if starredBy}}({{starredBy.length}}){{/if}}</th>
-        <td>
-        {{#each starredBy}}
+    {{/if}}
+    {{#if bugs.url}}
+    <tr>
+      <th>Bugs</th>
+      <td>
+        <a href="{{bugs.url}}">{{bugs.url}}</a>
+      </td>
+    </tr>
+    {{/if}}
+    <tr>
+      <th>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</th>
+      <td>
+      {{#if dependencies}}
+        {{#each dependencies}}
           {{#unless @last}}
-            <a href="/~{{this}}">{{this}}</a>,
+            <a href="/package/{{this}}">{{this}}</a>,
           {{else}}
-            <a href="{{url}}">{{name}}</a>
+            {{#unless noHref}}
+              <a href="/package/{{this}}">{{this}}</a>
+            {{else}}
+              <a>{{text}}</a>
+            {{/unless}}
           {{/unless}}
-        {{/each}}
-      </tr>
+        {{~/each}}
+      {{else}}
+        None
       {{/if}}
-    </table>
+      </td>
+    </tr>
+    {{#if dependents}}
+    <tr>
+      <th>Dependents {{#if dependents}}({{dependents.length}}){{/if}}</th>
+      <td>
+      {{#each dependents}}
+        <a href="{{url}}">{{name}}</a>{{#unless @last}},{{/unless}}
+      {{/each}}
+      </td>
+    </tr>
+    {{/if}}
+    {{#if starredBy}}
+    <tr>
+      <th>Starred by {{#if starredBy}}({{starredBy.length}}){{/if}}</th>
+      <td>
+      {{#each starredBy}}
+        {{#unless @last}}
+          <a href="/~{{this}}">{{this}}</a>,
+        {{else}}
+          <a href="{{url}}">{{name}}</a>
+        {{/unless}}
+      {{/each}}
+    </tr>
+    {{/if}}
+  </table>
 
-    <div class="details">
-      <ul class="toc">
-        {{#if readme}}
-        <li><a href="#readme">Read Me</a></li>
-        {{/if}}
-      </ul>
-
+  <div class="details">
+    <ul class="toc">
       {{#if readme}}
-      <section id="readme">
-      {{{readme}}}
-      </section>
+      <li><a href="#readme">Read Me</a></li>
       {{/if}}
-    </div>
-  </div>
-  {{/with}}
+    </ul>
 
-{{> footer}}
+    {{#if readme}}
+    <section id="readme">
+    {{{readme}}}
+    </section>
+    {{/if}}
+  </div>
+</div>
+{{/with}}
+-->
+
 <script src="/static/js/stars.js" async="true"></script>

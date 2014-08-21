@@ -1,48 +1,44 @@
-{{> header }}
-
 <h1>Search Results</h1>
 
-  {{#if hits}}
-    <ul class ="search-results">
-    {{#each hits}}
-    {{#with fields}}
-      <li class="search-result package">
-        <h2> <a href="/package/{{ name }}">{{ name }} </a> </h2>
-        <ul class="hud">
-          <li class="dlScore" title="average downlaods"><span>{{! stuff is going to be rendered here }}<span></li>
-          <li class="stars" title="number of stars by users">{{ stars }}</li>
+{{#if hits}}
+  <ul class ="search-results">
+  {{#each hits}}
+  {{#with fields}}
+    <li class="search-result package">
+      <h2> <a href="/package/{{ name }}">{{ name }} </a> </h2>
+      <ul class="hud">
+        <li class="dlScore" title="average downlaods"><span>{{! stuff is going to be rendered here }}<span></li>
+        <li class="stars" title="number of stars by users">{{ stars }}</li>
+      </ul>
+      <p class="description">{{ description }}</p>
+      <div class="details">
+        <span class="version">
+          {{ version }} by
+          <a href="/~ {{ author }}">{{ author }}</a>
+        </span>
+        {{#if keywords.length}}
+        <ul class="keywords">
+        {{#each keywords}}
+          <li> <a href="browse/keyword/{{ this }}"> {{ this }} </a> </li>
+        {{/each}}
         </ul>
-        <p class="description">{{ description }}</p>
-        <div class="details">
-          <span class="version">
-            {{ version }} by
-            <a href="/~ {{ author }}">{{ author }}</a>
-          </span>
-          {{#if keywords.length}}
-          <ul class="keywords">
-          {{#each keywords}}
-            <li> <a href="browse/keyword/{{ this }}"> {{ this }} </a> </li>
-          {{/each}}
-          </ul>
-          {{/if}}
-        </div>
-      </li>
-    {{/with}}
-    {{/each}}
-    </ul>
+        {{/if}}
+      </div>
+    </li>
+  {{/with}}
+  {{/each}}
+  </ul>
 
-    <p class="description">
-      {{#if prevPage}}
-        <a href="/search?q={{q}}&page={{prevPage}}">&larr; previous</a>
-      {{/if}}
-      Page {{page}}
-      {{#if nextPage}}
-        <a href="/search?q={{q}}&page={{nextPage}}">next &rarr;</a>
-      {{/if}}
-    </p>
+  <p class="description">
+    {{#if prevPage}}
+      <a href="/search?q={{q}}&page={{prevPage}}">&larr; previous</a>
+    {{/if}}
+    Page {{page}}
+    {{#if nextPage}}
+      <a href="/search?q={{q}}&page={{nextPage}}">next &rarr;</a>
+    {{/if}}
+  </p>
 
-  {{else}}
-    No results - try again?
-  {{/if}}
-
-{{> footer }}
+{{else}}
+  No results - try again?
+{{/if}}

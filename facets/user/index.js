@@ -6,7 +6,9 @@ var path = require('path'),
 exports.register = function User (facet, options, next) {
   facet.views({
     engines: { hbs: require('handlebars') },
-    path: path.resolve(__dirname, 'templates')
+    path: path.resolve(__dirname, 'templates'),
+    layoutPath: path.resolve(__dirname, '../../templates/layouts'),
+    layout: 'default',
   });
 
   var forceAuthConfig = function (handler) {

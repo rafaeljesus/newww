@@ -9,6 +9,8 @@ exports.register = function Company (facet, options, next) {
   facet.views({
     engines: { hbs: require('handlebars') },
     path: path.resolve(__dirname, 'templates'),
+    layoutPath: path.resolve(__dirname, '../../templates/layouts'),
+    layout: 'default',
   });
 
   facet.route({

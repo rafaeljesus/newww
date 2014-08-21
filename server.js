@@ -1,6 +1,7 @@
 var Hapi = require('hapi'),
     Hoek = require('hoek'),
     config = require('./config.js'),
+    url = require('url'),
     MetricsClient = require('./adapters/metrics');
 
 // set up the logger
@@ -44,7 +45,12 @@ server.ext('onPreResponse', function (request, next) {
 
   // adds the server info stamp to the bottom of each template
   if (request.response.variety === 'view') {
-    request.response.source.context = Hoek.applyToDefaults({stamp: config.stamp}, request.response.source.context);
+    var canonicalHref = url.resolve(config.canonicalHost, url.parse(request.url).path)
+
+    request.response.source.context = Hoek.applyToDefaults({
+      stamp: config.stamp,
+      canonicalHref: canonicalHref
+    }, request.response.source.context);
   }
 
   next();

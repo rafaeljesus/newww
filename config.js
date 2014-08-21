@@ -8,6 +8,7 @@ var config = module.exports = {};
 config.port = process.env.PORT || 15443;
 config.host = "localhost";
 // config.host = '0.0.0.0'
+config.canonicalHost = "https://localhost"
 
 config.server = {
   views: {

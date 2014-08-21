@@ -55,24 +55,6 @@ config.csp = {
   reportUri: '/-/csplog'
 }
 
-// stamp data for templates
-var gitHead;
-try {
-  gitHead = fs.readFileSync('.git/HEAD', 'utf8').trim()
-  if (gitHead.match(/^ref: /)) {
-    gitHead = gitHead.replace(/^ref: /, '').trim()
-    gitHead = fs.readFileSync('.git/' + gitHead, 'utf8').trim()
-  }
-  config.HEAD = gitHead
-} catch (_) {
-  gitHead = '(not a git repo) ' + _.message
-}
-
-config.stamp = 'pid=' + process.pid + ' ' +
-                // 'worker=' + cluster.worker.id + ' ' +
-                gitHead + ' ' + config.host +
-                ' ' + os.hostname() + ' ' + process.env.SMF_ZONENAME;
-
 // ===== service options =====
 config.couch = {
   "couchAuth": "admin:admin",
@@ -143,6 +125,26 @@ config.search = {
 if (fs.existsSync('./config.admin.js')) {
   Hoek.merge(config, require('./config.admin'), false);
 }
+
+// stamp data for templates
+var gitHead;
+try {
+  gitHead = fs.readFileSync('.git/HEAD', 'utf8').trim()
+  if (gitHead.match(/^ref: /)) {
+    gitHead = gitHead.replace(/^ref: /, '').trim()
+    gitHead = fs.readFileSync('.git/' + gitHead, 'utf8').trim()
+  }
+  config.HEAD = gitHead
+} catch (_) {
+  gitHead = '(not a git repo) ' + _.message
+}
+
+config.stamp = 'pid=' + process.pid + ' ' +
+                // 'worker=' + cluster.worker.id + ' ' +
+                gitHead + ' ' + config.canonicalHost + ' ' +
+                os.hostname() + ' ' + process.env.SMF_ZONENAME;
+
+
 
 function hostmatch (m) { return function (u) {
   return u.host && u.host.match(m)

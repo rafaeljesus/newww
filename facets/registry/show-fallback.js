@@ -11,12 +11,10 @@ module.exports = function fallbackHandler (request, reply) {
       reply.redirect('/package/' + package._id);
     }
 
-    opts.url = request.server.info.uri + request.url.path;
-
     timer.end = Date.now();
     metrics.addPageLatencyMetric(timer, '404-not-found');
 
-    metrics.addMetric({name: '404', url: opts.url});
+    metrics.addMetric({name: '404'});
     reply.view('notfound', opts).code(404);
   });
 };

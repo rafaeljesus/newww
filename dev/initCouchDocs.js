@@ -13,7 +13,7 @@ function replicateDdocs (callback) {
     return
   }
 
-  request({ url: 'https://aws-west-6.skimdb.internal.npmjs.com/' + ddoc, json: true }, then)
+  request({ url: 'https://skimdb.npmjs.com/' + ddoc, json: true }, then)
   function then (er, res, body) {
     if (er) throw er
     if (res.statusCode !== 200) {

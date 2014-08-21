@@ -11,34 +11,16 @@ var gulp = require('gulp'),
 
 gulp.task('styles', function () {
   gulp.src('stylus/index.styl')
-      .pipe(stylus({use: [nib()]}))
-      .pipe(gulp.dest('static/css/'))
+    .pipe(stylus({use: [nib()]}))
+    .pipe(gulp.dest('static/css/'))
 });
 
 gulp.task('browserify', function () {
-  browserify('./assets/js/typeahead.js')
+  browserify('./assets/js/index.js')
     .bundle()
-    .pipe(source('typeahead.min.js'))
+    .pipe(source('index.min.js'))
     .pipe(streamify(uglify()))
-    .pipe(gulp.dest('assets/js/'))
-});
-
-var footerScripts = [
-  "assets/js/jquery-2.1.0.min.js",
-  "assets/js/d3.js",
-  "assets/js/charts.js",
-  "assets/js/sh_main.js",
-  "assets/js/sh_javascript.min.js",
-  "assets/js/scripts.js",
-  "assets/js/google-analytics.js",
-  "assets/js/typeahead.min.js"
-];
-
-gulp.task('concat', function () {
-  gulp.src(footerScripts)
-      .pipe(uglify())
-      .pipe(concat('footer.min.js'))
-      .pipe(gulp.dest('static/js/'))
+    .pipe(gulp.dest('static/js/'))
 });
 
 gulp.task('develop', function () {
@@ -49,17 +31,19 @@ gulp.task('develop', function () {
     ignore: ['node_modules/', 'test/', 'facets/*/test/'],
     stdout: false
   })
-    .on('change', ['styles'])
+    .on('change', ['build'])
     .on('restart', function () {
       console.log('restarted!')
     })
     .on('readable', function () {
-      this.stdout.pipe(bistre({time: true}))
-                 .pipe(process.stdout);
-      this.stderr.pipe(bistre({time: true}))
-                 .pipe(process.stderr);
+      this.stdout
+        .pipe(bistre({time: true}))
+        .pipe(process.stdout);
+      this.stderr
+        .pipe(bistre({time: true}))
+        .pipe(process.stderr);
     })
 });
 
-gulp.task('default', ['styles']);
-gulp.task('build', ['styles', 'browserify', 'concat']);
+gulp.task('build', ['styles', 'browserify']);
+gulp.task('default', ['build']);

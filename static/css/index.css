@@ -198,6 +198,16 @@ a.view-all.icon-arrow-right:after {
   font-size: 7px;
   margin: 0 0 0 6px;
 }
+h1 {
+  font: 400 54px/65px 'Source Sans Pro', 'Lucida Grande', sans-serif;
+  letter-spacing: -3px;
+  color: rgba(0,0,0,0.8);
+}
+h1:before {
+  float: left;
+  margin-right: 10px;
+  margin-top: 10px;
+}
 h2 {
   margin: 0 0 25px;
   letter-spacing: -0.03em;
@@ -233,6 +243,12 @@ h4 {
 }
 h4 span {
   font-weight: 400;
+}
+hgroup {
+  text-align: center;
+}
+hgroup h2 {
+  font-weight: 300;
 }
 p {
   margin: 0 0 25px;
@@ -848,16 +864,6 @@ header.no-nav {
   header.no-nav {
     margin-bottom: 40px;
   }
-}
-header h1 {
-  font: 400 54px/65px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  letter-spacing: -3px;
-  color: rgba(0,0,0,0.8);
-}
-header h1:before {
-  float: left;
-  margin-right: 10px;
-  margin-top: 10px;
 }
 @media only screen and (max-width: 767px) {
   header h1 {

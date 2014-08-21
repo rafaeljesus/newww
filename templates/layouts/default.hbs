@@ -46,10 +46,10 @@
       </form>
       <div id="user-info" class="logged-out">
         <img src="/static/img/wombat-avatar.png" id="user-avatar" />
-        <a href="#">create account</a> |
-        <a href="#">login</a>
+        <a href="/signup">create account</a> |
+        <a href="/login">login</a>
       </div>
-      <h1>{{title}}</h1>
+      {{#if title}}<h1>{{title}}</h1>{{/if}}
     </div>
   </header>
 

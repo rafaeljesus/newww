@@ -1,6 +1,8 @@
 
-
-<h1>Login, please</h1>
+<hgroup>
+  <h1>login</h1>
+  <h2>you look lovely today, btw.</h2>
+<hgroup>
 
 {{#if error}}
   {{#compare error.type 'missing'}}
@@ -11,21 +13,14 @@
   {{/compare}}
 {{/if}}
 
-<form action='' method='post' class='form'>
-  <fieldset>
-    <label for='name'>Username</label>
-    <input name='name' id='name'>
-  </fieldset>
-  <fieldset>
-    <label for='password'>Password</label>
-    <input type='password' name='password' id='password'>
-  </fieldset>
-  <fieldset class='buttons'>
-    <button class='btn' type='submit'>Login!</button>
-    <a href="/forgot">Forgot password?</a>
-  </fieldset>
+<form class="login-forms" action='' method='post'>
+  <label for="name">username</label>
+  <input type="text" id="name" name="name" />
+  <label for="password">password</label>
+  <input type="password" id="password" name="password" />
+  <input type="submit" value="login" />
+  <p><a href="/forgot">forgot your password?</a> | <a href="/signup">create an account</a></p>
   <input type="hidden" name="crumb" value="{{crumb}}"/>
 </form>
 
-<p>Don't have an account? <a href="/signup">Sign up.</a>
 

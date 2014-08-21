@@ -46,11 +46,25 @@ if (process.env.NODE_ENV === 'dev') {
 
 config.csp = {
   defaultSrc: 'self',
-  scriptSrc: ['self', 'https://www.google-analytics.com/analytics.js'],
-  styleSrc: ['self', 'unsafe-inline'],
+  scriptSrc: [
+    'self',
+    'https://www.google-analytics.com',
+    'https://fonts.googleapis.com',
+  ],
+  styleSrc: [
+    'self',
+    'unsafe-inline',
+    'https://fonts.googleapis.com'
+  ],
   imgSrc: '*',
-  connectSrc: ['self', 'https://typeahead.npmjs.com/'],
-  // fontSrc: Values for the font-src directive,
+  connectSrc: [
+    'self',
+    'https://typeahead.npmjs.com/',
+  ],
+  fontSrc: [
+    'self',
+    'https://fonts.gstatic.com'
+  ],
   // objectSrc: Values for the object-src directive,
   // mediaSrc: Values for the media-src directive,
   // frameSrc: Values for the frame-src directive,

@@ -15,12 +15,7 @@
   <link rel="search" type="application/opensearchdescription+xml" href="/static/opensearch.xml" title="Search Packages">
   <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700|Source+Code+Pro:400,600,700' rel='stylesheet' type='text/css'>
 
-  <script async src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-  <script async src="/assets/js/prism.min.js"></script>
-  <script async src="/assets/js/jquery.sortable.min.js"></script>
-  <script async src="/assets/js/jquery.customSelect.min.js"></script>
-  <script async src="/assets/js/color-thief.min.js"></script>
-  <script async src="/assets/js/script.js"></script>
+  <!-- // <script async src="/static/js/footer.min.js"></script> -->
 
 </head>
 <body>
@@ -28,14 +23,14 @@
   <nav>
     <div class="container">
       <h2>node package manager</h2>
-      <a href="#" id="mobile-home">home</a>
-      <a href="#">packages</a>
-      <a href="#">collections</a>
-      <a href="#">ecosystems</a>
-      <a href="#">authors</a>
-      <a href="#">resources</a>
-      <a href="#">npm Enterprise</a>
-      <a href="#">documentation</a>
+      <a href="/" id="mobile-home">home</a>
+      <a href="/packages">packages</a>
+      <!-- <a href="#">collections</a> -->
+      <!-- <a href="#">ecosystems</a> -->
+      <!-- <a href="#">authors</a> -->
+      <!-- <a href="#">resources</a> -->
+      <a href="/npme-beta">npm Enterprise</a>
+      <a href="https://www.npmjs.org/doc">documentation</a>
     </div>
   </nav>
 
@@ -52,7 +47,7 @@
         <a href="#">create account</a> |
         <a href="#">login</a>
       </div>
-      <h1>page</h1>
+      <h1>{{title}}</h1>
     </div>
   </header>
 
@@ -90,5 +85,8 @@
 
 </body>
 </html>
+
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.1/"></script> -->
+<!-- // <script>hljs.initHighlightingOnLoad();</script> -->
 
 <!-- {{stamp}} -->

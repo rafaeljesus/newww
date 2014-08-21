@@ -18,8 +18,18 @@ gulp.task('styles', function () {
 gulp.task('browserify', function () {
   browserify('./assets/js/index.js')
     .bundle()
-    .pipe(source('index.min.js'))
-    .pipe(streamify(uglify()))
+    .pipe(source('index-bundled.js'))
+    // .pipe(streamify(uglify()))
+    .pipe(gulp.dest('assets/js/'))
+});
+
+gulp.task('concat', function () {
+  gulp.src([
+    "assets/js/vendor/highlight.min.js",
+    "assets/js/index-bundled.js",
+  ])
+    .pipe(uglify())
+    .pipe(concat('index.min.js'))
     .pipe(gulp.dest('static/js/'))
 });
 
@@ -45,5 +55,5 @@ gulp.task('develop', function () {
     })
 });
 
-gulp.task('build', ['styles', 'browserify']);
+gulp.task('build', ['styles', 'browserify', 'concat']);
 gulp.task('default', ['build']);

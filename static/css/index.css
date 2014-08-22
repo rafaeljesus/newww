@@ -827,17 +827,8 @@ nav h2 {
 }
 header {
   padding: 28px 0 20px;
-  min-height: 175px;
   border-bottom: 1px solid #d3d3d3;
   background: rgba(0,0,0,0.04);
-}
-header .container {
-  padding-top: 113px;
-}
-@media only screen and (max-width: 767px) {
-  header .container {
-    padding-top: 133px;
-  }
 }
 header#collections {
   min-height: 450px;
@@ -858,12 +849,16 @@ header#nux {
   }
 }
 header.no-nav {
-  margin-bottom: 75px;
+  margin-bottom: 1em;
 }
 @media only screen and (max-width: 767px) {
   header.no-nav {
-    margin-bottom: 40px;
+    margin-bottom: 1em;
   }
+}
+header h1 {
+  clear: left;
+  padding-top: 1em;
 }
 @media only screen and (max-width: 767px) {
   header h1 {
@@ -937,13 +932,13 @@ header.avatar h1 {
   }
 }
 header #npm-logo {
-  position: absolute;
-  top: 0;
-  left: 20px;
+  float: left;
+  margin-right: 7%;
 }
 @media only screen and (max-width: 767px) {
   header #npm-logo {
-    top: -8px;
+    margin-top: -8px;
+    margin-right: 0;
   }
 }
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5) and (max-width: 767px) {
@@ -953,9 +948,8 @@ header #npm-logo {
   }
 }
 header #npm-search {
-  position: absolute;
-  top: 0;
-  left: 23%;
+  float: left;
+  position: relative;
   width: 53%;
   height: 47px;
   padding: 0;
@@ -971,10 +965,8 @@ header #npm-search {
 }
 @media only screen and (max-width: 767px) {
   header #npm-search {
-    width: auto;
-    top: 60px;
-    left: 20px;
-    right: 20px;
+    margin-top: 2em;
+    width: 100%;
   }
 }
 header.custom #npm-search {
@@ -1018,11 +1010,7 @@ header #site-search-submit:hover {
   background: #cb3837 url("../img/ico-search-hover.png") no-repeat 50% 50%;
 }
 header #user-info {
-  position: absolute;
-  top: 0;
-  right: 20px;
-  width: 250px;
-  height: 49px;
+  float: right;
   font-size: 14px;
   line-height: 15px;
   text-align: right;
@@ -1030,8 +1018,8 @@ header #user-info {
 }
 @media only screen and (max-width: 767px) {
   header #user-info {
-    top: -1px;
-    right: 60px;
+    margin-top: -1px;
+    margin-right: 3em;
   }
 }
 header #user-info img {

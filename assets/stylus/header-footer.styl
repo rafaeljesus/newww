@@ -1,632 +1,627 @@
 header
-	padding 28px 0 20px
-	min-height 175px
-	border-bottom 1px solid lightgrey
-	background gray6
+  padding 28px 0 20px
+  // min-height 175px
+  border-bottom 1px solid lightgrey
+  background gray6
 
-	.container
-		padding-top 113px
-
-		@media only screen and (max-width: 767px)
-			padding-top 133px
-
-	&#collections
-		min-height 450px
-		background gray6 url(../img/header-collection.png) no-repeat bottom right
-
-		@media only screen and (max-width: 1023px)
-			background none
-
-	&#nux
-		min-height 350px
-		background gray6 url(../img/header-nux.png) no-repeat bottom right
-
-		@media only screen and (max-width: 1023px)
-			background none
-
-	&.no-nav
-		margin-bottom 75px
-
-		@media only screen and (max-width: 767px)
-			margin-bottom 40px
-
-	h1
-		@media only screen and (max-width: 767px)
-			font 400 28px/46px fonts
-			letter-spacing -1px
-
-			&:before
-				float left
-				margin-right 4px
-				margin-top 6px
-
-	.header-copy
-		width 46%
-		padding 0 0 25px
-
-		@media only screen and (max-width: 1023px)
-			width 80%
-
-		h1
-			position relative
-			top auto
-			margin 0 0 30px
-
-		span
-			margin 0 0 0 15px
-			font 400 13px/47px fonts
-			color text-color-subdued
-
-			a
-				color text-color-subdued
-				text-decoration underline
-
-				&:hover
-					color gray2
-
-	&.avatar
-		padding-bottom 12px
-
-		.container
-			padding-top 103px
-
-			@media only screen and (max-width: 767px)
-				padding-top 113px
-
-		@media only screen and (max-width: 767px)
-			min-height 222px
-
-		h1
-			margin 10px 0 0 157px
-
-			@media only screen and (max-width: 767px)
-				margin 10px 0 0 85px
-				width 215px
-				white-space nowrap
-				overflow hidden
-				text-overflow ellipsis
-				font 400 24px/29px fonts
-
-			@media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio : 1.5)
-				width 150px
-
-	#npm-logo
-		position absolute
-		top 0
-		left 20px
-
-		@media only screen and (max-width: 767px)
-			top -8px
-
-		@media only screen and (-webkit-min-device-pixel-ratio : 1.5) and (max-width: 767px)
-			img
-				display block
-				width 80%
-
-	#npm-search
-		position absolute
-		top 0
-		left 23%
-		width 53%
-		height 47px
-		padding 0
-		margin 0
-		border 1px solid gray5
-		border-radius 2px
-		background white
-
-		@media only screen and (max-width: 1023px)
-			width 45%
-
-		@media only screen and (max-width: 767px)
-			width auto
-			top 60px
-			left 20px
-			right 20px
-
-	&.custom #npm-search
-		border 0
-
-	#site-search
-		position absolute
-		top 7px
-		left 20px
-		width 80%
-		height 30px
-		padding 0
-		margin 0
-		border 0
-		outline 0
-		font-weight 300
-		font-family fonts
-		font-size 18px
-		background none
-
-	#site-search-submit
-		position absolute
-		top 0
-		right 0
-		height 47px
-		width 46px
-		border 0
-		text-indent -9999em
-		cursor pointer
-		outline 0
-		border-left 1px solid gray5
-		border-radius 0 2px 2px 0
-		background url(../img/ico-search.png) no-repeat 50% 50%
-
-
-		&:hover
-			width 47px
-			height 49px
-			top -1px
-			right -1px
-			border-left 0
-			background: npmred url(../img/ico-search-hover.png) no-repeat 50% 50%
-
-	#user-info
-		position absolute
-		top 0
-		right 20px
-		width 250px
-		height 49px
-		font-size 14px
-		line-height 15px
-		text-align right
-		color gray5
-
-		@media only screen and (max-width: 767px)
-			top -1px
-			right 60px
-
-		img
-			float right
-			display block
-			width 45px
-			margin 0 0 0 10px
-			border-radius 2px
-
-			@media only screen and (max-width: 767px)
-				display none
-
-		h6
-			margin 5px 0 0
-			font 600 13px/18px fonts
-			color gray2
-
-			@media only screen and (max-width: 767px)
-				display none
-
-		a
-			font 600 12px/15px fonts
-			padding 0 2px
-			color npmred
-
-		&.logged-out
-			color text-color-subdued
-			font-weight 100
-
-			a
-				color text-color-subdued
-				font 600 14px/49px fonts
-
-				@media only screen and (max-width: 767px)
-					font 600 12px/15px fonts
-
-	&.custom #user-info
-		color rgba(255,255,255,.4)
-
-		a
-			color rgba(255,255,255,.4)
-
-	#header-buttons
-		position absolute
-		right 20px
-		top 134px
-		z-index 7
-
-		@media only screen and (max-width: 1023px)
-			display none
-			width 140px
-			border 1px solid gray5
-			border-radius 4px
-			background white
-
-		@media only screen and (max-width: 767px)
-			top 120px
-
-		a
-			float left
-			display inline-block
-			height 31px
-			text-align center
-			margin 0
-			color text-color-subdued
-			padding 0 15px
-			font 600 13px/31px fonts
-			border 1px solid gray5
-			border-width 1px 0 1px 1px
-			background white
-
-			&:before
-				margin-right 8px
-				float left
-				margin-top 9px
-
-			&:hover
-				color background-color
-				border-color npmred
-				background npmred
-
-			@media only screen and (max-width: 1023px)
-				display block
-				float none
-				border-width 0 0 1px 0
-				text-align right
-
-			span
-				margin 0 0 0 5px
-
-			&.owner
-				color background-color
-				border-color npmred
-				background npmred
-
-				&:hover
-					color text-color-subdued
-					border-color gray5
-					background white
-
-			&:first-child
-				border-radius 4px 0 0 4px
-
-				@media only screen and (max-width: 1023px)
-					border-radius 0
-
-			&:last-child
-				border-radius 0 4px 4px 0
-				border-right 1px solid gray5
-
-				@media only screen and (max-width: 1023px)
-					border-width 0
-					border-radius 0
-
-	&.custom
-		&.dark
-			h1
-				color background-color
-
-			#user-info
-				color background-color
-
-				a, h6
-					color background-color
-
-		#header-buttons
-			@media only screen and (max-width: 1023px)
-				display none
-				width 140px
-				border 0
-				border-radius 4px
-				background white
-
-			a
-				float left
-				display inline-block
-				height 31px
-				text-align center
-				margin 0 0 0 1px
-				color background-color
-				padding 0 15px
-				border 0
-				font 600 13px/31px fonts
-				background rgba(255,255,255,.4)
-
-				&:hover
-					color gray2
-					background white
-
-				@media only screen and (max-width: 1023px)
-					display block
-					float none
-					border-bottom 0
-					margin 0
-					text-align right
-					color gray2
-
-					&:first-child
-						border-radius 4px 4px 0 0
-
-					&:last-child
-						border-width 0
-						border-radius 0 0 4px 4px
-
-					&:hover
-						color background-color
-						background npmred
-
-				&.owner
-					background white
-					color gray2
-
-					&:hover
-						color background-color
-						background gray2
-
-	#mobile-header-buttons
-		display none
-		position absolute
-		right 20px
-		top 134px
-		display inline-block
-		height 31px
-		padding 0 10px
-		font 600 25px/17px fonts
-		color gray2
-		text-align center
-		border 1px solid gray5
-		background white
-		border-radius 4px
-
-		@media only screen and (max-width: 767px)
-			top 120px
-			display block
-
-	&.custom #mobile-header-buttons
-		border 0
-		color background-color
-		background rgba(255,255,255,.4)
+  &#collections
+    min-height 450px
+    background gray6 url(../img/header-collection.png) no-repeat bottom right
+
+    @media only screen and (max-width: 1023px)
+      background none
+
+  &#nux
+    min-height 350px
+    background gray6 url(../img/header-nux.png) no-repeat bottom right
+
+    @media only screen and (max-width: 1023px)
+      background none
+
+  &.no-nav
+    margin-bottom 1em
+
+    @media only screen and (max-width: 767px)
+      margin-bottom 1em
+
+  h1
+    clear left
+    padding-top 1em
+
+    @media only screen and (max-width: 767px)
+      font 400 28px/46px fonts
+      letter-spacing -1px
+
+      &:before
+        float left
+        margin-right 4px
+        margin-top 6px
+
+  .header-copy
+    width 46%
+    padding 0 0 25px
+
+    @media only screen and (max-width: 1023px)
+      width 80%
+
+    h1
+      position relative
+      top auto
+      margin 0 0 30px
+
+    span
+      margin 0 0 0 15px
+      font 400 13px/47px fonts
+      color text-color-subdued
+
+      a
+        color text-color-subdued
+        text-decoration underline
+
+        &:hover
+          color gray2
+
+  &.avatar
+    padding-bottom 12px
+
+    .container
+      padding-top 103px
+
+      @media only screen and (max-width: 767px)
+        padding-top 113px
+
+    @media only screen and (max-width: 767px)
+      min-height 222px
+
+    h1
+      margin 10px 0 0 157px
+
+      @media only screen and (max-width: 767px)
+        margin 10px 0 0 85px
+        width 215px
+        white-space nowrap
+        overflow hidden
+        text-overflow ellipsis
+        font 400 24px/29px fonts
+
+      @media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio : 1.5)
+        width 150px
+
+  #npm-logo
+    float left
+    margin-right 7%
+
+    @media only screen and (max-width: 767px)
+      margin-top -8px
+      margin-right 0
+
+    @media only screen and (-webkit-min-device-pixel-ratio : 1.5) and (max-width: 767px)
+      img
+        display block
+        width 80%
+
+  #npm-search
+    // position absolute
+    // top 0
+    // left 23%
+    float left
+    // margin-left 23%
+    position relative
+
+    width 53%
+    height 47px
+    padding 0
+    margin 0
+    border 1px solid gray5
+    border-radius 2px
+    background white
+
+    @media only screen and (max-width: 1023px)
+      width 45%
+
+    @media only screen and (max-width: 767px)
+      margin-top: 2em;
+      width: 100%;
+
+  &.custom #npm-search
+    border 0
+
+  #site-search
+    position absolute
+    top 7px
+    left 20px
+    width 80%
+    height 30px
+    padding 0
+    margin 0
+    border 0
+    outline 0
+    font-weight 300
+    font-family fonts
+    font-size 18px
+    background none
+
+  #site-search-submit
+    position absolute
+    top 0
+    right 0
+    height 47px
+    width 46px
+    border 0
+    text-indent -9999em
+    cursor pointer
+    outline 0
+    border-left 1px solid gray5
+    border-radius 0 2px 2px 0
+    background url(../img/ico-search.png) no-repeat 50% 50%
+
+
+    &:hover
+      width 47px
+      height 49px
+      top -1px
+      right -1px
+      border-left 0
+      background: npmred url(../img/ico-search-hover.png) no-repeat 50% 50%
+
+  #user-info
+    float right
+    font-size 14px
+    line-height 15px
+    text-align right
+    color gray5
+
+    @media only screen and (max-width: 767px)
+      margin-top -1px
+      margin-right 3em
+
+    img
+      float right
+      display block
+      width 45px
+      margin 0 0 0 10px
+      border-radius 2px
+
+      @media only screen and (max-width: 767px)
+        display none
+
+    h6
+      margin 5px 0 0
+      font 600 13px/18px fonts
+      color gray2
+
+      @media only screen and (max-width: 767px)
+        display none
+
+    a
+      font 600 12px/15px fonts
+      padding 0 2px
+      color npmred
+
+    &.logged-out
+      color text-color-subdued
+      font-weight 100
+
+      a
+        color text-color-subdued
+        font 600 14px/49px fonts
+
+        @media only screen and (max-width: 767px)
+          font 600 12px/15px fonts
+
+  &.custom #user-info
+    color rgba(255,255,255,.4)
+
+    a
+      color rgba(255,255,255,.4)
+
+  #header-buttons
+    position absolute
+    right 20px
+    top 134px
+    z-index 7
+
+    @media only screen and (max-width: 1023px)
+      display none
+      width 140px
+      border 1px solid gray5
+      border-radius 4px
+      background white
+
+    @media only screen and (max-width: 767px)
+      top 120px
+
+    a
+      float left
+      display inline-block
+      height 31px
+      text-align center
+      margin 0
+      color text-color-subdued
+      padding 0 15px
+      font 600 13px/31px fonts
+      border 1px solid gray5
+      border-width 1px 0 1px 1px
+      background white
+
+      &:before
+        margin-right 8px
+        float left
+        margin-top 9px
+
+      &:hover
+        color background-color
+        border-color npmred
+        background npmred
+
+      @media only screen and (max-width: 1023px)
+        display block
+        float none
+        border-width 0 0 1px 0
+        text-align right
+
+      span
+        margin 0 0 0 5px
+
+      &.owner
+        color background-color
+        border-color npmred
+        background npmred
+
+        &:hover
+          color text-color-subdued
+          border-color gray5
+          background white
+
+      &:first-child
+        border-radius 4px 0 0 4px
+
+        @media only screen and (max-width: 1023px)
+          border-radius 0
+
+      &:last-child
+        border-radius 0 4px 4px 0
+        border-right 1px solid gray5
+
+        @media only screen and (max-width: 1023px)
+          border-width 0
+          border-radius 0
+
+  &.custom
+    &.dark
+      h1
+        color background-color
+
+      #user-info
+        color background-color
+
+        a, h6
+          color background-color
+
+    #header-buttons
+      @media only screen and (max-width: 1023px)
+        display none
+        width 140px
+        border 0
+        border-radius 4px
+        background white
+
+      a
+        float left
+        display inline-block
+        height 31px
+        text-align center
+        margin 0 0 0 1px
+        color background-color
+        padding 0 15px
+        border 0
+        font 600 13px/31px fonts
+        background rgba(255,255,255,.4)
+
+        &:hover
+          color gray2
+          background white
+
+        @media only screen and (max-width: 1023px)
+          display block
+          float none
+          border-bottom 0
+          margin 0
+          text-align right
+          color gray2
+
+          &:first-child
+            border-radius 4px 4px 0 0
+
+          &:last-child
+            border-width 0
+            border-radius 0 0 4px 4px
+
+          &:hover
+            color background-color
+            background npmred
+
+        &.owner
+          background white
+          color gray2
+
+          &:hover
+            color background-color
+            background gray2
+
+  #mobile-header-buttons
+    display none
+    position absolute
+    right 20px
+    top 134px
+    display inline-block
+    height 31px
+    padding 0 10px
+    font 600 25px/17px fonts
+    color gray2
+    text-align center
+    border 1px solid gray5
+    background white
+    border-radius 4px
+
+    @media only screen and (max-width: 767px)
+      top 120px
+      display block
+
+  &.custom #mobile-header-buttons
+    border 0
+    color background-color
+    background rgba(255,255,255,.4)
 
 // Search Auto Suggest
 
 #auto-suggest
-	position absolute
-	top 47px
-	left -1px
-	width 89%
-	border 1px solid gray5
-	border-width 0 1px 1px
-	border-radius 0 0 2px 2px
-	font 600 13px/18px fonts
-	color text-color-subdued
-	background white
-	z-index 200
+  position absolute
+  top 47px
+  left -1px
+  width 89%
+  border 1px solid gray5
+  border-width 0 1px 1px
+  border-radius 0 0 2px 2px
+  font 600 13px/18px fonts
+  color text-color-subdued
+  background white
+  z-index 200
 
-	// A little obessive, maybe
-	@media only screen and (max-width: 1024px)
-		width 86.8%
+  // A little obessive, maybe
+  @media only screen and (max-width: 1024px)
+    width 86.8%
 
-	@media only screen and (max-width: 768px)
-		width 79.5%
+  @media only screen and (max-width: 768px)
+    width 79.5%
 
-	@media only screen and (max-width: 767px)
-		width 80.2%
+  @media only screen and (max-width: 767px)
+    width 80.2%
 
-	@media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio: 1.5)
-		width 74.7%
+  @media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio: 1.5)
+    width 74.7%
 
-	@media only screen and (-webkit-min-device-pixel-ratio: 1.5) and (orientation: landscape)
-		width 86.6%
+  @media only screen and (-webkit-min-device-pixel-ratio: 1.5) and (orientation: landscape)
+    width 86.6%
 
-	#auto-suggest-nav
-		padding 8px 0 0 20px
-		border-bottom 1px solid gray5
+  #auto-suggest-nav
+    padding 8px 0 0 20px
+    border-bottom 1px solid gray5
 
-		a
-			display inline-block
-			text-transform uppercase
-			font 600 12px/12px fonts
-			color text-color-subdued
-			margin 0 10px 0 0
-			padding 0 0 12px
+    a
+      display inline-block
+      text-transform uppercase
+      font 600 12px/12px fonts
+      color text-color-subdued
+      margin 0 10px 0 0
+      padding 0 0 12px
 
-			&:hover, &.active
-				color text-color
-				padding 0 0 10px
-				border-bottom 2px solid gray
+      &:hover, &.active
+        color text-color
+        padding 0 0 10px
+        border-bottom 2px solid gray
 
-	dl
+  dl
 
-		dt
-			padding 10px 20px 0
+    dt
+      padding 10px 20px 0
 
-			a
-				color npmred
-				font-size 18px
+      a
+        color npmred
+        font-size 18px
 
-			p
-				margin 0
+      p
+        margin 0
 
-		dd
-			color text-color
-			padding 8px 20px
-			border-bottom 1px solid gray5
+    dd
+      color text-color
+      padding 8px 20px
+      border-bottom 1px solid gray5
 
-			span
-				float right
-				margin 0 0 0 20px
+      span
+        float right
+        margin 0 0 0 20px
 
-				&:before
-					margin-right 6px
+        &:before
+          margin-right 6px
 
-			em
-				font-style normal
-				font-weight 400
+      em
+        font-style normal
+        font-weight 400
 
-	#auto-suggest-bottom
-		padding 10px 20px
-		background gray6
+  #auto-suggest-bottom
+    padding 10px 20px
+    background gray6
 
 // Large Avatar
 
 #large-avatar
-	position absolute
-	top 122px
-	width 134px
-	border-radius 2px
-	background gray1
-	z-index 10
+  position absolute
+  top 122px
+  width 134px
+  border-radius 2px
+  background gray1
+  z-index 10
 
-	@media only screen and (max-width: 767px)
-		width 75px
+  @media only screen and (max-width: 767px)
+    width 75px
 
-	img
-		display block
-		max-width 100%
-		border-radius 2px 2px 0 0
+  img
+    display block
+    max-width 100%
+    border-radius 2px 2px 0 0
 
-		&.multiple
-			float left
-			max-width 50%
-			border-radius 0
+    &.multiple
+      float left
+      max-width 50%
+      border-radius 0
 
-			&:first-child
-				border-radius 2px 0 0 0
+      &:first-child
+        border-radius 2px 0 0 0
 
-			&:nth-child(2)
-				border-radius 0 2px 0 0
+      &:nth-child(2)
+        border-radius 0 2px 0 0
 
-	a
-		clear left
-		display block
-		height 29px
-		line-height 29px
-		font-size 14px
-		font-weight 600
-		border-radius 0 0 2px 2px
-		color background-color
-		text-align center
-		background npmred
+  a
+    clear left
+    display block
+    height 29px
+    line-height 29px
+    font-size 14px
+    font-weight 600
+    border-radius 0 0 2px 2px
+    color background-color
+    text-align center
+    background npmred
 
-		@media only screen and (max-width: 767px)
-			font-size 12px
+    @media only screen and (max-width: 767px)
+      font-size 12px
 
 // Health
 #health
-	position absolute
-	right 20px
-	top 0
+  position absolute
+  right 20px
+  top 0
 
-	@media only screen and (max-width: 767px)
-		right auto
-		left 20px
+  @media only screen and (max-width: 767px)
+    right auto
+    left 20px
 
-	.health
-		float right
-		text-align right
-		width 125px
-		padding-top 3px
+  .health
+    float right
+    text-align right
+    width 125px
+    padding-top 3px
 
-		@media only screen and (max-width: 767px)
-			float left
-			text-align left
+    @media only screen and (max-width: 767px)
+      float left
+      text-align left
 
-		span
-			font 600 14px/14px fonts
+    span
+      font 600 14px/14px fonts
 
-		span[class^="icon-"], span[class*=" icon-"]
-			float right
-			font-size 26px
-			margin 2px 0 0 8px
+    span[class^="icon-"], span[class*=" icon-"]
+      float right
+      font-size 26px
+      margin 2px 0 0 8px
 
-			@media only screen and (max-width: 767px)
-				float left
-				margin 2px 8px 0 0
+      @media only screen and (max-width: 767px)
+        float left
+        margin 2px 8px 0 0
 
-		p
-			font 600 12px/12px fonts
-			color text-color-subdued
-			margin-bottom -4px
+    p
+      font 600 12px/12px fonts
+      color text-color-subdued
+      margin-bottom -4px
 
-			@media only screen and (max-width: 767px)
-				position relative
-				top auto
+      @media only screen and (max-width: 767px)
+        position relative
+        top auto
 
-		.yay
-			color green
+    .yay
+      color green
 
-		.meh
-			color orange
+    .meh
+      color orange
 
-		.uh-oh
-			color yellow
+    .uh-oh
+      color yellow
 
-		.rip
-			color black
+    .rip
+      color black
 
 .ecosystem-content
-	margin 0 0 75px
-	padding 65px 0 0
-	border-bottom 1px solid gray5
-	background gray6
-	overflow hidden
+  margin 0 0 75px
+  padding 65px 0 0
+  border-bottom 1px solid gray5
+  background gray6
+  overflow hidden
 
-	.layout-left, .layout-right
-		margin-bottom 50px
+  .layout-left, .layout-right
+    margin-bottom 50px
 
-	.box
-		margin-bottom 0
+  .box
+    margin-bottom 0
 
-	img
-		display block
-		max-width 100%
-		margin 0 0 40px
+  img
+    display block
+    max-width 100%
+    margin 0 0 40px
 
-	h2, p
-		margin-bottom 5px
+  h2, p
+    margin-bottom 5px
 
 // Footer
 
 footer
-	position relative
-	clear both
-	padding 38px 0 0
-	min-height 150px
-	color background-color
-	font 600 14px/21px fonts
-	background gray2
+  position relative
+  clear both
+  padding 38px 0 0
+  min-height 150px
+  color background-color
+  font 600 14px/21px fonts
+  background gray2
 
-	.container
-		position static
+  .container
+    position static
 
-	p
-		margin 0
-		padding 0 0 20px
+  p
+    margin 0
+    padding 0 0 20px
 
-	span
-		margin 0 50px 0 0
+  span
+    margin 0 50px 0 0
 
-		@media only screen and (max-width: 1023px)
-			display block
-			margin 0 0 10px
+    @media only screen and (max-width: 1023px)
+      display block
+      margin 0 0 10px
 
-	a
-		font 600 14px/21px fonts
-		color footer-text-color
-		margin 0 20px 0 0
-		text-decoration none
+  a
+    font 600 14px/21px fonts
+    color footer-text-color
+    margin 0 20px 0 0
+    text-decoration none
 
-		&:hover
-			color background-color
+    &:hover
+      color background-color
 
-		@media only screen and (max-width: 1023px)
-			line-height 35px
+    @media only screen and (max-width: 1023px)
+      line-height 35px
 
-		&#npm-loves-you
-			position absolute
-			bottom 6px
-			right 10px
-			margin 0
-			color rgba(footer-text-color, 0.3)
+    &#npm-loves-you
+      position absolute
+      bottom 6px
+      right 10px
+      margin 0
+      color rgba(footer-text-color, 0.3)
 
-	#footer-logo
-		float right
+  #footer-logo
+    float right
 
-	#wombat
-		position absolute
-		bottom -300px
-		right -300px
-		width 300px
-		height 300px
-		background url(../img/wombat-ninja.png) no-repeat top left
+  #wombat
+    position absolute
+    bottom -300px
+    right -300px
+    width 300px
+    height 300px
+    background url(../img/wombat-ninja.png) no-repeat top left

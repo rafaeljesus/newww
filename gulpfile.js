@@ -7,7 +7,8 @@ var gulp = require('gulp'),
     source = require('vinyl-source-stream'),
     streamify = require('gulp-streamify'),
     bistre = require('bistre'),
-    nodemon = require('gulp-nodemon');
+    nodemon = require('gulp-nodemon'),
+    rename = require('gulp-rename');
 
 gulp.task('styles', function () {
   gulp.src('./assets/stylus/index.styl')
@@ -18,9 +19,12 @@ gulp.task('styles', function () {
 gulp.task('browserify', function () {
   browserify('./assets/js/index.js')
     .bundle()
-    .pipe(source('index.min.js'))
-    .pipe(streamify(uglify()))
+    .pipe(source('index.js'))
     .pipe(gulp.dest('static/js/'))
+    .pipe(rename('index.min.js'))
+    .pipe(streamify(uglify()))
+    .pipe(gulp.dest('static/js/'));
+
 });
 
 gulp.task('concat', function () {
@@ -35,7 +39,7 @@ gulp.task('develop', function () {
   nodemon({
     script: 'server.js',
     ext: 'hbs styl js',
-    ignore: ['node_modules/', 'test/', 'facets/*/test/'],
+    ignore: ['node_modules/', 'test/', 'facets/*/test/', 'static/'],
     stdout: false
   })
     .on('change', ['build'])

@@ -41,6 +41,49 @@ div {
   </div>
 
   <div class="layout-right">
+
+		<h4>package details</h4>
+		<ul class="box">
+			<li>
+        <span>license</span>
+        {{#if license}}
+          <a href="{{license.url}}">{{license.name}}</a>
+        {{else}}
+          <em>unspecified</em>
+        {{/if}}
+      </li>
+
+			<li><span>version</span> {{version}}</li>
+
+      <li>
+        <span>repository</span>
+        {{#if repository.url}}
+          <a href="{{repository.url}}">{{repository.url}}</a>
+        {{else}}
+          <em>unspecified</em>
+        {{/if}}
+      </li>
+
+      <li>
+        <span>homepage</span>
+        {{#if homepage}}
+          <a href="{{homepage}}">{{homepage}}</a>
+        {{else}}
+          <em>unspecified</em>
+        {{/if}}
+      </li>
+
+      <li>
+        <span>bugs</span>
+        {{#if bugs.url}}
+          <a href="{{bugs.url}}">{{bugs.url}}</a>
+        {{else}}
+          <em>unspecified</em>
+        {{/if}}
+      </li>
+
+		</ul>
+
   </div>
 
 {{/with}}

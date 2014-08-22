@@ -10,7 +10,7 @@ var gulp = require('gulp'),
     nodemon = require('gulp-nodemon');
 
 gulp.task('styles', function () {
-  gulp.src('stylus/index.styl')
+  gulp.src('./assets/stylus/index.styl')
     .pipe(stylus({use: [nib()]}))
     .pipe(gulp.dest('static/css/'))
 });

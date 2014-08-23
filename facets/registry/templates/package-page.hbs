@@ -25,7 +25,7 @@
       <li>
         <span>repository</span>
         {{#if repository.url}}
-          <a href="{{repository.url}}">{{repository.url}}</a>
+          <a href="{{repository.url}}">{{schemeless repository.url}}</a>
         {{else}}
           <em>unspecified</em>
         {{/if}}
@@ -34,7 +34,7 @@
       <li>
         <span>homepage</span>
         {{#if homepage}}
-          <a href="{{homepage}}">{{homepage}}</a>
+          <a href="{{homepage}}">{{schemeless homepage}}</a>
         {{else}}
           <em>unspecified</em>
         {{/if}}
@@ -43,7 +43,7 @@
       <li>
         <span>bugs</span>
         {{#if bugs.url}}
-          <a href="{{bugs.url}}">{{bugs.url}}</a>
+          <a href="{{bugs.url}}">{{schemeless bugs.url}}</a>
         {{else}}
           <em>unspecified</em>
         {{/if}}

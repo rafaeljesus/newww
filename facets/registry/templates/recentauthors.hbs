@@ -1,0 +1,39 @@
+{{> header}}
+
+<div id="package">
+  <h1>{{title}}</h1>
+  <p class="description">
+    {{#compare page '>' 1}}
+      <a href="/recent-authors/{{browseby}}?page={{prevPage}}">&larr; previous</a>
+    {{/compare}}
+    Page {{page}}
+    {{#compare items.length '>=' pageSize}}
+      <a href="/recent-authors/{{browseby}}?page={{nextPage}}">next &rarr;</a>
+    {{/compare}}
+  </p>
+
+  {{#if items.length}}
+    {{#each items}}
+      {{#if name}}
+        <div class="row">
+          <p><a href="{{url}}">{{name}}</a>
+            {{#if description}}{{description}}{{/if}}</p>
+        </div>
+      {{/if}}
+    {{/each}}
+  {{else}}
+    <div class="row"><p>No items found.</p></div>
+  {{/if}}
+
+  <p class="description">
+    {{#compare page '>' 1}}
+      <a href="/recent-authors/{{browseby}}?page={{prevPage}}">&larr; previous</a>
+    {{/compare}}
+    Page {{page}}
+    {{#compare items.length '>=' pageSize}}
+      <a href="/recent-authors/{{browseby}}?page={{nextPage}}">next &rarr;</a>
+    {{/compare}}
+  </p>
+</div>
+
+{{> footer}}

@@ -29,6 +29,12 @@ exports.register = function Regsitry (facet, options, next) {
   });
 
   facet.route({
+    path: "/recent-authors/{since?}",
+    method: "GET",
+    handler: require('./show-recent-authors')
+  });
+
+  facet.route({
     path: "/star",
     method: "POST",
     config: {

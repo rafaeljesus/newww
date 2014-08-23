@@ -20,7 +20,7 @@ module.exports = function (request, reply) {
 
   // the url will be something like /browse/{type?}/{arg?}/{page}
   var params = request.params.p || '',
-      page, type, arg, title;
+      page, type, arg;
 
   // grab the page number, if it's in the url
   page = +request.query.page || 0;

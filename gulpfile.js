@@ -51,12 +51,10 @@ gulp.task('nodemon', function() {
   process.env.NODE_ENV = 'dev';
   nodemon({
     script: 'server.js',
-    ignore: ['assets', 'node_modules/', 'test/', 'facets/*/test/', 'static/'],
+    ext: 'hbs',
+    ignore: ['assets/', 'node_modules/', 'test/', 'facets/*/test/', 'static/'],
     stdout: false,
   })
-    .on('restart', function () {
-      console.log('nodemon restarted!')
-    })
     .on('readable', function () {
       this.stdout
         .pipe(bistre({time: true}))

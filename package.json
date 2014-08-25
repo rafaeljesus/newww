@@ -36,6 +36,7 @@
     "npm-typeahead": "^0.2.0",
     "npm2es": "git://github.com/npm/npm2es",
     "numbat-emitter": "^1.0.0",
+    "schemeless": "^1.0.0",
     "scooter": "^1.2.0",
     "stylus": "^0.45.0"
   },

@@ -36,5 +36,12 @@ module.exports = [
   {
     plugin: require('../services/downloads'),
     options: config.downloads
+  },
+  {
+    plugin: require('./bonbon'),
+    options: {
+      stamp: config.stamp,
+      canonicalHost: config.canonicalHost
+    }
   }
 ];

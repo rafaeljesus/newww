@@ -8,7 +8,7 @@ var config = module.exports = {};
 config.port = process.env.PORT || 15443;
 config.host = "localhost";
 // config.host = '0.0.0.0'
-config.canonicalHost = "https://localhost"
+config.canonicalHost = "https://localhost";
 
 config.server = {
   views: {
@@ -143,8 +143,6 @@ config.stamp = 'pid=' + process.pid + ' ' +
                 // 'worker=' + cluster.worker.id + ' ' +
                 gitHead + ' ' + config.canonicalHost + ' ' +
                 os.hostname() + ' ' + process.env.SMF_ZONENAME;
-
-
 
 function hostmatch (m) { return function (u) {
   return u.host && u.host.match(m)

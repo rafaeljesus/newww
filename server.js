@@ -41,21 +41,6 @@ server.route({
   }
 });
 
-server.ext('onPreResponse', function (request, next) {
-
-  // adds the server info stamp to the bottom of each template
-  if (request.response.variety === 'view') {
-    var canonicalHref = url.resolve(config.canonicalHost, url.parse(request.url).path)
-
-    request.response.source.context = Hoek.applyToDefaults({
-      stamp: config.stamp,
-      canonicalHref: canonicalHref
-    }, request.response.source.context);
-  }
-
-  next();
-});
-
 server.pack.register(require('hapi-auth-cookie'), function (err) {
   if (err) throw err;
 

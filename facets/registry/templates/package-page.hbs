@@ -1,57 +1,110 @@
 {{#with package}}
-  <div class="layout-left">
-    {{#if readme}}
-    <section id="readme">
-    {{{readme}}}
-    </section>
+
+<div class="layout-left">
+  {{#if readme}}
+  <section id="readme">
+  {{{readme}}}
+  </section>
+  {{/if}}
+</div>
+
+<div class="layout-right">
+
+	<h4>package details</h4>
+	<ul class="box">
+		<li>
+      <span>license</span>
+      {{#if license}}
+        <a href="{{license.url}}">{{license.name}}</a>
+      {{else}}
+        <em>unspecified</em>
+      {{/if}}
+    </li>
+
+		<li><span>version</span> {{version}}</li>
+
+    <li>
+      <span>repository</span>
+      {{#if repository.url}}
+        <a href="{{repository.url}}">{{schemeless repository.url}}</a>
+      {{else}}
+        <em>unspecified</em>
+      {{/if}}
+    </li>
+
+    <li>
+      <span>homepage</span>
+      {{#if homepage}}
+        <a href="{{homepage}}">{{schemeless homepage}}</a>
+      {{else}}
+        <em>unspecified</em>
+      {{/if}}
+    </li>
+
+    <li>
+      <span>bugs</span>
+      {{#if bugs.url}}
+        <a href="{{bugs.url}}">{{schemeless bugs.url}}</a>
+      {{else}}
+        <em>unspecified</em>
+      {{/if}}
+    </li>
+
+	</ul>
+
+
+  <h4>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</h4>
+  <p>
+    {{#if dependencies}}
+      {{#each dependencies}}
+        {{#unless @last}}
+          <a href="/package/{{this}}">{{this}}</a>,
+        {{else}}
+          {{#unless noHref}}
+            <a href="/package/{{this}}">{{this}}</a>
+          {{else}}
+            <a>{{text}}</a>
+          {{/unless}}
+        {{/unless}}
+      {{/each}}
+    {{else}}
+      None
     {{/if}}
-  </div>
+  </p>
 
-  <div class="layout-right">
-
-		<h4>package details</h4>
-		<ul class="box">
-			<li>
-        <span>license</span>
-        {{#if license}}
-          <a href="{{license.url}}">{{license.name}}</a>
+  {{#if dependents}}
+    <h4>Dependents</h4>
+    <p>
+      {{#each dependents}}
+        {{#if @last}}
+          <a href="{{url}}">{{name}}</a>.
         {{else}}
-          <em>unspecified</em>
+          {{#if url}}
+            <a href="{{url}}">{{name}}</a>,
+          {{else}}
+            {{name}},
+          {{/if}}
         {{/if}}
-      </li>
+      {{/each}}
+    </p>
+  {{/if}}
 
-			<li><span>version</span> {{version}}</li>
+  {{#if showMaintainers}}
+    <h4>Maintainers</h4>
 
-      <li>
-        <span>repository</span>
-        {{#if repository.url}}
-          <a href="{{repository.url}}">{{schemeless repository.url}}</a>
-        {{else}}
-          <em>unspecified</em>
-        {{/if}}
-      </li>
+    <ul class="userList">
+      {{#each maintainers}}
+        <li>
+          <a href="/~{{name}}">
+            {{#if avatar}}<img src="{{avatar}}">{{/if}}
+            <span>{{name}}</span>
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
 
-      <li>
-        <span>homepage</span>
-        {{#if homepage}}
-          <a href="{{homepage}}">{{schemeless homepage}}</a>
-        {{else}}
-          <em>unspecified</em>
-        {{/if}}
-      </li>
-
-      <li>
-        <span>bugs</span>
-        {{#if bugs.url}}
-          <a href="{{bugs.url}}">{{schemeless bugs.url}}</a>
-        {{else}}
-          <em>unspecified</em>
-        {{/if}}
-      </li>
-
-		</ul>
-
-  </div>
+</div>
 
 {{/with}}
 
@@ -61,7 +114,7 @@
   <header>
     <h1>{{name}}</h1>
     {{#if isStarred}}
-      <a href="#" class="star star-starred" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
+      <a href="#" class="star star-starre d" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
     {{else}}
       <a href="#" class="star" title="click here to star/unstar this package" data-name="{{name}}" data-crumb="{{../../crumb}}"></a>
     {{/if}}
@@ -103,127 +156,8 @@
       </td>
     </tr>
     {{/if}}
-    {{#if showMaintainers}}
-    <tr>
-      <th>Maintainers</th>
-      <td>
-      {{#each maintainers}}
-        <div class="user">
-        <a class="username" href="/~{{name}}">
-          {{#if avatar}}
-          <img src="{{avatar}}" class="avatar">
-          {{/if}}{{name}}</a>
-        </div>
-      {{/each}}
-      </td>
-    </tr>
-    {{/if}}
-    <tr>
-      <th>Version</th>
-      <td>
-        <b>
-        {{version}}
-        </b>
-        {{#if fromNow}}
-        last updated
-        {{fromNow}}
-        {{/if}}
-      </td>
-    </tr>
-    {{#if license}}
-    <tr>
-      <th>License</th>
-      <td>
-          <a href="{{license.url}}">{{license.name}}</a>
-      </td>
-    </tr>
-    {{/if}}
-    {{#if keywords}}
-    <tr>
-      <th>Keywords</th>
-      <td>{{{packageKeywords keywords}}}</td>
-    </tr>
-    {{/if}}
-    {{#if repository}}
-    <tr>
-      <th>Repository</th>
-      <td>{{{packageRepository repository}}}</td>
-    </tr>
-    {{/if}}
-    {{#if homepage}}
-      <tr>
-        <th>Homepage</th>
-        <td>
-          <a href="{{homepage}}">{{homepage}}</a>
-        </td>
-      </tr>
-    {{/if}}
-    {{#if bugs.url}}
-    <tr>
-      <th>Bugs</th>
-      <td>
-        <a href="{{bugs.url}}">{{bugs.url}}</a>
-      </td>
-    </tr>
-    {{/if}}
-    <tr>
-      <th>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</th>
-      <td>
-      {{#if dependencies}}
-        {{#each dependencies}}
-          {{#unless @last}}
-            <a href="/package/{{this}}">{{this}}</a>,
-          {{else}}
-            {{#unless noHref}}
-              <a href="/package/{{this}}">{{this}}</a>
-            {{else}}
-              <a>{{text}}</a>
-            {{/unless}}
-          {{/unless}}
-        {{~/each}}
-      {{else}}
-        None
-      {{/if}}
-      </td>
-    </tr>
-    {{#if dependents}}
-    <tr>
-      <th>Dependents {{#if dependents}}({{dependents.length}}){{/if}}</th>
-      <td>
-      {{#each dependents}}
-        <a href="{{url}}">{{name}}</a>{{#unless @last}},{{/unless}}
-      {{/each}}
-      </td>
-    </tr>
-    {{/if}}
-    {{#if starredBy}}
-    <tr>
-      <th>Starred by {{#if starredBy}}({{starredBy.length}}){{/if}}</th>
-      <td>
-      {{#each starredBy}}
-        {{#unless @last}}
-          <a href="/~{{this}}">{{this}}</a>,
-        {{else}}
-          <a href="{{url}}">{{name}}</a>
-        {{/unless}}
-      {{/each}}
-    </tr>
-    {{/if}}
-  </table>
 
-  <div class="details">
-    <ul class="toc">
-      {{#if readme}}
-      <li><a href="#readme">Read Me</a></li>
-      {{/if}}
-    </ul>
 
-    {{#if readme}}
-    <section id="readme">
-    {{{readme}}}
-    </section>
-    {{/if}}
-  </div>
 </div>
 {{/with}}
 -->

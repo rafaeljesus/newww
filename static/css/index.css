@@ -178,6 +178,11 @@ body {
 }
 a {
   color: #cb3837;
+  font-weight: 600;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
 }
 a.view-all {
   font-size: 14px;
@@ -252,12 +257,6 @@ hgroup h2 {
 }
 p {
   margin: 0 0 25px;
-}
-p a {
-  text-decoration: underline;
-}
-p a:hover {
-  text-decoration: none;
 }
 strong.code {
   font-family: 'Source Code Pro', 'Courier', sans-serif;
@@ -2364,4 +2363,28 @@ h2.h2-toggle .h2-toggle-list li a.active {
 .side-nav li a.active {
   color: #fff;
   background: #cb3837;
+}
+ul.userList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul.userList > li {
+  display: block;
+  margin: 0;
+  padding: 3px 0;
+}
+ul.userList > li a img {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+  border-radius: 3px;
+}
+ul.userList > li a span {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  vertical-align: top;
+  line-height: 40px;
 }

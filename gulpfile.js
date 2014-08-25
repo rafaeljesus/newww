@@ -10,6 +10,20 @@ var gulp = require('gulp'),
     nodemon = require('gulp-nodemon'),
     rename = require('gulp-rename');
 
+var paths = {
+  styles: ['./assets/stylus/*.styl'],
+  scripts: {
+    browserify: ["./assets/js/index.js"],
+    vendor: ["./assets/js/vendor/*.js"]
+  }
+};
+
+gulp.task('watch', function(){
+  gulp.watch(paths.styles, ['styles']);
+  gulp.watch(paths.scripts.browserify, ['browserify']);
+  gulp.watch(paths.scripts.vendor, ['concat']);
+});
+
 gulp.task('styles', function () {
   gulp.src('./assets/stylus/index.styl')
     .pipe(stylus({use: [nib()]}))
@@ -17,34 +31,31 @@ gulp.task('styles', function () {
 });
 
 gulp.task('browserify', function () {
-  browserify('./assets/js/index.js')
+  browserify(paths.scripts.browserify)
     .bundle()
     .pipe(source('index.js'))
     .pipe(gulp.dest('static/js/'))
     .pipe(rename('index.min.js'))
     .pipe(streamify(uglify()))
     .pipe(gulp.dest('static/js/'));
-
 });
 
 gulp.task('concat', function () {
-  gulp.src(["assets/js/vendor/*.js"])
+  gulp.src(paths.scripts.vendor)
     .pipe(uglify())
     .pipe(concat('vendor.min.js'))
     .pipe(gulp.dest('static/js/'))
 });
 
-gulp.task('develop', function () {
+gulp.task('nodemon', function() {
   process.env.NODE_ENV = 'dev';
   nodemon({
     script: 'server.js',
-    ext: 'hbs styl js',
-    ignore: ['node_modules/', 'test/', 'facets/*/test/', 'static/'],
-    stdout: false
+    ignore: ['assets', 'node_modules/', 'test/', 'facets/*/test/', 'static/'],
+    stdout: false,
   })
-    .on('change', ['build'])
     .on('restart', function () {
-      console.log('restarted!')
+      console.log('nodemon restarted!')
     })
     .on('readable', function () {
       this.stdout
@@ -53,8 +64,9 @@ gulp.task('develop', function () {
       this.stderr
         .pipe(bistre({time: true}))
         .pipe(process.stderr);
-    })
+    });
 });
 
 gulp.task('build', ['styles', 'browserify', 'concat']);
+gulp.task('dev', ['build', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

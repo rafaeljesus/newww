@@ -4,11 +4,12 @@
   "description": "A total rewrite of npm-www using hapijs",
   "main": "server.js",
   "scripts": {
+    "start": "server.js",
     "test": "lab -vC; node allPlugins t",
-    "prepublish": "gulp build",
-    "start": "gulp develop",
     "install": "node allPlugins",
-    "dev": "node dev/go.js"
+    "prepublish": "gulp build",
+    "dev": "gulp dev",
+    "dev-db": "node dev/go.js"
   },
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",

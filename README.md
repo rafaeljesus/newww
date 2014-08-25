@@ -1,24 +1,36 @@
 newww
 =====
 
-We're using [Hapi](https://github.com/spumko/hapi) as a framework for the next iteration of the npm website. We wrote all about why we chose Hapi in [a blog post](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability). If you'd like to contribute to this project and/or get an understanding of what the goals and roadmap of the project are, check out the [CONTRIBUTING.md](https://github.com/npm/newww/blob/master/CONTRIBUTING.md) file.
+We're using [Hapi](https://github.com/spumko/hapi) as a framework for the
+next iteration of the npm website. We wrote all about why we chose Hapi in
+[a blog
+post](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability).
+If you'd like to contribute to this project and/or get an understanding of
+what the goals and roadmap of the project are, check out the
+[CONTRIBUTING.md](https://github.com/npm/newww/blob/master/CONTRIBUTING.md)
+file.
 
 ## General Layout
 
-There are two major pieces to the app, facets and services. Both are implemented as Hapi plugins, though the way they are used in the application are intentionally different.
+There are two major pieces to the app, facets and services. Both are
+implemented as Hapi plugins, though the way they are used in the application
+are intentionally different.
 
 ### Facets
 
-A **facet** is a mostly-self-involved piece of the website. Each facet is entirely self-contained, and includes the following pieces:
+A **facet** is a mostly-self-involved piece of the website. Each facet is
+entirely self-contained, and includes the following pieces:
 
 * Routes (in `index.js`)
 * Template controls (`show-[thing].js` for getting information from services and `presenters/[thing].js` for template-based utilities)
 * Templates (`[thing].hbs`)
 * Facet-specific tests (`test/*.js`).
 
-Template partials are *not* housed in facets, as they are cross-facet (i.e. headers, footers, etc).
+Template partials are *not* housed in facets, as they are cross-facet (i.e.
+headers, footers, etc).
 
-By self-containing each facet, we can turn them into microservices (which can be installed with npm) later, should we choose to do so.
+By self-containing each facet, we can turn them into microservices (which
+can be installed with npm) later, should we choose to do so.
 
 There are currently four facets:
 
@@ -49,10 +61,10 @@ There are currently four facets:
 	* Healthchecks
 	* Content Security Policy logging
 
-
 ### Services
 
-A service is a shared resource, like our couchDB instance. Services have methods that can be called from any facet.
+A service is a shared resource, like our couchDB instance. Services have
+methods that can be called from any facet.
 
 For example:
 
@@ -85,15 +97,25 @@ _Then, in `facets/registry/package-page.js`:_
 
 ## Tests
 
-There are tests! We're using [Lab](https://github.com/spumko/lab) as our testing utility. Site-wide tests are currently located in the `test/` folder and can be run with `npm test`. Facet-specific tests are located in their respective `facet/[name]/test/` folders.
+There are tests! We're using [Lab](https://github.com/spumko/lab) as our
+testing utility. Site-wide tests are currently located in the `test/` folder
+and can be run with `npm test`. Facet-specific tests are located in their
+respective `facet/[name]/test/` folders.
 
-Expect this bit to evolve as things get more complex. But for now, just having tests is a HUGE improvement.
+Expect this bit to evolve as things get more complex. But for now, just
+having tests is a HUGE improvement.
 
 ## Templating and Styling
 
-We're using [Handlebars](http://handlebarsjs.com/) as our templating engine. Think of it as a compromise between Jade and EJS; also an opportunity to learn a new templating language. It's got its ups and downs, but so far so good. (Plus the spumko team uses it, so all the integration is basically done for us.)
+We're using [Handlebars](http://handlebarsjs.com/) as our templating engine.
+Think of it as a compromise between Jade and EJS; also an opportunity to
+learn a new templating language. It's got its ups and downs, but so far so
+good. (Plus the spumko team uses it, so all the integration is basically
+done for us.)
 
-We're sticking with [Stylus](http://learnboost.github.io/stylus/) as our CSS preprocessor. The Stylus-to-CSS conversion happens as an npm prestart script.
+We're sticking with [Stylus](http://learnboost.github.io/stylus/) as our CSS
+preprocessor. The Stylus-to-CSS conversion happens as an npm prestart
+script.
 
 ## Code
 
@@ -103,7 +125,9 @@ Let's bring back semi-colons and comma-last. No rhyme or reason; just cuz.
 
 First, clone this repo.
 
-Second, copy numbat-config.example.js to numbat-config.js. Feel free to modify it to suit your needs. You can also create a config.admin.js to override any of the config.js values.
+Second, copy numbat-config.example.js to numbat-config.js. Feel free to
+modify it to suit your needs. You can also create a config.admin.js to
+override any of the config.js values.
 
 If you have a reasonably new machine, we strongly recommend using Virtualbox
 and Vagrant to run a pre-configured VM containing [couchdb](http://couchdb.apache.org/),
@@ -147,7 +171,7 @@ you run this.
 
 Again, from inside the VM at /vagrant, run
 
-`npm run dev`
+`npm run dev-db`
 
 You should see couch, redis and elasticsearch all being started. This can
 take a little while, so wait until you see "STARTING DEV SITE NOW". Once it's
@@ -166,9 +190,16 @@ first run.
 
 ### 4. Start the web server
 
-In a separate terminal outside of vagrant, run `npm start`. (You can also run `npm start` from inside vagrant, but you'll need to change your host to '0.0.0.0' in `config.js`. We recommend running it outside of vagrant, but it's totally up to you.)
+In a separate terminal outside of vagrant, run `npm run dev`. (You can also
+run `npm run dev` from inside vagrant, but you'll need to change your host to
+'0.0.0.0' in `config.js`. We recommend running it outside of vagrant, but
+it's totally up to you.)
 
-For ease of development, we've got a Gulpfile that uses [gulp](http://gulpjs.com/). It watches appropriate directories and restarts stuff for you when other stuff changes. Fortunately, you don't have to use gulp if you don't want to; just change the `start` line in the root `package.json` to `start: "node server.js"`.
+For ease of development, we've got a Gulpfile that uses
+[gulp](http://gulpjs.com/). It watches appropriate directories and restarts
+stuff for you when other stuff changes. Fortunately, you don't have to use
+gulp if you don't want to; just change the `start` line in the root
+`package.json` to `start: "node server.js"`.
 
 ### Under the hood
 
@@ -189,4 +220,8 @@ want to test queries or perform admin:
 
 [http://localhost:9200/](http://localhost:9200/)
 
-You should also have access to both the [head](http://mobz.github.io/elasticsearch-head/) and [kopf](https://github.com/lmenezes/elasticsearch-kopf) Elasticsearch plugins, accessible at http://localhost:9200/_plugin/head/ and http://localhost:9200/_plugin/kopf/, respectively.
+You should also have access to both the
+[head](http://mobz.github.io/elasticsearch-head/) and
+[kopf](https://github.com/lmenezes/elasticsearch-kopf) Elasticsearch
+plugins, accessible at http://localhost:9200/_plugin/head/ and
+http://localhost:9200/_plugin/kopf/, respectively.  

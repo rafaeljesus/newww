@@ -34,8 +34,8 @@
   "newscred": {
     "id": "newscred",
     "name": "NewsCred",
-    "description": "We are the fastest growing start up in NYC and are looking to <a href='http://boards.greenhouse.io/newscred'>expand our team of engineers</a> to include: Automation, Sr Search, Full Stack and Javascript Engineers.",
-    "url": "http://boards.greenhouse.io/newscred",
+    "description": "We are the fastest growing start up in NYC and are looking to <a href='http://www.newscred.com/careers'>expand our team of engineers</a> to include: Automation, Sr Search, Full Stack and Javascript Engineers.",
+    "url": "http://www.newscred.com/careers",
     "show_weight": 1
   },
 
@@ -52,6 +52,46 @@
     "name": "MuleSoft",
     "description": "<a href='http://www.mulesoft.com/careers'>Mulesoft</a> is looking for node.js Developers to join our smart and talented team of Core Services engineers in San Francisco.",
     "url": "http://www.mulesoft.com/careers",
+    "show_weight": 1
+  },
+
+  "polyvore": {
+    "id": "polyvore",
+    "name": "Polyvore",
+    "description": "<a href='http://www.polyvore.com/cgi/about.jobs'>Polyvore</a> is a profitable startup in Mountain View. Our product pushes JS to its limits, and we're looking for awesome Node.js engineers!",
+    "url": "http://www.polyvore.com/cgi/about.jobs",
+    "show_weight": 1
+  },
+
+  "godaddy": {
+    "id": "godaddy",
+    "name": "GoDaddy",
+    "description": "At <a href='https://hire.jobvite.com/j?cj=orfnYfwL&s=url'>GoDaddy</a> we're crazy about JavaScript. If you're into Node.js, NoSQL, Open Source and fun then we're into you. Come join us!",
+    "url": "https://hire.jobvite.com/j?cj=orfnYfwL&s=url",
+    "show_weight": 1
+  },
+
+  "help": {
+    "id": "help",
+    "name": "Help.com",
+    "description": "<a href='http://help.com/#were-hiring'>Help.com</a> just raised $6 million and is hiring talented Node.js engineers in Austin to build our platform.",
+    "url": "http://help.com/#were-hiring",
+    "show_weight": 1
+  },
+
+  "jut": {
+    "id": "jut",
+    "name": "Jut",
+    "description": "<a href='http://www.jut.io'>Jut, Inc.</a> is looking for node.js developers to join our Open Source, early stage Big Data company in San Francisco.  Clean code base, amazingly successful founders - check us out.",
+    "url": "http://www.jut.io/",
+    "show_weight": 1
+  },
+
+  "nutanix": {
+    "id": "nutanix",
+    "name": "Nutanix",
+    "description": "<a href='http://www.nutanix.com/careers/current-openings/'>Nutanix</a> is one of the fastest growing infrastructure companies of all time and is looking for passionate JS engineers to expand our web team!",
+    "url": "http://www.nutanix.com/careers/current-openings/",
     "show_weight": 1
   }
 }

@@ -32,13 +32,13 @@
     {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}}
 
     <p class="description">
-      {{#compare page '>' 1}}
+      {{#if prevPage}}
         <a href="/browse/{{browseby}}?page={{prevPage}}">&larr; previous</a>
-      {{/compare}}
+      {{/if}}
       Page {{page}}
-      {{#compare items.length '>=' pageSize}}
+      {{#if nextPage}}
         <a href="/browse/{{browseby}}?page={{nextPage}}">next &rarr;</a>
-      {{/compare}}
+      {{/if}}
     </p>
 
     {{#each items}}
@@ -57,13 +57,13 @@
     {{/each}}
 
     <p class="description">
-      {{#compare page '>' 1}}
+      {{#if prevPage}}
         <a href="/browse/{{browseby}}?page={{prevPage}}">&larr; previous</a>
-      {{/compare}}
+      {{/if}}
       Page {{page}}
-      {{#compare items.length '>=' pageSize}}
+      {{#if nextPage}}
         <a href="/browse/{{browseby}}?page={{nextPage}}">next &rarr;</a>
-      {{/compare}}
+      {{/if}}
     </p>
   </div>
 {{/with}}

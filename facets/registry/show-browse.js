@@ -59,7 +59,7 @@ module.exports = function (request, reply) {
       limit = pageSize;
 
   var timer = { start: Date.now() };
-  getBrowseData(type, arg, start, limit, function (err, data) {
+  getBrowseData(type, arg, start, limit, function (err, items) {
     timer.end = Date.now();
 
     if (err) {
@@ -82,10 +82,10 @@ module.exports = function (request, reply) {
     });
 
     opts.browse = {
-      items: data,
+      items: items,
       page: page + 1,
-      prevPage: page - 1,
-      nextPage: page + 1,
+      prevPage: page > 1 ? page - 1 : null,
+      nextPage: items.length >= pageSize ? page + 1 : null,
       pageSize: pageSize,
       browseby: browseby,
       type: type,

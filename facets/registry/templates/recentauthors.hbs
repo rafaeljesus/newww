@@ -3,13 +3,13 @@
 <div id="package">
   <h1>{{title}}</h1>
   <p class="description">
-    {{#compare page '>' 1}}
+    {{#if prevPage}}
       <a href="/recent-authors/{{browseby}}?page={{prevPage}}">&larr; previous</a>
-    {{/compare}}
+    {{/if}}
     Page {{page}}
-    {{#compare items.length '>=' pageSize}}
+    {{#if nextPage}}
       <a href="/recent-authors/{{browseby}}?page={{nextPage}}">next &rarr;</a>
-    {{/compare}}
+    {{/if}}
   </p>
 
   {{#if items.length}}
@@ -26,13 +26,13 @@
   {{/if}}
 
   <p class="description">
-    {{#compare page '>' 1}}
+    {{#if prevPage}}
       <a href="/recent-authors/{{browseby}}?page={{prevPage}}">&larr; previous</a>
-    {{/compare}}
+    {{/if}}
     Page {{page}}
-    {{#compare items.length '>=' pageSize}}
+    {{#if nextPage}}
       <a href="/recent-authors/{{browseby}}?page={{nextPage}}">next &rarr;</a>
-    {{/compare}}
+    {{/if}}
   </p>
 </div>
 

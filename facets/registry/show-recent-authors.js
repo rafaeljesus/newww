@@ -46,14 +46,16 @@ module.exports = function RecentAuthors (request, reply) {
       log.warn(uuid.v1() + ' ' + Hapi.error.internal('error retrieving recent authors'), err);
     }
 
+    var items = authors.filter(function (a) { return a.name });
+
     var authorOpts = {
       title: 'Authors active since ' + since,
       browseby: since,
+      items: items,
       pageSize: pageSize,
       page: page + 1,
-      prevPage: page - 1,
-      nextPage: page + 1,
-      items: authors.filter(function (a) { return a.name })
+      prevPage: page > 1 ? page - 1 : null,
+      nextPage: items.length >= pageSize ? page + 1 : null
     };
 
     Hoek.merge(opts, authorOpts);

@@ -16,9 +16,27 @@ function hash (id) {
   return crypto.createHash('sha1').update(id).digest('hex')
 }
 
+var popularPackages = ["underscore", "async", "request", "lodash",
+"commander", "express", "optimist", "coffee-script", "colors", "mkdirp",
+"debug", "q", "chalk", "yeoman-generator", "moment", "glob", "jade",
+"uglify-js", "redis", "through2", "socket.io", "through", "node-uuid",
+"cheerio", "gulp-util", "connect", "mime", "winston", "grunt", "mongodb",
+"rimraf", "handlebars", "ejs", "semver", "mongoose", "underscore.string",
+"marked", "minimist", "xml2js", "bluebird", "mocha", "fs-extra", "less",
+"js-yaml", "superagent", "esprima", "stylus", "jsdom", "wrench", "jquery",
+"xtend", "event-stream", "extend", "browserify", "minimatch", "shelljs",
+"prompt", "pkginfo", "mysql", "ws", "readable-stream", "backbone", "when",
+"nopt", "body-parser", "inherits", "cli-color", "passport", "concat-stream",
+"nodemailer", "nconf", "validator", "yosay", "should", "clean-css", "qs",
+"chai", "ncp", "mustache", "npm", "open", "requirejs", "aws-sdk",
+"http-proxy", "temp", "graceful-fs", "hiredis", "socket.io-client", "gulp",
+"oauth", "inquirer", "iconv-lite", "yargs", "escodegen", "uuid", "bower",
+"log4js", "eventemitter2", "promise", "cli-table"]
+
 function filterPackage (id, rev) {
-  return !!(hash(id).match(/^00/) ||
-      id.match(/^(npm.*|request|underscore|express|coffee-script|async)$/))
+  return !!(hash(id).match(/^00/)
+    || popularPackages.indexOf(id) > -1
+    || id.match(/^(npm.*)$/))
 }
 
 // add some more once we've got the first batch

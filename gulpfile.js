@@ -51,7 +51,7 @@ gulp.task('nodemon', function() {
   process.env.NODE_ENV = 'dev';
   nodemon({
     script: 'server.js',
-    ext: 'hbs',
+    ext: 'hbs js',
     ignore: ['assets/', 'node_modules/', 'test/', 'facets/*/test/', 'static/'],
     stdout: false,
   })

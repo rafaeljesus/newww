@@ -514,6 +514,7 @@ ul.userMosaic
     display block
     margin 0
     padding 3px 0
+    position relative
 
   img
     display inline-block
@@ -521,12 +522,37 @@ ul.userMosaic
     height mosaicSize
     margin-right 10px
     border-radius 5px
+    transition all 0.3s
+
   span
     margin 0
     padding 0
     vertical-align top
     line-height mosaicSize
     display none
+
+  a:before
+    display block
+    position absolute
+    width mosaicSize
+    line-height mosaicSize
+    text-align center
+    content attr(title) " "
+    opacity 0
+    transition all 0.3s
+    text-overflow ellipsis
+    overflow hidden
+    padding 0 6px
+
+  a:hover
+    img
+      opacity 0
+
+  &:hover
+    a:before
+      opacity 1
+    img
+      opacity 0.1
 
   &.single
     span

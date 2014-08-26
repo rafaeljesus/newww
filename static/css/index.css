@@ -2403,6 +2403,7 @@ ul.userMosaic li {
   display: block;
   margin: 0;
   padding: 3px 0;
+  position: relative;
 }
 ul.userMosaic img {
   display: inline-block;
@@ -2410,6 +2411,7 @@ ul.userMosaic img {
   height: 90px;
   margin-right: 10px;
   border-radius: 5px;
+  transition: all 0.3s;
 }
 ul.userMosaic span {
   margin: 0;
@@ -2417,6 +2419,28 @@ ul.userMosaic span {
   vertical-align: top;
   line-height: 90px;
   display: none;
+}
+ul.userMosaic a:before {
+  display: block;
+  position: absolute;
+  width: 90px;
+  line-height: 90px;
+  text-align: center;
+  content: attr(title) " ";
+  opacity: 0;
+  transition: all 0.3s;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  padding: 0 6px;
+}
+ul.userMosaic a:hover img {
+  opacity: 0;
+}
+ul.userMosaic:hover a:before {
+  opacity: 1;
+}
+ul.userMosaic:hover img {
+  opacity: 0.1;
 }
 ul.userMosaic.single span {
   display: inline-block;

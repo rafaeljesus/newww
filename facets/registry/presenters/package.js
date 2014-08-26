@@ -42,7 +42,7 @@ module.exports = function package (data, cb) {
     setLicense(data, v)
   }
 
-  data.showMaintainers = data.maintainers && (!data._npmUser || (data.publisherIsInMaintainersList && data.maintainers.length > 1));
+  data.showMaintainers = data.maintainers && data.publisherIsInMaintainersList
 
   if (data.showMaintainers && data.maintainers.length === 1) {
     data.singleMaintainer = true

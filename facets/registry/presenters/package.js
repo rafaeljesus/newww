@@ -137,6 +137,16 @@ function parseReadme (data, cb) {
   return cb(null, sanitizer.sanitize(p, urlPolicy(data)));
 }
 
+
+/* here's the potential situation: let's say I'm a hacker and I make a 
+package that does Something Evil™ then I add you as a maintainer `npm
+adduser zeke evil-package` and then I publish the package and then I remove
+myself from the package so it looks like YOU are the one who made the
+package well, that's nasty so we blocked that from showing because
+hypothetically your friends would be like, hey! this evil-package from zeke
+looks awesome, let me use it! and then I get all their bank account numbers
+and get super duper rich and become a VC and create LinkedIn for Cats */
+
 function isPubInMaint (data) {
   if (data.maintainers && data._npmUser) {
     for (var i = 0; i < data.maintainers.length; i++) {

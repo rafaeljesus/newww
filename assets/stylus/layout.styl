@@ -475,33 +475,6 @@
 
 // Lists
 
-avatarSize = 50px
-
-ul.userList
-  list-style none
-  margin 0 0 30px 0
-  padding 0
-
-  > li
-    display block
-    margin 0
-    padding 3px 0
-    a
-      img
-        display:inline-block
-        width avatarSize
-        height avatarSize
-        margin-right 10px
-        border-radius 5px
-      span
-        margin 0
-        padding 0
-        display inline-block
-        vertical-align top
-        line-height avatarSize
-
-mosaicSize = 90px
-
 ul.userMosaic
   list-style none
   margin 0 0 30px 0
@@ -544,16 +517,21 @@ ul.userMosaic
     overflow hidden
     padding 0 6px
 
-  a:hover
-    img
-      opacity 0
+  // Many-user Mosaic
+  &.many
+    a:hover
+      img
+        opacity 0
 
-  &:hover
+    &:hover
+      a:before
+        opacity 1
+      img
+        opacity 0.1
+
+  // Single-user Mosaic
+  &.one
     a:before
-      opacity 1
-    img
-      opacity 0.1
-
-  &.single
+      display none
     span
       display inline-block

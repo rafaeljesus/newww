@@ -2366,7 +2366,7 @@ h2.h2-toggle .h2-toggle-list li a.active {
 }
 ul.userList {
   list-style: none;
-  margin: 0;
+  margin: 0 0 15px 0;
   padding: 0;
 }
 ul.userList > li {
@@ -2376,15 +2376,45 @@ ul.userList > li {
 }
 ul.userList > li a img {
   display: inline-block;
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   margin-right: 10px;
-  border-radius: 3px;
+  border-radius: 5px;
 }
 ul.userList > li a span {
   margin: 0;
   padding: 0;
   display: inline-block;
   vertical-align: top;
-  line-height: 40px;
+  line-height: 50px;
+}
+ul.userMosaic {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  float: none;
+  overflow: hidden;
+}
+ul.userMosaic li {
+  float: left;
+  display: block;
+  margin: 0;
+  padding: 3px 0;
+}
+ul.userMosaic img {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+ul.userMosaic span {
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+  line-height: 80px;
+  display: none;
+}
+ul.userMosaic.single span {
+  display: inline-block;
 }

@@ -475,11 +475,11 @@
 
 // Lists
 
-avatarSize = 40px
+avatarSize = 50px
 
 ul.userList
   list-style none
-  margin 0
+  margin 0 0 15px 0
   padding 0
 
   > li
@@ -492,10 +492,42 @@ ul.userList
         width avatarSize
         height avatarSize
         margin-right 10px
-        border-radius 3px
+        border-radius 5px
       span
         margin 0
         padding 0
         display inline-block
         vertical-align top
         line-height avatarSize
+
+mosaicSize = 80px
+
+ul.userMosaic
+  list-style none
+  margin 0
+  padding 0
+  float none
+  overflow hidden
+
+  li
+    float left
+    display block
+    margin 0
+    padding 3px 0
+
+  img
+    display inline-block
+    width mosaicSize
+    height mosaicSize
+    margin-right 10px
+    border-radius 5px
+  span
+    margin 0
+    padding 0
+    vertical-align top
+    line-height mosaicSize
+    display none
+
+  &.single
+    span
+      display inline-block

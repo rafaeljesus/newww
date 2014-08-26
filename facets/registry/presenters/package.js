@@ -44,6 +44,10 @@ module.exports = function package (data, cb) {
 
   data.showMaintainers = data.maintainers && (!data._npmUser || (data.publisherIsInMaintainersList && data.maintainers.length > 1));
 
+  if (data.showMaintainers && data.maintainers.length === 1) {
+    data.singleMaintainer = true
+  }
+
   if (data.readme && !data.readmeSrc) {
     data.readmeSrc = data.readme
     parseReadme(data, function (er, readme) {

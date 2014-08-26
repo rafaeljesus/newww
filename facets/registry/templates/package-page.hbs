@@ -102,6 +102,20 @@
         </li>
       {{/each}}
     </ul>
+
+
+    <h4>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h4>
+    <ul class="userMosaic {{#if singleMaintainer}}single{{/if}}">
+      {{#each maintainers}}
+        <li>
+          <a href="/~{{name}}">
+            {{#if avatar}}<img src="{{avatar}}">{{/if}}
+            <span>{{name}}</span>
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+
   {{/if}}
 
 </div>

@@ -10,7 +10,7 @@
 
 <div class="layout-right">
 
-	<h4>package details</h4>
+	<h3>Package Details</h3>
 	<ul class="box">
 		<li>
       <span>license</span>
@@ -52,8 +52,37 @@
 
 	</ul>
 
+  {{#if showMaintainers}}
+    <!-- <h3>Maintainers</h3>
 
-  <h4>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</h4>
+    <ul class="userList">
+      {{#each maintainers}}
+        <li>
+          <a href="/~{{name}}">
+            {{#if avatar}}<img src="{{avatar}}">{{/if}}
+            <span>{{name}}</span>
+          </a>
+        </li>
+      {{/each}}
+    </ul> -->
+
+
+    <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
+    <ul class="userMosaic {{#if singleMaintainer}}single{{/if}}">
+      {{#each maintainers}}
+        <li>
+          <a href="/~{{name}}">
+            {{#if avatar}}<img src="{{avatar}}">{{/if}}
+            <span>{{name}}</span>
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+
+  {{/if}}
+
+
+  <h3>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</h3>
   <p>
     {{#if dependencies}}
       {{#each dependencies}}
@@ -73,7 +102,7 @@
   </p>
 
   {{#if dependents}}
-    <h4>Dependents</h4>
+    <h3>Dependents</h3>
     <p>
       {{#each dependents}}
         {{#if @last}}
@@ -87,35 +116,6 @@
         {{/if}}
       {{/each}}
     </p>
-  {{/if}}
-
-  {{#if showMaintainers}}
-    <h4>Maintainers</h4>
-
-    <ul class="userList">
-      {{#each maintainers}}
-        <li>
-          <a href="/~{{name}}">
-            {{#if avatar}}<img src="{{avatar}}">{{/if}}
-            <span>{{name}}</span>
-          </a>
-        </li>
-      {{/each}}
-    </ul>
-
-
-    <h4>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h4>
-    <ul class="userMosaic {{#if singleMaintainer}}single{{/if}}">
-      {{#each maintainers}}
-        <li>
-          <a href="/~{{name}}">
-            {{#if avatar}}<img src="{{avatar}}">{{/if}}
-            <span>{{name}}</span>
-          </a>
-        </li>
-      {{/each}}
-    </ul>
-
   {{/if}}
 
 </div>

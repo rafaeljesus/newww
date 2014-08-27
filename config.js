@@ -1,5 +1,6 @@
 var path = require('path'),
     fs = require('fs'),
+    util = require('util'),
     os = require('os'),
     Hoek = require('hoek');
 
@@ -8,7 +9,7 @@ var config = module.exports = {};
 config.port = process.env.PORT || 15443;
 config.host = "localhost";
 // config.host = '0.0.0.0'
-config.canonicalHost = "https://localhost";
+config.canonicalHost = util.format("https://localhost:%d", config.port);
 
 config.server = {
   views: {

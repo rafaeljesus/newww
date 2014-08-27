@@ -20,7 +20,7 @@ module.exports = function RecentAuthors (request, reply) {
   }
 
   // grab the page number, if it's in the url
-  var page = +request.query.page || 0;
+  var page = +request.query.page || 1;
   var since = request.params.since;
 
   since = since ? new Date(since) : new Date(Date.now() - TWO_WEEKS);
@@ -38,13 +38,15 @@ module.exports = function RecentAuthors (request, reply) {
   var age = Date.now() - since.getTime()
   since = since.toISOString().slice(0, 10)
 
-  var start = page * pageSize,
+  var start = (page - 1) * pageSize,
       limit = pageSize;
 
   recentAuthors(age, start, limit, function (err, authors) {
     if (err) {
       log.warn(uuid.v1() + ' ' + Hapi.error.internal('error retrieving recent authors'), err);
     }
+
+    console.log(authors)
 
     var items = authors.filter(function (a) { return a.name });
 
@@ -53,8 +55,8 @@ module.exports = function RecentAuthors (request, reply) {
       browseby: since,
       items: items,
       pageSize: pageSize,
-      page: page + 1,
-      prevPage: page > 1 ? page - 1 : null,
+      page: page,
+      prevPage: page > 0 ? page - 1 : null,
       nextPage: items.length >= pageSize ? page + 1 : null
     };
 

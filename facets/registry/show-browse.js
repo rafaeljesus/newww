@@ -23,7 +23,7 @@ module.exports = function (request, reply) {
       page, type, arg;
 
   // grab the page number, if it's in the url
-  page = +request.query.page || 0;
+  page = +request.query.page || 1;
 
   // now let's get the type and arg, if they're in there
   params = params.split('/');
@@ -55,7 +55,7 @@ module.exports = function (request, reply) {
     sarg = encodeURIComponent(arg);
   }
 
-  var start = page * pageSize,
+  var start = (page - 1) * pageSize,
       limit = pageSize;
 
   var timer = { start: Date.now() };
@@ -83,8 +83,8 @@ module.exports = function (request, reply) {
 
     opts.browse = {
       items: items,
-      page: page + 1,
-      prevPage: page > 1 ? page - 1 : null,
+      page: page,
+      prevPage: page > 0 ? page - 1 : null,
       nextPage: items.length >= pageSize ? page + 1 : null,
       pageSize: pageSize,
       browseby: browseby,

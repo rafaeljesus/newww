@@ -14,12 +14,12 @@ module.exports = function (options) {
         addLatencyMetric = metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
-    var page = +request.query.page || 0;
+    var page = +request.query.page || 1;
     var size  = parseInt(options.perPage);
     var searchQuery = {
       fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek'],
       body: {
-        from: page*size,
+        from: (page - 1) * size,
         size : size,
         "query" : {
           "dis_max": {
@@ -110,11 +110,11 @@ module.exports = function (options) {
       addMetric({ name: 'search', search: request.query.q });
 
       reply.view("search", {
-        page: page + 1,
+        page: page,
         q: request.query.q,
         hits: response.hits.hits,
-        prevPage: page > 1 ? page - 1 : null,
-        nextPage: response.hits.total >= (size * page + size) ? page + 1 : null
+        prevPage: page > 0 ? page - 1 : null,
+        nextPage: response.hits.total >= (size * page) ? page + 1 : null
       });
     });
   }

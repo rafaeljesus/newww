@@ -126,6 +126,12 @@ module.exports = function (request, reply) {
           addLatencyMetric(timer, 'showPackage');
 
           addMetric({ name: 'showPackage', package: request.params.package });
+
+          // Return raw context object if `json` query param is present
+          if (process.env.NODE_ENV === "dev" && Object.keys(request.query).indexOf('json') > -1) {
+            return reply(opts);
+          }
+
           return reply.view('package-page', opts);
         }
       })

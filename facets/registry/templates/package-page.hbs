@@ -12,43 +12,32 @@
 
 	<h3>Package Details</h3>
 	<ul class="box">
-		<li>
-      <span>license</span>
-      {{#if license}}
-        <a href="{{license.url}}">{{license.name}}</a>
-      {{else}}
-        <em>unspecified</em>
+
+    <li>
+      <strong>Version</strong>
+      {{version}}
+      {{#if fromNow}}
+        <span class="subdued"> published {{fromNow}}</span>
       {{/if}}
     </li>
 
-		<li><span>version</span> {{version}}</li>
+    {{#if license}}
+  		<li>
+        <a href="{{license.url}}">{{license.name}}</a> <span> license</span>
+      </li>
+    {{/if}}
 
-    <li>
-      <span>repository</span>
-      {{#if repository.url}}
+    {{#if repository.url}}
+      <li>
         <a href="{{repository.url}}">{{schemeless repository.url}}</a>
-      {{else}}
-        <em>unspecified</em>
-      {{/if}}
-    </li>
+      </li>
+    {{/if}}
 
-    <li>
-      <span>homepage</span>
-      {{#if homepage}}
+    {{#if homepage}}
+      <li>
         <a href="{{homepage}}">{{schemeless homepage}}</a>
-      {{else}}
-        <em>unspecified</em>
-      {{/if}}
-    </li>
-
-    <li>
-      <span>bugs</span>
-      {{#if bugs.url}}
-        <a href="{{bugs.url}}">{{schemeless bugs.url}}</a>
-      {{else}}
-        <em>unspecified</em>
-      {{/if}}
-    </li>
+      </li>
+    {{/if}}
 	</ul>
 
 
@@ -65,7 +54,6 @@
       {{/each}}
     </ul>
   {{/if}}
-
 
   <h3>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</h3>
   <p>

@@ -9,16 +9,6 @@ var marked = require('marked'),
 
 module.exports = function package (data, cb) {
 
-  if (data.homepage && typeof data.homepage !== 'string') {
-    if (Array.isArray(data.homepage)) {
-      data.homepage = data.homepage[0]
-    }
-
-    if (typeof data.homepage !== 'string') {
-      delete data.homepage
-    }
-  }
-
   if (data.time && data['dist-tags']) {
     var v = data['dist-tags'].latest
     var t = data.time[v]
@@ -68,6 +58,26 @@ module.exports = function package (data, cb) {
 
   if (data.dependencies) {
     data.dependencies = processDependencies(data.dependencies);
+  }
+
+  // homepage: convert array to string
+  if (data.homepage && Array.isArray(data.homepage)) {
+    data.homepage = data.homepage[0]
+  }
+
+  // homepage: disallow non-string
+  if (data.homepage && typeof data.homepage !== 'string') {
+    delete data.homepage
+  }
+
+  // homepage: discard if github repo URL
+  if (data.homepage && url.parse(data.homepage).hostname.match(/^(www\.)?github\.com/i)) {
+    delete data.homepage
+  }
+
+  // repository: sanitize into https URL if it's a github repo
+  if (data.repository && data.repository.url && ghurl(data.repository.url)) {
+    data.repository.url = ghurl(data.repository.url)
   }
 
   return cb(null, data);
@@ -138,7 +148,7 @@ function parseReadme (data, cb) {
 }
 
 
-/* here's the potential situation: let's say I'm a hacker and I make a 
+/* here's the potential situation: let's say I'm a hacker and I make a
 package that does Something Evil™ then I add you as a maintainer `npm
 adduser zeke evil-package` and then I publish the package and then I remove
 myself from the package so it looks like YOU are the one who made the

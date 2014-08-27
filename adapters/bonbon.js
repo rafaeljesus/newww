@@ -6,7 +6,12 @@ exports.register = function (plugin, options, next) {
     if (request.response.variety === 'view') {
 
       if (options.canonicalHost) {
-        options.canonicalHref = url.resolve(options.canonicalHost, url.parse(request.url).path);
+        if (request.url.query.page || request.url.query.q) {
+          options.canonicalURL = url.resolve(options.canonicalHost, request.url.path);
+        } else {
+          options.canonicalURL = url.resolve(options.canonicalHost, request.url.pathname);
+        }
+
       }
 
       request.response.source.context = Hoek.applyToDefaults(options, request.response.source.context);

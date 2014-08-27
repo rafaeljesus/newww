@@ -65,9 +65,9 @@ describe('our expected layout elements', function () {
 
   it('should have the canonical url in the header', function (done) {
     server.inject(opts, function (response) {
-      expect(source.context.canonicalHref).to.exist;
-      expect(source.context.canonicalHref).to.include('/about');
-      expect(response.payload).to.include(config.canonicalHref);
+      expect(source.context.canonicalURL).to.exist;
+      expect(source.context.canonicalURL).to.include('/about');
+      expect(response.payload).to.include(config.canonicalURL);
       done();
     });
   });

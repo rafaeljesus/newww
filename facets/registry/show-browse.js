@@ -33,7 +33,6 @@ module.exports = function (request, reply) {
     opts.errId = uuid.v1();
 
     opts.errorType = 'browseUrl';
-    opts.url = request.server.info.uri + request.url.path;
 
     log.error(opts.errId + ' ' + Hapi.error.notFound('The requested url is invalid'), opts.url);
     return reply.view('error', opts).code(404);

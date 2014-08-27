@@ -11,10 +11,10 @@ var gulp = require('gulp'),
     rename = require('gulp-rename');
 
 var paths = {
-  styles: ['./assets/stylus/*.styl'],
+  styles: ['./assets/styles/*.styl'],
   scripts: {
-    browserify: ["./assets/js/index.js"],
-    vendor: ["./assets/js/vendor/*.js"]
+    browserify: ["./assets/scripts/index.js"],
+    vendor: ["./assets/scripts/vendor/*.js"]
   }
 };
 
@@ -25,7 +25,7 @@ gulp.task('watch', function(){
 });
 
 gulp.task('styles', function () {
-  gulp.src('./assets/stylus/index.styl')
+  gulp.src('./assets/styles/index.styl')
     .pipe(stylus({use: [nib()]}))
     .pipe(gulp.dest('static/css/'))
 });
@@ -52,7 +52,13 @@ gulp.task('nodemon', function() {
   nodemon({
     script: 'server.js',
     ext: 'hbs js',
-    ignore: ['assets/', 'node_modules/', 'test/', 'facets/*/test/', 'static/'],
+    ignore: [
+      'assets/',
+      'facets/*/test/',
+      'node_modules/',
+      'static/',
+      'test/',
+    ],
     stdout: false,
   })
     .on('readable', function () {

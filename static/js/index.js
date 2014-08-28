@@ -28,7 +28,7 @@ module.exports = function(){
 
   window.issuesEl = $("#issues")
 
-  if (issuesEl && issuesEl.data().ghapi) {
+  if (issuesEl.length && issuesEl.data().ghapi) {
     $.getJSON(issuesEl.data().ghapi+"/issues", function(issues) {
       if (!issues.length) return
       window.issues = issues

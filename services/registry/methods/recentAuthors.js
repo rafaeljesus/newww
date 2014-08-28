@@ -62,9 +62,11 @@ module.exports = function recentAuthors (age, skip, limit, cb) {
           }
           return set;
         }, []).map(function (row) {
+          var str = row.value === 1 ? ' package' : ' packages'
+
           return {
             name: row.key[0],
-            description: row.value + ' packages',
+            description: row.value + str,
             url: '/profile/' + row.key[0],
             value: row.value
           };

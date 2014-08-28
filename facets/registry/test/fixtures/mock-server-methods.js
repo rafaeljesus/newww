@@ -3,7 +3,8 @@ var Hapi = require('hapi');
 var pkgs = {
       fake: require('./fake.json'),
       fakeDeps: require('./fake-deps'),
-      unpub: require('./fake-unpublished')
+      unpub: require('./fake-unpublished'),
+      authors: require('./fake-authors').authors
     };
 
 module.exports = function (server) {
@@ -15,6 +16,10 @@ module.exports = function (server) {
         }
 
         return next(Hapi.error.notFound('Username not found: ' + pkgName));
+      },
+
+      getRecentAuthors: function (arg, skip, limit, next) {
+        return next(null, pkgs.authors);
       },
 
       getBrowseData: function (type, arg, skip, limit, next) {

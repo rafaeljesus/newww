@@ -14,12 +14,12 @@ module.exports = function (options) {
         addLatencyMetric = metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
-    var page = parseInt(request.query.page || '0', 10);
+    var page = +request.query.page || 1;
     var size  = parseInt(options.perPage);
     var searchQuery = {
       fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek'],
       body: {
-        from: page*size,
+        from: (page - 1) * size,
         size : size,
         "query" : {
           "dis_max": {
@@ -104,31 +104,17 @@ module.exports = function (options) {
         return reply.view('error', opts).code(500);
       }
 
-      var page = parseInt(request.query.page) || 0,
-          pageSize = parseInt(options.perPage),
-          totalhits =  response.hits.total,
-          nextPage = 0; //zero for false 1 for true
-
-      if (totalhits > (pageSize * page + pageSize)){
-        nextPage = 1;
-      }
-
       timer.end = Date.now();
       addLatencyMetric(timer, 'search');
 
       addMetric({ name: 'search', search: request.query.q });
 
       reply.view("search", {
-        obj: {
-          page: page,
-          q: request.query.q,
-          pageSize: pageSize,
-          hits: response.hits,
-          np: nextPage, //flag
-          nextPageNum: page + 1,
-          subPage: page - 1
-        },
-        hits: response.hits
+        page: page,
+        q: request.query.q,
+        hits: response.hits.hits,
+        prevPage: page > 0 ? page - 1 : null,
+        nextPage: response.hits.total >= (size * page) ? page + 1 : null
       });
     });
   }

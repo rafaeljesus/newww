@@ -1,9 +1,16 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.$ = require("jquery");
+window.highlight = require("./highlight")
 
-// Syntax highlighting for package READMEs
+$(function () {
+  console.log("DOM is ready");
+  require("./update-package-issue-count")()
+})
+
+},{"./highlight":2,"./update-package-issue-count":3,"jquery":14}],2:[function(require,module,exports){
 var Highlight = require("highlight.js/lib/highlight");
-var hl = new Highlight();
+var hl = module.exports = new Highlight();
+
 hl.registerLanguage("bash", require('highlight.js/lib/languages/bash'));
 hl.registerLanguage("css", require('highlight.js/lib/languages/css'));
 hl.registerLanguage("coffeescript", require('highlight.js/lib/languages/coffeescript'));
@@ -13,33 +20,53 @@ hl.registerLanguage("javascript", require('highlight.js/lib/languages/javascript
 hl.registerLanguage("json", require('highlight.js/lib/languages/json'));
 hl.registerLanguage("typescript", require('highlight.js/lib/languages/typescript'));
 hl.registerLanguage("xml", require('highlight.js/lib/languages/xml'));
+
 hl.initHighlightingOnLoad();
 
-// require('npm-typeahead')({
-//   npmUrl: '',// URL to re-direct the user to.
-//   searchUrl: 'https://typeahead.npmjs.com', // URL for search npm-typeahead REST server.
-//   $: $ // jQuery dependency.
-// });
+},{"highlight.js/lib/highlight":4,"highlight.js/lib/languages/bash":5,"highlight.js/lib/languages/coffeescript":6,"highlight.js/lib/languages/css":7,"highlight.js/lib/languages/glsl":8,"highlight.js/lib/languages/http":9,"highlight.js/lib/languages/javascript":10,"highlight.js/lib/languages/json":11,"highlight.js/lib/languages/typescript":12,"highlight.js/lib/languages/xml":13}],3:[function(require,module,exports){
+module.exports = function(){
 
-$(function () {
-  console.log("DOM is ready");
-  enhancePackageIssueDisplay();
-})
-
-var enhancePackageIssueDisplay = function(){
   window.issuesEl = $("#issues")
+
   if (issuesEl && issuesEl.data().ghapi) {
-    $.getJSON(issuesEl.data().ghapi, function(repo) {
-      if (repo && repo.open_issues_count) {
-        issuesEl.find("span.original").hide()
-        issuesEl.find("span.count").text(repo.open_issues_count)
-        issuesEl.find("span.enhanced").show()
+    $.getJSON(issuesEl.data().ghapi+"/issues", function(issues) {
+      if (!issues.length) return
+      window.issues = issues
+      window.pulls = issues.filter(function(i) { return i.pull_request })
+      var count = issues.length - pulls.length
+      var label
+
+      switch (count) {
+        case 0:
+          label = "No open issues"
+          break;
+        case 1:
+          label = "One open issue"
+          break;
+        default:
+          label = count + " issues"
+          break;
       }
+
+      // switch (pulls.length) {
+      //   case 0:
+      //     break;
+      //   case 1:
+      //     label += " and one pull request"
+      //     break;
+      //   default:
+      //     label += " and " + pulls.length + " pull requests"
+      //     break;
+      // }
+
+      issuesEl.find(".original").hide()
+      issuesEl.find(".open_issues_count").text(label)
+      issuesEl.find(".enhanced").show()
     })
   }
 }
 
-},{"highlight.js/lib/highlight":2,"highlight.js/lib/languages/bash":3,"highlight.js/lib/languages/coffeescript":4,"highlight.js/lib/languages/css":5,"highlight.js/lib/languages/glsl":6,"highlight.js/lib/languages/http":7,"highlight.js/lib/languages/javascript":8,"highlight.js/lib/languages/json":9,"highlight.js/lib/languages/typescript":10,"highlight.js/lib/languages/xml":11,"jquery":12}],2:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -739,7 +766,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],3:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -802,7 +829,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],4:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -936,7 +963,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -1040,7 +1067,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],6:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -1134,7 +1161,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -1168,7 +1195,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -1240,7 +1267,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -1278,7 +1305,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['ts'],
@@ -1365,7 +1392,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -1469,7 +1496,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/

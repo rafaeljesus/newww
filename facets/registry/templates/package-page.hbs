@@ -1,11 +1,11 @@
 {{#with package}}
 
 <div class="layout-left">
+
   {{#if readme}}
-  <section id="readme">
-  {{{readme}}}
-  </section>
+    <section id="readme">{{{readme}}}</section>
   {{/if}}
+
 </div>
 
 <div class="layout-right">
@@ -44,8 +44,7 @@
         <span class="original">Have an issue? <a href="{{bugs.url}}">File it.</a></span>
         {{#if ghapi}}
           <span class="enhanced" style="display:none">
-            <a href="{{bugs.url}}"><span class="count" id="issues_count"></span> open issues</a> 
-            on GitHub
+            <a href="{{bugs.url}}"><span class="open_issues_count"></span></a> on GitHub
           </span>
         {{/if}}
       </li>

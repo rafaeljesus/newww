@@ -22,4 +22,18 @@ hl.initHighlightingOnLoad();
 
 $(function () {
   console.log("DOM is ready");
+  enhancePackageIssueDisplay();
 })
+
+var enhancePackageIssueDisplay = function(){
+  window.issuesEl = $("#issues")
+  if (issuesEl && issuesEl.data().ghapi) {
+    $.getJSON(issuesEl.data().ghapi, function(repo) {
+      if (repo && repo.open_issues_count) {
+        issuesEl.find("span.original").hide()
+        issuesEl.find("span.count").text(repo.open_issues_count)
+        issuesEl.find("span.enhanced").show()
+      }
+    })
+  }
+}

@@ -23,7 +23,21 @@ hl.initHighlightingOnLoad();
 
 $(function () {
   console.log("DOM is ready");
+  enhancePackageIssueDisplay();
 })
+
+var enhancePackageIssueDisplay = function(){
+  window.issuesEl = $("#issues")
+  if (issuesEl && issuesEl.data().ghapi) {
+    $.getJSON(issuesEl.data().ghapi, function(repo) {
+      if (repo && repo.open_issues_count) {
+        issuesEl.find("span.original").hide()
+        issuesEl.find("span.count").text(repo.open_issues_count)
+        issuesEl.find("span.enhanced").show()
+      }
+    })
+  }
+}
 
 },{"highlight.js/lib/highlight":2,"highlight.js/lib/languages/bash":3,"highlight.js/lib/languages/coffeescript":4,"highlight.js/lib/languages/css":5,"highlight.js/lib/languages/glsl":6,"highlight.js/lib/languages/http":7,"highlight.js/lib/languages/javascript":8,"highlight.js/lib/languages/json":9,"highlight.js/lib/languages/typescript":10,"highlight.js/lib/languages/xml":11,"jquery":12}],2:[function(require,module,exports){
 var Highlight = function() {

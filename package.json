@@ -24,6 +24,7 @@
     "catbox-redis": "^1.0.1",
     "couch-login": "^1.0.1",
     "crumb": "^3.1.0",
+    "github-url-to-object": "^1.4.0",
     "handlebars": "^2.0.0-alpha.2",
     "hapi": "^6.0.0",
     "hapi-auth-cookie": "^1.0.3",

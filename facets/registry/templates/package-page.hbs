@@ -40,8 +40,14 @@
     {{/if}}
 
     {{#if bugs.url}}
-      <li>
-        Have an issue? <a href="{{bugs.url}}">File it.</a>
+      <li id="issues" {{#if ghapi}}data-ghapi="{{ghapi}}"{{/if}}>
+        <span class="original">Have an issue? <a href="{{bugs.url}}">File it.</a></span>
+        {{#if ghapi}}
+          <span class="enhanced" style="display:none">
+            <a href="{{bugs.url}}"><span class="count" id="issues_count"></span> open issues</a> 
+            on GitHub
+          </span>
+        {{/if}}
       </li>
     {{/if}}
 

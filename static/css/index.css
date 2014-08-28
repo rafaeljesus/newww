@@ -2068,14 +2068,6 @@ h2.h2-toggle .h2-toggle-list li a.active {
 .box li:last-child {
   border-bottom: none;
 }
-.box li span {
-  display: inline-block;
-  width: 28%;
-  margin: 0 8px 0 0;
-  text-align: left;
-  padding: 0 2% 0 0;
-  color: rgba(0,0,0,0.5);
-}
 .box.list li {
   padding: 10px 15px;
   border-bottom: 1px solid rgba(0,0,0,0.1);

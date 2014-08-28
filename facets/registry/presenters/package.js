@@ -4,8 +4,8 @@ var marked = require('marked'),
     moment = require('moment'),
     url = require('url'),
     ghurl = require('github-url-from-git'),
+    gh = require('github-url-to-object'),
     log = require('bole')('registry-package-presenter');
-
 
 module.exports = function package (data, cb) {
 
@@ -78,6 +78,10 @@ module.exports = function package (data, cb) {
   // repository: sanitize into https URL if it's a github repo
   if (data.repository && data.repository.url && ghurl(data.repository.url)) {
     data.repository.url = ghurl(data.repository.url)
+  }
+
+  if (data.bugs && data.bugs.url && gh(data.bugs.url)) {
+    data.ghapi = gh(data.bugs.url).api_url
   }
 
   return cb(null, data);

@@ -33,9 +33,21 @@ var popularPackages = ["underscore", "async", "request", "lodash",
 "oauth", "inquirer", "iconv-lite", "yargs", "escodegen", "uuid", "bower",
 "log4js", "eventemitter2", "promise", "cli-table"]
 
+var packagesByZeke = ["app-cloner-heroku", "app-json-fetcher",
+"app-profiler-heroku", "app.json", "apps", "bitbucket-url-to-object",
+"carousel", "color-namer", "design", "dimensions", "envy-json",
+"euclidean-distance", "faceplate", "flickr-set-downloader",
+"geolocation-stream", "ghwd", "github-url-to-object",
+"grunt-markdown2slides", "harp-from-the-future", "heroku-addons",
+"heroku-auth-finder", "hk", "hk-manifest", "local-env", "markdown-index",
+"markdown2slides", "moby", "node-version-resolver", "npe", "ord.zeke.xxx",
+"package-json-to-readme", "redact-url", "schemeless", "scroll-fever",
+"swagger", "thief", "wikipedia-translator", "wikipedias"]
+
 function filterPackage (id, rev) {
   return !!(hash(id).match(/^00/)
     || popularPackages.indexOf(id) > -1
+    || packagesByZeke.indexOf(id) > -1
     || id.match(/^(npm.*)$/))
 }
 

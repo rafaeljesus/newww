@@ -44,6 +44,9 @@ var packagesByZeke = ["app-cloner-heroku", "app-json-fetcher",
 "package-json-to-readme", "redact-url", "schemeless", "scroll-fever",
 "swagger", "thief", "wikipedia-translator", "wikipedias"]
 
+var packagesByRockbot = ["couch-login", "googalytics", "newww",
+"nodealytics", "npm-registry-couchapp", "redsess", "vektor"]
+
 function filterPackage (id, rev) {
   return !!(hash(id).match(/^00/)
     || popularPackages.indexOf(id) > -1

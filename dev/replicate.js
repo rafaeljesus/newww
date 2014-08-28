@@ -51,6 +51,7 @@ function filterPackage (id, rev) {
   return !!(hash(id).match(/^00/)
     || popularPackages.indexOf(id) > -1
     || packagesByZeke.indexOf(id) > -1
+    || packagesByRockbot.indexOf(id) > -1
     || id.match(/^(npm.*)$/))
 }
 

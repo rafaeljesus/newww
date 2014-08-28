@@ -44,7 +44,7 @@ module.exports = function(){
           label = "One open issue"
           break;
         default:
-          label = count + " issues"
+          label = count + " open issues"
           break;
       }
 

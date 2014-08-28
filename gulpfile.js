@@ -13,7 +13,7 @@ var gulp = require('gulp'),
 var paths = {
   styles: ['./assets/styles/*.styl'],
   scripts: {
-    browserify: ["./assets/scripts/index.js"],
+    browserify: ["./assets/scripts/*.js"],
     vendor: ["./assets/scripts/vendor/*.js"]
   }
 };
@@ -31,7 +31,7 @@ gulp.task('styles', function () {
 });
 
 gulp.task('browserify', function () {
-  browserify(paths.scripts.browserify)
+  browserify("./assets/scripts/index.js")
     .bundle()
     .pipe(source('index.js'))
     .pipe(gulp.dest('static/js/'))

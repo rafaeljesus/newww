@@ -870,6 +870,10 @@ header h1 {
   clear: left;
   padding-top: 1em;
 }
+header h1 em {
+  color: #cb3837;
+  font-style: normal;
+}
 @media only screen and (max-width: 767px) {
   header h1 {
     font: 400 28px/46px 'Source Sans Pro', 'Lucida Grande', sans-serif;

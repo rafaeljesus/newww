@@ -110,6 +110,7 @@ module.exports = function (options) {
       addMetric({ name: 'search', search: request.query.q });
 
       reply.view("search", {
+        title: 'results for ',
         page: page,
         q: request.query.q,
         hits: response.hits.hits,

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-  <title>{{#if title }} {{title}} {{else}} npm {{/if}}</title>
+  <title>{{#if title }}{{title}}{{#if q}}{{q}}{{/if}}{{else}}npm{{/if}}</title>
 
   <meta charset="utf-8">
   <meta name="description" content="">
@@ -12,6 +12,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1,user-scalable=yes">
 
+  <link rel="canonical" href="{{canonicalURL}}">
   <link type="text/css" rel="stylesheet" media="all" href="/static/css/index.css">
   <link rel="search" type="application/opensearchdescription+xml" href="/static/opensearch.xml" title="Search Packages">
   <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700|Source+Code+Pro:400,600,700' rel='stylesheet' type='text/css'>
@@ -45,11 +46,11 @@
         <a href="/login">login</a>
       </div>
       <a href="#" id="mobile-menu">menu</a>
-      <form id="npm-search">
-        <input type="text" id="site-search" placeholder="search packages" />
+      <form id="npm-search" action="/search" method="get">
+        <input name="q" type="search" id="site-search" placeholder="search packages" tabindex="1"/>
         <input type="submit" id="site-search-submit" />
       </form>
-      {{#if title}}<h1>{{title}}</h1>{{/if}}
+      {{#if title}}<h1>{{title}}{{#if q}}<em>{{q}}</em>{{/if}}</h1>{{/if}}
     </div>
   </header>
 

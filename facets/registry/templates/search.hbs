@@ -1,44 +1,72 @@
-<h1>Search Results</h1>
+<div id="secondary-nav">
+  <div class="container">
+    <a href="#" class="active">packages</a>
+    {{!-- <a href="#">collections</a>
+    <a href="#">ecosystems</a>
+    <a href="#">people</a> --}}
+  </div>
+</div> <!-- / #secondary-nav -->
+<div class="container">
+  <div class="layout-left">
+    {{#if hits}}
 
-{{#if hits}}
-  <ul class ="search-results">
-  {{#each hits}}
-  {{#with fields}}
-    <li class="search-result package">
-      <h2> <a href="/package/{{ name }}">{{ name }} </a> </h2>
-      <ul class="hud">
-        <li class="dlScore" title="average downlaods"><span>{{! stuff is going to be rendered here }}<span></li>
-        <li class="stars" title="number of stars by users">{{ stars }}</li>
-      </ul>
-      <p class="description">{{ description }}</p>
-      <div class="details">
-        <span class="version">
-          {{ version }} by
-          <a href="/~ {{ author }}">{{ author }}</a>
-        </span>
-        {{#if keywords.length}}
-        <ul class="keywords">
-        {{#each keywords}}
-          <li> <a href="browse/keyword/{{ this }}"> {{ this }} </a> </li>
-        {{/each}}
-        </ul>
+      {{#each hits}} {{#with fields}}
+        <div class="package">
+          {{!-- <a href="/~{{author}}"><img src="/assets/img/placeholders/placeholder-yoda.jpg" /></a> --}}
+          <h2><a href="/package/{{name}}">{{name}}</a></h2>
+          <h5>npm install {{name}}</h5>
+          <p>{{description}}</p>
+          <span class="meta icon-download">TBD</span>
+          <span class="meta icon-star">{{stars}}</span>
+          <span class="meta version">v {{version}}</span>
+          {{#if keywords.length}}
+            <p class="tags icon-tag">
+              {{#each keywords}}
+                {{#if @last}}
+                  <a href="/browse/keyword/{{this}}">{{this}}</a>
+                {{else}}
+                  <a href="/browse/keyword/{{this}}">{{this}}</a>,&nbsp;
+                {{/if}}
+              {{/each}}
+            </p>
+          {{/if}}
+        </div> <!-- / .package -->
+      {{/with}} {{/each}}
+
+      <div class="pagination">
+        {{#if prevPage}}
+          <a href="/search?q={{q}}&page={{prevPage}}">previous</a>
         {{/if}}
+        <a class="active">{{page}}</a>
+        {{#if nextPage}}
+          <a href="/search?q={{q}}&page={{nextPage}}">next</a>
+        {{/if}}
+      </div> <!-- / .pagination -->
+
+    {{else}}
+      No results - try again?
+    {{/if}}
+
+  </div> <!-- / .layout-left -->
+  <div class="layout-right">
+    <form>
+    <label for="sort-by">sort by</label>
+    <select id="sort-by">
+      <option value="">most recently updated</option>
+      <option value="">most favorited</option>
+      <option value="">most downloaded</option>
+    </select>
+    <label>filter by</label>
+    <label class="checkbox" for="downloads"><input type="checkbox" id="downloads" />downloads</label>
+    <label class="checkbox" for="most-used"><input type="checkbox" id="most-used" />most used</label>
+    <label class="checkbox" for="last-updated"><input type="checkbox" id="last-updated" />last updated</label>
+    </form>
+    <h4>who's hiring</h4>
+    <div class="box">
+      <p><a href="#">Voxer</a><br />Come join us at Voxer & work on a powerful push-to-talk service! We are looking for node.js Eng, iOS/Android Eng, Ops Eng, & more!</p>
+      <div class="box-action">
+        <strong>5 more</strong> companies are hiring &middot; <a href="#">view all</a>
       </div>
-    </li>
-  {{/with}}
-  {{/each}}
-  </ul>
-
-  <p class="description">
-    {{#if prevPage}}
-      <a href="/search?q={{q}}&page={{prevPage}}">&larr; previous</a>
-    {{/if}}
-    Page {{page}}
-    {{#if nextPage}}
-      <a href="/search?q={{q}}&page={{nextPage}}">next &rarr;</a>
-    {{/if}}
-  </p>
-
-{{else}}
-  No results - try again?
-{{/if}}
+    </div> <!-- / .box -->
+  </div> <!-- / .layout-right -->
+</div> <!-- / .container -->

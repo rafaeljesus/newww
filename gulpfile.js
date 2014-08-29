@@ -11,6 +11,7 @@ var gulp = require('gulp'),
     rename = require('gulp-rename');
 
 var paths = {
+  fonts: ['./assets/fonts/*'],
   styles: ['./assets/styles/*.styl'],
   scripts: {
     browserify: ["./assets/scripts/*.js"],
@@ -19,6 +20,7 @@ var paths = {
 };
 
 gulp.task('watch', function(){
+  gulp.watch(paths.fonts, ['fonts']);
   gulp.watch(paths.styles, ['styles']);
   gulp.watch(paths.scripts.browserify, ['browserify']);
   gulp.watch(paths.scripts.vendor, ['concat']);
@@ -47,6 +49,11 @@ gulp.task('concat', function () {
     .pipe(gulp.dest('static/js/'))
 });
 
+gulp.task('fonts', function(){
+  gulp.src(paths.fonts)
+  .pipe(gulp.dest('static/fonts'));
+})
+
 gulp.task('nodemon', function() {
   process.env.NODE_ENV = 'dev';
   nodemon({
@@ -71,6 +78,6 @@ gulp.task('nodemon', function() {
     });
 });
 
-gulp.task('build', ['styles', 'browserify', 'concat']);
+gulp.task('build', ['fonts', 'styles', 'browserify', 'concat']);
 gulp.task('dev', ['build', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

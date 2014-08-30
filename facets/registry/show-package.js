@@ -89,7 +89,7 @@ module.exports = function (request, reply) {
           return reply.view('error', opts).code(500);
         }
 
-        pkg.isStarred = opts.user && pkg.users[opts.user.name] || false;
+        pkg.isStarred = opts.user && pkg.users && pkg.users[opts.user.name] || false;
 
         opts.package = pkg;
         opts.title = pkg.name;

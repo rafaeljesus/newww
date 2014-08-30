@@ -166,3 +166,26 @@ input[type=file]
 
   label
     text-transform lowercase
+
+
+// Star Form
+starHeight = 24px
+
+.star
+  input[type=checkbox]
+    display none
+
+    & + label
+      font-size 20px
+      line-height starHeight
+      vertical-align top
+      color text-color
+      cursor pointer
+      &:before
+        transition all 0.5s
+        font-size starHeight
+        color gray5
+        margin-right 5px
+
+    &:checked + label:before
+      color yellow

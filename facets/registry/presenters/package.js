@@ -84,6 +84,10 @@ module.exports = function package (data, cb) {
     data.ghapi = gh(data.bugs.url).api_url
   }
 
+  if (data.users) {
+    data.starCount = Object.keys(data.users).length
+  }
+
   return cb(null, data);
 }
 

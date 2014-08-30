@@ -1,81 +1,47 @@
-/*
-	Let's get these stars up in here
-*/
+var $ = require("jquery")
+var cargo = require("cargo")
 
-function addExpiration () {
-  var NUM_SECONDS = 60
-  var d = new Date()
-  d.setTime(d.getTime() + NUM_SECONDS*1000)
-  return '; expires='+d.toGMTString()
+var star = module.exports = function() {
+  // Load when the DOM is ready
+  $(star.init)
 }
 
-function getPackages (name) {
-  var packages = document.cookie.split(";")
-                  .map(function(k) {
-                    return k.trim().split("=")
-                  })
-                  .reduce(function (set, kv) {
-                    set[kv.shift()] = kv.join("=");
-                    return set
-                  },{})
-
-  return name ? packages[name] : packages
+// Registry data is cached and may be out of date.
+// Look in localStorage for recent (un)starrage of the current package.
+star.init = function() {
+  star.form = $('form.star')
+  if (!star.form) return
+  star.form.find('input[type=checkbox]').on('change', star.update)
 }
 
-$(document).ready(function () {
-  // check if there's already a cookie
-  var packageName = $('.star').data('name')
+star.update = function() {
+  var data = {}
 
-  var starType = getPackages(packageName)
-
-  if (starType) {
-    if (starType === 'star') {
-      $('.star').addClass('star-starred')
-    } else {
-      $('.star').removeClass('star-starred')
-    }
-  }
-
-  // user clicks on the star
-  $('.star').click(function (e) {
-    // let's turn this into a checkbox eventually...
-    e.preventDefault()
-    var packages = getPackages()
-
-    var data = {}
-    data.name = $(this).data('name')
-    data.isStarred = $(this).hasClass('star-starred')
-    data.crumb = $('.star').data('crumb')
-
-    $.ajax({
-      url: '/star',
-      data: data,
-      type: 'POST',
-      headers: { 'x-csrf-token': data.crumb }
-    })
-    .done(function (resp) {
-      // console.log('success!', resp)
-
-      if (data.isStarred) {
-        $('.star').removeClass('star-starred')
-        document.cookie = data.name + '=nostar' + addExpiration()
-      } else {
-        $('.star').addClass('star-starred')
-        document.cookie = data.name + '=star' + addExpiration()
-      }
-
-    })
-    .error(function (xhr, status, error) {
-      console.log('whoops!', xhr, xhr.status, xhr.responseText, status)
-      if (xhr.status === 403) {
-        // we're probably not logged in
-        window.location = '/login?done=/package/' + data.name
-      } else {
-        // couch is being silly...
-        console.log(xhr.responseText)
-        // eventually add the drop-toast "whoops something went wrong"
-      }
-    })
+  // Gather data from the form inputs
+  // If checkbox is *unchecked*, it won't be included in this array.
+  star.form.serializeArray().forEach(function(input){
+    data[input.name] = input.value;
   })
 
-})
+  // JavaScript is loosely typed...
+  data.isStarred = Boolean(data.isStarred)
+
+  // console.log(data);
+
+  $.ajax({
+    url: '/star',
+    data: data,
+    type: 'POST',
+    headers: {'x-csrf-token': data.crumb}
+  })
+    .done(star.done)
+    .error(star.error)
+}
+
+star.done = function (resp) {
+  console.log(resp)
+}
+
+star.error = function (xhr, status, error) {
+  console.error(xhr, status, error)
+}

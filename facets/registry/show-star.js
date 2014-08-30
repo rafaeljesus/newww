@@ -1,6 +1,7 @@
 var Hapi = require('hapi'),
     log = require('bole')('registry-star'),
     uuid = require('node-uuid'),
+    util = require('util'),
     metrics = require('../../adapters/metrics')();
 
 module.exports = function (request, reply) {
@@ -27,14 +28,15 @@ module.exports = function (request, reply) {
   var username = opts.user.name,
       body = request.payload,
       pkg = body.name,
-      starIt = !body.isStarred;
+      starIt = !!body.isStarred.match(/true/i)
 
   if (starIt) {
+
     star(pkg, username, function (err, data) {
 
       if (err) {
         var errId = uuid.v1();
-        log.error(errId + ' ' + Hapi.error.internal(username + 'was unable to star ' + pkg), err);
+        log.error(errId + ' ' + Hapi.error.internal(util.format("%s was unable to star %s", username, pkg)), err);
         return reply('not ok - ' + errId).code(500);
       }
 
@@ -45,11 +47,12 @@ module.exports = function (request, reply) {
       return reply(username + ' starred ' + pkg).code(200);
     });
   } else {
+
     unstar(pkg, username, function (err, data) {
 
       if (err) {
         var errId = uuid.v1();
-        log.error(errId + ' ' + Hapi.error.internal(username + 'was unable to unstar ' + pkg), err);
+        log.error(errId + ' ' + Hapi.error.internal(util.format("%s was unable to unstar %s", username, pkg)), err);
         return reply('not ok - ' + errId).code(500);
       }
 

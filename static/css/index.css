@@ -322,8 +322,8 @@ a .icon-add:before {
 }
 @font-face {
   font-family: 'icomoon';
-  src: url("/assets/fonts/icomoon.eot?gqpuz");
-  src: url("/assets/fonts/icomoon.eot?#iefixgqpuz") format('embedded-opentype'), url("/assets/fonts/icomoon.woff?gqpuz") format('woff'), url("/assets/fonts/icomoon.ttf?gqpuz") format('truetype'), url("/assets/fonts/icomoon.svg?gqpuz#icomoon") format('svg');
+  src: url("/static/fonts/icomoon.eot?gqpuz");
+  src: url("/static/fonts/icomoon.eot?#iefixgqpuz") format('embedded-opentype'), url("/static/fonts/icomoon.woff?gqpuz") format('woff'), url("/static/fonts/icomoon.ttf?gqpuz") format('truetype'), url("/static/fonts/icomoon.svg?gqpuz#icomoon") format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -332,8 +332,7 @@ a .icon-add:before {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-[class^="icon-"]:before,
-[class*=" icon-"]:before {
+:before {
   font-family: 'icomoon';
   speak: none;
   font-style: normal;
@@ -341,9 +340,6 @@ a .icon-add:before {
   font-variant: normal;
   text-transform: none;
   line-height: 1;
-}
-.icon-add:before {
-  content: "\e600";
 }
 .icon-arrow-down:before {
   content: "\e601";
@@ -604,6 +600,25 @@ input[type=file] {
 }
 .login-forms label {
   text-transform: lowercase;
+}
+.star input[type=checkbox] {
+  display: none;
+}
+.star input[type=checkbox] + label {
+  font-size: 20px;
+  line-height: 24px;
+  vertical-align: top;
+  color: rgba(0,0,0,0.6);
+  cursor: pointer;
+}
+.star input[type=checkbox] + label:before {
+  transition: all 0.5s;
+  font-size: 24px;
+  color: rgba(0,0,0,0.1);
+  margin-right: 5px;
+}
+.star input[type=checkbox]:checked + label:before {
+  color: #f3b600;
 }
 nav {
   height: 38px;

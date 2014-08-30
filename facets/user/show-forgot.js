@@ -1,9 +1,12 @@
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
+    nodemailer = require('nodemailer'),
     crypto = require('crypto'),
     log = require('bole')('user-forgot'),
     uuid = require('node-uuid'),
     metrics = require('../../adapters/metrics')();
+
+var transport, mailer;
 
 var from, devMode, timer = {};
 
@@ -22,19 +25,18 @@ module.exports = function (options) {
     // if there's no email configuration set up, then we can't do this.
     // however, in dev mode, just show the would-be email right on the screen
     devMode = false;
-    if (!options.mailTransportType ||
-        !options.mailTransportSettings) {
-      if (process.env.NODE_ENV === 'dev') {
-        devMode = true;
-      } else {
+    if (process.env.NODE_ENV === 'dev') {
+      devMode = true;
+    } else {
+      if (!options.mailTransportModule ||
+          !options.mailTransportSettings) {
         return showError(request, reply, 'Mail settings are missing!', 500);
       }
     }
 
     if (!devMode) {
-      var nodemailer = require('nodemailer'),
-          mailer = nodemailer.createTransport(options.mailTransportType,
-                                              options.mailTransportSettings);
+      transport = require(options.mailTransportModule);
+      mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
     }
 
     if (request.method === 'post') {
@@ -304,7 +306,7 @@ function sendEmail(name, email, request, reply) {
         metrics.addPageLatencyMetric(timer, 'sendForgotEmail');
 
         metrics.addMetric({ name: 'sendForgotEmail' });
-        return reply.view('password-recovery-submitted', opts);
+        return reply.view('password-recovery-form', opts);
       });
     }
 

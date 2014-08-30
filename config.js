@@ -111,9 +111,13 @@ config.user = {
     freenode: [ 'IRC Handle', '%s' ]
   },
   mail: {
-    mailTransportType: null,
-    mailTransportSettings: null,
-    emailFrom: '"The npm Website Robot" <webmaster@npmjs.org>'
+    mailTransportModule: "nodemailer-ses-transport",
+    mailTransportSettings: {
+      accessKeyId: "xxx",
+      secretAccessKey: "yyy",
+      region: "us-west-2"
+    },
+    emailFrom: 'support@npmjs.com'
   }
 };
 

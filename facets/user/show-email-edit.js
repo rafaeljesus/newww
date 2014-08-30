@@ -1,9 +1,12 @@
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
+    nodemailer = require('nodemailer'),
     crypto = require('crypto'),
     log = require('bole')('user-email-edit'),
     uuid = require('node-uuid'),
     metrics = require('../../adapters/metrics')();
+
+var transport, mailer;
 
 var from, devMode, timer = {};
 
@@ -21,19 +24,18 @@ module.exports = function (options) {
     // if there's no email configuration set up, then we can't do this.
     // however, in dev mode, just show the would-be email right on the screen
     devMode = false;
-    if (!options.mailTransportType ||
-        !options.mailTransportSettings) {
-      if (process.env.NODE_ENV === 'dev') {
-        devMode = true;
-      } else {
+    if (process.env.NODE_ENV === 'dev') {
+      devMode = true;
+    } else {
+      if (!options.mailTransportModule ||
+          !options.mailTransportSettings) {
         return showError(request, reply, 'Mail settings are missing!', 500);
       }
     }
 
     if (!devMode) {
-      var nodemailer = require('nodemailer'),
-          mailer = nodemailer.createTransport(options.mailTransportType,
-                                              options.mailTransportSettings);
+      transport = require(options.mailTransportModule);
+      mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
     }
 
     if (request.method === 'get' || request.method === 'head') {
@@ -81,6 +83,7 @@ module.exports = function (options) {
         metrics.addMetric({ name: 'email-edit-error' });
         return reply.view('email-edit', opts).code(403);
       }
+
       return handle(request, reply, email2);
     }
   };
@@ -148,7 +151,8 @@ function sendEmails (conf, rev, request, reply) {
       confUrl = urlStart + 'confirm/' + encodeURIComponent(conf.token),
       revUrl = urlStart + 'revert/' + encodeURIComponent(rev.token);
 
-  // we need to move the construction of these emails to somewhere else... but where?
+  // we need to move the construction of these emails to somewhere else...
+  // maybe we can consider https://github.com/andris9/nodemailer-html-to-text ?
   var confMail = {
     to: '"' + name + '" <' + conf.email2 + '>',
     from: from,

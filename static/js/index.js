@@ -25,27 +25,35 @@ hl.registerLanguage("xml", require('highlight.js/lib/languages/xml'));
 hl.initHighlightingOnLoad();
 
 },{"highlight.js/lib/highlight":6,"highlight.js/lib/languages/bash":7,"highlight.js/lib/languages/coffeescript":8,"highlight.js/lib/languages/css":9,"highlight.js/lib/languages/glsl":10,"highlight.js/lib/languages/http":11,"highlight.js/lib/languages/javascript":12,"highlight.js/lib/languages/json":13,"highlight.js/lib/languages/typescript":14,"highlight.js/lib/languages/xml":15}],3:[function(require,module,exports){
-var $ = require("jquery")
-var cargo = require("cargo")
+// This is the module for starring and unstarring modules in the browser.
+// It uses a localStorage cache to maintain a list of recent starrings
+// and unstarrings, while the remote registry cache catches up.
+
+var $ = require("jquery");
+var uniq = require("array-uniq");
+var remove = require("remove-value");
 
 var star = module.exports = function() {
-  // Load when the DOM is ready
-  $(star.init)
+  $(star.init);
+  return star;
 }
 
-// Registry data is cached and may be out of date.
-// Look in localStorage for recent (un)starrage of the current package.
 star.init = function() {
   star.form = $('form.star')
   if (!star.form) return
-  star.form.find('input[type=checkbox]').on('change', star.update)
+
+  // Check the local star cache and update the form input *before* attaching the change handler
+  var name = star.form.find("input[name=name]").val()
+  star.form.find('input[type=checkbox]').prop("checked", star.packageInCache(name));
+
+  star.form.find('input[type=checkbox]').on('change', star.onChange)
 }
 
-star.update = function() {
+star.onChange = function() {
   var data = {}
 
   // Gather data from the form inputs
-  // If checkbox is *unchecked*, it won't be included in this array.
+  // jQuery gotcha: If checkbox is unchecked, it won't be included in this array.
   star.form.serializeArray().forEach(function(input){
     data[input.name] = input.value;
   })
@@ -53,7 +61,13 @@ star.update = function() {
   // JavaScript is loosely typed...
   data.isStarred = Boolean(data.isStarred)
 
-  // console.log(data);
+  // Cache it in locaStorage
+  star.updateLocalCache(data);
+
+  // Update count in label
+  var count = Number(star.form.find("label").text())
+  data.isStarred ? ++count : --count
+  star.form.find("label").text(count)
 
   $.ajax({
     url: '/star',
@@ -61,19 +75,42 @@ star.update = function() {
     type: 'POST',
     headers: {'x-csrf-token': data.crumb}
   })
-    .done(star.done)
-    .error(star.error)
+    .done(star.onDone)
+    .error(star.onError)
 }
 
-star.done = function (resp) {
-  console.log(resp)
+// Add or remove this package from localStorage list of starred packages
+star.updateLocalCache = function(data) {
+  var stars = star.getCachedStarList()
+
+  if (data.isStarred) {
+    stars.push(data.name)
+    stars = uniq(stars)
+  } else {
+    stars = remove(stars, data.name)
+  }
+
+  localStorage["stars"] = stars.join(";")
 }
 
-star.error = function (xhr, status, error) {
+star.getCachedStarList = function() {
+  var stars = localStorage["stars"] || "";
+  return stars.length ? stars.split(";") : []
+}
+
+star.packageInCache = function(name) {
+  return star.getCachedStarList().indexOf(name) > -1
+}
+
+star.onDone = function (resp) {
+  // console.log(resp)
+}
+
+star.onError = function (xhr, status, error) {
   console.error(xhr, status, error)
 }
 
-},{"cargo":5,"jquery":16}],4:[function(require,module,exports){
+},{"array-uniq":5,"jquery":16,"remove-value":17}],4:[function(require,module,exports){
 module.exports = function(){
 
   window.issuesEl = $("#issues")
@@ -117,74 +154,57 @@ module.exports = function(){
 }
 
 },{}],5:[function(require,module,exports){
-/*!
- * cargo 0.8.0+201405131636
- * https://github.com/ryanve/cargo
- * MIT License (c) 2014 Ryan Van Etten
- */
-!function(root, name, make) {
-  if (typeof module != 'undefined' && module.exports) module.exports = make()
-  else root[name] = make()
-}(this, 'cargo', function() {
+(function (global){
+'use strict';
 
-  var cargo = {}
-    , win = typeof window != 'undefined' && window
-    , son = typeof JSON != 'undefined' && JSON || false
-    , has = {}.hasOwnProperty
-    
-  function clone(o) {
-    var k, r = {}
-    for (k in o) has.call(o, k) && (r[k] = o[k])
-    return r
-  }
-  
-  function test(api, key) {
-    if (api) try {
-      key = key || 'cargo'+-new Date
-      api.setItem(key, key)
-      api.removeItem(key)
-      return true
-    } catch (e) {}
-    return false
-  }
-  
-  /**
-   * @param {Storage=} api
-   * @return {Function} abstraction
-   */
-  function abstracts(api) {
-    var und, stores = test(api), cache = {}, all = stores ? api : cache
-    function f(k, v) {
-      var n = arguments.length
-      if (1 < n) return und === v ? f['remove'](k) : f['set'](k, v), v
-      return n ? f['get'](k) : clone(all)
-    }
-    f['stores'] = stores
-    f['decode'] = son.parse
-    f['encode'] = son.stringify
-    f['get'] = stores ? function(k) {
-      return und == (k = api.getItem(k)) ? und : k
-    } : function(k) {
-      return !has.call(cache, k) ? und : cache[k]
-    }
-    f['set'] = stores ? function(k, v) {
-      api.setItem(k, v)
-    } : function(k, v) {
-      cache[k] = v
-    }
-    f['remove'] = stores ? function(k) {
-      api.removeItem(k)
-    } : function(k) {
-      delete cache[k]
-    }
-    return f
-  }
+// there's 3 implementations written in increasing order of efficiency
 
-  cargo['session'] = abstracts(win.sessionStorage)
-  cargo['local'] = abstracts(win.localStorage)
-  cargo['temp'] = abstracts()
-  return cargo
-});
+// 1 - no Set type is defined
+function uniqNoSet(arr) {
+	var ret = [];
+
+	for (var i = 0; i < arr.length; i++) {
+		if (ret.indexOf(arr[i]) === -1) {
+			ret.push(arr[i]);
+		}
+	}
+
+	return ret;
+}
+
+// 2 - a simple Set type is defined
+function uniqSet(arr) {
+	var seen = new Set();
+	return arr.filter(function (el) {
+		if (!seen.has(el)) {
+			seen.add(el);
+			return true;
+		}
+	});
+}
+
+// 3 - a standard Set type is defined and it has a forEach method
+function uniqSetWithForEach(arr) {
+	var ret = [];
+
+	(new Set(arr)).forEach(function (el) {
+		ret.push(el);
+	});
+
+	return ret;
+}
+
+if ('Set' in global) {
+	if (typeof Set.prototype.forEach === 'function') {
+		module.exports = uniqSetWithForEach;
+	} else {
+		module.exports = uniqSet;
+	}
+} else {
+	module.exports = uniqNoSet;
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],6:[function(require,module,exports){
 var Highlight = function() {
 
@@ -10807,4 +10827,22 @@ return jQuery;
 
 }));
 
+},{}],17:[function(require,module,exports){
+'use strict';
+
+module.exports = function( array, value, count ){
+	if (Array.isArray(this)) {
+		count = value;
+		value = array;
+		array = this;
+	}
+
+	var index;
+	var i = 0;
+
+	while ((!count || i++ < count) && ~(index = array.indexOf(value)))
+		array.splice(index, 1);
+
+	return array;
+};
 },{}]},{},[1]);

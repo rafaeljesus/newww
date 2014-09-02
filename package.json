@@ -18,6 +18,7 @@
     "url": "https://github.com/npm/newww"
   },
   "dependencies": {
+    "array-uniq": "^1.0.0",
     "blankie": "^0.1.2",
     "bole": "^0.1.0",
     "cargo": "^0.8.0",
@@ -39,6 +40,7 @@
     "npm-typeahead": "^0.2.0",
     "npm2es": "git://github.com/npm/npm2es",
     "numbat-emitter": "^1.0.0",
+    "remove-value": "^1.0.0",
     "schemeless": "^1.0.0",
     "scooter": "^1.2.0",
     "stylus": "^0.45.0"

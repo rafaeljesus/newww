@@ -17,7 +17,7 @@ star.init = function() {
 
   // Check the local star cache and update the form input *before* attaching the change handler
   var name = star.form.find("input[name=name]").val()
-  star.form.find('input[type=checkbox]').prop("checked", star.packageInCache(name));
+  // star.form.find('input[type=checkbox]').prop("checked", star.packageInCache(name));
 
   star.form.find('input[type=checkbox]').on('change', star.onChange)
 }
@@ -35,7 +35,7 @@ star.onChange = function() {
   data.isStarred = Boolean(data.isStarred)
 
   // Cache it in locaStorage
-  star.updateLocalCache(data);
+  // star.updateLocalCache(data);
 
   // Update count in label
   var count = Number(star.form.find("label").text())
@@ -53,27 +53,27 @@ star.onChange = function() {
 }
 
 // Add or remove this package from localStorage list of starred packages
-star.updateLocalCache = function(data) {
-  var stars = star.getCachedStarList()
+// star.updateLocalCache = function(data) {
+//   var stars = star.getCachedStarList()
 
-  if (data.isStarred) {
-    stars.push(data.name)
-    stars = uniq(stars)
-  } else {
-    stars = remove(stars, data.name)
-  }
+//   if (data.isStarred) {
+//     stars.push(data.name)
+//     stars = uniq(stars)
+//   } else {
+//     stars = remove(stars, data.name)
+//   }
 
-  localStorage["stars"] = stars.join(";")
-}
+//   localStorage["stars"] = stars.join(";")
+// }
 
-star.getCachedStarList = function() {
-  var stars = localStorage["stars"] || "";
-  return stars.length ? stars.split(";") : []
-}
+// star.getCachedStarList = function() {
+//   var stars = localStorage["stars"] || "";
+//   return stars.length ? stars.split(";") : []
+// }
 
-star.packageInCache = function(name) {
-  return star.getCachedStarList().indexOf(name) > -1
-}
+// star.packageInCache = function(name) {
+//   return star.getCachedStarList().indexOf(name) > -1
+// }
 
 star.onDone = function (resp) {
   // console.log(resp)

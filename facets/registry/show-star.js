@@ -5,7 +5,8 @@ var Hapi = require('hapi'),
     metrics = require('../../adapters/metrics')();
 
 module.exports = function (request, reply) {
-  var star = request.server.methods.registry.star,
+  var getPackage = request.server.methods.registry.getPackage,
+      star = request.server.methods.registry.star,
       unstar = request.server.methods.registry.unstar,
       addMetric = metrics.addMetric,
       addLatencyMetric = metrics.addPageLatencyMetric,
@@ -40,11 +41,19 @@ module.exports = function (request, reply) {
         return reply('not ok - ' + errId).code(500);
       }
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'star');
+      getPackage.cache.drop(pkg, function (er, resp) {
+        if (er) {
+          var errId = uuid.v1();
+          log.error(errId + ' ' + Hapi.error.internal(util.format("unable to drop cache for %s", pkg)), err);
+          return reply('not ok - ' + errId).code(500);
+        }
 
-      addMetric({ name: 'star', package: pkg });
-      return reply(username + ' starred ' + pkg).code(200);
+        timer.end = Date.now();
+        addLatencyMetric(timer, 'star');
+
+        addMetric({ name: 'star', package: pkg });
+        return reply(username + ' starred ' + pkg).code(200);
+      });
     });
   } else {
 
@@ -56,11 +65,19 @@ module.exports = function (request, reply) {
         return reply('not ok - ' + errId).code(500);
       }
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'unstar');
+      getPackage.cache.drop(pkg, function (er, resp) {
+        if (er) {
+          var errId = uuid.v1();
+          log.error(errId + ' ' + Hapi.error.internal(util.format("unable to drop cache for %s", pkg)), err);
+          return reply('not ok - ' + errId).code(500);
+        }
 
-      addMetric({ name: 'unstar', package: pkg });
-      return reply(username + ' unstarred ' + pkg).code(200);
+        timer.end = Date.now();
+        addLatencyMetric(timer, 'unstar');
+
+        addMetric({ name: 'unstar', package: pkg });
+        return reply(username + ' unstarred ' + pkg).code(200);
+      });
     });
   }
 }

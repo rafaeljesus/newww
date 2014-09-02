@@ -4,7 +4,7 @@
   "description": "A total rewrite of npm-www using hapijs",
   "main": "server.js",
   "scripts": {
-    "start": "server.js",
+    "start": "node server.js",
     "test": "lab -vC; node allPlugins t",
     "install": "node allPlugins",
     "prepublish": "gulp build",

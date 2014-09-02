@@ -3,8 +3,6 @@
 // and unstarrings, while the remote registry cache catches up.
 
 var $ = require("jquery");
-var uniq = require("array-uniq");
-var remove = require("remove-value");
 
 var star = module.exports = function() {
   $(star.init);
@@ -14,11 +12,6 @@ var star = module.exports = function() {
 star.init = function() {
   star.form = $('form.star')
   if (!star.form) return
-
-  // Check the local star cache and update the form input *before* attaching the change handler
-  var name = star.form.find("input[name=name]").val()
-  // star.form.find('input[type=checkbox]').prop("checked", star.packageInCache(name));
-
   star.form.find('input[type=checkbox]').on('change', star.onChange)
 }
 
@@ -34,9 +27,6 @@ star.onChange = function() {
   // JavaScript is loosely typed...
   data.isStarred = Boolean(data.isStarred)
 
-  // Cache it in locaStorage
-  // star.updateLocalCache(data);
-
   // Update count in label
   var count = Number(star.form.find("label").text())
   data.isStarred ? ++count : --count
@@ -51,29 +41,6 @@ star.onChange = function() {
     .done(star.onDone)
     .error(star.onError)
 }
-
-// Add or remove this package from localStorage list of starred packages
-// star.updateLocalCache = function(data) {
-//   var stars = star.getCachedStarList()
-
-//   if (data.isStarred) {
-//     stars.push(data.name)
-//     stars = uniq(stars)
-//   } else {
-//     stars = remove(stars, data.name)
-//   }
-
-//   localStorage["stars"] = stars.join(";")
-// }
-
-// star.getCachedStarList = function() {
-//   var stars = localStorage["stars"] || "";
-//   return stars.length ? stars.split(";") : []
-// }
-
-// star.packageInCache = function(name) {
-//   return star.getCachedStarList().indexOf(name) > -1
-// }
 
 star.onDone = function (resp) {
   // console.log(resp)

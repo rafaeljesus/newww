@@ -8,7 +8,7 @@ $(function () {
   require("./update-package-issue-count")();
 });
 
-},{"./highlight":2,"./star":3,"./update-package-issue-count":4,"jquery":16}],2:[function(require,module,exports){
+},{"./highlight":2,"./star":3,"./update-package-issue-count":4,"jquery":15}],2:[function(require,module,exports){
 var Highlight = require("highlight.js/lib/highlight");
 var hl = module.exports = new Highlight();
 
@@ -24,14 +24,12 @@ hl.registerLanguage("xml", require('highlight.js/lib/languages/xml'));
 
 hl.initHighlightingOnLoad();
 
-},{"highlight.js/lib/highlight":6,"highlight.js/lib/languages/bash":7,"highlight.js/lib/languages/coffeescript":8,"highlight.js/lib/languages/css":9,"highlight.js/lib/languages/glsl":10,"highlight.js/lib/languages/http":11,"highlight.js/lib/languages/javascript":12,"highlight.js/lib/languages/json":13,"highlight.js/lib/languages/typescript":14,"highlight.js/lib/languages/xml":15}],3:[function(require,module,exports){
+},{"highlight.js/lib/highlight":5,"highlight.js/lib/languages/bash":6,"highlight.js/lib/languages/coffeescript":7,"highlight.js/lib/languages/css":8,"highlight.js/lib/languages/glsl":9,"highlight.js/lib/languages/http":10,"highlight.js/lib/languages/javascript":11,"highlight.js/lib/languages/json":12,"highlight.js/lib/languages/typescript":13,"highlight.js/lib/languages/xml":14}],3:[function(require,module,exports){
 // This is the module for starring and unstarring modules in the browser.
 // It uses a localStorage cache to maintain a list of recent starrings
 // and unstarrings, while the remote registry cache catches up.
 
 var $ = require("jquery");
-var uniq = require("array-uniq");
-var remove = require("remove-value");
 
 var star = module.exports = function() {
   $(star.init);
@@ -41,11 +39,6 @@ var star = module.exports = function() {
 star.init = function() {
   star.form = $('form.star')
   if (!star.form) return
-
-  // Check the local star cache and update the form input *before* attaching the change handler
-  var name = star.form.find("input[name=name]").val()
-  // star.form.find('input[type=checkbox]').prop("checked", star.packageInCache(name));
-
   star.form.find('input[type=checkbox]').on('change', star.onChange)
 }
 
@@ -60,9 +53,6 @@ star.onChange = function() {
 
   // JavaScript is loosely typed...
   data.isStarred = Boolean(data.isStarred)
-
-  // Cache it in locaStorage
-  // star.updateLocalCache(data);
 
   // Update count in label
   var count = Number(star.form.find("label").text())
@@ -79,29 +69,6 @@ star.onChange = function() {
     .error(star.onError)
 }
 
-// Add or remove this package from localStorage list of starred packages
-// star.updateLocalCache = function(data) {
-//   var stars = star.getCachedStarList()
-
-//   if (data.isStarred) {
-//     stars.push(data.name)
-//     stars = uniq(stars)
-//   } else {
-//     stars = remove(stars, data.name)
-//   }
-
-//   localStorage["stars"] = stars.join(";")
-// }
-
-// star.getCachedStarList = function() {
-//   var stars = localStorage["stars"] || "";
-//   return stars.length ? stars.split(";") : []
-// }
-
-// star.packageInCache = function(name) {
-//   return star.getCachedStarList().indexOf(name) > -1
-// }
-
 star.onDone = function (resp) {
   // console.log(resp)
 }
@@ -110,7 +77,7 @@ star.onError = function (xhr, status, error) {
   console.error(xhr, status, error)
 }
 
-},{"array-uniq":5,"jquery":16,"remove-value":17}],4:[function(require,module,exports){
+},{"jquery":15}],4:[function(require,module,exports){
 module.exports = function(){
 
   window.issuesEl = $("#issues")
@@ -154,58 +121,6 @@ module.exports = function(){
 }
 
 },{}],5:[function(require,module,exports){
-(function (global){
-'use strict';
-
-// there's 3 implementations written in increasing order of efficiency
-
-// 1 - no Set type is defined
-function uniqNoSet(arr) {
-	var ret = [];
-
-	for (var i = 0; i < arr.length; i++) {
-		if (ret.indexOf(arr[i]) === -1) {
-			ret.push(arr[i]);
-		}
-	}
-
-	return ret;
-}
-
-// 2 - a simple Set type is defined
-function uniqSet(arr) {
-	var seen = new Set();
-	return arr.filter(function (el) {
-		if (!seen.has(el)) {
-			seen.add(el);
-			return true;
-		}
-	});
-}
-
-// 3 - a standard Set type is defined and it has a forEach method
-function uniqSetWithForEach(arr) {
-	var ret = [];
-
-	(new Set(arr)).forEach(function (el) {
-		ret.push(el);
-	});
-
-	return ret;
-}
-
-if ('Set' in global) {
-	if (typeof Set.prototype.forEach === 'function') {
-		module.exports = uniqSetWithForEach;
-	} else {
-		module.exports = uniqSet;
-	}
-} else {
-	module.exports = uniqNoSet;
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],6:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -905,7 +820,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -968,7 +883,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -1102,7 +1017,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],9:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -1206,7 +1121,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -1300,7 +1215,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -1334,7 +1249,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -1406,7 +1321,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -1444,7 +1359,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['ts'],
@@ -1531,7 +1446,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -1635,7 +1550,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/
@@ -10827,22 +10742,4 @@ return jQuery;
 
 }));
 
-},{}],17:[function(require,module,exports){
-'use strict';
-
-module.exports = function( array, value, count ){
-	if (Array.isArray(this)) {
-		count = value;
-		value = array;
-		array = this;
-	}
-
-	var index;
-	var i = 0;
-
-	while ((!count || i++ < count) && ~(index = array.indexOf(value)))
-		array.splice(index, 1);
-
-	return array;
-};
 },{}]},{},[1]);

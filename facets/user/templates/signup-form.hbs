@@ -1,10 +1,10 @@
 <hgroup>
-  <h1>{{t "user.signup.title" "en_US"}}</h1>
-  <h2>{{t "user.signup.subtitle" "en_US"}}</h2>
+  <h1>{{t "user.signup.title" lang}}</h1>
+  <h2>{{t "user.signup.subtitle" lang}}</h2>
 </hgroup>
 
 {{#if errors}}
-  <p class="error">{{t "user.signup.error" "en_US"}}</p>
+  <p class="error">{{t "user.signup.error" lang}}</p>
   <ul>
     {{#each errors}}
       <li>
@@ -15,21 +15,21 @@
 {{/if}}
 
 <form class="login-forms" action="" method="post">
-  <label for="name">{{t "user.signup.form.name" "en_US"}}</label>
+  <label for="name">{{t "user.signup.form.name" lang}}</label>
   <input type="text" id="name" name="name" />
-  <p class="help-text">{{t "user.signup.form.nameHelp" "en_US"}}</p>
+  <p class="help-text">{{t "user.signup.form.nameHelp" lang}}</p>
 
-  <label for="password">{{t "user.signup.form.password" "en_US"}}</label>
+  <label for="password">{{t "user.signup.form.password" lang}}</label>
   <input type="password" id="password" name="password" />
 
-  <label for="verify">{{t "user.signup.form.verify" "en_US"}}</label>
+  <label for="verify">{{t "user.signup.form.verify" lang}}</label>
   <input type="password" id="verify" name="verify" />
 
-  <label for="email-address">{{t "user.signup.form.email" "en_US"}}</label>
+  <label for="email-address">{{t "user.signup.form.email" lang}}</label>
   <input type="text" id="email-address" name="email-address" />
-  <p class="help-text">{{{t "user.signup.form.emailHelp" "en_US"}}}</p>
+  <p class="help-text">{{{t "user.signup.form.emailHelp" lang}}}</p>
 
-  <input type="submit" value="{{t "user.signup.form.submit" "en_US"}}" />
+  <input type="submit" value="{{t "user.signup.form.submit" lang}}" />
 
   <input type="hidden" name="crumb" value="{{crumb}}"/>
 </form>

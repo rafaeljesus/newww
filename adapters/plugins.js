@@ -41,7 +41,8 @@ module.exports = [
     plugin: require('./bonbon'),
     options: {
       stamp: config.stamp,
-      canonicalHost: config.canonicalHost
+      canonicalHost: config.canonicalHost,
+      lang: "en_US"
     }
   }
 ];

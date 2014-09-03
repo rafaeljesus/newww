@@ -8,7 +8,7 @@ var Hapi = require('hapi'),
 
 var transport, mailer;
 
-var from, devMode, timer = {};
+var from, host, devMode, timer = {};
 
 var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
 
@@ -21,6 +21,7 @@ module.exports = function (options) {
     };
 
     from = options.emailFrom;
+    host = options.canonicalHost;
 
     // if there's no email configuration set up, then we can't do this.
     // however, in dev mode, just show the would-be email right on the screen
@@ -263,25 +264,14 @@ function sendEmail(name, email, request, reply) {
       return showError(request, reply, 'Unable to set ' + key + 'to the cache', 500, err);
     }
 
-    var u = request.server.info.uri + '/forgot/' + encodeURIComponent(token);
+    var u = host + '/forgot/' + encodeURIComponent(token);
 
     var mail = {
       to: '"' + name + '" <' + email + '>',
       from: from,
       subject : "npm Password Reset",
       headers: { "X-SMTPAPI": { category: "password-reset" } },
-      text: "You are receiving this because you (or someone else) have "
-      + "requested the reset of the '"
-      + name
-      + "' npm user account.\r\n\r\n"
-      + "Please click on the following link, or paste this into your "
-      + "browser to complete the process:\r\n\r\n"
-      + "    " + u + "\r\n\r\n"
-      + "If you received this in error, you can safely ignore it.\r\n"
-      + "The request will expire in an hour.\r\n\r\n"
-      + "You can reply to this message, or email\r\n    "
-      + from + "\r\nif you have questions."
-      + " \r\n\r\nnpm loves you.\r\n"
+      text: require('./emailTemplates/forgotPassword')(name, u, from)
     };
 
     if (devMode) {

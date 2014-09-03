@@ -166,6 +166,8 @@ config.stamp = 'pid=' + process.pid + ' ' +
                 gitHead + ' ' + config.canonicalHost + ' ' +
                 os.hostname() + ' ' + process.env.SMF_ZONENAME;
 
+config.user.mail.canonicalHost = config.canonicalHost;
+
 function hostmatch (m) { return function (u) {
   return u.host && u.host.match(m)
 } }

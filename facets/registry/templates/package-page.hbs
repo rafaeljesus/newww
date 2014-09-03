@@ -9,17 +9,13 @@
 </div>
 
 <div class="layout-right">
-
-  {{#if ../user}}
-    <form class="star">
-      <input type="hidden" name="name" value="{{name}}">
-      <input type="hidden" name="crumb" value="{{../../crumb}}">
-      <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>
-      <label for="star-input" class="icon-star">{{starCount}}</label>
-    </form>
-  {{else}}
-    You are not logged in.
-  {{/if}}
+  
+  <form class="star">
+    <input type="hidden" name="name" value="{{name}}">
+    <input type="hidden" name="crumb" value="{{../../crumb}}">
+    <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>
+    <label for="star-input" class="icon-star">{{starCount}}</label>
+  </form>
 
 	<h3>Package Details</h3>
 	<ul class="box">

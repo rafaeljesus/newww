@@ -257,6 +257,7 @@ h4 span {
 }
 hgroup {
   text-align: center;
+  text-transform: lowercase;
 }
 hgroup h2 {
   font-weight: 300;
@@ -599,6 +600,10 @@ input[type=file] {
 }
 .login-forms input[type=submit] {
   width: 100%;
+  text-transform: lowercase;
+}
+.login-forms label {
+  text-transform: lowercase;
 }
 nav {
   height: 38px;

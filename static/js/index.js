@@ -39,7 +39,16 @@ var star = module.exports = function() {
 star.init = function() {
   star.form = $('form.star')
   if (!star.form) return
-  star.form.find('input[type=checkbox]').on('change', star.onChange)
+  star.form.checkbox = star.form.find('input[type=checkbox]')
+
+  star.form.checkbox.on('change', star.onChange)
+
+  // Check the checkbox if we arrived from the login page and there's a #star
+  // fragment in the URL
+  if (String(document.referrer).match("/login") && String(location.hash).match("#star")) {
+    console.log("post-login starring...")
+    star.form.checkbox.prop("checked", true);
+  }
 }
 
 star.onChange = function() {
@@ -74,7 +83,12 @@ star.onDone = function (resp) {
 }
 
 star.onError = function (xhr, status, error) {
-  console.error(xhr, status, error)
+  if (xhr && xhr.status && Number(xhr.status) === 403) {
+    window.location = "/login?done="+location.pathname+"#star"
+    return
+  } else {
+    console.error(xhr)
+  }
 }
 
 },{"jquery":15}],4:[function(require,module,exports){

@@ -23,7 +23,7 @@ module.exports = {
       invalidContext: "If you feel that this is a mistake, please <a href='/contact'>contact us</a> with the following unique error ID:"
     },
     form: {
-      name: "username",
+      username: "username",
       password: "password",
       forgot: "forgot your password?",
       signup: "create an account",
@@ -31,4 +31,3 @@ module.exports = {
     }
   }
 };
-

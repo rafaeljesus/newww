@@ -1,7 +1,8 @@
-<h1>Sign all the way up</h1>
+<h1>{{t "signup.title"}}</h1>
+<h2>{{t "signup.subtitle"}}</h2>
 
 {{#if errors}}
-  <p class="error">There was a problem! The server said:</p>
+  <p class="error">{{t "signup.error"}}</p>
   <ul>
     {{#each errors}}
       <li>
@@ -11,34 +12,22 @@
   </ul>
 {{/if}}
 
-<form action='' method=post class=form>
-<fieldset>
-<label for='name'>Username</label>
-<input id='name' name='name' type='text'>
-<p class='form-help'>Must be all lower-case, and not have any non-urlsafe chars.</p>
-</fieldset>
+<form class="login-forms" action="" method="post">
+  <label for="name">{{t "signup.form.name"}}</label>
+  <input type="text" id="name" name="name" />
+  <p class="help-text">{{t "signup.form.nameHelp"}}</p>
 
-<fieldset>
-<label for='password'>Password</label>
-<input id='password' name='password' type='password'>
-</fieldset>
+  <label for="password">{{t "signup.form.password"}}</label>
+  <input type="password" id="password" name="password" />
 
-<fieldset>
-<label for='verify'>Verify Password</label>
-<input id='verify' name='verify' type='password'>
-</fieldset>
+  <label for="verify">{{t "signup.form.verify"}}</label>
+  <input type="password" id="verify" name="verify" />
 
-<fieldset>
-<label for='email'>Email Address (this IS public)</label>
-<input id='email' name='email' type='email'>
-<p class='form-help'>Must be a valid email address.  It <strong>will</strong>
-be shown on the site, and on all packages you publish.</p>
-<p class='form-help'>Accounts without valid email addresses may be deleted
-without notice.</p>
-</fieldset>
+  <label for="email-address">{{t "signup.form.email"}}</label>
+  <input type="text" id="email-address" name="email-address" />
+  <p class="help-text">{{{t "signup.form.emailHelp"}}}</p>
 
-<fieldset class='buttons'>
-<button class='btn' type='submit'>Make it so.</button>
-</fieldset>
-<input type="hidden" name="crumb" value="{{crumb}}"/>
+  <input type="submit" value="{{t "signup.form.submit"}}" />
+
+  <input type="hidden" name="crumb" value="{{crumb}}"/>
 </form>

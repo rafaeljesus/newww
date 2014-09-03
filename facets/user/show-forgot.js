@@ -24,7 +24,6 @@ module.exports = function (options) {
 
     // if there's no email configuration set up, then we can't do this.
     // however, in dev mode, just show the would-be email right on the screen
-    devMode = false;
     if (process.env.NODE_ENV === 'dev') {
       devMode = true;
     } else {
@@ -32,9 +31,6 @@ module.exports = function (options) {
           !options.mailTransportSettings) {
         return showError(request, reply, 'Mail settings are missing!', 500);
       }
-    }
-
-    if (!devMode) {
       transport = require(options.mailTransportModule);
       mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
     }

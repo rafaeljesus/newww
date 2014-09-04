@@ -7,6 +7,7 @@ nav
   text-align right
   border-bottom 1px solid darken(npmred, 10%)
   background npmred
+  overflow hidden
 
   @media only screen and (max-width: 767px)
     display none
@@ -20,14 +21,19 @@ nav
 
   a
     display inline-block
-    height 36px
-    margin 0 0 0 16px
-    opacity .6
+    line-height 36px
+    padding 0 10px
+    margin 0
+    opacity .7
     color background-color
+    text-decoration none
+    background npmred
+    transition all 0.1s
 
     &:hover, &.active
       opacity 1
-      border-bottom: 3px solid white
+      text-decoration none
+      background darken(npmred, 20%)
 
     @media only screen and (max-width: 767px)
       display block

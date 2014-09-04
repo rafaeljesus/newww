@@ -702,7 +702,7 @@ nav h2 {
 #mobile-menu {
   display: none;
   position: absolute;
-  top: 2px;
+  top: 4px;
   right: 15px;
   width: 50px;
   height: 36px;

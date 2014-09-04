@@ -9,10 +9,10 @@
 </div>
 
 <div class="layout-right">
-  
+
   <form class="star">
     <input type="hidden" name="name" value="{{name}}">
-    <input type="hidden" name="crumb" value="{{../../crumb}}">
+    <input type="hidden" name="crumb" value="{{../crumb}}">
     <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>
     <label for="star-input" class="icon-star">{{starCount}}</label>
   </form>

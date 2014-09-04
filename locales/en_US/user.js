@@ -5,7 +5,7 @@ module.exports = {
     error: "There was a problem! The server said:",
     form: {
       username: "Username",
-      nameHelp: "Must be all lower-case, and not have any non-urlsafe chars",
+      nameHelp: "Must be lowercase and composed of URL-safe characters.",
       password: "Password",
       verify: "Verify Password",
       email: "Email Address",

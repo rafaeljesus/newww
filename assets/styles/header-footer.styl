@@ -88,7 +88,7 @@ header
         text-overflow ellipsis
         font 400 24px/29px fonts
 
-      @media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio : 1.5)
+      @media only screen and (max-width: 767px)
         width 150px
 
   #npm-logo
@@ -96,13 +96,10 @@ header
     margin-right 7%
 
     @media only screen and (max-width: 767px)
-      margin-top -8px
-      margin-right 0
-
-    @media only screen and (-webkit-min-device-pixel-ratio : 1.5) and (max-width: 767px)
+      margin 0
       img
         display block
-        width 80%
+        width 80px
 
   #npm-search
     // position absolute
@@ -168,31 +165,58 @@ header
       border-left 0
       background: npmred url(../img/ico-search-hover.png) no-repeat 50% 50%
 
-  #user-info
-    min-width 200px
+
+
+userInfoAvatarSize = 45px
+userInfoAvatarSizeMobile = 25px
+
+#user-info
+  min-width 100px
+  float right
+
+  img
     float right
+    display block
+    width userInfoAvatarSize
+    margin 0 0 0 10px
+    border-radius 2px
+
+  ul
+    float right
+    display block
+    margin 0
+    padding 0
     text-align right
-    // color gray4
-    // background black
+    li
+      list-style none
+    &.single li
+      line-height userInfoAvatarSize
+      vertical-align top
 
-    @media only screen and (max-width: 767px)
-      margin-top -1px
-      margin-right 3em
-
+  @media only screen and (max-width: 767px)
+    margin-top 0
+    margin-right 40px
+    ul
+      li
+        display block
+        float left
+        padding-left 10px
+        &.username
+          display none
+      &.single li
+        line-height userInfoAvatarSizeMobile
     img
-      float right
-      display block
-      width 45px
-      margin 0 0 0 10px
-      border-radius 2px
-      //
-      // @media only screen and (max-width: 767px)
-      //   display none
+      width userInfoAvatarSizeMobile
 
-    a
-      &.subdued
-        color gray4
-        font-size 14px
+    &.anonymous
+      img
+        display none
+
+  a
+    &.subdued
+      color gray4
+      font-size 14px
+
 
   #header-buttons
     position absolute
@@ -377,10 +401,10 @@ header
   @media only screen and (max-width: 767px)
     width 80.2%
 
-  @media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio: 1.5)
+  @media only screen and (max-width: 767px)
     width 74.7%
 
-  @media only screen and (-webkit-min-device-pixel-ratio: 1.5) and (orientation: landscape)
+  @media only screen and (orientation: landscape)
     width 86.6%
 
   #auto-suggest-nav

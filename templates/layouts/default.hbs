@@ -41,14 +41,19 @@
     <div class="container">
       <a href="/" id="npm-logo"><img src="/static/img/npm-logo.png" alt="npm logo" /></a>
 
-      <div id="user-info">
+      <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
         {{#if user}}
           <a href="/~{{user.name}}"><img src="{{user.avatarMedium}}" id="user-avatar" /></a>
-          <a href="/~{{user.name}}">{{user.name}}</a><br />
-          <a href="/logout" class="subdued">log out</a>
+          <ul>
+            <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
+            <li><a href="/logout" class="subdued">log out</a></li>
+          </ul>
         {{else}}
-          <a href="/signup">sign up</a> or
-          <a href="/login">log in</a>
+          <a href="/login"><img src="/static/img/wombat-avatar.png" id="user-avatar" /></a>
+          <ul class="single">
+            <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
+          </ul>
+
         {{/if}}
       </div>
 

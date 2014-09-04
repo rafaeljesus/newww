@@ -702,8 +702,8 @@ nav h2 {
 #mobile-menu {
   display: none;
   position: absolute;
-  top: -3px;
-  right: 20px;
+  top: 2px;
+  right: 15px;
   width: 50px;
   height: 36px;
   text-indent: -9999em;
@@ -962,7 +962,7 @@ header.avatar h1 {
     font: 400 24px/29px 'Source Sans Pro', 'Lucida Grande', sans-serif;
   }
 }
-@media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio: 1.5) {
+@media only screen and (max-width: 767px) {
   header.avatar h1 {
     width: 150px;
   }
@@ -973,14 +973,11 @@ header #npm-logo {
 }
 @media only screen and (max-width: 767px) {
   header #npm-logo {
-    margin-top: -8px;
-    margin-right: 0;
+    margin: 0;
   }
-}
-@media only screen and (-webkit-min-device-pixel-ratio: 1.5) and (max-width: 767px) {
   header #npm-logo img {
     display: block;
-    width: 80%;
+    width: 80px;
   }
 }
 header #npm-search {
@@ -1045,36 +1042,66 @@ header #site-search-submit:hover {
   border-left: 0;
   background: #cb3837 url("../img/ico-search-hover.png") no-repeat 50% 50%;
 }
-header #user-info {
-  min-width: 200px;
+#user-info {
+  min-width: 100px;
   float: right;
-  text-align: right;
 }
-@media only screen and (max-width: 767px) {
-  header #user-info {
-    margin-top: -1px;
-    margin-right: 3em;
-  }
-}
-header #user-info img {
+#user-info img {
   float: right;
   display: block;
   width: 45px;
   margin: 0 0 0 10px;
   border-radius: 2px;
 }
-header #user-info a.subdued {
+#user-info ul {
+  float: right;
+  display: block;
+  margin: 0;
+  padding: 0;
+  text-align: right;
+}
+#user-info ul li {
+  list-style: none;
+}
+#user-info ul.single li {
+  line-height: 45px;
+  vertical-align: top;
+}
+@media only screen and (max-width: 767px) {
+  #user-info {
+    margin-top: 0;
+    margin-right: 40px;
+  }
+  #user-info ul li {
+    display: block;
+    float: left;
+    padding-left: 10px;
+  }
+  #user-info ul li.username {
+    display: none;
+  }
+  #user-info ul.single li {
+    line-height: 25px;
+  }
+  #user-info img {
+    width: 25px;
+  }
+  #user-info.anonymous img {
+    display: none;
+  }
+}
+#user-info a.subdued {
   color: rgba(0,0,0,0.5);
   font-size: 14px;
 }
-header #header-buttons {
+#user-info #header-buttons {
   position: absolute;
   right: 20px;
   top: 134px;
   z-index: 7;
 }
 @media only screen and (max-width: 1023px) {
-  header #header-buttons {
+  #user-info #header-buttons {
     display: none;
     width: 140px;
     border: 1px solid rgba(0,0,0,0.1);
@@ -1083,11 +1110,11 @@ header #header-buttons {
   }
 }
 @media only screen and (max-width: 767px) {
-  header #header-buttons {
+  #user-info #header-buttons {
     top: 120px;
   }
 }
-header #header-buttons a {
+#user-info #header-buttons a {
   float: left;
   display: inline-block;
   height: 31px;
@@ -1100,67 +1127,67 @@ header #header-buttons a {
   border-width: 1px 0 1px 1px;
   background: #fff;
 }
-header #header-buttons a:before {
+#user-info #header-buttons a:before {
   margin-right: 8px;
   float: left;
   margin-top: 9px;
 }
-header #header-buttons a:hover {
+#user-info #header-buttons a:hover {
   color: #fff;
   border-color: #cb3837;
   background: #cb3837;
 }
 @media only screen and (max-width: 1023px) {
-  header #header-buttons a {
+  #user-info #header-buttons a {
     display: block;
     float: none;
     border-width: 0 0 1px 0;
     text-align: right;
   }
 }
-header #header-buttons a span {
+#user-info #header-buttons a span {
   margin: 0 0 0 5px;
 }
-header #header-buttons a.owner {
+#user-info #header-buttons a.owner {
   color: #fff;
   border-color: #cb3837;
   background: #cb3837;
 }
-header #header-buttons a.owner:hover {
+#user-info #header-buttons a.owner:hover {
   color: rgba(0,0,0,0.5);
   border-color: rgba(0,0,0,0.1);
   background: #fff;
 }
-header #header-buttons a:first-child {
+#user-info #header-buttons a:first-child {
   border-radius: 4px 0 0 4px;
 }
 @media only screen and (max-width: 1023px) {
-  header #header-buttons a:first-child {
+  #user-info #header-buttons a:first-child {
     border-radius: 0;
   }
 }
-header #header-buttons a:last-child {
+#user-info #header-buttons a:last-child {
   border-radius: 0 4px 4px 0;
   border-right: 1px solid rgba(0,0,0,0.1);
 }
 @media only screen and (max-width: 1023px) {
-  header #header-buttons a:last-child {
+  #user-info #header-buttons a:last-child {
     border-width: 0;
     border-radius: 0;
   }
 }
-header.custom.dark h1 {
+#user-info.custom.dark h1 {
   color: #fff;
 }
-header.custom.dark #user-info {
+#user-info.custom.dark #user-info {
   color: #fff;
 }
-header.custom.dark #user-info a,
-header.custom.dark #user-info h6 {
+#user-info.custom.dark #user-info a,
+#user-info.custom.dark #user-info h6 {
   color: #fff;
 }
 @media only screen and (max-width: 1023px) {
-  header.custom #header-buttons {
+  #user-info.custom #header-buttons {
     display: none;
     width: 140px;
     border: 0;
@@ -1168,7 +1195,7 @@ header.custom.dark #user-info h6 {
     background: #fff;
   }
 }
-header.custom #header-buttons a {
+#user-info.custom #header-buttons a {
   float: left;
   display: inline-block;
   height: 31px;
@@ -1180,12 +1207,12 @@ header.custom #header-buttons a {
   font: 600 13px/31px 'Source Sans Pro', 'Lucida Grande', sans-serif;
   background: rgba(255,255,255,0.4);
 }
-header.custom #header-buttons a:hover {
+#user-info.custom #header-buttons a:hover {
   color: rgba(0,0,0,0.8);
   background: #fff;
 }
 @media only screen and (max-width: 1023px) {
-  header.custom #header-buttons a {
+  #user-info.custom #header-buttons a {
     display: block;
     float: none;
     border-bottom: 0;
@@ -1193,27 +1220,27 @@ header.custom #header-buttons a:hover {
     text-align: right;
     color: rgba(0,0,0,0.8);
   }
-  header.custom #header-buttons a:first-child {
+  #user-info.custom #header-buttons a:first-child {
     border-radius: 4px 4px 0 0;
   }
-  header.custom #header-buttons a:last-child {
+  #user-info.custom #header-buttons a:last-child {
     border-width: 0;
     border-radius: 0 0 4px 4px;
   }
-  header.custom #header-buttons a:hover {
+  #user-info.custom #header-buttons a:hover {
     color: #fff;
     background: #cb3837;
   }
 }
-header.custom #header-buttons a.owner {
+#user-info.custom #header-buttons a.owner {
   background: #fff;
   color: rgba(0,0,0,0.8);
 }
-header.custom #header-buttons a.owner:hover {
+#user-info.custom #header-buttons a.owner:hover {
   color: #fff;
   background: rgba(0,0,0,0.8);
 }
-header #mobile-header-buttons {
+#user-info #mobile-header-buttons {
   display: none;
   position: absolute;
   right: 20px;
@@ -1229,12 +1256,12 @@ header #mobile-header-buttons {
   border-radius: 4px;
 }
 @media only screen and (max-width: 767px) {
-  header #mobile-header-buttons {
+  #user-info #mobile-header-buttons {
     top: 120px;
     display: block;
   }
 }
-header.custom #mobile-header-buttons {
+#user-info.custom #mobile-header-buttons {
   border: 0;
   color: #fff;
   background: rgba(255,255,255,0.4);
@@ -1267,12 +1294,12 @@ header.custom #mobile-header-buttons {
     width: 80.2%;
   }
 }
-@media only screen and (max-width: 767px) and (-webkit-min-device-pixel-ratio: 1.5) {
+@media only screen and (max-width: 767px) {
   #auto-suggest {
     width: 74.7%;
   }
 }
-@media only screen and (-webkit-min-device-pixel-ratio: 1.5) and (orientation: landscape) {
+@media only screen and (orientation: landscape) {
   #auto-suggest {
     width: 86.6%;
   }

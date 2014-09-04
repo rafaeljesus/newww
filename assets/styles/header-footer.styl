@@ -169,11 +169,11 @@ header
       background: npmred url(../img/ico-search-hover.png) no-repeat 50% 50%
 
   #user-info
+    min-width 200px
     float right
-    font-size 14px
-    line-height 15px
     text-align right
-    color gray5
+    // color gray4
+    // background black
 
     @media only screen and (max-width: 767px)
       margin-top -1px
@@ -185,39 +185,14 @@ header
       width 45px
       margin 0 0 0 10px
       border-radius 2px
-
-      @media only screen and (max-width: 767px)
-        display none
-
-    h6
-      margin 5px 0 0
-      font 600 13px/18px fonts
-      color gray2
-
-      @media only screen and (max-width: 767px)
-        display none
+      //
+      // @media only screen and (max-width: 767px)
+      //   display none
 
     a
-      font 600 12px/15px fonts
-      padding 0 2px
-      color npmred
-
-    &.logged-out
-      color text-color-subdued
-      font-weight 100
-
-      a
-        color text-color-subdued
-        font 600 14px/49px fonts
-
-        @media only screen and (max-width: 767px)
-          font 600 12px/15px fonts
-
-  &.custom #user-info
-    color rgba(255,255,255,.4)
-
-    a
-      color rgba(255,255,255,.4)
+      &.subdued
+        color gray4
+        font-size 14px
 
   #header-buttons
     position absolute

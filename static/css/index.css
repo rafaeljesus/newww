@@ -1040,11 +1040,9 @@ header #site-search-submit:hover {
   background: #cb3837 url("../img/ico-search-hover.png") no-repeat 50% 50%;
 }
 header #user-info {
+  min-width: 200px;
   float: right;
-  font-size: 14px;
-  line-height: 15px;
   text-align: right;
-  color: rgba(0,0,0,0.1);
 }
 @media only screen and (max-width: 767px) {
   header #user-info {
@@ -1059,44 +1057,9 @@ header #user-info img {
   margin: 0 0 0 10px;
   border-radius: 2px;
 }
-@media only screen and (max-width: 767px) {
-  header #user-info img {
-    display: none;
-  }
-}
-header #user-info h6 {
-  margin: 5px 0 0;
-  font: 600 13px/18px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  color: rgba(0,0,0,0.8);
-}
-@media only screen and (max-width: 767px) {
-  header #user-info h6 {
-    display: none;
-  }
-}
-header #user-info a {
-  font: 600 12px/15px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  padding: 0 2px;
-  color: #cb3837;
-}
-header #user-info.logged-out {
+header #user-info a.subdued {
   color: rgba(0,0,0,0.5);
-  font-weight: 100;
-}
-header #user-info.logged-out a {
-  color: rgba(0,0,0,0.5);
-  font: 600 14px/49px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-}
-@media only screen and (max-width: 767px) {
-  header #user-info.logged-out a {
-    font: 600 12px/15px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  }
-}
-header.custom #user-info {
-  color: rgba(255,255,255,0.4);
-}
-header.custom #user-info a {
-  color: rgba(255,255,255,0.4);
+  font-size: 14px;
 }
 header #header-buttons {
   position: absolute;

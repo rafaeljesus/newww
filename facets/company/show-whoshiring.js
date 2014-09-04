@@ -6,8 +6,7 @@ module.exports = function (request, reply) {
   var opts = {
     user: request.auth.credentials,
     hiring: request.server.methods.hiring.getRandomWhosHiring(),
-    companies: request.server.methods.hiring.getAllWhosHiring(),
-    title: 'Who\'s Hiring'
+    companies: request.server.methods.hiring.getAllWhosHiring()
   };
 
   timer.end = Date.now();

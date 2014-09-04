@@ -1,12 +1,23 @@
-<h1>Who's Hiring?</h1>
+<h1>{{t "company.whoshiring.title" lang}}</h1>
 
-<p>These companies are currently hiring for Node.js developers</p>
+<h2>{{t "company.whoshiring.subtitle" lang}}</h2>
 
-<dl class="hiring">
-  {{#each companies}}
-    <dt data-id="{{id}}" class="hiring-logo"><a href="{{url}}" style="background: url('/static/img/hiring/{{id}}.png') no-repeat; background-size: 100px, 50px, contain; background-position-y: 50%;">{{name}}</a></dt>
-    <dd data-id="{{id}}">{{{description}}}</dd>
-  {{/each}}
-</dl>
+<div class="container">
+  <div class="thirds tab-content" data-tab="today">
+    {{#each companies}}
+      <div class="third hiring">
 
-<p>To add your company to this list, email <a href="mailto:whoshiring@npmjs.org">whoshiring@npmjs.org</a> for pricing options.</p>
+        <div class="c-name" data-id="{{id}}">
+          <a href="{{url}}"><img src="/static/img/hiring/{{id}}.png" />{{name}}</a>
+        </div>
+
+        <div class="c-details">
+          <p>{{{description}}}</p>
+        </div>
+
+      </div> <!-- / .hiring -->
+    {{/each}}
+  </div> <!-- / .thirds -->
+</div> <!-- / .container -->
+
+<p>{{{t "company.whoshiring.addCompany" lang}}}</p>

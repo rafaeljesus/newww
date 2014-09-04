@@ -1043,7 +1043,7 @@ header #site-search-submit:hover {
   background: #cb3837 url("../img/ico-search-hover.png") no-repeat 50% 50%;
 }
 #user-info {
-  min-width: 100px;
+  min-width: 140px;
   float: right;
 }
 #user-info img {

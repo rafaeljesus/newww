@@ -573,7 +573,7 @@ input[type=file] {
   background: url("../img/select-bg.png") no-repeat 95% 50%;
 }
 .login-forms {
-  width: 300px;
+  max-width: 420px;
   margin: 0 auto 50px;
   text-align: left;
 }
@@ -1486,10 +1486,11 @@ header #site-search-submit:hover {
 footer {
   position: relative;
   clear: both;
+  margin: 100px 0 0 0;
   padding: 38px 0 0;
   min-height: 150px;
   color: #fff;
-  font: 600 14px/21px 'Source Sans Pro', 'Lucida Grande', sans-serif;
+  font-size: 14px;
   background: rgba(0,0,0,0.8);
 }
 footer .container {
@@ -1531,6 +1532,7 @@ footer a#npm-loves-you {
 }
 footer #footer-logo {
   float: right;
+  opacity: 0.3;
 }
 footer #wombat {
   position: absolute;

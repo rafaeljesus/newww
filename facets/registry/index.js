@@ -11,9 +11,17 @@ exports.register = function Regsitry (facet, options, next) {
   });
 
   facet.route({
-    path: "/package/{package}/{version?}",
+    path: "/package/{package}",
     method: "GET",
     handler: require('./show-package')
+  });
+
+  facet.route({
+    path: "/packages/{package}",
+    method: "GET",
+    handler: function (request, reply) {
+      return reply.redirect("/package/" + request.params.package).code(301);
+    }
   });
 
   facet.route({

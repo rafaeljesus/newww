@@ -1,23 +1,23 @@
 <hgroup>
-  <h1>{{t "user.login.title" lang}}</h1>
-  <h2>{{t "user.login.subtitle" lang}}</h2>
+  <h1>{{t "user.login.title"}}</h1>
+  <h2>{{t "user.login.subtitle"}}</h2>
 <hgroup>
 
 {{#if error}}
   {{#compare error.type 'missing'}}
-    <p class='error'>{{t "user.login.error.missing" lang}}</p>
+    <p class='error'>{{t "user.login.error.missing"}}</p>
   {{else}}
-    <p class='error'>{{t "user.login.error.invalid" lang}}</p>
-    <p>{{{t "user.login.error.invalidContext" lang}}}<code>{{error.errId}}</code></p>
+    <p class='error'>{{t "user.login.error.invalid"}}</p>
+    <p>{{{t "user.login.error.invalidContext"}}}<code>{{error.errId}}</code></p>
   {{/compare}}
 {{/if}}
 
 <form class="login-forms" action='' method='post'>
-  <label for="name">{{t "user.login.form.username" lang}}</label>
+  <label for="name">{{t "user.login.form.username"}}</label>
   <input type="text" id="name" name="name" />
-  <label for="password">{{t "user.login.form.password" lang}}</label>
+  <label for="password">{{t "user.login.form.password"}}</label>
   <input type="password" id="password" name="password" />
-  <input type="submit" value="{{t "user.login.form.submit" lang}}" />
-  <p><a href="/forgot">{{t "user.login.form.forgot" lang}}</a> | <a href="/signup">{{t "user.login.form.signup" lang}}</a></p>
+  <input type="submit" value="{{t "user.login.form.submit"}}" />
+  <p><a href="/forgot">{{t "user.login.form.forgot"}}</a> | <a href="/signup">{{t "user.login.form.signup"}}</a></p>
   <input type="hidden" name="crumb" value="{{crumb}}"/>
 </form>

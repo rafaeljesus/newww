@@ -644,6 +644,18 @@ nav {
     z-index: 12;
   }
 }
+nav h2 a {
+  margin: 0;
+  text-decoration: none;
+  border: none;
+  opacity: 1;
+  color: rgba(255,255,255,0.6);
+  padding-right: 100px;
+}
+nav h2 a:hover {
+  text-decoration: none;
+  border: none;
+}
 nav a {
   display: inline-block;
   line-height: 36px;

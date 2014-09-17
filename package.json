@@ -36,6 +36,7 @@
     "murmurhash": "0.0.2",
     "nib": "^1.0.2",
     "node-uuid": "^1.4.1",
+    "npm-expansions": "^1.0.0",
     "npm-typeahead": "^0.2.0",
     "npm2es": "git://github.com/npm/npm2es",
     "numbat-emitter": "^1.0.0",

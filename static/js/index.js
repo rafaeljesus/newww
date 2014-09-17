@@ -1,14 +1,23 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.$ = require("jquery");
+<<<<<<< HEAD
 window.highlight = require("./highlight");
 window.star = require("./star")();
+=======
+window.highlight = require("./highlight")
+window.npm_expansions = require("./npm-expansions")
+>>>>>>> npm expansions! yay!
 
 $(function () {
   console.log("DOM is ready");
   require("./update-package-issue-count")();
 });
 
+<<<<<<< HEAD
 },{"./highlight":2,"./star":3,"./update-package-issue-count":4,"jquery":15}],2:[function(require,module,exports){
+=======
+},{"./highlight":2,"./npm-expansions":3,"./update-package-issue-count":4,"jquery":15}],2:[function(require,module,exports){
+>>>>>>> npm expansions! yay!
 var Highlight = require("highlight.js/lib/highlight");
 var hl = module.exports = new Highlight();
 
@@ -25,6 +34,7 @@ hl.registerLanguage("xml", require('highlight.js/lib/languages/xml'));
 hl.initHighlightingOnLoad();
 
 },{"highlight.js/lib/highlight":5,"highlight.js/lib/languages/bash":6,"highlight.js/lib/languages/coffeescript":7,"highlight.js/lib/languages/css":8,"highlight.js/lib/languages/glsl":9,"highlight.js/lib/languages/http":10,"highlight.js/lib/languages/javascript":11,"highlight.js/lib/languages/json":12,"highlight.js/lib/languages/typescript":13,"highlight.js/lib/languages/xml":14}],3:[function(require,module,exports){
+<<<<<<< HEAD
 // This is the module for starring and unstarring modules in the browser.
 // It uses a localStorage cache to maintain a list of recent starrings
 // and unstarrings, while the remote registry cache catches up.
@@ -92,6 +102,32 @@ star.onError = function (xhr, status, error) {
 }
 
 },{"jquery":15}],4:[function(require,module,exports){
+=======
+window.expansions = require("npm-expansions")
+var $ = require("jquery")
+var fadeDuration = 200
+var clickCount = -1
+
+var updateExpansion = function(event) {
+
+  if (++clickCount > 10) {
+    return window.location = "https://github.com/npm/npm-expansions"
+  }
+
+  var expansion = expansions[Math.floor(Math.random()*expansions.length)]
+  $("#npm-expansions").fadeOut(fadeDuration, function() {
+    $(this).text(expansion).fadeIn(fadeDuration)
+  })
+  return false
+}
+
+$(function(){
+  updateExpansion()
+  $("#npm-expansions").on('click', updateExpansion)
+})
+
+},{"jquery":15,"npm-expansions":16}],4:[function(require,module,exports){
+>>>>>>> npm expansions! yay!
 module.exports = function(){
 
   window.issuesEl = $("#issues")
@@ -10755,5 +10791,39 @@ if ( typeof noGlobal === strundefined ) {
 return jQuery;
 
 }));
+
+},{}],16:[function(require,module,exports){
+module.exports=[
+  "Nacho Pizza Marinade",
+  "Nancy's Preferred Machete",
+  "Napping Panda Missionaries",
+  "Narwhals Poke Mammals",
+  "Neatly Positioned Magazines",
+  "Nerds Produce Money",
+  "Nerdy Pun Mavens",
+  "Never Panic Much",
+  "Never Poke Monkeys",
+  "Never Punch Manticores",
+  "New Powerful Machines",
+  "Newly Paranoid Maintainers",
+  "Nice People Matter",
+  "Nicer Perusal Method",
+  "Nifty Pun Master",
+  "No Potty Mouths",
+  "No Problem, Meatbag",
+  "No Problematic Moustaches",
+  "No Proscribed Meaning",
+  "Node Package Maid",
+  "Node Package Manager",
+  "Node Packaged Modules",
+  "Node Powered Missiles",
+  "Northern Pileated Marmoset",
+  "Norwegian Polka Music",
+  "Notable Pottery Manufacturer",
+  "Now Patented, Motherfuckers",
+  "Now Printing Money",
+  "Now Proudly Macho",
+  "nom, please more"
+]
 
 },{}]},{},[1]);

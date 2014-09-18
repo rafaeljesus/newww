@@ -89,7 +89,7 @@ module.exports = function package (data, cb) {
     data.starCount = Object.keys(data.users).length
   }
 
-  removeRedundantHeadingFromReadme(data)
+  removeSuperfluousContentFromReadme(data)
 
   return cb(null, data);
 }
@@ -310,15 +310,23 @@ function processDependencies (dependencies, max) {
   return deps;
 }
 
-// If the README's first H1 element contains text that
-// matches the package name, then remove the element.
-function removeRedundantHeadingFromReadme (data) {
+function removeSuperfluousContentFromReadme (data) {
   if (typeof data.readme !== "string") return
   var $ = cheerio.load(data.readme)
+
+  // Remove first H1 if it matches package name
   var h1 = $('h1').first()
   var namePattern = new RegExp(data.name, "i")
   if (h1 && h1.text() && h1.text().match(namePattern)) {
     h1.remove()
     data.readme = $.html()
   }
+
+  // Remove nodei.co badges
+  var badges = $("a[href*='//nodei.co']")
+  if (badges) {
+    badges.remove()
+    data.readme = $.html()
+  }
+
 }

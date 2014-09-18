@@ -80,6 +80,12 @@ describe('Modifying the package before sending to the template', function () {
     done()
   });
 
+  it('removes shields.io badges from the README', function (done) {
+    expect(p.readmeSrc).to.include("img.shields.io")
+    expect(p.readme).to.not.include("img.shields.io")
+    done()
+  });
+
   it('turns relative URLs into real URLs', function (done) {
     expect(p.readme).to.include('/blob/master')
     done();

@@ -323,9 +323,24 @@ function removeSuperfluousContentFromReadme (data) {
   }
 
   // Remove nodei.co badges
-  var badges = $("a[href*='//nodei.co']")
-  if (badges) {
-    badges.remove()
+  var nodeicoBadges = $("a[href*='//nodei.co']")
+  if (nodeicoBadges) {
+    nodeicoBadges.remove()
+    data.readme = $.html()
+  }
+
+  // Remove shields.io badges, but save them in the context
+  // for potentional display elsewhere on the page
+  var shields = $("a:has(img[src*='img.shields.io'])")
+  if (shields) {
+    data.badges = []
+    shields.each(function(i, el) {
+      data.badges.push({
+        href: $(el).attr('href'),
+        img: $(el).find('img').attr('src')
+      })
+    })
+    shields.remove()
     data.readme = $.html()
   }
 

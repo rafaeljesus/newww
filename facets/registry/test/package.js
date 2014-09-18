@@ -2,7 +2,8 @@ var Lab = require('lab'),
     describe = Lab.experiment,
     before = Lab.before,
     it = Lab.test,
-    expect = Lab.expect;
+    expect = Lab.expect,
+    cheerio = require("cheerio");
 
 var server, p, source, cookieCrumb;
 var oriReadme = require('./fixtures/fake.json').readme;
@@ -68,6 +69,15 @@ describe('Modifying the package before sending to the template', function () {
     expect(p.readmeSrc).to.equal(oriReadme)
     expect(p.readme).to.include('<a href=')
     done();
+  });
+
+  it('removes the first H1 element from the README, but not subsequent H1s', function (done) {
+    expect(p.readmeSrc).to.include("# fake")
+    expect(p.readmeSrc).to.include("# Another H1")
+    var $ = cheerio.load(p.readme)
+    expect($("h1").length).to.equal(1)
+    expect($("h1").text()).to.equal("Another H1")
+    done()
   });
 
   it('turns relative URLs into real URLs', function (done) {

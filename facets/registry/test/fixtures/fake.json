@@ -88,7 +88,7 @@
     "fake",
     "omg so fake"
   ],
-  "readme": "# fake\n\nNot actually a package. In fact, it's not even real. [Here's a link](http://somelink.com/somwhere).\n\n[And here's a relative link](somewhere.md#bugs)\n",
+  "readme": "# fake\n\nNot actually a package. In fact, it's not even real. [Here's a link](http://somelink.com/somwhere).\n\n[And here's a relative link](somewhere.md#bugs)\nAnd here comes some prose\n\n# Another H1",
   "readmeFilename": "README.md",
   "homepage": "https://github.com/boom/fake",
   "bugs": {

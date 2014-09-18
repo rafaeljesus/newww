@@ -86,6 +86,12 @@ describe('Modifying the package before sending to the template', function () {
     done()
   });
 
+  it('removes nodei.co badges from the README', function (done) {
+    expect(p.readmeSrc).to.include("nodei.co")
+    expect(p.readme).to.not.include("nodei.co")
+    done()
+  });
+
   it('turns relative URLs into real URLs', function (done) {
     expect(p.readme).to.include('/blob/master')
     done();

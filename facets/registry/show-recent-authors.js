@@ -46,8 +46,6 @@ module.exports = function RecentAuthors (request, reply) {
       log.warn(uuid.v1() + ' ' + Hapi.error.internal('error retrieving recent authors'), err);
     }
 
-    console.log(authors)
-
     var items = authors.filter(function (a) { return a.name });
 
     var authorOpts = {

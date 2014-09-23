@@ -11,7 +11,7 @@ exports.register = function Regsitry (facet, options, next) {
   });
 
   facet.route({
-    path: "/package/{package}",
+    path: "/package/{package}/{version?}",
     method: "GET",
     handler: require('./show-package')
   });

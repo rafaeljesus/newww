@@ -1,23 +1,15 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 window.$ = require("jquery");
-<<<<<<< HEAD
 window.highlight = require("./highlight");
 window.star = require("./star")();
-=======
-window.highlight = require("./highlight")
 window.npm_expansions = require("./npm-expansions")
->>>>>>> npm expansions! yay!
 
 $(function () {
   console.log("DOM is ready");
   require("./update-package-issue-count")();
 });
 
-<<<<<<< HEAD
-},{"./highlight":2,"./star":3,"./update-package-issue-count":4,"jquery":15}],2:[function(require,module,exports){
-=======
-},{"./highlight":2,"./npm-expansions":3,"./update-package-issue-count":4,"jquery":15}],2:[function(require,module,exports){
->>>>>>> npm expansions! yay!
+},{"./highlight":2,"./npm-expansions":3,"./star":4,"./update-package-issue-count":5,"jquery":16}],2:[function(require,module,exports){
 var Highlight = require("highlight.js/lib/highlight");
 var hl = module.exports = new Highlight();
 
@@ -33,11 +25,32 @@ hl.registerLanguage("xml", require('highlight.js/lib/languages/xml'));
 
 hl.initHighlightingOnLoad();
 
-},{"highlight.js/lib/highlight":5,"highlight.js/lib/languages/bash":6,"highlight.js/lib/languages/coffeescript":7,"highlight.js/lib/languages/css":8,"highlight.js/lib/languages/glsl":9,"highlight.js/lib/languages/http":10,"highlight.js/lib/languages/javascript":11,"highlight.js/lib/languages/json":12,"highlight.js/lib/languages/typescript":13,"highlight.js/lib/languages/xml":14}],3:[function(require,module,exports){
-<<<<<<< HEAD
+},{"highlight.js/lib/highlight":6,"highlight.js/lib/languages/bash":7,"highlight.js/lib/languages/coffeescript":8,"highlight.js/lib/languages/css":9,"highlight.js/lib/languages/glsl":10,"highlight.js/lib/languages/http":11,"highlight.js/lib/languages/javascript":12,"highlight.js/lib/languages/json":13,"highlight.js/lib/languages/typescript":14,"highlight.js/lib/languages/xml":15}],3:[function(require,module,exports){
+window.expansions = require("npm-expansions")
+var $ = require("jquery")
+var fadeDuration = 200
+var clickCount = -1
+
+var updateExpansion = function(event) {
+
+  if (++clickCount > 10) {
+    return window.location = "https://github.com/npm/npm-expansions"
+  }
+
+  var expansion = expansions[Math.floor(Math.random()*expansions.length)]
+  $("#npm-expansions").fadeOut(fadeDuration, function() {
+    $(this).text(expansion).fadeIn(fadeDuration)
+  })
+  return false
+}
+
+$(function(){
+  updateExpansion()
+  $("#npm-expansions").on('click', updateExpansion)
+})
+
+},{"jquery":16,"npm-expansions":17}],4:[function(require,module,exports){
 // This is the module for starring and unstarring modules in the browser.
-// It uses a localStorage cache to maintain a list of recent starrings
-// and unstarrings, while the remote registry cache catches up.
 
 var $ = require("jquery");
 
@@ -53,8 +66,8 @@ star.init = function() {
 
   star.form.checkbox.on('change', star.onChange)
 
-  // Check the checkbox if we arrived from the login page and there's a #star
-  // fragment in the URL
+  // Check the checkbox if we arrived from the login page
+  // and there's a #star fragment in the URL
   if (String(document.referrer).match("/login") && String(location.hash).match("#star")) {
     console.log("post-login starring...")
     star.form.checkbox.prop("checked", true);
@@ -88,46 +101,21 @@ star.onChange = function() {
     .error(star.onError)
 }
 
-star.onDone = function (resp) {
-  // console.log(resp)
+star.onDone = function (data) {
+  // console.log(data)
 }
 
 star.onError = function (xhr, status, error) {
+  // Redirect to login page if we got a 403
   if (xhr && xhr.status && Number(xhr.status) === 403) {
     window.location = "/login?done="+location.pathname+"#star"
     return
-  } else {
-    console.error(xhr)
-  }
-}
-
-},{"jquery":15}],4:[function(require,module,exports){
-=======
-window.expansions = require("npm-expansions")
-var $ = require("jquery")
-var fadeDuration = 200
-var clickCount = -1
-
-var updateExpansion = function(event) {
-
-  if (++clickCount > 10) {
-    return window.location = "https://github.com/npm/npm-expansions"
   }
 
-  var expansion = expansions[Math.floor(Math.random()*expansions.length)]
-  $("#npm-expansions").fadeOut(fadeDuration, function() {
-    $(this).text(expansion).fadeIn(fadeDuration)
-  })
-  return false
+  console.error(xhr)
 }
 
-$(function(){
-  updateExpansion()
-  $("#npm-expansions").on('click', updateExpansion)
-})
-
-},{"jquery":15,"npm-expansions":16}],4:[function(require,module,exports){
->>>>>>> npm expansions! yay!
+},{"jquery":16}],5:[function(require,module,exports){
 module.exports = function(){
 
   window.issuesEl = $("#issues")
@@ -170,7 +158,7 @@ module.exports = function(){
   }
 }
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var Highlight = function() {
 
   /* Utility functions */
@@ -870,7 +858,7 @@ var Highlight = function() {
   };
 };
 module.exports = Highlight;
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 module.exports = function(hljs) {
   var VAR = {
     className: 'variable',
@@ -933,7 +921,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = function(hljs) {
   var KEYWORDS = {
     keyword:
@@ -1067,7 +1055,7 @@ module.exports = function(hljs) {
     ])
   };
 };
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 module.exports = function(hljs) {
   var IDENT_RE = '[a-zA-Z-][a-zA-Z0-9_-]*';
   var FUNCTION = {
@@ -1171,7 +1159,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     keywords: {
@@ -1265,7 +1253,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     illegal: '\\S',
@@ -1299,7 +1287,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['js'],
@@ -1371,7 +1359,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = function(hljs) {
   var LITERALS = {literal: 'true false null'};
   var TYPES = [
@@ -1409,7 +1397,7 @@ module.exports = function(hljs) {
     illegal: '\\S'
   };
 };
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 module.exports = function(hljs) {
   return {
     aliases: ['ts'],
@@ -1496,7 +1484,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 module.exports = function(hljs) {
   var XML_IDENT_RE = '[A-Za-z0-9\\._:-]+';
   var PHP = {
@@ -1600,7 +1588,7 @@ module.exports = function(hljs) {
     ]
   };
 };
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/
@@ -10792,7 +10780,7 @@ return jQuery;
 
 }));
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports=[
   "Nacho Pizza Marinade",
   "Nacho Portion Monitor",

@@ -17,7 +17,7 @@ module.exports = function (request, reply) {
   var timer = { start: Date.now() };
 
   if (request.params.version) {
-    reply.redirect('/package/' + request.params.package)
+    return reply.redirect('/package/' + request.params.package)
   }
 
   var opts = {

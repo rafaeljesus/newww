@@ -1055,8 +1055,11 @@ header #site-search-submit:hover {
   background: #cb3837 url("../img/ico-search-hover.png") no-repeat 50% 50%;
 }
 #user-info {
-  min-width: 140px;
-  float: right;
+  position: absolute;
+  top: 0;
+  right: 20px;
+  float: none;
+  clear: both;
 }
 #user-info img {
   float: right;

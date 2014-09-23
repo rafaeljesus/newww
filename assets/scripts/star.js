@@ -1,6 +1,4 @@
 // This is the module for starring and unstarring modules in the browser.
-// It uses a localStorage cache to maintain a list of recent starrings
-// and unstarrings, while the remote registry cache catches up.
 
 var $ = require("jquery");
 
@@ -16,8 +14,8 @@ star.init = function() {
 
   star.form.checkbox.on('change', star.onChange)
 
-  // Check the checkbox if we arrived from the login page and there's a #star
-  // fragment in the URL
+  // Check the checkbox if we arrived from the login page
+  // and there's a #star fragment in the URL
   if (String(document.referrer).match("/login") && String(location.hash).match("#star")) {
     console.log("post-login starring...")
     star.form.checkbox.prop("checked", true);
@@ -51,15 +49,16 @@ star.onChange = function() {
     .error(star.onError)
 }
 
-star.onDone = function (resp) {
-  // console.log(resp)
+star.onDone = function (data) {
+  // console.log(data)
 }
 
 star.onError = function (xhr, status, error) {
+  // Redirect to login page if we got a 403
   if (xhr && xhr.status && Number(xhr.status) === 403) {
     window.location = "/login?done="+location.pathname+"#star"
     return
-  } else {
-    console.error(xhr)
   }
+
+  console.error(xhr)
 }

@@ -12,10 +12,6 @@ module.exports = [
     options: config.csp
   },
   {
-    plugin: require('../facets/company'),
-    options: config.company
-  },
-  {
     plugin: require('../facets/registry'),
     options: config.search
   },

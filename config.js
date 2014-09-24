@@ -16,10 +16,11 @@ config.server = {
     engines: {
       hbs: require('handlebars')
     },
-    // layoutPath: path.resolve(__dirname, 'templates/layout'),
-    // layout: 'default',
+    path: path.resolve(__dirname, 'templates'),
     partialsPath: path.resolve(__dirname, 'hbs-partials'),
-    helpersPath: path.resolve(__dirname, 'hbs-helpers')
+    helpersPath: path.resolve(__dirname, 'hbs-helpers'),
+    layoutPath: path.resolve(__dirname, 'templates/layouts'),
+    layout: 'default'
   },
   cache: {
     engine: require('catbox-redis'),

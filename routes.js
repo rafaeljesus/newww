@@ -69,4 +69,78 @@ var routes = module.exports = [
     method: "GET",
     handler: require('./facets/company/show-npme-beta')
   },
+
+  {
+    path: "/package/{package}/{version?}",
+    method: "GET",
+    handler: require('./facets/registry/show-package')
+  },
+
+  {
+    path: "/packages/{package}",
+    method: "GET",
+    handler: function (request, reply) {
+      return reply.redirect("/package/" + request.params.package).code(301);
+    }
+  },
+
+  {
+    path: "/browse/{p*}",
+    method: "GET",
+    handler: require('./facets/registry/show-browse')
+  },
+
+  {
+    path: "/keyword/{kw}",
+    method: "GET",
+    handler: function (request, reply) {
+      return reply.redirect('/browse/keyword/' + request.params.kw).code(301);
+    }
+  },
+
+  {
+    path: "/recent-authors/{since?}",
+    method: "GET",
+    handler: require('./facets/registry/show-recent-authors')
+  },
+
+  {
+    path: "/star",
+    method: "POST",
+    config: {
+      handler: require('./facets/registry/show-star'),
+      plugins: {
+        crumb: {
+          source: 'payload',
+          restful: true
+        }
+      }
+    }
+  },
+
+  {
+    path: "/star",
+    method: "GET",
+    config: {
+      handler: require('./facets/registry/show-star'),
+      auth: {
+        mode: 'required'
+      },
+      plugins: { 'hapi-auth-cookie': {
+        redirectTo: '/login'
+      }}
+    }
+  },
+
+  {
+    path: "/search",
+    method: "GET",
+    handler: require('./facets/registry/show-search')(config.search)
+  },
+
+  {
+    method: '*',
+    path: '/{p*}',
+    handler: require('./facets/registry/show-fallback')
+  },
 ];

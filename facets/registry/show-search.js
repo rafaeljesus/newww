@@ -101,7 +101,7 @@ module.exports = function (options) {
         opts.errorType = 'internal';
         log.error(opts.errId + ' ' + Hapi.error.internal('elasticsearch failed searching ' + request.query.q), error);
 
-        return reply.view('error', opts).code(500);
+        return reply.view('registry/error', opts).code(500);
       }
 
       timer.end = Date.now();
@@ -109,7 +109,7 @@ module.exports = function (options) {
 
       addMetric({ name: 'search', search: request.query.q });
 
-      reply.view("search", {
+      reply.view('registry/search', {
         title: 'results for ',
         page: page,
         q: request.query.q,

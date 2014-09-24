@@ -4,27 +4,36 @@ var commaIt = require('number-grouper'),
     Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
-
+    metrics = require('newww-metrics')(),
+    parseLanguageHeader = require('accept-language-parser').parse,
+    fmt = require("util").format;
 
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };
 
   load(request, function (err, cached) {
 
+    // Use commas, periods, or spaces depending on user language
+    try {
+      var lang = parseLanguageHeader(request.headers['accept-language'])[0].code
+      if (lang === "en") lang = "en-gb" // numeral.js "bug"
+      var sep = require(fmt("numeral/languages/%s", lang)).delimiters.thousands
+    } catch(err) {
+      var sep = " "
+    }
+
     var opts = {
       user: request.auth.credentials,
-      title: 'npm',
       updated: cached.updated || [],
       depended: cached.depended || [],
       starred: cached.starred || [],
       authors: cached.authors || [],
       downloads: {
-        day: commaIt(cached.downloads.day, {sep: ' '}),
-        week: commaIt(cached.downloads.week, {sep: ' '}),
-        month: commaIt(cached.downloads.month, {sep: ' '}),
+        day: commaIt(cached.downloads.day, {sep: sep}),
+        week: commaIt(cached.downloads.week, {sep: sep}),
+        month: commaIt(cached.downloads.month, {sep: sep}),
       },
-      totalPackages: commaIt(cached.totalPackages, {sep: ' '}),
+      totalPackages: commaIt(cached.totalPackages, {sep: sep}),
       hiring: request.server.methods.hiring.getRandomWhosHiring()
     };
 

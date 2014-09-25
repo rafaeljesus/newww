@@ -16,10 +16,11 @@ config.server = {
     engines: {
       hbs: require('handlebars')
     },
-    path: path.resolve(__dirname, 'templates'),
-    partialsPath: path.resolve(__dirname, 'hbs-partials'),
-    helpersPath: path.resolve(__dirname, 'hbs-helpers'),
-    layoutPath: path.resolve(__dirname, 'templates/layouts'),
+    basePath: __dirname,
+    path: './templates',
+    helpersPath: './templates/helpers',
+    layoutPath: './templates/layouts',
+    partialsPath: './templates/partials',
     layout: 'default'
   },
   cache: {

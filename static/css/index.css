@@ -2173,6 +2173,7 @@ h2.h2-toggle .h2-toggle-list li a.active {
 .box-action {
   border-top: 1px solid rgba(0,0,0,0.1);
   padding: 14px;
+  text-transformation: lowercase;
 }
 .list .box-action {
   border-top: 0;

@@ -3,7 +3,7 @@
 var deck = require('deck'),
     Hapi = require('hapi');
 
-var whos_hiring = require('../../static/whos_hiring.json');
+var whos_hiring = require('./whos_hiring.json');
 
 exports.register = function (service, options, next) {
 

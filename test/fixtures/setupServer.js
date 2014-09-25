@@ -18,6 +18,10 @@ module.exports = function (done) {
   server.pack.register(require('hapi-auth-cookie'), function (err) {
     if (err) throw err;
 
+    server.app.cache = server.cache('sessions', {
+      expiresIn: 30
+    });
+
     server.auth.strategy('session', 'cookie', 'try', {
       password: '12345'
     });
@@ -28,7 +32,8 @@ module.exports = function (done) {
     }, function (err) {
       server.route(require('../../routes'));
 
-      return done();
+      // manually start the cache
+      server.app.cache._cache.connection.start(done);
     });
 
   });

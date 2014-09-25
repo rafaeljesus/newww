@@ -1,4 +1,4 @@
-exports.dependendents = [ { name: 'chrome-rdebug',
+module.exports = [ { name: 'chrome-rdebug',
     description: 'Full implementation of the chrome/webkit remote debugging protocol. Implemented to use as the bridge for AppJS v2.0',
     url: '/package/chrome-rdebug' },
   { name: 'clf',
@@ -219,4 +219,4 @@ exports.dependendents = [ { name: 'chrome-rdebug',
     url: '/package/unmagnify' },
   { name: 'zeyos-tasksync',
     description: 'Export/import ZeyOS tasks as YAML for easy editing',
-    url: '/package/zeyos-tasksync' } ]
+    url: '/package/zeyos-tasksync' } ];

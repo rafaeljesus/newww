@@ -7,7 +7,7 @@ var Lab = require('lab'),
 var server, serverResponse, source;
 
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
@@ -35,7 +35,7 @@ describe('Accessing fallback URLs', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('notfound');
+      expect(source.template).to.equal('registry/notfound');
       done();
     });
   });

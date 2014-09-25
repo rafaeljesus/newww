@@ -7,7 +7,7 @@ var Lab = require('lab'),
 var server, p, source;
 
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
@@ -35,7 +35,7 @@ describe('getting to the browse page', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('error');
+      expect(source.template).to.equal('registry/error');
       expect(source.context.errId).to.exist;
       expect(source.context.errorType).to.equal('browseUrl');
       done();
@@ -43,15 +43,15 @@ describe('getting to the browse page', function () {
   });
 
   it('understands the page query and uses it properly', function (done) {
-    var pageNum = 3;
+    var pageNum = 2;
     var opts = {
       url: '/browse?page=' + pageNum
     };
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('browse');
-      expect(source.context.browse.page).to.equal(pageNum + 1);
+      expect(source.template).to.equal('registry/browse');
+      expect(source.context.browse.page).to.equal(pageNum);
       expect(source.context.browse.nextPage).to.equal(pageNum + 1);
       expect(source.context.browse.prevPage).to.equal(pageNum - 1);
       done();
@@ -66,7 +66,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('all');
         expect(source.context.browse.arg).to.not.exist;
         done();
@@ -80,7 +80,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('updated');
         expect(source.context.browse.arg).to.not.exist;
         done();
@@ -94,7 +94,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('keyword');
         expect(source.context.browse.arg).to.not.exist;
         done();
@@ -108,7 +108,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('keyword');
         expect(source.context.browse.arg).to.equal('"grunt"');
         done();
@@ -122,7 +122,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('author');
         expect(source.context.browse.arg).to.not.exist;
         done();
@@ -136,7 +136,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('author');
         expect(source.context.browse.arg).to.equal('mikeal');
         done();
@@ -150,7 +150,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('depended');
         expect(source.context.browse.arg).to.not.exist;
         done();
@@ -164,7 +164,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('depended');
         expect(source.context.browse.arg).to.equal('request');
         done();
@@ -178,7 +178,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('star');
         expect(source.context.browse.arg).to.not.exist;
         done();
@@ -192,7 +192,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('star');
         expect(source.context.browse.arg).to.equal('request');
         done();
@@ -206,7 +206,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('userstar');
         expect(source.context.browse.arg).to.not.exist;
         done();
@@ -220,7 +220,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('browse');
+        expect(source.template).to.equal('registry/browse');
         expect(source.context.browse.type).to.equal('userstar');
         expect(source.context.browse.arg).to.equal('mikeal');
         done();

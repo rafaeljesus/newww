@@ -9,7 +9,7 @@ var server, cookieCrumb,
     user = { name: 'fakeuser' };
 
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 });
 
 describe('Accessing the star page via GET', function () {
@@ -73,7 +73,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       method: 'POST',
       payload: {
         name: pkg,
-        isStarred: true,
+        isStarred: 'true',
         crumb: cookieCrumb
       },
       headers: { cookie: 'crumb=' + cookieCrumb }
@@ -92,7 +92,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       method: 'POST',
       payload: {
         name: pkg,
-        isStarred: false,
+        isStarred: 'true',
         crumb: cookieCrumb
       },
       credentials: user,
@@ -112,7 +112,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       method: 'POST',
       payload: {
         name: pkg,
-        isStarred: true,
+        isStarred: 'false',
         crumb: cookieCrumb
       },
       credentials: user,

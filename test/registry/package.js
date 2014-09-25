@@ -6,11 +6,11 @@ var Lab = require('lab'),
     cheerio = require("cheerio");
 
 var server, p, source, cookieCrumb;
-var oriReadme = require('./fixtures/fake.json').readme;
+var oriReadme = require('../fixtures/fake.json').readme;
 
 // prepare the server
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
@@ -34,13 +34,13 @@ describe('Retreiving packages from the registry', function () {
 
       expect(resp.statusCode).to.equal(200);
       expect(source.context.package.name).to.equal(pkgName);
-      expect(resp.result).to.include('data-crumb="' + cookieCrumb + '"');
+      expect(resp.result).to.include('value="' + cookieCrumb + '"');
       done();
     });
   });
 
   it('sends the package to the package-page template', function (done) {
-    expect(source.template).to.equal('package-page');
+    expect(source.template).to.equal('registry/package-page');
     done();
   });
 });
@@ -114,7 +114,7 @@ describe('Modifying the package before sending to the template', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('unpublished-package-page');
+      expect(source.template).to.equal('registry/unpublished-package-page');
       expect(source.context.package.unpubFromNow).to.exist;
       done();
     });

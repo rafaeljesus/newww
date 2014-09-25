@@ -77,5 +77,8 @@ exports.register = function User (facet, options, next) {
 };
 
 exports.register.attributes = {
-  pkg: require('./package.json')
+  pkg: {
+    name: "newww-facet-user",
+    version: "1.0.0"
+  }
 };

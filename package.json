@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node server.js",
     "test": "lab -vC; node allPlugins t",
-    "install": "node allPlugins",
     "prepublish": "gulp build",
     "dev": "gulp dev",
     "dev-db": "node dev/go.js"
@@ -43,7 +42,19 @@
     "numbat-emitter": "^1.0.0",
     "schemeless": "^1.0.0",
     "scooter": "^1.2.0",
-    "stylus": "^0.45.0"
+    "stylus": "^0.45.0",
+    "number-grouper": "0.0.1",
+    "stripe": "^2.7.3",
+    "elasticsearch": "^2.2.0",
+    "github-url-from-git": "^1.1.1",
+    "gravatar": "^1.0.6",
+    "marked": "^0.3.2",
+    "moment": "^2.6.0",
+    "number-grouper": "0.0.1",
+    "sanitizer": "^0.1.1",
+    "nodemailer": "^1.0.0",
+    "nodemailer-ses-transport": "^1.1.0",
+    "npm-user-validate": "^0.1.0"
   },
   "devDependencies": {
     "bistre": "^1.0.0",
@@ -56,13 +67,15 @@
     "gulp-streamify": "0.0.5",
     "gulp-stylus": "^1.0.0",
     "gulp-uglify": "^0.3.0",
-    "lab": "^3.1.1",
+    "lab": "^3.2.1",
     "npm2es": "git://github.com/npm/npm2es",
     "numbat-collector": "0.0.5",
     "once": "^1.3.0",
     "replicate": "^0.2.0",
     "request": "^2.36.0",
     "touch": "0.0.3",
-    "vinyl-source-stream": "^0.1.1"
+    "vinyl-source-stream": "^0.1.1",
+    "hapi-auth-cookie": "^1.2.0",
+    "sinon": "^1.10.3"
   }
 }

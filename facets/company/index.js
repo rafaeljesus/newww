@@ -1,9 +1,11 @@
 var path = require('path');
 var internals = {};
 
-exports.register = function Company (facet, options, next) {
+exports.register = function Company(facet, options, next) {
   facet.views({
-    engines: { hbs: require('handlebars') },
+    engines: {
+      hbs: require('handlebars')
+    },
     path: path.resolve(__dirname, 'templates'),
     layoutPath: path.resolve(__dirname, '../../templates/layouts'),
     layout: 'default',
@@ -64,5 +66,8 @@ exports.register = function Company (facet, options, next) {
 };
 
 exports.register.attributes = {
-  pkg: require('./package.json')
+  pkg: {
+    name: "newww-facet-company",
+    version: "1.0.0"
+  }
 };

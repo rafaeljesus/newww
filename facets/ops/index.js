@@ -35,8 +35,12 @@ exports.register = function Company (facet, options, next) {
 };
 
 exports.register.attributes = {
-  pkg: require('./package.json')
+  pkg: {
+    name: "newww-facet-ops",
+    version: "1.0.0"
+  }
 };
+
 
 // ===== functions =====
 

@@ -88,5 +88,8 @@ exports.register = function Regsitry (facet, options, next) {
 };
 
 exports.register.attributes = {
-  pkg: require('./package.json')
+  pkg: {
+    name: "newww-facet-registry",
+    version: "1.0.0"
+  }
 };

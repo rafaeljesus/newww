@@ -1,4 +1,6 @@
 var config = require('./config');
+var ops = require('./facets/ops');
+
 
 var forceAuthConfig = function (handler) {
   return {
@@ -241,4 +243,23 @@ var routes = module.exports = [
     handler: require('./facets/user/show-forgot')(config.user.mail)
   },
 
+  // === OPS ===
+
+  {
+    path: "/ping",
+    method: "GET",
+    handler: ops.ping
+  },
+
+  {
+    path: "/status",
+    method: "GET",
+    handler: ops.status(require('./package.json').version)
+  },
+
+  {
+    path: "/-/csplog",
+    method: "POST",
+    handler: ops.csplog
+  }
 ];

@@ -12,10 +12,6 @@ module.exports = [
     options: config.csp
   },
   {
-    plugin: require('../facets/ops'),
-    options: require('../package.json').version
-  },
-  {
     plugin: require('../services/user'),
     options: config.couch
   },

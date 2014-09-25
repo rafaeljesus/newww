@@ -7,7 +7,7 @@ var Lab = require('lab'),
 var server, serverResponse, source, ctx;
 
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
@@ -24,7 +24,7 @@ describe('Getting to the npme beta page', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('npme-beta');
+      expect(source.template).to.equal('company/npme-beta');
       done();
     });
   });
@@ -44,7 +44,7 @@ describe('Getting to the npme beta thanks page', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('npme-beta-thanks');
+      expect(source.template).to.equal('company/npme-beta-thanks');
       done();
     });
   });

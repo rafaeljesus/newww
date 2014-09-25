@@ -1,5 +1,5 @@
-var browse = require('../../facets/company/test/fixtures/browseData'),
-    whosHiring = require('../../facets/company/test/fixtures/whosHiring');
+var browse = require('./browseData'),
+    whosHiring = require('./whosHiring');
 
 module.exports = function (server) {
   return {

@@ -7,7 +7,7 @@ var Lab = require('lab'),
 var server, serverResponse, source, ctx;
 
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
@@ -24,7 +24,7 @@ describe('Getting to the home page', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('about');
+      expect(source.template).to.equal('company/about');
       done();
     });
   });

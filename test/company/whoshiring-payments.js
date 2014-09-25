@@ -7,7 +7,7 @@ var Lab = require('lab'),
 var server, serverResponse, source, cookieCrumb;
 
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
@@ -15,7 +15,7 @@ before(function (done) {
   });
 });
 
-describe('Accessing the whoshiring page', function () {
+describe('Accessing the joinwhoshiring page', function () {
   it('gets there with ease', function (done) {
     var opts = {
       url: '/joinwhoshiring'
@@ -28,7 +28,7 @@ describe('Accessing the whoshiring page', function () {
       cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
 
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('payments');
+      expect(source.template).to.equal('company/payments');
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });

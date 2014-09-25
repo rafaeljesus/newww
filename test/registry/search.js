@@ -1,10 +1,12 @@
 var Lab = require('lab'),
+    lab = exports.lab = Lab.script(),
+    describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
+    it = lab.test,
+    expect = Lab.expect,
     sinon = require('sinon'),
-    elasticsearch = require('elasticsearch'),
-    describe = Lab.experiment,
-    before = Lab.before,
-    it = Lab.test,
-    expect = Lab.expect;
+    elasticsearch = require('elasticsearch');
 
 var fakeSearch = require('../fixtures/fake-search.json'),
     server;

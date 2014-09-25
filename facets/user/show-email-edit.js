@@ -12,6 +12,8 @@ var from, host, devMode, timer = {};
 
 module.exports = function (options) {
   return function (request, reply) {
+
+    console.log('========')
     timer.start = Date.now();
 
     var opts = {
@@ -34,6 +36,8 @@ module.exports = function (options) {
       transport = require(options.mailTransportModule);
       mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
     }
+
+    console.log('boom1')
 
     if (request.method === 'get' || request.method === 'head') {
       if (request.params && request.params.token) {

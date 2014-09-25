@@ -1,16 +1,18 @@
 var Lab = require('lab'),
-    describe = Lab.experiment,
-    before = Lab.before,
-    it = Lab.test,
+    lab = exports.lab = Lab.script(),
+    describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
+    it = lab.test,
     expect = Lab.expect;
 
 var server, source, cache, cookieCrumb,
-    fakeuser = require('./fixtures/users').fakeuser,
-    fakeusercli = require('./fixtures/users').fakeusercli;
+    fakeuser = require('../fixtures/users').fakeuser,
+    fakeusercli = require('../fixtures/users').fakeusercli;
 
 // prepare the server
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     cache = request.server.app.cache._cache.connection.cache['|sessions'];
@@ -32,7 +34,7 @@ describe('Getting to the login page', function () {
       cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
 
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('login');
+      expect(source.template).to.equal('user/login');
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });
@@ -76,7 +78,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(400);
-      expect(source.template).to.equal('login');
+      expect(source.template).to.equal('user/login');
       expect(source.context).to.have.deep.property('error.type', 'missing')
       done();
     });
@@ -96,7 +98,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(400);
-      expect(source.template).to.equal('login');
+      expect(source.template).to.equal('user/login');
       expect(source.context).to.have.deep.property('error.type', 'invalid')
       done();
     });

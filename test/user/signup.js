@@ -1,15 +1,17 @@
 var Lab = require('lab'),
-    describe = Lab.experiment,
-    before = Lab.before,
-    it = Lab.test,
+    lab = exports.lab = Lab.script(),
+    describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
+    it = lab.test,
     expect = Lab.expect;
 
 var server, source, cookieCrumb,
-    forms = require('./fixtures/signupForms');
+    forms = require('../fixtures/signupForms');
 
 // prepare the server
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     source = request.response.source;
@@ -31,6 +33,7 @@ describe('Signing up a new user', function () {
   it('renders the signup template', function (done) {
     var options = {
       url: '/signup'
+
     };
 
     server.inject(options, function (resp) {
@@ -41,7 +44,7 @@ describe('Signing up a new user', function () {
       forms = forms(cookieCrumb);
 
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('signup-form');
+      expect(source.template).to.equal('user/signup-form');
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });
@@ -63,7 +66,7 @@ describe('Signing up a new user', function () {
   it('fails validation with incomplete form fields', function (done) {
     server.inject(postSignup(forms.incomplete), function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('signup-form');
+      expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0][0]).to.have.deep.property('message', 'verify is required');
       done();
     });  })
@@ -71,7 +74,7 @@ describe('Signing up a new user', function () {
   it('fails validation with a bad email address', function (done) {
     server.inject(postSignup(forms.badEmail), function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('signup-form');
+      expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0][0]).to.have.deep.property('message', 'email must be a valid email');
       done();
     });
@@ -80,7 +83,7 @@ describe('Signing up a new user', function () {
   it('fails validation with a bad username (dot)', function (done) {
     server.inject(postSignup(forms.badUsernameDot), function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('signup-form');
+      expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username may not start with "."');
       done();
     });
@@ -89,7 +92,7 @@ describe('Signing up a new user', function () {
   it('fails validation with a bad username (uppercase)', function (done) {
     server.inject(postSignup(forms.badUsernameCaps), function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('signup-form');
+      expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username must be lowercase');
       done();
     });
@@ -98,7 +101,7 @@ describe('Signing up a new user', function () {
   it('fails validation with a bad username (encodeURI)', function (done) {
     server.inject(postSignup(forms.badUsernameEncodeURI), function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('signup-form');
+      expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username may not contain non-url-safe chars');
       done();
     });
@@ -107,7 +110,7 @@ describe('Signing up a new user', function () {
   it('fails validation with non-matching passwords', function (done) {
     server.inject(postSignup(forms.invalidPassMatch), function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('signup-form');
+      expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Passwords don\'t match');
       done();
     });

@@ -1,16 +1,17 @@
 var Lab = require('lab'),
-    describe = Lab.experiment,
-    before = Lab.before,
-    after = Lab.after,
-    it = Lab.test,
+    lab = exports.lab = Lab.script(),
+    describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
+    it = lab.test,
     expect = Lab.expect;
 
 var server, source, cache, revUrl, confUrl, cookieCrumb,
-    fakeuser = require('./fixtures/users').fakeuser,
-    fakeusercli = require('./fixtures/users').fakeusercli,
+    fakeuser = require('../fixtures/users').fakeuser,
+    fakeusercli = require('../fixtures/users').fakeusercli,
     newEmail = 'new@fakeuser.com',
     oldEmail = fakeuser.email,
-    emailEdits = require('./fixtures/emailEdits');
+    emailEdits = require('../fixtures/emailEdits');
 
 var postEmail = function (emailOpts) {
   return {
@@ -24,7 +25,7 @@ var postEmail = function (emailOpts) {
 
 // prepare the server
 before(function (done) {
-  server = require('./fixtures/setupServer')(done);
+  server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
     cache = request.server.app.cache._cache.connection.cache['|sessions'];
@@ -61,7 +62,7 @@ describe('Accessing the email-edit page', function () {
       emailEdits = emailEdits(cookieCrumb);
 
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('email-edit');
+      expect(source.template).to.equal('user/email-edit');
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });
@@ -100,7 +101,7 @@ describe('Requesting an email change', function () {
   it('renders an error if an email address is not provided', function (done) {
     server.inject(postEmail(emailEdits.missingEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
-      expect(source.template).to.equal('email-edit');
+      expect(source.template).to.equal('user/email-edit');
       expect(source.context.error).to.equal('Must provide a valid email address');
       done();
     });
@@ -109,7 +110,7 @@ describe('Requesting an email change', function () {
   it('renders an error if an invalid email address is provided', function (done) {
     server.inject(postEmail(emailEdits.invalidEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
-      expect(source.template).to.equal('email-edit');
+      expect(source.template).to.equal('user/email-edit');
       expect(source.context.error).to.equal('Must provide a valid email address');
       done();
     });
@@ -118,7 +119,7 @@ describe('Requesting an email change', function () {
   it('renders an error if the password is invalid', function (done) {
     server.inject(postEmail(emailEdits.invalidPassword), function (resp) {
       expect(resp.statusCode).to.equal(403);
-      expect(source.template).to.equal('email-edit');
+      expect(source.template).to.equal('user/email-edit');
       expect(source.context.error).to.equal('Invalid password');
       done();
     });
@@ -169,7 +170,7 @@ describe('Confirming an email change', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('error');
+      expect(source.template).to.equal('user/error');
       expect(source.context.errId).to.exist;
       done();
     });
@@ -183,7 +184,7 @@ describe('Confirming an email change', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(403);
-      expect(source.template).to.equal('error');
+      expect(source.template).to.equal('user/error');
       expect(source.context.errId).to.exist;
       done();
     });
@@ -198,7 +199,7 @@ describe('Confirming an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(fakeuser.email).to.equal(newEmail);
-      expect(source.template).to.equal('email-edit-confirmation');
+      expect(source.template).to.equal('user/email-edit-confirmation');
       done();
     });
   });
@@ -237,7 +238,7 @@ describe('Reverting an email change', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('error');
+      expect(source.template).to.equal('user/error');
       expect(source.context.errId).to.exist;
       done();
     });
@@ -254,7 +255,7 @@ describe('Reverting an email change', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(403);
-      expect(source.template).to.equal('error');
+      expect(source.template).to.equal('user/error');
       expect(source.context.errId).to.exist;
       done();
     });
@@ -269,7 +270,7 @@ describe('Reverting an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(fakeuser.email).to.equal(oldEmail);
-      expect(source.template).to.equal('email-edit-confirmation');
+      expect(source.template).to.equal('user/email-edit-confirmation');
       done();
     });
   });

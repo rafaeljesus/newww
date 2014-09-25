@@ -23,24 +23,6 @@ couchDB.init(config.couch);
 // configure metrics
 var metrics = new MetricsClient(config.metrics);
 
-server.route({
-  path: '/favicon.ico',
-  method: 'GET',
-  handler: { file: './favicon.ico' }
-})
-
-server.route({
-  path: '/static/{path*}',
-  method: 'GET',
-  handler: {
-    directory: {
-      path: './static',
-      listing: false,
-      index: false
-    }
-  }
-});
-
 server.pack.register(require('hapi-auth-cookie'), function (err) {
   if (err) throw err;
 
@@ -76,6 +58,8 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
       // DO NOT PASS GO, DO NOT COLLECT $200. Throw the error.
       throw err;
     }
+
+    server.route(require('./routes'))
 
     server.start(function() {
       log.info('Hapi server started @ ' + server.info.uri);

@@ -53,7 +53,7 @@ module.exports = function signup (request, reply) {
         addLatencyMetric(timer, 'signup-form-error');
 
         addMetric({name: 'signup-form-error'});
-        return reply.view('signup-form', opts);
+        return reply.view('user/signup-form', opts);
       }
 
       delSession(value, function (er) {
@@ -95,7 +95,7 @@ module.exports = function signup (request, reply) {
     addLatencyMetric(timer, 'signup-form');
 
     addMetric({ name: 'signup-form' });
-    return reply.view('signup-form', opts);
+    return reply.view('user/signup-form', opts);
   }
 };
 
@@ -118,5 +118,5 @@ function showError (request, reply, message, code, logExtras) {
 
   log.error(errId + ' ' + error, logExtras);
 
-  return reply.view('error', opts).code(code || 500);
+  return reply.view('user/error', opts).code(code || 500);
 }

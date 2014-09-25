@@ -37,6 +37,6 @@ module.exports = function About (options) {
     timer.end = Date.now();
     metrics.addPageLatencyMetric(timer, 'about');
     metrics.addMetric({name: 'about'});
-    reply.view('about', opts);
+    reply.view('company/about', opts);
   };
 };

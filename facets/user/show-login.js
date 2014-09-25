@@ -44,7 +44,7 @@ module.exports = function login (request, reply) {
           addLatencyMetric(timer, 'login-error');
 
           addMetric({name: 'login-error'})
-          return reply.view('login', opts).code(400);
+          return reply.view('user/login', opts).code(400);
         }
         // console.log("Login received, user available, setting session")
         // console.log("User is",user)
@@ -59,7 +59,7 @@ module.exports = function login (request, reply) {
             addLatencyMetric(timer, 'login-error');
 
             addMetric({name: 'login-error'})
-            return reply.view('error', {errId: errId}).code(500);
+            return reply.view('user/error', {errId: errId}).code(500);
           }
 
           if (user && user.mustChangePass) {
@@ -94,6 +94,6 @@ module.exports = function login (request, reply) {
     addLatencyMetric(timer, 'login');
 
     addMetric({name: 'login'})
-    return reply.view('login', opts).code(opts.error ? 400 : 200)
+    return reply.view('user/login', opts).code(opts.error ? 400 : 200)
   }
 }

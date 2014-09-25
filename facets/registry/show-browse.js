@@ -35,7 +35,7 @@ module.exports = function (request, reply) {
     opts.errorType = 'browseUrl';
 
     log.error(opts.errId + ' ' + Hapi.error.notFound('The requested url is invalid'), opts.url);
-    return reply.view('error', opts).code(404);
+    return reply.view('registry/error', opts).code(404);
   }
 
   if (type !== 'all' && type !== 'updated') {
@@ -68,7 +68,7 @@ module.exports = function (request, reply) {
       opts.errorType = 'internal';
 
       log.error(opts.errId + ' ' + Hapi.error.internal('There was an error when getting the browse data'), err);
-      return reply.view('error', opts).code(500);
+      return reply.view('registry/error', opts).code(500);
     }
 
     var key = [type, arg, start, limit].join(', ');
@@ -92,6 +92,6 @@ module.exports = function (request, reply) {
       arg: type === 'keyword' ? JSON.stringify(sarg) : sarg
     };
 
-    return reply.view('browse', opts);
+    return reply.view('registry/browse', opts);
   });
 }

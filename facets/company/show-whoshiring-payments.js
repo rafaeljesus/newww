@@ -26,7 +26,7 @@ module.exports = function (options) {
       addLatencyMetric(timer, 'whoshiring-payments');
 
       addMetric({name: 'whoshiring-payments'});
-      return reply.view('payments', opts);
+      return reply.view('company/payments', opts);
     }
 
     var schema = Joi.object().keys({

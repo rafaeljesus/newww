@@ -48,7 +48,7 @@ module.exports = function (options) {
         metrics.addPageLatencyMetric(timer, 'email-edit');
 
         metrics.addMetric({ name: 'email-edit' });
-        return reply.view('email-edit', opts);
+        return reply.view('user/email-edit', opts);
       }
     }
 
@@ -63,7 +63,7 @@ module.exports = function (options) {
         metrics.addPageLatencyMetric(timer, 'email-edit-error');
 
         metrics.addMetric({ name: 'email-edit-error' });
-        return reply.view('email-edit', opts).code(400);
+        return reply.view('user/email-edit', opts).code(400);
       }
 
       var salt = opts.user.salt,
@@ -78,7 +78,7 @@ module.exports = function (options) {
         metrics.addPageLatencyMetric(timer, 'email-edit-error');
 
         metrics.addMetric({ name: 'email-edit-error' });
-        return reply.view('email-edit', opts).code(403);
+        return reply.view('user/email-edit', opts).code(403);
       }
 
       return handle(request, reply, email2);
@@ -190,7 +190,7 @@ function sendEmails (conf, rev, request, reply) {
       metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
 
       metrics.addMetric({ name: 'email-edit-send-emails' });
-      return reply.view('email-edit', opts);
+      return reply.view('user/email-edit', opts);
     });
   });
 }
@@ -251,7 +251,7 @@ function confirm (request, reply) {
             opts.errId = uuid.v1();
             log.error(opts.errId + ' ' + Hapi.error.internal('Unable to set the session for user ' + opts.user.name), err);
 
-            return reply.view('error', opts);
+            return reply.view('user/error', opts);
           }
 
           timer.end = Date.now();
@@ -259,7 +259,7 @@ function confirm (request, reply) {
 
           metrics.addMetric({ name: 'confirmEmailChange' });
 
-          return reply.view('email-edit-confirmation', opts);
+          return reply.view('user/email-edit-confirmation', opts);
         });
       });
     });
@@ -327,7 +327,7 @@ function revert (request, reply) {
               opts.errId = uuid.v1();
               log.error(opts.errId + ' ' + Hapi.error.internal('Unable to set the session for user ' + opts.user.name), err);
 
-              return reply.view('error', opts);
+              return reply.view('user/error', opts);
             }
 
             timer.end = Date.now();
@@ -335,7 +335,7 @@ function revert (request, reply) {
 
             metrics.addMetric({ name: 'revertEmailChange' });
 
-            return reply.view('email-edit-confirmation', opts);
+            return reply.view('user/email-edit-confirmation', opts);
           });
         });
       });
@@ -370,5 +370,5 @@ function showError (request, reply, message, code, logExtras) {
 
   log.error(errId + ' ' + error, logExtras);
 
-  return reply.view('error', opts).code(code || 500);
+  return reply.view('user/error', opts).code(code || 500);
 }

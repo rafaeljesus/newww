@@ -33,7 +33,7 @@ module.exports = function (request, reply) {
 
     log.error(opts.errId + ' ' + Hapi.error.badRequest('Invalid Package Name'), opts.name);
 
-    return reply.view('error', opts).code(400)
+    return reply.view('registry/error', opts).code(400)
   }
 
   getPackage(opts.name, function (er, pkg) {
@@ -44,7 +44,7 @@ module.exports = function (request, reply) {
 
       log.error(opts.errId + ' ' + Hapi.error.notFound('Package Not Found ' + opts.name), er || pkg.error);
 
-      return reply.view('error', opts).code(404)
+      return reply.view('registry/error', opts).code(404)
     }
 
     if (pkg.time && pkg.time.unpublished) {
@@ -58,7 +58,7 @@ module.exports = function (request, reply) {
       addLatencyMetric(timer, 'showUnpublishedPackage');
 
       addMetric({ name: 'showPackage', package: request.params.package });
-      return reply.view('unpublished-package-page', opts);
+      return reply.view('registry/unpublished-package-page', opts);
     }
 
     timer.start = Date.now();
@@ -76,7 +76,7 @@ module.exports = function (request, reply) {
         opts.errorType = 'internal';
         log.error(opts.errId + ' ' + Hapi.error.internal('Unable to get depended data from couch for ' + opts.name), er);
 
-        return reply.view('error', opts).code(500);
+        return reply.view('registry/error', opts).code(500);
       }
 
       pkg.dependents = dependents;
@@ -86,7 +86,7 @@ module.exports = function (request, reply) {
           opts.errId = uuid.v1();
           opts.errorType = 'internal';
           log.error(opts.errId + ' ' + Hapi.error.internal('An error occurred with presenting package ' + opts.name), er);
-          return reply.view('error', opts).code(500);
+          return reply.view('registry/error', opts).code(500);
         }
 
         pkg.isStarred = opts.user && pkg.users && pkg.users[opts.user.name] || false;
@@ -106,7 +106,7 @@ module.exports = function (request, reply) {
             opts.errId = uuid.v1();
             opts.errorType = 'internal';
             log.error(opts.errId + ' ' + Hapi.error.internal('An error occurred with getting download counts for ' + opts.name), er);
-            return reply.view('error', opts).code(500);
+            return reply.view('registry/error', opts).code(500);
           }
 
           if (Array.isArray(downloadData)) {
@@ -132,7 +132,7 @@ module.exports = function (request, reply) {
             return reply(opts);
           }
 
-          return reply.view('package-page', opts);
+          return reply.view('registry/package-page', opts);
         }
       })
     })

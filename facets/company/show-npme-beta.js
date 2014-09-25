@@ -15,12 +15,12 @@ module.exports = function npmE (request, reply) {
 
     metrics.addMetric({name: 'npme-beta-thanks'});
 
-    return reply.view('npme-beta-thanks', opts);
+    return reply.view('company/npme-beta-thanks', opts);
   }
 
   timer.end = Date.now();
   metrics.addPageLatencyMetric(timer, 'npme-beta');
 
   metrics.addMetric({name: 'npme-beta'});
-  return reply.view('npme-beta', opts);
+  return reply.view('company/npme-beta', opts);
 }

@@ -15,5 +15,5 @@ module.exports = function (request, reply) {
 
   metrics.addMetric({name: 'whoshiring'});
 
-  reply.view('whoshiring', opts);
+  reply.view('company/whoshiring', opts);
 };

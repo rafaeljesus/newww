@@ -31,7 +31,7 @@ module.exports = function (request, reply) {
     metrics.addPageLatencyMetric(timer, 'homepage');
 
     metrics.addMetric({name: 'homepage'});
-    reply.view('index', opts);
+    reply.view('company/index', opts);
   });
 }
 

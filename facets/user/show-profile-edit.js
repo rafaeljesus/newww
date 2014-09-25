@@ -37,7 +37,7 @@ module.exports = function (options) {
               opts.errId = uuid.v1();
               log.error(opts.errId + ' ' + Hapi.error.internal('Unable to set the session for user ' + opts.user.name), err);
 
-              return reply.view('error', opts);
+              return reply.view('user/error', opts);
             }
 
             timer.end = Date.now();
@@ -56,7 +56,7 @@ module.exports = function (options) {
       addLatencyMetric(timer, 'profile-edit');
 
       opts.title = 'Edit Profile';
-      return reply.view('profile-edit', opts);
+      return reply.view('user/profile-edit', opts);
     }
   }
 }

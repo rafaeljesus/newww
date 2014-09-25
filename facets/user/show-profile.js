@@ -41,7 +41,7 @@ module.exports = function (options) {
         addLatencyMetric(timer, 'profile-not-found');
 
         addMetric({ name: 'profile-not-found', value: opts.name });
-        return reply.view('profile-not-found', opts).code(404);
+        return reply.view('user/profile-not-found', opts).code(404);
       }
 
       getBrowseData('userstar', profileName, 0, 1000, function (err, starred) {
@@ -69,7 +69,7 @@ module.exports = function (options) {
 
           addMetric({ name: 'showProfile' });
 
-          return reply.view('profile', opts)
+          return reply.view('user/profile', opts)
         });
       });
     }
@@ -106,5 +106,5 @@ function showError (request, reply, message, logExtras) {
 
   log.error(errId + ' ' + Hapi.error.internal(message), logExtras);
 
-  return reply.view('error', opts).code(500);
+  return reply.view('user/error', opts).code(500);
 }

@@ -22,7 +22,7 @@ module.exports = function (request, reply) {
     timer.end = Date.now();
     addLatencyMetric(timer, 'password');
 
-    return reply.view('password', opts);
+    return reply.view('user/password', opts);
   }
 
   if (request.method === 'post') {
@@ -41,7 +41,7 @@ module.exports = function (request, reply) {
       addLatencyMetric(timer, 'password-error');
 
       addMetric({ name: 'password-error' });
-      return reply.view('password', opts).code(403);
+      return reply.view('user/password', opts).code(403);
     }
 
     if (data.new !== data.verify) {
@@ -51,7 +51,7 @@ module.exports = function (request, reply) {
       addLatencyMetric(timer, 'password-error');
 
       addMetric({ name: 'password-error' });
-      return reply.view('password', opts).code(403);
+      return reply.view('user/password', opts).code(403);
     }
 
     var error = userValidate.pw(data.new);
@@ -62,7 +62,7 @@ module.exports = function (request, reply) {
       addLatencyMetric(timer, 'password-error');
 
       addMetric({ name: 'password-error' });
-      return reply.view('password', opts).code(400);
+      return reply.view('user/password', opts).code(400);
     }
 
     log.warn('Changing password', { name: prof.name });
@@ -122,5 +122,5 @@ function showError (request, reply, message, logExtras) {
 
   log.error(errId + ' ' + Hapi.error.internal(message), logExtras);
 
-  return reply.view('error', opts).code(500);
+  return reply.view('user/error', opts).code(500);
 }

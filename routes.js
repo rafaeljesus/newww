@@ -1,6 +1,21 @@
 var config = require('./config');
 
+var forceAuthConfig = function (handler) {
+  return {
+    handler: handler,
+    auth: {
+      mode: 'required'
+    },
+    plugins: { 'hapi-auth-cookie': {
+      redirectTo: '/login'
+    }}
+  };
+};
+
 var routes = module.exports = [
+
+  // === COMPANY ===
+
   {
     path: '/favicon.ico',
     method: 'GET',
@@ -69,6 +84,8 @@ var routes = module.exports = [
     method: "GET",
     handler: require('./facets/company/show-npme-beta')
   },
+
+  // === REGISTRY ===
 
   {
     path: "/package/{package}/{version?}",
@@ -143,4 +160,85 @@ var routes = module.exports = [
     path: '/{p*}',
     handler: require('./facets/registry/show-fallback')
   },
+
+  // === USER ===
+
+  {
+    path: "/~",
+    method: "GET",
+    config: forceAuthConfig(require('./facets/user/show-profile')(config.user.profileFields))
+  },
+
+  {
+    path: "/profile",
+    method: "GET",
+    config: forceAuthConfig(require('./facets/user/show-profile')(config.user.profileFields))
+  },
+
+  {
+    path: "/~{name}",
+    method: "GET",
+    handler: require('./facets/user/show-profile')(config.user.profileFields)
+  },
+
+  {
+    path: "/profile/{name}",
+    method: "GET",
+    handler: require('./facets/user/show-profile')(config.user.profileFields)
+  },
+
+  {
+    path: "/~/{name}",
+    method: "GET",
+    handler: require('./facets/user/show-profile')(config.user.profileFields)
+  },
+
+  {
+    path: "/signup",
+    method: ["GET", "HEAD", "POST"],
+    handler: require('./facets/user/show-signup')
+  },
+
+  {
+    path: "/profile-edit",
+    method: ["GET", "HEAD", "PUT", "POST"],
+    config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
+  },
+
+  {
+    path: "/email-edit",
+    method: ["GET", "HEAD", "PUT", "POST"],
+    config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
+  },
+
+  {
+    path: "/email-edit/{token*2}",
+    method: ["GET", "HEAD"],
+    config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
+  },
+
+  {
+    path: "/login",
+    method: ["GET", "POST"],
+    handler: require('./facets/user/show-login')
+  },
+
+  {
+    path: "/logout",
+    method: "GET",
+    handler: require('./facets/user/show-logout')
+  },
+
+  {
+    path: "/password",
+    method: ["GET", "HEAD", "POST"],
+    config: forceAuthConfig(require('./facets/user/show-password'))
+  },
+
+  {
+    path: "/forgot/{token?}",
+    method: ["GET", "HEAD", "POST"],
+    handler: require('./facets/user/show-forgot')(config.user.mail)
+  },
+
 ];

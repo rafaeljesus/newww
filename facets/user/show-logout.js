@@ -13,7 +13,7 @@ module.exports = function logout (request, reply) {
       log.error(errId + ' ' + Hapi.error.internal('unable to delete session for logout'), user)
 
       var opts = { errId: errId };
-      return reply.view('error', opts).code(500);
+      return reply.view('user/error', opts).code(500);
     }
 
     timer.end = Date.now();

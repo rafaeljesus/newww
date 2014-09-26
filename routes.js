@@ -71,17 +71,8 @@ var routes = module.exports = [
   {
     path: "/joinwhoshiring",
     method: "POST",
-    config: {
-      handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
-      plugins: {
-        blankie: {
-          scriptSrc: ['self', 'unsafe-eval', 'https://ssl.google-analytics.com', 'https://checkout.stripe.com'],
-          frameSrc: 'https://checkout.stripe.com'
-        }
-      }
-    }
+    handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe)
   },
-
 
   {
     path: "/npme-beta",

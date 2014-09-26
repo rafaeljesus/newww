@@ -1,4 +1,4 @@
-var metrics = require('../../adapters/metrics')();
+var metrics = require('newww-metrics')();
 
 module.exports = function fallbackHandler (request, reply) {
   var name = request.params.p,
@@ -15,6 +15,6 @@ module.exports = function fallbackHandler (request, reply) {
     metrics.addPageLatencyMetric(timer, '404-not-found');
 
     metrics.addMetric({name: '404'});
-    reply.view('notfound', opts).code(404);
+    reply.view('registry/notfound', opts).code(404);
   });
 };

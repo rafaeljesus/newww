@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     request = require('request'),
     log = require('bole')('downloads'),
     uuid = require('node-uuid'),
-    metrics = require('../../../adapters/metrics')(),
+    metrics = require('newww-metrics')(),
     timer = {};
 
 module.exports = function getDownloads (url) {

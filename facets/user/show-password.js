@@ -3,7 +3,7 @@ var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
     log = require('bole')('user-password'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function (request, reply) {
   var opts = {

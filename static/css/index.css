@@ -218,9 +218,9 @@ h1:before {
 }
 h2 {
   margin: 0 0 25px;
-  letter-spacing: -0.03em;
-  font: 700 24px/29px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  color: rgba(0,0,0,0.6);
+  font-weight: 600;
+  font-size: 24px;
+  color: rgba(0,0,0,0.5);
 }
 h2 span {
   font-weight: 400;
@@ -1661,12 +1661,14 @@ h2.h2-toggle .h2-toggle-list li a.active {
 }
 .collection,
 .package.third,
-.ecosystem {
+.ecosystem,
+.hiring {
   margin-bottom: 25px;
 }
 .collection .c-name,
 .package.third .c-name,
-.ecosystem .c-name {
+.ecosystem .c-name,
+.hiring .c-name {
   position: relative;
   display: block;
   height: 45px;
@@ -1674,21 +1676,24 @@ h2.h2-toggle .h2-toggle-list li a.active {
 }
 .collection .c-name img,
 .package.third .c-name img,
-.ecosystem .c-name img {
+.ecosystem .c-name img,
+.hiring .c-name img {
   float: left;
   margin: 0 10px 0 0;
   border-radius: 6px 0 0 6px;
 }
 .collection .c-name a,
 .package.third .c-name a,
-.ecosystem .c-name a {
+.ecosystem .c-name a,
+.hiring .c-name a {
   display: inline-block;
   font: 700 18px/43px 'Source Sans Pro', 'Lucida Grande', sans-serif;
   color: #fff;
 }
 .collection .c-name a:before,
 .package.third .c-name a:before,
-.ecosystem .c-name a:before {
+.ecosystem .c-name a:before,
+.hiring .c-name a:before {
   float: left;
   font-size: 24px;
   line-height: 45px;
@@ -1696,7 +1701,8 @@ h2.h2-toggle .h2-toggle-list li a.active {
 }
 .collection .c-name span,
 .package.third .c-name span,
-.ecosystem .c-name span {
+.ecosystem .c-name span,
+.hiring .c-name span {
   float: right;
   margin: 0 12px 0 0;
   color: #fff;
@@ -1704,32 +1710,38 @@ h2.h2-toggle .h2-toggle-list li a.active {
 }
 .collection.third .c-name,
 .package.third.third .c-name,
-.ecosystem.third .c-name {
+.ecosystem.third .c-name,
+.hiring.third .c-name {
   border-radius: 6px 6px 0 0;
 }
 .collection.third img,
 .package.third.third img,
-.ecosystem.third img {
+.ecosystem.third img,
+.hiring.third img {
   border-radius: 6px 0 0 0;
 }
 .collection .c-details,
 .package.third .c-details,
-.ecosystem .c-details {
+.ecosystem .c-details,
+.hiring .c-details {
   padding: 20px 0;
 }
 .collection .c-details h5,
 .package.third .c-details h5,
-.ecosystem .c-details h5 {
+.ecosystem .c-details h5,
+.hiring .c-details h5 {
   margin: 0 0 5px;
 }
 .collection .c-details p,
 .package.third .c-details p,
-.ecosystem .c-details p {
+.ecosystem .c-details p,
+.hiring .c-details p {
   margin-bottom: 15px;
 }
 .collection .c-details p.tags,
 .package.third .c-details p.tags,
-.ecosystem .c-details p.tags {
+.ecosystem .c-details p.tags,
+.hiring .c-details p.tags {
   color: rgba(0,0,0,0.5);
   font-size: 12px !important;
   font-weight: 600;
@@ -1737,12 +1749,14 @@ h2.h2-toggle .h2-toggle-list li a.active {
 }
 .collection .c-details p.tags:before,
 .package.third .c-details p.tags:before,
-.ecosystem .c-details p.tags:before {
+.ecosystem .c-details p.tags:before,
+.hiring .c-details p.tags:before {
   margin-right: 6px;
 }
 .collection .c-details p.tags a,
 .package.third .c-details p.tags a,
-.ecosystem .c-details p.tags a {
+.ecosystem .c-details p.tags a,
+.hiring .c-details p.tags a {
   color: rgba(0,0,0,0.5);
   margin: 0;
   padding: 0;
@@ -1752,13 +1766,15 @@ h2.h2-toggle .h2-toggle-list li a.active {
 }
 .collection .c-details p.tags a:hover,
 .package.third .c-details p.tags a:hover,
-.ecosystem .c-details p.tags a:hover {
+.ecosystem .c-details p.tags a:hover,
+.hiring .c-details p.tags a:hover {
   color: #cb3837;
   background: none;
 }
 .collection.third .c-details,
 .package.third.third .c-details,
-.ecosystem.third .c-details {
+.ecosystem.third .c-details,
+.hiring.third .c-details {
   padding: 20px;
   border: 2px solid rgba(0,0,0,0.1);
   border-width: 0 2px 2px 2px;
@@ -1766,7 +1782,8 @@ h2.h2-toggle .h2-toggle-list li a.active {
 }
 .collection.third .c-details p,
 .package.third.third .c-details p,
-.ecosystem.third .c-details p {
+.ecosystem.third .c-details p,
+.hiring.third .c-details p {
   font: 400 14px/18px 'Source Sans Pro', 'Lucida Grande', sans-serif;
 }
 .ecosystem .c-name {
@@ -1782,6 +1799,28 @@ h2.h2-toggle .h2-toggle-list li a.active {
   position: absolute;
   bottom: 0px;
   right: 10px;
+}
+.hiring .c-name {
+  height: 60px;
+  border: 2px solid rgba(0,0,0,0.1);
+  border-bottom: 0;
+  padding: 20px;
+  padding-top: 15px;
+}
+.hiring .c-name a {
+  color: rgba(0,0,0,0.9);
+  text-align: right;
+  display: block;
+  position: relative;
+  height: 50px;
+}
+.hiring .c-name img {
+  max-width: 100px;
+  max-height: 50px;
+  border-radius: 0;
+}
+.hiring .c-details p {
+  height: 55px;
 }
 .package.third {
   margin-bottom: 25px;
@@ -1856,9 +1895,14 @@ h2.h2-toggle .h2-toggle-list li a.active {
   display: block;
   font: 700 16px/21px 'Source Sans Pro', 'Lucida Grande', sans-serif;
 }
+.box.hiring {
+  border-radius: 6px;
+  border: 2px solid rgba(0,0,0,0.1);
+}
 .box-action {
   border-top: 1px solid rgba(0,0,0,0.1);
   padding: 14px;
+  text-transformation: lowercase;
 }
 .list .box-action {
   border-top: 0;

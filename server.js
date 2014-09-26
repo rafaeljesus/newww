@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     Hoek = require('hoek'),
     config = require('./config.js'),
     url = require('url'),
-    MetricsClient = require('./adapters/metrics');
+    MetricsClient = require('newww-metrics');
 
 // set up the logger
 var bole = require('bole'),

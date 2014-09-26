@@ -4,7 +4,7 @@ var Joi = require('joi'),
     Hapi = require('hapi'),
     log = require('bole')('user-signup'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function signup (request, reply) {
   var signupUser = request.server.methods.user.signupUser,

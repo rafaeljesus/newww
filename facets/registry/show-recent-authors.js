@@ -1,7 +1,7 @@
 var Hapi = require('hapi'),
     log = require('bole')('registry-recentauthors'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')(),
+    metrics = require('newww-metrics')(),
     Hoek = require('hoek');
 
 var pageSize = 100,

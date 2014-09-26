@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     log = require('bole')('user-login'),
     uuid = require('node-uuid'),
     murmurhash = require('murmurhash'),
-    metrics = require('../../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = {
   set: function set (request) {

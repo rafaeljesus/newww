@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "lab -vC; node allPlugins t",
+    "test": "lab --verbose --colors; node allPlugins t",
     "prepublish": "gulp build",
     "dev": "gulp dev",
     "dev-db": "node dev/go.js"

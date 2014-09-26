@@ -4,7 +4,8 @@ var commaIt = require('number-grouper'),
     Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
+
 
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };

@@ -3,7 +3,7 @@ var Hapi = require('hapi'),
     log = require('bole')('registry-package'),
     commaIt = require('number-grouper'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 
 module.exports = function (request, reply) {

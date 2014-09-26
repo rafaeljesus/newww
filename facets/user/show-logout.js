@@ -1,4 +1,4 @@
-var metrics = require('../../adapters/metrics')();
+var metrics = require('newww-metrics')();
 
 module.exports = function logout (request, reply) {
   var delSession = request.server.methods.user.delSession(request),

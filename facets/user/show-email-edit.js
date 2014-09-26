@@ -4,7 +4,7 @@ var Hapi = require('hapi'),
     crypto = require('crypto'),
     log = require('bole')('user-email-edit'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 var transport, mailer;
 

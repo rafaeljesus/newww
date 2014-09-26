@@ -2,7 +2,7 @@ var sanitizer = require('sanitizer'),
     Hapi = require('hapi'),
     log = require('bole')('registry-browse'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 var pageSize = 100;
 var possibleTypes = ['all', 'keyword', 'author', 'updated', 'depended', 'star', 'userstar'];

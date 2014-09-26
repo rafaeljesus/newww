@@ -3,7 +3,7 @@ var Hapi = require('hapi'),
     uuid = require('node-uuid'),
     qs = require('querystring'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
-    metrics = require('../../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function lookupUserByEmail (email, next) {
   var query = {

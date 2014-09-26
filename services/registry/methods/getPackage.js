@@ -1,6 +1,6 @@
 var Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
-    metrics = require('../../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function getPackage (package, next) {
 

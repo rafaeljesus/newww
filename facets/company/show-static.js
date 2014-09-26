@@ -1,4 +1,4 @@
-var metrics = require('../../adapters/metrics')();
+var metrics = require('newww-metrics')();
 
 module.exports = function (type, text) {
   return function (request, reply) {

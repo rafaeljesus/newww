@@ -1,4 +1,4 @@
-var metrics = require('../../adapters/metrics')();
+var metrics = metrics = require('newww-metrics')();
 
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };

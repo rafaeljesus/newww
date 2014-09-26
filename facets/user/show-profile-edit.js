@@ -3,7 +3,7 @@ var transform = require('./presenters/profile').transform,
     Hapi = require('hapi'),
     log = require('bole')('user-profile-edit'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function (options) {
   return function (request, reply) {

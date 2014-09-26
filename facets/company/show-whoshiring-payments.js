@@ -2,7 +2,7 @@ var Joi = require('joi'),
     Hapi = require('hapi'),
     log = require('bole')('company-whoshiring-payments'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function (options) {
   var stripe = require('stripe')(options.secretkey),

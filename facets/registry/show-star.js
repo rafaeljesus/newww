@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     log = require('bole')('registry-star'),
     uuid = require('node-uuid'),
     util = require('util'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,

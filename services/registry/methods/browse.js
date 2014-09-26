@@ -3,7 +3,7 @@ var Hapi = require('hapi'),
     qs = require('querystring'),
     log = require('bole')('registry-browse'),
     uuid = require('node-uuid'),
-    metrics = require('../../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 var viewNames = {
   all: 'browseAll',

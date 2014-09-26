@@ -1,5 +1,5 @@
 var anonCouch = require('../../../adapters/couchDB').anonCouch,
-    metrics = require('../../../adapters/metrics')(),
+    metrics = require('newww-metrics')(),
     qs = require('querystring'),
     AC = require('async-cache'),
     maxAge = 1000 * 60 * 60 * 24 * 365,

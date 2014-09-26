@@ -40,6 +40,7 @@
     "marked": "^0.3.2",
     "moment": "^2.6.0",
     "murmurhash": "0.0.2",
+    "newww-metrics": "^1.0.0",
     "nib": "^1.0.2",
     "node-uuid": "^1.4.1",
     "nodemailer": "^1.0.0",

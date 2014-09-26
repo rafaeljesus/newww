@@ -2,7 +2,7 @@ var elasticsearch = require('elasticsearch'),
     Hapi = require('hapi'),
     log = require('bole')('registry-search'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function (options) {
   var client = new elasticsearch.Client({

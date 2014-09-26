@@ -1,6 +1,6 @@
 var Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
-    metrics = require('../../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 var timer = {};
 

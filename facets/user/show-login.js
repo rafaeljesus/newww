@@ -3,7 +3,7 @@ var murmurhash = require('murmurhash'),
     uuid = require('node-uuid'),
     log = require('bole')('user-login'),
     url = require('url'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('newww-metrics')();
 
 module.exports = function login (request, reply) {
   var loginUser = request.server.methods.user.loginUser,

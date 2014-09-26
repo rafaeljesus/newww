@@ -35,6 +35,24 @@
   </div>
 </div>
 
+
+<h2>Recently Updated Packages</h2>
+
+<div class="thirds tab-content">
+
+  {{#each updated}}
+		<div class="third package">
+			<div class="c-name">
+				<a href="#" class="icon-package-hex">{{name}}</a>
+			</div>
+			<div class="c-details">
+				<p>{{description}}</p>
+			</div>
+		</div>
+  {{/each}}
+
+</div>
+
 <!--
 <table>
 <tr>

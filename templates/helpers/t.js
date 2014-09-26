@@ -1,7 +1,7 @@
 var Hoek = require('hoek');
 
 var locales = {
-  en_US: require('../locales/en_US/index')
+  en_US: require('../../locales/en_US/index')
 };
 
 module.exports = function t (path) {

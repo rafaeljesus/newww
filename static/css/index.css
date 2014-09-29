@@ -675,8 +675,10 @@ nav h2 a {
   opacity: 1;
   color: rgba(255,255,255,0.6);
   padding-right: 100px;
+  background: none;
 }
 nav h2 a:hover {
+  background: none;
   text-decoration: none;
   border: none;
 }

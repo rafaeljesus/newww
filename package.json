@@ -17,6 +17,7 @@
     "url": "https://github.com/npm/newww"
   },
   "dependencies": {
+    "accept-language-parser": "^1.0.2",
     "blankie": "^0.1.2",
     "bole": "^0.1.0",
     "cargo": "^0.8.0",
@@ -51,6 +52,7 @@
     "npm2es": "git://github.com/npm/npm2es",
     "numbat-emitter": "^1.0.0",
     "number-grouper": "0.0.1",
+    "numeral": "^1.5.3",
     "sanitizer": "^0.1.1",
     "schemeless": "^1.0.0",
     "scooter": "^1.2.0",

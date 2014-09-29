@@ -38,14 +38,14 @@ module.exports = function signup (request, reply) {
     Joi.validate(data, schema, joiOptions, function (err, value) {
 
       if (err) {
-        opts.errors.push(err.details);
+        opts.errors = err.details;
       }
 
       if (data.password !== data.verify) {
-        opts.errors.push(new Error("Passwords don't match"));
+        opts.errors.push({message: new Error("Passwords don't match").message});
       }
 
-      userValidate.username(data.name) && opts.errors.push(userValidate.username(data.name));
+      userValidate.username(data.name) && opts.errors.push({ message: userValidate.username(data.name).message});
 
       if (opts.errors.length) {
 
@@ -53,6 +53,7 @@ module.exports = function signup (request, reply) {
         addLatencyMetric(timer, 'signup-form-error');
 
         addMetric({name: 'signup-form-error'});
+
         return reply.view('user/signup-form', opts);
       }
 

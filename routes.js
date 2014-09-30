@@ -1,7 +1,6 @@
 var config = require('./config');
 var ops = require('./facets/ops');
 
-
 var forceAuthConfig = function (handler) {
   return {
     handler: handler,
@@ -46,6 +45,12 @@ var routes = module.exports = [
     path: "/about",
     method: "GET",
     handler: require('./facets/company/show-about')(config.company)
+  },
+
+  {
+    path: "/policies/{policy}",
+    method: "GET",
+    handler: require('./facets/company/show-policy')
   },
 
   {

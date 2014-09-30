@@ -1894,6 +1894,12 @@ div.stat strong {
   color: #fff;
   background: #cb3837;
 }
+ol {
+  list-style-position: inside;
+}
+li {
+  padding-bottom: 0.5em;
+}
 ul.userMosaic {
   list-style: none;
   margin: 0 0 30px 0;

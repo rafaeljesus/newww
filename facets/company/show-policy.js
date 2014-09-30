@@ -11,6 +11,11 @@ module.exports = function (request, reply) {
 
   req(url, function (er, resp, content) {
 
+    if (er) {
+      // this will get fixed with better error logging
+      console.error('gah something broke');
+    }
+
     var opts = {
       user: request.auth.credentials,
       hiring: request.server.methods.hiring.getRandomWhosHiring(),
@@ -22,5 +27,5 @@ module.exports = function (request, reply) {
     metrics.addMetric({name: 'policy-' + policy});
 
     return reply.view('layouts/default', opts, {layout: false});
-  })
+  });
 }

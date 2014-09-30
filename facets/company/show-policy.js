@@ -7,11 +7,9 @@ module.exports = function (request, reply) {
 
   var policy = request.params.policy;
 
-  var url = 'https://raw.githubusercontent.com/npm/policies/master/' + policy + '.md';
+  request.server.methods.static.getPolicy(policy, function (err, content) {
 
-  req(url, function (er, resp, content) {
-
-    if (er) {
+    if (err) {
       // this will get fixed with better error logging
       console.error('gah something broke');
     }
@@ -19,7 +17,7 @@ module.exports = function (request, reply) {
     var opts = {
       user: request.auth.credentials,
       hiring: request.server.methods.hiring.getRandomWhosHiring(),
-      content: marked.parse(content)
+      content: content
     };
 
     timer.end = Date.now();

@@ -364,21 +364,17 @@ var routes = module.exports = [
 ];
 
 function fallback (request, reply) {
-  var req = require('request'),
-      marked = require('marked'),
-      route = request.params.p,
+  var route = request.params.p,
       opts = {
         user: request.auth.credentials,
         hiring: request.server.methods.hiring.getRandomWhosHiring()
       };
       // timer = { start: Date.now() };
 
-  // request.server.methods.static.getPage(route, function (err, page) {
-
-  req('https://raw.githubusercontent.com/npm/static-pages/master/'+ route + '.md', function (er, resp, content) {
+  request.server.methods.static.getPage(route, function (err, content) {
 
     if (content) {
-      opts.content = marked.parse(content);
+      opts.content = content;
       return reply.view('layouts/default', opts, {layout: false});
     }
 
@@ -388,10 +384,6 @@ function fallback (request, reply) {
         return reply.redirect('/package/' + package._id);
       }
 
-      // timer.end = Date.now();
-      // metrics.addPageLatencyMetric(timer, '404-not-found');
-
-      // metrics.addMetric({name: '404'});
       return reply.view('registry/notfound', opts).code(404);
     });
   });

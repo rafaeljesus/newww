@@ -1,7 +1,6 @@
 var sanitizer = require('sanitizer'),
     Hapi = require('hapi'),
     log = require('bole')('registry-browse'),
-    uuid = require('node-uuid'),
     metrics = require('newww-metrics')();
 
 var pageSize = 100;
@@ -10,10 +9,12 @@ var possibleTypes = ['all', 'keyword', 'author', 'updated', 'depended', 'star', 
 module.exports = function (request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: 'registry-browse'
   };
 
   var getBrowseData = request.server.methods.registry.getBrowseData,
+      showError = request.server.methods.errors.showError(reply),
       addMetric = metrics.addMetric,
       addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
@@ -30,12 +31,7 @@ module.exports = function (request, reply) {
   type = params.shift() || 'updated'; // grab the first one - that will be the type
 
   if (possibleTypes.indexOf(type) === -1) {
-    opts.errId = uuid.v1();
-
-    opts.errorType = 'browseUrl';
-
-    log.error(opts.errId + ' ' + Hapi.error.notFound('The requested url is invalid'), opts.url);
-    return reply.view('registry/error', opts).code(404);
+    return showError([type, possibleTypes], 404, 'The requested url is invalid', opts);
   }
 
   if (type !== 'all' && type !== 'updated') {
@@ -63,12 +59,7 @@ module.exports = function (request, reply) {
     timer.end = Date.now();
 
     if (err) {
-      opts.errId = uuid.v1();
-
-      opts.errorType = 'internal';
-
-      log.error(opts.errId + ' ' + Hapi.error.internal('There was an error when getting the browse data'), err);
-      return reply.view('registry/error', opts).code(500);
+      return showError(err, 500, 'There was an error when getting the browse data', opts);
     }
 
     var key = [type, arg, start, limit].join(', ');

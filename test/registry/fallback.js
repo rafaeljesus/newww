@@ -37,7 +37,7 @@ describe('Accessing fallback URLs', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('registry/notfound');
+      expect(source.template).to.equal('errors/registry-notfound');
       done();
     });
   });

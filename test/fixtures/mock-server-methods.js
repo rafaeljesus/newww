@@ -42,6 +42,8 @@ module.exports = function (server) {
     errors: {
       showError: function (reply) {
         return function (err, code, message, opts) {
+          opts.errId = '12345';
+
           if (opts.isXhr) {
             return reply(message).code(code);
           }

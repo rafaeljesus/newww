@@ -7,7 +7,7 @@ module.exports = function showError (reply) {
 
   return function (err, code, message, opts) {
 
-    var errId = uuid.v1();
+    opts.errId = uuid.v1();
 
     var error;
     var template;
@@ -25,12 +25,16 @@ module.exports = function showError (reply) {
         error = Hapi.error.notFound(message);
         template = 'errors/notfound';
         break;
+      case 500:
       default:
         error = Hapi.error.internal(message);
-        template = 'errors/invalid';
+        template = 'errors/internal';
         break;
     }
 
+    if (code === 404 && opts.name) {
+      template = 'errors/registry-notfound';
+    }
 
     metrics.addMetric({
       name: 'error',
@@ -42,7 +46,7 @@ module.exports = function showError (reply) {
     log(opts.namespace).error(opts.errId + ' ' + error, err);
 
     if (opts.isXhr) {
-      return reply(message + ' - ' + errId).code(code);
+      return reply(message + ' - ' + opts.errId).code(code);
     }
 
     return reply.view(template, opts).code(code);

@@ -10,6 +10,7 @@ var pageSize = 100,
 // url is something like /recent-authors/:since
 module.exports = function RecentAuthors (request, reply) {
   var recentAuthors = request.server.methods.registry.getRecentAuthors,
+      showError = request.server.methods.errors.showError(reply),
       addMetric = metrics.addMetric,
       addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
@@ -17,6 +18,7 @@ module.exports = function RecentAuthors (request, reply) {
   var opts = {
     user: request.auth.credentials,
     hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: 'registry-recentauthors'
   }
 
   // grab the page number, if it's in the url
@@ -26,13 +28,8 @@ module.exports = function RecentAuthors (request, reply) {
   since = since ? new Date(since) : new Date(Date.now() - TWO_WEEKS);
 
   if (!since.getTime()) {
-    opts.errId = uuid.v1();
-
-    opts.errorType = 'browseUrl';
     opts.url = request.server.info.uri + request.url.path;
-
-    log.error(opts.errId + ' ' + Hapi.error.notFound('The requested url is invalid'), opts.url);
-    return reply.view('registry/error', opts).code(404);
+    return showError(opts.url, 404, 'The requested url is invalid', opts);
   }
 
   var age = Date.now() - since.getTime()

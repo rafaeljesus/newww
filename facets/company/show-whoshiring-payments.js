@@ -11,13 +11,15 @@ module.exports = function (options) {
   return function (request, reply) {
     var addMetric = metrics.addMetric,
         addLatencyMetric = metrics.addPageLatencyMetric,
+        showError = request.server.methods.errors.showError(reply),
         timer = { start: Date.now() };
 
     var opts = {
       user: request.auth.credentials,
       hiring: request.server.methods.hiring.getRandomWhosHiring(),
-      title: "Join the Who's Hiring Page"
-    }
+      title: "Join the Who's Hiring Page",
+      namespace: 'company-whoshiring-payments'
+    };
 
     if (request.method === 'get') {
       opts.stripeKey = options.publickey;
@@ -28,6 +30,8 @@ module.exports = function (options) {
       addMetric({name: 'whoshiring-payments'});
       return reply.view('company/payments', opts);
     }
+
+    opts.isXhr = true;
 
     var schema = Joi.object().keys({
       email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
@@ -43,15 +47,11 @@ module.exports = function (options) {
 
     Joi.validate(request.payload, schema, function (err, token) {
       if (err) {
-        var errId = uuid.v1();
-        log.error(errId + ' ' + Hapi.error.badRequest('there was a validation error'), err);
-        return reply('validation error: ' + errId).code(403);
+        return showError(err, 403, 'validation error', opts);
       }
 
       if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
-        var errId = uuid.v1();
-        log.error(errId + ' ' + Hapi.error.badRequest('the charge amount of ' + token.amount + ' is invalid'), err);
-        return reply('invalid charge amount error: ' + errId).code(403);
+        return showError(token.amount, 403, 'invalid charge amount error', opts);
       }
 
       var stripeStart = Date.now();
@@ -62,9 +62,7 @@ module.exports = function (options) {
         description: "Charge for " + token.email
       }, function(err, charge) {
         if (err) {
-          var errId = uuid.v1();
-          log.error(errId + ' ' + Hapi.error.internal('something went wrong with the stripe charge'), err);
-          return reply('internal stripe error - ' + errId).code(500);
+          return showError(token.amount, 500, 'internal stripe error', opts);
         }
 
         timer.end = Date.now();

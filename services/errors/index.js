@@ -1,14 +1,14 @@
 
-exports.register = function Error (service, options, next) {
+exports.register = function Errors (service, options, next) {
 
-  service.method('error.generateError', require('./methods/generateError'));
+  service.method('errors.showError', require('./methods/showError'));
 
-  service.method('error.generateWarning', require('./methods/generateWarning'));
+  service.method('errors.generateWarning', require('./methods/generateWarning'));
 
   next();
 };
 
 exports.register.attributes = {
-  name: "newww-service-error",
+  name: "newww-service-errors",
   version: "1.0.0",
 };

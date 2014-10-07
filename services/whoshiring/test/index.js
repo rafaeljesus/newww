@@ -6,7 +6,7 @@ var Lab = require('lab')
 
 var Hapi = require('hapi'),
     whoshiring = require('../index.js'),
-    whos_hiring = require('../../../static/whos_hiring.json');
+    whos_hiring = require('../whos_hiring.json');
 
 var server;
 

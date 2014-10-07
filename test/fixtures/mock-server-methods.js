@@ -79,6 +79,12 @@ module.exports = function (server) {
       }
     },
 
+    static: {
+      getPage: function (name, next) {
+        return next(null)
+      }
+    },
+
     user: {
       changeEmail: function (name, email, next) {
         if (name !== 'fakeuser') {

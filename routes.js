@@ -353,7 +353,20 @@ var routes = module.exports = [
     handler: ops.csplog
   },
 
-  // === CATCH ALL ===
+  {
+    method: '*',
+    path: '/doc/{p*}',
+    handler: function (request, reply) {
+      return reply.redirect(require("url").format({
+        protocol: "https",
+        hostname: "docs.npmjs.com",
+        pathname: request.url.path
+          .replace(/^\/doc/, "")
+          .replace(/\.html$/, "")
+          .replace(/\/npm-/, "/")
+      })).code(301)
+    }
+  },
 
   {
     method: '*',

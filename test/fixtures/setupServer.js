@@ -1,7 +1,7 @@
 var Hapi = require('hapi'),
     config = require('../../config'),
     metricsConfig = config.metrics,
-    MetricsClient = require('../../adapters/metrics');
+    MetricsClient = require('newww-metrics');
 
 var serverOptions = {
   views: config.server.views

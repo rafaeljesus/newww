@@ -9,7 +9,7 @@ var Hapi = require('hapi'),
     config = require('../../../config').couch,
     metricsConfig = require('../../../config').metrics,
     couch = require('../index.js'),
-    MetricsClient = require('../../../adapters/metrics');
+    MetricsClient = require('newww-metrics');
 
 var couchdb = require('./fixtures/fake-couch')(config),
     server;

@@ -7,7 +7,7 @@ var Lab = require('lab'),
 var Hapi = require('hapi'),
     downloads = require('../index.js'),
     config = require('../../../config').metrics,
-    MetricsClient = require('../../../adapters/metrics');
+    MetricsClient = require('newww-metrics');
 
 var server;
 
@@ -105,4 +105,3 @@ describe('Getting download counts for all packages', function () {
     });
   });
 });
-

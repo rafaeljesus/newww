@@ -1,8 +1,10 @@
+var NAMESPACE = 'user-email-edit';
+
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
     nodemailer = require('nodemailer'),
     crypto = require('crypto'),
-    log = require('bole')('user-email-edit'),
+    log = require('bole')(NAMESPACE),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')();
 
@@ -14,9 +16,12 @@ module.exports = function (options) {
   return function (request, reply) {
     timer.start = Date.now();
 
+    var showError = request.server.methods.errors.showError(reply);
+
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.hiring.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      namespace: NAMESPACE
     };
 
     from = options.emailFrom;
@@ -29,7 +34,7 @@ module.exports = function (options) {
     } else {
       if (!options.mailTransportModule ||
           !options.mailTransportSettings) {
-        return showError(request, reply, 'Mail settings are missing!', 500);
+        return showError(null, 500, 'Mail settings are missing!', opts);
       }
       transport = require(options.mailTransportModule);
       mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
@@ -41,7 +46,7 @@ module.exports = function (options) {
         switch (request.params.token.split('/')[0]) {
           case 'revert': return revert(request, reply);
           case 'confirm': return confirm(request, reply);
-          default: return showError(request, reply, 'Page not found', 404, request.url.path);
+          default: return showError(request.url.path, 404, 'Page not found', opts);
         }
       } else {
         timer.end = Date.now();
@@ -91,7 +96,8 @@ module.exports = function (options) {
 function handle (request, reply, email2) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: NAMESPACE
   };
 
   var confTok = crypto.randomBytes(18).toString('hex'),
@@ -130,7 +136,7 @@ function handle (request, reply, email2) {
 
   function cb (er) {
     if (er) {
-      showError(request, reply, 'Could not set value to the cache', 500, er);
+      return showError(er, 500, 'Could not set value to the cache', opts);
     } else if (--n == 0) {
       sendEmails(conf, rev, request, reply);
     }
@@ -140,7 +146,8 @@ function handle (request, reply, email2) {
 function sendEmails (conf, rev, request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: NAMESPACE
   };
 
   var name = conf.name,
@@ -177,12 +184,12 @@ function sendEmails (conf, rev, request, reply) {
   // don't send the confmail until we know the revert mail was sent!
   mailer.sendMail(revMail, function (er, result) {
     if (er) {
-      return showError(request, reply, 'Unable to send revert email', 500, er);
+      return showError(er, 500, 'Unable to send revert email', opts);
     }
 
     mailer.sendMail(confMail, function (er, result) {
       if (er) {
-        return showError(request, reply, 'Unable to send confirmation email', 500, er);
+        return showError(er, 500, 'Unable to send confirmation email', opts);
       }
 
       opts.submitted = true;
@@ -197,11 +204,13 @@ function sendEmails (conf, rev, request, reply) {
 
 function confirm (request, reply) {
   var methods = request.server.methods,
-      setSession = request.server.methods.user.setSession(request);
+      setSession = request.server.methods.user.setSession(request),
+      showError = request.server.methods.errors.showError(reply);
 
   var opts = {
         user: request.auth.credentials,
-        hiring: methods.hiring.getRandomWhosHiring()
+        hiring: methods.hiring.getRandomWhosHiring(),
+        namespace: NAMESPACE
       },
       cache = request.server.app.cache;
 
@@ -212,16 +221,16 @@ function confirm (request, reply) {
 
   cache.get(confKey, function (er, cached) {
     if (er) {
-      return showError(request, reply, 'Error getting token from Redis', 500, confKey);
+      return showError(confKey, 500, 'Error getting token from Redis', opts);
     }
 
     if (!cached) {
-      return showError(request, reply, 'Token not found, or invalid', 404, confKey);
+      return showError(confKey, 500, 'Token not found, or invalid', opts);
     }
 
     var name = cached.item.name;
     if (name !== opts.user.name) {
-      return showError(request, reply, 'This request was for someone else', 403, {changeEmailFor: name, loggedInAs: opts.user.name});
+      return showError({changeEmailFor: name, loggedInAs: opts.user.name}, 500, 'This request was for someone else', opts);
     }
 
     var email1 = cached.item.email1,
@@ -230,17 +239,17 @@ function confirm (request, reply) {
         hash = cached.item.hash;
 
     if (hash !== confHash) {
-      return showError(request, reply, 'Math is broken, sorry', 500, {hash: hash, confHash: confHash});
+      return showError({hash: hash, confHash: confHash}, 500, 'Math is broken, sorry', opts);
     }
 
     cache.drop(confKey, function (err) {
       if (err) {
-        return showError(request, reply, 'Unable to drop key ' + confKey, 500, err);
+        return showError(err, 500, 'Unable to drop key ' + confKey, opts);
       }
 
       methods.user.changeEmail(opts.user.name, email2, function (er) {
         if (er) {
-          return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email2, 500, er);
+          return showError(er, 500, 'Unable to change email for ' + opts.user.name + ' to ' + email2, opts);
         }
 
         opts.user.email = email2;
@@ -248,10 +257,7 @@ function confirm (request, reply) {
 
         setSession(opts.user, function (err) {
           if (err) {
-            opts.errId = uuid.v1();
-            log.error(opts.errId + ' ' + Hapi.error.internal('Unable to set the session for user ' + opts.user.name), err);
-
-            return reply.view('user/error', opts);
+            showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
           }
 
           timer.end = Date.now();
@@ -268,11 +274,13 @@ function confirm (request, reply) {
 
 function revert (request, reply) {
   var methods = request.server.methods,
-      setSession = request.server.methods.user.setSession(request);
+      setSession = request.server.methods.user.setSession(request),
+      showError = request.server.methods.errors.showError(reply);
 
   var opts = {
         user: request.auth.credentials,
-        hiring: methods.hiring.getRandomWhosHiring()
+        hiring: methods.hiring.getRandomWhosHiring(),
+        namespace: NAMESPACE
       },
       cache = request.server.app.cache;
 
@@ -283,16 +291,16 @@ function revert (request, reply) {
 
   cache.get(revKey, function (er, cached) {
     if (er) {
-      return showError(request, reply, 'Error getting token from Redis', 500, revKey);
+      return showError(revKey, 500, 'Error getting token from Redis', opts);
     }
 
     if (!cached) {
-      return showError(request, reply, 'Token not found, or invalid', 404, revKey);
+      return showError(revKey, 500, 'Token not found, or invalid', opts);
     }
 
     var name = cached.item.name;
     if (name !== opts.user.name) {
-      return showError(request, reply, 'This request was for someone else', 403, {changeEmailFor: name, loggedInAs: opts.user.name});
+      return showError({changeEmailFor: name, loggedInAs: opts.user.name}, 500, 'This request was for someone else', opts);
     }
 
     var email1 = cached.item.email1,
@@ -302,32 +310,29 @@ function revert (request, reply) {
         hash = cached.item.hash;
 
     if (hash !== revHash) {
-      return showError(request, reply, 'Math is broken, sorry', 500, {hash: hash, confHash: confHash});
+      return showError({hash: hash, confHash: confHash}, 500, 'Math is broken, sorry', opts);
     }
 
     cache.drop(confKey, function (err) {
       if (err) {
-        return showError(request, reply, 'Unable to drop key ' + confKey, 500, err);
+        return showError(err, 500, 'Unable to drop key ' + confKey, opts);
       }
 
       cache.drop(revKey, function (err) {
         if (err) {
-          return showError(request, reply, 'Unable to drop key ' + revKey, 500, err);
+          return showError(err, 500, 'Unable to drop key ' + revKey, opts);
         }
 
         methods.user.changeEmail(opts.user.name, email1, function (er) {
           if (er) {
-            return showError(request, reply, 'Unable to change email for ' + opts.user.name + ' to ' + email1, 500, er);
+            return showError(er, 500, 'Unable to change email for ' + opts.user.name + ' to ' + email1, opts);
           }
 
           opts.user.email = email1;
 
           setSession(opts.user, function (err) {
             if (err) {
-              opts.errId = uuid.v1();
-              log.error(opts.errId + ' ' + Hapi.error.internal('Unable to set the session for user ' + opts.user.name), err);
-
-              return reply.view('user/error', opts);
+              return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
             }
 
             timer.end = Date.now();
@@ -349,26 +354,4 @@ function sha (s) {
 
 function pbkdf2 (pass, salt, iterations) {
   return crypto.pbkdf2Sync(pass, salt, iterations, 20).toString('hex')
-}
-
-function showError (request, reply, message, code, logExtras) {
-  var errId = uuid.v1();
-
-  var opts = {
-    user: request.auth.credentials,
-    errId: errId,
-    code: code || 500,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
-  };
-
-  var error;
-  switch (code) {
-    case 403: error = Hapi.error.forbidden(message); break;
-    case 404: error = Hapi.error.notFound(message); break;
-    default: error = Hapi.error.internal(message); break;
-  }
-
-  log.error(errId + ' ' + error, logExtras);
-
-  return reply.view('user/error', opts).code(code || 500);
 }

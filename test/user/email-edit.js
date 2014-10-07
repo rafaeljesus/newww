@@ -169,8 +169,8 @@ describe('Confirming an email change', function () {
     };
 
     server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('user/error');
+      expect(resp.statusCode).to.equal(500);
+      expect(source.template).to.equal('errors/internal');
       expect(source.context.errId).to.exist;
       done();
     });
@@ -183,8 +183,8 @@ describe('Confirming an email change', function () {
     };
 
     server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(403);
-      expect(source.template).to.equal('user/error');
+      expect(resp.statusCode).to.equal(500);
+      expect(source.template).to.equal('errors/internal');
       expect(source.context.errId).to.exist;
       done();
     });
@@ -237,8 +237,8 @@ describe('Reverting an email change', function () {
     };
 
     server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('user/error');
+      expect(resp.statusCode).to.equal(500);
+      expect(source.template).to.equal('errors/internal');
       expect(source.context.errId).to.exist;
       done();
     });
@@ -254,8 +254,8 @@ describe('Reverting an email change', function () {
     };
 
     server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(403);
-      expect(source.template).to.equal('user/error');
+      expect(resp.statusCode).to.equal(500);
+      expect(source.template).to.equal('errors/internal');
       expect(source.context.errId).to.exist;
       done();
     });

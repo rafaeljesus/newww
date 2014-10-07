@@ -8,13 +8,15 @@ module.exports = function (options) {
   return function (request, reply) {
     var getUser = request.server.methods.user.getUser,
         getBrowseData = request.server.methods.registry.getBrowseData,
+        showError = request.server.methods.errors.showError(reply),
         addMetric = metrics.addMetric,
         addLatencyMetric = metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.hiring.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      namespace: 'user-profile'
     };
 
     var profileName = request.params.name || opts.user.name;
@@ -22,7 +24,7 @@ module.exports = function (options) {
     if (request.info.referrer.indexOf('profile-edit') !== -1) {
       getUser.cache.drop(profileName, function (er, resp) {
         if (er) {
-          return showError(request, reply, 'Unable to drop key ' + profileName, er);
+          return showError(er, 500, 'Unable to drop key ' + profileName, opts);
         }
         return getUser(profileName, showProfile);
       });
@@ -46,12 +48,12 @@ module.exports = function (options) {
 
       getBrowseData('userstar', profileName, 0, 1000, function (err, starred) {
         if (err) {
-          return showError(request, reply, 'Unable to get stars for user ' + profileName, err);
+          return showError(err, 500, 'Unable to get stars for user ' + profileName, opts);
         }
 
         getBrowseData('author', profileName, 0, 1000, function (err, packages) {
           if (err) {
-            return showError(request, reply, 'Unable to get modules by user ' + profileName, err);
+            return showError(err, 500, 'Unable to get modules by user ' + profileName, opts);
           }
 
           opts.profile = {
@@ -92,19 +94,4 @@ function getRandomAssortment (items, browseKeyword, name) {
   }
 
   return items;
-}
-
-function showError (request, reply, message, logExtras) {
-  var errId = uuid.v1();
-
-  var opts = {
-    user: request.auth.credentials,
-    errId: errId,
-    code: 500,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
-  };
-
-  log.error(errId + ' ' + Hapi.error.internal(message), logExtras);
-
-  return reply.view('user/error', opts).code(500);
 }

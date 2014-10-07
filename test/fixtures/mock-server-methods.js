@@ -48,7 +48,19 @@ module.exports = function (server) {
             return reply(message).code(code);
           }
 
-          return reply.view('errors/notfound', opts).code(code);
+          var template;
+          switch (code) {
+            case 404:
+              template = 'errors/notfound';
+              break;
+            case 500:
+            default:
+              template = 'errors/internal';
+              break;
+          }
+
+
+          return reply.view(template, opts).code(code);
         }
       }
     },

@@ -10,6 +10,7 @@ module.exports = function signup (request, reply) {
   var signupUser = request.server.methods.user.signupUser,
       setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request),
+      showError = request.server.methods.errors.showError(reply),
       addMetric = metrics.addMetric,
       addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
@@ -17,7 +18,8 @@ module.exports = function signup (request, reply) {
   var opts = {
     user: request.auth.credentials,
     errors: [],
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: 'user-signup'
   };
 
   if (request.method === 'post') {
@@ -60,19 +62,19 @@ module.exports = function signup (request, reply) {
       delSession(value, function (er) {
 
         if (er) {
-          return showError(request, reply, 'Unable to delete the session for user ' + data.name, 500, er);
+          return showError(er, 500, 'Unable to delete the session for user ' + data.name, opts);
         }
 
         signupUser(value, function (er, user) {
 
           if (er) {
-            return showError(request, reply, 'Failed to create account', 403, er);
+            return showError(er, 403, 'Failed to create account', opts);
           }
 
           setSession(user, function (err) {
 
             if (err) {
-              return showError(request, reply, 'Unable to set the session for user ' + opts.user.name, 500, err);
+              return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
             }
 
             timer.end = Date.now();
@@ -100,24 +102,24 @@ module.exports = function signup (request, reply) {
   }
 };
 
-function showError (request, reply, message, code, logExtras) {
-  var errId = uuid.v1();
+// function showError (request, reply, message, code, logExtras) {
+//   var errId = uuid.v1();
 
-  var opts = {
-    user: request.auth.credentials,
-    errId: errId,
-    code: code || 500,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
-  };
+//   var opts = {
+//     user: request.auth.credentials,
+//     errId: errId,
+//     code: code || 500,
+//     hiring: request.server.methods.hiring.getRandomWhosHiring()
+//   };
 
-  var error;
-  if (code === 403) {
-    error = Hapi.error.forbidden(message);
-  } else {
-    error = Hapi.error.internal(message);
-  }
+//   var error;
+//   if (code === 403) {
+//     error = Hapi.error.forbidden(message);
+//   } else {
+//     error = Hapi.error.internal(message);
+//   }
 
-  log.error(errId + ' ' + error, logExtras);
+//   log.error(errId + ' ' + error, logExtras);
 
-  return reply.view('user/error', opts).code(code || 500);
-}
+//   return reply.view('user/error', opts).code(code || 500);
+// }

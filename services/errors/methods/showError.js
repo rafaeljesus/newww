@@ -19,7 +19,7 @@ module.exports = function showError (reply) {
         break;
       case 403:
         error = Hapi.error.forbidden(message);
-        template = 'errors/invalid';
+        template = 'errors/internal';
         break;
       case 404:
         error = Hapi.error.notFound(message);

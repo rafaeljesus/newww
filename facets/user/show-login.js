@@ -8,6 +8,7 @@ var murmurhash = require('murmurhash'),
 module.exports = function login (request, reply) {
   var loginUser = request.server.methods.user.loginUser,
       setSession = request.server.methods.user.setSession(request),
+      showError = request.server.methods.errors.showError(reply),
       addMetric = metrics.addMetric,
       addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
@@ -20,7 +21,8 @@ module.exports = function login (request, reply) {
   }
 
   var opts = {
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: 'user-login'
   };
 
   if (request.method === 'post') {
@@ -34,6 +36,7 @@ module.exports = function login (request, reply) {
       loginUser(request.payload, function (er, user) {
         if (er || !user) {
           var errId = uuid.v1();
+
           log.error(errId + ' ' + Hapi.error.badRequest('Invalid username or password'), request.payload.name);
           opts.error = {
             type: 'invalid',
@@ -50,16 +53,8 @@ module.exports = function login (request, reply) {
         // console.log("User is",user)
 
         setSession(user, function (err) {
-          // console.log("session set, next...")
           if (err) {
-            var errId = uuid.v1();
-            log.error(errId + ' ' + err)
-
-            timer.end = Date.now();
-            addLatencyMetric(timer, 'login-error');
-
-            addMetric({name: 'login-error'})
-            return reply.view('user/error', {errId: errId}).code(500);
+            return showError(err, 500, 'could not set session for ' + user.name, opts);
           }
 
           if (user && user.mustChangePass) {

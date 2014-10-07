@@ -9,13 +9,15 @@ module.exports = function (options) {
   return function (request, reply) {
     var saveProfile = request.server.methods.user.saveProfile,
         setSession = request.server.methods.user.setSession(request),
+        showError = request.server.methods.errors.showError(reply),
         addMetric = metrics.addMetric,
         addLatencyMetric = metrics.addPageLatencyMetric,
         timer = { start: Date.now() };
 
     var opts = {
       user: transform(request.auth.credentials, options),
-      hiring: request.server.methods.hiring.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      namespace: 'user-profile-edit'
     }
 
     if (request.method === 'post' || request.method === 'put') {
@@ -34,10 +36,7 @@ module.exports = function (options) {
 
           setSession(opts.user, function (err) {
             if (err) {
-              opts.errId = uuid.v1();
-              log.error(opts.errId + ' ' + Hapi.error.internal('Unable to set the session for user ' + opts.user.name), err);
-
-              return reply.view('user/error', opts);
+              return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
             }
 
             timer.end = Date.now();

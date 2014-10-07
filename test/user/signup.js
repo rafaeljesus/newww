@@ -67,7 +67,7 @@ describe('Signing up a new user', function () {
     server.inject(postSignup(forms.incomplete), function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('user/signup-form');
-      expect(source.context.errors[0][0]).to.have.deep.property('message', 'verify is required');
+      expect(source.context.errors[0]).to.have.deep.property('message', 'verify is required');
       done();
     });  })
 
@@ -75,7 +75,7 @@ describe('Signing up a new user', function () {
     server.inject(postSignup(forms.badEmail), function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('user/signup-form');
-      expect(source.context.errors[0][0]).to.have.deep.property('message', 'email must be a valid email');
+      expect(source.context.errors[0]).to.have.deep.property('message', 'email must be a valid email');
       done();
     });
   });

@@ -49,8 +49,8 @@ describe('Accessing the joinwhoshiring page', function () {
     });
   });
 
-
-  it('renders an error when a stripe key is reused', function (done) {
+  // when the internet is slow, the longer timeout becomes necessary
+  it('renders an error when a stripe key is reused', { timeout: 4000 }, function (done) {
     var opts = {
       url: '/joinwhoshiring',
       method: 'POST',

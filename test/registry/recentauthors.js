@@ -38,9 +38,8 @@ describe('getting to the recentauthors page', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('registry/error');
+      expect(source.template).to.equal('errors/notfound');
       expect(source.context.errId).to.exist;
-      expect(source.context.errorType).to.equal('browseUrl');
       done();
     });
   });

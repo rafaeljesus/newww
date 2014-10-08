@@ -8,12 +8,14 @@ var Hapi = require('hapi'),
 module.exports = function (request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: 'user-password'
   };
 
   var changePass = request.server.methods.user.changePass,
       loginUser = request.server.methods.user.loginUser,
       setSession = request.server.methods.user.setSession(request),
+      showError = request.server.methods.errors.showError(reply),
       addMetric = metrics.addMetric,
       addLatencyMetric = metrics.addPageLatencyMetric,
       timer = { start: Date.now() };
@@ -72,17 +74,17 @@ module.exports = function (request, reply) {
 
     changePass(newAuth, function (er, data) {
       if (er) {
-        return showError(request, reply, 'Failed to set the password for ' + newAuth.name, er);
+        return showError(er, 500, 'Failed to set the password for ' + newAuth.name, opts);
       }
 
       loginUser(newAuth, function (er, user) {
         if (er) {
-          return showError(request, reply, 'Unable to login user', er);
+          return showError(er, 500, 'Unable to login user', opts);
         }
 
         setSession(user, function (err) {
           if (err) {
-            return showError(request, reply, 'Unable to set session for ' + user.name, err);
+            return showError(err, 500, 'Unable to set session for ' + user.name, opts);
           }
 
           timer.end = Date.now();
@@ -108,19 +110,4 @@ function pbkdf2 (pass, salt, iterations) {
 
 function sha (s) {
   return crypto.createHash("sha1").update(s).digest("hex")
-}
-
-function showError (request, reply, message, logExtras) {
-  var errId = uuid.v1();
-
-  var opts = {
-    user: request.auth.credentials,
-    errId: errId,
-    code: 500,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
-  };
-
-  log.error(errId + ' ' + Hapi.error.internal(message), logExtras);
-
-  return reply.view('user/error', opts).code(500);
 }

@@ -13,6 +13,68 @@ var pkgs = {
 module.exports = function (server) {
   var methods = {
 
+    downloads: {
+      getAllDownloads: function (next) {
+        var d = {
+          day: 0,
+          week: 0,
+          month: 0
+        };
+
+        return next(null, d);
+      },
+
+      getAllDownloadsForPackage: function (name, next) {
+        var d = {
+          day: 0,
+          week: 0,
+          month: 0
+        };
+
+        return next(null, d);
+      },
+
+      getDownloadsForPackage: function (period, detail, package, next) {
+        return next(null, [{day: '2014-07-12', downloads: 0}, {day: '2014-07-13', downloads: 0}]);
+      }
+    },
+
+    errors: {
+      showError: function (reply) {
+        return function (err, code, message, opts) {
+          opts.errId = '12345';
+
+          if (opts.isXhr) {
+            return reply(message).code(code);
+          }
+
+          var template;
+          switch (code) {
+            case 404:
+              template = 'errors/notfound';
+              break;
+            case 500:
+            default:
+              template = 'errors/internal';
+              break;
+          }
+
+
+          return reply.view(template, opts).code(code);
+        }
+      }
+    },
+
+    hiring: {
+      getAllWhosHiring: function () {
+        return whosHiring.all;
+      },
+
+      getRandomWhosHiring: function () {
+        return whosHiring.random;
+      }
+    },
+
     registry: {
       getBrowseData: function (type, arg, skip, limit, next) {
         return next(null, browse[type]);
@@ -43,45 +105,9 @@ module.exports = function (server) {
       }
     },
 
-    downloads: {
-      getAllDownloads: function (next) {
-        var d = {
-          day: 0,
-          week: 0,
-          month: 0
-        };
-
-        return next(null, d);
-      },
-
-      getAllDownloadsForPackage: function (name, next) {
-        var d = {
-          day: 0,
-          week: 0,
-          month: 0
-        };
-
-        return next(null, d);
-      },
-
-      getDownloadsForPackage: function (period, detail, package, next) {
-        return next(null, [{day: '2014-07-12', downloads: 0}, {day: '2014-07-13', downloads: 0}]);
-      }
-    },
-
-    hiring: {
-      getAllWhosHiring: function () {
-        return whosHiring.all;
-      },
-
-      getRandomWhosHiring: function () {
-        return whosHiring.random;
-      }
-    },
-
     static: {
       getPage: function (name, next) {
-        return next(null)
+        return next(null);
       }
     },
 

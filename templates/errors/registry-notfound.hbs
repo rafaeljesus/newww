@@ -1,18 +1,6 @@
-
-
 <h1>Whoops! Something went wrong :(</h1>
 
-{{#compare errorType 'invalid'}}
-  <p><strong><code>{{name}}</code></strong> is an invalid package name. Try again?</p>
-{{/compare}}
-
-{{#compare errorType 'notFound'}}
-  <p><strong><code>{{name}}</code></strong> does not exist in the registry. Would you like to claim it for yourself?</p>
-{{/compare}}
-
-{{#compare errorType 'browseUrl'}}
-  <p>The URL you visited - {{canonicalURL}} - is invalid. Try again?</p>
-{{/compare}}
+<p><strong><code>{{name}}</code></strong> does not exist in the registry. Would you like to claim it for yourself?</p>
 
 <p>If you feel this error is the result of a bug, please <a href="mailto:support@npmjs.com">email us</a>, <a href="https://twitter.com/npm_support">send us a tweet</a>, or reach out to us on IRC (#npmjs on Freenode) and reference the following unique error number:</p>
 

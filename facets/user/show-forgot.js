@@ -1,8 +1,10 @@
+var NAMESPACE = 'user-forgot';
+
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
     nodemailer = require('nodemailer'),
     crypto = require('crypto'),
-    log = require('bole')('user-forgot'),
+    log = require('bole')(NAMESPACE),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')();
 
@@ -15,9 +17,13 @@ var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
 module.exports = function (options) {
   return function (request, reply) {
     timer.start = Date.now();
+
+    var showError = request.server.methods.errors.showError(reply);
+
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.hiring.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      namespace: NAMESPACE
     };
 
     from = options.emailFrom;
@@ -30,7 +36,7 @@ module.exports = function (options) {
     } else {
       if (!options.mailTransportModule ||
           !options.mailTransportSettings) {
-        return showError(request, reply, 'Mail settings are missing!', 500);
+        return showError(null, 500, 'Mail settings are missing!', opts);
       }
       transport = require(options.mailTransportModule);
       mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
@@ -60,9 +66,11 @@ module.exports = function (options) {
 function token (request, reply) {
   var opts = {
         user: request.auth.credentials,
-        hiring: request.server.methods.hiring.getRandomWhosHiring()
+        hiring: request.server.methods.hiring.getRandomWhosHiring(),
+        namespace: NAMESPACE
       },
-      cache = request.server.app.cache;
+      cache = request.server.app.cache,
+      showError = request.server.methods.errors.showError(reply);
 
   var token = request.params.token,
       hash = sha(token),
@@ -70,11 +78,11 @@ function token (request, reply) {
 
   cache.get(pwKey, function (err, cached) {
     if (err) {
-      return showError(request, reply, 'Error getting token from Redis', 500, pwKey);
+      return showError(pwKey, 500, 'Error getting token from Redis', opts);
     }
 
     if (!cached) {
-      return showError(request, reply, 'Token not found, or invalid', 404, pwKey);
+      return showError(pwKey, 500, 'Token not found, or invalid', opts);
     }
 
     var name = cached.item.name,
@@ -82,7 +90,7 @@ function token (request, reply) {
         verify = cached.item.token;
 
     if (verify !== token) {
-      return showError(request, reply, 'Token not found, or invalid', 404, pwKey);
+      return showError(pwKey, 500, 'Token not found, or invalid', opts);
     }
 
     var newPass = crypto.randomBytes(18).toString('base64'),
@@ -96,12 +104,12 @@ function token (request, reply) {
 
     request.server.methods.user.changePass(newAuth, function (err, data) {
       if (err) {
-      return showError(request, reply, 'Failed to set password for ' + newAuth.name, 400, er);
+      return showError(er, 500, 'Failed to set password for ' + newAuth.name, opts);
       }
 
       cache.drop(pwKey, function (err) {
         if (err) {
-          return showError(request, reply, 'Unable to drop key ' + pwKey, 500, err);
+          return showError(err, 500, 'Unable to drop key ' + pwKey, opts);
         }
         opts.password = newPass;
         opts.user = null;
@@ -120,7 +128,8 @@ function token (request, reply) {
 function handle(request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: NAMESPACE
    };
 
   var data = request.payload;
@@ -162,7 +171,8 @@ function handle(request, reply) {
 function lookupUserByEmail (email, request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: NAMESPACE
    };
 
   request.server.methods.user.lookupUserByEmail(email, function (er, usernames) {
@@ -197,7 +207,8 @@ function lookupUserByEmail (email, request, reply) {
 function lookupUserByUsername (name, request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: NAMESPACE
    };
 
   request.server.methods.user.getUser(name, function (er, user) {
@@ -242,9 +253,12 @@ function lookupUserByUsername (name, request, reply) {
 }
 
 function sendEmail(name, email, request, reply) {
+  var showError = request.server.methods.errors.showError(reply);
+
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: NAMESPACE
   };
 
   // the token needs to be url-safe
@@ -261,7 +275,7 @@ function sendEmail(name, email, request, reply) {
 
   request.server.app.cache.set(key, data, ONE_HOUR, function (err) {
     if (err) {
-      return showError(request, reply, 'Unable to set ' + key + 'to the cache', 500, err);
+      return showError(err, 'Unable to set ' + key + 'to the cache', opts);
     }
 
     var u = host + '/forgot/' + encodeURIComponent(token);
@@ -283,7 +297,7 @@ function sendEmail(name, email, request, reply) {
     } else {
       mailer.sendMail(mail, function (er, result) {
         if (er) {
-          return showError(request, reply, 'Unable to send revert email', 500, er);
+          return showError(er, 500, 'Unable to send revert email', opts);
         }
 
         opts.sent = true;
@@ -301,26 +315,4 @@ function sendEmail(name, email, request, reply) {
 
 function sha (token) {
   return crypto.createHash('sha1').update(token).digest('hex');
-}
-
-function showError (request, reply, message, code, logExtras) {
-  var errId = uuid.v1();
-
-  var opts = {
-    user: request.auth.credentials,
-    errId: errId,
-    code: code || 500,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
-  };
-
-  var error;
-  switch (code) {
-    case 400: error = Hapi.error.badRequest(message); break;
-    case 404: error = Hapi.error.notFound(message); break;
-    default: error = Hapi.error.internal(message); break;
-  }
-
-  log.error(errId + ' ' + error, logExtras);
-
-  return reply.view('user/error', opts).code(code || 500);
 }

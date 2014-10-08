@@ -2,17 +2,16 @@ var Hapi = require('hapi'),
     presentPackage = require('./presenters/package'),
     log = require('bole')('registry-package'),
     commaIt = require('number-grouper'),
-    uuid = require('node-uuid'),
     metrics = require('newww-metrics')();
-
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
       getBrowseData = request.server.methods.registry.getBrowseData,
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
       getDownloadsForPackage = request.server.methods.downloads.getDownloadsForPackage,
-      getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;
+      getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage,
+      showError = request.server.methods.errors.showError(reply),
+      addMetric = metrics.addMetric,
+      addLatencyMetric = metrics.addPageLatencyMetric;
 
   var timer = { start: Date.now() };
 
@@ -22,29 +21,20 @@ module.exports = function (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    namespace: 'registry-package'
   }
 
   opts.name = request.params.package
 
   if (opts.name !== encodeURIComponent(opts.name)) {
-    opts.errorType = 'invalid';
-    opts.errId = uuid.v1();
-
-    log.error(opts.errId + ' ' + Hapi.error.badRequest('Invalid Package Name'), opts.name);
-
-    return reply.view('registry/error', opts).code(400)
+    return showError([opts.name, encodeURIComponent(opts.name)], 400, 'Invalid Package Name', opts);
   }
 
   getPackage(opts.name, function (er, pkg) {
 
     if (er || pkg.error) {
-      opts.errorType = 'notFound';
-      opts.errId = uuid.v1();
-
-      log.error(opts.errId + ' ' + Hapi.error.notFound('Package Not Found ' + opts.name), er || pkg.error);
-
-      return reply.view('registry/error', opts).code(404)
+      return showError(er || pkg.error, 404, 'Package Not Found ' + opts.name, opts);
     }
 
     if (pkg.time && pkg.time.unpublished) {
@@ -72,21 +62,14 @@ module.exports = function (request, reply) {
       });
 
       if (er) {
-        opts.errId = uuid.v1();
-        opts.errorType = 'internal';
-        log.error(opts.errId + ' ' + Hapi.error.internal('Unable to get depended data from couch for ' + opts.name), er);
-
-        return reply.view('registry/error', opts).code(500);
+        return showError(er, 500, 'Unable to get depended data from couch for ' + opts.name, opts);
       }
 
       pkg.dependents = dependents;
 
       presentPackage(pkg, function (er, pkg) {
         if (er) {
-          opts.errId = uuid.v1();
-          opts.errorType = 'internal';
-          log.error(opts.errId + ' ' + Hapi.error.internal('An error occurred with presenting package ' + opts.name), er);
-          return reply.view('registry/error', opts).code(500);
+          return showError(er, 500, 'An error occurred with presenting package ' + opts.name, opts);
         }
 
         pkg.isStarred = opts.user && pkg.users && pkg.users[opts.user.name] || false;
@@ -103,10 +86,7 @@ module.exports = function (request, reply) {
 
         function handleDownloads(er, downloadData) {
           if (er) {
-            opts.errId = uuid.v1();
-            opts.errorType = 'internal';
-            log.error(opts.errId + ' ' + Hapi.error.internal('An error occurred with getting download counts for ' + opts.name), er);
-            return reply.view('registry/error', opts).code(500);
+            return showError(er, 500, 'An error occurred with getting download counts for ' + opts.name, opts);
           }
 
           if (Array.isArray(downloadData)) {

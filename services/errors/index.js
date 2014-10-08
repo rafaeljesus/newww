@@ -3,8 +3,6 @@ exports.register = function Errors (service, options, next) {
 
   service.method('errors.showError', require('./methods/showError'));
 
-  service.method('errors.generateWarning', require('./methods/generateWarning'));
-
   next();
 };
 

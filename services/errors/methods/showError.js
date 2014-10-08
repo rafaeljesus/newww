@@ -6,7 +6,6 @@ var Hapi = require('hapi'),
 module.exports = function showError (reply) {
 
   return function (err, code, message, opts) {
-
     opts.errId = uuid.v1();
 
     var error;

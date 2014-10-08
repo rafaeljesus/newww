@@ -397,7 +397,7 @@ function fallback (request, reply) {
         return reply.redirect('/package/' + package._id);
       }
 
-      return reply.view('registry/notfound', opts).code(404);
+      return reply.view('errors/registry-notfound', opts).code(404);
     });
   });
 }

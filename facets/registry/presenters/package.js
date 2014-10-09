@@ -344,4 +344,11 @@ function removeSuperfluousContentFromReadme (data) {
     data.readme = $.html()
   }
 
+  // Remove the Express logo
+  var expressLogo = $("img[alt='express logo']").first()
+  if (expressLogo) {
+    expressLogo.remove()
+    data.readme = $.html()
+  }
+
 }

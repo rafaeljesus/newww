@@ -71,6 +71,11 @@ module.exports = function (options) {
 
           addMetric({ name: 'showProfile' });
 
+          // Return raw context object if `json` query param is present
+          if (process.env.NODE_ENV === "dev" && 'json' in request.query) {
+            return reply(opts);
+          }
+
           return reply.view('user/profile', opts)
         });
       });

@@ -8,11 +8,14 @@ var gulp = require('gulp'),
     streamify = require('gulp-streamify'),
     bistre = require('bistre'),
     nodemon = require('gulp-nodemon'),
-    rename = require('gulp-rename');
+    rename = require('gulp-rename'),
+    imagemin = require('gulp-imagemin'),
+    pngcrush = require('imagemin-pngcrush');
 
 var paths = {
   fonts: ['./assets/fonts/*'],
   styles: ['./assets/styles/*.styl'],
+  images: ['./assets/images/*'],
   scripts: {
     browserify: ["./assets/scripts/*.js"],
     vendor: ["./assets/scripts/vendor/*.js"]
@@ -54,6 +57,16 @@ gulp.task('fonts', function(){
   .pipe(gulp.dest('static/fonts'));
 })
 
+gulp.task('images', function(){
+  gulp.src(paths.images)
+    .pipe(imagemin({
+        progressive: true,
+        svgoPlugins: [{removeViewBox: false}],
+        use: [pngcrush()]
+    }))
+    .pipe(gulp.dest('static/images'));
+})
+
 gulp.task('nodemon', function() {
   process.env.NODE_ENV = 'dev';
   nodemon({
@@ -78,6 +91,6 @@ gulp.task('nodemon', function() {
     });
 });
 
-gulp.task('build', ['fonts', 'styles', 'browserify', 'concat']);
+gulp.task('build', ['fonts', 'images', 'styles', 'browserify', 'concat']);
 gulp.task('dev', ['build', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

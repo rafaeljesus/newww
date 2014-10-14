@@ -9,7 +9,8 @@ module.exports = function (request, reply) {
   var opts = {
     user: request.auth.credentials,
     hiring: request.server.methods.hiring.getRandomWhosHiring(),
-    namespace: 'user-password'
+    namespace: 'user-password',
+    title: 'Edit Profile'
   };
 
   var changePass = request.server.methods.user.changePass,

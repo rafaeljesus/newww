@@ -1,36 +1,40 @@
-
-
 {{#with profile}}
+
 <div id="profile">
+
   {{#if isSelf}}
-  <a href="http://en.gravatar.com/emails/"
-    title="edit avatar at gravatar.com">
-  {{/if}}
-  <img src="{{showprofile.avatarLarge}}"
-    class="avatar-large" height=248 width=248 alt="">
-  {{#if isSelf}}
+    <a href="http://en.gravatar.com/emails/" class="avatar">
+      <img src="{{showprofile.avatarLarge}}">
+      <h1>{{showprofile.name}}</h1>
+    </a>
+  {{else}}
+    <a href="/~{{showprofile.name}}" class="avatar">
+      <img src="{{showprofile.avatarLarge}}">
+      <h1>{{showprofile.name}}</h1>
     </a>
   {{/if}}
 
-  <h1>{{showprofile.name}}</h1>
-  {{!-- We'll get to this after login/logout + profile sessions gets involved --}}
-  {{#if isSelf}}
+  {{{../graphics.github_badge}}}
+
+  <!-- {{#if isSelf}}
     <p><a href=/profile-edit>Edit Profile</a> -
       <a href=/password>Change Password</a> -
       <a href="http://gravatar.com/emails/">Change Picture</a>
     </p>
-  {{/if}}
+  {{/if}} -->
 
-  <table class="metadata">
-  {{#each fields}}
-    {{#if show}}
-      <tr>
-        <th>{{title}}</th>
-        {{{showField this}}}
-      </tr>
-    {{/if}}
-  {{/each}}
-  </table>
+  {{#if fields}}
+    <ul class="fields">
+      {{#each fields}}
+        {{#if show}}
+          <li class="{{name}}">
+            <label>{{title}}</label>
+            <span>{{{showField this}}}</span>
+          </li>
+        {{/if}}
+      {{/each}}
+    </ul>
+  {{/if}}
 
   {{#if packages}}
     <h2>Packages by {{showprofile.name}}</h2>
@@ -55,7 +59,6 @@
   {{#if profile}}
     <a href='/logout/?done=/profile/{{showprofile.name}}'>log out</a>
   {{/if}}
+
 </div>
 {{/with}}
-
-<script src="/static/js/emObf.js" async="true"></script>

@@ -7,10 +7,6 @@
   </div>
 </div> <!-- / #secondary-nav -->
 
-{{#if error}}
-  <p class="error">{{ error }}</p>
-{{/if}}
-
 <form class="container tab-content" data-tab="profile" method="post" action="/profile-edit">
   <div class="layout-left">
 
@@ -25,9 +21,10 @@
         <input type="text" id="full-name" name="full-name" value="{{fullname}}">
         <p class="help-text">Ex: wombat watson</p>
 
-        <label for="email">email address</label>
-        <input type="text" id="email" name="email" value="{{email}}" disabled="disabled">
-        <p class="help-text">Ex: wombat@npmjs.org</p>
+        <a href="/email-edit" class="email-label">email address</a>
+        <a href="/email-edit" class="email-field">
+          <input type="text" id="email" name="email" value="{{email}}" disabled='disabled'>
+        </a>
 
       </div> <!-- / .layout-left.half -->
 

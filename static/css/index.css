@@ -322,6 +322,14 @@ a .icon-add:before {
   margin: 0 6px 0 0;
   background: #cb3837;
 }
+.email-label:hover,
+.email-field:hover {
+  text-decoration: none;
+  color: rgba(0,0,0,0.8);
+}
+.email-field input {
+  background-color: rgba(0,0,0,0.04);
+}
 @font-face {
   font-family: 'icomoon';
   src: url("/static/fonts/icomoon.eot?gqpuz");

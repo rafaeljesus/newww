@@ -17,6 +17,7 @@
     "url": "https://github.com/npm/newww"
   },
   "dependencies": {
+    "@npm/graphics": "git://github.com/npm/graphics",
     "accept-language-parser": "^1.0.2",
     "blankie": "^0.1.2",
     "bole": "^0.1.0",

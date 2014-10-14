@@ -1,44 +1,79 @@
-
-
-<h1>Edit your Profile</h1>
-
-<p>
-  <a href='/email-edit'>Edit Email Address</a> -
-  <a href='/password'>Change Password</a> -
-  <a href='/forgot'>Forgot Password</a>
-</p>
+<div id="secondary-nav">
+  <div class="container">
+    <a class="active tab" data-tab="profile">edit your profile</a>
+    <a href="/email-edit" class="tab" data-tab="edit-email">edit email</a>
+    <a href="/password" class="tab" data-tab="password">change password</a>
+    {{!-- <a href="#" class="tab" data-tab="edit-order">edit package/collection order</a> --}}
+  </div>
+</div> <!-- / #secondary-nav -->
 
 {{#if error}}
   <p class="error">{{ error }}</p>
 {{/if}}
 
-<form method='post' action='/profile-edit'>
-  {{#with user}}
-    <input type='hidden' name='_id' value="{{_id}}">
-    <input type='hidden' name='name' value="{{name}}">
-    {{#each fields}}
-      {{#compare name 'email'}}
-        <fieldset>
-          <a href="/email-edit" class="email-label">{{title}}</a>
-          <a href="/email-edit" class="email-field">
-            <input id="{{name}}" name="{{name}}"
-              value="{{value}}" disabled='disabled'>
-          </a>
-        </fieldset>
-      {{else}}
-        <fieldset>
-          <label for="{{name}}">{{title}}</label>
-          <input id="{{name}}" name="{{name}}"
-            value="{{value}}">
-        </fieldset>
-      {{/compare}}
-    {{/each}}
-  {{/with}}
+<form class="container tab-content" data-tab="profile" method="post" action="/profile-edit">
+  <div class="layout-left">
 
-  <fieldset class='buttons'>
-    <button class='btn' type='submit'>Save</button>
-  </fieldset>
+    {{#with user}}
+      <h2>personal information</h2>
+
+      <div class="layout-left half">
+        <input type="hidden" name="_id" value="{{_id}}">
+        <input type="hidden" name="name" value="{{name}}">
+
+        <label for="full-name">full name</label>
+        <input type="text" id="full-name" name="full-name" value="{{fullname}}">
+        <p class="help-text">Ex: wombat watson</p>
+
+        <label for="email">email address</label>
+        <input type="text" id="email" name="email" value="{{email}}" disabled="disabled">
+        <p class="help-text">Ex: wombat@npmjs.org</p>
+
+      </div> <!-- / .layout-left.half -->
+
+      <div class="layout-right half">
+
+        <label for="homepage">homepage</label>
+        <input type="text" id="homepage" name="homepage" value="{{homepage}}">
+        <p class="help-text">Ex: www.wombats-rule.com</p>
+
+      </div> <!-- / .layout-right.half -->
+
+      <hr />
+
+      <h2>social</h2>
+
+      <div class="layout-left half">
+        <label for="github">github</label>
+        <input type="text" id="github" name="github" value="{{github}}">
+        <p class="help-text">Ex: wombat</p>
+
+        <label for="twitter">twitter</label>
+        <input type="text" id="twitter" name="twitter" value="{{twitter}}">
+        <p class="help-text">Ex: @wombat</p>
+      </div> <!-- / .layout-left.half -->
+
+      <div class="layout-right half">
+        <label for="freenode">freenode</label>
+        <input type="text" id="freenode" name="freenode" value="{{freenode}}">
+        <p class="help-text">Ex: wombat</p>
+      </div> <!-- / .layout-right.half -->
+    {{/with}}
+
   <input type="hidden" name="crumb" value="{{crumb}}"/>
-</form>
+  <input type="submit" value="save" />
+  </div> <!-- / .layout-left -->
+
+
+  <div class="layout-right">
+    <h4>where is my avatar?</h4>
+    <div class="box">
+      <p><strong>How do I change my avatar?</strong> We use Gravatar to manage all our avatars. Head on over to Gravatar to add yours and it will magically show up on npm!</p>
+      <div class="box-action">
+        <strong>create an avatar at</strong> <a href="#">gravatar.com</a>
+      </div>
+    </div> <!-- / .box -->
+  </div> <!-- / .layout-right -->
+</form> <!-- / .container -->
 
 

@@ -7,10 +7,6 @@
   </div>
 </div> <!-- / #secondary-nav -->
 
-{{#if error}}
-  <p class="error">{{error}}</p>
-{{/if}}
-
 {{#unless submitted}}
 
   <form class="container tab-content" data-tab="edit-email" method="post" action="/email-edit">
@@ -24,12 +20,20 @@
         <label for="password">password</label>
         <input type="password" id="password" name="password">
 
+        {{#if error.password}}
+          <p class="error">Invalid password</p>
+        {{/if}}
+
         <label for="email">new email address</label>
         <input type="text" id="email" name="email" value="">
 
         <p class="help-text">this <strong>will be</strong> public</p>
-        <input type="submit" value="save" />
 
+        {{#if error.email}}
+          <p class="error">Must provide a valid email address</p>
+        {{/if}}
+
+        <input type="submit" value="save" />
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
       </div> <!-- / .layout-right.half -->

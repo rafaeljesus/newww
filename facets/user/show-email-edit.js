@@ -64,7 +64,7 @@ module.exports = function (options) {
           email2 = data.email;
 
       if (!email2 || userValidate.email(email2)) {
-        opts.error = 'Must provide a valid email address';
+        opts.error = {email: true};
 
         timer.end = Date.now();
         metrics.addPageLatencyMetric(timer, 'email-edit-error');
@@ -79,7 +79,7 @@ module.exports = function (options) {
           profHash = opts.user.password_sha || opts.user.derived_key;
 
       if (pwHash !== profHash) {
-        opts.error = 'Invalid password';
+        opts.error = {password: true};
 
         timer.end = Date.now();
         metrics.addPageLatencyMetric(timer, 'email-edit-error');

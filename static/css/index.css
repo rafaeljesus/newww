@@ -221,6 +221,7 @@ h2 {
   font-weight: 600;
   font-size: 24px;
   color: rgba(0,0,0,0.5);
+  text-transform: lowercase;
 }
 h2 span {
   font-weight: 400;
@@ -235,7 +236,8 @@ h2:before {
   float: left;
   margin-right: 10px;
 }
-form h2 {
+form h2,
+.layout-left h2 {
   color: #cb3837;
 }
 h3 {
@@ -489,7 +491,7 @@ input[type=submit] {
   border: 0;
   border-radius: 4px;
   text-align: center;
-  display: inline-block;
+  display: block;
   padding: 0 35px;
   margin: 0 0 4px;
   height: 47px;
@@ -500,6 +502,7 @@ input[type=submit] {
   background: #cb3837;
   cursor: pointer;
   -webkit-appearance: none;
+  clear: both;
 }
 input[type=submit]:hover {
   background: rgba(0,0,0,0.8);
@@ -775,6 +778,7 @@ nav h2 {
   line-height: 65px;
   font: 600 16px/65px 'Source Sans Pro', 'Lucida Grande', sans-serif;
   color: rgba(0,0,0,0.5);
+  text-decoration: none;
 }
 @media only screen and (max-width: 767px) {
   #secondary-nav a {
@@ -910,7 +914,7 @@ nav h2 {
 }
 #site-search-submit:hover {
   width: 47px;
-  height: 49px;
+  height: 46px;
   top: -1px;
   right: -1px;
   border-left: 0;
@@ -1381,7 +1385,6 @@ div.stat strong {
 }
 .layout-right {
   margin: 0 0 90px 72.5%;
-  padding-top: 20px;
 }
 @media only screen and (max-width: 1024px) {
   .layout-right {

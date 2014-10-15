@@ -103,3 +103,8 @@ describe('Changing the password', function () {
 
   });
 });
+
+after(function (done) {
+  server.app.cache._cache.connection.stop();
+  done();
+});

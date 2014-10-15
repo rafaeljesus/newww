@@ -52,6 +52,8 @@ module.exports = function (options) {
         timer.end = Date.now();
         metrics.addPageLatencyMetric(timer, 'email-edit');
 
+        opts.title = 'Edit Profile';
+
         metrics.addMetric({ name: 'email-edit' });
         return reply.view('user/email-edit', opts);
       }
@@ -62,7 +64,7 @@ module.exports = function (options) {
           email2 = data.email;
 
       if (!email2 || userValidate.email(email2)) {
-        opts.error = 'Must provide a valid email address';
+        opts.error = {email: true};
 
         timer.end = Date.now();
         metrics.addPageLatencyMetric(timer, 'email-edit-error');
@@ -77,7 +79,7 @@ module.exports = function (options) {
           profHash = opts.user.password_sha || opts.user.derived_key;
 
       if (pwHash !== profHash) {
-        opts.error = 'Invalid password';
+        opts.error = {password: true};
 
         timer.end = Date.now();
         metrics.addPageLatencyMetric(timer, 'email-edit-error');
@@ -176,9 +178,12 @@ function sendEmails (conf, rev, request, reply) {
   if (devMode) {
     timer.end = Date.now();
     metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
+    opts.confirm = JSON.stringify(confMail);
+    opts.revert = JSON.stringify(revMail);
+    opts.submitted = true;
 
     metrics.addMetric({ name: 'email-edit-send-emails' });
-    return reply({confirm: confMail, revert: revMail});
+    return reply.view('user/email-edit', opts);
   }
 
   // don't send the confmail until we know the revert mail was sent!
@@ -265,6 +270,8 @@ function confirm (request, reply) {
 
           metrics.addMetric({ name: 'confirmEmailChange' });
 
+          opts.title = "Edit Profile";
+
           return reply.view('user/email-edit-confirmation', opts);
         });
       });
@@ -339,6 +346,8 @@ function revert (request, reply) {
             metrics.addPageLatencyMetric(timer, 'revertEmailChange');
 
             metrics.addMetric({ name: 'revertEmailChange' });
+
+            opts.title = "Edit Profile";
 
             return reply.view('user/email-edit-confirmation', opts);
           });

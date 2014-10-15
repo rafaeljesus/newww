@@ -14,7 +14,8 @@
     </a>
   {{/if}}
 
-  {{{../graphics.github_badge}}}
+
+  <!-- {{{../graphics.github_badge}}} -->
 
   <!-- {{#if isSelf}}
     <p><a href=/profile-edit>Edit Profile</a> -
@@ -24,10 +25,10 @@
   {{/if}} -->
 
   {{#if fields}}
-    <ul class="fields">
+    <ul class="social">
       {{#each fields}}
         {{#if show}}
-          <li class="{{name}}">
+          <li class="{{name}} icon-{{name}}">
             <label>{{title}}</label>
             <span>{{{showField this}}}</span>
           </li>

@@ -516,3 +516,24 @@ ul.userMosaic
   img
     width 300px
     margin 1em
+
+.reset-list
+  list-style none
+  margin 0
+  padding 0
+
+a.avatar
+  max-width 200px
+  display block
+  img
+    width 100%
+    border-radius 5px
+
+ul.social
+  @extend .reset-list
+
+  li
+    list-style none
+    &.twitter, &.github
+      label
+        display none

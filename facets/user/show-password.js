@@ -38,7 +38,7 @@ module.exports = function (request, reply) {
         hashProf = prof.password_sha || prof.derived_key;
 
     if (hashCurrent !== hashProf) {
-      opts.error = 'Invalid current password';
+      opts.error = {current: true};
 
       timer.end = Date.now();
       addLatencyMetric(timer, 'password-error');
@@ -48,24 +48,13 @@ module.exports = function (request, reply) {
     }
 
     if (data.new !== data.verify) {
-      opts.error = 'Failed to verify password';
+      opts.error = {verify: true};
 
       timer.end = Date.now();
       addLatencyMetric(timer, 'password-error');
 
       addMetric({ name: 'password-error' });
       return reply.view('user/password', opts).code(403);
-    }
-
-    var error = userValidate.pw(data.new);
-    if (error) {
-      opts.error = error.message;
-
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'password-error');
-
-      addMetric({ name: 'password-error' });
-      return reply.view('user/password', opts).code(400);
     }
 
     log.warn('Changing password', { name: prof.name });

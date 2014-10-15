@@ -105,3 +105,8 @@ describe('Modifying the profile before sending it to the template', function () 
     done();
   });
 });
+
+after(function (done) {
+  server.app.cache._cache.connection.stop();
+  done();
+});

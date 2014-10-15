@@ -143,3 +143,8 @@ describe('Getting to the login page', function () {
   });
 
 });
+
+after(function (done) {
+  server.app.cache._cache.connection.stop();
+  done();
+});

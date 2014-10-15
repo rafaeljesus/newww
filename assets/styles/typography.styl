@@ -45,6 +45,7 @@ h2
   font-weight 600
   font-size 24px
   color gray4
+  text-transform lowercase
 
   span
     font-weight 400
@@ -58,7 +59,7 @@ h2
     float left
     margin-right 10px
 
-  form &
+  form &, .layout-left &
     color npmred
 
 h3
@@ -143,3 +144,10 @@ a .icon-add:before
   text-align center
   margin 0 6px 0 0
   background npmred
+
+.email-label:hover, .email-field:hover
+  text-decoration none
+  color gray2
+
+.email-field input
+  background-color gray6

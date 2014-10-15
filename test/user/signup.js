@@ -133,3 +133,8 @@ describe('Signing up a new user', function () {
   });
 
 });
+
+after(function (done) {
+  server.app.cache._cache.connection.stop();
+  done();
+});

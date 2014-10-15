@@ -24,6 +24,12 @@ var routes = module.exports = [
   },
 
   {
+    path: '/robots.txt',
+    method: 'GET',
+    handler: { file: './robots.txt' }
+  },
+
+  {
     path: '/static/{path*}',
     method: 'GET',
     handler: {

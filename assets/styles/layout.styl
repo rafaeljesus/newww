@@ -36,7 +36,6 @@
 
 .layout-right
   margin 0 0 90px 72.5%
-  padding-top 20px
 
   @media only screen and (max-width: 1024px)
     margin 0 0 0 65%
@@ -537,3 +536,12 @@ ul.social
     &.twitter, &.github
       label
         display none
+
+p.error
+  display block
+  background errorColor
+  color darken(text-color, 20%)
+  border 1px solid darken(errorColor, 30%)
+  border-radius 2px
+  padding 10px
+  margin 10px 0

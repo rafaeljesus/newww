@@ -4,7 +4,7 @@ var Hoek = require('hoek'),
 exports.register = function(plugin, options, next) {
   plugin.ext('onPreResponse', function(request, next) {
 
-    if (request.response.variety.match(/view|plain/)) {
+    if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
 
       options.graphics = require("@npm/graphics")
 

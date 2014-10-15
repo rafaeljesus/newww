@@ -102,7 +102,7 @@ describe('Requesting an email change', function () {
     server.inject(postEmail(emailEdits.missingEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/email-edit');
-      expect(source.context.error).to.equal('Must provide a valid email address');
+      expect(source.context.error.email).to.be.true;
       done();
     });
   });
@@ -111,7 +111,7 @@ describe('Requesting an email change', function () {
     server.inject(postEmail(emailEdits.invalidEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/email-edit');
-      expect(source.context.error).to.equal('Must provide a valid email address');
+      expect(source.context.error.email).to.be.true;
       done();
     });
   });
@@ -120,18 +120,20 @@ describe('Requesting an email change', function () {
     server.inject(postEmail(emailEdits.invalidPassword), function (resp) {
       expect(resp.statusCode).to.equal(403);
       expect(source.template).to.equal('user/email-edit');
-      expect(source.context.error).to.equal('Invalid password');
+      expect(source.context.error.password).to.be.true;
       done();
     });
   });
 
   it('sends two emails if everything goes properly', function (done) {
     server.inject(postEmail(emailEdits.newEmail), function (resp) {
-      confUrl = source.confirm.text.match(/\/email-edit\/confirm\/[\/\w \.-]*\/?/)[0];
-      revUrl = source.revert.text.match(/\/email-edit\/revert\/[\/\w \.-]*\/?/)[0];
+      var confJSON = JSON.parse(source.context.confirm);
+      var revJSON = JSON.parse(source.context.revert);
+      confUrl = confJSON.text.match(/\/email-edit\/confirm\/[\/\w \.-]*\/?/)[0];
+      revUrl = revJSON.text.match(/\/email-edit\/revert\/[\/\w \.-]*\/?/)[0];
       expect(resp.statusCode).to.equal(200);
-      expect(source).to.have.deep.property('confirm.subject', 'npm Email Confirmation');
-      expect(source).to.have.deep.property('revert.subject', 'npm Email Change Alert');
+      expect(confJSON).to.have.deep.property('subject', 'npm Email Confirmation');
+      expect(revJSON).to.have.deep.property('subject', 'npm Email Change Alert');
       done();
     });
   });

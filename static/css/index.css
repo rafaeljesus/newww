@@ -1,3 +1,15 @@
+.vanilla-list,
+#user-info ul,
+ul.social {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.vanilla-list li,
+#user-info ul li,
+ul.social li {
+  list-style: none;
+}
 html,
 body,
 div,
@@ -217,10 +229,10 @@ h1:before {
   margin-top: 10px;
 }
 h2 {
-  margin: 0 0 25px;
+  margin: 20px 0 20px 0;
   font-weight: 600;
   font-size: 24px;
-  color: rgba(0,0,0,0.5);
+  color: rgba(0,0,0,0.8);
   text-transform: lowercase;
 }
 h2 span {
@@ -235,10 +247,6 @@ h2:before {
   font-size: 45px;
   float: left;
   margin-right: 10px;
-}
-form h2,
-.layout-left h2 {
-  color: #cb3837;
 }
 h3 {
   display: block;
@@ -268,7 +276,7 @@ p {
   margin: 0 0 25px;
 }
 strong.code {
-  font-family: 'Source Code Pro', 'Courier', sans-serif;
+  font-family: Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace;
 }
 .btn {
   display: inline-block;
@@ -447,9 +455,6 @@ a .icon-add:before {
 .icon-website:before {
   content: "\e620";
 }
-.layout-right form {
-  margin: 0 0 60px;
-}
 label {
   display: block;
   margin: 0 0 7px;
@@ -467,7 +472,7 @@ textarea {
   width: 94%;
   min-height: 300px;
   border-radius: 4px;
-  font: 400 16px/25px 'Source Code Pro', 'Courier', sans-serif;
+  font: 400 16px/25px Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace;
   color: rgba(0,0,0,0.6);
   outline: 0;
   resize: none;
@@ -612,20 +617,24 @@ input[type=file] {
 .login-forms label {
   text-transform: lowercase;
 }
+.star {
+  display: block;
+  margin: 10px 0;
+}
 .star input[type=checkbox] {
   display: none;
 }
 .star input[type=checkbox] + label {
-  font-size: 20px;
-  line-height: 24px;
+  font-size: 16px;
+  line-height: 20px;
   vertical-align: top;
   color: rgba(0,0,0,0.6);
   cursor: pointer;
 }
 .star input[type=checkbox] + label:before {
   transition: transform 0.5s;
-  font-size: 24px;
-  color: rgba(0,0,0,0.1);
+  font-size: 20px;
+  color: rgba(0,0,0,0.5);
   margin-right: 5px;
 }
 .star input[type=checkbox]:checked + label:before {
@@ -639,7 +648,9 @@ header {
 }
 header h1 {
   clear: left;
-  padding-top: 1em;
+  padding: 20px 0 0 0;
+  line-height: 1;
+  font-weight: 400;
 }
 header h1 em {
   color: #cb3837;
@@ -679,8 +690,13 @@ nav {
     z-index: 12;
   }
 }
+nav h2 {
+  margin: 0;
+  padding: 0;
+}
 nav h2 a {
   margin: 0;
+  padding: 0;
   text-decoration: none;
   border: none;
   opacity: 1;
@@ -880,9 +896,6 @@ nav h2 {
     width: 100%;
   }
 }
-#npm-search.custom #npm-search {
-  border: 0;
-}
 #site-search {
   position: absolute;
   top: 7px;
@@ -937,12 +950,14 @@ nav h2 {
 #user-info ul {
   float: right;
   display: block;
-  margin: 0;
-  padding: 0;
   text-align: right;
+  margin-top: 8px;
 }
 #user-info ul li {
-  list-style: none;
+  line-height: 1;
+}
+#user-info ul.single {
+  margin-top: 0;
 }
 #user-info ul.single li {
   line-height: 45px;
@@ -974,178 +989,6 @@ nav h2 {
 #user-info a.subdued {
   color: rgba(0,0,0,0.5);
   font-size: 14px;
-}
-#user-info #header-buttons {
-  position: absolute;
-  right: 20px;
-  top: 134px;
-  z-index: 7;
-}
-@media only screen and (max-width: 1023px) {
-  #user-info #header-buttons {
-    display: none;
-    width: 140px;
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: 4px;
-    background: #fff;
-  }
-}
-@media only screen and (max-width: 767px) {
-  #user-info #header-buttons {
-    top: 120px;
-  }
-}
-#user-info #header-buttons a {
-  float: left;
-  display: inline-block;
-  height: 31px;
-  text-align: center;
-  margin: 0;
-  color: rgba(0,0,0,0.5);
-  padding: 0 15px;
-  font: 600 13px/31px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  border: 1px solid rgba(0,0,0,0.1);
-  border-width: 1px 0 1px 1px;
-  background: #fff;
-}
-#user-info #header-buttons a:before {
-  margin-right: 8px;
-  float: left;
-  margin-top: 9px;
-}
-#user-info #header-buttons a:hover {
-  color: #fff;
-  border-color: #cb3837;
-  background: #cb3837;
-}
-@media only screen and (max-width: 1023px) {
-  #user-info #header-buttons a {
-    display: block;
-    float: none;
-    border-width: 0 0 1px 0;
-    text-align: right;
-  }
-}
-#user-info #header-buttons a span {
-  margin: 0 0 0 5px;
-}
-#user-info #header-buttons a.owner {
-  color: #fff;
-  border-color: #cb3837;
-  background: #cb3837;
-}
-#user-info #header-buttons a.owner:hover {
-  color: rgba(0,0,0,0.5);
-  border-color: rgba(0,0,0,0.1);
-  background: #fff;
-}
-#user-info #header-buttons a:first-child {
-  border-radius: 4px 0 0 4px;
-}
-@media only screen and (max-width: 1023px) {
-  #user-info #header-buttons a:first-child {
-    border-radius: 0;
-  }
-}
-#user-info #header-buttons a:last-child {
-  border-radius: 0 4px 4px 0;
-  border-right: 1px solid rgba(0,0,0,0.1);
-}
-@media only screen and (max-width: 1023px) {
-  #user-info #header-buttons a:last-child {
-    border-width: 0;
-    border-radius: 0;
-  }
-}
-#user-info.custom.dark h1 {
-  color: #fff;
-}
-#user-info.custom.dark #user-info {
-  color: #fff;
-}
-#user-info.custom.dark #user-info a,
-#user-info.custom.dark #user-info h6 {
-  color: #fff;
-}
-@media only screen and (max-width: 1023px) {
-  #user-info.custom #header-buttons {
-    display: none;
-    width: 140px;
-    border: 0;
-    border-radius: 4px;
-    background: #fff;
-  }
-}
-#user-info.custom #header-buttons a {
-  float: left;
-  display: inline-block;
-  height: 31px;
-  text-align: center;
-  margin: 0 0 0 1px;
-  color: #fff;
-  padding: 0 15px;
-  border: 0;
-  font: 600 13px/31px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  background: rgba(255,255,255,0.4);
-}
-#user-info.custom #header-buttons a:hover {
-  color: rgba(0,0,0,0.8);
-  background: #fff;
-}
-@media only screen and (max-width: 1023px) {
-  #user-info.custom #header-buttons a {
-    display: block;
-    float: none;
-    border-bottom: 0;
-    margin: 0;
-    text-align: right;
-    color: rgba(0,0,0,0.8);
-  }
-  #user-info.custom #header-buttons a:first-child {
-    border-radius: 4px 4px 0 0;
-  }
-  #user-info.custom #header-buttons a:last-child {
-    border-width: 0;
-    border-radius: 0 0 4px 4px;
-  }
-  #user-info.custom #header-buttons a:hover {
-    color: #fff;
-    background: #cb3837;
-  }
-}
-#user-info.custom #header-buttons a.owner {
-  background: #fff;
-  color: rgba(0,0,0,0.8);
-}
-#user-info.custom #header-buttons a.owner:hover {
-  color: #fff;
-  background: rgba(0,0,0,0.8);
-}
-#user-info #mobile-header-buttons {
-  display: none;
-  position: absolute;
-  right: 20px;
-  top: 134px;
-  display: inline-block;
-  height: 31px;
-  padding: 0 10px;
-  font: 600 25px/17px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  color: rgba(0,0,0,0.8);
-  text-align: center;
-  border: 1px solid rgba(0,0,0,0.1);
-  background: #fff;
-  border-radius: 4px;
-}
-@media only screen and (max-width: 767px) {
-  #user-info #mobile-header-buttons {
-    top: 120px;
-    display: block;
-  }
-}
-#user-info.custom #mobile-header-buttons {
-  border: 0;
-  color: #fff;
-  background: rgba(255,255,255,0.4);
 }
 #auto-suggest {
   position: absolute;
@@ -1264,55 +1107,6 @@ footer ul.links li a:hover {
   display: inline-block;
   width: 140px;
   padding-right: 20px;
-}
-#subheader {
-  position: relative;
-  margin: 40px 0;
-  padding-bottom: 100px;
-}
-#subheader h1 {
-  text-align: center;
-  text-transform: lowercase;
-}
-#home-stats {
-  position: relative;
-  margin: 25px auto 25px auto;
-  padding: 0;
-  max-width: 800px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-}
-@media only screen and (max-width: 820px) {
-  #home-stats {
-    display: block;
-  }
-  #home-stats .stat {
-    display: block;
-    width: 200px;
-    margin: 15px auto;
-  }
-}
-div.stat {
-  flex: 0 1 auto;
-  line-height: 16px;
-  font-size: 13px;
-  color: rgba(0,0,0,0.5);
-  margin: 20px 20px 20px 0;
-}
-div.stat span:before {
-  font-size: 30px;
-  float: left;
-  margin-right: 10px;
-  margin-top: 2px;
-  color: rgba(0,0,0,0.8);
-}
-div.stat strong {
-  font-family: 'Source Code Pro', 'Courier', sans-serif;
-  font-weight: 600;
-  font-size: 16px;
-  display: block;
-  color: rgba(0,0,0,0.8);
 }
 .container {
   position: relative;
@@ -1434,7 +1228,7 @@ div.stat strong {
 }
 .package h5,
 .author h5 {
-  font: 600 14px/14px 'Source Code Pro', 'Courier', sans-serif;
+  font: 600 14px/14px Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace;
   color: rgba(0,0,0,0.5);
 }
 .package p,
@@ -1823,9 +1617,6 @@ div.stat strong {
 ol {
   list-style-position: inside;
 }
-li {
-  padding-bottom: 0.5em;
-}
 ul.userMosaic {
   list-style: none;
   margin: 0 0 30px 0;
@@ -1890,27 +1681,6 @@ ul.userMosaic.one span {
 .notfound img {
   width: 300px;
   margin: 1em;
-}
-.reset-list,
-ul.social {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-a.avatar {
-  max-width: 200px;
-  display: block;
-}
-a.avatar img {
-  width: 100%;
-  border-radius: 5px;
-}
-ul.social li {
-  list-style: none;
-}
-ul.social li.twitter label,
-ul.social li.github label {
-  display: none;
 }
 p.error {
   display: block;
@@ -2025,6 +1795,80 @@ p.error {
 .hljs-chunk {
   color: #aaa;
 }
+#readme {
+  margin: 20px 0;
+}
+#readme h2 {
+  text-transform: none;
+  font-weight: 700;
+}
 #readme img {
   max-width: 100%;
+}
+#readme code {
+  font-family: Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace;
+}
+#profile {
+  padding-top: 30px;
+}
+a.avatar {
+  max-width: 100%;
+  display: block;
+}
+a.avatar img {
+  width: 100%;
+  border-radius: 5px;
+}
+ul.social li.twitter label,
+ul.social li.github label {
+  display: none;
+}
+#subheader {
+  position: relative;
+  margin: 40px 0;
+  padding-bottom: 100px;
+}
+#subheader h1 {
+  text-align: center;
+  text-transform: lowercase;
+}
+#home-stats {
+  position: relative;
+  margin: 25px auto 25px auto;
+  padding: 0;
+  max-width: 800px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+@media only screen and (max-width: 820px) {
+  #home-stats {
+    display: block;
+  }
+  #home-stats .stat {
+    display: block;
+    width: 200px;
+    margin: 15px auto;
+  }
+}
+div.stat {
+  flex: 0 1 auto;
+  line-height: 16px;
+  font-size: 13px;
+  color: rgba(0,0,0,0.5);
+  margin: 20px 20px 20px 0;
+}
+div.stat span:before {
+  font-size: 30px;
+  float: left;
+  margin-right: 10px;
+  margin-top: 2px;
+  color: rgba(0,0,0,0.8);
+}
+div.stat strong {
+  font-family: Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace;
+  font-weight: 600;
+  font-size: 16px;
+  display: block;
+  color: rgba(0,0,0,0.8);
 }

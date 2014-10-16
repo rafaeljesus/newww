@@ -5,7 +5,9 @@ header
 
   h1
     clear left
-    padding-top 1em
+    padding 20px 0 0 0
+    line-height 1
+    font-weight 400
 
     em
       color npmred
@@ -42,8 +44,11 @@ nav
     z-index 12
 
   h2
+    margin 0
+    padding 0
     a
       margin 0
+      padding 0
       text-decoration none
       border none
       opacity 1
@@ -212,9 +217,6 @@ nav
     margin-top: 2em;
     width: 100%;
 
-  &.custom #npm-search
-    border 0
-
 #site-search
   position absolute
   top 7px
@@ -253,8 +255,6 @@ nav
     border-left 0
     background: npmred url(../images/ico-search-hover.png) no-repeat 50% 50%
 
-userInfoAvatarSize = 45px
-userInfoAvatarSizeMobile = 25px
 
 #user-info
   position absolute
@@ -271,16 +271,18 @@ userInfoAvatarSizeMobile = 25px
     border-radius 2px
 
   ul
+    @extend .vanilla-list
     float right
     display block
-    margin 0
-    padding 0
     text-align right
+    margin-top 8px
     li
-      list-style none
-    &.single li
-      line-height userInfoAvatarSize
-      vertical-align top
+      line-height 1
+    &.single
+      margin-top 0
+      li
+        line-height userInfoAvatarSize
+        vertical-align top
 
   @media only screen and (max-width: 767px)
     margin-top 0
@@ -306,164 +308,6 @@ userInfoAvatarSizeMobile = 25px
       color gray4
       font-size 14px
 
-
-  #header-buttons
-    position absolute
-    right 20px
-    top 134px
-    z-index 7
-
-    @media only screen and (max-width: 1023px)
-      display none
-      width 140px
-      border 1px solid gray5
-      border-radius 4px
-      background white
-
-    @media only screen and (max-width: 767px)
-      top 120px
-
-    a
-      float left
-      display inline-block
-      height 31px
-      text-align center
-      margin 0
-      color text-color-subdued
-      padding 0 15px
-      font 600 13px/31px fonts
-      border 1px solid gray5
-      border-width 1px 0 1px 1px
-      background white
-
-      &:before
-        margin-right 8px
-        float left
-        margin-top 9px
-
-      &:hover
-        color background-color
-        border-color npmred
-        background npmred
-
-      @media only screen and (max-width: 1023px)
-        display block
-        float none
-        border-width 0 0 1px 0
-        text-align right
-
-      span
-        margin 0 0 0 5px
-
-      &.owner
-        color background-color
-        border-color npmred
-        background npmred
-
-        &:hover
-          color text-color-subdued
-          border-color gray5
-          background white
-
-      &:first-child
-        border-radius 4px 0 0 4px
-
-        @media only screen and (max-width: 1023px)
-          border-radius 0
-
-      &:last-child
-        border-radius 0 4px 4px 0
-        border-right 1px solid gray5
-
-        @media only screen and (max-width: 1023px)
-          border-width 0
-          border-radius 0
-
-  &.custom
-    &.dark
-      h1
-        color background-color
-
-      #user-info
-        color background-color
-
-        a, h6
-          color background-color
-
-    #header-buttons
-      @media only screen and (max-width: 1023px)
-        display none
-        width 140px
-        border 0
-        border-radius 4px
-        background white
-
-      a
-        float left
-        display inline-block
-        height 31px
-        text-align center
-        margin 0 0 0 1px
-        color background-color
-        padding 0 15px
-        border 0
-        font 600 13px/31px fonts
-        background rgba(255,255,255,.4)
-
-        &:hover
-          color gray2
-          background white
-
-        @media only screen and (max-width: 1023px)
-          display block
-          float none
-          border-bottom 0
-          margin 0
-          text-align right
-          color gray2
-
-          &:first-child
-            border-radius 4px 4px 0 0
-
-          &:last-child
-            border-width 0
-            border-radius 0 0 4px 4px
-
-          &:hover
-            color background-color
-            background npmred
-
-        &.owner
-          background white
-          color gray2
-
-          &:hover
-            color background-color
-            background gray2
-
-  #mobile-header-buttons
-    display none
-    position absolute
-    right 20px
-    top 134px
-    display inline-block
-    height 31px
-    padding 0 10px
-    font 600 25px/17px fonts
-    color gray2
-    text-align center
-    border 1px solid gray5
-    background white
-    border-radius 4px
-
-    @media only screen and (max-width: 767px)
-      top 120px
-      display block
-
-  &.custom #mobile-header-buttons
-    border 0
-    color background-color
-    background rgba(255,255,255,.4)
 
 // Search Auto Suggest
 

@@ -1,7 +1,3 @@
-form
-  .layout-right &
-    margin 0 0 60px
-
 label
   display block
   margin 0 0 7px
@@ -169,24 +165,22 @@ input[type=file]
     text-transform lowercase
 
 
-// Star Form
-starHeight = 24px
-
 .star
+  display block
+  margin 10px 0
   input[type=checkbox]
     display none
 
     & + label
-      font-size 20px
+      font-size 16px
       line-height starHeight
       vertical-align top
       color text-color
       cursor pointer
       &:before
         transition transform 0.5s
-        // transition color 0.5s ease-out 0.5s
         font-size starHeight
-        color gray5
+        color gray4
         margin-right 5px
 
     &:checked + label:before

@@ -2,64 +2,67 @@
 
 <div id="profile">
 
-  {{#if isSelf}}
-    <a href="http://en.gravatar.com/emails/" class="avatar">
-      <img src="{{showprofile.avatarLarge}}">
+  <div class="layout-left">
+    {{#if packages}}
+      <h2>Packages by {{showprofile.name}}</h2>
+      <ul>
+        {{#each packages}}
+        <li><a href="{{url}}">{{name}}</a> {{description}}
+        </li>
+        {{/each}}
+      </ul>
+    {{/if}}
+
+    {{#if starred}}
+      <h2>Packages Starred by {{showprofile.name}}</h2>
+      <ul>
+        {{#each starred}}
+        <li><a href="{{url}}">{{name}}</a> {{description}}
+        </li>
+        {{/each}}
+      </ul>
+    {{/if}}
+  </div>
+
+  <div class="layout-right">
+
+    {{#if isSelf}}
+      <a href="http://en.gravatar.com/emails/" class="avatar">
+        <img src="{{showprofile.avatarLarge}}">
+      </a>
+    {{else}}
+      <a href="/~{{showprofile.name}}" class="avatar">
+        <img src="{{showprofile.avatarLarge}}">
+      </a>
+    {{/if}}
+
+    {{#if isSelf}}
+      <p><a href=/profile-edit>Edit Profile</a> -
+        <a href=/password>Change Password</a> -
+        <a href="http://gravatar.com/emails/">Change Picture</a>
+      </p>
+    {{/if}}
+
+    <!-- {{#if showprofile.fullname}}
+      <h1>{{showprofile.fullname}}</h1>
+    {{else}}
       <h1>{{showprofile.name}}</h1>
-    </a>
-  {{else}}
-    <a href="/~{{showprofile.name}}" class="avatar">
-      <img src="{{showprofile.avatarLarge}}">
-      <h1>{{showprofile.name}}</h1>
-    </a>
-  {{/if}}
+    {{/if}} -->
 
+    {{#if fields}}
+      <ul class="social">
+        {{#each fields}}
+          {{#if show}}
+            <li class="{{name}} icon-{{name}}">
+              <!-- <label>{{title}}</label> -->
+              <span>{{{showField this}}}</span>
+            </li>
+          {{/if}}
+        {{/each}}
+      </ul>
+    {{/if}}
 
-  <!-- {{{../graphics.github_badge}}} -->
-
-  <!-- {{#if isSelf}}
-    <p><a href=/profile-edit>Edit Profile</a> -
-      <a href=/password>Change Password</a> -
-      <a href="http://gravatar.com/emails/">Change Picture</a>
-    </p>
-  {{/if}} -->
-
-  {{#if fields}}
-    <ul class="social">
-      {{#each fields}}
-        {{#if show}}
-          <li class="{{name}} icon-{{name}}">
-            <label>{{title}}</label>
-            <span>{{{showField this}}}</span>
-          </li>
-        {{/if}}
-      {{/each}}
-    </ul>
-  {{/if}}
-
-  {{#if packages}}
-    <h2>Packages by {{showprofile.name}}</h2>
-    <ul>
-      {{#each packages}}
-      <li><a href="{{url}}">{{name}}</a> {{description}}
-      </li>
-      {{/each}}
-    </ul>
-  {{/if}}
-
-  {{#if starred}}
-    <h2>Packages Starred by {{showprofile.name}}</h2>
-    <ul>
-      {{#each starred}}
-      <li><a href="{{url}}">{{name}}</a> {{description}}
-      </li>
-      {{/each}}
-    </ul>
-  {{/if}}
-
-  {{#if profile}}
-    <a href='/logout/?done=/profile/{{showprofile.name}}'>log out</a>
-  {{/if}}
+  </div>
 
 </div>
 {{/with}}

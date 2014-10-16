@@ -305,18 +305,6 @@ ul {
 ul li {
   list-style: disc;
 }
-ul.sortable {
-  margin: 25px 0;
-  border-top: 1px solid rgba(0,0,0,0.1);
-}
-ul.sortable li {
-  list-style: none;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  height: 45px;
-  line-height: 45px;
-  padding-left: 30px;
-  background: url("../img/sortable-handle.png") no-repeat 0 50%;
-}
 a .icon-add:before {
   float: left;
   color: #fff;
@@ -528,65 +516,6 @@ input[type=file] {
   color: rgba(0,0,0,0.5);
   line-height: 18px;
   margin: -15px 0 22px;
-}
-.layout-left form#content-search {
-  position: relative;
-  height: 47px;
-  padding: 0;
-  margin: 0 0 50px;
-  border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 2px;
-  background: #fff;
-}
-.layout-left form#content-search #content-search-input {
-  position: absolute;
-  top: 7px;
-  left: 20px;
-  width: 80%;
-  height: 30px;
-  padding: 0;
-  margin: 0;
-  border: 0;
-  outline: 0;
-  font-weight: 300;
-  font-family: 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  font-size: 18px;
-  background: none;
-}
-.layout-left form#content-search #content-search-submit {
-  position: absolute;
-  top: 0;
-  right: 0;
-  height: 47px;
-  width: 46px;
-  border: 0;
-  text-indent: -9999em;
-  cursor: pointer;
-  outline: 0;
-  border-left: 1px solid rgba(0,0,0,0.1);
-  border-radius: 0 2px 2px 0;
-  background: url("../img/ico-search.png") no-repeat 50% 50%;
-}
-.layout-left form#content-search #content-search-submit:hover {
-  width: 47px;
-  height: 49px;
-  top: -1px;
-  right: -1px;
-  border-left: 0;
-  background: #cb3837 url("../img/ico-search-hover.png") no-repeat 50% 50%;
-}
-.customSelect {
-  margin: -2px 0 20px;
-  border: 1px solid rgba(0,0,0,0.1);
-  padding-top: 1px;
-  border-radius: 4px;
-  width: 96%;
-  height: 38px;
-  letter-spacing: 0px;
-  font: 600 18px/38px 'Source Sans Pro', 'Lucida Grande', sans-serif;
-  font-size: 13px;
-  padding-left: 10px;
-  background: url("../img/select-bg.png") no-repeat 95% 50%;
 }
 .login-forms {
   max-width: 420px;

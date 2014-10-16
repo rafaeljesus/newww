@@ -63,6 +63,8 @@ module.exports = function (options) {
             isSelf: opts.user && opts.user.name && profileName === opts.user.name
           }
 
+          opts.title = showprofile.fullname ? showprofile.fullname : showprofile.name
+
           opts.profile.showprofile = transform(showprofile, options);
           opts.profile.fields = opts.profile.showprofile.fields;
 

@@ -6,21 +6,22 @@ module.exports = function npmE (request, reply) {
   var opts = {
     user: request.auth.credentials,
     hiring: request.server.methods.hiring.getRandomWhosHiring(),
-    title: "npm Enterprise beta"
+    title: "npm Enterprise"
+
   };
 
   if (request.path.indexOf('thanks') !== -1) {
     timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'npme-beta-thanks');
+    metrics.addPageLatencyMetric(timer, 'enterprise-thanks');
 
-    metrics.addMetric({name: 'npme-beta-thanks'});
+    metrics.addMetric({name: 'enterprise-thanks'});
 
-    return reply.view('company/npme-beta-thanks', opts);
+    return reply.view('company/enterprise-thanks', opts);
   }
 
   timer.end = Date.now();
-  metrics.addPageLatencyMetric(timer, 'npme-beta');
+  metrics.addPageLatencyMetric(timer, 'enterprise');
 
-  metrics.addMetric({name: 'npme-beta'});
-  return reply.view('company/npme-beta', opts);
+  metrics.addMetric({name: 'enterprise'});
+  return reply.view('company/enterprise', opts);
 }

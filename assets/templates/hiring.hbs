@@ -1,0 +1,10 @@
+<h3>Who's Hiring</h3>
+
+<ul class="hiring">
+  {{#each companies}}
+    <li>
+      <a href="{{url}}" data-id="{{id}}">{{name}}</a><br />
+      {{{description}}}
+    </li>
+  {{/each}}
+</ul>

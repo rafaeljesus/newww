@@ -1,9 +1,9 @@
-window.$ = require("jquery");
-window.highlight = require("./highlight");
-window.star = require("./star")();
+window.$ = require("jquery")
+window.highlight = require("./highlight")
+window.star = require("./star")()
 window.npm_expansions = require("./npm-expansions")
+window.hiring = require("./hiring")
 
 $(function () {
-  console.log("DOM is ready");
-  require("./update-package-issue-count")();
-});
+  require("./update-package-issue-count")()
+})

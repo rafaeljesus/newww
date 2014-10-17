@@ -63,6 +63,7 @@ config.csp = {
   connectSrc: [
     'self',
     'https://typeahead.npmjs.com/',
+    'https://npm-partners.herokuapp.com/',
     'https://api.github.com',
   ],
   fontSrc: [

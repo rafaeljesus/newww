@@ -16,6 +16,11 @@
     "type": "git",
     "url": "https://github.com/npm/newww"
   },
+  "browserify": {
+    "transform": [
+      "hbsfy"
+    ]
+  },
   "dependencies": {
     "accept-language-parser": "^1.0.2",
     "blankie": "^0.1.2",
@@ -33,6 +38,7 @@
     "handlebars": "^2.0.0-alpha.2",
     "hapi": "^6.0.0",
     "hapi-auth-cookie": "^1.0.3",
+    "hbsfy": "^2.2.0",
     "highlight.js": "^8.2.0",
     "hoek": "^2.4.1",
     "joi": "^4.0.0",

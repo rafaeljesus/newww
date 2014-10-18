@@ -8,10 +8,21 @@ a.avatar
     width 100%
     border-radius 5px
 
-ul.social
-  @extend .vanilla-list
+.layout-right h2
+  text-transform none
+  font-size 32px
+  margin 20px 0 10px 0
 
+.bullet-free
+  @extend .vanilla-list
   li
-    &.twitter, &.github
-      label
-        display none
+    list-style none
+    padding 5px 0
+
+ul.meta
+  @extend .vanilla-list
+  li
+    border-top 1px solid gray5
+    line-height 2
+    &:first-child
+      border none

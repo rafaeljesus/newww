@@ -1,13 +1,15 @@
 .vanilla-list,
 #user-info ul,
-ul.social {
+.bullet-free,
+ul.meta {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 .vanilla-list li,
 #user-info ul li,
-ul.social li {
+.bullet-free li,
+ul.meta li {
   list-style: none;
 }
 html,
@@ -1748,9 +1750,21 @@ a.avatar img {
   width: 100%;
   border-radius: 5px;
 }
-ul.social li.twitter label,
-ul.social li.github label {
-  display: none;
+.layout-right h2 {
+  text-transform: none;
+  font-size: 32px;
+  margin: 20px 0 10px 0;
+}
+.bullet-free li {
+  list-style: none;
+  padding: 5px 0;
+}
+ul.meta li {
+  border-top: 1px solid rgba(0,0,0,0.1);
+  line-height: 2;
+}
+ul.meta li:first-child {
+  border: none;
 }
 #subheader {
   position: relative;

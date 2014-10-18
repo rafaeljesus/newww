@@ -4,8 +4,8 @@
 
   <div class="layout-left">
     {{#if packages}}
-      <h2>Packages by {{showprofile.name}}</h2>
-      <ul>
+      <h2>Packages by {{name}}</h2>
+      <ul class="bullet-free">
         {{#each packages}}
         <li><a href="{{url}}">{{name}}</a> {{description}}
         </li>
@@ -14,8 +14,8 @@
     {{/if}}
 
     {{#if starred}}
-      <h2>Packages Starred by {{showprofile.name}}</h2>
-      <ul>
+      <h2>Packages Starred by {{name}}</h2>
+      <ul class="bullet-free">
         {{#each starred}}
         <li><a href="{{url}}">{{name}}</a> {{description}}
         </li>
@@ -28,39 +28,43 @@
 
     {{#if isSelf}}
       <a href="http://en.gravatar.com/emails/" class="avatar">
-        <img src="{{showprofile.avatarLarge}}">
+        <img src="{{avatarLarge}}">
       </a>
     {{else}}
-      <a href="/~{{showprofile.name}}" class="avatar">
-        <img src="{{showprofile.avatarLarge}}">
+      <a href="/~{{name}}" class="avatar">
+        <img src="{{avatarLarge}}">
       </a>
     {{/if}}
+
+    <h2>{{fullname}}</h2>
 
     {{#if isSelf}}
-      <p><a href=/profile-edit>Edit Profile</a> -
-        <a href=/password>Change Password</a> -
-        <a href="http://gravatar.com/emails/">Change Picture</a>
-      </p>
-    {{/if}}
-
-    <!-- {{#if showprofile.fullname}}
-      <h1>{{showprofile.fullname}}</h1>
-    {{else}}
-      <h1>{{showprofile.name}}</h1>
-    {{/if}} -->
-
-    {{#if fields}}
-      <ul class="social">
-        {{#each fields}}
-          {{#if show}}
-            <li class="{{name}} icon-{{name}}">
-              <!-- <label>{{title}}</label> -->
-              <span>{{{showField this}}}</span>
-            </li>
-          {{/if}}
-        {{/each}}
+      <ul class="micro-menu">
+        <li><a href=/profile-edit>Edit Profile</a></li>
+        <li><a href=/password>Change Password</a></li>
+        <li><a href="http://gravatar.com/emails/">Change Picture</a></li>
       </ul>
     {{/if}}
+
+    <ul class="meta">
+
+      {{#if meta.github}}
+        <li class="github">
+          <a href="https://github.com/{{meta.github}}">@{{meta.github}}</a> on GitHub
+        </li>
+      {{/if}}
+
+      {{#if meta.twitter}}
+        <li class="twitter">
+          <a href="https://twitter.com/{{meta.twitter}}">@{{meta.twitter}}</a> on Twitter
+        </li>
+      {{/if}}
+
+      <li class="npm">
+        <a href="https://npmjs.org/~{{name}}">@{{name}}</a> on npm
+      </li>
+
+    </ul>
 
   </div>
 

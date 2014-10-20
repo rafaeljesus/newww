@@ -40,14 +40,6 @@
 
     <h2>{{fullname}}</h2>
 
-    {{#if isSelf}}
-      <ul class="micro-menu">
-        <li><a href=/profile-edit>Edit Profile</a></li>
-        <li><a href=/password>Change Password</a></li>
-        <li><a href="http://gravatar.com/emails/">Change Picture</a></li>
-      </ul>
-    {{/if}}
-
     <ul class="meta">
 
       {{#if emailObfuscated}}
@@ -72,7 +64,15 @@
         <a href="https://npmjs.org/~{{name}}">@{{name}}</a> on npm
       </li>
 
+      {{#if isSelf}}
+          <li><a href=/profile-edit class="unadorned">Edit your Profile</a></li>
+          <li><a href=/password class="unadorned">Change your Password</a></li>
+          <li><a href="http://gravatar.com/emails/" class="unadorned">Change your Picture</a></li>
+      {{/if}}
+
     </ul>
+
+
 
   </div>
 

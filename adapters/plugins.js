@@ -4,7 +4,7 @@ var config = require('../config');
 module.exports = [
   {
     plugin: require('crumb'),
-    options: { cookieOptions: { isSecure: true } }
+    options: {cookieOptions: { isSecure: true }}
   },
   require('scooter'),
   {

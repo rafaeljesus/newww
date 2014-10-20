@@ -8,6 +8,15 @@ var Lab = require('lab'),
     present = require(__dirname + "/../../presenters/user"),
     users = require(__dirname + "/../fixtures/users")
 
+describe("email", function(){
+
+  it("gets obfuscated", function(done) {
+    var user = present({email: "zeke@sikelianos.com"})
+    expect(user.emailObfuscated).to.exist
+    done()
+  })
+
+})
 
 describe("meta", function () {
 

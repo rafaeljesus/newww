@@ -7,8 +7,9 @@
       <h2>Packages by {{name}}</h2>
       <ul class="bullet-free">
         {{#each packages}}
-        <li><a href="{{url}}">{{name}}</a> {{description}}
-        </li>
+          <li>
+            <a href="{{url}}">{{name}}</a> {{description}}
+          </li>
         {{/each}}
       </ul>
     {{/if}}
@@ -17,8 +18,9 @@
       <h2>Packages Starred by {{name}}</h2>
       <ul class="bullet-free">
         {{#each starred}}
-        <li><a href="{{url}}">{{name}}</a> {{description}}
-        </li>
+          <li>
+            <a href="{{url}}">{{name}}</a> {{description}}
+          </li>
         {{/each}}
       </ul>
     {{/if}}
@@ -47,6 +49,12 @@
     {{/if}}
 
     <ul class="meta">
+
+      {{#if emailObfuscated}}
+        <li class="email">
+          <a href="#" data-email={{emailObfuscated}}>obfuscated</a>
+        </li>
+      {{/if}}
 
       {{#if meta.github}}
         <li class="github">

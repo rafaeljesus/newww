@@ -4,7 +4,7 @@ var fmt = require("util").format
 module.exports = function() {
 
   $(function() {
-    var el = $("#email")
+    var el = $("[data-email]")
 
     if (!el.length) return
 
@@ -16,7 +16,8 @@ module.exports = function() {
       })
       .join("")
 
-    el.html(fmt("<a href=\"mailto:%s\">%s</a>", email, email))
+    el.attr("href", "mailto:"+email)
+    el.text(email)
   })
 
 }

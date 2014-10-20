@@ -5,6 +5,9 @@ var atty = new RegExp("^@")
 
 module.exports = function(user) {
   user = merge({}, user)
+
+  user.emailObfuscated = obfuscateEmail(user.email)
+
   user.meta = deriveMetaObjectFromFieldsArray(user.fields)
   return user
 }
@@ -58,4 +61,11 @@ var sanitizeGitHubHandle = function(input) {
   if (input.match(atty)) return input.replace(atty, "")
 
   return input
+}
+
+var obfuscateEmail = function(email) {
+  if (!email || typeof email != "string") return email
+  return Array.prototype.map.call(email, function (x) {
+    return '%' + x.charCodeAt(0).toString(16)
+  }).join('')
 }

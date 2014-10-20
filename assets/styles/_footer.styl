@@ -8,13 +8,15 @@ footer
 
   ul.links
     display inline-block
-    list-style none
     margin 0
     padding 0
     li
       padding 0 10px
       display inline-block
       text-transform lowercase
+      border-left 1px solid gray5
+      &:first-child
+        border-left none
       a
         padding 5px
         text-decoration none
@@ -24,5 +26,24 @@ footer
 #npm-loves-you
   margin-top 40px
   display inline-block
-  width 140px
-  padding-right 20px
+  color gray4
+  text-decoration none
+  &:before, &:after
+    content "\2665"
+    line-height 3
+    padding-top 5px
+    color rgba(npmred, 0)
+    font-size 14px
+    transition all 0.3s
+  &:before
+    padding-right -5px
+  &:after
+    padding-left -5px
+  &:hover
+    color rgba(npmred, 1)
+    &:before, &:after
+      color rgba(npmred, 1)
+    &:before
+      padding-right 5px
+    &:after
+      padding-left 5px

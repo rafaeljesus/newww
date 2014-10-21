@@ -2,7 +2,7 @@ var $ = require("jquery")
 var template = require("../templates/hiring.hbs")
 
 var fetchCompanies = function() {
-  var container = $("#hiring-container")
+  var container = $("data^=hiring")
   if (!container.length) return
 
   $.getJSON("https://npm-partners.herokuapp.com/hiring?limit=3")

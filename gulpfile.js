@@ -9,7 +9,7 @@ var gulp = require('gulp'),
     bistre = require('bistre'),
     nodemon = require('gulp-nodemon'),
     rename = require('gulp-rename'),
-    imagemin = require('gulp-imagemin'),
+    // imagemin = require('gulp-imagemin'),
     pngcrush = require('imagemin-pngcrush');
 
 var paths = {

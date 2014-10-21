@@ -70,6 +70,12 @@
         <a href="https://npmjs.org/~{{name}}">@{{name}}</a> on npm
       </li>
 
+      {{#if meta.freenode}}
+        <li class="freenode">
+          <a href="irc://chat.freenode.net/npm">{{meta.freenode}}</a> on freenode
+        </li>
+      {{/if}}
+
       {{#if isSelf}}
           <li><a href=/profile-edit class="unadorned">Edit your Profile</a></li>
           <li><a href=/password class="unadorned">Change your Password</a></li>

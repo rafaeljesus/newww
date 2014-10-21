@@ -81,6 +81,7 @@ describe("meta", function () {
 
   })
 
+
   describe("github", function () {
 
     it("removes leading @ from username if present", function(done){
@@ -132,7 +133,6 @@ describe("meta", function () {
   })
 
   describe("twitter", function () {
-
     it("removes leading @ from username if present", function(done){
       var user = present({
         name: "eleanor",
@@ -165,6 +165,20 @@ describe("meta", function () {
       expect(user.meta.twitter).to.equal("suzan")
       done()
     })
-
   })
+
+  describe("freenode", function () {
+    it("is present", function(done){
+      var user = present({
+        name: "eleanor",
+        fields: [
+          {name: "twitter", value: "@eleanor"},
+          {name: "freenode", value: "eleanor1"},
+        ]
+      })
+      expect(user.meta.freenode).to.equal("eleanor1")
+      done()
+    })
+  })
+
 })

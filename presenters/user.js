@@ -24,14 +24,17 @@ var deriveMetaObjectFromFieldsArray = function(fields) {
     })
     .forEach(function(field){
       switch(field.name) {
+        case "homepage":
+          meta["homepage"] = sanitizeHomepage(field.value)
+          break;
         case "github":
           meta["github"] = sanitizeGitHubHandle(field.value)
           break;
         case "twitter":
           meta["twitter"] = sanitizeTwitterHandle(field.value)
           break;
-        case "homepage":
-          meta["homepage"] = sanitizeHomepage(field.value)
+        case "freenode":
+          meta["freenode"] = field.value
           break;
       }
 

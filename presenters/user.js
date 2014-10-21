@@ -23,16 +23,34 @@ var deriveMetaObjectFromFieldsArray = function(fields) {
       return field.name && field.value
     })
     .forEach(function(field){
-      if (field.name === "github") {
-        meta["github"] = sanitizeGitHubHandle(field.value)
+      switch(field.name) {
+        case "github":
+          meta["github"] = sanitizeGitHubHandle(field.value)
+          break;
+        case "twitter":
+          meta["twitter"] = sanitizeTwitterHandle(field.value)
+          break;
+        case "homepage":
+          meta["homepage"] = sanitizeHomepage(field.value)
+          break;
       }
 
-      if (field.name === "twitter") {
-        meta["twitter"] = sanitizeTwitterHandle(field.value)
+      // Remove any null or empty metadata
+      if (!meta[field.name]) {
+        delete meta[field.name]
       }
+
     })
 
   return meta
+}
+
+var sanitizeHomepage = function(input) {
+  // URL
+  if (isURL(input)) return input
+
+  // Not-fully-qualified URL
+  if (isURL("http://"+input)) return "http://"+input
 }
 
 var sanitizeTwitterHandle = function(input) {

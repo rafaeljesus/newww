@@ -48,6 +48,12 @@
         </li>
       {{/if}}
 
+      {{#if meta.homepage}}
+        <li class="homepage">
+          <a href="{{meta.homepage}}">{{schemeless meta.homepage}}</a>
+        </li>
+      {{/if}}
+
       {{#if meta.github}}
         <li class="github">
           <a href="https://github.com/{{meta.github}}">@{{meta.github}}</a> on GitHub

@@ -27,7 +27,7 @@ describe("meta", function () {
     done()
   })
 
-  it("removes meta pairs with empty values", function(done){
+  it("discards pairs with empty key or values", function(done){
     var user = present({
       name: "mona",
       fields: [
@@ -41,6 +41,44 @@ describe("meta", function () {
     expect(user.meta.github).to.exist
     expect(user.meta.twitter).to.exist
     done()
+  })
+
+  describe("homepage", function () {
+
+    it("leaves fully-qualified URLs untouched", function(done){
+      var user = present({
+        name: "lisa",
+        fields: [
+          {name: "homepage", value: "https://lisa.org"},
+        ]
+      })
+      expect(user.meta.homepage).to.equal("https://lisa.org")
+      done()
+    })
+
+    it("converts schemeless URLs into fully-qualified URLs", function(done){
+      var user = present({
+        name: "margaret",
+        fields: [
+          {name: "homepage", value: "margaret.com"},
+        ]
+      })
+      expect(user.meta.homepage).to.equal("http://margaret.com")
+      done()
+    })
+
+    it("discards values that can't be turned into URLs", function(done){
+      var user = present({
+        name: "kate",
+        fields: [
+          {name: "twitter", value: "kate"},
+          {name: "homepage", value: "kate"},
+        ]
+      })
+      expect(user.meta.homepage).to.not.exist
+      done()
+    })
+
   })
 
   describe("github", function () {
@@ -75,6 +113,19 @@ describe("meta", function () {
         ]
       })
       expect(user.meta.github).to.equal("jimbo")
+      done()
+    })
+
+    it("is discarded if value is an empty string", function(done){
+      var user = present({
+        name: "suzan",
+        fields: [
+          {name: "twitter", value: "suzan"},
+          {name: "github", value: ""},
+        ]
+      })
+      expect(user.meta.twitter).to.equal("suzan")
+      expect(user.meta.github).to.not.exist
       done()
     })
 

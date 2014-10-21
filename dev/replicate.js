@@ -47,11 +47,17 @@ var packagesByZeke = ["app-cloner-heroku", "app-json-fetcher",
 var packagesByRockbot = ["couch-login", "googalytics", "newww",
 "nodealytics", "npm-registry-couchapp", "redsess", "vektor"]
 
+var crazyPackages = [
+  'ifyouwanttogetthesumoftwonumberswherethosetwonumbersarechosenbyfindingthelargestoftwooutofthreenumbersandsquaringthemwhichismultiplyingthembyitselfthenyoushouldinputthreenumbersintothisfunctionanditwilldothatforyou',
+  'dezalgo'
+]
+
 function filterPackage (id, rev) {
   return !!(hash(id).match(/^00/)
     || popularPackages.indexOf(id) > -1
     || packagesByZeke.indexOf(id) > -1
     || packagesByRockbot.indexOf(id) > -1
+    || crazyPackages.indexOf(id) > -1
     || id.match(/^(npm.*)$/))
 }
 

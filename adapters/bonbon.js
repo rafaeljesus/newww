@@ -6,7 +6,7 @@ exports.register = function(plugin, options, next) {
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
 
-      options.graphics = require("@npm/graphics")
+      // options.graphics = require("@npm/graphics")
 
       if (options.canonicalHost) {
         if (request.url.query.page || request.url.query.q) {

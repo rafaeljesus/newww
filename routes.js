@@ -1,15 +1,17 @@
 var config = require('./config');
 var ops = require('./facets/ops');
 
-var forceAuthConfig = function (handler) {
+var forceAuthConfig = function(handler) {
   return {
     handler: handler,
     auth: {
       mode: 'required'
     },
-    plugins: { 'hapi-auth-cookie': {
-      redirectTo: '/login'
-    }}
+    plugins: {
+      'hapi-auth-cookie': {
+        redirectTo: '/login'
+      }
+    }
   };
 };
 
@@ -20,22 +22,22 @@ var routes = module.exports = [
   {
     path: '/favicon.ico',
     method: 'GET',
-    handler: { file: './static/misc/favicon.ico' }
-  },
-
-  {
+    handler: {
+      file: './static/misc/favicon.ico'
+    }
+  },{
     path: '/robots.txt',
     method: 'GET',
-    handler: { file: './static/misc/robots.txt' }
-  },
-
-  {
+    handler: {
+      file: './static/misc/robots.txt'
+    }
+  },{
     path: '/install.sh',
     method: 'GET',
-    handler: { file: './static/misc/install.sh' }
-  },
-
-  {
+    handler: {
+      file: './static/misc/install.sh'
+    }
+  },{
     path: '/static/{path*}',
     method: 'GET',
     handler: {
@@ -45,33 +47,23 @@ var routes = module.exports = [
         index: true
       }
     }
-  },
-
-  {
+  },{
     path: "/",
     method: "GET",
     handler: require('./facets/company/show-homepage')
-  },
-
-  {
+  },{
     path: "/about",
     method: "GET",
     handler: require('./facets/company/show-about')(config.company)
-  },
-
-  {
+  },{
     path: "/policies/{policy}",
     method: "GET",
     handler: require('./facets/company/show-policy')
-  },
-
-  {
+  },{
     path: "/whoshiring",
     method: "GET",
     handler: require('./facets/company/show-whoshiring')
-  },
-
-  {
+  },{
     path: "/joinwhoshiring",
     method: "GET",
     config: {
@@ -83,15 +75,11 @@ var routes = module.exports = [
         }
       }
     }
-  },
-
-  {
+  },{
     path: "/joinwhoshiring",
     method: "POST",
     handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe)
-  },
-
-  {
+  },{
     path: "/npme-beta",
     method: "GET",
     config: {
@@ -102,9 +90,7 @@ var routes = module.exports = [
         }
       }
     }
-  },
-
-  {
+  },{
     path: "/npme-beta-thanks",
     method: "GET",
     handler: require('./facets/company/show-npme-beta')
@@ -116,37 +102,27 @@ var routes = module.exports = [
     path: "/package/{package}/{version?}",
     method: "GET",
     handler: require('./facets/registry/show-package')
-  },
-
-  {
+  },{
     path: "/packages/{package}",
     method: "GET",
-    handler: function (request, reply) {
+    handler: function(request, reply) {
       return reply.redirect("/package/" + request.params.package).code(301);
     }
-  },
-
-  {
+  },{
     path: "/browse/{p*}",
     method: "GET",
     handler: require('./facets/registry/show-browse')
-  },
-
-  {
+  },{
     path: "/keyword/{kw}",
     method: "GET",
-    handler: function (request, reply) {
+    handler: function(request, reply) {
       return reply.redirect('/browse/keyword/' + request.params.kw).code(301);
     }
-  },
-
-  {
+  },{
     path: "/recent-authors/{since?}",
     method: "GET",
     handler: require('./facets/registry/show-recent-authors')
-  },
-
-  {
+  },{
     path: "/star",
     method: "POST",
     config: {
@@ -158,9 +134,7 @@ var routes = module.exports = [
         }
       }
     }
-  },
-
-  {
+  },{
     path: "/star",
     method: "GET",
     config: {
@@ -168,13 +142,13 @@ var routes = module.exports = [
       auth: {
         mode: 'required'
       },
-      plugins: { 'hapi-auth-cookie': {
-        redirectTo: '/login'
-      }}
+      plugins: {
+        'hapi-auth-cookie': {
+          redirectTo: '/login'
+        }
+      }
     }
-  },
-
-  {
+  },{
     path: "/search",
     method: "GET",
     handler: require('./facets/registry/show-search')(config.search)
@@ -186,160 +160,107 @@ var routes = module.exports = [
     path: "/~",
     method: "GET",
     config: forceAuthConfig(require('./facets/user/show-profile')(config.user.profileFields))
-  },
-
-  {
+  },{
     path: "/profile",
     method: "GET",
     config: forceAuthConfig(require('./facets/user/show-profile')(config.user.profileFields))
-  },
-
-  {
+  },{
     path: "/~{name}",
     method: "GET",
     handler: require('./facets/user/show-profile')(config.user.profileFields)
-  },
-
-  {
+  },{
     path: "/profile/{name}",
     method: "GET",
     handler: require('./facets/user/show-profile')(config.user.profileFields)
-  },
-
-  {
+  },{
     path: "/~/{name}",
     method: "GET",
     handler: require('./facets/user/show-profile')(config.user.profileFields)
-  },
-
-  {
+  },{
     path: "/signup",
     method: "GET",
     handler: require('./facets/user/show-signup')
-  },
-
-  {
+  },{
     path: "/signup",
     method: "HEAD",
     handler: require('./facets/user/show-signup')
-  },
-
-  {
+  },{
     path: "/signup",
     method: "POST",
     handler: require('./facets/user/show-signup')
-  },
-
-  {
+  },{
     path: "/profile-edit",
     method: "GET",
     config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
-  },
-
-  {
+  },{
     path: "/profile-edit",
     method: "HEAD",
     config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
-  },
-
-  {
+  },{
     path: "/profile-edit",
     method: "PUT",
     config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
-  },
-
-  {
+  },{
     path: "/profile-edit",
     method: "POST",
     config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
-  },
-
-  {
+  },{
     path: "/email-edit",
     method: "GET",
     config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },
-
-  {
+  },{
     path: "/email-edit",
     method: "HEAD",
     config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },
-
-  {
+  },{
     path: "/email-edit",
     method: "PUT",
     config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },
-
-  {
+  },{
     path: "/email-edit",
     method: "POST",
     config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },
-
-  {
+  },{
     path: "/email-edit/{token*2}",
     method: "GET",
     config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },
-
-  {
+  },{
     path: "/email-edit/{token*2}",
     method: "HEAD",
     config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },
-
-  {
+  },{
     path: "/login",
     method: "GET",
     handler: require('./facets/user/show-login')
-  },
-
-
-  {
+  },{
     path: "/login",
     method: "POST",
     handler: require('./facets/user/show-login')
-  },
-
-  {
+  },{
     path: "/logout",
     method: "GET",
     handler: require('./facets/user/show-logout')
-  },
-
-  {
+  },{
     path: "/password",
     method: "GET",
     config: forceAuthConfig(require('./facets/user/show-password'))
-  },
-
-  {
+  },{
     path: "/password",
     method: "HEAD",
     config: forceAuthConfig(require('./facets/user/show-password'))
-  },
-
-  {
+  },{
     path: "/password",
     method: "POST",
     config: forceAuthConfig(require('./facets/user/show-password'))
-  },
-
-  {
+  },{
     path: "/forgot/{token?}",
     method: "GET",
     handler: require('./facets/user/show-forgot')(config.user.mail)
-  },
-
-  {
+  },{
     path: "/forgot/{token?}",
     method: "HEAD",
     handler: require('./facets/user/show-forgot')(config.user.mail)
-  },
-
-  {
+  },{
     path: "/forgot/{token?}",
     method: "POST",
     handler: require('./facets/user/show-forgot')(config.user.mail)
@@ -351,24 +272,18 @@ var routes = module.exports = [
     path: "/ping",
     method: "GET",
     handler: ops.ping
-  },
-
-  {
+  },{
     path: "/status",
     method: "GET",
     handler: ops.status(require('./package.json').version)
-  },
-
-  {
+  },{
     path: "/-/csplog",
     method: "POST",
     handler: ops.csplog
-  },
-
-  {
+  },{
     method: '*',
     path: '/doc/{p*}',
-    handler: function (request, reply) {
+    handler: function(request, reply) {
       return reply.redirect(require("url").format({
         protocol: "https",
         hostname: "docs.npmjs.com",
@@ -378,9 +293,7 @@ var routes = module.exports = [
           .replace(/\/npm-/, "/")
       })).code(301)
     }
-  },
-
-  {
+  },{
     method: '*',
     path: '/{p*}',
     handler: fallback
@@ -388,22 +301,23 @@ var routes = module.exports = [
 
 ];
 
-function fallback (request, reply) {
+function fallback(request, reply) {
   var route = request.params.p,
-      opts = {
-        user: request.auth.credentials,
-        hiring: request.server.methods.hiring.getRandomWhosHiring()
-      };
-      // timer = { start: Date.now() };
+    opts = {
+      user: request.auth.credentials,
+      hiring: request.server.methods.hiring.getRandomWhosHiring()
+    };
 
-  request.server.methods.static.getPage(route, function (err, content) {
+  request.server.methods.static.getPage(route, function(err, content) {
 
     if (content) {
       opts.content = content;
-      return reply.view('layouts/default', opts, {layout: false});
+      return reply.view('layouts/default', opts, {
+        layout: false
+      });
     }
 
-    request.server.methods.registry.getPackage(route, function (err, package) {
+    request.server.methods.registry.getPackage(route, function(err, package) {
 
       if (package && !package.error) {
         return reply.redirect('/package/' + package._id);

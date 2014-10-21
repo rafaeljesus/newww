@@ -92,7 +92,7 @@ module.exports = function(options) {
           });
 
           // Return raw context object if `json` query param is present
-          if ('json' in request.query) {
+          if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {
             return reply(opts);
           }
 

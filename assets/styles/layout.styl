@@ -1,16 +1,14 @@
 .container
   position relative
-  max-width 1180px
+  max-width fullColumnWidth
   margin 0 auto
   padding 0 20px
-
+  &.narrow
+    max-width narrowColumnWidth
   &:after
     content: ""
     display table
     clear both
-
-  &.pad-top
-    padding-top 50px
 
 .layout-left
   float left

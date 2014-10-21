@@ -18,14 +18,13 @@ module.exports = {
     title: "Login",
     subtitle: "You look lovely today, btw.",
     error: {
-      missing: "Missing username or password",
       invalid: "Invalid username or password",
-      invalidContext: "If you feel that this is a mistake, please <a href='/contact'>contact us</a> with the following unique error ID:"
+      invalidContext: "If you feel that this is a mistake, please email <a href='mailto:support@npmjs.com'>support@npmjs.com</a> with the following unique error ID:"
     },
     form: {
       username: "Username",
       password: "Password",
-      forgot: "Forgot our password?",
+      forgot: "Forgot your password?",
       signup: "Create an Account",
       submit: "Login"
     }

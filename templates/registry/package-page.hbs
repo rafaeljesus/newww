@@ -15,18 +15,12 @@
 	<ul class="box">
 
     <li>
-      <strong>Version</strong>
-      {{version}}
+      Version
+      <strong>{{version}}</strong>
       {{#if fromNow}}
-        <span class="subdued"> published {{fromNow}}</span>
+        published {{fromNow}}
       {{/if}}
     </li>
-
-    {{#if license}}
-  		<li>
-        <a href="{{license.url}}">{{license.name}}</a> <span> license</span>
-      </li>
-    {{/if}}
 
     {{#if repository.url}}
       <li>
@@ -37,6 +31,12 @@
     {{#if homepage}}
       <li>
         <a href="{{homepage}}">{{schemeless homepage}}</a>
+      </li>
+    {{/if}}
+
+    {{#if license}}
+      <li>
+        <a href="{{license.url}}">{{license.name}}</a> <span> license</span>
       </li>
     {{/if}}
 
@@ -60,20 +60,17 @@
 
 	</ul>
 
-
-  {{#if showMaintainers}}
-    <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
-    <ul class="userMosaic {{#if singleMaintainer}}one{{else}}many{{/if}}">
-      {{#each maintainers}}
-        <li>
-          <a href="/~{{name}}" title="{{name}}">
-            {{#if avatarMedium}}<img src="{{avatarMedium}}">{{/if}}
-            <span>{{name}}</span>
-          </a>
-        </li>
+  <h3>Keywords</h3>
+  <p>
+    {{#if keywords}}
+      {{#each keywords}}
+        <a href="/browse/keyword/{{this}}">{{this}}</a>{{#unless @last}}, {{/unless}}
       {{/each}}
-    </ul>
-  {{/if}}
+    {{else}}
+      None
+    {{/if}}
+  </p>
+
 
   <h3>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</h3>
   <p>
@@ -109,6 +106,20 @@
         {{/if}}
       {{/each}}
     </p>
+  {{/if}}
+
+  {{#if showMaintainers}}
+    <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
+    <ul class="userMosaic {{#if singleMaintainer}}one{{else}}many{{/if}}">
+      {{#each maintainers}}
+        <li>
+          <a href="/~{{name}}" title="{{name}}">
+            {{#if avatarMedium}}<img src="{{avatarMedium}}">{{/if}}
+            <span>{{name}}</span>
+          </a>
+        </li>
+      {{/each}}
+    </ul>
   {{/if}}
 
   {{> hiring ../hiring}}

@@ -20,19 +20,19 @@ var routes = module.exports = [
   {
     path: '/favicon.ico',
     method: 'GET',
-    handler: { file: './favicon.ico' }
+    handler: { file: './static/misc/favicon.ico' }
   },
 
   {
     path: '/robots.txt',
     method: 'GET',
-    handler: { file: './robots.txt' }
+    handler: { file: './static/misc/robots.txt' }
   },
 
   {
     path: '/install.sh',
     method: 'GET',
-    handler: { file: './install.sh' }
+    handler: { file: './static/misc/install.sh' }
   },
 
   {
@@ -41,8 +41,8 @@ var routes = module.exports = [
     handler: {
       directory: {
         path: './static',
-        listing: false,
-        index: false
+        listing: true,
+        index: true
       }
     }
   },

@@ -68,40 +68,25 @@ describe('Retreiving profiles from the registry', function () {
   });
 });
 
+
+// TODO: Move this to test/presenters/user.js
 describe('Modifying the profile before sending it to the template', function () {
   it('sends the transformed profile', function (done) {
-    expect(u[username1].showprofile.name).to.equal(username1);
-    expect(u[username2].showprofile.name).to.equal(username2);
+    expect(u[username1].name).to.equal(username1);
+    expect(u[username2].name).to.equal(username2);
     done();
   });
 
-  it('separates the fields from the original profile', function (done) {
-    expect(u[username1].fields).to.deep.equal(users[username1].fields);
-    expect(u[username2].fields).to.deep.equal(users.fakeuserCliFields);
-    done();
-  });
-
-  // it('randomly sorts the packages list', function (done) {
-  // console.log(u[username1].packages.sort(), username2)
-  //   expect(u[username1].packages.sort()).to.deep.equal(fakeBrowse['author'].sort());
-  //   expect(u[username2].packages.sort()).to.deep.equal(fakeBrowse['author'].sort());
-  //   done();
-  // });
-
-  it('cuts the stars list down to the MAX_COUNT and adds some "more" text', function (done) {
+  it('includes stars', function (done) {
     expect(fakeBrowse['userstar'].length).to.be.gt(20);
-    expect(u[username1].starred.length).to.equal(21);
-    expect(u[username1].starred[20].name).to.include('more');
-    expect(u[username2].starred.length).to.equal(21);
-    expect(u[username2].starred[20].name).to.include('more');
     done();
   });
 
   it('includes avatar links', function (done) {
-    expect(u[username1].showprofile.avatar).to.exist;
-    expect(u[username1].showprofile.avatar).to.contain('gravatar');
-    expect(u[username2].showprofile.avatar).to.exist;
-    expect(u[username2].showprofile.avatar).to.contain('gravatar');
+    expect(u[username1].avatar).to.exist;
+    expect(u[username1].avatar).to.contain('gravatar');
+    // expect(u[username2].avatar).to.exist;
+    // expect(u[username2].avatar).to.contain('gravatar');
     done();
   });
 });

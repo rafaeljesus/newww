@@ -59,11 +59,11 @@ gulp.task('fonts', function(){
 
 gulp.task('images', function(){
   gulp.src(paths.images)
-    .pipe(imagemin({
-        progressive: true,
-        svgoPlugins: [{removeViewBox: false}],
-        use: [pngcrush()]
-    }))
+    // .pipe(imagemin({
+    //     progressive: true,
+    //     svgoPlugins: [{removeViewBox: false}],
+    //     use: [pngcrush()]
+    // }))
     .pipe(gulp.dest('static/images'));
 })
 

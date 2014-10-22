@@ -20,7 +20,7 @@ module.exports = [
   require('../services/static'),
   require('../services/errors'),
   {
-    plugin: require('../services/hubspot'),
+    plugin: require('../services/npme'),
     options: config.license
   },
   {

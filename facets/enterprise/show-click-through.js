@@ -8,12 +8,8 @@ var Hoek = require('hoek'),
 
 var config = require('../../config').license;
 
-module.exports = {
-  signup1: createHubspotLead
-};
-
-function createHubspotLead (request, reply) {
-  var postToHubspot = request.server.methods.hubspot.postForm;
+module.exports = function createHubspotLead (request, reply) {
+  var postToHubspot = request.server.methods.npme.postForm;
 
   var opts = {
     user: request.auth.credentials,
@@ -39,8 +35,8 @@ function createHubspotLead (request, reply) {
 }
 
 function getOrCreateCustomer (request, reply, data) {
-  var getCustomer = request.server.methods.hubspot.getCustomer,
-      createCustomer = request.server.methods.hubspot.createCustomer,
+  var getCustomer = request.server.methods.npme.getCustomer,
+      createCustomer = request.server.methods.npme.createCustomer,
       showError = request.server.methods.errors.showError(reply);
 
   var opts = {
@@ -75,7 +71,7 @@ function showClickThroughAgreement (reply, customer) {
   // we use both email and ID so people can't just guess an ID to get a license
 
   var opts = {
-    title: "Terms and Conditions",
+    title: "Get started with npm Enterprise",
     customer_id: customer.id,
     customer_email: customer.email
   };

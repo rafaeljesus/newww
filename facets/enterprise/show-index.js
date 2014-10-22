@@ -10,18 +10,9 @@ module.exports = function npmE (request, reply) {
 
   };
 
-  if (request.path.indexOf('thanks') !== -1) {
-    timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'enterprise-thanks');
-
-    metrics.addMetric({name: 'enterprise-thanks'});
-
-    return reply.view('company/enterprise-thanks', opts);
-  }
-
   timer.end = Date.now();
   metrics.addPageLatencyMetric(timer, 'enterprise');
 
   metrics.addMetric({name: 'enterprise'});
-  return reply.view('company/enterprise', opts);
+  return reply.view('enterprise/index', opts);
 }

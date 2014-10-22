@@ -88,7 +88,7 @@ var routes = module.exports = [
     path: "/enterprise",
     method: "GET",
     config: {
-      handler: require('./facets/company/show-enterprise'),
+      handler: require('./facets/enterprise/show-index'),
       plugins: {
         blankie: {
           scriptSrc: enterpriseCspScriptSrc
@@ -101,7 +101,7 @@ var routes = module.exports = [
     path: "/enterprise-signup-1",
     method: "POST",
     config: {
-      handler: require('./facets/company/show-enterprise-signup').signup1,
+      handler: require('./facets/enterprise/show-click-through'),
       plugins: {
         blankie: {
           scriptSrc: enterpriseCspScriptSrc

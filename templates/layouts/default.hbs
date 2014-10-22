@@ -1,13 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <title>{{#if title}}{{title}}{{#if q}}{{q}}{{/if}}{{else}}npm{{/if}}</title>
 
-  <title>{{#if title }}{{title}}{{#if q}}{{q}}{{/if}}{{else}}npm{{/if}}</title>
+  {{#if package}}
+    <meta name="description" content="{{package.description}}">
+    <meta name="keywords" content="{{package.keywords}}">
+    <meta name="twitter:url" content="{{canonicalURL}}">
+    <meta name="twitter:title" content="npm: {{package.name}}">
+    <meta name="twitter:description" content="{{package.description}}">
+  {{/if}}
 
   <meta charset="utf-8">
-  <meta name="description" content="">
-  <meta name="HandheldFriendly" content="True" />
-  <meta name="lOptimized" content="width" />
   <meta http-equiv="cleartype" content="on" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1,user-scalable=yes">
@@ -87,7 +91,6 @@
     </div>
 
     <a href="/" id="npm-loves-you">
-      <!-- <img src="/static/images/npm-loves-you.svg" alt="npm loves you" /> -->
       npm loves you
     </a>
 

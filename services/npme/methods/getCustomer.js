@@ -1,7 +1,7 @@
 var request = require('request'),
     log = require('bole')('hubspot-customer')
 
-module.exports = function customer (options) {
+module.exports = function getCustomer (options) {
   return function (email, next) {
 
     var customerEndpoint = options.api + '/customer';
@@ -9,17 +9,19 @@ module.exports = function customer (options) {
     request.get({
       url: customerEndpoint + '/' + email,
       json: true
-    }, function (er, httpResponse, body) {
+    }, function (er, resp, body) {
 
-      if (httpResponse.statusCode == 404) {
+      if (resp.statusCode == 404) {
         return next(null, null); // no error, but no customer either
       }
-      else if (httpResponse.statusCode == 200) {
+      else if (resp.statusCode == 200) {
         log.warn("model found customer", body);
         return next(null, body);
       }
 
-      return next(true);
+      var err = new Error("unexpected status code: " + resp.statusCode);
+
+      return next(err);
     });
   }
 }

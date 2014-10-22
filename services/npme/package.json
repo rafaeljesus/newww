@@ -1,0 +1,20 @@
+{
+  "name": "newww-service-npme",
+  "version": "1.0.0",
+  "description": "a service for accessing the npme customer database (currently hubspot)",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "lab -vC"
+  },
+  "author": "npm, Inc. <support@npmjs.com>",
+  "license": "ISC",
+  "dependencies": {
+    "lab": "^4.7.0"
+  },
+  "devDependencies": {
+    "nock": "^0.48.1"
+  }
+}

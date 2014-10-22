@@ -1,5 +1,5 @@
 var request = require('request'),
-    log = require('bole')('hubspot-post-form'),
+    log = require('bole')('npme-post-form'),
     uuid = require('node-uuid');
 
 module.exports = function postForm (options) {
@@ -13,7 +13,7 @@ module.exports = function postForm (options) {
       if (resp.statusCode === 204 || resp.statusCode === 302) {
         return next(null);
       } else {
-        var err = new Error("unexpected status code: ", resp.statusCode);
+        var err = new Error("unexpected status code: " + resp.statusCode);
 
         log.warn(uuid.v1(), err);
         return next(err);

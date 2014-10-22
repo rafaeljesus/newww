@@ -101,7 +101,7 @@ config.downloads = {
   url: "https://api.npmjs.org/downloads/"
 };
 
-exports.license = {
+config.license = {
   "hubspot": {
     "forms": "https://forms.hubspot.com/uploads/form/v2/:portal_id/:form_guid",
     "portal_id": "123456",

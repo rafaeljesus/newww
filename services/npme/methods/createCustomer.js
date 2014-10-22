@@ -15,11 +15,15 @@ module.exports = function createCustomer (options) {
         name: data.firstname + ' ' + data.lastname,
         phone: data.phone
       }
-    }, function(er, httpResponse, newCustomer) {
+    }, function(er, resp, newCustomer) {
+
       // stop if we couldn't create the customer
-      if(httpResponse.statusCode != 200) {
-        log.warn("customer creation failed: ", httpResponse.statusCode)
+      if(resp.statusCode != 200) {
+        log.warn("customer creation failed: ", resp.statusCode)
         log.warn(newCustomer)
+
+        er = er || new Error('unable to create customer');
+
         return next(er);
       }
 

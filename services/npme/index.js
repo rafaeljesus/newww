@@ -1,7 +1,7 @@
 
 exports.register = function npmE (service, options, next) {
 
-  service.method('npme.postForm', require('./methods/postForm')(options));
+  service.method('npme.sendData', require('./methods/sendData')(options));
 
   service.method('npme.getCustomer', require('./methods/getCustomer')(options));
 

@@ -1,6 +1,6 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
-var commaIt = require('number-grouper'),
+var formatNumber = require('number-grouper'),
     Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
@@ -29,11 +29,11 @@ module.exports = function (request, reply) {
       starred: cached.starred || [],
       authors: cached.authors || [],
       downloads: {
-        day: commaIt(cached.downloads.day, {sep: sep}),
-        week: commaIt(cached.downloads.week, {sep: sep}),
-        month: commaIt(cached.downloads.month, {sep: sep}),
+        day: formatNumber(cached.downloads.day, {sep: sep}),
+        week: formatNumber(cached.downloads.week, {sep: sep}),
+        month: formatNumber(cached.downloads.month, {sep: sep}),
       },
-      totalPackages: commaIt(cached.totalPackages, {sep: sep}),
+      totalPackages: formatNumber(cached.totalPackages, {sep: sep}),
       hiring: request.server.methods.hiring.getRandomWhosHiring()
     };
 
@@ -41,6 +41,12 @@ module.exports = function (request, reply) {
     metrics.addPageLatencyMetric(timer, 'homepage');
 
     metrics.addMetric({name: 'homepage'});
+
+    // Return raw context object if `json` query param is present
+    if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {
+      return reply(opts);
+    }
+
     reply.view('company/index', opts);
   });
 }

@@ -3,6 +3,7 @@ var murmurhash = require('murmurhash');
 var crypto = require('crypto');
 
 var browse = require('./browseData');
+var enterprise = require('./enterprise-data');
 var whosHiring = require('./whosHiring');
 var users = require('./users');
 var pkgs = {
@@ -72,6 +73,35 @@ module.exports = function (server) {
 
       getRandomWhosHiring: function () {
         return whosHiring.random;
+      }
+    },
+
+    npme: {
+      createCustomer: function (data, next) {
+        return next(null, enterprise.newUser);
+      },
+
+      getCustomer: function (email, next) {
+        if (email.indexOf('exists') !== -1) {
+          // user already exists
+          return next(null, enterprise.existingUser);
+        }
+
+        if (email.indexOf('new') !== -1) {
+          // user doesn't exist yet
+          return next(null, null);
+        }
+
+        // something went wrong with hubspot
+        return next(new Error('something went wrong'));
+      },
+
+      postData: function (formID, data, next) {
+        if (data.email.indexOf('error') !== -1) {
+          return next(new Error('ruh roh broken'));
+        }
+
+        return next(null);
       }
     },
 

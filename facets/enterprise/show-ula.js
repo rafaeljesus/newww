@@ -1,4 +1,4 @@
-var NAMESPACE = 'enterprise-signup';
+var NAMESPACE = 'enterprise-ula';
 
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
@@ -9,7 +9,7 @@ var Hoek = require('hoek'),
 var config = require('../../config').license;
 
 module.exports = function createHubspotLead (request, reply) {
-  var postToHubspot = request.server.methods.npme.postForm;
+  var postToHubspot = request.server.methods.npme.postData;
 
   var opts = {
     user: request.auth.credentials,
@@ -46,8 +46,8 @@ function getOrCreateCustomer (request, reply, data) {
   };
 
   getCustomer(data.email, function (err, customer) {
-    if (err) {
 
+    if (err) {
       return showError(err, 500, "There was an unknown problem with the customer error", opts);
     }
 

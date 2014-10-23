@@ -1,6 +1,4 @@
 <div id="ula-intro">
-  <h1>Get started with npm Enterprise</h1>
-
   <p>To download and install your trial of npm Enterprise, you have two options:</p>
 </div>
 
@@ -44,10 +42,10 @@
         "Contact me" instead.</p>
     </div>
     <div id="contact-form" class="col">
-      <form accept-charset="UTF-8" action="/enterprise-signup-alternative" method="POST" id="npme-contact-instead">
+      <form accept-charset="UTF-8" action="/enterprise-contact-me" method="POST" id="npme-contact-instead">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <input type="hidden" id="contact_customer_email" name="contact_customer_email" value="<%= customer_email %>">
-        <input type="hidden" id="contact_customer_id" name="contact_customer_id" value="<%= customer_id %>">
+        <input type="hidden" id="contact_customer_email" name="contact_customer_email" value="{{customer_email}}">
+        <input type="hidden" id="contact_customer_id" name="contact_customer_id" value="{{customer_id}}">
         <div>
           <p>npm will contact you by email within 1 working day.</p>
           <div class="actions">

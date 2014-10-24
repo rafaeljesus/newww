@@ -63,10 +63,10 @@ function load (request, cb) {
   var n = 6,
       cached = {};
 
-  browse('star', null, 0, 10, next('starred'));
-  browse('depended', null, 0, 10, next('depended'));
-  browse('updated', null, 0, 10, next('updated'));
-  recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
+  browse('star', null, 0, 24, next('starred'));
+  browse('depended', null, 0, 24, next('depended'));
+  browse('updated', null, 0, 24, next('updated'));
+  recentAuthors(TWO_WEEKS, 0, 24, next('authors'));
   downloads(next('downloads'));
   packagesCreated(next('totalPackages'));
 

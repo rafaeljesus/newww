@@ -1,9 +1,9 @@
 var Hapi = require('hapi'),
-    anonCouch = require('../../../adapters/couchDB').anonCouch,
-    qs = require('querystring'),
-    log = require('bole')('registry-browse'),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+  anonCouch = require('../../../adapters/couchDB').anonCouch,
+  qs = require('querystring'),
+  log = require('bole')('registry-browse'),
+  uuid = require('node-uuid'),
+  metrics = require('newww-metrics')();
 
 var viewNames = {
   all: 'browseAll',
@@ -35,9 +35,11 @@ var groupLevelArg = {
   userstar: 3
 }
 
-module.exports = function (type, arg, skip, limit, next) {
+module.exports = function(type, arg, skip, limit, next) {
   var key = [type, arg, skip, limit].join(',')
-  var timer = { start: Date.now() };
+  var timer = {
+    start: Date.now()
+  };
 
   var u = '/registry/_design/app/_view/' + viewNames[type]
   var query = {}
@@ -64,12 +66,19 @@ module.exports = function (type, arg, skip, limit, next) {
 
   u += '?' + qs.stringify(query)
 
-  anonCouch.get(u, function (er, cr, data) {
+  anonCouch.get(u, function(er, cr, data) {
     if (data) {
       data = transform(type, arg, data, skip, limit)
     }
     if (er) {
-      var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };
+      var erObj = {
+        type: type,
+        arg: arg,
+        data: data,
+        skip: skip,
+        limit: limit,
+        er: er
+      };
       log.error(uuid.v1() + ' ' + Hapi.error.internal('Error fetching browse data'), erObj);
       data = []
       er = null
@@ -84,19 +93,23 @@ module.exports = function (type, arg, skip, limit, next) {
 
 
 var transformKey = {
-  all: function (k, v) { return {
-    name: k[0],
-    description: k[1],
-    url: '/package/' + k[0],
-    value: v
-  }},
+  all: function(k, v) {
+    return {
+      name: k[0],
+      description: k[1],
+      url: '/package/' + k[0],
+      value: v
+    }
+  },
 
-  updated: function (k, v) { return {
-    name: k[1],
-    description: k[2] + ' - ' + k[0].substr(0, 10),
-    url: '/package/' + k[1],
-    value: k[0]
-  }},
+  updated: function(k, v) {
+    return {
+      name: k[1],
+      description: k[2],
+      url: '/package/' + k[1],
+      value: k[0]
+    }
+  },
 
   keyword: tk,
   author: tk,
@@ -104,59 +117,71 @@ var transformKey = {
 
   // usernames should always link to a profile, and
   // package names should always link to a package.
-  userstar: function (k, v, type) { return {
-    name: k[0],
-    description: v + ' packages',
-    url: '/profile/' + k[0],
-    value: v
-  }},
-  star: function (k, v, type) { return {
-    name: k[0],
-    description: k[1] + ' - ' + v,
-    url: '/package/' + k[0],
-    value: v
-  }}
+  userstar: function(k, v, type) {
+    return {
+      name: k[0],
+      description: v + ' packages',
+      url: '/profile/' + k[0],
+      value: v
+    }
+  },
+
+  star: function(k, v, type) {
+    return {
+      name: k[0],
+      description: k[1],
+      url: '/package/' + k[0],
+      value: v
+    }
+  }
 }
 
-function tk (k, v, type) { return {
-  name: k[0],
-  description: v + ' packages',
-  url: '/browse/' + type + '/' + k[0],
-  value: v
-}}
+function tk(k, v, type) {
+  return {
+    name: k[0],
+    description: v + ' packages',
+    url: '/browse/' + type + '/' + k[0],
+    value: v
+  }
+}
 
 var transformKeyArg = {
   keyword: tka,
   author: tka,
   depended: tka,
   userstar: tka,
-  star: function (k, v) { return {
-    name: k[2],
-    description: '',
-    url: '/profile/' + k[2]
-  }}
+  star: function(k, v) {
+    return {
+      name: k[2],
+      description: '',
+      url: '/profile/' + k[2]
+    }
+  }
 }
 
-function tka (k, v) { return {
-  name: k[1],
-  description: k[2] || '',
-  url: '/package/' + k[1]
-}}
+function tka(k, v) {
+  return {
+    name: k[1],
+    description: k[2] || '',
+    url: '/package/' + k[1]
+  }
+}
 
-function transform (type, arg, data, skip, limit) {
+function transform(type, arg, data, skip, limit) {
+
   if (!data.rows) {
     log.warn('no rows?', type, arg, data, skip, limit)
     return []
   }
 
-  data = data.rows.map(function (row) {
+  data = data.rows.map(function(row) {
     var fn = (arg ? transformKeyArg : transformKey)[type]
     return fn(row.key, row.value, type)
   })
 
   // normally has an arg.  sort, and then manually paginate.
   if (!arg && transformKeyArg[type]) {
-    data = data.sort(function (a, b) {
+    data = data.sort(function(a, b) {
       return a.value === b.value ? (
         a.name === b.name ? 0 : a.name < b.name ? -1 : 1
       ) : a.value > b.value ? -1 : 1
@@ -165,5 +190,3 @@ function transform (type, arg, data, skip, limit) {
 
   return data
 }
-
-

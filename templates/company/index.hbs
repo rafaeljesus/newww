@@ -40,7 +40,8 @@
 <ul class="columnar packages">
   {{#each updated}}
     <li>
-      <a href="/packages{{name}}">{{name}}</a> <span class="description">{{description}}</span>
+      <a href="{{url}}">{{name}}</a>
+      <p class="description">{{description}}</p>
     </li>
   {{/each}}
 </ul>
@@ -48,7 +49,10 @@
 <h2>Most Depended Upon</h2>
 <ul class="columnar packages">
   {{#each depended}}
-    <li>{{value}} <a href="/package/{{name}}">{{name}}</a></li>
+    <li>
+      <a href="{{url}}">{{name}}</a>
+      <p class="description">{{description}}</p>
+    </li>
   {{/each}}
   <li><a href="/browse/depended">More...</a></li>
 </ul>
@@ -56,15 +60,21 @@
 <h2>Most Prolific Recently</h2>
 <ul class="columnar authors">
   {{#each authors}}
-    <li>{{value}} <a href="/~{{name}}">{{name}}</a></li>
+    <li>
+      <a href="{{url}}">{{name}}</a>
+      <p class="description">{{description}}</p>
+    </li>
   {{/each}}
   <li><a href="/recent-authors">More...</a></li>
 </ul>
 
 <h2>Most Starred</h2>
-<ul>
+<ul class="columnar packages">
   {{#each starred}}
-    <li>{{value}} <a href="/package/{{name}}">{{name}}</a></li>
+    <li>
+      <a href="{{url}}">{{name}}</a>
+      <p class="description">{{description}}</p>
+    </li>
   {{/each}}
   <li><a href="/browse/star">More...</a></li>
 </ul>

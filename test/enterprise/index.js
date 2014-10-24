@@ -18,41 +18,21 @@ before(function (done) {
   });
 });
 
-describe('Getting to the npme beta page', function () {
+describe('Getting to the enterprise page', function () {
   it('gets there, no problem', function (done) {
     var opts = {
-      url: '/npme-beta'
+      url: '/enterprise'
     };
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('company/npme-beta');
+      expect(source.template).to.equal('enterprise/index');
       done();
     });
   });
 
   it('has all the pieces', function (done) {
-    expect(ctx.title).to.equal('npm Enterprise beta');
-    expect(ctx.hiring).to.exist;
-    done();
-  });
-});
-
-describe('Getting to the npme beta thanks page', function () {
-  it('gets there, no problem', function (done) {
-    var opts = {
-      url: '/npme-beta-thanks'
-    };
-
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('company/npme-beta-thanks');
-      done();
-    });
-  });
-
-  it('has all the pieces', function (done) {
-    expect(ctx.title).to.equal('npm Enterprise beta');
+    expect(ctx.title).to.equal('npm Enterprise');
     expect(ctx.hiring).to.exist;
     done();
   });

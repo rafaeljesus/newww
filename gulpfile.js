@@ -16,6 +16,7 @@ var paths = {
   fonts: ['./assets/fonts/*'],
   styles: ['./assets/styles/*.styl'],
   images: ['./assets/images/*'],
+  misc: ['./assets/misc/*'],
   scripts: {
     browserify: ["./assets/scripts/*.js"],
     vendor: ["./assets/scripts/vendor/*.js"]
@@ -67,6 +68,11 @@ gulp.task('images', function(){
     .pipe(gulp.dest('static/images'));
 })
 
+gulp.task('misc', function(){
+  gulp.src(paths.misc)
+    .pipe(gulp.dest('static/misc'));
+})
+
 gulp.task('nodemon', function() {
   process.env.NODE_ENV = 'dev';
   nodemon({
@@ -91,6 +97,6 @@ gulp.task('nodemon', function() {
     });
 });
 
-gulp.task('build', ['fonts', 'images', 'styles', 'browserify', 'concat']);
+gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat']);
 gulp.task('dev', ['build', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

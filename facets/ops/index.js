@@ -3,7 +3,7 @@ var path = require('path'),
 
 module.exports = {
   ping: function (request, reply) {
-    return reply('ok');
+    return reply('ok').code(200);
   },
 
   status: function (appVersion) {

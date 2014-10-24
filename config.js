@@ -113,6 +113,12 @@ config.license = {
   "api": "https://billing.website.com",
 };
 
+config.npme = {
+  product_id: '12345',
+  trial_length: 5,
+  trial_seats: 2
+};
+
 // ==== facet options ====
 config.company = {
   stripe: {

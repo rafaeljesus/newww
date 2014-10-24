@@ -81,27 +81,73 @@ module.exports = function (server) {
         return next(null, enterprise.newUser);
       },
 
-      getCustomer: function (email, next) {
-        if (email.indexOf('exists') !== -1) {
-          // user already exists
-          return next(null, enterprise.existingUser);
-        }
-
-        if (email.indexOf('new') !== -1) {
-          // user doesn't exist yet
-          return next(null, null);
-        }
-
-        // something went wrong with hubspot
-        return next(new Error('something went wrong'));
+      createTrial: function (customer, next) {
+        return next(null, customer);
       },
 
-      postData: function (formID, data, next) {
+      getCustomer: function (email, next) {
+        var key = email.split('@')[0];
+
+        switch (key) {
+          case 'exists':
+            // user already exists
+            return next(null, enterprise.existingUser);
+          case 'new':
+            // user doesn't exist yet
+            return next(null, null);
+          case 'noLicense':
+            // for license testing
+            return next(null, enterprise.noLicenseUser);
+          case 'tooManyLicenses':
+            // for license testing
+            return next(null, enterprise.tooManyLicensesUser);
+          case 'licenseBroken':
+            // for license testing
+            return next(null, enterprise.licenseBrokenUser);
+          default:
+            // something went wrong with hubspot
+            return next(new Error('something went wrong'));
+        }
+      },
+
+      getLicenses: function (productId, customerId, next) {
+        var key = customerId.split('@')[0];
+
+        switch (key) {
+          case 'noLicense':
+            return next(null, enterprise.noLicense);
+          case 'tooManyLicenses':
+            return next(null, enterprise.tooManyLicenses);
+          case 'exists':
+            return next(null, enterprise.goodLicense);
+          default:
+            return next(new Error('license machine brokened'));
+        }
+      },
+
+      sendData: function (formID, data, next) {
         if (data.email.indexOf('error') !== -1) {
           return next(new Error('ruh roh broken'));
         }
 
         return next(null);
+      },
+
+      verifyTrial: function (verificationKey, next) {
+        switch (verificationKey) {
+          case '12345':
+            return next(null, enterprise.newTrial);
+          case '23456':
+            return next(null, enterprise.noCustomerTrial);
+          case 'noLicense':
+            return next(null, enterprise.noLicenseTrial);
+          case 'tooManyLicenses':
+            return next(null, enterprise.tooManyLicensesTrial);
+          case 'licenseBroken':
+            return next(null, enterprise.licenseBrokenTrial);
+          default:
+            return next(new Error('cannot verify trial'));
+        }
       }
     },
 

@@ -1,5 +1,5 @@
 var request = require('request'),
-    log = require('bole')('npme-post-form'),
+    log = require('bole')('npme-send-data'),
     uuid = require('node-uuid');
 
 module.exports = function postForm (options) {

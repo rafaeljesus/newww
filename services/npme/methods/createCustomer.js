@@ -1,5 +1,5 @@
 var request = require('request'),
-    log = require('bole')('hubspot-create-customer'),
+    log = require('bole')('npme-create-customer'),
     uuid = require('node-uuid');
 
 module.exports = function createCustomer (options) {

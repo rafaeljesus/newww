@@ -21,7 +21,7 @@ module.exports = [
   require('../services/errors'),
   {
     plugin: require('../services/npme'),
-    options: config.license
+    options: config
   },
   {
     plugin: require('../services/downloads'),

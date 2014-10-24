@@ -9,7 +9,7 @@ var Hoek = require('hoek'),
 var config = require('../../config').license;
 
 module.exports = function createHubspotLead (request, reply) {
-  var postToHubspot = request.server.methods.npme.postData;
+  var postToHubspot = request.server.methods.npme.sendData;
 
   var opts = {
     user: request.auth.credentials,

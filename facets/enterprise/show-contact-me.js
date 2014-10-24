@@ -11,7 +11,7 @@ var config = require('../../config').license;
 // if they decide not to agree to the ULA
 // hit the hubspot contact-me form instead, and thank them
 module.exports = function contactMe (request, reply) {
-  var postToHubspot = request.server.methods.npme.postData,
+  var postToHubspot = request.server.methods.npme.sendData,
       showError = request.server.methods.errors.showError(reply);
 
   var opts = {

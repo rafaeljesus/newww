@@ -98,10 +98,49 @@ var routes = module.exports = [
   },
 
   {
-    path: "/enterprise-signup-1",
+    path: "/enterprise-start-signup",
     method: "POST",
     config: {
-      handler: require('./facets/enterprise/show-click-through'),
+      handler: require('./facets/enterprise/show-ula'),
+      plugins: {
+        blankie: {
+          scriptSrc: enterpriseCspScriptSrc
+        }
+      }
+    }
+  },
+
+  {
+    path: "/enterprise-contact-me",
+    method: "POST",
+    config: {
+      handler: require('./facets/enterprise/show-contact-me'),
+      plugins: {
+        blankie: {
+          scriptSrc: enterpriseCspScriptSrc
+        }
+      }
+    }
+  },
+
+  {
+    path: "/enterprise-trial-signup",
+    method: "POST",
+    config: {
+      handler: require('./facets/enterprise/show-trial-signup'),
+      plugins: {
+        blankie: {
+          scriptSrc: enterpriseCspScriptSrc
+        }
+      }
+    }
+  },
+
+  {
+    path: "/enterprise-verify",
+    method: "GET",
+    config: {
+      handler: require('./facets/enterprise/show-verification'),
       plugins: {
         blankie: {
           scriptSrc: enterpriseCspScriptSrc

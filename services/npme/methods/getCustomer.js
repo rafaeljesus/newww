@@ -1,5 +1,5 @@
 var request = require('request'),
-    log = require('bole')('hubspot-customer')
+    log = require('bole')('npme-get-customer')
 
 module.exports = function getCustomer (options) {
   return function (email, next) {
@@ -15,7 +15,7 @@ module.exports = function getCustomer (options) {
         return next(null, null); // no error, but no customer either
       }
       else if (resp.statusCode == 200) {
-        log.warn("model found customer", body);
+        log.info("model found customer", body);
         return next(null, body);
       }
 

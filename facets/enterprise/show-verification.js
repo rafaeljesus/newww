@@ -47,7 +47,9 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
           return showError(licenses.length, 400, 'zero or more than one license for ' + trial.customer_id, opts);
         }
 
-        var from = config.emailFrom,
+        var mailSettings = config.user.mail;
+
+        var from = mailSettings.emailFrom,
             requirementsUrl = "https://docs.npmjs.com/enterprise/installation#requirements",
             instructionsUrl = "https://docs.npmjs.com/enterprise/installation",
             license = licenses[0];
@@ -89,15 +91,15 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
           return reply.view('enterprise/complete', opts);
 
         } else {
-          if (!options.mailTransportModule ||
-              !options.mailTransportSettings) {
+          if (!mailSettings.mailTransportModule ||
+              !mailSettings.mailTransportSettings) {
             return showError(null, 500, 'Mail settings are missing!', opts);
           }
-          var transport = require(options.mailTransportModule);
-          var mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
+          var transport = require(mailSettings.mailTransportModule);
+          var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
 
           mailer.sendMail(mail, function (er, result) {
-            if (err) {
+            if (er) {
               return showError(er, 500, "Unable to send license to email", opts);
             }
 

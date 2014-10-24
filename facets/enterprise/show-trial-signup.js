@@ -7,7 +7,7 @@ var Hoek = require('hoek'),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')();
 
-var config = require('../../config').license;
+var config = require('../../config');
 
 // if they agree to the ULA, notify hubspot, create a trial and send verification link
 
@@ -23,7 +23,7 @@ module.exports = function trialSignup (request, reply) {
   };
 
   var data = { email: request.payload.customer_email };
-  postToHubspot(config.hubspot.form_npme_agreed_ula, data, function (er) {
+  postToHubspot(config.license.hubspot.form_npme_agreed_ula, data, function (er) {
 
     if (er) {
       log.warn("Could not hit ULA notification form on Hubspot");
@@ -76,7 +76,7 @@ function sendVerificationEmail (request, reply, customer, trial) {
     namespace: NAMESPACE
   };
 
-  var from = config.emailFrom;
+  var from = config.user.mail.emailFrom;
 
   var mail = {
     to: '"' + customer.name + '" <' + customer.email + '>',
@@ -97,15 +97,17 @@ function sendVerificationEmail (request, reply, customer, trial) {
     return reply(mail);
 
   } else {
-    if (!options.mailTransportModule ||
-        !options.mailTransportSettings) {
+    var mailSettings = config.user.mail;
+
+    if (!mailSettings.mailTransportModule ||
+        !mailSettings.mailTransportSettings) {
       return showError(null, 500, 'Mail settings are missing!', opts);
     }
-    var transport = require(options.mailTransportModule);
-    var mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
+    var transport = require(mailSettings.mailTransportModule);
+    var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
 
     mailer.sendMail(mail, function (er, result) {
-      if (err) {
+      if (er) {
         return showError(er, 500, "Unable to send verification email", opts);
       }
 

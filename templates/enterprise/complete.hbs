@@ -1,0 +1,26 @@
+<h2>Time to install!</h2>
+
+<p>Thank you for trying out npm Enterprise!</p>
+
+<p>To get started, make sure you have a fresh machine that meets the
+  <a href="{{requirementsUrl}}">installation requirements</a>, then
+  simply run:</p>
+
+<p><code>npm install npme</code></p>
+
+<p>That's it! When prompted, provide the following information:<br><br>
+  Billing email: <b>{{email}}</b><br>
+  License key: <b><code>{{license_key}}</code></b></p>
+
+<p>The installation process will ask you questions about your local
+  environment. For help with supplying the correct values, please refer to the
+  <a href="{{instructionsUrl}}">npm Enterprise documentation</a>. If you
+  have any trouble, you can also always contact
+  <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>.</p>
+
+<p>A copy of your license key and these instructions has been emailed to
+{{email}}.</p>
+
+{{#if mail}}
+{{{mail}}}
+{{/if}}

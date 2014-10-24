@@ -20,6 +20,10 @@ module.exports = [
   require('../services/static'),
   require('../services/errors'),
   {
+    plugin: require('../services/npme'),
+    options: config
+  },
+  {
     plugin: require('../services/downloads'),
     options: config.downloads
   },

@@ -15,6 +15,8 @@ var forceAuthConfig = function(handler) {
   };
 };
 
+var enterpriseCspScriptSrc = ['self', 'unsafe-eval', 'https://ssl.google-analytics.com', 'https://js.hs-analytics.net', 'https://js.hsforms.net/forms/current.js', 'https://forms.hubspot.com', 'https://internal.hubapi.com', 'https://api.hubapi.com'];
+
 var routes = module.exports = [
 
   // === COMPANY ===
@@ -79,21 +81,72 @@ var routes = module.exports = [
     path: "/joinwhoshiring",
     method: "POST",
     handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe)
-  },{
-    path: "/npme-beta",
+  },
+
+  // enterprise
+  {
+    path: "/enterprise",
     method: "GET",
     config: {
-      handler: require('./facets/company/show-npme-beta'),
+      handler: require('./facets/enterprise/show-index'),
       plugins: {
         blankie: {
-          scriptSrc: ['self', 'unsafe-eval', 'https://ssl.google-analytics.com', 'https://js.hs-analytics.net', 'https://js.hsforms.net/forms/current.js', 'https://forms.hubspot.com', 'https://internal.hubapi.com', 'https://api.hubapi.com']
+          scriptSrc: enterpriseCspScriptSrc
         }
       }
     }
-  },{
-    path: "/npme-beta-thanks",
+  },
+
+  {
+    path: "/enterprise-start-signup",
+    method: "POST",
+    config: {
+      handler: require('./facets/enterprise/show-ula'),
+      plugins: {
+        blankie: {
+          scriptSrc: enterpriseCspScriptSrc
+        }
+      }
+    }
+  },
+
+  {
+    path: "/enterprise-contact-me",
+    method: "POST",
+    config: {
+      handler: require('./facets/enterprise/show-contact-me'),
+      plugins: {
+        blankie: {
+          scriptSrc: enterpriseCspScriptSrc
+        }
+      }
+    }
+  },
+
+  {
+    path: "/enterprise-trial-signup",
+    method: "POST",
+    config: {
+      handler: require('./facets/enterprise/show-trial-signup'),
+      plugins: {
+        blankie: {
+          scriptSrc: enterpriseCspScriptSrc
+        }
+      }
+    }
+  },
+
+  {
+    path: "/enterprise-verify",
     method: "GET",
-    handler: require('./facets/company/show-npme-beta')
+    config: {
+      handler: require('./facets/enterprise/show-verification'),
+      plugins: {
+        blankie: {
+          scriptSrc: enterpriseCspScriptSrc
+        }
+      }
+    }
   },
 
   // === REGISTRY ===

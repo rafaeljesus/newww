@@ -3,6 +3,7 @@ var murmurhash = require('murmurhash');
 var crypto = require('crypto');
 
 var browse = require('./browseData');
+var enterprise = require('./enterprise-data');
 var whosHiring = require('./whosHiring');
 var users = require('./users');
 var pkgs = {
@@ -72,6 +73,81 @@ module.exports = function (server) {
 
       getRandomWhosHiring: function () {
         return whosHiring.random;
+      }
+    },
+
+    npme: {
+      createCustomer: function (data, next) {
+        return next(null, enterprise.newUser);
+      },
+
+      createTrial: function (customer, next) {
+        return next(null, customer);
+      },
+
+      getCustomer: function (email, next) {
+        var key = email.split('@')[0];
+
+        switch (key) {
+          case 'exists':
+            // user already exists
+            return next(null, enterprise.existingUser);
+          case 'new':
+            // user doesn't exist yet
+            return next(null, null);
+          case 'noLicense':
+            // for license testing
+            return next(null, enterprise.noLicenseUser);
+          case 'tooManyLicenses':
+            // for license testing
+            return next(null, enterprise.tooManyLicensesUser);
+          case 'licenseBroken':
+            // for license testing
+            return next(null, enterprise.licenseBrokenUser);
+          default:
+            // something went wrong with hubspot
+            return next(new Error('something went wrong'));
+        }
+      },
+
+      getLicenses: function (productId, customerId, next) {
+        var key = customerId.split('@')[0];
+
+        switch (key) {
+          case 'noLicense':
+            return next(null, enterprise.noLicense);
+          case 'tooManyLicenses':
+            return next(null, enterprise.tooManyLicenses);
+          case 'exists':
+            return next(null, enterprise.goodLicense);
+          default:
+            return next(new Error('license machine brokened'));
+        }
+      },
+
+      sendData: function (formID, data, next) {
+        if (data.email.indexOf('error') !== -1) {
+          return next(new Error('ruh roh broken'));
+        }
+
+        return next(null);
+      },
+
+      verifyTrial: function (verificationKey, next) {
+        switch (verificationKey) {
+          case '12345':
+            return next(null, enterprise.newTrial);
+          case '23456':
+            return next(null, enterprise.noCustomerTrial);
+          case 'noLicense':
+            return next(null, enterprise.noLicenseTrial);
+          case 'tooManyLicenses':
+            return next(null, enterprise.tooManyLicensesTrial);
+          case 'licenseBroken':
+            return next(null, enterprise.licenseBrokenTrial);
+          default:
+            return next(new Error('cannot verify trial'));
+        }
       }
     },
 

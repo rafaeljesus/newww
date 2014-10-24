@@ -36,11 +36,14 @@
 </div>
 
 
-<h2>Recently Updated Packages</h2>
+<h2><a id="recent" href="#recent">Recently Updated Packages</a></h2>
 <ul class="columnar packages">
   {{#each updated}}
     <li>
-      <a href="{{url}}">{{name}}</a>
+      <h3>
+        <a class="icon-package-hex" href="{{url}}">{{name}}</a>
+        <span class="version">1.0.0</span>
+      </h3>
       <p class="description">{{description}}</p>
     </li>
   {{/each}}

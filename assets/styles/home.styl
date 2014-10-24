@@ -42,20 +42,32 @@ div.stat
     display block
     color greigh2
 
+columnarItemMaxWidth = 590px
+columnarItemHeadingHeight = 18px
+
 ul.columnar
   @extend .vanilla-list
   li
-    max-width 300px
+    max-width columnarItemMaxWidth
     padding 5px
-    p
-      margin 0
-    a
+    h3, h3 a, h3 span
       font-size 18px
-      display block
-      line-height 18px
+      line-height columnarItemHeadingHeight
       vertical-align top
+    a
       text-decoration none
-      color greigh3
+      transform all 0.1s
+      color greigh2
+      &:hover
+        color npmred
       &:before
         color greigh5
-        line-height 18px
+        line-height columnarItemHeadingHeight
+        padding-right 6px
+    span.version
+      opacity 0.4
+    p
+      margin 0
+      padding 6px 0 0 0
+      max-width 100%
+      @extend .ellipsis

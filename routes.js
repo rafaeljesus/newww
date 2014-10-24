@@ -264,16 +264,14 @@ var routes = module.exports = [
     path: "/forgot/{token?}",
     method: "POST",
     handler: require('./facets/user/show-forgot')(config.user.mail)
-  },
-
-  // === OPS ===
-
-  {
-    path: "/ping",
-    method: "GET",
-    handler: ops.ping
   },{
-    path: "/status",
+    path: "/_monitor/ping",
+    method: "GET",
+    handler: function (request, reply) {
+      return reply('ok');
+    }
+  },{
+    path: "/_monitor/status",
     method: "GET",
     handler: ops.status(require('./package.json').version)
   },{

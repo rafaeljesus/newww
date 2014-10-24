@@ -22,7 +22,9 @@ exports.register = function(plugin, options, next) {
         request.response.source.context = Hoek.applyToDefaults(options, request.response.source.context);
         break;
       case "plain":
-        request.response.source = Hoek.applyToDefaults(options, request.response.source);
+        if (typeof(request.response.source) === "object") {
+          request.response.source = Hoek.applyToDefaults(options, request.response.source);
+        }
         break;
     }
 

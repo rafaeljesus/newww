@@ -11,10 +11,10 @@ module.exports = function getCustomer (options) {
       json: true
     }, function (er, resp, body) {
 
-      if (resp.statusCode == 404) {
+      if (resp.statusCode === 404) {
         return next(null, null); // no error, but no customer either
       }
-      else if (resp.statusCode == 200) {
+      else if (resp.statusCode === 200) {
         log.info("model found customer", body);
         return next(null, body);
       }

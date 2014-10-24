@@ -21,7 +21,7 @@ before(function (done) {
 
   var metrics = new MetricsClient(metricsConfig);
 
-  server = Hapi.createServer('localhost', '8000');
+  server = Hapi.createServer('localhost', '6110');
   server.pack.register([
     {
       plugin: couch,

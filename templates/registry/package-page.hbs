@@ -2,16 +2,27 @@
 
 <div class="layout-left">
 
-  {{#if readme}}
-    <section id="readme">{{{readme}}}</section>
-  {{/if}}
+  <section id="readme">
+    <hgroup>
+      <h1>{{name}}</h1>
+      <h2>{{description}}</h2>
+    </hgroup>
+    {{#if readme}}
+      {{{readme}}}
+    {{/if}}
+  </section>
 
 </div>
 
 <div class="layout-right">
 
+  {{#if installCommand}}
+  <div id="npm-install">
+    <input type="text" value="{{installCommand}}" readonly>
+  </div>
+  {{/if}}
 
-	<h3>Package Details</h3>
+	<h3>Package Info</h3>
 	<ul class="box">
 
     <li>

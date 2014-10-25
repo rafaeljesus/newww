@@ -64,9 +64,6 @@ h4
     font-weight 400
 
 hgroup
-  text-align center
-  text-transform lowercase
-
   & h2
     font-weight 300
 
@@ -123,3 +120,43 @@ a .icon-add:before
 
 .email-field input
   background-color greigh6
+
+npmInstallHeight = 32px
+npmInstallFontSize = 15px
+
+#npm-install
+  position relative
+  margin 20px 0 30px 0
+  // background greigh6//rgba(npmred, 0.07)
+  border 1px solid rgba(npmred, 0.4)
+  // box-shadow inset 1px 1px 3px greigh5
+  border-radius 4px
+  &:before
+    position absolute
+    top 0
+    left 0px
+    font-family codefonts
+    content: "$"
+    color white
+    background npmred
+    padding-left 8px
+    padding-right 8px
+    border-radius 4px 0 0 5px
+    line-height npmInstallHeight
+    font-style normal
+    vertical-align top
+    font-size npmInstallFontSize
+  input[type=text]
+    @extend .unstyledTextInput
+    font-family codefonts
+    padding-left 30px
+    line-height npmInstallHeight
+    vertical-align top
+    display inline-block
+    width 100%
+    white-space nowrap
+    overflow-x auto
+    color npmred
+    height npmInstallHeight
+    cursor text
+    font-size npmInstallFontSize

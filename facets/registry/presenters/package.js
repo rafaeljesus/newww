@@ -1,4 +1,5 @@
 var marked = require('marked'),
+    fmt = require('util').format,
     sanitizer = require('sanitizer'),
     gravatar = require('gravatar').url,
     moment = require('moment'),
@@ -79,6 +80,11 @@ module.exports = function package (data, cb) {
   // repository: sanitize into https URL if it's a github repo
   if (data.repository && data.repository.url && ghurl(data.repository.url)) {
     data.repository.url = ghurl(data.repository.url)
+  }
+
+  data.installCommand = fmt("npm install %s", data.name)
+  if (data.preferGlobal) {
+    data.installCommand += " -g"
   }
 
   if (data.bugs && data.bugs.url && gh(data.bugs.url)) {
@@ -345,7 +351,7 @@ function removeSuperfluousContentFromReadme (data) {
   }
 
   // Remove the Express logo
-  var expressLogo = $("img[alt='express logo']").first()
+  var expressLogo = $("img[alt='Express Logo']").first()
   if (expressLogo) {
     expressLogo.remove()
     data.readme = $.html()

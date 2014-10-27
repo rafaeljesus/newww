@@ -35,7 +35,12 @@ module.exports = function (request, reply) {
       },
       totalPackages: formatNumber(cached.totalPackages, {sep: sep}),
       hiring: request.server.methods.hiring.getRandomWhosHiring(),
-      explicit: require("../../lib/explicit-installs.json")
+      explicit: require("../../tmp/explicit-installs.json").map(function(pkg) {
+        pkg.installCommand = "npm install " + pkg.name
+        if (pkg.preferGlobal) pkg.installCommand += " -g"
+        pkg.starCount = pkg.users ? Object.keys(pkg.users).length : 0
+        return pkg
+      })
     };
 
     timer.end = Date.now();

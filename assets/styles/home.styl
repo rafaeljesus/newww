@@ -46,14 +46,27 @@ columnarItemMaxWidth = 590px
 columnarItemHeadingHeight = 18px
 
 ul.columnar
+  columns 3
+  column-gap 20px
+
   @extend .vanilla-list
   li
-    max-width columnarItemMaxWidth
+    column-break-inside avoid
+    // background #DDD
+    // max-width columnarItemMaxWidth
+    // border 1px solid greigh6
+    border-radius 3px
     padding 5px
+    margin-bottom 15px
     h3, h3 a, h3 span
       font-size 18px
       line-height columnarItemHeadingHeight
+      overflow visible
       vertical-align top
+      margin 0
+      padding 0
+      max-width 90%
+      @extend .ellipsis
     a
       text-decoration none
       transform all 0.1s
@@ -65,9 +78,19 @@ ul.columnar
         line-height columnarItemHeadingHeight
         padding-right 6px
     span.version
-      opacity 0.4
+      display none
+      color greigh4
     p
+      font-size 14px
       margin 0
-      padding 6px 0 0 0
-      max-width 100%
+      max-width 90%
       @extend .ellipsis
+
+    .keywords
+      font-size 13px
+      color greigh5
+      font-weight 300
+      a
+        color greigh5
+        &:hover
+          color npmred

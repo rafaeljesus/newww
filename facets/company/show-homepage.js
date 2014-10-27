@@ -6,7 +6,8 @@ var formatNumber = require('number-grouper'),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')(),
     parseLanguageHeader = require('accept-language-parser').parse,
-    fmt = require("util").format;
+    fmt = require('util').format,
+    moment = require('moment');
 
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };
@@ -35,10 +36,15 @@ module.exports = function (request, reply) {
       },
       totalPackages: formatNumber(cached.totalPackages, {sep: sep}),
       hiring: request.server.methods.hiring.getRandomWhosHiring(),
-      explicit: require("../../tmp/explicit-installs.json").map(function(pkg) {
-        pkg.installCommand = "npm install " + pkg.name
-        if (pkg.preferGlobal) pkg.installCommand += " -g"
+      explicit: require("../../tmp/explicit-installs.json").slice(0,15).map(function(pkg) {
+        pkg.installCommand = "npm install " + pkg.name + (pkg.preferGlobal ? " -g" : "")
         pkg.starCount = pkg.users ? Object.keys(pkg.users).length : 0
+
+        pkg.version = pkg['dist-tags'].latest
+        if (pkg.versions) pkg.latestVersion = pkg.versions[pkg.version]
+        pkg.lastPublishedInWords = moment(pkg.time[pkg.version]).fromNow()
+        delete pkg.versions
+
         return pkg
       })
     };
@@ -69,10 +75,10 @@ function load (request, cb) {
   var n = 6,
       cached = {};
 
-  browse('star', null, 0, 10, next('starred'));
-  browse('depended', null, 0, 10, next('depended'));
-  browse('updated', null, 0, 10, next('updated'));
-  recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
+  browse('star', null, 0, 15, next('starred'));
+  browse('depended', null, 0, 15, next('depended'));
+  browse('updated', null, 0, 15, next('updated'));
+  recentAuthors(TWO_WEEKS, 0, 15, next('authors'));
   downloads(next('downloads'));
   packagesCreated(next('totalPackages'));
 

@@ -42,24 +42,25 @@ div.stat
     display block
     color greigh2
 
-columnarItemMaxWidth = 590px
-columnarItemHeadingHeight = 18px
+columnarItemHeadingHeight = 20px
 
 ul.columnar
   columns 3
-  column-gap 20px
+  column-gap 40px
 
   @extend .vanilla-list
   li
     column-break-inside avoid
-    // background #DDD
-    // max-width columnarItemMaxWidth
-    // border 1px solid greigh6
-    border-radius 3px
     padding 5px
-    margin-bottom 15px
-    h3, h3 a, h3 span
-      font-size 18px
+    margin-bottom 20px
+
+    &:hover
+      a
+        color npmred !important
+
+    h3, h3 a
+      font-size columnarItemHeadingHeight
+
       line-height columnarItemHeadingHeight
       overflow visible
       vertical-align top
@@ -67,30 +68,37 @@ ul.columnar
       padding 0
       max-width 90%
       @extend .ellipsis
+
     a
-      text-decoration none
-      transform all 0.1s
-      color greigh2
-      &:hover
-        color npmred
-      &:before
-        color greigh5
-        line-height columnarItemHeadingHeight
-        padding-right 6px
-    span.version
-      display none
-      color greigh4
+      &.name
+        text-decoration none
+        transform all 0.1s
+        color greigh2
+        @extend .red-on-hover
+        &:before
+          color greigh5
+          line-height columnarItemHeadingHeight
+          padding-right 6px
+
     p
-      font-size 14px
+      font-size 15px
       margin 0
       max-width 90%
+      padding-left 22px
       @extend .ellipsis
+
+    .author
+      font-size 14px
+      color greigh4
+      a
+        color greigh3
+        @extend .red-on-hover
+        font-weight 400
+        // text-decoration underline
 
     .keywords
       font-size 13px
-      color greigh5
+      color greigh4
       font-weight 300
-      a
-        color greigh5
-        &:hover
-          color npmred
+      &:before
+        padding-right 4px

@@ -41,39 +41,48 @@
   {{#each explicit}}
     <li>
       <h3>
-        <a class="iconz-package-hex" href="/packages/{{name}}">{{name}}</a>
+        <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
         <!-- <span class="version">{{dist-tags.latest}}</span> -->
         <!-- <div class="npm-install">
           <input type="text" value="{{installCommand}}" readonly>
         </div> -->
       </h3>
       <p class="description">{{description}}</p>
+      <p class="author">
+        <a class="version" href="/packages/{{name}}">{{version}}</a>
+        published
+        {{lastPublishedInWords}}
+        by
+        <a href="/~{{latestVersion._npmUser.name}}">{{latestVersion._npmUser.name}}</a>
+      </p>
 
       <!-- {{#if starCount}}
         <p class="stars">{{{starCount}}} stars</p>
       {{/if}} -->
 
       <!-- {{#if keywords}}
-        <p class="keywords">{{{packageKeywords keywords 5}}}</p>
+        <p class="keywords icon-tag">{{{packageKeywords keywords 5}}}</p>
+      {{else}}
+        <p class="keywords icon-tag">&nbsp;</p>
       {{/if}} -->
 
     </li>
   {{/each}}
 </ul>
 
-<!-- <h2><a id="recent" href="#recent">Recently Updated Packages</a></h2>
+<h2><a id="recent" href="#recent">Recently Updated Packages</a></h2>
 <ul class="columnar packages">
   {{#each updated}}
     <li>
       <h3>
-        <a class="icon-package-hex" href="{{url}}">{{name}}</a>
-        <span class="version">1.0.0</span>
+        <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
       </h3>
       <p class="description">{{description}}</p>
     </li>
   {{/each}}
 </ul>
 
+<!--
 <h2>Most Depended Upon</h2>
 <ul class="columnar packages">
   {{#each depended}}

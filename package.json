@@ -56,6 +56,7 @@
     "numbat-emitter": "^1.0.0",
     "number-grouper": "0.0.1",
     "numeral": "^1.5.3",
+    "pkgs": "^1.1.0",
     "sanitizer": "^0.1.1",
     "schemeless": "^1.0.0",
     "scooter": "^1.2.0",

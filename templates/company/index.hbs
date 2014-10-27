@@ -36,7 +36,21 @@
 </div>
 
 
-<h2><a id="recent" href="#recent">Recently Updated Packages</a></h2>
+<h2><a id="explicit" href="#explicit">Top Explicity-Installed Packages</a></h2>
+<ul class="columnar packages">
+  {{#each explicit}}
+    <li>
+      <h3>
+        <a class="icon-package-hex" href="{{url}}">{{name}}</a>
+        <span class="version">{{version}}</span>
+      </h3>
+      <p class="description">{{description}}</p>
+      <p class="keywords">{{packageKeywords keywords}}</p>
+    </li>
+  {{/each}}
+</ul>
+
+<!-- <h2><a id="recent" href="#recent">Recently Updated Packages</a></h2>
 <ul class="columnar packages">
   {{#each updated}}
     <li>
@@ -80,4 +94,4 @@
     </li>
   {{/each}}
   <li><a href="/browse/star">More...</a></li>
-</ul>
+</ul> -->

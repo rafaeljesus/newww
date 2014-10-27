@@ -34,7 +34,8 @@ module.exports = function (request, reply) {
         month: formatNumber(cached.downloads.month, {sep: sep}),
       },
       totalPackages: formatNumber(cached.totalPackages, {sep: sep}),
-      hiring: request.server.methods.hiring.getRandomWhosHiring()
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      explicit: require("../../lib/explicit-installs.json")
     };
 
     timer.end = Date.now();
@@ -63,10 +64,10 @@ function load (request, cb) {
   var n = 6,
       cached = {};
 
-  browse('star', null, 0, 24, next('starred'));
-  browse('depended', null, 0, 24, next('depended'));
-  browse('updated', null, 0, 24, next('updated'));
-  recentAuthors(TWO_WEEKS, 0, 24, next('authors'));
+  browse('star', null, 0, 10, next('starred'));
+  browse('depended', null, 0, 10, next('depended'));
+  browse('updated', null, 0, 10, next('updated'));
+  recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
   downloads(next('downloads'));
   packagesCreated(next('totalPackages'));
 

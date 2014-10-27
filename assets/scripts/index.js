@@ -7,7 +7,7 @@ window.obfuscate = require("./email-obfuscate")()
 $(function () {
   require("./update-package-issue-count")();
 
-  $("#npm-install input").on("click", function () {
+  $(".npm-install input").on("click", function () {
     $(this).select()
   })
 })

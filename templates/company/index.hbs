@@ -5,29 +5,25 @@
 
     <div id="home-stats">
       {{#if totalPackages}}
-        <div class="stat">
-          <span class="icon-package-hex"></span>
+        <div class="stat icon-package-hex">
           total packages<strong>{{totalPackages}}</strong>
         </div>
       {{/if}}
 
       {{#if downloads.day}}
-        <div class="stat">
-          <span class="icon-cal-24hours"></span>
+        <div class="stat icon-cal-24hours">
           downloads in the last day<strong>{{downloads.day}}</strong>
         </div>
       {{/if}}
 
       {{#if downloads.week}}
-        <div class="stat">
-          <span class="icon-cal-7days"></span>
+        <div class="stat icon-cal-7days">
           downloads in the last week<strong>{{downloads.week}}</strong>
         </div>
       {{/if}}
 
       {{#if downloads.month}}
-        <div class="stat">
-          <span class="icon-cal-30days"></span>
+        <div class="stat icon-cal-30days">
           downloads in the last month<strong>{{downloads.month}}</strong>
         </div>
       {{/if}}

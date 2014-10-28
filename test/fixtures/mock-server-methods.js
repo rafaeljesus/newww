@@ -164,6 +164,34 @@ module.exports = function (server) {
         return next(Hapi.error.notFound('Username not found: ' + pkgName));
       },
 
+      getAllPackages: function (skip, limit, next) {
+        return next(null, browse.all);
+      },
+
+      getAllByKeyword: function (arg, skip, limit, next) {
+        return next(null, browse.keyword);
+      },
+
+      getAuthors: function (arg, skip, limit, next) {
+        return next(null, browse.author);
+      },
+
+      getDependedUpon: function (arg, skip, limit, next) {
+        return next(null, browse.depended);
+      },
+
+      getStarredPackages: function (arg, skip, limit, next) {
+        return next(null, browse.star);
+      },
+
+      getUserStars: function (arg, skip, limit, next) {
+        return next(null, browse.userstar);
+      },
+
+      getUpdated: function (skip, limit, next) {
+        return next(null, browse.updated);
+      },
+
       getRecentAuthors: function (arg, skip, limit, next) {
         return next(null, browse.recentauthors);
       },

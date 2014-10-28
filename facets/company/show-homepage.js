@@ -36,7 +36,7 @@ module.exports = function (request, reply) {
       },
       totalPackages: formatNumber(cached.totalPackages, {sep: sep}),
       hiring: request.server.methods.hiring.getRandomWhosHiring(),
-      explicit: require("../../tmp/explicit-installs.json").slice(0,15).map(function(pkg) {
+      explicit: require("../../lib/explicit-installs.json").slice(0,15).map(function(pkg) {
         pkg.installCommand = "npm install " + pkg.name + (pkg.preferGlobal ? " -g" : "")
         pkg.starCount = pkg.users ? Object.keys(pkg.users).length : 0
 

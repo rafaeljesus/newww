@@ -1,12 +1,13 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
-var commaIt = require('number-grouper'),
+var formatNumber = require('number-grouper'),
     Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')(),
     parseLanguageHeader = require('accept-language-parser').parse,
-    fmt = require("util").format;
+    fmt = require('util').format,
+    moment = require('moment');
 
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };
@@ -29,12 +30,23 @@ module.exports = function (request, reply) {
       starred: cached.starred || [],
       authors: cached.authors || [],
       downloads: {
-        day: commaIt(cached.downloads.day, {sep: sep}),
-        week: commaIt(cached.downloads.week, {sep: sep}),
-        month: commaIt(cached.downloads.month, {sep: sep}),
+        day: formatNumber(cached.downloads.day, {sep: sep}),
+        week: formatNumber(cached.downloads.week, {sep: sep}),
+        month: formatNumber(cached.downloads.month, {sep: sep}),
       },
-      totalPackages: commaIt(cached.totalPackages, {sep: sep}),
-      hiring: request.server.methods.hiring.getRandomWhosHiring()
+      totalPackages: formatNumber(cached.totalPackages, {sep: sep}),
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      explicit: require("../../lib/explicit-installs.json").slice(0,15).map(function(pkg) {
+        pkg.installCommand = "npm install " + pkg.name + (pkg.preferGlobal ? " -g" : "")
+        pkg.starCount = pkg.users ? Object.keys(pkg.users).length : 0
+
+        pkg.version = pkg['dist-tags'].latest
+        if (pkg.versions) pkg.latestVersion = pkg.versions[pkg.version]
+        pkg.lastPublishedInWords = moment(pkg.time[pkg.version]).fromNow()
+        delete pkg.versions
+
+        return pkg
+      })
     };
 
     timer.end = Date.now();
@@ -48,6 +60,7 @@ module.exports = function (request, reply) {
     }
 
     return reply.view('company/index', opts);
+
   });
 }
 

@@ -10,10 +10,10 @@
 {{#unless submitted}}
 
   <form class="container tab-content" data-tab="edit-email" method="post" action="/email-edit">
-    <div class="layout-left">
+    <div class="content">
       <h2>edit email address</h2>
       <p>An email will be sent to the new address to confirm. Please click the link when you receive it. An informative confirmation email will be sent to the old address just to verify that this is intentional.</p>
-      <div class="layout-left half">
+      <div class="content half">
         <input type="hidden" name="_id" value="{{profile._id}}">
         <input type="hidden" name="name" value="{{profile.name}}">
 
@@ -37,12 +37,12 @@
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
       </div> <!-- / .layout-right.half -->
-    </div> <!-- / .layout-left -->
+    </div> <!-- / .content -->
   </form> <!-- / .container -->
 
 {{else}}
 
-  <div class="container layout-left">
+  <div class="container content">
     <h2>Email Address Change Submitted!</h2>
 
     <p>An email confirmation has just been sent to you with a link that

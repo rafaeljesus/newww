@@ -1,23 +1,24 @@
 .container
   position relative
+  float none
+  clear both
+  overflow hidden
   max-width fullColumnWidth
   margin 0 auto
   padding 0 20px
   &.narrow
     max-width narrowColumnWidth
     text-align center
+
   &:after
     content: ""
     display table
     clear both
 
-.layout-left
+.content
   float left
   width 60%
   margin-bottom 90px
-
-  & .layout-left
-    margin-bottom 25px
 
   @media only screen and (max-width: 1024px)
     width 57%
@@ -33,21 +34,10 @@
       float none
       width 100%
 
-.layout-right
-  margin 0 0 90px 72.5%
-
-  @media only screen and (max-width: 1024px)
-    margin 0 0 0 65%
-
-  @media only screen and (max-width: 767px)
-    margin 0
-
-  &.half
-    margin-left 54%
-
-    @media only screen and (max-width: 767px)
-      margin-left 0
-
+.sidebar
+  float right
+  margin-top 40px
+  max-width 320px
 
 .thirds
   overflow hidden
@@ -87,10 +77,10 @@
 
 // Package Results
 
-.package, .author
+.package
   margin-bottom 25px
   padding 0 0 25px
-  border-bottom 1px solid gray5
+  border-bottom 1px solid greigh5
 
   img
     float left
@@ -106,7 +96,7 @@
   p
     clear left
     font-weight 600
-    color gray3
+    color greigh3
     margin 0
 
   span
@@ -147,12 +137,6 @@
       clear none
       font-weight 400
 
-.author
-  h5
-    font-family fonts
-
-    a
-      color text-color-subdued
 
 // Collection Results
 
@@ -226,7 +210,7 @@
   &.third
     .c-details
       padding 20px
-      border 2px solid gray5
+      border 2px solid greigh5
       border-width 0 2px 2px 2px
       border-radius 0 0 6px 6px
 
@@ -251,13 +235,13 @@
 .hiring
   .c-name
     height 60px
-    border 2px solid gray5
+    border 2px solid greigh5
     border-bottom 0
     padding 20px
     padding-top 15px
 
     a
-      color gray1
+      color greigh1
       text-align right
       display block
       position relative
@@ -279,7 +263,7 @@
   padding-bottom 0
 
   .c-name
-    border 2px solid gray5
+    border 2px solid greigh5
     height 43px
 
     img
@@ -293,7 +277,7 @@
         font-size 24px
         line-height 45px
         margin-right 8px
-        color gray5
+        color greigh5
 
     span
       color text-color
@@ -320,7 +304,7 @@
     overflow hidden
     text-overflow ellipsis
     padding-right 10px
-    border-bottom 1px solid gray5
+    border-bottom 1px solid greigh5
 
     &:last-child
       border-bottom none
@@ -328,7 +312,7 @@
   &.list
     li
       padding 10px 15px
-      border-bottom 1px solid gray5
+      border-bottom 1px solid greigh5
       line-height 15px
       white-space normal
       overflow auto
@@ -338,10 +322,10 @@
         border-bottom 0
 
       &.disabled
-        color gray5
+        color greigh5
 
         a
-          color gray5
+          color greigh5
 
       a
         display block
@@ -349,10 +333,10 @@
 
   &.hiring
     border-radius 6px
-    border 2px solid gray5
+    border 2px solid greigh5
 
 .box-action
-  border-top 1px solid gray5
+  border-top 1px solid greigh5
   padding 14px
   text-transformation lowercase
 
@@ -378,7 +362,7 @@
     margin 0 3px 5px 0
     padding 5px 7px
     border-radius 2px
-    border 1px solid gray5
+    border 1px solid greigh5
 
     &:hover
       color background-color
@@ -391,8 +375,8 @@
       background npmred
 
       &:hover
-        border-color gray2
-        background gray2
+        border-color greigh2
+        background greigh2
 
       &:before
         font-size 10px
@@ -405,7 +389,7 @@
   a
     display inline-block
     border-radius 2px
-    border 1px solid gray5
+    border 1px solid greigh5
     text-align center
     margin 0 2px 10px
     padding 1px 11px
@@ -414,7 +398,7 @@
 
     &:hover, &.active
       color background-color
-      background gray5
+      background greigh5
 
 .side-nav
   margin 0 0 50px
@@ -423,7 +407,7 @@
     list-style none
     a
       display inline-block
-      border 1px solid gray5
+      border 1px solid greigh5
       margin 0 0 5px
       padding 5px 15px
       text-align center

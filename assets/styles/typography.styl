@@ -17,12 +17,11 @@ a
 h1
   font 400 54px/65px fonts
   letter-spacing -3px
-  color gray2
-
-  &:before
-    float left
-    margin-right 10px
-    margin-top 10px
+  color greigh2
+  text-transform lowercase
+  &.centered
+    text-align center
+    padding 40px 0 20px 0
 
   .narrow &
     margin 0.2em 0
@@ -31,7 +30,7 @@ h2
   margin 20px 0 20px 0
   font-weight 600
   font-size 24px
-  color gray2
+  color greigh2
   text-transform lowercase
 
   span
@@ -46,8 +45,13 @@ h2
     float left
     margin-right 10px
 
-  // form &, .layout-left &
-  //   color npmred
+  &.centered
+    margin 40px 0 28px 0
+    font-weight 600
+    font-size 26px
+    text-align center
+    border-bottom 2px solid greigh6
+    padding-bottom 22px
 
 h3
   display block
@@ -55,13 +59,13 @@ h3
   font-size 20px
   font-weight 600
   line-height 1
-  color gray2
+  color greigh2
 
 h4
   margin 0 0 10px
   letter-spacing -.03em
   font 600 16px/16px fonts
-  color gray3
+  color greigh3
 
   span
     font-weight 400
@@ -99,14 +103,14 @@ strong
   background npmred
 
   &:hover
-    background gray2
+    background greigh2
 
-  &.gray
+  &.greigh
     margin-right 10px
     background c
 
     &:hover
-      background gray2
+      background greigh2
 
 ul
   margin 25px 0 25px 35px
@@ -129,7 +133,37 @@ a .icon-add:before
 
 .email-label:hover, .email-field:hover
   text-decoration none
-  color gray2
+  color greigh2
 
 .email-field input
-  background-color gray6
+  background-color greigh6
+
+npmInstallHeight = 18px
+npmInstallFontSize = 15px
+
+.npm-install
+  position relative
+  &:before
+    position absolute
+    top 0
+    left 0
+    font-size npmInstallHeight
+    line-height npmInstallHeight
+    color greigh5
+    vertical-align top
+  input[type=text]
+    @extend .unstyledTextInput
+    font-family codefonts
+    margin 0
+    padding 0 0 0 30px
+    line-height npmInstallHeight
+    vertical-align top
+    display inline-block
+    width 100%
+    white-space nowrap
+    overflow visible
+    overflow-x auto
+    color greigh3
+    height npmInstallHeight+2px
+    cursor text
+    font-size npmInstallFontSize

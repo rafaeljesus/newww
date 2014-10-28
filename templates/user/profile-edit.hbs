@@ -8,12 +8,12 @@
 </div> <!-- / #secondary-nav -->
 
 <form class="container tab-content" data-tab="profile" method="post" action="/profile-edit">
-  <div class="layout-left">
+  <div class="content">
 
     {{#with user}}
       <h2>personal information</h2>
 
-      <div class="layout-left half">
+      <div class="content half">
         <input type="hidden" name="_id" value="{{_id}}">
         <input type="hidden" name="name" value="{{name}}">
 
@@ -26,7 +26,7 @@
           <input type="text" id="email" name="email" value="{{email}}" disabled='disabled'>
         </a>
 
-      </div> <!-- / .layout-left.half -->
+      </div> <!-- / .content.half -->
 
       <div class="layout-right half">
 
@@ -40,7 +40,7 @@
 
       <h2>social</h2>
 
-      <div class="layout-left half">
+      <div class="content half">
         <label for="github">github</label>
         <input type="text" id="github" name="github" value="{{github}}">
         <p class="help-text">Ex: wombat</p>
@@ -48,7 +48,7 @@
         <label for="twitter">twitter</label>
         <input type="text" id="twitter" name="twitter" value="{{twitter}}">
         <p class="help-text">Ex: @wombat</p>
-      </div> <!-- / .layout-left.half -->
+      </div> <!-- / .content.half -->
 
       <div class="layout-right half">
         <label for="freenode">freenode</label>
@@ -59,7 +59,7 @@
 
   <input type="hidden" name="crumb" value="{{crumb}}"/>
   <input type="submit" value="save" />
-  </div> <!-- / .layout-left -->
+  </div> <!-- / .content -->
 
 
   <div class="layout-right">

@@ -1,7 +1,7 @@
 header
   padding 28px 0 20px
   border-bottom 1px solid lightgrey
-  background gray6
+  background greigh6
 
   h1
     clear left
@@ -9,9 +9,7 @@ header
     line-height 1.4
     font-weight 400
     width 100%
-    white-space nowrap
-    overflow-x hidden
-    text-overflow ellipsis
+    @extend .ellipsis
 
     em
       color npmred
@@ -44,7 +42,7 @@ nav
     left 0
     right 0
     border-bottom 0
-    background gray6
+    background greigh6
     z-index 12
 
   h2
@@ -90,7 +88,7 @@ nav
 
       &:hover
         color npmred
-        background gray6
+        background greigh6
         border-bottom 1px solid white
 
   h2
@@ -145,7 +143,7 @@ nav
       margin 0 15px 0 0
 
     &:hover, &.active
-      color gray2
+      color greigh2
       border-bottom 2px solid npmred
 
 #profile-nav
@@ -191,7 +189,7 @@ nav
       color rgba(255,255,255,.4)
 
     &:hover
-      color gray2
+      color greigh2
 
 #npm-logo
   float left
@@ -210,7 +208,7 @@ nav
   height 47px
   padding 0
   margin 0
-  border 1px solid gray5
+  border 1px solid greigh5
   border-radius 2px
   background white
 
@@ -246,7 +244,7 @@ nav
   text-indent -9999em
   cursor pointer
   outline 0
-  border-left 1px solid gray5
+  border-left 1px solid greigh5
   border-radius 0 2px 2px 0
   background url(../images/ico-search.png) no-repeat 50% 50%
 
@@ -309,7 +307,7 @@ nav
 
   a
     &.subdued
-      color gray4
+      color greigh4
       font-size 14px
 
 
@@ -320,7 +318,7 @@ nav
   top 47px
   left -1px
   width 89%
-  border 1px solid gray5
+  border 1px solid greigh5
   border-width 0 1px 1px
   border-radius 0 0 2px 2px
   font 600 13px/18px fonts
@@ -346,7 +344,7 @@ nav
 
   #auto-suggest-nav
     padding 8px 0 0 20px
-    border-bottom 1px solid gray5
+    border-bottom 1px solid greigh5
 
     a
       display inline-block
@@ -359,7 +357,7 @@ nav
       &:hover, &.active
         color text-color
         padding 0 0 10px
-        border-bottom 2px solid gray
+        border-bottom 2px solid greigh
 
   dl
 
@@ -376,7 +374,7 @@ nav
     dd
       color text-color
       padding 8px 20px
-      border-bottom 1px solid gray5
+      border-bottom 1px solid greigh5
 
       span
         float right
@@ -391,4 +389,4 @@ nav
 
 #auto-suggest-bottom
   padding 10px 20px
-  background gray6
+  background greigh6

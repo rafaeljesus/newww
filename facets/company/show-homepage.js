@@ -59,28 +59,28 @@ module.exports = function (request, reply) {
       return reply(opts);
     }
 
-    reply.view('company/index', opts);
+    return reply.view('company/index', opts);
+
   });
 }
 
 // ======= functions =======
 
 function load (request, cb) {
-  var browse = request.server.methods.registry.getBrowseData,
-      recentAuthors = request.server.methods.registry.getRecentAuthors,
+  var registry = request.server.methods.registry,
+      recentAuthors = registry.getRecentAuthors,
       addMetric = metrics.addMetric,
-      downloads = request.server.methods.downloads.getAllDownloads,
-      packagesCreated = request.server.methods.registry.packagesCreated;
+      downloads = request.server.methods.downloads.getAllDownloads;
 
   var n = 6,
       cached = {};
 
-  browse('star', null, 0, 15, next('starred'));
-  browse('depended', null, 0, 15, next('depended'));
-  browse('updated', null, 0, 15, next('updated'));
-  recentAuthors(TWO_WEEKS, 0, 15, next('authors'));
+  registry.getStarredPackages(null, 0, 10, next('starred'));
+  registry.getDependedUpon(null, 0, 10, next('depended'));
+  registry.getUpdated(0, 10, next('updated'));
+  recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
   downloads(next('downloads'));
-  packagesCreated(next('totalPackages'));
+  registry.packagesCreated(next('totalPackages'));
 
   function next (which) {
     return function (err, data) {

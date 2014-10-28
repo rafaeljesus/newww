@@ -28,5 +28,16 @@ module.exports = {
       signup: "Create an Account",
       submit: "Login"
     }
+  },
+
+  password: {
+    title: "Forgot your password?",
+    subtitle: "Don't worry. It happens to the best of us.",
+    emailed: "An email has been sent. Click the link when you get it.",
+    multipleUsernames: "Found multiple usernames for the given email address. Please choose one.",
+    form: {
+      submit: "Email me a recovery link"
+    }
   }
+
 };

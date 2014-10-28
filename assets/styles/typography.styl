@@ -23,6 +23,9 @@ h1
     text-align center
     padding 40px 0 20px 0
 
+  .narrow &
+    margin 0.2em 0
+
 h2
   margin 20px 0 20px 0
   font-weight 600
@@ -68,11 +71,21 @@ h4
     font-weight 400
 
 hgroup
+  margin-top 1em
+  text-align center
+  text-transform lowercase
+
   & h2
     font-weight 300
 
+  & p
+    margin-top 1em
+
 p
   margin 0 0 25px
+
+  .narrow &
+    margin-bottom 1em
 
 strong
   &.code

@@ -5,18 +5,15 @@
   padding 0 20px
   &.narrow
     max-width narrowColumnWidth
+
   &:after
     content: ""
     display table
     clear both
 
-.layout-left
-  float left
+.content
   width 60%
   margin-bottom 90px
-
-  & .layout-left
-    margin-bottom 25px
 
   @media only screen and (max-width: 1024px)
     width 57%
@@ -32,21 +29,12 @@
       float none
       width 100%
 
-.layout-right
-  margin 20px 0 90px 72.5%
-
-  @media only screen and (max-width: 1024px)
-    margin 20px 0 0 65%
-
-  @media only screen and (max-width: 767px)
-    margin 20px
-
-  &.half
-    margin-left 54%
-
-    @media only screen and (max-width: 767px)
-      margin-left 0
-
+.sidebar
+  position absolute
+  top 40px
+  right 0
+  // background black
+  max-width 320px
 
 .thirds
   overflow hidden

@@ -1,6 +1,6 @@
 {{#with package}}
 
-<div class="layout-left">
+<div class="content">
 
   <section id="readme">
     <hgroup>
@@ -14,12 +14,12 @@
 
 </div>
 
-<div class="layout-right">
+<div class="sidebar">
 
   {{#if installCommand}}
-  <div class="npm-install">
-    <input type="text" value="{{installCommand}}" readonly>
-  </div>
+    <div class="npm-install icon-download">
+      <input type="text" value="{{installCommand}}" readonly>
+    </div>
   {{/if}}
 
 	<h3>Package Info</h3>

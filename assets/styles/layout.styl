@@ -1,5 +1,8 @@
 .container
   position relative
+  float none
+  clear both
+  overflow hidden
   max-width fullColumnWidth
   margin 0 auto
   padding 0 20px
@@ -12,6 +15,7 @@
     clear both
 
 .content
+  float left
   width 60%
   margin-bottom 90px
 
@@ -30,10 +34,8 @@
       width 100%
 
 .sidebar
-  position absolute
-  top 40px
-  right 0
-  // background black
+  float right
+  margin-top 40px
   max-width 320px
 
 .thirds

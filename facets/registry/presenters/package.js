@@ -5,6 +5,7 @@ var marked = require('marked'),
     moment = require('moment'),
     url = require('url'),
     ghurl = require('github-url-from-git'),
+    distance = require('leven'),
     gh = require('github-url-to-object'),
     cheerio = require('cheerio'),
     log = require('bole')('registry-package-presenter');
@@ -320,6 +321,20 @@ function removeSuperfluousContentFromReadme (data) {
   if (typeof data.readme !== "string") return
   var $ = cheerio.load(data.readme)
 
+  // Remove the Express logo
+  var expressLogo = $("p:has(img[alt='Express Logo'])").first()
+  if (expressLogo) {
+    expressLogo.remove()
+    data.readme = $.html()
+  }
+
+  // Remove the Gulp logo
+  var gulpLogo = $("p:has(img[src*='gulp-2x.png'])").first()
+  if (gulpLogo) {
+    gulpLogo.remove()
+    data.readme = $.html()
+  }
+
   // Remove first H1 if it matches package name
   var h1 = $('h1').first()
   var namePattern = new RegExp(data.name, "i")
@@ -328,11 +343,24 @@ function removeSuperfluousContentFromReadme (data) {
     data.readme = $.html()
   }
 
+  // Remove the first paragraph if it's pretty close to the package description
+  //
+  // Specifically: If the levenshtein distance between the paragraph and the
+  // package.json description is less than a given % of the total description
+  // length, then remove the paragraph.
+  var p = $('p').first()
+  var namePattern = new RegExp(data.name, "i")
+  if (data.description && p && p.text()) {
+    var tolerance = 30 // %
+    var d = distance(p.text(), data.description)
+    var threshold = data.description.length*tolerance/100
+    if (d<threshold) p.remove()
+  }
+
   // Remove nodei.co badges
   var nodeicoBadges = $("a[href*='//nodei.co']")
   if (nodeicoBadges) {
     nodeicoBadges.remove()
-    data.readme = $.html()
   }
 
   // Remove shields.io badges, but save them in the context
@@ -350,11 +378,6 @@ function removeSuperfluousContentFromReadme (data) {
     data.readme = $.html()
   }
 
-  // Remove the Express logo
-  var expressLogo = $("img[alt='Express Logo']").first()
-  if (expressLogo) {
-    expressLogo.remove()
-    data.readme = $.html()
-  }
+  data.readme = $.html()
 
 }

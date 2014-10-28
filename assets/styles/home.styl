@@ -5,7 +5,7 @@
   position relative
   margin 25px auto 25px auto
   padding 0
-  max-width 800px
+  max-width 900px
   display flex
   flex-wrap wrap
   justify-content space-between
@@ -17,16 +17,24 @@
       width 200px
       margin 15px auto
 
-div.stat
+.stat
+  position relative
   flex 0 1 auto
-  line-height 16px
-  font-size 13px
+  line-height 20px
+  font-size 14px
   color text-color-subdued
   margin 20px 20px 20px 0
+  padding-left 46px
+  &.icon-package-hex
+    &:before
+      top 0
+      font-size 36px
 
   &:before
+    position absolute
+    top 2px
+    left 0
     font-size 30px
-    float left
     margin-right 10px
     margin-top 2px
     color greigh2

@@ -1,23 +1,20 @@
-{{#if hits}}
+<h2 class="centered">
+  {{#if totalResults}}
+    {{totalResults}}
+  {{else}}
+    Sorry, no
+  {{/if}}
+  result{{#unless singleResult}}s{{/unless}}
+  for
+  <a href="/search?q={{q}}">&lsquo;{{q}}&rsquo;</a>
+</h2>
 
-  <ul class="columnar">
-    {{#each hits}}
-      {{#with fields}}
-        <li>{{> package-widget}}</li>
-      {{/with}}
-    {{/each}}
-  </ul>
+<ul class="columnar">
+  {{#each results}}
+    {{#with fields}}
+      <li>{{> package-widget}}</li>
+    {{/with}}
+  {{/each}}
+</ul>
 
-  <div class="pagination">
-    {{#if prevPage}}
-      <a href="/search?q={{q}}&page={{prevPage}}">previous</a>
-    {{/if}}
-    <a class="active">{{page}}</a>
-    {{#if nextPage}}
-      <a href="/search?q={{q}}&page={{nextPage}}">next</a>
-    {{/if}}
-  </div>
-
-{{else}}
-  No results.
-{{/if}}
+{{> pagination}}

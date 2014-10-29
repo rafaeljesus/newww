@@ -9,13 +9,18 @@
 
 a
   color npmred
-  font-weight 600
+  font-weight 400
   text-decoration none
   &:hover
     text-decoration underline
   &.unadorned
     color text-color
     font-weight 400
+
+  .sidebar &
+    color greigh2
+    @extend .red-on-hover
+    font-weight 600
 
 h1
   font 400 54px/65px fonts
@@ -56,6 +61,7 @@ h2
     border-bottom 2px solid greigh6
     padding-bottom 22px
 
+
 h3
   display block
   margin 30px 0 10px 0
@@ -63,6 +69,10 @@ h3
   font-weight 600
   line-height 1
   color greigh2
+
+  .sidebar &
+    color npmred
+
 
 h4
   margin 0 0 10px

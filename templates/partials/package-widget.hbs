@@ -1,0 +1,27 @@
+<div class="package-widget">
+  <h3>
+    <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
+  </h3>
+  <p class="description">{{description}}</p>
+  <p class="author">
+    <a class="version" href="/packages/{{name}}">{{version}}</a>
+    published
+    {{lastPublishedInWords}}
+    by
+    <a href="/~{{latestVersion._npmUser.name}}">{{latestVersion._npmUser.name}}</a>
+  </p>
+
+  <!-- <div class="npm-install">
+    <input type="text" value="{{installCommand}}" readonly>
+  </div> -->
+
+  <!-- {{#if starCount}}
+    <p class="stars">{{{starCount}}} stars</p>
+  {{/if}} -->
+
+  <!-- {{#if keywords}}
+    <p class="keywords icon-tag">{{{packageKeywords keywords 5}}}</p>
+  {{else}}
+    <p class="keywords icon-tag">&nbsp;</p>
+  {{/if}} -->
+</div>

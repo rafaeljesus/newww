@@ -6,7 +6,7 @@
     <div id="home-stats">
       {{#if totalPackages}}
         <div class="stat icon-package-hex">
-          <strong>{{totalPackages}}</strong> 
+          <strong>{{totalPackages}}</strong>
           total packages
         </div>
       {{/if}}
@@ -36,50 +36,21 @@
   </div>
 </div>
 
-<h2 class="centered"><a id="explicit" href="#explicit">packages people 'npm install' a lot</a></h2>
-<ul class="columnar packages">
+<h2 class="centered">
+  <a id="explicit" href="#explicit">packages people 'npm install' a lot</a>
+</h2>
+<ul class="columnar">
   {{#each explicit}}
-    <li>
-      <h3>
-        <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
-        <!-- <span class="version">{{dist-tags.latest}}</span> -->
-        <!-- <div class="npm-install">
-          <input type="text" value="{{installCommand}}" readonly>
-        </div> -->
-      </h3>
-      <p class="description">{{description}}</p>
-      <p class="author">
-        <a class="version" href="/packages/{{name}}">{{version}}</a>
-        published
-        {{lastPublishedInWords}}
-        by
-        <a href="/~{{latestVersion._npmUser.name}}">{{latestVersion._npmUser.name}}</a>
-      </p>
-
-      <!-- {{#if starCount}}
-        <p class="stars">{{{starCount}}} stars</p>
-      {{/if}} -->
-
-      <!-- {{#if keywords}}
-        <p class="keywords icon-tag">{{{packageKeywords keywords 5}}}</p>
-      {{else}}
-        <p class="keywords icon-tag">&nbsp;</p>
-      {{/if}} -->
-
-    </li>
+    <li>{{> package-widget}}</li>
   {{/each}}
 </ul>
 
-<h2 class="centered"><a id="recent" href="#recent">Recently Updated Packages</a></h2>
-
-<ul class="columnar packages">
+<h2 class="centered">
+  <a id="recent" href="#recent">Recently Updated Packages</a>
+</h2>
+<ul class="columnar">
   {{#each updated}}
-    <li>
-      <h3>
-        <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
-      </h3>
-      <p class="description">{{description}}</p>
-    </li>
+    <li>{{> package-widget}}</li>
   {{/each}}
 </ul>
 

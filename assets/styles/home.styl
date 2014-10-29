@@ -46,7 +46,7 @@
     display block
     color greigh2
 
-columnarItemHeadingHeight = 20px
+
 
 ul.columnar
   columns 3
@@ -58,50 +58,53 @@ ul.columnar
     padding 5px
     margin-bottom 20px
 
-    &:hover
-      a
-        color npmred !important
 
-    h3, h3 a
-      font-size columnarItemHeadingHeight
-      line-height columnarItemHeadingHeight
-      overflow visible
-      vertical-align top
-      margin 0
-      padding 0
-      max-width 90%
-      @extend .ellipsis
-
+packageWidgetHeadingHeight = 20px
+.package-widget
+  &:hover
     a
-      &.name
-        text-decoration none
-        transform all 0.1s
-        color greigh2
-        @extend .red-on-hover
-        &:before
-          color greigh5
-          line-height columnarItemHeadingHeight
-          padding-right 6px
+      color npmred !important
 
-    p
-      font-size 15px
-      margin 0
-      max-width 90%
-      padding-left 22px
-      @extend .ellipsis
+  h3, h3 a
+    font-size packageWidgetHeadingHeight
+    line-height packageWidgetHeadingHeight
+    overflow visible
+    vertical-align top
+    margin 0
+    padding 0
+    max-width 90%
+    @extend .ellipsis
 
-    .author
-      font-size 14px
-      color greigh4
-      a
-        color greigh3
-        @extend .red-on-hover
-        font-weight 400
-        // text-decoration underline
-
-    .keywords
-      font-size 13px
-      color greigh4
-      font-weight 300
+  a
+    &.name
+      text-decoration none
+      transform all 0.1s
+      color greigh2
+      @extend .red-on-hover
       &:before
-        padding-right 4px
+        color greigh5
+        line-height packageWidgetHeadingHeight
+        padding-right 6px
+
+  p
+    font-size 15px
+    margin 0
+    max-width 90%
+    padding-left 22px
+    @extend .ellipsis
+
+  .author
+    font-size 14px
+    color greigh4
+    a
+      color greigh3
+      @extend .red-on-hover
+      font-weight 400
+      // text-decoration underline
+
+  .keywords
+    font-size 13px
+    color greigh4
+    font-weight 300
+    &:before
+      padding-right 4px

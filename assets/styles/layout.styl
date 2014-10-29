@@ -381,23 +381,27 @@
         font-size 10px
         text-align center;
 
-// Pagination
 .pagination
-  margin 50px 0 0
+  margin 50px 0
+  width 100%
+  text-align center
 
   a
     display inline-block
     border-radius 2px
-    border 1px solid greigh5
+    border 1px solid greigh6
     text-align center
     margin 0 2px 10px
     padding 1px 11px
-    font 600 16px/25px fonts
     color npmred
+    text-decoration none
+    text-transform lowercase
 
     &:hover, &.active
+      border-color darken(npmred, 20%)
       color background-color
-      background greigh5
+      background npmred
+
 
 .side-nav
   margin 0 0 50px

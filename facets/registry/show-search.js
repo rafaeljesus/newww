@@ -111,10 +111,14 @@ module.exports = function (options) {
         title: 'results for ',
         page: page,
         q: request.query.q,
-        hits: response.hits.hits,
+        results: response.hits.hits,
+        totalResults: response.hits.total,
+        singleResult: response.hits.total === 1,
         prevPage: page > 0 ? page - 1 : null,
         nextPage: response.hits.total >= (size * page) ? page + 1 : null
       })
+
+      opts.paginate = opts.prevPage || opts.nextPage
 
       // Return raw context object if `json` query param is present
       if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {

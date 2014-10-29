@@ -1,0 +1,13 @@
+{{#if paginate}}
+  <div class="pagination">
+    {{#if prevPage}}
+      <a href="/search?q={{q}}&page={{prevPage}}" class="previous">Previous</a>
+    {{/if}}
+
+    <a href="/search?q={{q}}&page={{page}}" class="active">{{page}}</a>
+
+    {{#if nextPage}}
+      <a href="/search?q={{q}}&page={{nextPage}}" class="next">Next</a>
+    {{/if}}
+  </div>
+{{/if}}

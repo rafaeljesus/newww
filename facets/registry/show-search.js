@@ -1,6 +1,7 @@
 var elasticsearch = require('elasticsearch'),
     Hapi = require('hapi'),
     log = require('bole')('registry-search'),
+    merge = require('lodash').merge
     metrics = require('newww-metrics')();
 
 module.exports = function (options) {
@@ -106,14 +107,22 @@ module.exports = function (options) {
 
       addMetric({ name: 'search', search: request.query.q });
 
-      reply.view('registry/search', {
+      merge(opts, {
         title: 'results for ',
         page: page,
         q: request.query.q,
         hits: response.hits.hits,
         prevPage: page > 0 ? page - 1 : null,
         nextPage: response.hits.total >= (size * page) ? page + 1 : null
-      });
+      })
+
+      // Return raw context object if `json` query param is present
+      if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {
+        return reply(opts);
+      }
+
+      reply.view('registry/search', opts);
+
     });
   }
 }

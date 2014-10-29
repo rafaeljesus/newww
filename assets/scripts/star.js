@@ -34,11 +34,6 @@ star.onChange = function() {
   // JavaScript is loosely typed...
   data.isStarred = Boolean(data.isStarred)
 
-  // Update count in label
-  var count = Number(star.form.find("label").text())
-  data.isStarred ? ++count : --count
-  star.form.find("label").text(count)
-
   $.ajax({
     url: '/star',
     data: data,

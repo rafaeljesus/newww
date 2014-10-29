@@ -4,11 +4,15 @@
   </h3>
   <p class="description">{{description}}</p>
   <p class="author">
+    {{#if version}}
     <a class="version" href="/packages/{{name}}">{{version}}</a>
-    published
-    {{lastPublishedInWords}}
-    by
-    <a href="/~{{latestVersion._npmUser.name}}">{{latestVersion._npmUser.name}}</a>
+      {{#if latestVersion}}
+        published
+        {{lastPublishedInWords}}
+        by
+        <a href="/~{{latestVersion._npmUser.name}}">{{latestVersion._npmUser.name}}</a>
+      {{/if}}
+    {{/if}}
   </p>
 
   <!-- <div class="npm-install">

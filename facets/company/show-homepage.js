@@ -75,8 +75,8 @@ function load (request, cb) {
   var n = 6,
       cached = {};
 
-  registry.getStarredPackages(null, 0, 10, next('starred'));
-  registry.getDependedUpon(null, 0, 10, next('depended'));
+  registry.getStarredPackages(false, 0, 10, next('starred'));
+  registry.getDependedUpon(false, 0, 10, next('depended'));
   registry.getUpdated(0, 10, next('updated'));
   recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
   downloads(next('downloads'));

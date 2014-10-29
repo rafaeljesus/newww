@@ -1,8 +1,9 @@
-var SECOND = 1000;
+var SECOND = 1000,
+    MINUTE = 60 * SECOND;
 
-function setCache (name) {
+function setCache (name, minutes) {
   return {
-    expiresIn: 60 * SECOND,
+    expiresIn: (minutes || 1) * MINUTE,
     segment: '##' + name
   };
 };
@@ -38,12 +39,12 @@ exports.register = function Registry (service, options, next) {
     {
       name: 'registry.getDependedUpon',
       fn: require('./methods/getDependedUpon'),
-      options: { cache: setCache('depended') }
+      options: { cache: setCache('depended', 10) }
     },
     {
       name: 'registry.getStarredPackages',
       fn: require('./methods/getStarredPackages'),
-      options: { cache: setCache('browseStar') }
+      options: { cache: setCache('browseStar', 10) }
     },
     {
       name: 'registry.getUserStars',

@@ -1,3 +1,6 @@
+var log = require('bole')('registry-browse-transform');
+
+
 exports.all = {
   viewName: 'browseAll',
   groupLevel: 2,
@@ -27,14 +30,15 @@ exports.updated = {
   groupLevel: 3,
   transformKey: function (key, value) {
     var name = key[1],
-        description = key[2],
+        packageInfo = key[2],
         time = key[0];
 
     return {
       name: name,
-      description: description + ' - ' + time.substr(0, 10),
+      description: packageInfo.description + ' - ' + time.substr(0, 10),
       url: '/package/' + name,
-      value: time
+      value: time,
+      pkg: packageInfo
     }
   },
 };
@@ -50,7 +54,7 @@ exports.author = {
 exports.depended = {
   viewName: 'dependedUpon',
   groupLevel: 1,
-  groupLevelArg: 3,
+  groupLevelArg: 5,
   transformKey: countDisplay,
   transformKeyArg: packageDisplay
 };
@@ -58,7 +62,7 @@ exports.depended = {
 exports.star = {
   viewName: 'browseStarPackage',
   groupLevel: 2,
-  groupLevelArg: 3,
+  groupLevelArg: 5,
   transformKey: function (key, value) {
     var name = key[0],
         description = key[1],
@@ -116,12 +120,16 @@ function countDisplay (key, value, type) {
 
 function packageDisplay (key, value) {
   var name = key[1],
-      description = key[2] || '';
+      description = key[2] || '',
+      lastUpdated = key[3] || '',
+      packageInfo = key[4] || '';
 
   return {
     name: name,
     description: description,
-    url: '/package/' + name
+    url: '/package/' + name,
+    lastUpdated: lastUpdated,
+    pkg: packageInfo
   };
 };
 

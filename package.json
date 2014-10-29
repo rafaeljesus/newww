@@ -22,7 +22,7 @@
     "blankie": "^0.1.2",
     "bole": "^0.1.0",
     "cargo": "^0.8.0",
-    "catbox": "^2.2.1",
+    "catbox": "^3.4.3",
     "catbox-redis": "^1.0.1",
     "cheerio": "^0.17.0",
     "couch-login": "^1.0.1",

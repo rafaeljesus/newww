@@ -16,12 +16,12 @@ module.exports = function (options) {
         timer = { start: Date.now() };
 
     var page = +request.query.page || 1;
-    var size  = parseInt(options.perPage);
+    var perPage  = parseInt(options.perPage);
     var searchQuery = {
       fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek'],
       body: {
-        from: (page - 1) * size,
-        size : size,
+        from: (page - 1) * perPage,
+        size : perPage,
         "query" : {
           "dis_max": {
             "tie_breaker": 0.7,
@@ -115,7 +115,7 @@ module.exports = function (options) {
         totalResults: response.hits.total,
         singleResult: response.hits.total === 1,
         prevPage: page > 0 ? page - 1 : null,
-        nextPage: response.hits.total >= (size * page) ? page + 1 : null
+        nextPage: response.hits.total >= (perPage * page) ? page + 1 : null
       })
 
       opts.paginate = opts.prevPage || opts.nextPage

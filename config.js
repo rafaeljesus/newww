@@ -171,7 +171,7 @@ config.user = {
 // options for search (registry facet)
 config.search = {
   url:'http://127.0.0.1:9200/npm',
-  perPage: 20
+  perPage: 24
 };
 
 if (fs.existsSync('./config.admin.js')) {

@@ -1,5 +1,7 @@
-var log = require('bole')('registry-browse-transform');
-
+var log = require('bole')('registry-browse-transform'),
+    pkgs = require("pkgs"),
+    _ = require('lodash'),
+    moment = require('moment');
 
 exports.all = {
   viewName: 'browseAll',
@@ -35,10 +37,11 @@ exports.updated = {
 
     return {
       name: name,
-      description: packageInfo.description + ' - ' + time.substr(0, 10),
+      description: packageInfo.description,
       url: '/package/' + name,
       value: time,
-      pkg: packageInfo
+      pkg: packageInfo,
+      lastUpdated: moment(time).fromNow()
     }
   },
 };
@@ -104,8 +107,6 @@ exports.userstar = {
   transformKeyArg: packageDisplay
 };
 
-
-
 function countDisplay (key, value, type) {
   var name = key[0],
       num = value;
@@ -134,7 +135,7 @@ function packageDisplay (key, value) {
 };
 
 
-exports.transform = function transform (type, arg, data, skip, limit) {
+exports.transform = function transform (type, arg, data, skip, limit, next) {
   if (!data.rows) {
     log.warn('no rows?', type, arg, data, skip, limit)
     return []
@@ -157,5 +158,31 @@ exports.transform = function transform (type, arg, data, skip, limit) {
     }).slice(skip, skip + limit)
   }
 
-  return data
+  if (type === 'depended' && !arg) {
+    return getPackageData(data, function (er, data) {
+      return next(er, data);
+    });
+  }
+
+  return next(null, data);
+}
+
+function getPackageData (data, cb) {
+  var names = data.map(function (d) {
+    return d.name;
+  });
+
+  pkgs(names, {pick: ['name', 'versions', 'time', 'dist-tags']}, function (err, packages) {
+
+    packages.forEach(function (p) {
+      var d = _.find(data, {name: p.name});
+
+      var latest = p['dist-tags'].latest;
+
+      d.lastUpdated = moment(p.time[latest]).fromNow();
+      d.pkg = p.versions[latest];
+    });
+
+    return cb(null, data);
+  });
 }

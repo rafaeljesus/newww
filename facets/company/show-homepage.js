@@ -72,13 +72,13 @@ function load (request, cb) {
       addMetric = metrics.addMetric,
       downloads = request.server.methods.downloads.getAllDownloads;
 
-  var n = 6,
+  var n = 5,
       cached = {};
 
-  registry.getStarredPackages(false, 0, 10, next('starred'));
-  registry.getDependedUpon(false, 0, 10, next('depended'));
-  registry.getUpdated(0, 10, next('updated'));
-  recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
+  // registry.getStarredPackages(false, 0, 12, next('starred'));
+  registry.getDependedUpon(false, 0, 12, next('depended'));
+  registry.getUpdated(0, 12, next('updated'));
+  recentAuthors(TWO_WEEKS, 0, 12, next('authors'));
   downloads(next('downloads'));
   registry.packagesCreated(next('totalPackages'));
 

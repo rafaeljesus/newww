@@ -54,18 +54,31 @@
   {{/each}}
 </ul>
 
-<!--
-<h2>Most Depended Upon</h2>
+<h2 class="centered"><a id="depended" href="#depended">Most Depended Upon</a></h2>
 <ul class="columnar packages">
   {{#each depended}}
     <li>
+      <h3>
+        <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
+      </h3>
+      <p class="description">{{description}}</p>
+      <p class="author">
+        <a class="version" href="/packages/{{name}}">{{pkg.version}}</a>
+        published
+        {{lastUpdated}}
+        by
+        <a href="/~{{pkg._npmUser.name}}">{{pkg._npmUser.name}}</a>
+      </p>
+    </li>
+
+{{!--     <li>
       <a href="{{url}}">{{name}}</a>
       <p class="description">{{description}}</p>
-    </li>
+    </li> --}}
   {{/each}}
-  <li><a href="/browse/depended">More...</a></li>
 </ul>
 
+<!--
 <h2>Most Prolific Recently</h2>
 <ul class="columnar authors">
   {{#each authors}}

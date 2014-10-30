@@ -10,6 +10,11 @@ module.exports = function (options) {
   });
 
   return function (request, reply) {
+
+    if (!request.query || !request.query.q) {
+      return reply.redirect('/');
+    }
+
     var addMetric = metrics.addMetric,
         addLatencyMetric = metrics.addPageLatencyMetric,
         showError = request.server.methods.errors.showError(reply),

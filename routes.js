@@ -58,7 +58,7 @@ var routes = module.exports = [
     method: "GET",
     handler: require('./facets/company/show-about')(config.company)
   },{
-    path: "/policies/{policy}",
+    path: "/policies/{policy?}",
     method: "GET",
     handler: require('./facets/company/show-policy')
   },{
@@ -362,10 +362,8 @@ function fallback(request, reply) {
   request.server.methods.corp.getPage(route, function(err, content) {
 
     if (content) {
-      opts.content = content;
-      return reply.view('layouts/default', opts, {
-        layout: false
-      });
+      opts.md = content;
+      return reply.view('company/corporate', opts);
     }
 
     request.server.methods.registry.getPackage(route, function(err, package) {

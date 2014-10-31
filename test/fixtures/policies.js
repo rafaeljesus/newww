@@ -1,0 +1,6 @@
+module.exports = {
+
+  README: '# policies\n These are the legal policies of npm, Inc.\n <ul>\n <li><a href="http://www.npmjs.com/policies/conduct">Code of Conduct</a></li>\n <li><a href="http://www.npmjs.com/policies/disputes">Package Name Disputes</a></li>\n <li><a href="http://www.npmjs.com/policies/npm-license">npm License</a></li>\n <li><a href="http://www.npmjs.com/policies/privacy">Privacy Policy</a></li>\n <li><a href="http://www.npmjs.com/policies/receiving-reports">Receiving Abuse Reports</a></li>\n <li><a href="http://www.npmjs.com/policies/trademark">Trademark Policy</a></li>\n </ul>\n\n These are updated from time to time.  Their sources are stored in a git\n repository at <https://github.com/npm/policies>.\n',
+
+  disputes: "# Dispute Resolution\n\n This document describes the steps that you should take to resolve module name\n disputes with other npm publishers.\n\n This document is a clarification of the acceptable behavior outlined in the [npm\n Code of Conduct](conduct.md), and nothing in this document should be interpreted to\n contradict any aspect of the npm Code of Conduct.\n\n ## tl;dr\n\n 1. Get the author email with `npm owner ls <pkgname>`\n 2. Email the author, CC <support@npmjs.com>\n 3. After a few weeks, if there's no resolution, we'll sort it out.\n\n Don't squat on package names.  Publish code or move out of the way.\n "
+}

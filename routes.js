@@ -72,7 +72,7 @@ var routes = module.exports = [
       handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
       plugins: {
         blankie: {
-          scriptSrc: ['self', 'unsafe-eval', 'https://ssl.google-analytics.com', 'https://checkout.stripe.com'],
+          scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com'],
           frameSrc: 'https://checkout.stripe.com'
         }
       }
@@ -80,7 +80,15 @@ var routes = module.exports = [
   },{
     path: "/joinwhoshiring",
     method: "POST",
-    handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe)
+    config: {
+      handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
+      plugins: {
+        crumb: {
+          source: 'payload',
+          restful: true
+        }
+      }
+    }
   },
 
   // enterprise

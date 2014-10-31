@@ -209,8 +209,12 @@ module.exports = function (server) {
       }
     },
 
-    static: {
+    corp: {
       getPage: function (name, next) {
+        return next(null);
+      },
+
+      getPolicy: function (name, next) {
         return next(null);
       }
     },

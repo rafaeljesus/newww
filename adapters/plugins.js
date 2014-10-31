@@ -17,7 +17,7 @@ module.exports = [
   },
   require('../services/registry'),
   require('../services/whoshiring'),
-  require('../services/static'),
+  require('../services/corporate'),
   require('../services/errors'),
   {
     plugin: require('../services/npme'),

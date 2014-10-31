@@ -3,14 +3,14 @@ var MINUTE = 60 * SECOND;
 
 exports.register = function (service, options, next) {
 
-  service.method('static.getPage', require('./methods/getPage'), {
+  service.method('corp.getPage', require('./methods/getPage').static, {
     cache: {
       expiresIn: 5 * MINUTE,
       segment: '##staticpage'
     }
   });
 
-  service.method('static.getPolicy', require('./methods/getPolicy'), {
+  service.method('corp.getPolicy', require('./methods/getPage').policy, {
     cache: {
       expiresIn: 5 * MINUTE,
       segment: '##staticpolicy'
@@ -21,6 +21,6 @@ exports.register = function (service, options, next) {
 }
 
 exports.register.attributes = {
-  name: 'newww-service-static',
+  name: 'newww-service-corp',
   version: '1.0.0'
 };

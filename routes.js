@@ -359,7 +359,7 @@ function fallback(request, reply) {
       hiring: request.server.methods.hiring.getRandomWhosHiring()
     };
 
-  request.server.methods.static.getPage(route, function(err, content) {
+  request.server.methods.corp.getPage(route, function(err, content) {
 
     if (content) {
       opts.content = content;

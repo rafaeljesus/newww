@@ -10,9 +10,25 @@ var pkgs = {
       fake: require('./fake.json'),
       unpub: require('./fake-unpublished')
     };
+var policies = require('./policies');
 
 module.exports = function (server) {
   var methods = {
+
+    corp: {
+      getPage: function (name, next) {
+        return next(null);
+      },
+
+      getPolicy: function (name, next) {
+        if (policies[name]) {
+          return next(null, policies[name]);
+        }
+
+        return next(new Error('Not Found'))
+      }
+    },
+
 
     downloads: {
       getAllDownloads: function (next) {
@@ -206,12 +222,6 @@ module.exports = function (server) {
 
       unstar: function (package, username, next) {
         return next(null, 'ok');
-      }
-    },
-
-    static: {
-      getPage: function (name, next) {
-        return next(null);
       }
     },
 

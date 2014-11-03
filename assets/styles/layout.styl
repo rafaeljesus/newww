@@ -464,12 +464,15 @@ ul.userMosaic
     text-overflow ellipsis
     overflow hidden
     padding 0 6px
+    text-decoration none
 
   // Many-user Mosaic
   &.many
     a:hover
       img
         opacity 0
+      &:before
+        text-decoration underline
 
     &:hover
       a:before

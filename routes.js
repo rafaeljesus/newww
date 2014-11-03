@@ -15,8 +15,6 @@ var forceAuthConfig = function(handler) {
   };
 };
 
-var enterpriseCspScriptSrc = ['self', 'unsafe-eval', 'https://ssl.google-analytics.com', 'https://js.hs-analytics.net', 'https://js.hsforms.net/forms/current.js', 'https://forms.hubspot.com', 'https://internal.hubapi.com', 'https://api.hubapi.com'];
-
 var routes = module.exports = [
 
   // === COMPANY ===
@@ -72,7 +70,7 @@ var routes = module.exports = [
       handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
       plugins: {
         blankie: {
-          scriptSrc: ['self', 'unsafe-eval', 'https://ssl.google-analytics.com', 'https://checkout.stripe.com'],
+          scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com'],
           frameSrc: 'https://checkout.stripe.com'
         }
       }
@@ -80,7 +78,15 @@ var routes = module.exports = [
   },{
     path: "/joinwhoshiring",
     method: "POST",
-    handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe)
+    config: {
+      handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
+      plugins: {
+        crumb: {
+          source: 'payload',
+          restful: true
+        }
+      }
+    }
   },
 
   // enterprise
@@ -91,7 +97,7 @@ var routes = module.exports = [
       handler: require('./facets/enterprise/show-index'),
       plugins: {
         blankie: {
-          scriptSrc: enterpriseCspScriptSrc
+          scriptSrc: config.enterpriseCspScriptSrc
         }
       }
     }
@@ -104,7 +110,7 @@ var routes = module.exports = [
       handler: require('./facets/enterprise/show-ula'),
       plugins: {
         blankie: {
-          scriptSrc: enterpriseCspScriptSrc
+          scriptSrc: config.enterpriseCspScriptSrc
         }
       }
     }
@@ -117,7 +123,7 @@ var routes = module.exports = [
       handler: require('./facets/enterprise/show-contact-me'),
       plugins: {
         blankie: {
-          scriptSrc: enterpriseCspScriptSrc
+          scriptSrc: config.enterpriseCspScriptSrc
         }
       }
     }
@@ -130,7 +136,7 @@ var routes = module.exports = [
       handler: require('./facets/enterprise/show-trial-signup'),
       plugins: {
         blankie: {
-          scriptSrc: enterpriseCspScriptSrc
+          scriptSrc: config.enterpriseCspScriptSrc
         }
       }
     }
@@ -143,7 +149,7 @@ var routes = module.exports = [
       handler: require('./facets/enterprise/show-verification'),
       plugins: {
         blankie: {
-          scriptSrc: enterpriseCspScriptSrc
+          scriptSrc: config.enterpriseCspScriptSrc
         }
       }
     }
@@ -320,7 +326,7 @@ var routes = module.exports = [
   },{
     path: "/_monitor/ping",
     method: "GET",
-    handler: function (request, reply) {
+    handler: function(request, reply) {
       return reply('ok').code(200);
     }
   },{

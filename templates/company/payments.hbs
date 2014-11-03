@@ -1,21 +1,26 @@
-<h1 class="hiring-header">Listing on npm's Who's Hiring</h1>
+<div class="container narrow">
 
-<section class="payment">
+  <hgroup>
+    <h1>Listing on npm's Who's Hiring</h1>
+  </hgroup>
 
-  <p>Thank you for joining the npm community!</p>
+  <section class="payment">
 
-  <p>There are two listing options. You can buy 1 month for $350 or 3 months for $1,000.</p>
+    <p>Thank you for joining the npm community! There are two listing options. You can buy <strong>one month for $350</strong> or <strong>3 months for $1,000</strong>.</p>
 
-  <p>Please select the option that is right for you. Once the payment is in place, we’ll work with you to get your company’s hiring page onto the list as soon as possible.</p>
+    <p>Please select the option that is right for you. Once the payment is in place, we’ll work with you to get your company’s hiring page onto the list as soon as possible.</p>
 
-  <input type="hidden" data-key="{{stripeKey}}"/>
-  <input type="hidden" name="crumb" value="{{crumb}}"/>
-  <button id="one-month" class="btn">One Month for $350</button>
-  <button id="three-months" class="btn">Three Months for $1000</button>
+    <form>
+      <input type="hidden" data-key="{{stripeKey}}"/>
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
+      <input type="submit" class="full-width" id="one-month" value="One Month for $350">
+      <input type="submit" class="full-width" id="three-months" value="Three Months for $1000">
+    </form>
 
-</section>
+  </section>
 
-<p>If you have any questions about using this form, please email us at <a href="mailto:whoshiring@npmjs.com">whoshiring@npmjs.com</a>.</p>
+  <p>If you have any questions about using this form, please email us at <a href="mailto:whoshiring@npmjs.com">whoshiring@npmjs.com</a>.</p>
 
-<script src="https://checkout.stripe.com/checkout.js"></script>
-<script src='/static/js/payments.js'></script>
+  <script src="https://checkout.stripe.com/checkout.js"></script>
+
+</div>

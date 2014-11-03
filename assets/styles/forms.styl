@@ -3,6 +3,7 @@ label
   margin 0 0 7px
   color greigh2
   font-weight 600
+  text-transform lowercase
 
   &.checkbox
     color npmred
@@ -58,7 +59,8 @@ input[type=submit]
   font-size 18px
   background npmred
   cursor pointer
-  -webkit-appearance: none;
+  text-transform lowercase
+  -webkit-appearance none
   clear both
 
   &:hover
@@ -73,37 +75,22 @@ input[type=file]
   line-height 18px
   margin -15px 0 22px
 
-// Login Forms
+form p
+  margin 25px 0 0
+  color text-color-subdued
+  font-size 15px
+  text-align: center
 
-.login-forms
-  max-width narrowColumnWidth
-  margin 0 auto 50px
-  text-align left
+  &.help-text
+    margin -15px 0 22px
+    text-align left
 
-  p
-    margin 25px 0 0
-    color text-color-subdued
-    font-size 15px
-    text-align: center
+  a
+    text-decoration none
+    margin 0 5px
 
-    &.help-text
-      margin -15px 0 22px
-      text-align left
-
-    a
-      text-decoration none
-      margin 0 5px
-
-      &:hover
-        color greigh2
-
-  input[type=submit]
-    width 100%
-    text-transform lowercase
-
-  label
-    text-transform lowercase
-
+    &:hover
+      color greigh2
 
 .star
   display block

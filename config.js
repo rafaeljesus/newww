@@ -76,6 +76,15 @@ config.csp = {
   reportUri: '/-/csplog'
 }
 
+// Allow extra script sources on enterprise signup pages
+config.enterpriseCspScriptSrc = config.csp.scriptSrc.concat(
+  'https://js.hs-analytics.net',
+  'https://js.hsforms.net/forms/current.js',
+  'https://forms.hubspot.com',
+  'https://internal.hubapi.com',
+  'https://api.hubapi.com'
+);
+
 // ===== service options =====
 config.couch = {
   "couchAuth": "admin:admin",

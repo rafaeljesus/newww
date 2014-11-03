@@ -1,35 +1,39 @@
-<hgroup>
-  <h1>{{t "user.signup.title"}}</h1>
-  <h2>{{t "user.signup.subtitle"}}</h2>
-</hgroup>
+<div class="container narrow">
 
-{{#if errors}}
-  <p class="error">{{t "user.signup.error"}}</p>
-  <ul>
-    {{#each errors}}
-      <li>
-        <p class="error">{{message}}</p>
-      </li>
-    {{/each}}
-  </ul>
-{{/if}}
+  <hgroup>
+    <h1>{{t "user.signup.title"}}</h1>
+    <h2>{{t "user.signup.subtitle"}}</h2>
+  </hgroup>
 
-<form class="login-forms" action="" method="post">
-  <label for="name">{{t "user.signup.form.username"}}</label>
-  <input type="text" id="name" name="name" />
-  <p class="help-text">{{t "user.signup.form.nameHelp"}}</p>
+  {{#if errors}}
+    <p class="error">{{t "user.signup.error"}}</p>
+    <ul>
+      {{#each errors}}
+        <li>
+          <p class="error">{{message}}</p>
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
 
-  <label for="password">{{t "user.signup.form.password"}}</label>
-  <input type="password" id="password" name="password" />
+  <form action="" method="post">
+    <label for="name">{{t "user.signup.form.username"}}</label>
+    <input type="text" id="name" name="name" />
+    <p class="help-text">{{t "user.signup.form.nameHelp"}}</p>
 
-  <label for="verify">{{t "user.signup.form.verify"}}</label>
-  <input type="password" id="verify" name="verify" />
+    <label for="password">{{t "user.signup.form.password"}}</label>
+    <input type="password" id="password" name="password" />
 
-  <label for="email">{{t "user.signup.form.email"}}</label>
-  <input type="text" id="email" name="email" />
-  <p class="help-text">{{{t "user.signup.form.emailHelp"}}}</p>
+    <label for="verify">{{t "user.signup.form.verify"}}</label>
+    <input type="password" id="verify" name="verify" />
 
-  <input type="submit" value="{{t "user.signup.form.submit"}}" />
+    <label for="email">{{t "user.signup.form.email"}}</label>
+    <input type="text" id="email" name="email" />
+    <p class="help-text">{{{t "user.signup.form.emailHelp"}}}</p>
 
-  <input type="hidden" name="crumb" value="{{crumb}}"/>
-</form>
+    <input type="submit" class="full-width" value="{{t "user.signup.form.submit"}}" />
+
+    <input type="hidden" name="crumb" value="{{crumb}}"/>
+  </form>
+
+</div>

@@ -1,20 +1,20 @@
 <div class="container narrow">
 
-  <h1 class="hiring-header">Listing on npm's Who's Hiring</h1>
+  <hgroup>
+    <h1>Listing on npm's Who's Hiring</h1>
+  </hgroup>
 
   <section class="payment">
 
-    <p>Thank you for joining the npm community!</p>
-
-    <p>There are two listing options. You can buy 1 month for $350 or 3 months for $1,000.</p>
+    <p>Thank you for joining the npm community! There are two listing options. You can buy <strong>one month for $350</strong> or <strong>3 months for $1,000</strong>.</p>
 
     <p>Please select the option that is right for you. Once the payment is in place, we’ll work with you to get your company’s hiring page onto the list as soon as possible.</p>
 
-    <form class="login-forms">
+    <form>
       <input type="hidden" data-key="{{stripeKey}}"/>
       <input type="hidden" name="crumb" value="{{crumb}}"/>
-      <input type="submit" id="one-month" value="One Month for $350">
-      <input type="submit" id="three-months" value="Three Months for $1000">
+      <input type="submit" class="full-width" id="one-month" value="One Month for $350">
+      <input type="submit" class="full-width" id="three-months" value="Three Months for $1000">
     </form>
 
   </section>

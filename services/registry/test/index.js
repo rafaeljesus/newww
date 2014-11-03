@@ -93,7 +93,7 @@ describe('browsing', function () {
           .get('/registry/_design/app/_view/byKeyword?group_level=1&stale=update_after')
           .reply(200, require('./fixtures/browse').allKeywords)
 
-      server.methods.registry.getAllByKeyword(null, 0, 10, function (er, data) {
+      server.methods.registry.getAllByKeyword(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
@@ -123,7 +123,7 @@ describe('browsing', function () {
           .get('/registry/_design/app/_view/browseAuthors?group_level=1&stale=update_after')
           .reply(200, require('./fixtures/browse').allAuthors)
 
-      server.methods.registry.getAuthors(null, 0, 10, function (er, data) {
+      server.methods.registry.getAuthors(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
@@ -153,7 +153,7 @@ describe('browsing', function () {
           .get('/registry/_design/app/_view/dependedUpon?group_level=1&stale=update_after')
           .reply(200, require('./fixtures/browse').allDepended)
 
-      server.methods.registry.getDependedUpon(null, 0, 10, function (er, data) {
+      server.methods.registry.getDependedUpon(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
@@ -165,7 +165,7 @@ describe('browsing', function () {
       var pkg = 'underscore';
 
       var couch = nock(config.registryCouch)
-          .get('/registry/_design/app/_view/dependedUpon?group_level=3&startkey=%5B%22' + pkg + '%22%5D&endkey=%5B%22' + pkg + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
+          .get('/registry/_design/app/_view/dependedUpon?group_level=5&startkey=%5B%22' + pkg + '%22%5D&endkey=%5B%22' + pkg + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
           .reply(200, require('./fixtures/browse').byDependedUpon)
 
       server.methods.registry.getDependedUpon(pkg, 0, 10, function (er, data) {
@@ -183,7 +183,7 @@ describe('browsing', function () {
           .get('/registry/_design/app/_view/browseStarPackage?group_level=2&stale=update_after')
           .reply(200, require('./fixtures/browse').stars)
 
-      server.methods.registry.getStarredPackages(null, 0, 10, function (er, data) {
+      server.methods.registry.getStarredPackages(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
@@ -198,7 +198,7 @@ describe('browsing', function () {
       var pkg = 'underscore';
 
       var couch = nock(config.registryCouch)
-          .get('/registry/_design/app/_view/browseStarPackage?group_level=3&startkey=%5B%22' + pkg + '%22%5D&endkey=%5B%22' + pkg + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
+          .get('/registry/_design/app/_view/browseStarPackage?group_level=5&startkey=%5B%22' + pkg + '%22%5D&endkey=%5B%22' + pkg + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
           .reply(200, require('./fixtures/browse').usersWhoStarredPackage)
 
       server.methods.registry.getStarredPackages(pkg, 0, 10, function (er, data) {
@@ -216,7 +216,7 @@ describe('browsing', function () {
           .get('/registry/_design/app/_view/browseStarUser?group_level=1&stale=update_after')
           .reply(200, require('./fixtures/browse').userstars)
 
-      server.methods.registry.getUserStars(null, 0, 10, function (er, data) {
+      server.methods.registry.getUserStars(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);

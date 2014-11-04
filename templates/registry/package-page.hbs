@@ -26,10 +26,12 @@
 	<ul class="box">
 
     <li>
-      Version
       <strong>{{version}}</strong>
       {{#if fromNow}}
         published {{fromNow}}
+      {{/if}}
+      {{#if _npmUser}}
+        by <a href="/~{{_npmUser.name}}">{{_npmUser.name}}</a>
       {{/if}}
     </li>
 

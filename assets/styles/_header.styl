@@ -53,11 +53,11 @@ nav
       padding 0
       text-decoration none
       border none
-      opacity 1
-      color rgba(background-color, 0.6)
+      color rgba(background-color, 0.8)
       padding-right 100px
       background none
       &:hover
+        color rgba(background-color, 1)
         background none
         text-decoration none
         border none
@@ -67,14 +67,13 @@ nav
     line-height 36px
     padding 0 10px
     margin 0
-    opacity .7
-    color background-color
+    color rgba(background-color, 0.8)
     text-decoration none
     background npmred
     transition all 0.1s
 
     &:hover, &.active
-      opacity 1
+      color rgba(background-color, 1)
       text-decoration none
       background darken(npmred, 20%)
 
@@ -292,7 +291,7 @@ nav
 
   @media only screen and (max-width: 767px)
     margin-top 0
-    margin-right 40px
+    margin-right 0
     ul
       li
         display block

@@ -41,8 +41,11 @@ module.exports = function (request, reply) {
         pkg.starCount = pkg.users ? Object.keys(pkg.users).length : 0
 
         pkg.version = pkg['dist-tags'].latest
-        if (pkg.versions) pkg.latestVersion = pkg.versions[pkg.version]
-        pkg.lastPublishedInWords = moment(pkg.time[pkg.version]).fromNow()
+        if (pkg.versions) {
+          pkg.version = pkg.versions[pkg.version].version
+          pkg.publishedBy = pkg.versions[pkg.version]._npmUser
+        }
+        pkg.lastPublished = moment(pkg.time[pkg.version]).fromNow()
         delete pkg.versions
 
         return pkg
@@ -72,13 +75,13 @@ function load (request, cb) {
       addMetric = metrics.addMetric,
       downloads = request.server.methods.downloads.getAllDownloads;
 
-  var n = 6,
+  var n = 5,
       cached = {};
 
-  registry.getStarredPackages(null, 0, 10, next('starred'));
-  registry.getDependedUpon(null, 0, 10, next('depended'));
-  registry.getUpdated(0, 10, next('updated'));
-  recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
+  // registry.getStarredPackages(false, 0, 12, next('starred'));
+  registry.getDependedUpon(false, 0, 12, next('depended'));
+  registry.getUpdated(0, 12, next('updated'));
+  recentAuthors(TWO_WEEKS, 0, 12, next('authors'));
   downloads(next('downloads'));
   registry.packagesCreated(next('totalPackages'));
 

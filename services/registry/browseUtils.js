@@ -1,3 +1,8 @@
+var log = require('bole')('registry-browse-transform'),
+    pkgs = require("pkgs"),
+    _ = require('lodash'),
+    moment = require('moment');
+
 exports.all = {
   viewName: 'browseAll',
   groupLevel: 2,
@@ -24,17 +29,22 @@ exports.keyword = {
 
 exports.updated = {
   viewName: 'browseUpdated',
-  groupLevel: 3,
+  groupLevel: 5,
   transformKey: function (key, value) {
-    var name = key[1],
+    var time = key[0],
+        name = key[1],
         description = key[2],
-        time = key[0];
+        version = key[3],
+        publishedBy = key[4];
 
     return {
       name: name,
-      description: description + ' - ' + time.substr(0, 10),
+      description: description,
       url: '/package/' + name,
-      value: time
+      value: time,
+      version: version,
+      publishedBy: publishedBy,
+      lastPublished: moment(time).fromNow()
     }
   },
 };
@@ -50,7 +60,7 @@ exports.author = {
 exports.depended = {
   viewName: 'dependedUpon',
   groupLevel: 1,
-  groupLevelArg: 3,
+  groupLevelArg: 5,
   transformKey: countDisplay,
   transformKeyArg: packageDisplay
 };
@@ -58,7 +68,7 @@ exports.depended = {
 exports.star = {
   viewName: 'browseStarPackage',
   groupLevel: 2,
-  groupLevelArg: 3,
+  groupLevelArg: 5,
   transformKey: function (key, value) {
     var name = key[0],
         description = key[1],
@@ -100,8 +110,6 @@ exports.userstar = {
   transformKeyArg: packageDisplay
 };
 
-
-
 function countDisplay (key, value, type) {
   var name = key[0],
       num = value;
@@ -116,17 +124,21 @@ function countDisplay (key, value, type) {
 
 function packageDisplay (key, value) {
   var name = key[1],
-      description = key[2] || '';
+      description = key[2] || '',
+      lastPublished = key[3] || '',
+      packageInfo = key[4] || '';
 
   return {
     name: name,
     description: description,
-    url: '/package/' + name
+    url: '/package/' + name,
+    lastPublished: lastPublished,
+    pkg: packageInfo
   };
 };
 
 
-exports.transform = function transform (type, arg, data, skip, limit) {
+exports.transform = function transform (type, arg, data, skip, limit, next) {
   if (!data.rows) {
     log.warn('no rows?', type, arg, data, skip, limit)
     return []
@@ -149,5 +161,34 @@ exports.transform = function transform (type, arg, data, skip, limit) {
     }).slice(skip, skip + limit)
   }
 
-  return data
+  if (type === 'depended' && !arg) {
+    return getPackageData(data, function (er, data) {
+      return next(er, data);
+    });
+  }
+
+  return next(null, data);
+}
+
+function getPackageData (data, cb) {
+  var names = data.map(function (d) {
+    return d.name;
+  });
+
+  pkgs(names, {pick: ['name', 'versions', 'time', 'dist-tags']}, function (err, packages) {
+
+    packages.forEach(function (p) {
+      var d = _.find(data, {name: p.name});
+
+      var latest = p['dist-tags'].latest;
+
+      d.lastPublished = moment(p.time[latest]).fromNow();
+      var latest = p.versions[latest];
+      d.description = latest.description;
+      d.version = latest.version;
+      d.publishedBy = latest._npmUser;
+    });
+
+    return cb(null, data);
+  });
 }

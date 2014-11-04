@@ -1,13 +1,6 @@
-<div id="secondary-nav">
-  <div class="container">
-    <a href="/profile-edit" data-tab="profile">edit your profile</a>
-    <a class="active tab" data-tab="edit-email">edit email</a>
-    <a href="/password" class="tab" data-tab="password">change password</a>
-    {{!-- <a href="#" class="tab" data-tab="edit-order">edit package/collection order</a> --}}
-  </div>
-</div> <!-- / #secondary-nav -->
+{{> profile-secondary-nav}}
 
-<div class="container content">
+<div class="container narrow">
 
   <h2>Email Address {{#if confirmed}}Confirmed{{else}}Reverted{{/if}}!</h2>
 

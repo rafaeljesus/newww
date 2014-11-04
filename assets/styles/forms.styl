@@ -74,11 +74,12 @@ input[type=file]
   color text-color-subdued
   line-height 18px
   margin -15px 0 22px
+  &.example
+    &:before
+      content: "Example: "
 
 form p
   margin 25px 0 0
-  color text-color-subdued
-  font-size 15px
   text-align: center
 
   &.help-text
@@ -91,6 +92,21 @@ form p
 
     &:hover
       color greigh2
+
+changeAvatarSize = 40px
+p.change-avatar
+  display block
+  margin 40px 0
+  padding 0
+  line-height changeAvatarSize
+  vertical-align top
+  a
+    vertical-align top
+  img
+    width changeAvatarSize
+    height changeAvatarSize
+    margin-right 10px
+    border-radius 3px
 
 .star
   display block

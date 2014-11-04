@@ -83,15 +83,18 @@ module.exports = function package (data, cb) {
     data.repository.url = ghurl(data.repository.url)
   }
 
+  // Create `npm install foo` command
   data.installCommand = fmt("npm install %s", data.name)
   if (data.preferGlobal) {
     data.installCommand += " -g"
   }
 
+  // Infer GitHub API URL from bugs URL
   if (data.bugs && data.bugs.url && gh(data.bugs.url)) {
     data.ghapi = gh(data.bugs.url).api_url
   }
 
+  // Get star count
   if (data.users) {
     data.starCount = Object.keys(data.users).length
   }

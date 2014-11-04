@@ -11,4 +11,8 @@ $(function () {
   $(".npm-install input").on("click", function () {
     $(this).select()
   })
+
+  // Add active class to links that point to the current page
+  $("a[href='" + location.pathname + "']").addClass("active")
+
 })

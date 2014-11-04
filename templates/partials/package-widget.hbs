@@ -3,17 +3,23 @@
     <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
   </h3>
   <p class="description">{{description}}</p>
-  <p class="author">
-    {{#if version}}
-    <a class="version" href="/packages/{{name}}">{{version}}</a>
-      {{#if latestVersion}}
-        published
-        {{lastPublishedInWords}}
-        by
-        <a href="/~{{latestVersion._npmUser.name}}">{{latestVersion._npmUser.name}}</a>
-      {{/if}}
-    {{/if}}
-  </p>
+  {{#if latestVersion}}
+    <p class="author quiet">
+      <a class="version" href="/packages/{{name}}">{{version}}</a>
+      published
+      {{lastPublishedInWords}}
+      by
+      <a href="/~{{latestVersion._npmUser.name}}">{{latestVersion._npmUser.name}}</a>
+    </p>
+  {{/if}}
+
+  <!-- {{#if keywords}}
+    <p class="keywords quiet">{{{packageKeywords keywords 5}}}</p>
+  {{/if}} -->
+
+  {{#if dlWeek}}
+    <p class="quiet">{{pluralize dlWeek "download" true}} in the last week</p>
+  {{/if}}
 
   <!-- <div class="npm-install">
     <input type="text" value="{{installCommand}}" readonly>
@@ -23,9 +29,5 @@
     <p class="stars">{{{starCount}}} stars</p>
   {{/if}} -->
 
-  <!-- {{#if keywords}}
-    <p class="keywords icon-tag">{{{packageKeywords keywords 5}}}</p>
-  {{else}}
-    <p class="keywords icon-tag">&nbsp;</p>
-  {{/if}} -->
+
 </div>

@@ -184,6 +184,7 @@ function getPackageData (data, cb) {
 
       d.lastPublished = moment(p.time[latest]).fromNow();
       var latest = p.versions[latest];
+      d.description = latest.description;
       d.version = latest.version;
       d.publishedBy = latest._npmUser;
     });

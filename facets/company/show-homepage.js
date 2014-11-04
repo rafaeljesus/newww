@@ -41,8 +41,11 @@ module.exports = function (request, reply) {
         pkg.starCount = pkg.users ? Object.keys(pkg.users).length : 0
 
         pkg.version = pkg['dist-tags'].latest
-        if (pkg.versions) pkg.latestVersion = pkg.versions[pkg.version]
-        pkg.lastPublishedInWords = moment(pkg.time[pkg.version]).fromNow()
+        if (pkg.versions) {
+          pkg.version = pkg.versions[pkg.version].version
+          pkg.publishedBy = pkg.versions[pkg.version]._npmUser
+        }
+        pkg.lastPublished = moment(pkg.time[pkg.version]).fromNow()
         delete pkg.versions
 
         return pkg

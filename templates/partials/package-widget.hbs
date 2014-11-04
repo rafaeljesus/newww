@@ -3,13 +3,15 @@
     <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
   </h3>
   <p class="description">{{description}}</p>
-  {{#if latestVersion}}
+  {{#if version}}
     <p class="author quiet">
       <a class="version" href="/packages/{{name}}">{{version}}</a>
       published
-      {{lastPublishedInWords}}
-      by
-      <a href="/~{{latestVersion._npmUser.name}}">{{latestVersion._npmUser.name}}</a>
+      {{lastPublished}}
+      {{#if publishedBy}}
+        by
+        <a href="/~{{publishedBy.name}}">{{publishedBy.name}}</a>
+      {{/if}}
     </p>
   {{/if}}
 

@@ -29,19 +29,22 @@ exports.keyword = {
 
 exports.updated = {
   viewName: 'browseUpdated',
-  groupLevel: 3,
+  groupLevel: 5,
   transformKey: function (key, value) {
-    var name = key[1],
-        packageInfo = key[2],
-        time = key[0];
+    var time = key[0],
+        name = key[1],
+        description = key[2],
+        version = key[3],
+        publishedBy = key[4];
 
     return {
       name: name,
-      description: packageInfo.description,
+      description: description,
       url: '/package/' + name,
       value: time,
-      pkg: packageInfo,
-      lastUpdated: moment(time).fromNow()
+      version: version,
+      publishedBy: publishedBy,
+      lastPublished: moment(time).fromNow()
     }
   },
 };
@@ -122,14 +125,14 @@ function countDisplay (key, value, type) {
 function packageDisplay (key, value) {
   var name = key[1],
       description = key[2] || '',
-      lastUpdated = key[3] || '',
+      lastPublished = key[3] || '',
       packageInfo = key[4] || '';
 
   return {
     name: name,
     description: description,
     url: '/package/' + name,
-    lastUpdated: lastUpdated,
+    lastPublished: lastPublished,
     pkg: packageInfo
   };
 };
@@ -179,8 +182,10 @@ function getPackageData (data, cb) {
 
       var latest = p['dist-tags'].latest;
 
-      d.lastUpdated = moment(p.time[latest]).fromNow();
-      d.pkg = p.versions[latest];
+      d.lastPublished = moment(p.time[latest]).fromNow();
+      var latest = p.versions[latest];
+      d.version = latest.version;
+      d.publishedBy = latest._npmUser;
     });
 
     return cb(null, data);

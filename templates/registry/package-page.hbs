@@ -121,10 +121,10 @@
 
   {{#if showMaintainers}}
     <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
-    <ul class="userMosaic {{#if singleMaintainer}}one{{else}}many{{/if}}">
+    <ul class="maintainers">
       {{#each maintainers}}
         <li>
-          <a href="/~{{name}}" title="{{name}}">
+          <a href="/~{{name}}">
             {{#if avatarMedium}}<img src="{{avatarMedium}}">{{/if}}
             <span>{{name}}</span>
           </a>
@@ -138,5 +138,3 @@
 </div>
 
 {{/with}}
-
-<!-- <script src="/static/js/stars.js" async="true"></script> -->

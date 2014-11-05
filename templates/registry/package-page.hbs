@@ -74,7 +74,7 @@
 	</ul>
 
   <h3>Keywords</h3>
-  <p>
+  <p class="list-of-links">
     {{#if keywords}}
       {{#each keywords}}
         <a href="/browse/keyword/{{this}}">{{this}}</a>{{#unless @last}}, {{/unless}}
@@ -86,7 +86,7 @@
 
 
   <h3>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</h3>
-  <p>
+  <p class="list-of-links">
     {{#if dependencies}}
       {{#each dependencies}}
         {{#unless @last}}
@@ -106,7 +106,7 @@
 
   {{#if dependents}}
     <h3>Dependents</h3>
-    <p>
+    <p class="list-of-links">
       {{#each dependents}}
         {{#if @last}}
           <a href="{{url}}">{{name}}</a>.

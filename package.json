@@ -30,6 +30,7 @@
     "catbox": "^3.4.3",
     "catbox-redis": "^1.0.1",
     "cheerio": "^0.17.0",
+    "chunk": "0.0.2",
     "couch-login": "^1.0.1",
     "crumb": "^3.1.0",
     "deck": "0.0.4",

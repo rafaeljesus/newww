@@ -1,11 +1,13 @@
-<ul class="columnar">
-  {{#each companies}}
-    <li>
-      <div class="hiring-widget">
-        <a href="{{url}}" class="hiring-widget-logo"><img src="{{logo_url}}"></a>
-        <!-- <h3><a href="{{url}}">{{name}}</a></h3> -->
-        <p>{{{description}}}</p>
-      </div>
-    </li>
-  {{/each}}
-</ul>
+{{#each companies}}
+  <ul class="columnar">
+    {{#each this}}
+      <li>
+        <div class="hiring-widget">
+          <a href="{{url}}" class="hiring-widget-logo"><img src="{{logo_url}}"></a>
+          <!-- <h3><a href="{{url}}">{{name}}</a></h3> -->
+          <p>{{{description}}}hello</p>
+        </div>
+      </li>
+    {{/each}}
+  </ul>
+{{/each}}

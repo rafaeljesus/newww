@@ -1,14 +1,6 @@
 <div class="ad hiring-widget-sidebar">
-  <h3>
-    <a href="{{companies.0.url}}">
-      {{companies.0.name}} is hiring
-    </a>
-  </h3>
-
-  <p>{{{companies.0.description}}}</p>
-
   <p>
-    {{companies.length}} more companies are hiring.
-    <a href="/whoshiring">View more</a>.
+    <a href="{{companies.0.url}}">{{companies.0.name}}</a> is hiring.
+    <a class="quiet" href="/whoshiring">View all {{companies.length}} companies</a>
   </p>
 </div>

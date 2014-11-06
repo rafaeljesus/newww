@@ -17,6 +17,9 @@
       width 200px
       margin 15px auto
 
+  @media only screen and (max-width: mobileMaxWidth)
+    display none
+
 .stat
   position relative
   flex 0 1 auto
@@ -40,65 +43,8 @@
     color greigh2
 
   strong
-    font-family codefonts
+    code-font()
     font-weight 600
     font-size 16px
     display block
     color greigh2
-
-
-
-ul.columnar
-  columns 3
-  column-gap 40px
-  @extend .vanilla-list
-
-  li
-    column-break-inside avoid
-    padding 5px
-    margin-bottom 20px
-
-
-packageWidgetHeadingHeight = 20px
-.package-widget
-  &:hover
-    a
-      color npmred !important
-
-  h3, h3 a
-    font-size packageWidgetHeadingHeight
-    line-height packageWidgetHeadingHeight
-    overflow visible
-    vertical-align top
-    margin 0
-    padding 0
-    max-width 90%
-    @extend .ellipsis
-
-  a
-    &.name
-      text-decoration none
-      transform all 0.1s
-      color greigh2
-      @extend .red-on-hover
-      &:before
-        color greigh5
-        line-height packageWidgetHeadingHeight
-        padding-right 6px
-
-  p
-    font-size 15px
-    margin 0
-    max-width 90%
-    padding-left 22px
-    color greigh3
-    @extend .ellipsis
-
-  .quiet
-    font-size 14px
-    color greigh3
-    a
-      color greigh2
-      @extend .red-on-hover
-      font-weight 400
-      // text-decoration underline

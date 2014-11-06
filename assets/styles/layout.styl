@@ -38,251 +38,61 @@
   margin-top 40px
   max-width 320px
 
-.thirds
-  overflow hidden
-  padding-bottom 40px
+ul.columnar
+  @extend .vanilla-list
+  columns 3
+  column-gap 40px
 
-.third
-  float left
-  width 31.118846411804154%
-  margin-right 3.221730382293762%
-
-  &:nth-child(3n)
-    margin-right 0 !important
-
-  @media only screen and (max-width: 1023px)
-    width 48%
-    margin-right 4% !important
-
-    &:nth-child(3n)
-      margin-right 4% !important
-
-    &:nth-child(2n)
-      margin-right 0 !important
+  li
+    column-break-inside avoid
+    padding 5px
+    margin-bottom 20px
 
   @media only screen and (max-width: mobileMaxWidth)
-    width 100%
-    margin-right 0% !important
+    columns 1
 
-    &:nth-child(3n)
-      margin-right 0 !important
+.package-widget
+  &:hover
+    a
+      color npmred !important
 
-    &:nth-child(2n)
-      margin-right 0 !important
-
-.generic
-  clear both
-  margin-top 75px
-
-// Package Results
-
-.package
-  margin-bottom 25px
-  padding 0 0 25px
-  border-bottom 1px solid greigh5
-
-  img
-    float left
-    margin 0 10px 20px 0
-
-  h2
+  h3, h3 a
+    font-size packageWidgetHeadingHeight
+    line-height packageWidgetHeadingHeight
+    overflow visible
+    vertical-align top
     margin 0
+    padding 0
+    max-width 90%
+    @extend .ellipsis
 
-  h5
-    font 600 14px/14px codefonts
-    color text-color-subdued
+  a
+    &.name
+      text-decoration none
+      transform all 0.1s
+      color greigh2
+      @extend .red-on-hover
+      &:before
+        color greigh5
+        line-height packageWidgetHeadingHeight
+        padding-right 6px
 
   p
-    clear left
-    font-weight 600
-    color greigh3
+    font-size 15px
     margin 0
+    max-width 90%
+    padding-left 22px
+    color greigh3
+    @extend .ellipsis
 
-  span
-    color text-color-subdued
-    margin 0 15px 0 0
-    font-size 12px
-    font-weight 600
-
-    &:before
-      margin-right 8px
-
-  p.tags
-    color text-color-subdued
-    font-size 12px !important
-    font-weight 600
-    margin 2px 0 0
-
-    &:before
-      margin-right 6px
-
+  .quiet
+    font-size 14px
+    color greigh3
     a
-      color text-color-subdued
-      margin 0
-      padding 0
-      border 0
-      border-radius 0
-      text-decoration none
-
-      &:hover
-        color npmred
-        background none
-
-  &.profile
-    border-bottom 0
-    padding 0
-
-    p
-      clear none
+      color greigh2
+      @extend .red-on-hover
       font-weight 400
 
-
-// Collection Results
-
-.collection, .package.third, .ecosystem, .hiring
-  margin-bottom 25px
-
-  .c-name
-    position relative
-    display block
-    height 45px
-    border-radius 6px
-
-    img
-      float left
-      margin 0 10px 0 0
-      border-radius 6px 0 0 6px
-
-    a
-      display inline-block
-      font 700 18px/43px fonts
-      color background-color
-
-      &:before
-        float left
-        font-size 24px
-        line-height 45px
-        margin-right 8px
-
-    span
-      float right
-      margin 0 12px 0 0
-      color background-color
-      font 400 12px/45px fonts
-
-  &.third
-    .c-name
-      border-radius 6px 6px 0 0
-    img
-      border-radius 6px 0 0 0
-
-  .c-details
-    padding 20px 0
-
-    h5
-      margin 0 0 5px
-
-    p
-      margin-bottom 15px
-
-      &.tags
-        color text-color-subdued
-        font-size 12px !important
-        font-weight 600
-        margin 0
-
-        &:before
-          margin-right 6px
-
-        a
-          color text-color-subdued
-          margin 0
-          padding 0
-          border 0
-          border-radius 0
-          text-decoration none
-
-          &:hover
-            color npmred
-            background none
-
-  &.third
-    .c-details
-      padding 20px
-      border 2px solid greigh5
-      border-width 0 2px 2px 2px
-      border-radius 0 0 6px 6px
-
-      p
-        font 400 14px/18px fonts
-
-.ecosystem
-  .c-name
-    text-align center
-    height 140px
-
-    img
-      float none
-      margin 0
-      border-radius 0
-
-    span
-      position absolute
-      bottom 0px
-      right 10px
-
-.hiring
-  .c-name
-    height 60px
-    border 2px solid greigh5
-    border-bottom 0
-    padding 20px
-    padding-top 15px
-
-    a
-      color greigh1
-      text-align right
-      display block
-      position relative
-      height 50px
-
-    img
-      max-width 100px
-      max-height 50px
-      border-radius 0
-
-  .c-details
-    p
-      height 55px
-
-.package.third
-  margin-bottom 25px
-  margin-right 3.221730382293762%
-  border-bottom 0
-  padding-bottom 0
-
-  .c-name
-    border 2px solid greigh5
-    height 43px
-
-    img
-      margin -2px 10px 12px -2px
-
-    a
-      color text-color
-
-      &:before
-        float left
-        font-size 24px
-        line-height 45px
-        margin-right 8px
-        color greigh5
-
-    span
-      color text-color
-
-
-// Boxes
 
 .box
   margin 0 0 30px
@@ -308,79 +118,6 @@
     &:last-child
       border-bottom none
 
-  &.list
-    li
-      padding 10px 15px
-      border-bottom 1px solid greigh5
-      line-height 15px
-      white-space normal
-      overflow auto
-      text-overflow none
-
-      &:last-child
-        border-bottom 0
-
-      &.disabled
-        color greigh5
-
-        a
-          color greigh5
-
-      a
-        display block
-        font 700 16px/21px fonts
-
-  &.hiring
-    border-radius 6px
-    border 2px solid greigh5
-
-.box-action
-  border-top 1px solid greigh5
-  padding 14px
-  text-transformation lowercase
-
-  .list &
-    border-top 0
-
-  .icon-arrow-tri-right:before
-    content ""
-
-  .icon-arrow-tri-right:after
-    font-family icomoon
-    content "\e605"
-    font-size 7px
-    margin 0 0 0 6px
-
-
-.tags
-  margin 0 0 60px
-
-  a
-    display inline-block
-    font 600 14px/14px fonts
-    margin 0 3px 5px 0
-    padding 5px 7px
-    border-radius 2px
-    border 1px solid greigh5
-
-    &:hover
-      color background-color
-      border 1px solid npmred
-      background npmred
-
-    &.icon-add
-      color background-color
-      border-color npmred
-      background npmred
-
-      &:hover
-        border-color greigh2
-        background greigh2
-
-      &:before
-        font-size 10px
-        text-align center;
-
 .pagination
   margin 50px 0
   width 100%
@@ -401,26 +138,6 @@
       border-color darken(npmred, 20%)
       color background-color
       background npmred
-
-
-.side-nav
-  margin 0 0 50px
-
-  li
-    list-style none
-    a
-      display inline-block
-      border 1px solid greigh5
-      margin 0 0 5px
-      padding 5px 15px
-      text-align center
-      font 700 16px/25px fonts
-      border-radius 4px
-
-      &:hover, &.active
-        color background-color
-        background npmred
-
 
 // Lists
 
@@ -483,9 +200,9 @@ ul.maintainers
 
 p.error
   display block
-  background errorColor
+  background error-color
   color darken(text-color, 20%)
-  border 1px solid darken(errorColor, 30%)
+  border 1px solid darken(error-color, 30%)
   border-radius 2px
   padding 10px
   margin 10px 0

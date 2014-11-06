@@ -7,6 +7,13 @@
 .full-width
   width 100%
 
+body
+  normal-font()
+  font-weight 400
+  font-size 16px
+  line-height 25px
+  letter-spacing -0.03em
+
 a
   color npmred
   font-weight 600
@@ -23,7 +30,9 @@ a
     font-weight 600
 
 h1
-  font 400 54px/65px fonts
+  font-weight 400
+  font-size 48px
+  line-height 60px
   letter-spacing -3px
   color greigh2
   text-transform lowercase
@@ -73,16 +82,6 @@ h3
   .sidebar &
     color npmred
 
-
-h4
-  margin 0 0 10px
-  letter-spacing -.03em
-  font 600 16px/16px fonts
-  color greigh3
-
-  span
-    font-weight 400
-
 hgroup
   margin-top 1em
   text-align center
@@ -105,7 +104,7 @@ p
 
 strong
   &.code
-    font-family codefonts
+    code-font()
 
 .btn
   display inline-block
@@ -168,8 +167,8 @@ npmInstallFontSize = 15px
     color greigh5
     vertical-align top
   input[type=text]
-    @extend .unstyledTextInput
-    font-family codefonts
+    @extend .unstyled-text-input
+    code-font()
     margin 0
     padding 0 0 0 30px
     line-height npmInstallHeight

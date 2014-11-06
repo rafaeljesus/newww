@@ -1,12 +1,13 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
-var commaIt = require('number-grouper'),
+var formatNumber = require('number-grouper'),
     Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')(),
     parseLanguageHeader = require('accept-language-parser').parse,
-    fmt = require("util").format;
+    fmt = require('util').format,
+    moment = require('moment');
 
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };
@@ -29,40 +30,60 @@ module.exports = function (request, reply) {
       starred: cached.starred || [],
       authors: cached.authors || [],
       downloads: {
-        day: commaIt(cached.downloads.day, {sep: sep}),
-        week: commaIt(cached.downloads.week, {sep: sep}),
-        month: commaIt(cached.downloads.month, {sep: sep}),
+        day: formatNumber(cached.downloads.day, {sep: sep}),
+        week: formatNumber(cached.downloads.week, {sep: sep}),
+        month: formatNumber(cached.downloads.month, {sep: sep}),
       },
-      totalPackages: commaIt(cached.totalPackages, {sep: sep}),
-      hiring: request.server.methods.hiring.getRandomWhosHiring()
+      totalPackages: formatNumber(cached.totalPackages, {sep: sep}),
+      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      explicit: require("../../lib/explicit-installs.json").slice(0,15).map(function(pkg) {
+        pkg.installCommand = "npm install " + pkg.name + (pkg.preferGlobal ? " -g" : "")
+        pkg.starCount = pkg.users ? Object.keys(pkg.users).length : 0
+
+        pkg.version = pkg['dist-tags'].latest
+        if (pkg.versions) {
+          pkg.version = pkg.versions[pkg.version].version
+          pkg.publishedBy = pkg.versions[pkg.version]._npmUser
+        }
+        pkg.lastPublished = moment(pkg.time[pkg.version]).fromNow()
+        delete pkg.versions
+
+        return pkg
+      })
     };
 
     timer.end = Date.now();
     metrics.addPageLatencyMetric(timer, 'homepage');
 
     metrics.addMetric({name: 'homepage'});
-    reply.view('company/index', opts);
+
+    // Return raw context object if `json` query param is present
+    if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {
+      return reply(opts);
+    }
+
+    return reply.view('company/index', opts);
+
   });
 }
 
 // ======= functions =======
 
 function load (request, cb) {
-  var browse = request.server.methods.registry.getBrowseData,
-      recentAuthors = request.server.methods.registry.getRecentAuthors,
+  var registry = request.server.methods.registry,
+      recentAuthors = registry.getRecentAuthors,
       addMetric = metrics.addMetric,
-      downloads = request.server.methods.downloads.getAllDownloads,
-      packagesCreated = request.server.methods.registry.packagesCreated;
+      downloads = request.server.methods.downloads.getAllDownloads;
 
-  var n = 6,
+  var n = 5,
       cached = {};
 
-  browse('star', null, 0, 10, next('starred'));
-  browse('depended', null, 0, 10, next('depended'));
-  browse('updated', null, 0, 10, next('updated'));
-  recentAuthors(TWO_WEEKS, 0, 10, next('authors'));
+  // registry.getStarredPackages(false, 0, 12, next('starred'));
+  registry.getDependedUpon(false, 0, 12, next('depended'));
+  registry.getUpdated(0, 12, next('updated'));
+  recentAuthors(TWO_WEEKS, 0, 12, next('authors'));
   downloads(next('downloads'));
-  packagesCreated(next('totalPackages'));
+  registry.packagesCreated(next('totalPackages'));
 
   function next (which) {
     return function (err, data) {

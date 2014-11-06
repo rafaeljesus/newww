@@ -1,6 +1,7 @@
 .DS_Store
 node_modules/
 .vagrant
+.env
 .idea
 dev/couch/*.couch
 dev/couch/.registry_design
@@ -17,3 +18,4 @@ dev/user_upload_complete.dat
 numbat.log
 numbat-config.js
 config.admin.js
+static

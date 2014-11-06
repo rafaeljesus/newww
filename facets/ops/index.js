@@ -3,13 +3,13 @@ var path = require('path'),
 
 module.exports = {
   ping: function (request, reply) {
-    return reply('OK').code(200);
+    return reply('ok').code(200);
   },
 
   status: function (appVersion) {
     return function (request, reply) {
       var info = {
-        status:   'OK',
+        status:   'ok',
         pid:      process.pid,
         app:      process.title,
         host:     process.env.SMF_ZONENAME,
@@ -31,6 +31,6 @@ module.exports = {
     }
 
     log.warn('content-security-policy validation', data);
-    return reply('OK').code(200);
+    return reply('ok').code(200);
   }
 }

@@ -1,18 +1,69 @@
-var SECOND = 1000;
+var SECOND = 1000,
+    MINUTE = 60 * SECOND;
+
+function setCache (name, minutes) {
+  return {
+    expiresIn: (minutes || 1) * MINUTE,
+    segment: '##' + name
+  };
+};
 
 exports.register = function Registry (service, options, next) {
 
-  service.method('registry.getPackage', require('./methods/getPackage'), {
-    cache: { expiresIn: 60 * SECOND, segment: '##package' }
-  });
+  service.method([
+    {
+      name: 'registry.getBrowseData',
+      fn: require('./methods/browse'),
+      options: { cache: setCache('browse') }
+    },
+    {
+      name: 'registry.getPackage',
+      fn: require('./methods/getPackage'),
+      options: { cache: setCache('package') }
+    },
+    {
+      name: 'registry.getAllPackages',
+      fn: require('./methods/getAllPackages'),
+      options: { cache: setCache('allPackages') }
+    },
+    {
+      name: 'registry.getAllByKeyword',
+      fn: require('./methods/getAllByKeyword'),
+      options: { cache: setCache('byKeyword') }
+    },
+    {
+      name: 'registry.getAuthors',
+      fn: require('./methods/getAuthors'),
+      options: { cache: setCache('byAuthor') }
+    },
+    {
+      name: 'registry.getDependedUpon',
+      fn: require('./methods/getDependedUpon'),
+      options: { cache: setCache('depended', 10) }
+    },
+    {
+      name: 'registry.getStarredPackages',
+      fn: require('./methods/getStarredPackages'),
+      options: { cache: setCache('browseStar', 10) }
+    },
+    {
+      name: 'registry.getUserStars',
+      fn: require('./methods/getUserStars'),
+      options: { cache: setCache('userStars') }
+    },
+    {
+      name: 'registry.getUpdated',
+      fn: require('./methods/getUpdated'),
+      options: { cache: setCache('updated') }
+    },
 
-  service.method('registry.getBrowseData', require('./methods/browse'), {
-    cache: { expiresIn: 60 * SECOND, segment: '##browse' }
-  });
+    {
+      name: 'registry.getRecentAuthors',
+      fn: require('./methods/getRecentAuthors'),
+      options: { cache: setCache('authors') }
+    }
+  ]);
 
-  service.method('registry.getRecentAuthors', require('./methods/recentAuthors'), {
-    cache: { expiresIn: 60 * SECOND, segment: '##authors' }
-  });
 
   service.method('registry.star', require('./methods/stars').star);
   service.method('registry.unstar', require('./methods/stars').unstar);

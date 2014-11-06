@@ -1,38 +1,39 @@
 {{#with package}}
 
-<div class="layout-left">
+<div class="content">
 
-  {{#if readme}}
-    <section id="readme">{{{readme}}}</section>
-  {{/if}}
+  <section id="readme">
+    <hgroup>
+      <h1>{{name}}</h1>
+      <h2>{{description}}</h2>
+    </hgroup>
+    {{#if readme}}
+      {{{readme}}}
+    {{/if}}
+  </section>
 
 </div>
 
-<div class="layout-right">
+<div class="sidebar">
 
-  <form class="star">
-    <input type="hidden" name="name" value="{{name}}">
-    <input type="hidden" name="crumb" value="{{../crumb}}">
-    <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>
-    <label for="star-input" class="icon-star">{{starCount}}</label>
-  </form>
+  {{#if installCommand}}
+    <div class="npm-install icon-download">
+      <input type="text" value="{{installCommand}}" readonly>
+    </div>
+  {{/if}}
 
-	<h3>Package Details</h3>
+	<h3>Package Info</h3>
 	<ul class="box">
 
     <li>
-      <strong>Version</strong>
-      {{version}}
+      <strong>{{version}}</strong>
       {{#if fromNow}}
-        <span class="subdued"> published {{fromNow}}</span>
+        published {{fromNow}}
+      {{/if}}
+      {{#if _npmUser}}
+        by <a href="/~{{_npmUser.name}}">{{_npmUser.name}}</a>
       {{/if}}
     </li>
-
-    {{#if license}}
-  		<li>
-        <a href="{{license.url}}">{{license.name}}</a> <span> license</span>
-      </li>
-    {{/if}}
 
     {{#if repository.url}}
       <li>
@@ -43,6 +44,12 @@
     {{#if homepage}}
       <li>
         <a href="{{homepage}}">{{schemeless homepage}}</a>
+      </li>
+    {{/if}}
+
+    {{#if license}}
+      <li>
+        <a href="{{license.url}}">{{license.name}}</a> <span> license</span>
       </li>
     {{/if}}
 
@@ -57,22 +64,26 @@
       </li>
     {{/if}}
 
+    <form class="star">
+      <input type="hidden" name="name" value="{{name}}">
+      <input type="hidden" name="crumb" value="{{../crumb}}">
+      <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>
+      <label for="star-input" class="icon-star">{{starCount}}</label>
+    </form>
+
 	</ul>
 
-
-  {{#if showMaintainers}}
-    <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
-    <ul class="userMosaic {{#if singleMaintainer}}one{{else}}many{{/if}}">
-      {{#each maintainers}}
-        <li>
-          <a href="/~{{name}}" title="{{name}}">
-            {{#if avatarMedium}}<img src="{{avatarMedium}}">{{/if}}
-            <span>{{name}}</span>
-          </a>
-        </li>
+  <h3>Keywords</h3>
+  <p>
+    {{#if keywords}}
+      {{#each keywords}}
+        <a href="/browse/keyword/{{this}}">{{this}}</a>{{#unless @last}}, {{/unless}}
       {{/each}}
-    </ul>
-  {{/if}}
+    {{else}}
+      None
+    {{/if}}
+  </p>
+
 
   <h3>Dependencies {{#if dependencies}}({{dependencies.length}}){{/if}}</h3>
   <p>
@@ -110,10 +121,22 @@
     </p>
   {{/if}}
 
+  {{#if showMaintainers}}
+    <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
+    <ul class="maintainers">
+      {{#each maintainers}}
+        <li>
+          <a href="/~{{name}}">
+            {{#if avatarMedium}}<img src="{{avatarMedium}}">{{/if}}
+            <span>{{name}}</span>
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
+
   {{> hiring ../hiring}}
 
 </div>
 
 {{/with}}
-
-<!-- <script src="/static/js/stars.js" async="true"></script> -->

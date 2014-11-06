@@ -4,47 +4,41 @@
 .subdued
   opacity 0.6
 
+.full-width
+  width 100%
+
 a
   color npmred
   font-weight 600
   text-decoration none
   &:hover
     text-decoration underline
+  &.unadorned
+    color text-color
+    font-weight 400
 
-  &.view-all
-    font-size 14px
+  .sidebar &
+    color greigh2
+    @extend .red-on-hover
     font-weight 600
-    position relative
-    z-index 1
-
-    strong
-      font-weight 700
-
-    &.icon-arrow-right:before
-      content ""
-    &.icon-arrow-right:after
-      font-family icomoon
-      content "\e603"
-      float right
-      font-size 7px
-      margin 0 0 0 6px
 
 h1
   font 400 54px/65px fonts
   letter-spacing -3px
-  color gray2
+  color greigh2
+  text-transform lowercase
+  &.centered
+    text-align center
+    padding 40px 0 20px 0
 
-  &:before
-    float left
-    margin-right 10px
-    margin-top 10px
+  .narrow &
+    margin 0.2em 0
 
 h2
-  margin 0 0 25px
-  // letter-spacing -.03em
+  margin 20px 0 20px 0
   font-weight 600
   font-size 24px
-  color gray4
+  color greigh2
   text-transform lowercase
 
   span
@@ -59,35 +53,52 @@ h2
     float left
     margin-right 10px
 
-  form &, .layout-left &
-    color npmred
+  &.centered
+    margin 40px 0 28px 0
+    font-weight 600
+    font-size 26px
+    text-align center
+    border-bottom 2px solid greigh6
+    padding-bottom 22px
+
 
 h3
   display block
-  margin 15px 0
+  margin 30px 0 10px 0
   font-size 20px
   font-weight 600
   line-height 1
-  color gray2
+  color greigh2
+
+  .sidebar &
+    color npmred
+
 
 h4
   margin 0 0 10px
   letter-spacing -.03em
   font 600 16px/16px fonts
-  color gray3
+  color greigh3
 
   span
     font-weight 400
 
 hgroup
+  margin-top 1em
   text-align center
   text-transform lowercase
 
   & h2
     font-weight 300
 
+  & p
+    margin-top 1em
+
 p
   margin 0 0 25px
+
+  .narrow &
+    margin-bottom 1em
 
 strong
   &.code
@@ -105,32 +116,20 @@ strong
   background npmred
 
   &:hover
-    background gray2
+    background greigh2
 
-  &.gray
+  &.greigh
     margin-right 10px
     background c
 
     &:hover
-      background gray2
+      background greigh2
 
 ul
   margin 25px 0 25px 35px
 
   li
     list-style disc
-
-  &.sortable
-    margin 25px 0
-    border-top 1px solid gray5
-
-    li
-      list-style none
-      border-bottom 1px solid gray5
-      height 45px
-      line-height 45px
-      padding-left 30px
-      background url(../img/sortable-handle.png) no-repeat 0 50%
 
 a .icon-add:before
   float left
@@ -147,7 +146,37 @@ a .icon-add:before
 
 .email-label:hover, .email-field:hover
   text-decoration none
-  color gray2
+  color greigh2
 
 .email-field input
-  background-color gray6
+  background-color greigh6
+
+npmInstallHeight = 18px
+npmInstallFontSize = 15px
+
+.npm-install
+  position relative
+  &:before
+    position absolute
+    top 0
+    left 0
+    font-size npmInstallHeight
+    line-height npmInstallHeight
+    color greigh5
+    vertical-align top
+  input[type=text]
+    @extend .unstyledTextInput
+    font-family codefonts
+    margin 0
+    padding 0 0 0 30px
+    line-height npmInstallHeight
+    vertical-align top
+    display inline-block
+    width 100%
+    white-space nowrap
+    overflow visible
+    overflow-x auto
+    color greigh3
+    height npmInstallHeight+2px
+    cursor text
+    font-size npmInstallFontSize

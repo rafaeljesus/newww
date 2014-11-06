@@ -1,19 +1,16 @@
-form
-  .layout-right &
-    margin 0 0 60px
-
 label
   display block
   margin 0 0 7px
-  color gray2
+  color greigh2
   font-weight 600
+  text-transform lowercase
 
   &.checkbox
     color npmred
     font-size 14px
 
 textarea
-  border 1px solid gray5
+  border 1px solid greigh5
   margin 0 0 50px
   padding 3%
   width 94%
@@ -25,13 +22,14 @@ textarea
   resize none
 
 input[type=text],
+input[type=email],
 input[type=password]
   display block
   width 100%
   height 38px
   padding-left 2%
   padding-right 2%
-  border 1px solid gray5
+  border 1px solid greigh5
   margin 0 0 20px
   border-radius 4px
   font-family fonts
@@ -61,11 +59,12 @@ input[type=submit]
   font-size 18px
   background npmred
   cursor pointer
-  -webkit-appearance: none;
+  text-transform lowercase
+  -webkit-appearance none
   clear both
 
   &:hover
-    background gray2
+    background greigh2
 
 input[type=file]
   margin 0 0 50px
@@ -75,118 +74,56 @@ input[type=file]
   color text-color-subdued
   line-height 18px
   margin -15px 0 22px
+  &.example
+    &:before
+      content: "Example: "
 
-.layout-left
-  form#content-search
-    position relative
-    height 47px
-    padding 0
-    margin 0 0 50px
-    border 1px solid gray5
-    border-radius 2px
-    background white
+form p
+  margin 25px 0 0
+  text-align: center
 
-    #content-search-input
-      position absolute
-      top 7px
-      left 20px
-      width 80%
-      height 30px
-      padding 0
-      margin 0
-      border 0
-      outline 0
-      font-weight 300
-      font-family fonts
-      font-size 18px
-      background none
+  &.help-text
+    margin -15px 0 22px
+    text-align left
 
-    #content-search-submit
-      position absolute
-      top 0
-      right 0
-      height 47px
-      width 46px
-      border 0
-      text-indent -9999em
-      cursor pointer
-      outline 0
-      border-left 1px solid gray5
-      border-radius 0 2px 2px 0
-      background url(../img/ico-search.png) no-repeat 50% 50%
+  a
+    text-decoration none
+    margin 0 5px
 
+    &:hover
+      color greigh2
 
-      &:hover
-        width 47px
-        height 49px
-        top -1px
-        right -1px
-        border-left 0
-        background: npmred url(../img/ico-search-hover.png) no-repeat 50% 50%
-
-.customSelect
-  margin -2px 0 20px
-  border 1px solid gray5
-  padding-top 1px
-  border-radius 4px
-  width 96%
-  height 38px
-  letter-spacing 0px
-  font 600 18px/38px fonts
-  font-size 13px
-  padding-left 10px
-  background url(../img/select-bg.png) no-repeat 95% 50%
-
-// Login Forms
-
-.login-forms
-  max-width 420px
-  margin 0 auto 50px
-  text-align left
-
-  p
-    margin 25px 0 0
-    color text-color-subdued
-    font-size 15px
-    text-align: center
-
-    &.help-text
-      margin -15px 0 22px
-      text-align left
-
-    a
-      text-decoration none
-      margin 0 5px
-
-      &:hover
-        color gray2
-
-  input[type=submit]
-    width 100%
-    text-transform lowercase
-
-  label
-    text-transform lowercase
-
-
-// Star Form
-starHeight = 24px
+changeAvatarSize = 40px
+p.change-avatar
+  display block
+  margin 40px 0
+  padding 0
+  line-height changeAvatarSize
+  vertical-align top
+  a
+    vertical-align top
+  img
+    width changeAvatarSize
+    height changeAvatarSize
+    margin-right 10px
+    border-radius 3px
 
 .star
+  display block
+  margin 10px 0
   input[type=checkbox]
     display none
 
     & + label
-      font-size 20px
+      font-size 16px
       line-height starHeight
       vertical-align top
       color text-color
       cursor pointer
       &:before
         transition transform 0.5s
-        // transition color 0.5s ease-out 0.5s
         font-size starHeight
-        color gray5
+        color greigh5
         margin-right 5px
 
     &:checked + label:before

@@ -3,15 +3,32 @@ var murmurhash = require('murmurhash');
 var crypto = require('crypto');
 
 var browse = require('./browseData');
+var enterprise = require('./enterprise-data');
 var whosHiring = require('./whosHiring');
 var users = require('./users');
 var pkgs = {
       fake: require('./fake.json'),
       unpub: require('./fake-unpublished')
     };
+var policies = require('./policies');
 
 module.exports = function (server) {
   var methods = {
+
+    corp: {
+      getPage: function (name, next) {
+        return next(null);
+      },
+
+      getPolicy: function (name, next) {
+        if (policies[name]) {
+          return next(null, policies[name]);
+        }
+
+        return next(new Error('Not Found'))
+      }
+    },
+
 
     downloads: {
       getAllDownloads: function (next) {
@@ -75,6 +92,81 @@ module.exports = function (server) {
       }
     },
 
+    npme: {
+      createCustomer: function (data, next) {
+        return next(null, enterprise.newUser);
+      },
+
+      createTrial: function (customer, next) {
+        return next(null, customer);
+      },
+
+      getCustomer: function (email, next) {
+        var key = email.split('@')[0];
+
+        switch (key) {
+          case 'exists':
+            // user already exists
+            return next(null, enterprise.existingUser);
+          case 'new':
+            // user doesn't exist yet
+            return next(null, null);
+          case 'noLicense':
+            // for license testing
+            return next(null, enterprise.noLicenseUser);
+          case 'tooManyLicenses':
+            // for license testing
+            return next(null, enterprise.tooManyLicensesUser);
+          case 'licenseBroken':
+            // for license testing
+            return next(null, enterprise.licenseBrokenUser);
+          default:
+            // something went wrong with hubspot
+            return next(new Error('something went wrong'));
+        }
+      },
+
+      getLicenses: function (productId, customerId, next) {
+        var key = customerId.split('@')[0];
+
+        switch (key) {
+          case 'noLicense':
+            return next(null, enterprise.noLicense);
+          case 'tooManyLicenses':
+            return next(null, enterprise.tooManyLicenses);
+          case 'exists':
+            return next(null, enterprise.goodLicense);
+          default:
+            return next(new Error('license machine brokened'));
+        }
+      },
+
+      sendData: function (formID, data, next) {
+        if (data.email.indexOf('error') !== -1) {
+          return next(new Error('ruh roh broken'));
+        }
+
+        return next(null);
+      },
+
+      verifyTrial: function (verificationKey, next) {
+        switch (verificationKey) {
+          case '12345':
+            return next(null, enterprise.newTrial);
+          case '23456':
+            return next(null, enterprise.noCustomerTrial);
+          case 'noLicense':
+            return next(null, enterprise.noLicenseTrial);
+          case 'tooManyLicenses':
+            return next(null, enterprise.tooManyLicensesTrial);
+          case 'licenseBroken':
+            return next(null, enterprise.licenseBrokenTrial);
+          default:
+            return next(new Error('cannot verify trial'));
+        }
+      }
+    },
+
     registry: {
       getBrowseData: function (type, arg, skip, limit, next) {
         return next(null, browse[type]);
@@ -86,6 +178,34 @@ module.exports = function (server) {
         }
 
         return next(Hapi.error.notFound('Username not found: ' + pkgName));
+      },
+
+      getAllPackages: function (skip, limit, next) {
+        return next(null, browse.all);
+      },
+
+      getAllByKeyword: function (arg, skip, limit, next) {
+        return next(null, browse.keyword);
+      },
+
+      getAuthors: function (arg, skip, limit, next) {
+        return next(null, browse.author);
+      },
+
+      getDependedUpon: function (arg, skip, limit, next) {
+        return next(null, browse.depended);
+      },
+
+      getStarredPackages: function (arg, skip, limit, next) {
+        return next(null, browse.star);
+      },
+
+      getUserStars: function (arg, skip, limit, next) {
+        return next(null, browse.userstar);
+      },
+
+      getUpdated: function (skip, limit, next) {
+        return next(null, browse.updated);
       },
 
       getRecentAuthors: function (arg, skip, limit, next) {
@@ -102,12 +222,6 @@ module.exports = function (server) {
 
       unstar: function (package, username, next) {
         return next(null, 'ok');
-      }
-    },
-
-    static: {
-      getPage: function (name, next) {
-        return next(null);
       }
     },
 

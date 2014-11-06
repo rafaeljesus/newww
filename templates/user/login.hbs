@@ -1,23 +1,29 @@
-<hgroup>
-  <h1>{{t "user.login.title"}}</h1>
-  <h2>{{t "user.login.subtitle"}}</h2>
-<hgroup>
+<div class="container narrow">
 
-{{#if error}}
-  {{#compare error.type 'missing'}}
-    <p class='error'>{{t "user.login.error.missing"}}</p>
-  {{else}}
-    <p class='error'>{{t "user.login.error.invalid"}}</p>
-    <p>{{{t "user.login.error.invalidContext"}}}<code>{{error.errId}}</code></p>
-  {{/compare}}
-{{/if}}
+  <hgroup>
+    <h1>{{t "user.login.title"}}</h1>
+    <h2>{{t "user.login.subtitle"}}</h2>
+  </hgroup>
 
-<form class="login-forms" action='' method='post'>
-  <label for="name">{{t "user.login.form.username"}}</label>
-  <input type="text" id="name" name="name" />
-  <label for="password">{{t "user.login.form.password"}}</label>
-  <input type="password" id="password" name="password" />
-  <input type="submit" value="{{t "user.login.form.submit"}}" />
-  <p><a href="/forgot">{{t "user.login.form.forgot"}}</a> | <a href="/signup">{{t "user.login.form.signup"}}</a></p>
-  <input type="hidden" name="crumb" value="{{crumb}}"/>
-</form>
+  {{#if error}}
+    <p class='error'>
+      {{t "user.login.error.invalid"}}<br>
+      {{{t "user.login.error.invalidContext"}}}
+      <code>{{error.errId}}</code>
+    </p>
+  {{/if}}
+
+  <form action='' method='post'>
+    <label for="name">{{t "user.login.form.username"}}</label>
+    <input type="text" id="name" name="name" />
+
+    <label for="password">{{t "user.login.form.password"}}</label>
+    <input type="password" id="password" name="password" />
+
+    <input type="submit" class="full-width" value="{{t "user.login.form.submit"}}" />
+
+    <p><a href="/forgot">{{t "user.login.form.forgot"}}</a> | <a href="/signup">{{t "user.login.form.signup"}}</a></p>
+    <input type="hidden" name="crumb" value="{{crumb}}"/>
+  </form>
+
+</div>

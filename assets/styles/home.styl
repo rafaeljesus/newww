@@ -1,16 +1,11 @@
 #subheader
   position relative
-  margin 40px 0
-  padding-bottom 100px
-  h1
-    text-align center
-    text-transform lowercase
 
 #home-stats
   position relative
   margin 25px auto 25px auto
   padding 0
-  max-width 800px
+  max-width 900px
   display flex
   flex-wrap wrap
   justify-content space-between
@@ -22,23 +17,88 @@
       width 200px
       margin 15px auto
 
-div.stat
+.stat
+  position relative
   flex 0 1 auto
-  line-height 16px
-  font-size 13px
+  line-height 20px
+  font-size 14px
   color text-color-subdued
   margin 20px 20px 20px 0
+  padding-left 46px
+  &.icon-package-hex
+    &:before
+      top 0
+      font-size 36px
 
-  & span:before
+  &:before
+    position absolute
+    top 2px
+    left 0
     font-size 30px
-    float left
     margin-right 10px
     margin-top 2px
-    color gray2
+    color greigh2
 
   strong
     font-family codefonts
     font-weight 600
     font-size 16px
     display block
-    color gray2
+    color greigh2
+
+
+
+ul.columnar
+  columns 3
+  column-gap 40px
+  @extend .vanilla-list
+
+  li
+    column-break-inside avoid
+    padding 5px
+    margin-bottom 20px
+
+
+packageWidgetHeadingHeight = 20px
+.package-widget
+  &:hover
+    a
+      color npmred !important
+
+  h3, h3 a
+    font-size packageWidgetHeadingHeight
+    line-height packageWidgetHeadingHeight
+    overflow visible
+    vertical-align top
+    margin 0
+    padding 0
+    max-width 90%
+    @extend .ellipsis
+
+  a
+    &.name
+      text-decoration none
+      transform all 0.1s
+      color greigh2
+      @extend .red-on-hover
+      &:before
+        color greigh5
+        line-height packageWidgetHeadingHeight
+        padding-right 6px
+
+  p
+    font-size 15px
+    margin 0
+    max-width 90%
+    padding-left 22px
+    color greigh3
+    @extend .ellipsis
+
+  .quiet
+    font-size 14px
+    color greigh3
+    a
+      color greigh2
+      @extend .red-on-hover
+      font-weight 400
+      // text-decoration underline

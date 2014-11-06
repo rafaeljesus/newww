@@ -77,6 +77,15 @@ config.csp = {
   reportUri: '/-/csplog'
 }
 
+// Allow extra script sources on enterprise signup pages
+config.enterpriseCspScriptSrc = config.csp.scriptSrc.concat(
+  'https://js.hs-analytics.net',
+  'https://js.hsforms.net/forms/current.js',
+  'https://forms.hubspot.com',
+  'https://internal.hubapi.com',
+  'https://api.hubapi.com'
+);
+
 // ===== service options =====
 config.couch = {
   "couchAuth": "admin:admin",
@@ -100,6 +109,24 @@ config.metrics = {
 
 config.downloads = {
   url: "https://api.npmjs.org/downloads/"
+};
+
+config.license = {
+  "hubspot": {
+    "forms": "https://forms.hubspot.com/uploads/form/v2/:portal_id/:form_guid",
+    "portal_id": "123456",
+    "form_npme_signup": "12345",
+    "form_npme_agreed_ula": "12345",
+    "form_npme_contact_me": "12345",
+    "form_private_npm": "12345"
+  },
+  "api": "https://billing.website.com",
+};
+
+config.npme = {
+  product_id: '12345',
+  trial_length: 5,
+  trial_seats: 2
 };
 
 // ==== facet options ====
@@ -145,7 +172,7 @@ config.user = {
 // options for search (registry facet)
 config.search = {
   url:'http://127.0.0.1:9200/npm',
-  perPage: 20
+  perPage: 24
 };
 
 if (fs.existsSync('./config.admin.js')) {

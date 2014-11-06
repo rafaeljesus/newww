@@ -17,8 +17,12 @@ module.exports = [
   },
   require('../services/registry'),
   require('../services/whoshiring'),
-  require('../services/static'),
+  require('../services/corporate'),
   require('../services/errors'),
+  {
+    plugin: require('../services/npme'),
+    options: config
+  },
   {
     plugin: require('../services/downloads'),
     options: config.downloads

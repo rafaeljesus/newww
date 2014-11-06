@@ -1,61 +1,56 @@
-<div id="secondary-nav">
-  <div class="container">
-    <a href="/profile-edit" data-tab="profile">edit your profile</a>
-    <a class="active tab" data-tab="edit-email">edit email</a>
-    <a href="/password" class="tab" data-tab="password">change password</a>
-    {{!-- <a href="#" class="tab" data-tab="edit-order">edit package/collection order</a> --}}
-  </div>
-</div> <!-- / #secondary-nav -->
+{{> profile-secondary-nav}}
 
-{{#unless submitted}}
+<div class="container narrow">
 
-  <form class="container tab-content" data-tab="edit-email" method="post" action="/email-edit">
-    <div class="layout-left">
-      <h2>edit email address</h2>
+  <hgroup>
+    <h1>Edit Email Address</h1>
+  </hgroup>
+
+  {{#unless submitted}}
+
+    <form data-tab="edit-email" method="post" action="/email-edit">
+
       <p>An email will be sent to the new address to confirm. Please click the link when you receive it. An informative confirmation email will be sent to the old address just to verify that this is intentional.</p>
-      <div class="layout-left half">
-        <input type="hidden" name="_id" value="{{profile._id}}">
-        <input type="hidden" name="name" value="{{profile.name}}">
 
-        <label for="password">password</label>
-        <input type="password" id="password" name="password">
+      <input type="hidden" name="_id" value="{{profile._id}}">
+      <input type="hidden" name="name" value="{{profile.name}}">
 
-        {{#if error.password}}
-          <p class="error">Invalid password</p>
-        {{/if}}
+      <label for="password">password</label>
+      <input type="password" id="password" name="password">
 
-        <label for="email">new email address</label>
-        <input type="text" id="email" name="email" value="">
+      {{#if error.password}}
+        <p class="error">Invalid password</p>
+      {{/if}}
 
-        <p class="help-text">this <strong>will be</strong> public</p>
+      <label for="email">new email address</label>
+      <input type="text" id="email" name="email" value="">
 
-        {{#if error.email}}
-          <p class="error">Must provide a valid email address</p>
-        {{/if}}
+      <p class="help-text">this <strong>will be</strong> public</p>
 
-        <input type="submit" value="save" />
-        <input type="hidden" name="crumb" value="{{crumb}}"/>
+      {{#if error.email}}
+        <p class="error">Must provide a valid email address</p>
+      {{/if}}
 
-      </div> <!-- / .layout-right.half -->
-    </div> <!-- / .layout-left -->
-  </form> <!-- / .container -->
+      <input type="submit" value="send email confirmation" class="full-width" />
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-{{else}}
+    </form>
 
-  <div class="container layout-left">
-    <h2>Email Address Change Submitted!</h2>
+  {{else}}
 
-    <p>An email confirmation has just been sent to you with a link that
-      you must click to complete the process.</p>
+      <h2>Email Address Change Submitted!</h2>
 
-    <p>If you have any problems, please contact
-      <a href="mailto:support@npmjs.com">the website admins</a>
-      and we'll do our best to get you sorted out.</p>
+      <p>An email confirmation has just been sent to you with a link that
+        you must click to complete the process.</p>
 
-    {{!-- only for dev; this should *never* show up in prod! --}}
-    {{#if confirm}}{{confirm}}{{/if}}
-    {{#if revert}}{{revert}}{{/if}}
+      <p>If you have any problems, please contact
+        <a href="mailto:support@npmjs.com">the website admins</a>
+        and we'll do our best to get you sorted out.</p>
 
-  </div>
-{{/unless}}
+      {{!-- only for dev; this should *never* show up in prod! --}}
+      {{#if confirm}}{{confirm}}{{/if}}
+      {{#if revert}}{{revert}}{{/if}}
 
+  {{/unless}}
+
+</div>

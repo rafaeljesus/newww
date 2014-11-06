@@ -1,24 +1,23 @@
 .container
   position relative
-  max-width 1180px
+  float none
+  clear both
+  overflow hidden
+  max-width fullColumnWidth
   margin 0 auto
   padding 0 20px
+  &.narrow
+    max-width narrowColumnWidth
 
   &:after
     content: ""
     display table
     clear both
 
-  &.pad-top
-    padding-top 50px
-
-.layout-left
+.content
   float left
   width 60%
   margin-bottom 90px
-
-  & .layout-left
-    margin-bottom 25px
 
   @media only screen and (max-width: 1024px)
     width 57%
@@ -34,21 +33,10 @@
       float none
       width 100%
 
-.layout-right
-  margin 0 0 90px 72.5%
-
-  @media only screen and (max-width: 1024px)
-    margin 0 0 0 65%
-
-  @media only screen and (max-width: 767px)
-    margin 0
-
-  &.half
-    margin-left 54%
-
-    @media only screen and (max-width: 767px)
-      margin-left 0
-
+.sidebar
+  float right
+  margin-top 40px
+  max-width 320px
 
 .thirds
   overflow hidden
@@ -88,10 +76,10 @@
 
 // Package Results
 
-.package, .author
+.package
   margin-bottom 25px
   padding 0 0 25px
-  border-bottom 1px solid gray5
+  border-bottom 1px solid greigh5
 
   img
     float left
@@ -107,7 +95,7 @@
   p
     clear left
     font-weight 600
-    color gray3
+    color greigh3
     margin 0
 
   span
@@ -148,12 +136,6 @@
       clear none
       font-weight 400
 
-.author
-  h5
-    font-family fonts
-
-    a
-      color text-color-subdued
 
 // Collection Results
 
@@ -227,7 +209,7 @@
   &.third
     .c-details
       padding 20px
-      border 2px solid gray5
+      border 2px solid greigh5
       border-width 0 2px 2px 2px
       border-radius 0 0 6px 6px
 
@@ -252,13 +234,13 @@
 .hiring
   .c-name
     height 60px
-    border 2px solid gray5
+    border 2px solid greigh5
     border-bottom 0
     padding 20px
     padding-top 15px
 
     a
-      color gray1
+      color greigh1
       text-align right
       display block
       position relative
@@ -280,7 +262,7 @@
   padding-bottom 0
 
   .c-name
-    border 2px solid gray5
+    border 2px solid greigh5
     height 43px
 
     img
@@ -294,7 +276,7 @@
         font-size 24px
         line-height 45px
         margin-right 8px
-        color gray5
+        color greigh5
 
     span
       color text-color
@@ -304,9 +286,6 @@
 
 .box
   margin 0 0 30px
-  // border-radius 6px
-  // border 2px solid gray5
-  font-weight 600
   font-size 16px
 
   p
@@ -324,7 +303,7 @@
     overflow hidden
     text-overflow ellipsis
     padding-right 10px
-    border-bottom 1px solid gray5
+    border-bottom 1px solid greigh5
 
     &:last-child
       border-bottom none
@@ -332,7 +311,7 @@
   &.list
     li
       padding 10px 15px
-      border-bottom 1px solid gray5
+      border-bottom 1px solid greigh5
       line-height 15px
       white-space normal
       overflow auto
@@ -342,10 +321,10 @@
         border-bottom 0
 
       &.disabled
-        color gray5
+        color greigh5
 
         a
-          color gray5
+          color greigh5
 
       a
         display block
@@ -353,10 +332,10 @@
 
   &.hiring
     border-radius 6px
-    border 2px solid gray5
+    border 2px solid greigh5
 
 .box-action
-  border-top 1px solid gray5
+  border-top 1px solid greigh5
   padding 14px
   text-transformation lowercase
 
@@ -372,61 +351,6 @@
     font-size 7px
     margin 0 0 0 6px
 
-// Health and Stats
-
-#health-stats
-  .stat
-    position relative
-    border-bottom 1px solid gray5
-
-    p
-      position relative
-      height 40px
-      padding 0 14px
-      font 400 16px/40px fonts
-      z-index 1
-
-      span
-        float right
-        font 600 12px/40px fonts
-        color text-color-subdued
-
-
-    em
-      position absolute
-      left 0
-      top 0
-      bottom 0
-      background gray6
-      z-index 0
-
-  .overall-health
-    position relative
-    height 50px
-    margin 0 -2px -2px
-    padding 0 16px
-    border-radius 0 0 4px 4px
-    color background-color
-    font 400 16px/50px fonts
-
-    &.yay
-      background green
-
-    &.meh
-      background orange
-
-    &.uh-oh
-      background yellow
-
-    &.rip
-      background black
-
-    span
-      float right
-      margin 2px 0 0
-      font-size 26px
-
-// Tags
 
 .tags
   margin 0 0 60px
@@ -437,7 +361,7 @@
     margin 0 3px 5px 0
     padding 5px 7px
     border-radius 2px
-    border 1px solid gray5
+    border 1px solid greigh5
 
     &:hover
       color background-color
@@ -450,30 +374,34 @@
       background npmred
 
       &:hover
-        border-color gray2
-        background gray2
+        border-color greigh2
+        background greigh2
 
       &:before
         font-size 10px
         text-align center;
 
-// Pagination
 .pagination
-  margin 50px 0 0
+  margin 50px 0
+  width 100%
+  text-align center
 
   a
     display inline-block
     border-radius 2px
-    border 1px solid gray5
+    border 1px solid greigh6
     text-align center
     margin 0 2px 10px
     padding 1px 11px
-    font 600 16px/25px fonts
     color npmred
+    text-decoration none
+    text-transform lowercase
 
     &:hover, &.active
+      border-color darken(npmred, 20%)
       color background-color
-      background gray5
+      background npmred
+
 
 .side-nav
   margin 0 0 50px
@@ -482,7 +410,7 @@
     list-style none
     a
       display inline-block
-      border 1px solid gray5
+      border 1px solid greigh5
       margin 0 0 5px
       padding 5px 15px
       text-align center
@@ -499,10 +427,7 @@
 ol
   list-style-position inside
 
-li
-  padding-bottom 0.5em
-
-ul.userMosaic
+ul.maintainers
   list-style none
   margin 0 0 30px 0
   padding 0
@@ -516,60 +441,45 @@ ul.userMosaic
     padding 3px 0
     position relative
 
-  img
-    display inline-block
-    width mosaicSize
-    height mosaicSize
+  a
+    display block
+    position relative
+    width maintainerAvatarSize
+    height maintainerAvatarSize
     margin-right 10px
+    margin-bottom 10px
+
+  img, span
+    display block
+    position absolute
+    width maintainerAvatarSize
+
+  img
     border-radius 5px
     transition all 0.3s
 
   span
-    margin 0
-    padding 0
-    vertical-align top
-    line-height mosaicSize
-    display none
-
-  a:before
-    display block
-    position absolute
-    width mosaicSize
-    line-height mosaicSize
+    line-height maintainerAvatarSize
     text-align center
-    content attr(title) " "
     opacity 0
     transition all 0.3s
     text-overflow ellipsis
     overflow hidden
     padding 0 6px
+    text-decoration none
 
-  // Many-user Mosaic
-  &.many
-    a:hover
-      img
-        opacity 0
-
-    &:hover
-      a:before
-        opacity 1
-      img
-        opacity 0.1
-
-  // Single-user Mosaic
-  &.one
-    a:before
-      display none
+  a:hover
+    img
+      opacity 0
     span
-      display inline-block
+      text-decoration underline
 
-.notfound
-  text-align center
-  margin-top 1em
+  &:hover
+    span
+      opacity 1
+    img
+      opacity 0.1
 
-  img
-    width 300px
-    margin 1em
 
 p.error
   display block
@@ -579,3 +489,13 @@ p.error
   border-radius 2px
   padding 10px
   margin 10px 0
+
+#not-found
+  text-align center
+  img
+    max-width 400px
+
+.pass-info
+  margin 1em 0
+  p
+    margin 0

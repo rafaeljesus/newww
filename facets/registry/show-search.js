@@ -1,6 +1,7 @@
 var elasticsearch = require('elasticsearch'),
     Hapi = require('hapi'),
     log = require('bole')('registry-search'),
+    merge = require('lodash').merge
     metrics = require('newww-metrics')();
 
 module.exports = function (options) {
@@ -9,18 +10,23 @@ module.exports = function (options) {
   });
 
   return function (request, reply) {
+
+    if (!request.query || !request.query.q) {
+      return reply.redirect('/');
+    }
+
     var addMetric = metrics.addMetric,
         addLatencyMetric = metrics.addPageLatencyMetric,
         showError = request.server.methods.errors.showError(reply),
         timer = { start: Date.now() };
 
     var page = +request.query.page || 1;
-    var size  = parseInt(options.perPage);
+    var perPage  = parseInt(options.perPage);
     var searchQuery = {
       fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek'],
       body: {
-        from: (page - 1) * size,
-        size : size,
+        from: (page - 1) * perPage,
+        size : perPage,
         "query" : {
           "dis_max": {
             "tie_breaker": 0.7,
@@ -106,14 +112,26 @@ module.exports = function (options) {
 
       addMetric({ name: 'search', search: request.query.q });
 
-      reply.view('registry/search', {
+      merge(opts, {
         title: 'results for ',
         page: page,
         q: request.query.q,
-        hits: response.hits.hits,
+        results: response.hits.hits,
+        totalResults: response.hits.total,
+        singleResult: response.hits.total === 1,
         prevPage: page > 0 ? page - 1 : null,
-        nextPage: response.hits.total >= (size * page) ? page + 1 : null
-      });
+        nextPage: response.hits.total >= (perPage * page) ? page + 1 : null
+      })
+
+      opts.paginate = opts.prevPage || opts.nextPage
+
+      // Return raw context object if `json` query param is present
+      if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {
+        return reply(opts);
+      }
+
+      reply.view('registry/search', opts);
+
     });
   }
 }

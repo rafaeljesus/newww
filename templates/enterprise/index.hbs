@@ -1,0 +1,229 @@
+<div class="main">
+  <p>npm Enterprise is an on-premises solution for securely sharing and distributing
+  JavaScript modules within your organization, from the team that maintains npm
+  and the public npm registry. It's designed for teams that need:
+  <ul>
+    <li>easy internal sharing of private modules</li>
+    <li>better control of development and deployment workflow</li>
+    <li>stricter security around deploying open-source modules</li>
+    <li>compliance with legal requirements to host code on-premises</li>
+  </ul>
+
+  <div id="enterprise-cta"><a class="hs-button cta-link" href="#contact">Try npm Enterprise for free</a></div>
+
+  <h2>Features</h2>
+
+  <ul>
+    <li><a href="#private">Private npm that just works</a></li>
+    <li><a href="#scoped">Scoped modules give you private code, simply</a></li>
+    <li><a href="#conflicts">Eliminate conflicts with public modules</a></li>
+    <li><a href="#compatible">Works in concert with the public registry</a></li>
+    <li><a href="#mirror">Selectively mirror the public registry</a></li>
+    <li><a href="#install">Simple installation with npm</a></li>
+    <li><a href="#github">Integrates with GitHub enterprise and other OAuth providers</a></li>
+  </ul>
+
+  <h3>See it in action</h3>
+
+  <iframe width="480" height="360" src="//www.youtube.com/embed/FJyVsD8xs14?rel=0" frameborder="0" allowfullscreen></iframe>
+
+  <h3><a name="private">npm Enterprise is private npm</a></h3>
+
+  <p>npm Enterprise is an npm registry that works with the same standard npm client you
+  already use, but provides the features needed by larger organizations who
+  are now enthusiastically adopting node. It's built by npm, Inc., the sponsor
+  of the npm open source project and the host of the public npm registry.</p>
+
+  <h3><a name="scoped">Private, scoped modules</a></h3>
+
+  <p>Lots of companies using Node.js love the "many small modules" pattern that is
+  part of the Node culture. However, splitting internal applications and private
+  code up into small modules has been inconvenient, requiring git dependencies or
+  other workarounds to avoid publishing sensitive code to the public registry. npm
+  Enterprise makes private modules a first-class citizen. Just log in to your
+  registry:
+
+  <p><code>npm login --registry=http://myreg.mycompany.com --scope=myco</code></p>
+
+  <p>Now you can install private modules without any additional work, the same way
+  you do with public modules:</p>
+
+  <p><code>npm install @myco/somepackage</code></p>
+
+  <p>npm automatically knows that any package with the <code>@myco</code> scope
+  should be installed from your npm Enterprise installation. Scoped packages will
+  be installed into your <code>node_modules</code> folder and can be used in your
+  JavaScript just like any other module:</p>
+
+  <pre><code>
+  require('@myco/somepackage');
+  </code></pre>
+
+  <p>Publishing private modules is similarly easy. Simply give your package name
+  a scope in package.json:</p>
+
+  <pre><code>
+  {
+    "name": "@myco/anypackage",
+    ..
+  }
+  </code></pre>
+
+  <p>Then publish as usual:</p>
+
+  <p><code>npm publish</code></p>
+
+  <p>npm will automatically publish to your npm Enterprise, and will refuse to
+  publish scoped packages to the public registry.</p>
+
+  <h3><a name="conflicts">Eliminate conflicts with public modules</a></h3>
+
+  <p>By their nature, the existence of scopes means you cannot create a module
+  that accidentally conflicts with an existing public package.</p>
+
+  <p>In addition, when you register a scope with npm Enterprise, we reserve that
+    scope across all npm Enterprise users and the public registry. This will
+    allow you to publish your modules publicly without needing to rename them
+    when this feature becomes available in the public registry.</p>
+
+  <h3><a name="compatible">Works in concert with the public npm registry</a></h3>
+
+  <p>Depending on your security preferences, you can work with npm Enterprise in
+  two ways:
+  <ol>
+    <li>use it to host only your private modules, and use the public npm registry
+      for any un-scoped modules, or</li>
+    <li>configure npm to use your local npm Enterprise server for all modules, and
+      use npm Enterprise to mirror the public packages you have approved for
+      internal use</li>
+  </ol>
+
+  <p>This can be configured per-client, so your developers and your build server
+  can apply different levels of strictness about where they can install packages
+  from.</p>
+
+  <h3><a name="mirror">Selectively mirror the public registry</a></h3>
+
+  <p>npm Enterprise goes beyond a simple local cache of the registry. It allows you to
+    selectively mirror the public registry, automatically inspecting every new and
+    updated package available in the public registry and applying a security
+    policy to determine if it should be made available locally. You can use
+    pre-built filters, or you can write your own, which is as simple as writing
+    an npm module and publishing it to your local registry. Some possible filters:
+
+  <ul>
+    <li>Mirror the entire public registry as a local cache</li>
+    <li>Mirror all packages except these blacklisted packages</li>
+    <li>Mirror all versions of these whitelisted packages</li>
+    <li>Mirror only approved versions of specific packages</li>
+    <li>Mirror any package with an acceptable software license</li>
+  </ul>
+
+  <h3><a name="install">npm install npmE</a></h3>
+
+  <p>npm Enterprise runs locally, on a server you control, with no external
+    dependencies (mirroring the public registry of course requires external
+    internet access, but mirroring is optional). Many organizations want this for
+    security, regulatory, or operational reasons.
+
+  <p>As you would expect, npm Enterprise is installed using npm! Our installation
+    process asks you a series of simple questions about your local environment,
+    and sets up all the services it needs to run.</p>
+
+  <p>npm Enterprise has been extensively tested on CentOS 6.5 and Ubuntu 14, and is
+    supported on most recent public Linux distributions. It can run inside a
+    virtual machine or on standard hardware. Since it can be configured to
+    only selectively mirror the public registry in addition to your private
+    packages, its disk space requirements are significantly lighter than other
+    private registry solutions.</p>
+
+  <h3><a name="github">Integrates with GitHub and GitHub Enterprise</a></h3>
+
+  <p>If your organization uses GitHub or GitHub Enterprise, npm Enterprise can be
+    configured to automatically use them for login and access control. Simply add a
+  repository field to your package.json that points to your repo:</p>
+
+  <pre><code>
+  {
+    ..
+    "repository": {
+      "url": "git://github.mycompany.com/myco/mypackage.git"
+    }
+  }
+  </code></pre>
+
+  <p>Depending on your configuration, npm Enterprise can restrict installation of
+    your package to users who have access to the repo for that package, and restrict
+  publishing of that package to users who have commit access to the repo.</p>
+
+  <p>npm Enterprise uses OAuth to interact with GitHub, and will support any other
+    OAuth2 providers. A standalone solution for authentication and authorization is
+  coming soon.</p>
+
+  <h2><a name="contact">Try npm Enterprise for free</a></h2>
+
+  <p>Get a trial license for npm Enterprise instantly by supplying some basic information:</p>
+
+  <form accept-charset="UTF-8" action="/enterprise-start-signup" method="POST" id="npme-signup-form">
+    <input type="hidden" name="crumb" value="{{crumb}}"/>
+    <div>
+      <label for="firstname">First Name</label>
+      <div class="input">
+        <input type="text" required="required" id="firstname" name="firstname" value="" placeholder="">
+      </div>
+    </div>
+    <div>
+      <label for="lastname">Last Name</label>
+      <div class="input">
+        <input type="text" required="required" id="lastname" name="lastname" value="" placeholder="">
+      </div>
+    </div>
+    <div>
+      <label for="email">Work Email</label>
+      <div class="input">
+        <input type="email" required="required" id="email" name="email" value="" placeholder="">
+      </div>
+      <div class="note">This email will be the username for your trial license</div>
+    </div>
+    <div>
+      <label for="phone">Phone Number</label>
+      <div class="input">
+        <input type="text" required="required" id="phone" name="phone" value="" placeholder="">
+      </div>
+    </div>
+    <div>
+      <label for="company">Company</label>
+      <div class="input">
+        <input type="text" required="required" id="company" name="company" value="" placeholder="">
+      </div>
+    </div>
+    <div>
+      <label for="numemployees">Number of Employees (optional)</label>
+      <div class="input">
+        <select id="numemployees" name="numemployees">
+          <option value="__PLACEHOLDER__">- Please Select -</option>
+          <option value="1 - 25">1 - 25</option>
+          <option value="26 - 100">26 - 100</option>
+          <option value="100 - 1000">100 - 1000</option>
+          <option value="1,000 +">1,000 +</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <label for="comments">What interests you about npm Enterprise? (optional)</label>
+      <div class="input">
+        <textarea id="comments" name="comments" value="" placeholder=""></textarea>
+      </div>
+    </div>
+    <div>
+      <div class="actions">
+        <input class="hs-button" type="submit" value="Start npm Enterprise trial">
+      </div>
+    </div>
+  </form>
+
+</div>
+
+<div class="layout-right">
+  {{> hiring hiring}}
+</div>

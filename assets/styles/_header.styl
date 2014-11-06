@@ -1,11 +1,15 @@
 header
   padding 28px 0 20px
   border-bottom 1px solid lightgrey
-  background gray6
+  background greigh6
 
   h1
     clear left
-    padding-top 1em
+    padding 20px 0 0 0
+    line-height 1.4
+    font-weight 400
+    width 100%
+    @extend .ellipsis
 
     em
       color npmred
@@ -38,19 +42,22 @@ nav
     left 0
     right 0
     border-bottom 0
-    background gray6
+    background greigh6
     z-index 12
 
   h2
+    margin 0
+    padding 0
     a
       margin 0
+      padding 0
       text-decoration none
       border none
-      opacity 1
-      color rgba(background-color, 0.6)
+      color rgba(background-color, 0.8)
       padding-right 100px
       background none
       &:hover
+        color rgba(background-color, 1)
         background none
         text-decoration none
         border none
@@ -60,14 +67,13 @@ nav
     line-height 36px
     padding 0 10px
     margin 0
-    opacity .7
-    color background-color
+    color rgba(background-color, 0.8)
     text-decoration none
     background npmred
     transition all 0.1s
 
     &:hover, &.active
-      opacity 1
+      color rgba(background-color, 1)
       text-decoration none
       background darken(npmred, 20%)
 
@@ -81,14 +87,8 @@ nav
 
       &:hover
         color npmred
-        background gray6
+        background greigh6
         border-bottom 1px solid white
-
-    &#mobile-home
-      visibility hidden
-
-      @media only screen and (max-width: 767px)
-        visibility visible
 
   h2
     float left
@@ -110,19 +110,20 @@ nav
   width 50px
   height 36px
   text-indent -9999em
-  background url(../img/ico-mobile-menu.png) no-repeat top right
+  background url(../images/ico-mobile-menu.png) no-repeat top right
 
   @media only screen and (max-width: 767px)
     display block
 
   @media only screen
-    background url(../img/ico-mobile-menu@2x.png) no-repeat top right
+    background url(../images/ico-mobile-menu@2x.png) no-repeat top right
     background-size 26px 18px
 
 #secondary-nav
+  text-align center
   min-height 65px
-  margin 0 0 75px
-  background url(../img/secondary-nav-bg.png) repeat-x bottom left
+  margin 0 0 25px
+  background url(../images/secondary-nav-bg.png) repeat-x bottom left
 
   @media only screen and (max-width: 767px)
     min-height 45px
@@ -142,13 +143,16 @@ nav
       margin 0 15px 0 0
 
     &:hover, &.active
-      color gray2
+      color greigh2
       border-bottom 2px solid npmred
+
+    &:last-child
+      margin-right 0
 
 #profile-nav
   min-height 67px
   margin 0 0 95px
-  background url(../img/secondary-nav-bg.png) repeat-x bottom left
+  background url(../images/secondary-nav-bg.png) repeat-x bottom left
 
   @media only screen and (max-width: 767px)
     position relative
@@ -188,7 +192,7 @@ nav
       color rgba(255,255,255,.4)
 
     &:hover
-      color gray2
+      color greigh2
 
 #npm-logo
   float left
@@ -207,7 +211,7 @@ nav
   height 47px
   padding 0
   margin 0
-  border 1px solid gray5
+  border 1px solid greigh5
   border-radius 2px
   background white
 
@@ -218,13 +222,10 @@ nav
     margin-top: 2em;
     width: 100%;
 
-  &.custom #npm-search
-    border 0
-
 #site-search
   position absolute
   top 7px
-  left 20px
+  left 7px
   width 80%
   height 30px
   padding 0
@@ -246,9 +247,9 @@ nav
   text-indent -9999em
   cursor pointer
   outline 0
-  border-left 1px solid gray5
+  border-left 1px solid greigh5
   border-radius 0 2px 2px 0
-  background url(../img/ico-search.png) no-repeat 50% 50%
+  background url(../images/ico-search.png) no-repeat 50% 50%
 
 
   &:hover
@@ -257,10 +258,8 @@ nav
     top -1px
     right -1px
     border-left 0
-    background: npmred url(../img/ico-search-hover.png) no-repeat 50% 50%
+    background: npmred url(../images/ico-search-hover.png) no-repeat 50% 50%
 
-userInfoAvatarSize = 45px
-userInfoAvatarSizeMobile = 25px
 
 #user-info
   position absolute
@@ -277,20 +276,22 @@ userInfoAvatarSizeMobile = 25px
     border-radius 2px
 
   ul
+    @extend .vanilla-list
     float right
     display block
-    margin 0
-    padding 0
     text-align right
+    margin-top 8px
     li
-      list-style none
-    &.single li
-      line-height userInfoAvatarSize
-      vertical-align top
+      line-height 1
+    &.single
+      margin-top 0
+      li
+        line-height userInfoAvatarSize
+        vertical-align top
 
   @media only screen and (max-width: 767px)
     margin-top 0
-    margin-right 40px
+    margin-right 0
     ul
       li
         display block
@@ -309,167 +310,9 @@ userInfoAvatarSizeMobile = 25px
 
   a
     &.subdued
-      color gray4
+      color greigh4
       font-size 14px
 
-
-  #header-buttons
-    position absolute
-    right 20px
-    top 134px
-    z-index 7
-
-    @media only screen and (max-width: 1023px)
-      display none
-      width 140px
-      border 1px solid gray5
-      border-radius 4px
-      background white
-
-    @media only screen and (max-width: 767px)
-      top 120px
-
-    a
-      float left
-      display inline-block
-      height 31px
-      text-align center
-      margin 0
-      color text-color-subdued
-      padding 0 15px
-      font 600 13px/31px fonts
-      border 1px solid gray5
-      border-width 1px 0 1px 1px
-      background white
-
-      &:before
-        margin-right 8px
-        float left
-        margin-top 9px
-
-      &:hover
-        color background-color
-        border-color npmred
-        background npmred
-
-      @media only screen and (max-width: 1023px)
-        display block
-        float none
-        border-width 0 0 1px 0
-        text-align right
-
-      span
-        margin 0 0 0 5px
-
-      &.owner
-        color background-color
-        border-color npmred
-        background npmred
-
-        &:hover
-          color text-color-subdued
-          border-color gray5
-          background white
-
-      &:first-child
-        border-radius 4px 0 0 4px
-
-        @media only screen and (max-width: 1023px)
-          border-radius 0
-
-      &:last-child
-        border-radius 0 4px 4px 0
-        border-right 1px solid gray5
-
-        @media only screen and (max-width: 1023px)
-          border-width 0
-          border-radius 0
-
-  &.custom
-    &.dark
-      h1
-        color background-color
-
-      #user-info
-        color background-color
-
-        a, h6
-          color background-color
-
-    #header-buttons
-      @media only screen and (max-width: 1023px)
-        display none
-        width 140px
-        border 0
-        border-radius 4px
-        background white
-
-      a
-        float left
-        display inline-block
-        height 31px
-        text-align center
-        margin 0 0 0 1px
-        color background-color
-        padding 0 15px
-        border 0
-        font 600 13px/31px fonts
-        background rgba(255,255,255,.4)
-
-        &:hover
-          color gray2
-          background white
-
-        @media only screen and (max-width: 1023px)
-          display block
-          float none
-          border-bottom 0
-          margin 0
-          text-align right
-          color gray2
-
-          &:first-child
-            border-radius 4px 4px 0 0
-
-          &:last-child
-            border-width 0
-            border-radius 0 0 4px 4px
-
-          &:hover
-            color background-color
-            background npmred
-
-        &.owner
-          background white
-          color gray2
-
-          &:hover
-            color background-color
-            background gray2
-
-  #mobile-header-buttons
-    display none
-    position absolute
-    right 20px
-    top 134px
-    display inline-block
-    height 31px
-    padding 0 10px
-    font 600 25px/17px fonts
-    color gray2
-    text-align center
-    border 1px solid gray5
-    background white
-    border-radius 4px
-
-    @media only screen and (max-width: 767px)
-      top 120px
-      display block
-
-  &.custom #mobile-header-buttons
-    border 0
-    color background-color
-    background rgba(255,255,255,.4)
 
 // Search Auto Suggest
 
@@ -478,7 +321,7 @@ userInfoAvatarSizeMobile = 25px
   top 47px
   left -1px
   width 89%
-  border 1px solid gray5
+  border 1px solid greigh5
   border-width 0 1px 1px
   border-radius 0 0 2px 2px
   font 600 13px/18px fonts
@@ -504,7 +347,7 @@ userInfoAvatarSizeMobile = 25px
 
   #auto-suggest-nav
     padding 8px 0 0 20px
-    border-bottom 1px solid gray5
+    border-bottom 1px solid greigh5
 
     a
       display inline-block
@@ -517,7 +360,7 @@ userInfoAvatarSizeMobile = 25px
       &:hover, &.active
         color text-color
         padding 0 0 10px
-        border-bottom 2px solid gray
+        border-bottom 2px solid greigh
 
   dl
 
@@ -534,7 +377,7 @@ userInfoAvatarSizeMobile = 25px
     dd
       color text-color
       padding 8px 20px
-      border-bottom 1px solid gray5
+      border-bottom 1px solid greigh5
 
       span
         float right
@@ -549,4 +392,4 @@ userInfoAvatarSizeMobile = 25px
 
 #auto-suggest-bottom
   padding 10px 20px
-  background gray6
+  background greigh6

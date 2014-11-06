@@ -1,21 +1,26 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <title>{{#if title}}{{title}}{{#if q}}{{q}}{{/if}}{{else}}npm{{/if}}</title>
 
-  <title>{{#if title }}{{title}}{{#if q}}{{q}}{{/if}}{{else}}npm{{/if}}</title>
+  {{#if package}}
+    <meta name="description" content="{{package.description}}">
+    <meta name="keywords" content="{{package.keywords}}">
+    <meta name="twitter:url" content="{{canonicalURL}}">
+    <meta name="twitter:title" content="npm: {{package.name}}">
+    <meta name="twitter:description" content="{{package.description}}">
+  {{/if}}
 
   <meta charset="utf-8">
-  <meta name="description" content="">
-  <meta name="HandheldFriendly" content="True" />
-  <meta name="lOptimized" content="width" />
   <meta http-equiv="cleartype" content="on" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1,user-scalable=yes">
 
+  <link rel="shortcut icon" href="/static/misc/favicon.ico">
   <link rel="canonical" href="{{canonicalURL}}">
   <link type="text/css" rel="stylesheet" media="all" href="/static/css/index.css">
   <link rel="search" type="application/opensearchdescription+xml" href="/static/opensearch.xml" title="Search Packages">
-  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700|Source+Code+Pro:400,600,700' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700' rel='stylesheet' type='text/css'>
 
   <script defer src="/static/js/index.js"></script>
   <script defer src="/static/js/vendor.min.js"></script>
@@ -28,22 +33,19 @@
 
   <nav>
     <div class="container">
-      <h2><a href="#" id="npm-expansions">node package manager</a></h2>
-
-      <a href="/" id="mobile-home">home</a>
-      <a href="/packages">packages</a>
-      <!-- <a href="#">collections</a> -->
-      <!-- <a href="#">ecosystems</a> -->
-      <!-- <a href="#">authors</a> -->
-      <!-- <a href="#">resources</a> -->
-      <a href="/npme-beta">npm Enterprise</a>
-      <a href="https://www.npmjs.org/doc">documentation</a>
+      <h2>
+        <a href="#" id="npm-expansions">node package manager</a>
+      </h2>
+      <a href="/enterprise">npm Enterprise</a>
+      <a href="https://docs.npmjs.com">documentation</a>
+      <a href="http://blog.npmjs.org/">blog</a>
+      <a href="mailto:support@npmjs.com">support</a>
     </div>
   </nav>
 
   <header class="no-nav">
     <div class="container">
-      <a href="/" id="npm-logo"><img src="/static/img/npm-logo.png" alt="npm logo" /></a>
+      <a href="/" id="npm-logo"><img src="/static/images/npm-logo.png" alt="npm logo" /></a>
 
       <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
         {{#if user}}
@@ -53,7 +55,7 @@
             <li><a href="/logout" class="subdued">log out</a></li>
           </ul>
         {{else}}
-          <a href="/login"><img src="/static/img/wombat-avatar.png" id="user-avatar" /></a>
+          <a href="/login"><img src="/static/images/wombat-avatar.png" id="user-avatar" /></a>
           <ul class="single">
             <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
           </ul>
@@ -61,12 +63,11 @@
         {{/if}}
       </div>
 
-      <a href="#" id="mobile-menu">menu</a>
       <form id="npm-search" action="/search" method="get">
-        <input name="q" type="search" id="site-search" placeholder="search packages" tabindex="1"/>
+        <input name="q" value="{{q}}" type="search" id="site-search" placeholder="search packages" tabindex="1"/>
         <input type="submit" id="site-search-submit" />
       </form>
-      {{#if title}}<h1>{{title}}{{#if q}}<em>{{q}}</em>{{/if}}</h1>{{/if}}
+
     </div>
   </header>
 
@@ -75,33 +76,25 @@
   </div>
 
   <footer>
+
     <div class="container">
-      <img src="/static/img/npm-footer-logo.png" id="footer-logo" />
-      <p>
-        <span>npm stuff</span>
-        <a href="#">faq</a>
-        <a href="#">readme</a>
-        <a href="#">npm bugs</a>
-        <a href="#">website bugs</a>
-        <a href="#">node.js home</a>
-        <a href="#">blog</a>
-        <a href="#">mailing list</a>
-        <a href="#">more about this site</a>
-      </p>
-      <p>
-        <span>legal stuff</span>
-        <a href="#">privacy policy</a>
-        <a href="#">terms &amp; conditions</a>
-        <a href="#">handling disputes</a>
-        <a href="#">license</a>
-        <a href="#">website issues</a>
-        <a href="#">status</a>
-      </p>
-      <a href="#" id="npm-loves-you">npm loves you</a>
+      <ul class="links">
+        <li><a href="https://docs.npmjs.com">Documentation</a></li>
+        <li><a href="https://nodejs.org">Node.js Home</a></li>
+        <li><a href="http://blog.npmjs.org">Blog</a></li>
+        <li><a href="https://twitter.com/npmjs">Twitter</a></li>
+        <li><a href="https://github.com/npm">GitHub</a></li>
+        <li><a href="https://github.com/npm/policies#readme">Policies</a></li>
+        <li><a href="http://status.npmjs.org">Status</a></li>
+        <li><a href="mailto:support@npmjs.com">Support</a></li>
+      </ul>
     </div>
 
-  </footer>
+    <a href="/" id="npm-loves-you">
+      npm loves you
+    </a>
 
+  </footer>
 </body>
 </html>
 

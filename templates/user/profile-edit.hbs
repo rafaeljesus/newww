@@ -1,76 +1,53 @@
-<div id="secondary-nav">
-  <div class="container">
-    <a class="active tab" data-tab="profile">edit your profile</a>
-    <a href="/email-edit" class="tab" data-tab="edit-email">edit email</a>
-    <a href="/password" class="tab" data-tab="password">change password</a>
-    {{!-- <a href="#" class="tab" data-tab="edit-order">edit package/collection order</a> --}}
-  </div>
-</div> <!-- / #secondary-nav -->
+{{> profile-secondary-nav}}
 
-<form class="container tab-content" data-tab="profile" method="post" action="/profile-edit">
-  <div class="layout-left">
+<div class="container narrow">
+
+  <hgroup>
+    <h1>Edit your Profile</h1>
+  </hgroup>
+
+  <form data-tab="profile" method="post" action="/profile-edit">
 
     {{#with user}}
-      <h2>personal information</h2>
 
-      <div class="layout-left half">
-        <input type="hidden" name="_id" value="{{_id}}">
-        <input type="hidden" name="name" value="{{name}}">
+      <input type="hidden" name="_id" value="{{_id}}">
+      <input type="hidden" name="name" value="{{name}}">
 
-        <label for="fullname">full name</label>
-        <input type="text" id="fullname" name="fullname" value="{{fullname}}">
-        <p class="help-text">Ex: wombat watson</p>
+      <label for="fullname">full name</label>
+      <input type="text" id="fullname" name="fullname" value="{{fullname}}">
+      <p class="help-text example">wombat watson</p>
 
-        <a href="/email-edit" class="email-label">email address</a>
-        <a href="/email-edit" class="email-field">
-          <input type="text" id="email" name="email" value="{{email}}" disabled='disabled'>
-        </a>
+      <a href="/email-edit" class="email-label">email address</a>
+      <a href="/email-edit" class="email-field">
+        <input type="text" id="email" name="email" value="{{email}}" disabled='disabled'>
+      </a>
 
-      </div> <!-- / .layout-left.half -->
+      <label for="homepage">homepage</label>
+      <input type="text" id="homepage" name="homepage" value="{{homepage}}">
+      <p class="help-text example">wombats-rule.com</p>
 
-      <div class="layout-right half">
+      <label for="github">github</label>
+      <input type="text" id="github" name="github" value="{{github}}">
+      <p class="help-text example">wombat</p>
 
-        <label for="homepage">homepage</label>
-        <input type="text" id="homepage" name="homepage" value="{{homepage}}">
-        <p class="help-text">Ex: www.wombats-rule.com</p>
+      <label for="twitter">twitter</label>
+      <input type="text" id="twitter" name="twitter" value="{{twitter}}">
+      <p class="help-text example">wombat</p>
 
-      </div> <!-- / .layout-right.half -->
+      <label for="freenode">freenode</label>
+      <input type="text" id="freenode" name="freenode" value="{{freenode}}">
+      <p class="help-text example">wombat</p>
 
-      <hr />
-
-      <h2>social</h2>
-
-      <div class="layout-left half">
-        <label for="github">github</label>
-        <input type="text" id="github" name="github" value="{{github}}">
-        <p class="help-text">Ex: wombat</p>
-
-        <label for="twitter">twitter</label>
-        <input type="text" id="twitter" name="twitter" value="{{twitter}}">
-        <p class="help-text">Ex: @wombat</p>
-      </div> <!-- / .layout-left.half -->
-
-      <div class="layout-right half">
-        <label for="freenode">freenode</label>
-        <input type="text" id="freenode" name="freenode" value="{{freenode}}">
-        <p class="help-text">Ex: wombat</p>
-      </div> <!-- / .layout-right.half -->
     {{/with}}
 
-  <input type="hidden" name="crumb" value="{{crumb}}"/>
-  <input type="submit" value="save" />
-  </div> <!-- / .layout-left -->
+    <input type="hidden" name="crumb" value="{{crumb}}"/>
+    <input type="submit" value="save" class="full-width">
 
+  </form>
 
-  <div class="layout-right">
-    <h4>where is my avatar?</h4>
-    <div class="box">
-      <p><strong>How do I change my avatar?</strong> We use Gravatar to manage all our avatars. Head on over to Gravatar to add yours and it will magically show up on npm!</p>
-      <div class="box-action">
-        <strong>create an avatar at</strong> <a href="#">gravatar.com</a>
-      </div>
-    </div> <!-- / .box -->
-  </div> <!-- / .layout-right -->
-</form> <!-- / .container -->
+  <p class="change-avatar">
+    <a href="https://en.gravatar.com/emails/"><img src="{{user.avatarMedium}}"></a>
+    Change your avatar at <a href="https://en.gravatar.com/emails/">gravatar.com</a>
+  </p>
 
-
+</div>

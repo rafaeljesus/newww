@@ -108,7 +108,7 @@ module.exports = function (request, reply) {
           addMetric({ name: 'showPackage', package: request.params.package });
 
           // Return raw context object if `json` query param is present
-          if (process.env.NODE_ENV === "dev" && Object.keys(request.query).indexOf('json') > -1) {
+          if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {
             return reply(opts);
           }
 

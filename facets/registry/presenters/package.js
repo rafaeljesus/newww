@@ -92,6 +92,9 @@ module.exports = function package (data, cb) {
   // Infer GitHub API URL from bugs URL
   if (data.bugs && data.bugs.url && gh(data.bugs.url)) {
     data.ghapi = gh(data.bugs.url).api_url
+    data.pull_requests = {
+      url: data.bugs.url.replace(/issues/, "pulls")
+    }
   }
 
   // Get star count

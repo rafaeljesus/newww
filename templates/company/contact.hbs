@@ -1,0 +1,91 @@
+<div class="content">
+
+  <section id="readme">
+    <hgroup>
+      <h1>Contact</h1>
+      <h2>We're building a bunch of awesome products. If you're interested in working with us, or have a burning feature request you want to talk about, then let us know.</h2>
+
+      <h2>Need support? Get a hold of us via twitter, email, or IRC using one of the options in the <a href="#need-help">Need Help?</a> section!</h2>
+    </hgroup>
+
+
+    {{#if sent}}
+      <p>Thanks for reaching out! One of us will get back to you as soon as possible.</p>
+
+    {{else}}
+      <form class="narrow" action="/send-contact" method="post">
+        <label for="name">Name</label>
+        <input type="text" required="required" id="name" name="name">
+
+        <label for="email">Email Address</label>
+        <input type="email" required="required" id="email" name="email">
+
+        <label for="subject">Subject</label>
+        <input type="text" required="required" id="subject" name="subject">
+
+
+        {{!-- need to figure out how to keep the buttons accessible! --}}
+
+        <div class="inquire">
+          This is a&nbsp;
+          <input id="inquire-general" name="inquire" value="general" type="radio" checked tabindex="0"><label for="inquire-general" class="btn">General</label><input id="inquire-support" name="inquire" value="support" type="radio" tabindex="0"><label for="inquire-support" class="btn">Support</label>
+          &nbsp;inquiry.
+        </div>
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message" value=""></textarea>
+
+        <input type="submit" class="full-width" value="Submit" />
+
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+      </form>
+    {{/if}}
+
+  </section>
+
+</div>
+
+<div class="sidebar">
+
+  <h3 id="need-help">Need Help?</h3>
+  <ul class="box">
+    <li>
+      Tweet at us at <a href="https://twitter.com/npm_support">@npm_support</a>
+    </li>
+    <li>
+      Send us <a href="mailto:support@npmjs.com">an email</a>
+    </li>
+    <li class="freenode">
+      Chat with us in <a href="irc://chat.freenode.net/npm">#npm</a> on freenode
+    </li>
+  </ul>
+
+  <h3>Get in Touch</h3>
+  <ul class="box">
+    <li>
+      <a href="https://twitter.com/npmjs">@npmjs</a> for general
+    </li>
+    <li class="address">
+      <a href="https://goo.gl/maps/JXngp">npm, Inc.</a><br/>
+      200 Frank Ogawa Plaza<br/>
+      Floor 5<br/>
+      Oakland CA 94612<br/>
+    </li>
+  </ul>
+
+  <h3>Maintainers</h3>
+  <ul class="maintainers">
+    {{#each maintainers}}
+      <li>
+        <a href="/~{{username}}">
+          {{#if avatar}}<img src="{{avatar}}">{{/if}}
+          <span>{{username}}</span>
+        </a>
+      </li>
+    {{/each}}
+  </ul>
+
+  {{> hiring hiring}}
+
+</div>

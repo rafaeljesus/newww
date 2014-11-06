@@ -6,13 +6,14 @@
   max-width fullColumnWidth
   margin 0 auto
   padding 0 20px
-  &.narrow
-    max-width narrowColumnWidth
 
   &:after
     content: ""
     display table
     clear both
+
+.narrow
+  max-width narrowColumnWidth
 
 .content
   float left
@@ -113,6 +114,10 @@ ul.columnar
 
     &:last-child
       border-bottom none
+
+    &.address
+      line-height 1.5
+      padding-top 0.5em
 
 .pagination
   margin 50px 0
@@ -239,3 +244,25 @@ p.error
   margin 1em 0
   p
     margin 0
+
+.inquire
+  margin-bottom 0.5em
+
+  input[type='radio']
+    width 0.1px
+
+    &:checked + label
+      background-color npmred
+      color white
+      border 1px solid npmred
+
+    &:hover + label
+      background-color greigh2
+      color white
+      border 1px solid greigh2
+
+  input[type='radio'] + label
+    margin 0 1px 0 -8px
+    background-color background-color
+    border 1px solid greigh3
+    color greigh3

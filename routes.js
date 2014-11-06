@@ -56,6 +56,18 @@ var routes = module.exports = [
     method: "GET",
     handler: require('./facets/company/show-about')(config.company)
   },{
+    path: "/contact",
+    method: "GET",
+    handler: require('./facets/company/show-contact')
+  },{
+    path: "/send-contact",
+    method: "POST",
+    handler: require('./facets/company/show-send-contact')(config.user.mail)
+  },{
+    path: "/support",
+    method: "GET",
+    handler: require('./facets/company/show-contact')
+  },{
     path: "/policies/{policy?}",
     method: "GET",
     handler: require('./facets/company/show-policy')

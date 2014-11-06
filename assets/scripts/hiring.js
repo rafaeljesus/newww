@@ -1,11 +1,20 @@
 var $ = require("jquery")
-var template = require("../templates/hiring.hbs")
+var templates = {
+  sidebar: require("../templates/hiring-sidebar.hbs"),
+  full: require("../templates/hiring-full.hbs"),
+}
 
 var fetchCompanies = function() {
-  var container = $("data^=hiring")
+  var container = $(".hiring-container")
   if (!container.length) return
 
-  $.getJSON("https://npm-partners.herokuapp.com/hiring?limit=3")
+  if (!container.data() || !container.data().template) {
+    return console.error("container must specify a template")
+  }
+
+  var template = templates[container.data().template]
+
+  $.getJSON("https://partners.npmjs.com/hiring")
     .done(function(companies) {
       container.html(template({companies: companies}))
     })

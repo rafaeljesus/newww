@@ -177,8 +177,8 @@ Be wary of comments. They may be a sign of unnecessary complexity.
 
 ## Quotes
 
-Quotes for URLs and multi-word font names are optional in CSS, we find quotes to be
-visually clearer.
+While quotes for URLs and multi-word font names are optional in CSS, we find quotes to be
+visually clearer. Please used double quotes instead of single quotes.
 
 ```css
 /* good */
@@ -191,6 +191,12 @@ visually clearer.
 {
   background-image: url(/img/you.jpg);
   font-family: Helvetica Neue Light, Helvetica Neue, Helvetica, Arial;
+}
+
+/* bad */
+{
+  background-image: url('/img/you.jpg');
+  font-family: 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial;
 }
 ```
 

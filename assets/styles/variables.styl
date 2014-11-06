@@ -1,7 +1,4 @@
-fonts = "Source Sans Pro", "Lucida Grande", sans-serif
-codefonts = Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace
-
-npmred = #cb3837
+// Colors
 
 greigh0 = rgba(black, 1)
 greigh1 = rgba(black, 0.9)
@@ -13,26 +10,24 @@ greigh6 = rgba(black, 0.08)
 greigh7 = rgba(black, 0.04)
 greigh8 = rgba(black, 0.02)
 
-green = #07A700
-orange = #ff7900
-yellow = #f3b600
-
+npmred = #cb3837
 background-color = white
 text-color = greigh3
 text-color-subdued = greigh4
-footer-text-color = rgba(white, 0.5)
+error-color = rgba(255, 246, 195, 0.78)
 
+// Dimensions
+
+packageWidgetHeadingHeight = 20px
 maintainerAvatarSize = 90px
 userAvatarSize = 50px
 starHeight = 16px
 userInfoAvatarSize = 45px
 userInfoAvatarSizeMobile = 25px
-
 fullColumnWidth = 1180px
 narrowColumnWidth = 420px
-
 errorColor = rgba(255, 246, 195, 0.78)
-adColor = rgba(255, 246, 195, 0.35)
+mobileMaxWidth = 767px
 
 // @extend Classes
 
@@ -48,7 +43,7 @@ adColor = rgba(255, 246, 195, 0.35)
   overflow-x hidden
   text-overflow ellipsis
 
-.unstyledTextInput
+.unstyled-text-input
   border none
   outline none
   background none
@@ -60,6 +55,12 @@ adColor = rgba(255, 246, 195, 0.35)
     color npmred
 
 // Mixins
+
+normal-font()
+  font-family 'Source Sans Pro', 'Lucida Grande', sans-serif
+
+code-font()
+  font-family Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace
 
 columns(n)
   -webkit-columns n

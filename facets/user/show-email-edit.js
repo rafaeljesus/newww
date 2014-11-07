@@ -20,7 +20,7 @@ module.exports = function (options) {
 
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+
       namespace: NAMESPACE
     };
 
@@ -98,7 +98,7 @@ module.exports = function (options) {
 function handle (request, reply, email2) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+
     namespace: NAMESPACE
   };
 
@@ -148,7 +148,7 @@ function handle (request, reply, email2) {
 function sendEmails (conf, rev, request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+
     namespace: NAMESPACE
   };
 
@@ -214,7 +214,6 @@ function confirm (request, reply) {
 
   var opts = {
         user: request.auth.credentials,
-        hiring: methods.hiring.getRandomWhosHiring(),
         namespace: NAMESPACE
       },
       cache = request.server.app.cache;
@@ -286,7 +285,6 @@ function revert (request, reply) {
 
   var opts = {
         user: request.auth.credentials,
-        hiring: methods.hiring.getRandomWhosHiring(),
         namespace: NAMESPACE
       },
       cache = request.server.app.cache;

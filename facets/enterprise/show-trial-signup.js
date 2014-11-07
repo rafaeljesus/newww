@@ -18,7 +18,7 @@ module.exports = function trialSignup (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
   };
 
@@ -54,7 +54,7 @@ function createTrial (request, reply, customer) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
   };
 
@@ -72,7 +72,7 @@ function sendVerificationEmail (request, reply, customer, trial) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
   };
 

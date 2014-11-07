@@ -15,7 +15,7 @@ module.exports = function (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: 'registry-star',
     isXhr: true
   };

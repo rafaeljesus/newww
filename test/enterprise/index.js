@@ -33,7 +33,6 @@ describe('Getting to the enterprise page', function () {
 
   it('has all the pieces', function (done) {
     expect(ctx.title).to.equal('npm Enterprise');
-    expect(ctx.hiring).to.exist;
     done();
   });
 });

@@ -362,7 +362,6 @@ function fallback(request, reply) {
   var route = request.params.p,
     opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.hiring.getRandomWhosHiring()
     };
 
   request.server.methods.corp.getPage(route, function(err, content) {

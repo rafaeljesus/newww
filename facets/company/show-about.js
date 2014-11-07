@@ -23,7 +23,7 @@ module.exports = function About (options) {
     var opts = {
       user: request.auth.credentials,
       title: 'About',
-      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      
       package: options.package,
       dependencies: deps,
       HEAD: options.HEAD,

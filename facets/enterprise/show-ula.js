@@ -13,7 +13,7 @@ module.exports = function createHubspotLead (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
   };
 
@@ -41,7 +41,7 @@ function getOrCreateCustomer (request, reply, data) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
   };
 

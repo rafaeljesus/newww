@@ -16,7 +16,6 @@ module.exports = [
     options: config.couch
   },
   require('../services/registry'),
-  require('../services/whoshiring'),
   require('../services/corporate'),
   require('../services/errors'),
   {

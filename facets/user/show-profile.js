@@ -18,7 +18,7 @@ module.exports = function(options) {
 
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      
       namespace: 'user-profile'
     };
 

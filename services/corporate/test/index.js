@@ -1,16 +1,17 @@
-var Lab = require('lab'),
-    describe = Lab.experiment,
-    before = Lab.before,
-    it = Lab.test,
-    expect = Lab.expect;
 
-var Hapi = require('hapi'),
+var Lab = require('lab'),
+    lab = exports.lab = Lab.script(),
+    describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
+    it = lab.test,
+    expect = Lab.expect,
+    Hapi = require('hapi'),
     corporate = require('../index.js'),
     nock = require('nock'),
     metricsConfig = require('../../../config').metrics,
-    MetricsClient = require('newww-metrics');
-
-var server;
+    MetricsClient = require('newww-metrics'),
+    server;
 
 before(function (done) {
   server = Hapi.createServer('localhost', '8123');

@@ -4,8 +4,7 @@ var metrics = require('newww-metrics')();
 
 module.exports = function (request, reply) {
   var opts = {
-    user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring()
+    user: request.auth.credentials
   };
 
   var timer = { start: Date.now() };

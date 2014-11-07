@@ -16,7 +16,7 @@ module.exports = function contactMe (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
   };
 

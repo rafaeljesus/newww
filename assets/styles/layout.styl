@@ -16,27 +16,23 @@
 
 .content
   float left
-  width 60%
+  max-width fullColumnWidth - sidebarMaxWidth - 100px
   margin-bottom 90px
 
-  @media only screen and (max-width: 1024px)
-    width 57%
-
-  @media only screen and (max-width: mobileMaxWidth)
+  @media only screen and (max-width: fullColumnWidth)
     float none
-    width 100%
-
-  &.half
-    width 48%
-
-    @media only screen and (max-width: mobileMaxWidth)
-      float none
-      width 100%
+    max-width 100%
+    margin-bottom 40px
 
 .sidebar
   float right
   margin-top 40px
-  max-width 320px
+  max-width sidebarMaxWidth
+  @media only screen and (max-width: fullColumnWidth)
+    max-width 100%
+    float none
+    clear both
+    overflow hidden
 
 ul.columnar
   @extend .vanilla-list

@@ -12,7 +12,7 @@ label
 
 textarea
   border 1px solid greigh5
-  margin 0 0 50px
+  margin 0 0
   padding 3%
   width 100%
   min-height 300px
@@ -25,6 +25,7 @@ input[type=text],
 input[type=search],
 input[type=email],
 input[type=password]
+  -webkit-appearance none
   normal-font()
   font-size 16px
   display block
@@ -95,6 +96,23 @@ form p
 
     &:hover
       color greigh2
+
+
+.radio-group
+  margin 25px 0
+
+  &.floaty
+    @extend .no-float
+    input
+      vertical-align text-bottom
+    label
+      display block
+      float left
+      margin-right 50px
+      text-transform none
+      font-weight 400
+      height 30px
+      line-height 30px
 
 changeAvatarSize = 40px
 p.change-avatar

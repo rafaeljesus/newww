@@ -1,19 +1,16 @@
 <div class="content">
 
-  <section id="readme">
+    <section id="readme">
     <hgroup>
-      <h1>Contact</h1>
+      <h1>Contact Us</h1>
       <h2>We're building a bunch of awesome products. If you're interested in working with us, or have a burning feature request you want to talk about, then let us know.</h2>
-
-      <h2>Need support? Get a hold of us via twitter, email, or IRC using one of the options in the <a href="#need-help">Need Help?</a> section!</h2>
     </hgroup>
-
 
     {{#if sent}}
       <p>Thanks for reaching out! One of us will get back to you as soon as possible.</p>
 
     {{else}}
-      <form class="narrow" action="/send-contact" method="post">
+      <form action="/send-contact" method="post">
         <label for="name">Name</label>
         <input type="text" required="required" id="name" name="name">
 
@@ -23,22 +20,21 @@
         <label for="subject">Subject</label>
         <input type="text" required="required" id="subject" name="subject">
 
+        <label for="message">Message</label>
+        <textarea id="message" name="message"></textarea>
 
-        {{!-- need to figure out how to keep the buttons accessible! --}}
+        <div class="radio-group floaty">
+          <label for="inquire-general">
+            <input id="inquire-general" name="inquire" value="general" type="radio" checked> This is a general inquiry
+          </label>
 
-        <div class="inquire">
-          This is a&nbsp;
-          <input id="inquire-general" name="inquire" value="general" type="radio" checked tabindex="0"><label for="inquire-general" class="btn">General</label><input id="inquire-support" name="inquire" value="support" type="radio" tabindex="0"><label for="inquire-support" class="btn">Support</label>
-          &nbsp;inquiry.
+          <label for="inquire-support">
+            <input id="inquire-support" name="inquire" value="support" type="radio"> I need help with something
+          </label>
         </div>
 
-        <label for="message">Message</label>
-        <textarea id="message" name="message" value=""></textarea>
-
-        <input type="submit" class="full-width" value="Submit" />
-
-        <input type="hidden" name="crumb" value="{{crumb}}"/>
-
+        <input type="hidden" name="crumb" value="{{crumb}}">
+        <input type="submit" class="full-width" value="Submit">
       </form>
     {{/if}}
 
@@ -48,13 +44,13 @@
 
 <div class="sidebar">
 
-  <h3 id="need-help">Need Help?</h3>
+  <h3>Need Help?</h3>
   <ul class="box">
     <li>
-      Tweet at us at <a href="https://twitter.com/npm_support">@npm_support</a>
+      <a href="https://twitter.com/npm_support">npm_support</a>
     </li>
     <li>
-      Send us <a href="mailto:support@npmjs.com">an email</a>
+      Email us at <a class="icon-support" href="mailto:support@npmjs.com">support@npmjs.com</a>
     </li>
     <li class="freenode">
       Chat with us in <a href="irc://chat.freenode.net/npm">#npm</a> on freenode
@@ -88,7 +84,5 @@
       </li>
     {{/each}}
   </ul>
-
-  {{> hiring hiring}}
 
 </div>

@@ -121,9 +121,13 @@ module.exports = function (options) {
         singleResult: response.hits.total === 1,
         prevPage: page > 0 ? page - 1 : null,
         nextPage: response.hits.total >= (perPage * page) ? page + 1 : null
-      })
+      });
 
-      opts.paginate = opts.prevPage || opts.nextPage
+      opts.prevUrl = opts.prevPage && "/search?q=" + opts.q + "&page=" + opts.prevPage;
+      opts.nextUrl = opts.nextPage && "/search?q=" + opts.q + "&page=" + opts.nextPage;
+      opts.currUrl = "/search?q=" + opts.q + "?page=" + opts.page;
+
+      opts.paginate = opts.prevPage || opts.nextPage;
 
       // Return raw context object if `json` query param is present
       if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {

@@ -1,9 +1,10 @@
 var sanitizer = require('sanitizer'),
     Hapi = require('hapi'),
     log = require('bole')('registry-browse'),
+    merge = require('lodash').merge
     metrics = require('newww-metrics')();
 
-var pageSize = 100;
+var pageSize = 60;
 var possibleTypes = ['all', 'keyword', 'author', 'updated', 'depended', 'star', 'userstar'];
 
 module.exports = function (request, reply) {
@@ -72,7 +73,7 @@ module.exports = function (request, reply) {
       value: key
     });
 
-    opts.browse = {
+    merge(opts, {
       items: items,
       page: page,
       prevPage: page > 0 ? page - 1 : null,
@@ -81,7 +82,17 @@ module.exports = function (request, reply) {
       browseby: browseby,
       type: type,
       arg: type === 'keyword' ? JSON.stringify(sarg) : sarg
-    };
+    });
+
+    opts.prevUrl = opts.prevPage && "/browse/" + opts.browseby + "?page=" + opts.prevPage;
+    opts.nextUrl = opts.nextPage && "/browse/" + opts.browseby + "?page=" + opts.nextPage;
+
+    opts.paginate = opts.prevPage || opts.nextPage;
+
+    // Return raw context object if `json` query param is present
+    if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {
+      return reply(opts);
+    }
 
     return reply.view('registry/browse', opts);
   });

@@ -18,7 +18,7 @@ module.exports = function signup (request, reply) {
   var opts = {
     user: request.auth.credentials,
     errors: [],
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+
     namespace: 'user-signup'
   };
 
@@ -101,25 +101,3 @@ module.exports = function signup (request, reply) {
     return reply.view('user/signup-form', opts);
   }
 };
-
-// function showError (request, reply, message, code, logExtras) {
-//   var errId = uuid.v1();
-
-//   var opts = {
-//     user: request.auth.credentials,
-//     errId: errId,
-//     code: code || 500,
-//     hiring: request.server.methods.hiring.getRandomWhosHiring()
-//   };
-
-//   var error;
-//   if (code === 403) {
-//     error = Hapi.error.forbidden(message);
-//   } else {
-//     error = Hapi.error.internal(message);
-//   }
-
-//   log.error(errId + ' ' + error, logExtras);
-
-//   return reply.view('user/error', opts).code(code || 500);
-// }

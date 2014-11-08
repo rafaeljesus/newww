@@ -30,9 +30,4 @@ describe('Getting to the whoshiring page', function () {
     });
   });
 
-  it('has all the pieces', function (done) {
-    expect(source.context.hiring).to.exist;
-    expect(source.context.companies).to.exist;
-    done();
-  });
 });

@@ -21,7 +21,7 @@ module.exports = function login (request, reply) {
   }
 
   var opts = {
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: 'user-login'
   };
 

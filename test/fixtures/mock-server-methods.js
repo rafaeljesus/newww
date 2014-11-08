@@ -4,7 +4,6 @@ var crypto = require('crypto');
 
 var browse = require('./browseData');
 var enterprise = require('./enterprise-data');
-var whosHiring = require('./whosHiring');
 var users = require('./users');
 var pkgs = {
       fake: require('./fake.json'),
@@ -79,16 +78,6 @@ module.exports = function (server) {
 
           return reply.view(template, opts).code(code);
         }
-      }
-    },
-
-    hiring: {
-      getAllWhosHiring: function () {
-        return whosHiring.all;
-      },
-
-      getRandomWhosHiring: function () {
-        return whosHiring.random;
       }
     },
 

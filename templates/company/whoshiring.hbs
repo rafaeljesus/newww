@@ -1,13 +1,10 @@
-<h1>{{t "company.whoshiring.title"}}</h1>
-<h2>{{t "company.whoshiring.subtitle"}}</h2>
+<hgroup>
+  <h1>{{t "company.whoshiring.title"}}</h1>
+  <h2>{{t "company.whoshiring.subtitle"}}</h2>
+</hgroup>
 
-<ul class="columnar">
-  {{#each companies}}
-    <li>
-      <a href="{{url}}"><img src="{{logo_url}}">{{name}}</a>
-      <p>{{{description}}}</p>
-    </li>
-  {{/each}}
-</ul>
+<div class="hiring-container" data-template="full"></div>
 
-<p>{{{t "company.whoshiring.addCompany"}}}</p>
+<p class="center">
+  {{{t "company.whoshiring.addCompany"}}}
+</p>

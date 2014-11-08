@@ -35,7 +35,6 @@ describe('Getting to the home page', function () {
     expect(source.context.depended).to.exist;
     expect(source.context.starred).to.exist;
     expect(source.context.authors).to.exist;
-    expect(source.context.hiring).to.exist;
     done();
   });
 });

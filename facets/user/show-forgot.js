@@ -22,7 +22,7 @@ module.exports = function (options) {
 
     var opts = {
       user: request.auth.credentials,
-      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      
       namespace: NAMESPACE
     };
 
@@ -66,7 +66,7 @@ module.exports = function (options) {
 function token (request, reply) {
   var opts = {
         user: request.auth.credentials,
-        hiring: request.server.methods.hiring.getRandomWhosHiring(),
+        
         namespace: NAMESPACE
       },
       cache = request.server.app.cache,
@@ -128,7 +128,7 @@ function token (request, reply) {
 function handle(request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
    };
 
@@ -171,7 +171,7 @@ function handle(request, reply) {
 function lookupUserByEmail (email, request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
    };
 
@@ -207,7 +207,7 @@ function lookupUserByEmail (email, request, reply) {
 function lookupUserByUsername (name, request, reply) {
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
    };
 
@@ -257,7 +257,7 @@ function sendEmail(name, email, request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    hiring: request.server.methods.hiring.getRandomWhosHiring(),
+    
     namespace: NAMESPACE
   };
 

@@ -8,7 +8,7 @@ ga('require', 'displayfeatures');
 ga('send', 'pageview');
 
 $(document).ready(function () {
-  $('.hiring a').click(function (e) {
+  $('.ad a').click(function (e) {
     var id = $(this).parent().data('id')
     ga('send', 'event', 'Hiring Ads', 'click', id)
   })

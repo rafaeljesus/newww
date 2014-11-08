@@ -16,7 +16,7 @@ module.exports = function (options) {
 
     var opts = {
       user: transform(request.auth.credentials, options),
-      hiring: request.server.methods.hiring.getRandomWhosHiring(),
+      
       namespace: 'user-profile-edit'
     }
 

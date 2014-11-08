@@ -33,7 +33,6 @@ describe('Getting to the home page', function () {
 
   it('has all the pieces', function (done) {
     expect(ctx.title).to.equal('About');
-    expect(ctx.hiring).to.exist;
     expect(ctx.package.name).to.equal('newww');
     expect(ctx.dependencies).to.be.an('Array');
     expect(ctx.contributors).to.be.an('Array');

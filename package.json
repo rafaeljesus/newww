@@ -16,6 +16,11 @@
     "type": "git",
     "url": "https://github.com/npm/newww"
   },
+  "browserify": {
+    "transform": [
+      "hbsfy"
+    ]
+  },
   "dependencies": {
     "accept-language-parser": "^1.0.2",
     "async-cache": "^0.1.5",
@@ -25,6 +30,7 @@
     "catbox": "^3.4.3",
     "catbox-redis": "^1.0.1",
     "cheerio": "^0.17.0",
+    "chunk": "0.0.2",
     "couch-login": "^1.0.1",
     "crumb": "^3.1.0",
     "deck": "0.0.4",
@@ -36,6 +42,7 @@
     "handlebars-helper-pluralize": "^1.0.1",
     "hapi": "6.4.0",
     "hapi-auth-cookie": "^1.0.3",
+    "hbsfy": "^2.2.0",
     "highlight.js": "^8.2.0",
     "hoek": "^2.4.1",
     "is-url": "^1.1.0",

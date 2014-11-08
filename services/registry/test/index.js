@@ -76,7 +76,7 @@ describe('browsing', function () {
 
   it('gets the top 10 most recently updated packages', function (done) {
     var couch = nock(config.registryCouch)
-        .get('/registry/_design/app/_view/browseUpdated?group_level=3&skip=0&limit=10&descending=true&stale=update_after')
+        .get('/registry/_design/app/_view/browseUpdated?group_level=5&skip=0&limit=10&descending=true&stale=update_after')
         .reply(200, require('./fixtures/browse').updated)
 
     server.methods.registry.getUpdated(0, 10, function (er, data) {

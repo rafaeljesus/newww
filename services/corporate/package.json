@@ -9,7 +9,7 @@
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
   "devDependencies": {
-    "lab": "^3.2.1",
+    "lab": "^4.0.0",
     "nock": "^0.42.3"
   }
 }

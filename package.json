@@ -50,7 +50,6 @@
     "joi": "^4.0.0",
     "jquery": "^2.1.1",
     "lab": "^4.5.1",
-    "leven": "^1.0.1",
     "marked": "^0.3.2",
     "moment": "^2.6.0",
     "murmurhash": "0.0.2",
@@ -70,6 +69,7 @@
     "sanitizer": "^0.1.1",
     "schemeless": "^1.0.0",
     "scooter": "^1.2.0",
+    "similarity": "^1.0.0",
     "stripe": "^2.7.3",
     "stylus": "^0.45.0",
     "validate-npm-package-name": "^1.0.0"

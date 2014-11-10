@@ -5,7 +5,7 @@ var marked = require('marked'),
     moment = require('moment'),
     url = require('url'),
     ghurl = require('github-url-from-git'),
-    distance = require('leven'),
+    similarity = require('similarity'),
     gh = require('github-url-to-object'),
     cheerio = require('cheerio'),
     log = require('bole')('registry-package-presenter');
@@ -327,63 +327,23 @@ function removeSuperfluousContentFromReadme (data) {
   if (typeof data.readme !== "string") return
   var $ = cheerio.load(data.readme)
 
-  // Remove the Express logo
-  var expressLogo = $("p:has(img[alt='Express Logo'])").first()
-  if (expressLogo) {
-    expressLogo.remove()
-    data.readme = $.html()
-  }
+  $("p:has(img[alt='Express Logo'])").addClass("superfluous")
+  $("p:has(img[src*='gulp-2x.png'])").addClass("superfluous")
+  $("a[href*='//nodei.co']").addClass("superfluous")
+  $("a:has(img[src*='img.shields.io'])").addClass("superfluous")
 
-  // Remove the Gulp logo
-  var gulpLogo = $("p:has(img[src*='gulp-2x.png'])").first()
-  if (gulpLogo) {
-    gulpLogo.remove()
-    data.readme = $.html()
-  }
-
-  // Remove first H1 if it matches package name
   var h1 = $('h1').first()
-  var namePattern = new RegExp(data.name, "i")
-  if (h1 && h1.text() && h1.text().match(namePattern)) {
-    h1.remove()
-    data.readme = $.html()
+  if (
+    similarity(data.name, h1.text()) > 0.6 ||
+    ~h1.text().toLowerCase().indexOf(data.name.toLowerCase())
+  ) {
+    h1.addClass("superfluous")
   }
 
-  // Remove the first paragraph if it's pretty close to the package description
-  //
-  // Specifically: If the levenshtein distance between the paragraph and the
-  // package.json description is less than a given % of the total description
-  // length, then remove the paragraph.
-  var p = $('p').first()
-  var namePattern = new RegExp(data.name, "i")
-  if (data.description && p && p.text()) {
-    var tolerance = 30 // %
-    var d = distance(p.text(), data.description)
-    var threshold = data.description.length*tolerance/100
-    if (d<threshold) p.remove()
-  }
-
-  // Remove nodei.co badges
-  var nodeicoBadges = $("a[href*='//nodei.co']")
-  if (nodeicoBadges) {
-    nodeicoBadges.remove()
-  }
-
-  // Remove shields.io badges, but save them in the context
-  // for potentional display elsewhere on the page
-  var shields = $("a:has(img[src*='img.shields.io'])")
-  if (shields) {
-    data.badges = []
-    shields.each(function(i, el) {
-      data.badges.push({
-        href: $(el).attr('href'),
-        img: $(el).find('img').attr('src')
-      })
-    })
-    shields.remove()
-    data.readme = $.html()
+  var p = $('p:not(.superfluous)').first()
+  if (similarity(data.description, p.text()) > 0.6) {
+    p.addClass("superfluous")
   }
 
   data.readme = $.html()
-
 }

@@ -6,28 +6,28 @@
     <div id="home-stats">
       {{#if totalPackages}}
         <div class="stat icon-package-hex">
-          <strong>{{totalPackages}}</strong>
+          <strong class="pretty-number">{{totalPackages}}</strong>
           total packages
         </div>
       {{/if}}
 
       {{#if downloads.day}}
         <div class="stat icon-cal-24hours">
-          <strong>{{downloads.day}}</strong>
+          <strong class="pretty-number">{{downloads.day}}</strong>
           downloads in the last day
         </div>
       {{/if}}
 
       {{#if downloads.week}}
         <div class="stat icon-cal-7days">
-          <strong>{{downloads.week}}</strong>
+          <strong class="pretty-number">{{downloads.week}}</strong>
           downloads in the last week
         </div>
       {{/if}}
 
       {{#if downloads.month}}
         <div class="stat icon-cal-30days">
-          <strong>{{downloads.month}}</strong>
+          <strong class="pretty-number">{{downloads.month}}</strong>
           downloads in the last month
         </div>
       {{/if}}

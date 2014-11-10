@@ -1,7 +1,6 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
-var formatNumber = require('number-grouper'),
-    Hapi = require('hapi'),
+var Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')(),
@@ -14,28 +13,14 @@ module.exports = function (request, reply) {
 
   load(request, function (err, cached) {
 
-    // Use commas, periods, or spaces depending on user language
-    try {
-      var lang = parseLanguageHeader(request.headers['accept-language'])[0].code
-      if (lang === "en") lang = "en-gb" // numeral.js "bug"
-      var sep = require(fmt("numeral/languages/%s", lang)).delimiters.thousands
-    } catch(err) {
-      var sep = " "
-    }
-
     var opts = {
       user: request.auth.credentials,
       updated: cached.updated || [],
       depended: cached.depended || [],
       starred: cached.starred || [],
       authors: cached.authors || [],
-      downloads: {
-        day: formatNumber(cached.downloads.day, {sep: sep}),
-        week: formatNumber(cached.downloads.week, {sep: sep}),
-        month: formatNumber(cached.downloads.month, {sep: sep}),
-      },
-      totalPackages: formatNumber(cached.totalPackages, {sep: sep}),
-
+      downloads: cached.downloads,
+      totalPackages: cached.totalPackages,
       explicit: require("../../lib/explicit-installs.json").slice(0,15).map(function(pkg) {
         pkg.installCommand = "npm install " + pkg.name + (pkg.preferGlobal ? " -g" : "")
         pkg.starCount = pkg.users ? Object.keys(pkg.users).length : 0

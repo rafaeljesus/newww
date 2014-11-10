@@ -1,3 +1,6 @@
+// Use the browser's built-in localization to prettify numbers,
+// falling back to space-delimited thousands on older browsers
+
 var format = function(input) {
   try {
     return Number(input).toLocaleString()

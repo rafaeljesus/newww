@@ -63,7 +63,7 @@ describe('getting packages from couch', function () {
 describe('browsing', function () {
   it('gets all the packages', function (done) {
     var couch = nock(config.registryCouch)
-        .get('/registry/_design/app/_view/browseAll?group_level=2&skip=0&limit=10&stale=update_after')
+        .get('/registry/_design/app/_view/browseAll?group_level=5&skip=0&limit=10&stale=update_after')
         .reply(200, require('./fixtures/browse').browseAll)
 
     server.methods.registry.getAllPackages(0, 10, function (er, data) {
@@ -105,7 +105,7 @@ describe('browsing', function () {
       var keyword = 'angular';
 
       var couch = nock(config.registryCouch)
-          .get('/registry/_design/app/_view/byKeyword?group_level=3&startkey=%5B%22' + keyword +'%22%5D&endkey=%5B%22' + keyword +'%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
+          .get('/registry/_design/app/_view/byKeyword?group_level=6&startkey=%5B%22' + keyword +'%22%5D&endkey=%5B%22' + keyword +'%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
           .reply(200, require('./fixtures/browse').byKeyword)
 
       server.methods.registry.getAllByKeyword(keyword, 0, 10, function (er, data) {
@@ -231,7 +231,7 @@ describe('browsing', function () {
       var user = 'substack';
 
       var couch = nock(config.registryCouch)
-          .get('/registry/_design/app/_view/browseStarUser?group_level=3&startkey=%5B%22' + user + '%22%5D&endkey=%5B%22' + user + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
+          .get('/registry/_design/app/_view/browseStarUser?group_level=6&startkey=%5B%22' + user + '%22%5D&endkey=%5B%22' + user + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
           .reply(200, require('./fixtures/browse').starsByUser)
 
       server.methods.registry.getUserStars(user, 0, 10, function (er, data) {

@@ -135,7 +135,7 @@ describe('browsing', function () {
       var author = 'substack';
 
       var couch = nock(config.registryCouch)
-          .get('/registry/_design/app/_view/browseAuthors?group_level=3&startkey=%5B%22' + author + '%22%5D&endkey=%5B%22' + author + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
+          .get('/registry/_design/app/_view/browseAuthors?group_level=6&startkey=%5B%22' + author + '%22%5D&endkey=%5B%22' + author + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
           .reply(200, require('./fixtures/browse').byAuthor)
 
       server.methods.registry.getAuthors(author, 0, 10, function (er, data) {

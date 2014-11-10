@@ -58,7 +58,7 @@ exports.updated = {
 exports.author = {
   viewName: 'browseAuthors',
   groupLevel: 1,
-  groupLevelArg: 3,
+  groupLevelArg: 6,
   transformKey: countDisplay,
   transformKeyArg: packageDisplay
 };

@@ -52,6 +52,7 @@
     "lab": "^4.5.1",
     "marked": "^0.3.2",
     "moment": "^2.6.0",
+    "mousetrap": "0.0.1",
     "murmurhash": "0.0.2",
     "newww-metrics": "^1.0.0",
     "nib": "^1.0.2",

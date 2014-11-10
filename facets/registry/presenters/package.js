@@ -331,8 +331,9 @@ function removeSuperfluousContentFromReadme (data) {
   $("p:has(img[src*='gulp-2x.png'])").addClass("superfluous")
   $("a[href*='//nodei.co']").addClass("superfluous")
   $("a:has(img[src*='img.shields.io'])").addClass("superfluous")
+  $("h1[id*='lo-dash']").addClass("superfluous")
 
-  var h1 = $('h1').first()
+  var h1 = $('h1:not(.superfluous)').first()
   if (
     similarity(data.name, h1.text()) > 0.6 ||
     ~h1.text().toLowerCase().indexOf(data.name.toLowerCase())

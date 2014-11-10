@@ -79,6 +79,15 @@
 
 	</ul>
 
+  <h3>Stats</h3>
+  <ul class="box">
+    {{#if downloads}}
+      <li><strong class="pretty-number">{{downloads.day}}</strong> downloads in the last day</li>
+      <li><strong class="pretty-number">{{downloads.week}}</strong> downloads in the last week</li>
+      <li><strong class="pretty-number">{{downloads.month}}</strong> downloads in the last month</li>
+    {{/if}}
+  </ul>
+
   <h3>Keywords</h3>
   <p class="list-of-links">
     {{#if keywords}}

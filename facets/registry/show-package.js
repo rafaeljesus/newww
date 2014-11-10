@@ -1,7 +1,6 @@
 var Hapi = require('hapi'),
     presentPackage = require('./presenters/package'),
     log = require('bole')('registry-package'),
-    commaIt = require('number-grouper'),
     metrics = require('newww-metrics')();
 
 module.exports = function (request, reply) {
@@ -21,7 +20,7 @@ module.exports = function (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    
+
     namespace: 'registry-package'
   }
 
@@ -78,29 +77,14 @@ module.exports = function (request, reply) {
         opts.title = pkg.name;
 
         // Show download count for the last day, week, and month
-        if (opts.user) {
-          return getDownloadsForPackage('last-month', 'range', pkg.name, handleDownloads);
-        } else {
-          return getAllDownloadsForPackage(pkg.name, handleDownloads);
-        }
+        return getAllDownloadsForPackage(pkg.name, handleDownloads);
 
         function handleDownloads(er, downloadData) {
           if (er) {
             return showError(er, 500, 'An error occurred with getting download counts for ' + opts.name, opts);
           }
 
-          if (Array.isArray(downloadData)) {
-            opts.downloads = {
-              data: JSON.stringify(downloadData),
-              count: commaIt(downloadData[downloadData.length - 1].downloads, {sep: ' '})
-            };
-          } else {
-            opts.downloads = {
-              day: commaIt(downloadData.day, {sep: ' '}),
-              week: commaIt(downloadData.week, {sep: ' '}),
-              month: commaIt(downloadData.month, {sep: ' '}),
-            };
-          }
+          opts.package.downloads = downloadData
 
           timer.end = Date.now();
           addLatencyMetric(timer, 'showPackage');

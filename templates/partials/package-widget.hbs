@@ -1,11 +1,11 @@
 <div class="package-widget">
   <h3>
-    <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
+    <a class="name icon-package-hex" href="{{url}}">{{name}}</a>
   </h3>
   <p class="description">{{description}}</p>
   {{#if version}}
     <p class="author quiet">
-      <a class="version" href="/packages/{{name}}">{{version}}</a>
+      <a class="version" href="{{url}}">{{version}}</a>
       published
       {{lastPublished}}
       {{#if publishedBy}}
@@ -15,9 +15,9 @@
     </p>
   {{/if}}
 
-  <!-- {{#if keywords}}
-    <p class="keywords quiet">{{{packageKeywords keywords 5}}}</p>
-  {{/if}} -->
+  {{#if stars}}
+    <p class="quiet">{{{pluralize stars "star" true}}}</p>
+  {{/if}}
 
   {{#if dlWeek}}
     <p class="quiet">{{pluralize dlWeek "download" true}} in the last week</p>

@@ -1,69 +1,56 @@
-
-
-{{#with browse}}
-  <div id="package">
-
-    {{#compare type 'all'}}
-      <h1>All Packages (alphabetically)</h1>
-    {{else}} {{#compare type 'keyword'}}
-      <h1>Browse by Keyword{{#if arg}}: {{arg}}{{/if}}</h1>
-    {{else}} {{#compare type 'author'}}
-      <h1>Browse by Author{{#if arg}}: <a href="/profile/{{arg}}">{{arg}}</a>{{/if}}</h1>
-    {{else}} {{#compare type 'updated'}}
-      <h1>All Packages (by updated date)</h1>
-    {{else}} {{#compare type 'depended'}}
-      {{#if arg}}
-        <h1>Packages depending on <a href="/package/{{arg}}">{{arg}}</a></h1>
-      {{else}}
-        <h1>Most Depended-upon Packages</h1>
-      {{/if}}
-    {{else}} {{#compare type 'star'}}
-      {{#if arg}}
-        <h1>Users who starred <a href="/package/{{arg}}">{{arg}}</a></h1>
-      {{else}}
-        <h1>Most Starred Packages</h1>
-      {{/if}}
-    {{else}} {{#compare type 'userstar'}}
-      {{#if arg}}
-        <h1>Starred Packages by User: <a href="/profile/{{arg}}">{{arg}}</a></h1>
-      {{else}}
-        <h1>Starred Packages by User</h1>
-      {{/if}}
-    {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}}
-
-    <p class="description">
-      {{#if prevPage}}
-        <a href="/browse/{{browseby}}?page={{prevPage}}">&larr; previous</a>
-      {{/if}}
-      Page {{page}}
-      {{#if nextPage}}
-        <a href="/browse/{{browseby}}?page={{nextPage}}">next &rarr;</a>
-      {{/if}}
-    </p>
-
-    {{#each items}}
-      {{#if name}}
-        <div class="row">
-          <p>
-            <a href="{{url}}">{{name}}</a>
-            {{description}}
-          </p>
-        </div>
-      {{/if}}
+<h2 class="centered">
+  {{#compare type 'all'}}
+    All Packages (alphabetically)
+  {{else}} {{#compare type 'keyword'}}
+    Browse by Keyword{{#if arg}}: {{arg}}{{/if}}
+  {{else}} {{#compare type 'author'}}
+    Browse by Author{{#if arg}}: <a href="/profile/{{arg}}">{{arg}}</a>{{/if}}
+  {{else}} {{#compare type 'updated'}}
+    All Packages (by updated date)
+  {{else}} {{#compare type 'depended'}}
+    {{#if arg}}
+      Packages depending on <a href="/package/{{arg}}">{{arg}}</a>
     {{else}}
-      <div class="row">
-        <p>No items found.</p>
-      </div>
-    {{/each}}
+      Most Depended-upon Packages
+    {{/if}}
+  {{else}} {{#compare type 'star'}}
+    {{#if arg}}
+      Users who starred <a href="/package/{{arg}}">{{arg}}</a>
+    {{else}}
+      Most Starred Packages
+    {{/if}}
+  {{else}} {{#compare type 'userstar'}}
+    {{#if arg}}
+      Starred Packages by User: <a href="/profile/{{arg}}">{{arg}}</a>
+    {{else}}
+      Starred Packages by User
+    {{/if}}
+  {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}} {{/compare}}
+</h2>
 
-    <p class="description">
-      {{#if prevPage}}
-        <a href="/browse/{{browseby}}?page={{prevPage}}">&larr; previous</a>
-      {{/if}}
-      Page {{page}}
-      {{#if nextPage}}
-        <a href="/browse/{{browseby}}?page={{nextPage}}">next &rarr;</a>
-      {{/if}}
-    </p>
+
+<ul class="columnar">
+  {{#each items}}
+    <li>{{> package-widget}}</li>
+  {{/each}}
+</ul>
+
+
+
+{{!-- {{#each items}}
+  {{#if name}}
+    <div class="row">
+      <p>
+        <a href="{{url}}">{{name}}</a>
+        {{description}}
+      </p>
+    </div>
+  {{/if}}
+{{else}}
+  <div class="row">
+    <p>No items found.</p>
   </div>
-{{/with}}
+{{/each}} --}}
+
+
+{{> pagination}}

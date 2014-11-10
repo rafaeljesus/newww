@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     log = require('bole')('registry-recentauthors'),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')(),
-    Hoek = require('hoek');
+    merge = require('lodash').merge;
 
 var pageSize = 100,
     TWO_WEEKS = 1000 * 60 * 60 * 24 * 14;
@@ -17,7 +17,6 @@ module.exports = function RecentAuthors (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    
     namespace: 'registry-recentauthors'
   }
 
@@ -45,17 +44,19 @@ module.exports = function RecentAuthors (request, reply) {
 
     var items = authors.filter(function (a) { return a.name });
 
-    var authorOpts = {
-      title: 'Authors active since ' + since,
+    merge(opts, {
       browseby: since,
       items: items,
       pageSize: pageSize,
       page: page,
       prevPage: page > 0 ? page - 1 : null,
       nextPage: items.length >= pageSize ? page + 1 : null
-    };
+    });
 
-    Hoek.merge(opts, authorOpts);
+    opts.prevUrl = opts.prevPage && "/recent-authors/" + opts.browseby + "?page=" + opts.prevPage;
+    opts.nextUrl = opts.nextPage && "/recent-authors/" + opts.browseby + "?page=" + opts.nextPage;
+
+    opts.paginate = opts.prevPage || opts.nextPage;
 
     timer.end = Date.now();
     addLatencyMetric(timer, 'recentauthors');

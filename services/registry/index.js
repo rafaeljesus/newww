@@ -14,7 +14,7 @@ exports.register = function Registry (service, options, next) {
     {
       name: 'registry.getBrowseData',
       fn: require('./methods/browse'),
-      options: { cache: setCache('browse') }
+      options: { cache: setCache('browse', 10) }
     },
     {
       name: 'registry.getPackage',
@@ -24,7 +24,7 @@ exports.register = function Registry (service, options, next) {
     {
       name: 'registry.getAllPackages',
       fn: require('./methods/getAllPackages'),
-      options: { cache: setCache('allPackages') }
+      options: { cache: setCache('allPackages', 5) }
     },
     {
       name: 'registry.getAllByKeyword',

@@ -52,9 +52,9 @@ describe('getting to the browse page', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('registry/browse');
-      expect(source.context.browse.page).to.equal(pageNum);
-      expect(source.context.browse.nextPage).to.equal(pageNum + 1);
-      expect(source.context.browse.prevPage).to.equal(pageNum - 1);
+      expect(source.context.page).to.equal(pageNum);
+      expect(source.context.nextPage).to.equal(pageNum + 1);
+      expect(source.context.prevPage).to.equal(pageNum - 1);
       done();
     });
   });
@@ -68,8 +68,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('all');
-        expect(source.context.browse.arg).to.not.exist;
+        expect(source.context.type).to.equal('all');
+        expect(source.context.arg).to.not.exist;
         done();
       });
     });
@@ -82,8 +82,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('updated');
-        expect(source.context.browse.arg).to.not.exist;
+        expect(source.context.type).to.equal('updated');
+        expect(source.context.arg).to.not.exist;
         done();
       });
     });
@@ -96,8 +96,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('keyword');
-        expect(source.context.browse.arg).to.not.exist;
+        expect(source.context.type).to.equal('keyword');
+        expect(source.context.arg).to.not.exist;
         done();
       });
     });
@@ -110,8 +110,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('keyword');
-        expect(source.context.browse.arg).to.equal('"grunt"');
+        expect(source.context.type).to.equal('keyword');
+        expect(source.context.arg).to.equal('"grunt"');
         done();
       });
     });
@@ -124,8 +124,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('author');
-        expect(source.context.browse.arg).to.not.exist;
+        expect(source.context.type).to.equal('author');
+        expect(source.context.arg).to.not.exist;
         done();
       });
     });
@@ -138,8 +138,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('author');
-        expect(source.context.browse.arg).to.equal('mikeal');
+        expect(source.context.type).to.equal('author');
+        expect(source.context.arg).to.equal('mikeal');
         done();
       });
     });
@@ -152,8 +152,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('depended');
-        expect(source.context.browse.arg).to.not.exist;
+        expect(source.context.type).to.equal('depended');
+        expect(source.context.arg).to.not.exist;
         done();
       });
     });
@@ -166,8 +166,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('depended');
-        expect(source.context.browse.arg).to.equal('request');
+        expect(source.context.type).to.equal('depended');
+        expect(source.context.arg).to.equal('request');
         done();
       });
     });
@@ -180,8 +180,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('star');
-        expect(source.context.browse.arg).to.not.exist;
+        expect(source.context.type).to.equal('star');
+        expect(source.context.arg).to.not.exist;
         done();
       });
     });
@@ -194,8 +194,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('star');
-        expect(source.context.browse.arg).to.equal('request');
+        expect(source.context.type).to.equal('star');
+        expect(source.context.arg).to.equal('request');
         done();
       });
     });
@@ -208,8 +208,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('userstar');
-        expect(source.context.browse.arg).to.not.exist;
+        expect(source.context.type).to.equal('userstar');
+        expect(source.context.arg).to.not.exist;
         done();
       });
     });
@@ -222,8 +222,8 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('registry/browse');
-        expect(source.context.browse.type).to.equal('userstar');
-        expect(source.context.browse.arg).to.equal('mikeal');
+        expect(source.context.type).to.equal('userstar');
+        expect(source.context.arg).to.equal('mikeal');
         done();
       });
     });

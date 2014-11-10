@@ -1,6 +1,6 @@
 var format = function(input) {
   try {
-    return Number(input).toLocaleStringz()
+    return Number(input).toLocaleString()
   } catch(e) {
     return require("number-grouper")(input, {sep:" ", radix:"."})
   }

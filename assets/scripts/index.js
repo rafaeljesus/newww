@@ -6,6 +6,7 @@ window.npm_expansions = require("./npm-expansions")
 window.obfuscate = require("./email-obfuscate")()
 window.payments = require("./payments")()
 window.github = require("./github")()
+window.pretty_numbers = require("./pretty-numbers")()
 
 $(function () {
   $(".npm-install input").on("click", function () {

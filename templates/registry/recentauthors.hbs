@@ -1,35 +1,9 @@
-<div id="package">
-  <h1>{{title}}</h1>
-  <p class="description">
-    {{#if prevPage}}
-      <a href="/recent-authors/{{browseby}}?page={{prevPage}}">&larr; previous</a>
-    {{/if}}
-    Page {{page}}
-    {{#if nextPage}}
-      <a href="/recent-authors/{{browseby}}?page={{nextPage}}">next &rarr;</a>
-    {{/if}}
-  </p>
+<h2 class="centered">Authors active since {{browseby}}</h2>
 
-  {{#if items.length}}
-    {{#each items}}
-      {{#if name}}
-        <div class="row">
-          <p><a href="{{url}}">{{name}}</a>
-            {{#if description}}{{description}}{{/if}}</p>
-        </div>
-      {{/if}}
-    {{/each}}
-  {{else}}
-    <div class="row"><p>No items found.</p></div>
-  {{/if}}
+<ul class="columnar">
+  {{#each items}}
+    <li>{{> package-widget}}</li>
+  {{/each}}
+</ul>
 
-  <p class="description">
-    {{#if prevPage}}
-      <a href="/recent-authors/{{browseby}}?page={{prevPage}}">&larr; previous</a>
-    {{/if}}
-    Page {{page}}
-    {{#if nextPage}}
-      <a href="/recent-authors/{{browseby}}?page={{nextPage}}">next &rarr;</a>
-    {{/if}}
-  </p>
-</div>
+{{> pagination}}

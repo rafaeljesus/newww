@@ -1,7 +1,7 @@
 var sanitizer = require('sanitizer'),
     Hapi = require('hapi'),
     log = require('bole')('registry-browse'),
-    merge = require('lodash').merge
+    merge = require('lodash').merge,
     metrics = require('newww-metrics')();
 
 var pageSize = 60;
@@ -10,7 +10,7 @@ var possibleTypes = ['all', 'keyword', 'author', 'updated', 'depended', 'star', 
 module.exports = function (request, reply) {
   var opts = {
     user: request.auth.credentials,
-    
+
     namespace: 'registry-browse'
   };
 

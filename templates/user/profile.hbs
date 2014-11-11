@@ -4,7 +4,7 @@
 
   <div class="content">
     {{#if packages}}
-      <h2>Packages by {{name}}</h2>
+      <h2><a id="packages" href="#packages">{{pluralize packages.length "Packages" true}} by {{name}}</a></h2>
       <ul class="bullet-free">
         {{#each packages}}
           <li>
@@ -15,7 +15,7 @@
     {{/if}}
 
     {{#if starred}}
-      <h2><a id="starred" href="#starred">Packages Starred by {{name}}</a></h2>
+      <h2><a id="starred" href="#starred">{{pluralize starred.length "Packages" true}} by {{name}}</a></h2>
       <ul class="bullet-free">
         {{#each starred}}
           <li>

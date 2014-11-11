@@ -1,7 +1,7 @@
 var elasticsearch = require('elasticsearch'),
     Hapi = require('hapi'),
     log = require('bole')('registry-search'),
-    merge = require('lodash').merge
+    merge = require('lodash').merge,
     metrics = require('newww-metrics')();
 
 module.exports = function (options) {

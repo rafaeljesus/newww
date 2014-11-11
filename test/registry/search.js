@@ -26,20 +26,39 @@ sinon.stub(elasticsearch, 'Client', function(){
 describe('Rendering the view', function () {
   var source;
   it('Should use the index template to render the view', function (done) {
-  var options =  {
-    url: '/search?q=express',
-    method: 'GET'
-  };
+    var options =  {
+      url: '/search?q=express',
+      method: 'GET'
+    };
 
-  server.ext('onPreResponse', function (request, next){
-    source = request.response.source;
-    next();
-  });
+    server.ext('onPreResponse', function (request, next){
+      source = request.response.source;
+      next();
+    });
 
-  server.inject(options, function (resp) {
-    expect(resp.statusCode).to.equal(200);
-    expect(source.template).to.equal('registry/search');
-    done();
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      expect(source.template).to.equal('registry/search');
+      done();
     });
   });
+
+  it('redirects /search/foo to /search?q=foo', function (done) {
+    var options =  {
+      url: '/search/food-trucks',
+      method: 'GET'
+    };
+
+    server.ext('onPreResponse', function (request, next){
+      source = request.response.source;
+      next();
+    });
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.headers.location).to.include("/search?q=food-trucks");
+      done();
+    });
+  });
+
 });

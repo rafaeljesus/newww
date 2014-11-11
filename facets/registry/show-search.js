@@ -11,6 +11,11 @@ module.exports = function (options) {
 
   return function (request, reply) {
 
+    // Redirect /search/foo to /search/?foo
+    if (request.params && request.params.q) {
+      return reply.redirect('/search?q='+request.params.q)
+    }
+
     if (!request.query || !request.query.q) {
       return reply.redirect('/');
     }
@@ -99,7 +104,7 @@ module.exports = function (options) {
 
       var opts = {
         user: request.auth.credentials,
-        
+
         namespace: 'registry-search'
       };
 

@@ -220,7 +220,7 @@ var routes = module.exports = [
       }
     }
   },{
-    path: "/search",
+    path: "/search/{q?}",
     method: "GET",
     handler: require('./facets/registry/show-search')(config.search)
   },

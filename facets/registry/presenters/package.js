@@ -327,12 +327,24 @@ function removeSuperfluousContentFromReadme (data) {
   if (typeof data.readme !== "string") return
   var $ = cheerio.load(data.readme)
 
-  $("p:has(img[alt='Express Logo'])").addClass("superfluous")
-  $("p:has(img[src*='gulp-2x.png'])").addClass("superfluous")
-  $("a[href*='//nodei.co']").addClass("superfluous")
-  $("a:has(img[src*='img.shields.io'])").addClass("superfluous")
+  // Gratuitous Logos
+  $("p:has(img[alt='Express Logo'])").addClass("superfluous");
+  $("p:has(img[src*='gulp-2x.png'])").addClass("superfluous");
+
+  // Badges
+  [
+    '//nodei.co',
+    '//img.shields.io',
+    '//ci.testling.com',
+    '//badges.github.io'
+  ].forEach(function(host){
+    $("p:has(img[src*='"+host+"'])").addClass("superfluous")
+  })
+
+  // Unruly H1s
   $("h1[id*='lo-dash']").addClass("superfluous")
 
+  // H1 that closely matches package name
   var h1 = $('h1:not(.superfluous)').first()
   if (
     similarity(data.name, h1.text()) > 0.6 ||
@@ -341,6 +353,7 @@ function removeSuperfluousContentFromReadme (data) {
     h1.addClass("superfluous")
   }
 
+  // p that closely matches package description
   var p = $('p:not(.superfluous)').first()
   if (similarity(data.description, p.text()) > 0.6) {
     p.addClass("superfluous")

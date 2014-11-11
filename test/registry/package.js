@@ -73,24 +73,28 @@ describe('Modifying the package before sending to the template', function () {
     done();
   });
 
-  it('removes the first H1 element from the README, but not subsequent H1s', function (done) {
+  it('marks first H1 element as superfluous, if similar to package name', function (done) {
     expect(p.readmeSrc).to.include("# fake")
     expect(p.readmeSrc).to.include("# Another H1")
     var $ = cheerio.load(p.readme)
-    expect($("h1").length).to.equal(1)
-    expect($("h1").text()).to.equal("Another H1")
+    expect($("h1.superfluous").length).to.equal(1)
+    expect($("h1.superfluous").text()).to.equal("fake")
+    expect($("h1:not(.superfluous)").length).to.equal(1)
+    expect($("h1:not(.superfluous)").text()).to.equal("Another H1")
     done()
   });
 
   it('removes shields.io badges from the README', function (done) {
     expect(p.readmeSrc).to.include("img.shields.io")
-    expect(p.readme).to.not.include("img.shields.io")
+    var $ = cheerio.load(p.readme)
+    expect($("p:has(img[src*='img.shields.io'])").hasClass("superfluous")).to.be.true
     done()
   });
 
   it('removes nodei.co badges from the README', function (done) {
     expect(p.readmeSrc).to.include("nodei.co")
-    expect(p.readme).to.not.include("nodei.co")
+    var $ = cheerio.load(p.readme)
+    expect($("p:has(img[src*='nodei.co'])").hasClass("superfluous")).to.be.true
     done()
   });
 

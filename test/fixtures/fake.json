@@ -88,7 +88,7 @@
     "fake",
     "omg so fake"
   ],
-  "readme": "# fake\n\nNot actually a package. In fact, it's not even real. [Here's a link](http://somelink.com/somwhere).\n\n[And here's a relative link](somewhere.md#bugs)\nAnd here comes some prose\n\n# Another H1\n\n<a href=\"https://travis-ci.org/senchalabs/connect\"><img src=\"https://img.shields.io/travis/senchalabs/connect.svg?style=flat\" alt=\"Build Status\"></a>\n\n<a href=\"https://nodei.co/npm/request/\"><img src=\"https://nodei.co/npm/request.png?downloads=true&amp;downloadRank=true&amp;stars=true\" alt=\"NPM\"></a>",
+  "readme": "# fake\n\nNot actually a package. In fact, it's not even real. [Here's a link](http://somelink.com/somwhere).\n\n[And here's a relative link](somewhere.md#bugs)\nAnd here comes some prose\n\n# Another H1\n\n<p><a href=\"https://travis-ci.org/senchalabs/connect\"><img src=\"https://img.shields.io/travis/senchalabs/connect.svg?style=flat\" alt=\"Build Status\"></a></p>\n\n<a href=\"https://nodei.co/npm/request/\"><img src=\"https://nodei.co/npm/request.png?downloads=true&amp;downloadRank=true&amp;stars=true\" alt=\"NPM\"></a>",
   "readmeFilename": "README.md",
   "homepage": "https://github.com/boom/fake",
   "bugs": {

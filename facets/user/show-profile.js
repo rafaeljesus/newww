@@ -18,7 +18,7 @@ module.exports = function(options) {
 
     var opts = {
       user: request.auth.credentials,
-      
+
       namespace: 'user-profile'
     };
 
@@ -92,7 +92,7 @@ module.exports = function(options) {
           });
 
           // Return raw context object if `json` query param is present
-          if (String(process.env.NODE_ENV).match(/dev|staging/) &&  'json' in request.query) {
+          if ('json' in request.query) {
             return reply(opts);
           }
 

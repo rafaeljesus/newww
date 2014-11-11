@@ -1,45 +1,16 @@
-<div class="content">
-
-  <section id="readme">
-    <hgroup>
-      <h1>{{package.name}}</h1>
-      <h2>an awesome package that doesn't exist yet</h2>
-    </hgroup>
-
-    <h2>A Happy 404</h2>
-
-    <p>
-      404 pages are usually a sad thing, but today is different, friend! The <strong>{{package.name}}</strong> name is available for your next great
-      work of art. Copy the snippet below and get to work!
-    </p>
-
-    <h2>Stake your Claim</h2>
-
-<pre><code class="lang-bash hljs">mkdir {{name}}
-cd {{name}}
-npm init
-# magic goes here
-npm publish
-</code></pre>
-
-  </section>
-
+<div class="container">
+  <hgroup>
+    <h1>{{t "package.not_found.title"}}</h1>
+    <h2>{{name}} will be yours. Oh yes, {{name}} will be yours.</h2>
+  </hgroup>
 </div>
 
-<div class="sidebar">
+<div class="container narrow">
+<pre><code class="lang-bash hljs" style="background:#F5F5F5;">mkdir {{name}}
+cd {{name}}
+npm init
+# work your magic...
+</code></pre>
 
-  <!-- <div class="npm-install icon-download">
-    <input type="text" value="npm install {{name}}" readonly>
-  </div> -->
-
-  <h3>Package Info</h3>
-  <ul class="box">
-    {{#if user}}
-      <li>
-        <strong>1.0.0</strong>
-        soon to be published by
-        <a href="/~{{user.name}}">{{user.name}}</a>
-      </li>
-    {{/if}}
-  </ul>
+  <img style="margin-top:50px;max-width:100%;" src="/static/images/notfound.png"/>
 </div>

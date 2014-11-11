@@ -5,22 +5,14 @@ var log = require('bole')('registry-browse-transform'),
 
 exports.all = {
   viewName: 'browseAll',
-  groupLevel: 5,
+  groupLevel: 1,
   transformKey: function (key, value) {
-    var name = key[0],
-        description = key[1],
-        time = key[2],
-        version = key[3],
-        publishedBy = key[4];
+    var name = key[0];
 
     return {
       name: name,
-      description: description,
       url: '/package/' + name,
-      value: value,
-      version: version,
-      publishedBy: publishedBy,
-      lastPublished: moment(time).fromNow()
+      value: value
     }
   }
 };
@@ -28,29 +20,22 @@ exports.all = {
 exports.keyword = {
   viewName: 'byKeyword',
   groupLevel: 1,
-  groupLevelArg: 6,
+  groupLevelArg: 2,
   transformKey: countDisplay,
   transformKeyArg: packageDisplay
 };
 
 exports.updated = {
   viewName: 'browseUpdated',
-  groupLevel: 5,
+  groupLevel: 2,
   transformKey: function (key, value) {
     var time = key[0],
-        name = key[1],
-        description = key[2],
-        version = key[3],
-        publishedBy = key[4];
+        name = key[1];
 
     return {
       name: name,
-      description: description,
       url: '/package/' + name,
-      value: time,
-      version: version,
-      publishedBy: publishedBy,
-      lastPublished: moment(time).fromNow()
+      value: time
     }
   },
 };
@@ -58,7 +43,7 @@ exports.updated = {
 exports.author = {
   viewName: 'browseAuthors',
   groupLevel: 1,
-  groupLevelArg: 6,
+  groupLevelArg: 2,
   transformKey: countDisplay,
   transformKeyArg: packageDisplay
 };
@@ -66,23 +51,21 @@ exports.author = {
 exports.depended = {
   viewName: 'dependedUpon',
   groupLevel: 1,
-  groupLevelArg: 5,
+  groupLevelArg: 2,
   transformKey: countDisplay,
   transformKeyArg: packageDisplay
 };
 
 exports.star = {
   viewName: 'browseStarPackage',
-  groupLevel: 2,
-  groupLevelArg: 5,
+  groupLevel: 1,
+  groupLevelArg: 3,
   transformKey: function (key, value) {
     var name = key[0],
-        description = key[1],
         num = value;
 
     return {
       name: name,
-      description: description,
       url: '/package/' + name,
       value: num
     }
@@ -101,7 +84,7 @@ exports.star = {
 exports.userstar = {
   viewName: 'browseStarUser',
   groupLevel: 1,
-  groupLevelArg: 6,
+  groupLevelArg: 2,
   transformKey: function (key, value) {
     var name = key[0],
         num = value;
@@ -129,19 +112,11 @@ function countDisplay (key, value, type) {
 };
 
 function packageDisplay (key, value) {
-  var name = key[1],
-      description = key[2] || '',
-      time = key[3] || '',
-      version = key[4] || '',
-      publishedBy = key[5] || '';
+  var name = key[1];
 
   return {
     name: name,
-    description: description,
-    url: '/package/' + name,
-    lastPublished: moment(time).fromNow(),
-    version: version,
-    publishedBy: publishedBy
+    url: '/package/' + name
   };
 };
 
@@ -169,7 +144,8 @@ exports.transform = function transform (type, arg, data, skip, limit, next) {
     }).slice(skip, skip + limit)
   }
 
-  if (type.match(/depended|^star/) && !arg) {
+  if (type.match(/all|updated|depended|^star/) && !arg ||
+      type.match(/keyword|author|depended|userstar/) && arg) {
     return getPackageData(data, function (er, data) {
       return next(er, data);
     });
@@ -188,13 +164,17 @@ function getPackageData (data, cb) {
     packages.forEach(function (p) {
       var d = _.find(data, {name: p.name});
 
-      var latest = p['dist-tags'].latest;
+      var latest = p['dist-tags'] && p['dist-tags'].latest;
 
-      d.lastPublished = moment(p.time[latest]).fromNow();
-      var latest = p.versions[latest];
-      d.description = latest.description;
-      d.version = latest.version;
-      d.publishedBy = latest._npmUser;
+      if (latest) {
+        d.lastPublished = moment(p.time[latest]).fromNow();
+
+        var latestVersion = p.versions[latest];
+
+        d.description = latestVersion.description;
+        d.version = latestVersion.version;
+        d.publishedBy = latestVersion._npmUser;
+      }
     });
 
     return cb(null, data);

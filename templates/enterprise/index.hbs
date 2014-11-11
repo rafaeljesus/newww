@@ -1,10 +1,17 @@
 <div class="content">
 
-  <h1>npm Enterprise</h1>
+  <section id="readme">
 
-  <p>npm Enterprise is an on-premises solution for securely sharing and distributing
+  <hgroup>
+    <h1>npm Enterprise</h1>
+    <h2>Run your own on-premises npm registry</h2>
+  </hgroup>
+
+  <p>npmE is an on-premises solution for securely sharing and distributing
   JavaScript modules within your organization, from the team that maintains npm
   and the public npm registry. It's designed for teams that need:
+  </p>
+
   <ul>
     <li>easy internal sharing of private modules</li>
     <li>better control of development and deployment workflow</li>
@@ -46,35 +53,30 @@
   Enterprise makes private modules a first-class citizen. Just log in to your
   registry:
 
-  <p><code>npm login --registry=http://myreg.mycompany.com --scope=myco</code></p>
+  <pre><code class="lang-bash">npm login --registry=http://myreg.mycompany.com --scope=myco</code></pre>
 
   <p>Now you can install private modules without any additional work, the same way
   you do with public modules:</p>
 
-  <p><code>npm install @myco/somepackage</code></p>
+  <pre><code class="lang-bash">npm install @myco/somepackage</code></pre>
 
   <p>npm automatically knows that any package with the <code>@myco</code> scope
   should be installed from your npm Enterprise installation. Scoped packages will
   be installed into your <code>node_modules</code> folder and can be used in your
   JavaScript just like any other module:</p>
 
-  <pre><code>
-  require('@myco/somepackage');
-  </code></pre>
+  <pre><code>require('@myco/somepackage');</code></pre>
 
   <p>Publishing private modules is similarly easy. Simply give your package name
   a scope in package.json:</p>
 
-  <pre><code>
-  {
-    "name": "@myco/anypackage",
-    ..
-  }
-  </code></pre>
+<pre><code class="lang-json">{
+  "name": "@myco/anypackage"
+}</code></pre>
 
   <p>Then publish as usual:</p>
 
-  <p><code>npm publish</code></p>
+  <pre><code class="lang-bash">npm publish</code></pre>
 
   <p>npm will automatically publish to your npm Enterprise, and will refuse to
   publish scoped packages to the public registry.</p>
@@ -122,7 +124,7 @@
     <li>Mirror any package with an acceptable software license</li>
   </ul>
 
-  <h3><a name="install">npm install npmE</a></h3>
+  <h3><a name="install">npm install npme</a></h3>
 
   <p>npm Enterprise runs locally, on a server you control, with no external
     dependencies (mirroring the public registry of course requires external
@@ -146,14 +148,11 @@
     configured to automatically use them for login and access control. Simply add a
   repository field to your package.json that points to your repo:</p>
 
-  <pre><code>
-  {
-    ..
-    "repository": {
-      "url": "git://github.mycompany.com/myco/mypackage.git"
-    }
+<pre><code class="lang-json">{
+  "repository": {
+    "url": "git://github.mycompany.com/myco/mypackage.git"
   }
-  </code></pre>
+}</code></pre>
 
   <p>Depending on your configuration, npm Enterprise can restrict installation of
     your package to users who have access to the repo for that package, and restrict
@@ -224,5 +223,7 @@
       </div>
     </div>
   </form>
+
+  </section>
 
 </div>

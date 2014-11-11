@@ -389,7 +389,10 @@ function fallback(request, reply) {
         return reply.redirect('/package/' + package._id);
       }
 
-      return reply.view('errors/registry-notfound', opts).code(404);
+      opts.package = {
+        name: request.params.p
+      }
+      return reply.view('registry/package-not-found-page', opts).code(404);
     });
   });
 }

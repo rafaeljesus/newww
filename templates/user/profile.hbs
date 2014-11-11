@@ -30,11 +30,11 @@
 
     {{#if isSelf}}
       <a href="http://en.gravatar.com/emails/" class="avatar">
-        <img src="{{avatarLarge}}">
+        <img src="{{#if avatarLarge}}{{avatarLarge}}{{else}}{{avatarMedium}}{{/if}}">
       </a>
     {{else}}
       <a href="/~{{name}}" class="avatar">
-        <img src="{{avatarLarge}}">
+        <img src="{{#if avatarLarge}}{{avatarLarge}}{{else}}{{avatarMedium}}{{/if}}">
       </a>
     {{/if}}
 

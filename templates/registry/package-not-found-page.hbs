@@ -1,0 +1,45 @@
+<div class="content">
+
+  <section id="readme">
+    <hgroup>
+      <h1>{{package.name}}</h1>
+      <h2>an awesome package that doesn't exist yet</h2>
+    </hgroup>
+
+    <h2>A Happy 404</h2>
+
+    <p>
+      404 pages are usually a sad thing, but today is different, friend! The <strong>{{package.name}}</strong> name is available for your next great
+      work of art. Copy the snippet below and get to work!
+    </p>
+
+    <h2>Stake your Claim</h2>
+
+<pre><code class="lang-bash hljs">mkdir {{name}}
+cd {{name}}
+npm init
+# magic goes here
+npm publish
+</code></pre>
+
+  </section>
+
+</div>
+
+<div class="sidebar">
+
+  <!-- <div class="npm-install icon-download">
+    <input type="text" value="npm install {{name}}" readonly>
+  </div> -->
+
+  <h3>Package Info</h3>
+  <ul class="box">
+    {{#if user}}
+      <li>
+        <strong>1.0.0</strong>
+        soon to be published by
+        <a href="/~{{user.name}}">{{user.name}}</a>
+      </li>
+    {{/if}}
+  </ul>
+</div>

@@ -33,7 +33,11 @@ module.exports = function (request, reply) {
   getPackage(opts.name, function (er, pkg) {
 
     if (er || pkg.error) {
-      return showError(er || pkg.error, 404, 'Package Not Found ' + opts.name, opts);
+
+      opts.package = {
+        name: opts.name
+      }
+      return reply.view('registry/package-not-found-page', opts).code(404);
     }
 
     if (pkg.time && pkg.time.unpublished) {

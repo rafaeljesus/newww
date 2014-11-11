@@ -9,7 +9,7 @@ window.github = require("./github")()
 window.pretty_numbers = require("./pretty-numbers")()
 
 $(function () {
-  $(".npm-install input").on("click", function () {
+  $(".autoselect-wrapper input").on("click", function () {
     $(this).select()
   })
 

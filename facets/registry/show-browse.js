@@ -37,6 +37,8 @@ module.exports = function (request, reply) {
 
   if (type !== 'all' && type !== 'updated') {
     arg = params.shift() || false;
+  } else {
+    arg = false;
   }
 
   var browseby = type;

@@ -18,7 +18,7 @@ module.exports = function trialSignup (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    
+
     namespace: NAMESPACE
   };
 
@@ -54,7 +54,7 @@ function createTrial (request, reply, customer) {
 
   var opts = {
     user: request.auth.credentials,
-    
+
     namespace: NAMESPACE
   };
 
@@ -72,7 +72,7 @@ function sendVerificationEmail (request, reply, customer, trial) {
 
   var opts = {
     user: request.auth.credentials,
-    
+
     namespace: NAMESPACE
   };
 
@@ -94,7 +94,9 @@ function sendVerificationEmail (request, reply, customer, trial) {
 
   if (process.env.NODE_ENV === 'dev') {
 
-    return reply(mail);
+    opts.mail = JSON.stringify(mail);
+
+    return reply.view('enterprise/thanks', opts);
 
   } else {
     var mailSettings = config.user.mail;

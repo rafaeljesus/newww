@@ -1,6 +1,4 @@
-<div class="content">
-
-  <section id="readme">
+<div class="container tabletWidth">
 
   <hgroup>
     <h1 class="preserve-case">npm Enterprise</h1>
@@ -19,7 +17,7 @@
     <li>compliance with legal requirements to host code on-premises</li>
   </ul>
 
-  <div id="enterprise-cta"><a class="hs-button cta-link" href="#contact">Try npm Enterprise for free</a></div>
+  <div id="enterprise-cta"><a class="button" href="#contact">Try npm Enterprise for free</a></div>
 
   <h2>Features</h2>
 
@@ -162,68 +160,62 @@
     OAuth2 providers. A standalone solution for authentication and authorization is
   coming soon.</p>
 
-  <h2><a name="contact">Try npm Enterprise for free</a></h2>
+  <h2><a class="button" name="contact">Try npm Enterprise for free</a></h2>
 
   <p>Get a trial license for npm Enterprise instantly by supplying some basic information:</p>
 
   <form accept-charset="UTF-8" action="/enterprise-start-signup" method="POST" id="npme-signup-form">
     <input type="hidden" name="crumb" value="{{crumb}}"/>
+
     <div>
       <label for="firstname">First Name</label>
-      <div class="input">
-        <input type="text" required="required" id="firstname" name="firstname" value="" placeholder="">
-      </div>
+      <input type="text" required="required" id="firstname" name="firstname" value="" placeholder="">
     </div>
+
     <div>
       <label for="lastname">Last Name</label>
-      <div class="input">
-        <input type="text" required="required" id="lastname" name="lastname" value="" placeholder="">
-      </div>
+      <input type="text" required="required" id="lastname" name="lastname" value="" placeholder="">
     </div>
+
     <div>
       <label for="email">Work Email</label>
-      <div class="input">
-        <input type="email" required="required" id="email" name="email" value="" placeholder="">
-      </div>
-      <div class="note">This email will be the username for your trial license</div>
+      <input type="email" required="required" id="email" name="email" value="" placeholder="">
+      <p class="help-text">This email will be the username for your trial license</p>
+
     </div>
+
     <div>
       <label for="phone">Phone Number</label>
-      <div class="input">
-        <input type="text" required="required" id="phone" name="phone" value="" placeholder="">
-      </div>
+      <input type="text" required="required" id="phone" name="phone" value="" placeholder="">
     </div>
+
     <div>
       <label for="company">Company</label>
-      <div class="input">
-        <input type="text" required="required" id="company" name="company" value="" placeholder="">
-      </div>
+      <input type="text" required="required" id="company" name="company" value="" placeholder="">
     </div>
+
     <div>
       <label for="numemployees">Number of Employees (optional)</label>
-      <div class="input">
-        <select id="numemployees" name="numemployees">
-          <option value="__PLACEHOLDER__">- Please Select -</option>
-          <option value="1 - 25">1 - 25</option>
-          <option value="26 - 100">26 - 100</option>
-          <option value="100 - 1000">100 - 1000</option>
-          <option value="1,000 +">1,000 +</option>
-        </select>
-      </div>
+      <select id="numemployees" name="numemployees">
+        <option value="__PLACEHOLDER__">- Please Select -</option>
+        <option value="1 - 25">1 - 25</option>
+        <option value="26 - 100">26 - 100</option>
+        <option value="100 - 1000">100 - 1000</option>
+        <option value="1,000 +">1,000 +</option>
+      </select>
     </div>
+
     <div>
       <label for="comments">What interests you about npm Enterprise? (optional)</label>
-      <div class="input">
-        <textarea id="comments" name="comments" value="" placeholder=""></textarea>
-      </div>
+      <textarea id="comments" name="comments" value="" placeholder=""></textarea>
     </div>
+
     <div>
       <div class="actions">
-        <input class="hs-button" type="submit" class="full-width" value="Start npm Enterprise trial">
+        <input type="submit" class="full-width" value="Start npm Enterprise trial">
       </div>
     </div>
-  </form>
 
-  </section>
+  </form>
 
 </div>

@@ -326,7 +326,13 @@ module.exports = function (server) {
     drop: function (pkg, cb) {
       return cb(null, 200);
     }
-  }
+  };
+
+  methods.user.getUser.cache = {
+    drop: function (pkg, cb) {
+      return cb(null, 200);
+    }
+  };
 
   return methods;
 };

@@ -18,7 +18,8 @@ before(function (done) {
 });
 
 describe('Accessing fallback URLs', function () {
-  it('goes to package page for packages that exist', function (done) {
+
+  it('redirects to package page for packages that exist', function (done) {
     var opts = {
       url: '/fake'
     };
@@ -30,15 +31,27 @@ describe('Accessing fallback URLs', function () {
     });
   });
 
-  it('goes to 404 wombat page for anything else', function (done) {
+  it('renders 404 page for anything else', function (done) {
     var opts = {
       url: '/blajklasji'
     };
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('registry/package-not-found-page');
+      expect(source.template).to.equal('errors/not-found');
       done();
     });
   });
+
+  it('add package name to view context if path contains no slashes', function (done) {
+    var opts = {
+      url: '/some-package-hklsj'
+    };
+
+    server.inject(opts, function (resp) {
+      expect(source.context.package.name).to.equal("some-package-hklsj")
+      done();
+    });
+  });
+  
 });

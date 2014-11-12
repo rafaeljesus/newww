@@ -389,10 +389,12 @@ function fallback(request, reply) {
         return reply.redirect('/package/' + package._id);
       }
 
-      opts.package = {
-        name: request.params.p
+      // Add package to view context if path contains no slashes
+      if (request.params.p && !request.params.p.match(/\//)) {
+        opts.package = {name: request.params.p};
       }
-      return reply.view('registry/package-not-found-page', opts).code(404);
+
+      return reply.view('errors/not-found', opts).code(404);
     });
   });
 }

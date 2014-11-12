@@ -37,7 +37,7 @@ module.exports = function (request, reply) {
       opts.package = {
         name: opts.name
       }
-      return reply.view('registry/package-not-found-page', opts).code(404);
+      return reply.view('errors/not-found', opts).code(404);
     }
 
     if (pkg.time && pkg.time.unpublished) {

@@ -1,0 +1,26 @@
+<div class="container">
+  <hgroup>
+    <h1>{{t "package.not_found.title"}}</h1>
+    <h2>
+      {{#if package}}
+        {{package.name}} will be yours. Oh yes, {{package.name}} will be yours.
+      {{else}}
+        {{canonicalURL}} does not exist. time to go outside.
+      {{/if}}
+    </h2>
+  </hgroup>
+
+</div>
+
+<div class="container narrow">
+
+{{#if package}}
+<pre><code class="lang-bash hljs" style="background:#F5F5F5;">mkdir {{package.name}}
+cd {{package.name}}
+npm init
+# work your magic...
+</code></pre>
+{{/if}}
+
+  <img class="roomy-and-flexible" src="/static/images/not-found.png">
+</div>

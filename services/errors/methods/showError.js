@@ -22,7 +22,7 @@ module.exports = function showError (reply) {
         break;
       case 404:
         error = Hapi.error.notFound(message);
-        template = 'errors/notfound';
+        template = 'errors/not-found';
         break;
       case 500:
       default:
@@ -32,7 +32,7 @@ module.exports = function showError (reply) {
     }
 
     if (code === 404 && opts.name) {
-      template = 'errors/registry-notfound';
+      template = 'errors/registry-not-found';
     }
 
     metrics.addMetric({

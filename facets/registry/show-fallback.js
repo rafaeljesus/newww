@@ -15,6 +15,6 @@ module.exports = function fallbackHandler (request, reply) {
     metrics.addPageLatencyMetric(timer, '404-not-found');
 
     metrics.addMetric({name: '404'});
-    reply.view('errors/registry-notfound', opts).code(404);
+    reply.view('errors/registry-not-found', opts).code(404);
   });
 };

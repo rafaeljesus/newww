@@ -72,7 +72,7 @@ describe('Bubbling errors up to the user', function () {
     done();
   });
 
-  it('should take a code 404 error to the notfound error template', function (done) {
+  it('should take a code 404 error to the not-found error template', function (done) {
 
     var replyMock = createReplyMock();
     var replySpy = sinon.spy(replyMock);
@@ -84,7 +84,7 @@ describe('Bubbling errors up to the user', function () {
 
     showError.call(this, 'someError', 404, 'some message', opts);
     expect(replyMock.view.called).to.be.true;
-    expect(replyMock.view.calledWith('errors/notfound')).to.be.true;
+    expect(replyMock.view.calledWith('errors/not-found')).to.be.true;
     expect(replyMock.code.calledWith(404)).to.be.true;
     done();
   });

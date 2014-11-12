@@ -40,7 +40,7 @@ describe('finishing the enterprise signup process', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.template).to.equal('errors/notfound');
+      expect(source.template).to.equal('errors/not-found');
       done();
     });
   });

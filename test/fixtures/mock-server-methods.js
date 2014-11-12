@@ -67,7 +67,7 @@ module.exports = function (server) {
           var template;
           switch (code) {
             case 404:
-              template = 'errors/notfound';
+              template = 'errors/not-found';
               break;
             case 500:
             default:

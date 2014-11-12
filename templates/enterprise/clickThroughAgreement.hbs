@@ -1,58 +1,39 @@
-<div id="ula-intro">
-  <p>To download and install your trial of npm Enterprise, you have two options:</p>
-</div>
+<div class="container tabletWidth">
 
-<div id="ula-or-contact">
-  <div class="row">
-    <div class="col left">
-      <h2>1: Download now</h2>
+  <hgroup>
+    <h1 class="preserve-case">npm Enterprise</h1>
+    <h2>Two ways to get started</h2>
+  </hgroup>
 
-      <p>To immediately download and try, agree to our User License Agreement by checking the box at right, then
-        click "Agree to license".</p>
+  <section>
+    <h2>Option 1: Download now</h2>
 
-    </div>
-    <div id="ula-form" class="col">
-      <form accept-charset="UTF-8" action="/enterprise-trial-signup" method="POST" id="npme-agree-form">
-        <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <input type="hidden" id="customer_email" name="customer_email" value="{{customer_email}}">
-        <input type="hidden" id="customer_id" name="customer_id" value="{{customer_id}}">
-        <div class="license">
-          <div id="innerscroll">
-            {{> license-text}}
-          </div>
-        </div>
-        <div>
-          <div class="input">
-            <label for="agree"><input type="checkbox" required="required" id="agree" name="agree"> I agree to the npm Enterprise ULA</label>
-          </div>
-        </div>
-        <div>
-          <div class="actions">
-            <input class="hs-button primary large" type="submit" value="Agree to license">
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-  <div class="row bottom">
-    <div class="col left">
-      <h2>2: Contact me instead</h2>
-      <p>If you have further questions you would like to ask before beginning your
-        trial, or your company has different licensing requirements, just click
-        "Contact me" instead.</p>
-    </div>
-    <div id="contact-form" class="col">
-      <form accept-charset="UTF-8" action="/enterprise-contact-me" method="POST" id="npme-contact-instead">
-        <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <input type="hidden" id="contact_customer_email" name="contact_customer_email" value="{{customer_email}}">
-        <input type="hidden" id="contact_customer_id" name="contact_customer_id" value="{{customer_id}}">
-        <div>
-          <p>npm will contact you by email within 1 working day.</p>
-          <div class="actions">
-            <input class="hs-button primary large" type="submit" value="Contact me">
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
+    <p>To immediately download and try npmE, please read and agree to our User License Agreement.</p>
+
+    <div class="scroll-beyond-300">{{> license-text}}</div>
+
+    <form accept-charset="UTF-8" action="/enterprise-trial-signup" method="POST">
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
+      <input type="hidden" id="customer_email" name="customer_email" value="{{customer_email}}">
+      <input type="hidden" id="customer_id" name="customer_id" value="{{customer_id}}">
+      <label for="agree" class="preserve-case">
+        <input type="checkbox" required="required" id="agree" name="agree"> I agree to the npm Enterprise ULA
+      </label>
+      <input class="full-width" type="submit" value="Agree to license">
+    </form>
+  </section>
+
+  <section>
+    <h2>Option 2: Start a conversation</h2>
+
+    <p>If you have further questions before beginning your trial, or your company has different licensing requirements, click the button below and we'll contact you by email within 1 working day.</p>
+
+    <form accept-charset="UTF-8" action="/enterprise-contact-me" method="POST">
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
+      <input type="hidden" id="contact_customer_email" name="contact_customer_email" value="{{customer_email}}">
+      <input type="hidden" id="contact_customer_id" name="contact_customer_id" value="{{customer_id}}">
+      <input class="full-width" type="submit" value="Contact me">
+    </form>
+  </section>
+
 </div>

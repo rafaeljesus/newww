@@ -1,26 +1,32 @@
-<h2>Time to install!</h2>
+<div class="container tabletWidth">
 
-<p>Thank you for trying out npm Enterprise!</p>
+  <hgroup>
+    <h1 class="preserve-case">npm Enterprise</h1>
+    <h2>Signup complete. Time to install!</h2>
+  </hgroup>
 
-<p>To get started, make sure you have a fresh machine that meets the
-  <a href="{{requirementsUrl}}">installation requirements</a>, then
-  simply run:</p>
+  <p>Thank you for trying out npm Enterprise. To get started, make sure you have a fresh machine that meets the
+    <a href="{{requirementsUrl}}">installation requirements</a>, then
+    simply run:</p>
 
-<p><code>npm install npme</code></p>
+  <pre><code class="lang-bash">npm install npme</code></pre>
 
-<p>That's it! When prompted, provide the following information:<br><br>
-  Billing email: <b>{{email}}</b><br>
-  License key: <b><code>{{license_key}}</code></b></p>
+  <p>When prompted, provide the following information:</p>
 
-<p>The installation process will ask you questions about your local
-  environment. For help with supplying the correct values, please refer to the
-  <a href="{{instructionsUrl}}">npm Enterprise documentation</a>. If you
-  have any trouble, you can also always contact
-  <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>.</p>
+  <pre><code class="hljs nohighlight">Billing email: {{email}}
+License key: {{license_key}}</code></pre>
 
-<p>A copy of your license key and these instructions has been emailed to
-{{email}}.</p>
+  <p>The installation process will ask you questions about your local
+    environment. For help with supplying the correct values, please refer to the
+    <a href="{{instructionsUrl}}">npm Enterprise documentation</a>. If you
+    have any trouble, you can also always contact
+    <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>.</p>
 
-{{#if mail}}
-{{{mail}}}
-{{/if}}
+  <p>A copy of your license key and these instructions has been emailed to
+  {{email}}.</p>
+
+  {{#if mail}}
+  {{{mail}}}
+  {{/if}}
+
+</div>

@@ -1,6 +1,6 @@
 var config = require('./config');
 var ops = require('./facets/ops');
-var validPackageName = require('valid-npm-package-name');
+var validatePackageName = require('validate-npm-package-name');
 
 var forceAuthConfig = function(handler) {
   return {
@@ -391,7 +391,7 @@ function fallback(request, reply) {
       }
 
       // Add package to view context if path is a valid package name
-      if (validPackageName(request.params.p)) {
+      if (validatePackageName(request.params.p).valid) {
         opts.package = {name: request.params.p};
       }
 

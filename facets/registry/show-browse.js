@@ -2,6 +2,7 @@ var sanitizer = require('sanitizer'),
     Hapi = require('hapi'),
     log = require('bole')('registry-browse'),
     merge = require('lodash').merge,
+    chunk = require('chunk'),
     metrics = require('newww-metrics')();
 
 var pageSize = 60;
@@ -76,7 +77,7 @@ module.exports = function (request, reply) {
     });
 
     merge(opts, {
-      items: items,
+      items: chunk(items, 3),
       page: page,
       prevPage: page > 0 ? page - 1 : null,
       nextPage: items.length >= pageSize ? page + 1 : null,

@@ -29,10 +29,12 @@
 </h2>
 
 
-<ul class="columnar">
-  {{#each items}}
-    <li>{{> package-widget}}</li>
-  {{/each}}
-</ul>
+{{#each items}}
+  <ul class="columnar">
+    {{#each this}}
+      <li>{{> package-widget}}</li>
+    {{/each}}
+  </ul>
+{{/each}}
 
 {{> pagination}}

@@ -261,17 +261,23 @@ function confirm (request, reply) {
 
         setSession(opts.user, function (err) {
           if (err) {
-            showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
+            return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
           }
 
-          timer.end = Date.now();
-          metrics.addPageLatencyMetric(timer, 'confirmEmailChange');
+          methods.user.getUser.cache.drop(opts.user.name, function (er, resp) {
+            if (er) {
+              return showError(er, 500, 'Unable to drop profile for ' + opts.user.name, opts);
+            }
 
-          metrics.addMetric({ name: 'confirmEmailChange' });
+            timer.end = Date.now();
+            metrics.addPageLatencyMetric(timer, 'confirmEmailChange');
 
-          opts.title = "Edit Profile";
+            metrics.addMetric({ name: 'confirmEmailChange' });
 
-          return reply.view('user/email-edit-confirmation', opts);
+            opts.title = "Edit Profile";
+
+            return reply.view('user/email-edit-confirmation', opts);
+          });
         });
       });
     });
@@ -340,14 +346,20 @@ function revert (request, reply) {
               return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
             }
 
-            timer.end = Date.now();
-            metrics.addPageLatencyMetric(timer, 'revertEmailChange');
+            methods.user.getUser.cache.drop(opts.user.name, function (er, resp) {
+              if (er) {
+                return showError(er, 500, 'Unable to drop profile for ' + opts.user.name, opts);
+              }
 
-            metrics.addMetric({ name: 'revertEmailChange' });
+              timer.end = Date.now();
+              metrics.addPageLatencyMetric(timer, 'revertEmailChange');
 
-            opts.title = "Edit Profile";
+              metrics.addMetric({ name: 'revertEmailChange' });
 
-            return reply.view('user/email-edit-confirmation', opts);
+              opts.title = "Edit Profile";
+
+              return reply.view('user/email-edit-confirmation', opts);
+            });
           });
         });
       });

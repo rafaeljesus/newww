@@ -1,5 +1,6 @@
 var config = require('./config');
 var ops = require('./facets/ops');
+var validPackageName = require('valid-npm-package-name');
 
 var forceAuthConfig = function(handler) {
   return {
@@ -389,8 +390,8 @@ function fallback(request, reply) {
         return reply.redirect('/package/' + package._id);
       }
 
-      // Add package to view context if path contains no slashes
-      if (request.params.p && !request.params.p.match(/\//)) {
+      // Add package to view context if path is a valid package name
+      if (validPackageName(request.params.p)) {
         opts.package = {name: request.params.p};
       }
 

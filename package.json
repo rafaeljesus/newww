@@ -70,7 +70,8 @@
     "schemeless": "^1.0.0",
     "scooter": "^1.2.0",
     "stripe": "^2.7.3",
-    "stylus": "^0.45.0"
+    "stylus": "^0.45.0",
+    "valid-npm-package-name": "^1.1.0"
   },
   "devDependencies": {
     "bistre": "^1.0.0",

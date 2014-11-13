@@ -198,16 +198,15 @@ describe('getting to the browse page', function () {
       });
     });
 
-    it('handles "userstar" by itself', function (done) {
+    it('redirects "userstar" to homepage, because users who star things a lot is not an interesting view', function (done) {
       var opts = {
         url: '/browse/userstar'
       };
 
       server.inject(opts, function (resp) {
-        expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('registry/browse');
-        expect(source.context.type).to.equal('userstar');
-        expect(source.context.arg).to.not.exist;
+        console.log("\n\n\n\n\n", resp.headers, "\n\n\n\n\n")
+        expect(resp.statusCode).to.equal(301);
+        expect(resp.headers.location).to.match(/\/$/);
         done();
       });
     });

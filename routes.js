@@ -188,6 +188,12 @@ var routes = module.exports = [
       return reply.redirect(fmt("/~%s#packages", request.params.user)).code(301);
     }
   },{
+    path: "/browse/userstar",
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/").code(301);
+    }
+  },{
     path: "/browse/userstar/{user}",
     method: "GET",
     handler: function(request, reply) {

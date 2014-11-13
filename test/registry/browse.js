@@ -130,16 +130,14 @@ describe('getting to the browse page', function () {
       });
     });
 
-    it('handles "author" with an argument', function (done) {
+    it('redirects "author" with an argument to profile page #packages', function (done) {
       var opts = {
         url: '/browse/author/mikeal'
       };
 
       server.inject(opts, function (resp) {
-        expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('registry/browse');
-        expect(source.context.type).to.equal('author');
-        expect(source.context.arg).to.equal('mikeal');
+        expect(resp.statusCode).to.equal(301);
+        expect(resp.headers.location).to.include('/~mikeal#packages');
         done();
       });
     });

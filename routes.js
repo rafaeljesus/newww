@@ -182,6 +182,12 @@ var routes = module.exports = [
       return reply.redirect("/package/" + request.params.package).code(301);
     }
   },{
+    path: "/browse/all",
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/").code(301);
+    }
+  },{
     path: "/browse/author/{user}",
     method: "GET",
     handler: function(request, reply) {

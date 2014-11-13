@@ -60,16 +60,14 @@ describe('getting to the browse page', function () {
   });
 
   describe('parsing browse paths', function () {
-    it('handles "all"', function (done) {
+    it('redirects "all" to homepage, because it is not an interesting view', function (done) {
       var opts = {
         url: '/browse/all'
       };
 
       server.inject(opts, function (resp) {
-        expect(resp.statusCode).to.equal(200);
-        expect(source.template).to.equal('registry/browse');
-        expect(source.context.type).to.equal('all');
-        expect(source.context.arg).to.not.exist;
+        expect(resp.statusCode).to.equal(301);
+        expect(resp.headers.location).to.match(/\/$/);
         done();
       });
     });
@@ -204,7 +202,6 @@ describe('getting to the browse page', function () {
       };
 
       server.inject(opts, function (resp) {
-        console.log("\n\n\n\n\n", resp.headers, "\n\n\n\n\n")
         expect(resp.statusCode).to.equal(301);
         expect(resp.headers.location).to.match(/\/$/);
         done();

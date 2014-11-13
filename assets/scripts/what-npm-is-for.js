@@ -4,7 +4,7 @@ window.malarkey = require("malarkey");
 module.exports = function(){
   $(function() {
     var elem = document.querySelector('#what-npm-is-for');
-    var duration = 1000
+    var duration = 1200
     var opts = {
       speed: 30,
       loop: true,

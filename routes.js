@@ -1,5 +1,6 @@
 var config = require('./config');
 var ops = require('./facets/ops');
+var fmt = require('util').format;
 var validatePackageName = require('validate-npm-package-name');
 
 var forceAuthConfig = function(handler) {
@@ -179,6 +180,12 @@ var routes = module.exports = [
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect("/package/" + request.params.package).code(301);
+    }
+  },{
+    path: "/browse/userstar/{user}",
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect(fmt("/~%s#starred", request.params.user)).code(301);
     }
   },{
     path: "/browse/{p*}",

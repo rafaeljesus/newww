@@ -4,9 +4,9 @@
   {{else}} {{#compare type 'keyword'}}
     Browse by Keyword{{#if arg}}: {{arg}}{{/if}}
   {{else}} {{#compare type 'author'}}
-    Browse by Author{{#if arg}}: <a href="/profile/{{arg}}">{{arg}}</a>{{/if}}
+    Most prolific authors
   {{else}} {{#compare type 'updated'}}
-    All Packages (by updated date)
+    Recently updated packages
   {{else}} {{#compare type 'depended'}}
     {{#if arg}}
       Packages depending on <a href="/package/{{arg}}">{{arg}}</a>

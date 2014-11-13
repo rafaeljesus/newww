@@ -5,16 +5,7 @@
     <h2>{{t "user.signup.subtitle"}}</h2>
   </hgroup>
 
-  {{#if errors}}
-    <p class="error">{{t "user.signup.error"}}</p>
-    <ul>
-      {{#each errors}}
-        <li>
-          <p class="error">{{message}}</p>
-        </li>
-      {{/each}}
-    </ul>
-  {{/if}}
+  {{> errors}}
 
   <form action="" method="post">
     <label for="name">{{t "user.signup.form.username"}}</label>

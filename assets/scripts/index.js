@@ -8,6 +8,7 @@ window.payments = require("./payments")()
 window.github = require("./github")()
 window.pretty_numbers = require("./pretty-numbers")()
 window.mousetrap = require("mousetrap")
+require("./what-npm-is-for")()
 
 $(function () {
   $(".autoselect-wrapper input").on("click", function () {

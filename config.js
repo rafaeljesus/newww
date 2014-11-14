@@ -29,6 +29,9 @@ config.server = {
     port: '16379',
     password: 'i-am-using-redis-in-development-mode-for-npm-www'
   },
+  router: {
+    stripTrailingSlash: true
+  },
   security: {
     hsts: {
       maxAge: 1000 * 60 * 60 * 24 * 30,

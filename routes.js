@@ -188,12 +188,6 @@ var routes = module.exports = [
       return reply.redirect("/").code(301);
     }
   },{
-    path: "/browse/all/",
-    method: "GET",
-    handler: function(request, reply) {
-      return reply.redirect("/").code(301);
-    }
-  },{
     path: "/browse/author/{user}",
     method: "GET",
     handler: function(request, reply) {
@@ -201,12 +195,6 @@ var routes = module.exports = [
     }
   },{
     path: "/browse/userstar",
-    method: "GET",
-    handler: function(request, reply) {
-      return reply.redirect("/").code(301);
-    }
-  },{
-    path: "/browse/userstar/",
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect("/").code(301);

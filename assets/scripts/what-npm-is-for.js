@@ -3,23 +3,31 @@ window.malarkey = require("malarkey");
 
 module.exports = function(){
   $(function() {
+
+    // Start by retyping the text content present in
+    // the element at load time
     var elem = document.querySelector('#what-npm-is-for');
-    var duration = 1200
+    var initialText = elem.textContent;
+
+    var pause = 1200
     var opts = {
-      speed: 30,
-      loop: true,
+      speed: 50,
+      loop: false,
       postfix: ''
     };
+
     malarkey(elem, opts)
-      .pause(duration).delete()
-      .type('node').pause(duration).delete()
-      .type('browsers').pause(duration).delete()
-      .type('angular').pause(duration).delete()
-      .type('bower').pause(duration).delete()
-      .type('gulp').pause(duration).delete()
-      .type('browserify').pause(duration).delete()
-      .type('grunt').pause(duration).delete()
-      .type('tessel').pause(duration).delete()
-      .type('javascript');
+      .clear()
+      .type(initialText).pause(pause).delete(10)
+      .type('node').pause(pause).delete(4)
+      .type('browsers').pause(pause).delete(8)
+      .type('angular').pause(pause).delete(7)
+      .type('bower').pause(pause).delete(5)
+      .type('gulp').pause(pause).delete(4)
+      .type('browserify').pause(pause).delete(10)
+      .type('grunt').pause(pause).delete(5)
+      .type('tessel').pause(pause).delete(6)
+      .type('you.').pause(600).delete(1)
+      .type(', Buddy.');
   })
 }

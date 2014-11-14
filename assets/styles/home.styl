@@ -1,12 +1,27 @@
-#subheader
-  position relative
+@keyframes cursor-blink
+  1%
+    opacity 0
+  40%
+    opacity 0
+  60%
+     opacity 1
+  100%
+    opacity 1
 
 #what-npm-is-for
+  line-height 1.2
   display inline-block
-  width 200px
-  text-align left
+  margin-bottom 20px
   @media only screen and (max-width: mobileMaxWidth)
-    width auto
+    margin-bottom 0
+  &:after
+    -webkit-animation cursor-blink 0.8s linear infinite
+    -moz-animation cursor-blink 0.8s linear infinite
+    -o-animation cursor-blink 0.8s linear infinite
+    animation cursor-blink 0.8s linear infinite
+    content "|"
+    color npmred
+    padding-left 3px
 
 #home-stats
   position relative

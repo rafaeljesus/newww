@@ -1,39 +1,39 @@
-<div id="subheader">
-  <div class="container">
+<div class="container">
 
-    <h1 class="centered">npm is the package manager for <span id="what-npm-is-for">JavaScript</span></h1>
-
-    <div id="home-stats">
-      {{#if totalPackages}}
-        <div class="stat icon-package-hex">
-          <strong class="pretty-number">{{totalPackages}}</strong>
-          total packages
-        </div>
-      {{/if}}
-
-      {{#if downloads.day}}
-        <div class="stat icon-cal-24hours">
-          <strong class="pretty-number">{{downloads.day}}</strong>
-          downloads in the last day
-        </div>
-      {{/if}}
-
-      {{#if downloads.week}}
-        <div class="stat icon-cal-7days">
-          <strong class="pretty-number">{{downloads.week}}</strong>
-          downloads in the last week
-        </div>
-      {{/if}}
-
-      {{#if downloads.month}}
-        <div class="stat icon-cal-30days">
-          <strong class="pretty-number">{{downloads.month}}</strong>
-          downloads in the last month
-        </div>
-      {{/if}}
-    </div>
-
+  <div class="centered">
+    <h1 id="what-npm-is-for">npm is the package manager for JavaScript</h1>
   </div>
+
+  <div id="home-stats">
+    {{#if totalPackages}}
+      <div class="stat icon-package-hex">
+        <strong class="pretty-number">{{totalPackages}}</strong>
+        total packages
+      </div>
+    {{/if}}
+
+    {{#if downloads.day}}
+      <div class="stat icon-cal-24hours">
+        <strong class="pretty-number">{{downloads.day}}</strong>
+        downloads in the last day
+      </div>
+    {{/if}}
+
+    {{#if downloads.week}}
+      <div class="stat icon-cal-7days">
+        <strong class="pretty-number">{{downloads.week}}</strong>
+        downloads in the last week
+      </div>
+    {{/if}}
+
+    {{#if downloads.month}}
+      <div class="stat icon-cal-30days">
+        <strong class="pretty-number">{{downloads.month}}</strong>
+        downloads in the last month
+      </div>
+    {{/if}}
+  </div>
+
 </div>
 
 <h2 class="centered">

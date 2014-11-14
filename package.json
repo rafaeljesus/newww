@@ -51,7 +51,7 @@
     "jquery": "^2.1.1",
     "lab": "^4.5.1",
     "leven": "^1.0.1",
-    "malarkey": "git://github.com/yuanqing/malarkey",
+    "malarkey": "0.0.2",
     "marked": "^0.3.2",
     "moment": "^2.6.0",
     "mousetrap": "0.0.1",

@@ -16,7 +16,7 @@ module.exports = function (options) {
 
     var opts = {
       user: transform(request.auth.credentials, options),
-      
+
       namespace: 'user-profile-edit'
     }
 
@@ -50,7 +50,7 @@ module.exports = function (options) {
       }
     }
 
-    if (request.method === 'head' || request.method === 'get' || opts.error) {
+    if (request.method === 'get' || opts.error) {
       timer.end = Date.now();
       addLatencyMetric(timer, 'profile-edit');
 

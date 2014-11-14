@@ -291,10 +291,6 @@ var routes = module.exports = [
     config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
   },{
     path: "/profile-edit",
-    method: "HEAD",
-    config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
-  },{
-    path: "/profile-edit",
     method: "PUT",
     config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
   },{

@@ -3,6 +3,8 @@ footer
 
   h3, ul.links
     margin-left 20px
+    @media only screen and (max-width: mobileMaxWidth)
+      margin-left 0
 
   h3
     text-transform lowercase
@@ -17,7 +19,6 @@ footer
       padding 0
       display block
       text-transform lowercase
-      // border-bottom 1px solid greigh5
       a
         text-decoration none
         &:hover

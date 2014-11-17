@@ -15,7 +15,7 @@ var Hapi = require('hapi'),
 var server;
 
 before(function (done) {
-  server = Hapi.createServer('localhost', '9110');
+  server = Hapi.createServer('localhost', '9119');
 
   server.pack.register([
     {

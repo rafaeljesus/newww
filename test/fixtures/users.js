@@ -59,12 +59,9 @@ exports.fakeuser = {
 }
 
 exports.fakeuserNewProfile = {
-  _id: 'org.couchdb.user:fakeuser',
-  name: 'fakeuser',
   fullname: 'Fake User',
   github: 'fakeuser',
   twitter: 'fakeuser',
-  appdotnet: '',
   homepage: '',
   freenode: ''
 }

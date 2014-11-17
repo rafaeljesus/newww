@@ -1,8 +1,10 @@
 var transform = require('./presenters/profile').transform,
     murmurhash = require('murmurhash'),
     Hapi = require('hapi'),
+    Joi = require('joi'),
     log = require('bole')('user-profile-edit'),
     uuid = require('node-uuid'),
+    merge = require('lodash').merge,
     metrics = require('newww-metrics')();
 
 module.exports = function (options) {
@@ -22,11 +24,23 @@ module.exports = function (options) {
 
     if (request.method === 'post' || request.method === 'put') {
 
-      if (!request.payload.name) {
-        opts.error = 'Name is required';
-      } else {
+      var editableUserProperties = Joi.object().keys({
+        fullname: Joi.string().allow(''),
+        homepage: Joi.string().allow(''),
+        github: Joi.string().allow(''),
+        twitter: Joi.string().allow(''),
+        freenode: Joi.string().allow('')
+      });
 
-        opts.user = applyChanges(opts.user, request.payload);
+      Joi.validate(request.payload, editableUserProperties, function (err, userChanges) {
+
+        if (err) {
+          opts.error = err;
+          return reply.view('user/profile-edit', opts).code(400);
+        }
+
+        merge(opts.user, userChanges);
+
         opts.user = transform(opts.user, options);
 
         saveProfile(opts.user, function (err, data) {
@@ -47,10 +61,10 @@ module.exports = function (options) {
           });
 
         });
-      }
+      });
     }
 
-    if (request.method === 'get' || opts.error) {
+    if (request.method === 'head' || request.method === 'get' || opts.error) {
       timer.end = Date.now();
       addLatencyMetric(timer, 'profile-edit');
 

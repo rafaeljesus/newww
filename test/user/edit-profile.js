@@ -107,7 +107,39 @@ describe('Modifying the profile', function () {
     expect(cacheData.github).to.equal(fakeProfile.github);
     expect(cacheData.fields[3].value).to.equal(fakeProfile.twitter);
     done();
-  })
+  });
+
+  it('rejects _id, name, and email from the payload', function (done) {
+    var options = {
+      url: '/profile-edit',
+      method: 'POST',
+      payload: fakeProfile,
+      credentials: fakeuser,
+      headers: { cookie: 'crumb=' + cookieCrumb }
+    };
+
+    options.payload.crumb = cookieCrumb;
+
+    options.payload._id = 'org.couchdb.user:badguy';
+    options.payload.name = 'badguy';
+    options.payload.email = 'badguy@bad.com';
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(400);
+      expect(source.context.user).to.exist;
+      expect(source.context.error).to.exist;
+      expect(source.context.error.details).to.be.an.array;
+      var names = source.context.error.details.map(function(detail){
+        return detail.path
+      })
+      expect(names).to.include('_id');
+      expect(names).to.include('name');
+      expect(names).to.include('email');
+      expect(source.template).to.equal('user/profile-edit');
+      done();
+    });
+
+  });
 });
 
 after(function (done) {

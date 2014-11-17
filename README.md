@@ -139,8 +139,8 @@ of VMs, you will need to install them yourself.
 
 ### 1. Recommended setup: pre-built VM
 
-First [install VirtualBox](https://www.virtualbox.org/wiki/Downloads), which is
-free for personal use.
+First [install the latest version of VirtualBox](https://www.virtualbox.org/wiki/Downloads), which is
+free for personal use. There is [an issue](https://github.com/npm/newww/issues/265) with some earlier versions of VirtualBox, so you may need to update it.
 
 Then [install Vagrant](https://www.vagrantup.com/downloads.html), also free.
 

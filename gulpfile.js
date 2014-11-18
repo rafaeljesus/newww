@@ -10,6 +10,7 @@ var gulp = require('gulp'),
     nodemon = require('gulp-nodemon'),
     rename = require('gulp-rename'),
     // imagemin = require('gulp-imagemin'),
+    jshint = require('gulp-jshint'),
     pngcrush = require('imagemin-pngcrush');
 
 var paths = {
@@ -95,6 +96,12 @@ gulp.task('nodemon', function() {
         .pipe(bistre({time: true}))
         .pipe(process.stderr);
     });
+});
+
+gulp.task('lint', function() {
+  gulp.src('./**/*')
+      .pipe(jshint())
+      .pipe(jshint.reporter('default'));
 });
 
 gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat']);

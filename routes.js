@@ -393,12 +393,17 @@ var routes = module.exports = [
 ];
 
 function fallback(request, reply) {
+
+  // 1. Try to render a static page
+  // 2. Look for a package with the given name
+  // 3. 404
+
   var route = request.params.p,
     opts = {
       user: request.auth.credentials,
     };
 
-  request.server.methods.corp.getPage(route, function(err, content) {
+  request.server.methods.corp.getPage(route, function(er, content) {
 
     if (content) {
       opts.md = content;

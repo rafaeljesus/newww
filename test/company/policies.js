@@ -59,4 +59,16 @@ describe('Viewing policies', function () {
       done();
     });
   });
+
+  it('rejects any non-alphanumeric-string', function (done) {
+    var opts = {
+      url: '/policies/..%2f..%2fsomething'
+    };
+
+    server.inject(opts, function (resp) {
+      expect(resp.statusCode).to.equal(404);
+      expect(source.template).to.equal('errors/not-found');
+      done();
+    });
+  });
 });

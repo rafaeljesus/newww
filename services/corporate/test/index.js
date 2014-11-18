@@ -70,4 +70,14 @@ describe('getting pages from GitHub', function () {
       done();
     });
   });
+
+  it('returns an error if the page name is not alphanumeric', function (done) {
+    server.methods.corp.getPolicy('%2f..%2fboom', function (er, content) {
+      expect(er).to.exist;
+      var message = er.details[0].message;
+      expect(message).to.equal('value must only contain alpha-numeric characters');
+      expect(content).to.be.null;
+      done();
+    });
+  })
 });

@@ -16,7 +16,15 @@ module.exports = function (server) {
 
     corp: {
       getPage: function (name, next) {
-        return next(null);
+        if (name === 'jobs') {
+          return next(null, "<h1 id='jobs'>JOBS</h1>");
+        }
+
+        // if (name === '%2f..%2fboom') {
+        //   return next();
+        // }
+
+        return next(new Error('OMGBOOM'));
       },
 
       getPolicy: function (name, next) {

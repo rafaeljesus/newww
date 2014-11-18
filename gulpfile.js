@@ -104,6 +104,6 @@ gulp.task('lint', function() {
       .pipe(jshint.reporter('default'));
 });
 
-gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat']);
+gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat', 'lint']);
 gulp.task('dev', ['build', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

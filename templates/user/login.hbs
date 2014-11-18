@@ -23,7 +23,7 @@
     <input type="submit" class="full-width" value="{{t "user.login.form.submit"}}" />
 
     <p><a href="/forgot">{{t "user.login.form.forgot"}}</a> | <a href="/signup">{{t "user.login.form.signup"}}</a></p>
-    <input type="hidden" name="crumb" value="{{crumb}}"/>
+    {{> form_security}}
   </form>
 
 </div>

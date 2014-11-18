@@ -13,13 +13,13 @@
     <div class="scroll-beyond-300">{{> license-text}}</div>
 
     <form accept-charset="UTF-8" action="/enterprise-trial-signup" method="POST">
-      <input type="hidden" name="crumb" value="{{crumb}}"/>
       <input type="hidden" id="customer_email" name="customer_email" value="{{customer_email}}">
       <input type="hidden" id="customer_id" name="customer_id" value="{{customer_id}}">
       <label for="agree" class="preserve-case">
         <input type="checkbox" required="required" id="agree" name="agree"> I agree to the npm Enterprise ULA
       </label>
       <input class="full-width" type="submit" value="Agree to license">
+      {{> form_security}}
     </form>
   </section>
 
@@ -29,10 +29,10 @@
     <p>If you have further questions before beginning your trial, or your company has different licensing requirements, click the button below and we'll contact you by email within 1 working day.</p>
 
     <form accept-charset="UTF-8" action="/enterprise-contact-me" method="POST">
-      <input type="hidden" name="crumb" value="{{crumb}}"/>
       <input type="hidden" id="contact_customer_email" name="contact_customer_email" value="{{customer_email}}">
       <input type="hidden" id="contact_customer_id" name="contact_customer_id" value="{{customer_id}}">
       <input class="full-width" type="submit" value="Contact me">
+      {{> form_security}}
     </form>
   </section>
 

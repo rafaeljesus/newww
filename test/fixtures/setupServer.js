@@ -26,10 +26,12 @@ module.exports = function (done) {
       password: '12345'
     });
 
-    server.pack.register({
-      plugin: require('crumb'),
-      options: { cookieOptions: { isSecure: true } }
-    }, function (err) {
+    server.pack.register([{
+        plugin: require('crumb'),
+        options: { cookieOptions: { isSecure: true } }
+      },
+      require('../../adapters/bonbon')
+    ], function (err) {
       server.route(require('../../routes'));
 
       // manually start the cache

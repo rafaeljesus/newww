@@ -1,4 +1,4 @@
-<div class="content">
+   <div class="content">
 
     <div id="readme">
     <hgroup>
@@ -33,8 +33,8 @@
           </label>
         </div>
 
-        <input type="hidden" name="crumb" value="{{crumb}}"/>
         <input type="submit" class="full-width" value="Submit">
+        {{> form_security}}
       </form>
     {{/if}}
 

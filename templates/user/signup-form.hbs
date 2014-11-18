@@ -23,8 +23,7 @@
     <p class="help-text">{{{t "user.signup.form.emailHelp"}}}</p>
 
     <input type="submit" class="full-width" value="{{t "user.signup.form.submit"}}" />
-
-    <input type="hidden" name="crumb" value="{{crumb}}"/>
+    {{> form_security}}
   </form>
 
 </div>

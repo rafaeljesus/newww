@@ -7,9 +7,9 @@
       <h1>{{name}}
         <form class="star">
           <input type="hidden" name="name" value="{{name}}">
-          <input type="hidden" name="crumb" value="{{../crumb}}">
           <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>
           <label for="star-input" class="icon-star"></label>
+          {{> form_security ..}}
         </form>
       </h1>
       <h2>{{description}}</h2>

@@ -1,7 +1,24 @@
 var Hoek = require('hoek'),
-  url = require('url');
+    Hapi = require('hapi'),
+    url = require('url');
 
 exports.register = function(plugin, options, next) {
+
+  plugin.ext('onPreHandler', function(request, next) {
+
+    if (request.method !== "post") {
+      return next();
+    }
+
+    if (request.payload.honey && request.payload.honey.length) {
+      return next(Hapi.Error.badRequest(request.path));
+    }
+
+    delete request.payload.honey;
+
+    return next();
+  })
+
   plugin.ext('onPreResponse', function(request, next) {
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {

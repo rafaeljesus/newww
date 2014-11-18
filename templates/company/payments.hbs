@@ -12,9 +12,9 @@
 
     <form>
       <input type="hidden" data-key="{{stripeKey}}"/>
-      <input type="hidden" name="crumb" value="{{crumb}}"/>
       <input type="submit" class="full-width" id="one-month" value="One Month for $350">
       <input type="submit" class="full-width" id="three-months" value="Three Months for $1000">
+      {{> form_security}}
     </form>
 
   </section>

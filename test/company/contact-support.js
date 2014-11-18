@@ -130,4 +130,43 @@ describe('sending a contact email', function () {
       });
     });
   });
+
+
+  it('rejects submission if `honey` is in the payload', function (done) {
+
+    server.inject({url: '/contact'}, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+
+      var opts = {
+        url: '/send-contact',
+        method: 'POST',
+        payload: {
+          name: 'Boom',
+          email: 'boom@bam.com',
+          subject: 'Hi!',
+          inquire: 'general',
+          message: 'This is a message.',
+          honey: 'I am a robot bear.',
+          crumb: cookieCrumb
+        },
+        headers: { cookie: 'crumb=' + cookieCrumb }
+      }
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(400);
+        expect(resp.result.error).to.exist;
+        expect(resp.result.error).to.equal('Bad Request');
+        done();
+      });
+    });
+  });
+
+
+
+
 });

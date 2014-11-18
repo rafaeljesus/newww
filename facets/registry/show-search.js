@@ -25,7 +25,7 @@ module.exports = function (options) {
         showError = request.server.methods.errors.showError(reply),
         timer = { start: Date.now() };
 
-    var page = +request.query.page || 1;
+    var page = Math.abs(parseInt(request.query.page, 10)) || 1;
     var perPage  = parseInt(options.perPage);
     var searchQuery = {
       fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek'],
@@ -124,7 +124,7 @@ module.exports = function (options) {
         results: response.hits.hits,
         totalResults: response.hits.total,
         singleResult: response.hits.total === 1,
-        prevPage: page > 0 ? page - 1 : null,
+        prevPage: page > 1 ? page - 1 : null,
         nextPage: response.hits.total >= (perPage * page) ? page + 1 : null
       });
 

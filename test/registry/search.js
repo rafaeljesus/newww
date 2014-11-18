@@ -18,7 +18,7 @@ before(function (done) {
 sinon.stub(elasticsearch, 'Client', function(){
   return {
     search: function(query, cb){
-      cb(null, fakeSearch)
+      cb(null, {hits: fakeSearch})
     }
   };
 });
@@ -58,6 +58,56 @@ describe('Rendering the view', function () {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include("/search?q=food-trucks");
       done();
+    });
+  });
+
+  describe('pagination', function () {
+    it('understands the page query and uses it properly', function (done) {
+      var pageNum = 2;
+      var opts = {
+        url: '/search/?q=express&page=' + pageNum
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(source.template).to.equal('registry/search');
+        expect(source.context.page).to.equal(pageNum);
+        expect(source.context.nextPage).to.equal(pageNum + 1);
+        expect(source.context.prevPage).to.equal(pageNum - 1);
+        done();
+      });
+    });
+
+    it('coerces negative page numbers to 1', function (done) {
+      var pageNum = -1;
+      var opts = {
+        url: '/search/?q=express&page=' + pageNum
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(source.template).to.equal('registry/search');
+        expect(source.context.page).to.equal(1);
+        expect(source.context.nextPage).to.equal(2);
+        expect(source.context.prevPage).to.not.exist;
+        done();
+      });
+    });
+
+    it('coerces decimal page numbers to 1', function (done) {
+      var pageNum = 0.1;
+      var opts = {
+        url: '/search/?q=express&page=' + pageNum
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(source.template).to.equal('registry/search');
+        expect(source.context.page).to.equal(1);
+        expect(source.context.nextPage).to.equal(2);
+        expect(source.context.prevPage).to.not.exist;
+        done();
+      });
     });
   });
 

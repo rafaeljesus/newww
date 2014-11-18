@@ -43,19 +43,53 @@ describe('getting to the browse page', function () {
     });
   });
 
-  it('understands the page query and uses it properly', function (done) {
-    var pageNum = 2;
-    var opts = {
-      url: '/browse?page=' + pageNum
-    };
+  describe('pagination', function () {
+    it('understands the page query and uses it properly', function (done) {
+      var pageNum = 2;
+      var opts = {
+        url: '/browse?page=' + pageNum
+      };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('registry/browse');
-      expect(source.context.page).to.equal(pageNum);
-      expect(source.context.nextPage).to.equal(pageNum + 1);
-      expect(source.context.prevPage).to.equal(pageNum - 1);
-      done();
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(source.template).to.equal('registry/browse');
+        expect(source.context.page).to.equal(pageNum);
+        expect(source.context.nextPage).to.equal(pageNum + 1);
+        expect(source.context.prevPage).to.equal(pageNum - 1);
+        done();
+      });
+    });
+
+    it('coerces negative page numbers to 1', function (done) {
+      var pageNum = -1;
+      var opts = {
+        url: '/browse?page=' + pageNum
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(source.template).to.equal('registry/browse');
+        expect(source.context.page).to.equal(1);
+        expect(source.context.nextPage).to.equal(2);
+        expect(source.context.prevPage).to.not.exist;
+        done();
+      });
+    });
+
+    it('coerces decimal page numbers to 1', function (done) {
+      var pageNum = 0.1;
+      var opts = {
+        url: '/browse?page=' + pageNum
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(source.template).to.equal('registry/browse');
+        expect(source.context.page).to.equal(1);
+        expect(source.context.nextPage).to.equal(2);
+        expect(source.context.prevPage).to.not.exist;
+        done();
+      });
     });
   });
 

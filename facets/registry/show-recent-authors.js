@@ -21,7 +21,7 @@ module.exports = function RecentAuthors (request, reply) {
   }
 
   // grab the page number, if it's in the url
-  var page = +request.query.page || 1;
+  var page = Math.abs(parseInt(request.query.page, 10)) || 1;
   var since = request.params.since;
 
   since = since ? new Date(since) : new Date(Date.now() - TWO_WEEKS);
@@ -49,7 +49,7 @@ module.exports = function RecentAuthors (request, reply) {
       items: items,
       pageSize: pageSize,
       page: page,
-      prevPage: page > 0 ? page - 1 : null,
+      prevPage: page > 1 ? page - 1 : null,
       nextPage: items.length >= pageSize ? page + 1 : null
     });
 

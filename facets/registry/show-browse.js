@@ -26,7 +26,7 @@ module.exports = function (request, reply) {
       page, type, arg;
 
   // grab the page number, if it's in the url
-  page = +request.query.page || 1;
+  page = Math.abs(parseInt(request.query.page, 10)) || 1;
 
   // now let's get the type and arg, if they're in there
   params = params.split('/');
@@ -79,7 +79,7 @@ module.exports = function (request, reply) {
     merge(opts, {
       items: chunk(items, 3),
       page: page,
-      prevPage: page > 0 ? page - 1 : null,
+      prevPage: page > 1 ? page - 1 : null,
       nextPage: items.length >= pageSize ? page + 1 : null,
       pageSize: pageSize,
       browseby: browseby,

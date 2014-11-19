@@ -21,10 +21,18 @@ exports.register = function(plugin, options, next) {
 
   plugin.ext('onPreResponse', function(request, next) {
 
+    // Return raw context object if `json` query param is present
+    // Remove `user` property from context to minimize risk
+    if ('json' in request.query) {
+      var ctx = Hoek.reach(request, 'response.source.context');
+      if (ctx) {
+        var context = Hoek.applyToDefaults({}, ctx);
+        delete context.user;
+        return next(context);
+      }
+    }
+
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
-
-      // options.graphics = require("@npm/graphics")
-
       if (options.canonicalHost) {
         if (request.url.query.page || request.url.query.q) {
           options.canonicalURL = url.resolve(options.canonicalHost, request.url.path);

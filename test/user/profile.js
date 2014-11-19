@@ -56,6 +56,20 @@ describe('Retreiving profiles from the registry', function () {
     done();
   });
 
+  it('returns sanitized view context if json query param is present', function (done) {
+    var options = {
+      url: '/~' + username1 + '?json'
+    }
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      expect(resp.headers['content-type']).to.match(/json/);
+      expect(resp.result).to.be.an.object;
+      expect(resp.result.user).to.not.exist;
+      return done();
+    });
+  });
+
   it('renders an error page with a user that doesn\'t exist', function (done) {
     var options = {
       url: '/~blerg'

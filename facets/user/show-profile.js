@@ -25,7 +25,7 @@ module.exports = function(options) {
     var profileName = request.params.name || opts.user.name;
 
     if (request.info.referrer.indexOf('profile-edit') !== -1) {
-      getUser.cache.drop(profileName, function(er, resp) {
+      return getUser.cache.drop(profileName, function(er, resp) {
         if (er) {
           return showError(er, 500, 'Unable to drop key ' + profileName, opts);
         }

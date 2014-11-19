@@ -91,11 +91,6 @@ module.exports = function(options) {
             name: 'showProfile'
           });
 
-          // Return raw context object if `json` query param is present
-          if ('json' in request.query) {
-            return reply(opts);
-          }
-
           return reply.view('user/profile', opts)
         });
       });

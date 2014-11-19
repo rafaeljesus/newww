@@ -5,3 +5,9 @@ exports.package = {
     title: "not found"
   }
 }
+exports.errors = {
+  generic: {
+    title: "Whoops",
+    subtitle: "Something went wrong"
+  }
+}

@@ -29,7 +29,6 @@ gulp.task('watch', function(){
   gulp.watch(paths.styles, ['styles']);
   gulp.watch(paths.scripts.browserify, ['browserify']);
   gulp.watch(paths.scripts.vendor, ['concat']);
-  gulp.watch(paths.scripts.all, ['lint']);
 });
 
 gulp.task('styles', function () {

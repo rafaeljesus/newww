@@ -20,7 +20,8 @@ var paths = {
   misc: ['./assets/misc/*'],
   scripts: {
     browserify: ["./assets/scripts/*.js"],
-    vendor: ["./assets/scripts/vendor/*.js"]
+    vendor: ["./assets/scripts/vendor/*.js"],
+    all: ["./**/*.js"]
   }
 };
 
@@ -29,6 +30,7 @@ gulp.task('watch', function(){
   gulp.watch(paths.styles, ['styles']);
   gulp.watch(paths.scripts.browserify, ['browserify']);
   gulp.watch(paths.scripts.vendor, ['concat']);
+  gulp.watch(paths.scripts.all, ['lint']);
 });
 
 gulp.task('styles', function () {

@@ -20,7 +20,8 @@ var paths = {
   misc: ['./assets/misc/*'],
   scripts: {
     browserify: ["./assets/scripts/*.js"],
-    vendor: ["./assets/scripts/vendor/*.js"]
+    vendor: ["./assets/scripts/vendor/*.js"],
+    all: ["./**/*.js"]
   }
 };
 

@@ -227,7 +227,7 @@ describe('browsing', function () {
       })
     });
 
-    it('gets the first 10 packages that have been starred by a specific user', function (done) {
+    it('gets the first 10 packages that have been starred by a specific user', { timeout: 5000 }, function (done) {
       var user = 'substack';
 
       var couch = nock(config.registryCouch)
@@ -279,6 +279,15 @@ describe('starring a package', function () {
       done();
     });
   });
+
+  it('does not star invalid package names', function (done) {
+    server.methods.registry.star('request%2f', 'boom', function (er, data) {
+      expect(er).to.exist;
+      expect(er.message).to.equal('Invalid package name');
+      done();
+    });
+  });
+
 });
 
 describe('unstarring a package', function () {
@@ -291,6 +300,14 @@ describe('unstarring a package', function () {
       expect(er).to.not.exist;
       expect(data).to.exist;
       expect(data.ok).to.equal('unstarred');
+      done();
+    });
+  });
+
+  it('does not remove star from invalid package names', function (done) {
+    server.methods.registry.unstar('request%2f', 'boom', function (er, data) {
+      expect(er).to.exist;
+      expect(er.message).to.equal('Invalid package name');
       done();
     });
   });

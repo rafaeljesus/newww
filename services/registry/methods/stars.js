@@ -1,5 +1,6 @@
 var Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
+    validatePackageName = require("validate-npm-package-name"),
     metrics = require('newww-metrics')();
 
 var timer = {};
@@ -7,6 +8,11 @@ var timer = {};
 module.exports = {
   star: function star (package, username, next) {
     timer.start = Date.now();
+
+    if (!validatePackageName(package).valid) {
+      return next(Hapi.error.badRequest("Invalid package name"));
+    }
+
     adminCouch.put('/registry/_design/app/_update/star/' + package, username, function (er, cr, data) {
       timer.end = Date.now();
       metrics.addCouchLatencyMetric(timer, 'star');
@@ -21,6 +27,11 @@ module.exports = {
 
   unstar: function unstar (package, username, next) {
     timer.start = Date.now();
+
+    if (!validatePackageName(package).valid) {
+      return next(Hapi.error.badRequest("Invalid package name"));
+    }
+
     adminCouch.put('/registry/_design/app/_update/unstar/' + package, username, function (er, cr, data) {
       timer.end = Date.now();
       metrics.addCouchLatencyMetric(timer, 'unstar');

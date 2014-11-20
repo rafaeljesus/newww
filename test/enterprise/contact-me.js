@@ -46,6 +46,34 @@ describe('Getting to the contact me page', function () {
     });
   });
 
+  it('rejects invalid email address', function (done) {
+      server.inject({url: '/enterprise'}, function (resp) {
+        var header = resp.headers['set-cookie'];
+        expect(header.length).to.equal(1);
+
+        var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
+        expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+
+        var opts = {
+          method: 'post',
+          url: '/enterprise-contact-me',
+          payload: {
+            crumb: cookieCrumb,
+            contact_customer_email: 'boomATbam.com-pletely-not-an-email-address',
+            contact_customer_id: '12345'
+          },
+          headers: { cookie: 'crumb=' + cookieCrumb }
+        };
+
+        server.inject(opts, function (resp) {
+          expect(resp.statusCode).to.equal(400);
+          expect(source.template).to.equal('enterprise/index');
+          done();
+        });
+      });
+    });
+
   it('shows an error if something goes wrong with hubspot', function (done) {
     server.inject({url: '/enterprise'}, function (resp) {
       var header = resp.headers['set-cookie'];

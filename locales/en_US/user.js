@@ -38,6 +38,13 @@ module.exports = {
     form: {
       submit: "Email me a recovery link"
     }
+  },
+
+  profile: {
+    not_found: {
+      title: "User Not Found",
+      subtitle: "Sorry, there's no user by that name."
+    }
   }
 
 };

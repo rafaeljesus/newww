@@ -2,6 +2,7 @@ var NAMESPACE = 'enterprise-contact-me';
 
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
+    Joi = require('joi'),
     log = require('bole')(NAMESPACE),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')();
@@ -16,9 +17,14 @@ module.exports = function contactMe (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    
+
     namespace: NAMESPACE
   };
+
+  // Is email invalid?
+  if (Joi.validate(request.payload.contact_customer_email, Joi.string().regex(/^.+@.+\..+$/)).error) {
+    return reply.view('enterprise/index').code(400);
+  }
 
   var data = { email: request.payload.contact_customer_email };
 
@@ -36,4 +42,5 @@ module.exports = function contactMe (request, reply) {
       }
     }
   );
+
 }

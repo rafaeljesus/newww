@@ -54,6 +54,90 @@ describe('Getting to the ULA page', function () {
     });
   });
 
+  it('re-renders signup page with errors if form input contains non-whitelisted properties', function (done) {
+
+    server.inject({url: '/enterprise'}, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+
+      var opts = {
+        method: 'post',
+        url: '/enterprise-start-signup',
+        payload: {
+          firstname: 'Blerg',
+          lastname: 'Bam',
+          secrets: 'yes',
+          malicious_intent: true,
+          email: 'new@bam.com',
+          phone: '123-456-7890',
+          company: 'npm, Inc.',
+          numemployees: '1-25',
+          comments: 'teehee',
+          crumb: cookieCrumb
+        },
+        headers: { cookie: 'crumb=' + cookieCrumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(400);
+        expect(source.template).to.equal('enterprise/index');
+        expect(source.context.errors).to.exist;
+        var names = source.context.errors.map(function(error){
+          return error.path
+        })
+        expect(names).to.include('malicious_intent')
+        expect(names).to.include('secrets')
+        done();
+      });
+    });
+  });
+
+
+  it('re-renders signup page with errors if form input is invalid', function (done) {
+
+    server.inject({url: '/enterprise'}, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+
+      var opts = {
+        method: 'post',
+        url: '/enterprise-start-signup',
+        payload: {
+          firstname: 'Blerg',
+          lastname: 'Bam',
+          email: 'new-OOPS-bam.com',
+          phone: '123-456-7890',
+          company: "",
+          numemployees: '1-25',
+          comments: "",
+          crumb: cookieCrumb
+        },
+        headers: { cookie: 'crumb=' + cookieCrumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(400);
+        expect(source.template).to.equal('enterprise/index');
+        expect(source.context.errors).to.exist;
+        var names = source.context.errors.map(function(error){
+          return error.path
+        })
+        expect(names).to.not.include('comments') // because they're optional
+        expect(names).to.include('company')
+        expect(names).to.include('email')
+        done();
+      });
+    });
+  });
+
   it('gets the customer when they already exist', function (done) {
 
     server.inject({url: '/enterprise'}, function (resp) {

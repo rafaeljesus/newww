@@ -87,6 +87,20 @@ exports.fakeusercli = {
   "mustChangePass": true
 }
 
+exports.npmEmployee = {
+  "_id": "org.couchdb.user:seldo",
+  "_rev": "1-dadbd134b001443c5fe120e4444b2b0e",
+  "password_scheme": "pbkdf2",
+  "iterations": 10,
+  "name": "seldo",
+  "email": "rainbow-unicorns@seldo.com",
+  "type": "user",
+  "roles": [],
+  "date": "2014-04-26T00:54:43.315Z",
+  "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
+  "salt": "67bbd97d32e397ded845e279fb371ea7"
+}
+
 exports.fakeuserCliFields = [{
   name: 'fullname',
   value: '',

@@ -8,6 +8,7 @@ var Lab = require('lab'),
 
 var server, source, u = {};
 var users = require('../fixtures/users'),
+    fakeuser = users.fakeuser,
     fakeBrowse = require('../fixtures/browseData');
 
 var username1 = 'fakeuser',
@@ -56,20 +57,6 @@ describe('Retreiving profiles from the registry', function () {
     done();
   });
 
-  it('returns sanitized view context if json query param is present', function (done) {
-    var options = {
-      url: '/~' + username1 + '?json'
-    }
-
-    server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(200);
-      expect(resp.headers['content-type']).to.match(/json/);
-      expect(resp.result).to.be.an.object;
-      expect(resp.result.user).to.not.exist;
-      return done();
-    });
-  });
-
   it('renders an error page with a user that doesn\'t exist', function (done) {
     var options = {
       url: '/~blerg'
@@ -80,6 +67,78 @@ describe('Retreiving profiles from the registry', function () {
       done();
     });
   });
+
+  describe("JSON responses", function() {
+    before(function (done) {
+      process.env.NODE_ENV = 'production';
+      done();
+    })
+
+    after(function (done) {
+      process.env.NODE_ENV = 'dev';
+      done();
+    })
+
+
+    it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
+      var options = {
+        url: '/~' + username1 + '?json',
+        credentials: users.npmEmployee
+      }
+      expect(process.env.NODE_ENV).to.equal("production");
+      server.inject(options, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.headers['content-type']).to.match(/json/);
+        expect(resp.result).to.be.an.object;
+        done();
+      });
+    });
+
+
+    it('does not allow logged-in non-employees to request the view context', function (done) {
+      var options = {
+        url: '/~' + username1 + '?json',
+        credentials: users.fakeuser
+      }
+      expect(process.env.NODE_ENV).to.equal("production");
+      server.inject(options, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.headers['content-type']).to.match(/html/);
+        expect(source.template).to.equal('user/profile');
+        done();
+      });
+    });
+
+    it('does not allow anonymous users to request the view context', function (done) {
+      var options = {
+        url: '/~' + username1 + '?json',
+        credentials: users.fakeuser
+      }
+      expect(process.env.NODE_ENV).to.equal("production");
+      server.inject(options, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.headers['content-type']).to.match(/html/);
+        expect(source.template).to.equal('user/profile');
+        done();
+      });
+    });
+
+    it('allows anyone to request the view context if NODE_ENV is `dev`', function (done) {
+      process.env.NODE_ENV = "dev";
+      expect(process.env.NODE_ENV).to.equal("dev");
+      var options = {
+        url: '/~' + username1 + '?json',
+        credentials: null
+      }
+      server.inject(options, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.headers['content-type']).to.match(/json/);
+        expect(resp.result).to.be.an.object;
+        done();
+      });
+    });
+
+  })
 });
 
 

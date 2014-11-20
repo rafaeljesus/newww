@@ -1,6 +1,7 @@
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
-    url = require('url');
+    url = require('url'),
+    npmHumans = require("npm-humans");
 
 exports.register = function(plugin, options, next) {
 
@@ -21,14 +22,15 @@ exports.register = function(plugin, options, next) {
 
   plugin.ext('onPreResponse', function(request, next) {
 
-    // Return raw context object if `json` query param is present
-    // Remove `user` property from context to minimize risk
     if ('json' in request.query) {
-      var ctx = Hoek.reach(request, 'response.source.context');
-      if (ctx) {
-        var context = Hoek.applyToDefaults({}, ctx);
-        delete context.user;
-        return next(context);
+      var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "auth.credentials.name"))
+      if (process.env.NODE_ENV === "dev" || isNpmEmployee) {
+        var ctx = Hoek.reach(request, 'response.source.context');
+        if (ctx) {
+          var context = Hoek.applyToDefaults({}, ctx);
+          delete context.user;
+          return next(context);
+        }
       }
     }
 

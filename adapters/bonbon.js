@@ -28,7 +28,6 @@ exports.register = function(plugin, options, next) {
         var ctx = Hoek.reach(request, 'response.source.context');
         if (ctx) {
           var context = Hoek.applyToDefaults({}, ctx);
-          delete context.user;
           return next(context);
         }
       }

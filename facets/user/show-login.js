@@ -1,5 +1,4 @@
-var murmurhash = require('murmurhash'),
-    Hapi = require('hapi'),
+var Hapi = require('hapi'),
     uuid = require('node-uuid'),
     log = require('bole')('user-login'),
     url = require('url'),
@@ -21,7 +20,7 @@ module.exports = function login (request, reply) {
   }
 
   var opts = {
-    
+
     namespace: 'user-login'
   };
 

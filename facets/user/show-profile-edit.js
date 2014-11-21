@@ -1,5 +1,4 @@
 var transform = require('./presenters/profile').transform,
-    murmurhash = require('murmurhash'),
     Hapi = require('hapi'),
     Joi = require('joi'),
     log = require('bole')('user-profile-edit'),

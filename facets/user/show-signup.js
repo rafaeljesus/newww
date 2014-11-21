@@ -1,6 +1,5 @@
 var Joi = require('joi'),
     userValidate = require('npm-user-validate'),
-    murmurhash = require('murmurhash'),
     Hapi = require('hapi'),
     log = require('bole')('user-signup'),
     uuid = require('node-uuid'),

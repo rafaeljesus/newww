@@ -9,9 +9,9 @@ var what_npm_is_for = function() {
   var el = document.querySelector('#what-npm-is-for');
   if (!el) return;
   var initialText = el.textContent;
-  var pause = 1200
+  var pause = 800
   var opts = {
-    speed: 50,
+    speed: 40,
     loop: false,
     postfix: ''
   };
@@ -28,5 +28,5 @@ var what_npm_is_for = function() {
     .type('grunt').pause(pause).delete(5)
     .type('tessel').pause(pause).delete(6)
     .type('you.').pause(600).delete(1)
-    .type(', Buddy.');
+    .type(', friend.');
 }

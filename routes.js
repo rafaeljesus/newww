@@ -1,26 +1,34 @@
-var config = require('./config');
-var ops = require('./facets/ops');
-var fmt = require('util').format;
-var validatePackageName = require('validate-npm-package-name');
+var config = require('./config'),
+    ops = require('./facets/ops'),
+    fmt = require('util').format,
+    validatePackageName = require('validate-npm-package-name'),
+    Hoek = require("hoek")
 
-var forceAuthConfig = function(handler) {
-  return {
-    handler: handler,
+var enterpriseConfig = {
+  plugins: {
+    blankie: {
+      scriptSrc: config.enterpriseCspScriptSrc
+    }
+  }
+}
+
+var unathenticatedRouteConfig = {
+  config: {
     auth: {
-      mode: 'required'
+      mode: 'try'
     },
     plugins: {
       'hapi-auth-cookie': {
-        redirectTo: '/login'
+        redirectTo: false
       }
     }
-  };
+  }
 };
 
-var routes = module.exports = [
 
-  // === COMPANY ===
-
+// CAUTION: THESE ROUTES DO NOT REQUIRE AUTHENTICATION.
+// DO NOT PUT SENSITIVE ROUTES IN THIS ARRAY.
+var unauthenticatedRoutes = [
   {
     path: '/favicon.ico',
     method: 'GET',
@@ -80,8 +88,8 @@ var routes = module.exports = [
   },{
     path: "/joinwhoshiring",
     method: "GET",
+    handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
     config: {
-      handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
       plugins: {
         blankie: {
           scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com'],
@@ -92,8 +100,8 @@ var routes = module.exports = [
   },{
     path: "/joinwhoshiring",
     method: "POST",
+    handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
     config: {
-      handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
       plugins: {
         crumb: {
           source: 'payload',
@@ -101,77 +109,32 @@ var routes = module.exports = [
         }
       }
     }
-  },
-
-  // enterprise
-  {
+  },{
     path: "/enterprise",
     method: "GET",
-    config: {
-      handler: require('./facets/enterprise/show-index'),
-      plugins: {
-        blankie: {
-          scriptSrc: config.enterpriseCspScriptSrc
-        }
-      }
-    }
-  },
-
-  {
+    handler: require('./facets/enterprise/show-index'),
+    config: enterpriseConfig
+  },{
     path: "/enterprise-start-signup",
     method: "POST",
-    config: {
-      handler: require('./facets/enterprise/show-ula'),
-      plugins: {
-        blankie: {
-          scriptSrc: config.enterpriseCspScriptSrc
-        }
-      }
-    }
-  },
-
-  {
+    handler: require('./facets/enterprise/show-ula'),
+    config: enterpriseConfig
+  },{
     path: "/enterprise-contact-me",
     method: "POST",
-    config: {
-      handler: require('./facets/enterprise/show-contact-me'),
-      plugins: {
-        blankie: {
-          scriptSrc: config.enterpriseCspScriptSrc
-        }
-      }
-    }
-  },
-
-  {
+    handler: require('./facets/enterprise/show-contact-me'),
+    config: enterpriseConfig
+  },{
     path: "/enterprise-trial-signup",
     method: "POST",
-    config: {
-      handler: require('./facets/enterprise/show-trial-signup'),
-      plugins: {
-        blankie: {
-          scriptSrc: config.enterpriseCspScriptSrc
-        }
-      }
-    }
-  },
-
-  {
+    handler: require('./facets/enterprise/show-trial-signup'),
+    config: enterpriseConfig
+  },{
     path: "/enterprise-verify",
     method: "GET",
-    config: {
-      handler: require('./facets/enterprise/show-verification'),
-      plugins: {
-        blankie: {
-          scriptSrc: config.enterpriseCspScriptSrc
-        }
-      }
-    }
-  },
-
-  // === REGISTRY ===
-
-  {
+    handler: require('./facets/enterprise/show-verification'),
+    config: enterpriseConfig
+  },{
     path: "/package/{package}/{version?}",
     method: "GET",
     handler: require('./facets/registry/show-package')
@@ -222,8 +185,8 @@ var routes = module.exports = [
   },{
     path: "/star",
     method: "POST",
+    handler: require('./facets/registry/show-star'),
     config: {
-      handler: require('./facets/registry/show-star'),
       plugins: {
         crumb: {
           source: 'payload',
@@ -232,35 +195,9 @@ var routes = module.exports = [
       }
     }
   },{
-    path: "/star",
-    method: "GET",
-    config: {
-      handler: require('./facets/registry/show-star'),
-      auth: {
-        mode: 'required'
-      },
-      plugins: {
-        'hapi-auth-cookie': {
-          redirectTo: '/login'
-        }
-      }
-    }
-  },{
     path: "/search/{q?}",
     method: "GET",
     handler: require('./facets/registry/show-search')(config.search)
-  },
-
-  // === USER ===
-
-  {
-    path: "/~",
-    method: "GET",
-    config: forceAuthConfig(require('./facets/user/show-profile')(config.user.profileFields))
-  },{
-    path: "/profile",
-    method: "GET",
-    config: forceAuthConfig(require('./facets/user/show-profile')(config.user.profileFields))
   },{
     path: "/~{name}",
     method: "GET",
@@ -286,42 +223,6 @@ var routes = module.exports = [
     method: "POST",
     handler: require('./facets/user/show-signup')
   },{
-    path: "/profile-edit",
-    method: "GET",
-    config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
-  },{
-    path: "/profile-edit",
-    method: "PUT",
-    config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
-  },{
-    path: "/profile-edit",
-    method: "POST",
-    config: forceAuthConfig(require('./facets/user/show-profile-edit')(config.user.profileFields))
-  },{
-    path: "/email-edit",
-    method: "GET",
-    config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },{
-    path: "/email-edit",
-    method: "HEAD",
-    config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },{
-    path: "/email-edit",
-    method: "PUT",
-    config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },{
-    path: "/email-edit",
-    method: "POST",
-    config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },{
-    path: "/email-edit/{token*2}",
-    method: "GET",
-    config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },{
-    path: "/email-edit/{token*2}",
-    method: "HEAD",
-    config: forceAuthConfig(require('./facets/user/show-email-edit')(config.user.mail))
-  },{
     path: "/login",
     method: "GET",
     handler: require('./facets/user/show-login')
@@ -333,18 +234,6 @@ var routes = module.exports = [
     path: "/logout",
     method: "GET",
     handler: require('./facets/user/show-logout')
-  },{
-    path: "/password",
-    method: "GET",
-    config: forceAuthConfig(require('./facets/user/show-password'))
-  },{
-    path: "/password",
-    method: "HEAD",
-    config: forceAuthConfig(require('./facets/user/show-password'))
-  },{
-    path: "/password",
-    method: "POST",
-    config: forceAuthConfig(require('./facets/user/show-password'))
   },{
     path: "/forgot/{token?}",
     method: "GET",
@@ -391,6 +280,78 @@ var routes = module.exports = [
   }
 
 ];
+
+var authenticatedRoutes = [
+  {
+    path: "/star",
+    method: "GET",
+    handler: require('./facets/registry/show-star'),
+  },{
+    path: "/~",
+    method: "GET",
+    handler: require('./facets/user/show-profile')(config.user.profileFields)
+  },{
+    path: "/profile",
+    method: "GET",
+    handler: require('./facets/user/show-profile')(config.user.profileFields)
+  },{
+    path: "/profile-edit",
+    method: "GET",
+    handler: require('./facets/user/show-profile-edit')(config.user.profileFields)
+  },{
+    path: "/profile-edit",
+    method: "PUT",
+    handler: require('./facets/user/show-profile-edit')(config.user.profileFields)
+  },{
+    path: "/profile-edit",
+    method: "POST",
+    handler: require('./facets/user/show-profile-edit')(config.user.profileFields)
+  },{
+    path: "/email-edit",
+    method: "GET",
+    handler: require('./facets/user/show-email-edit')(config.user.mail)
+  },{
+    path: "/email-edit",
+    method: "HEAD",
+    handler: require('./facets/user/show-email-edit')(config.user.mail)
+  },{
+    path: "/email-edit",
+    method: "PUT",
+    handler: require('./facets/user/show-email-edit')(config.user.mail)
+  },{
+    path: "/email-edit",
+    method: "POST",
+    handler: require('./facets/user/show-email-edit')(config.user.mail)
+  },{
+    path: "/email-edit/{token*2}",
+    method: "GET",
+    handler: require('./facets/user/show-email-edit')(config.user.mail)
+  },{
+    path: "/email-edit/{token*2}",
+    method: "HEAD",
+    handler: require('./facets/user/show-email-edit')(config.user.mail)
+  },{
+    path: "/password",
+    method: "GET",
+    handler: require('./facets/user/show-password')
+  },{
+    path: "/password",
+    method: "HEAD",
+    handler: require('./facets/user/show-password')
+  },{
+    path: "/password",
+    method: "POST",
+    handler: require('./facets/user/show-password')
+  }
+
+]
+
+// Apply unathenticated route config to all the public routes
+unauthenticatedRoutes = unauthenticatedRoutes.map(function(route){
+  return Hoek.applyToDefaults(unathenticatedRouteConfig, route)
+})
+
+module.exports = unauthenticatedRoutes.concat(authenticatedRoutes)
 
 function fallback(request, reply) {
 

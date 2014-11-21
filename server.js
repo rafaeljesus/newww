@@ -32,9 +32,10 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
 
   server.app.cache = cache;
 
-  server.auth.strategy('session', 'cookie', 'try', {
+  server.auth.strategy('session', 'cookie', 'required', {
     password: config.session.password,
     appendNext: 'done',
+    redirectTo: '/login',
     cookie: config.session.cookie,
     validateFunc: function (session, cb) {
       cache.get(session.sid, function (err, cached) {

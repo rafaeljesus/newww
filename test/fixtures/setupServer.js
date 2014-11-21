@@ -22,8 +22,9 @@ module.exports = function (done) {
       expiresIn: 30
     });
 
-    server.auth.strategy('session', 'cookie', 'try', {
-      password: '12345'
+    server.auth.strategy('session', 'cookie', 'required', {
+      password: '12345',
+      redirectTo: '/login'
     });
 
     server.pack.register([{

@@ -259,7 +259,12 @@ var unauthenticatedRoutes = [
   },{
     path: "/-/csplog",
     method: "POST",
-    handler: ops.csplog
+    handler: ops.csplog,
+    config: {
+      plugins: {
+        crumb: false
+      }
+    }
   },{
     method: '*',
     path: '/doc/{p*}',

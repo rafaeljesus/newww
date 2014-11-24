@@ -4,11 +4,12 @@ var Hapi = require('hapi'),
     log = require('bole')('user-password'),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')();
+    var redisSessions = require("../../adapters/redis-sessions");
 
 module.exports = function (request, reply) {
   var opts = {
     user: request.auth.credentials,
-    
+
     namespace: 'user-password',
     title: 'Edit Profile'
   };
@@ -67,27 +68,34 @@ module.exports = function (request, reply) {
         return showError(er, 500, 'Failed to set the password for ' + newAuth.name, opts);
       }
 
-      loginUser(newAuth, function (er, user) {
-        if (er) {
-          return showError(er, 500, 'Unable to login user', opts);
+      // Log out all of this user's existing sessions across all devices
+      redisSessions.dropKeysWithPrefix(newAuth.name, function(err){
+        if (err) {
+          return showError(err, 500, 'Unable to drop all sessions for ' + newAuth.name, opts);
         }
 
-        setSession(user, function (err) {
-          if (err) {
-            return showError(err, 500, 'Unable to set session for ' + user.name, opts);
+        log.info("cleared all sessions for user " + newAuth.name);
+
+        loginUser(newAuth, function (er, user) {
+          if (er) {
+            return showError(er, 500, 'Unable to login user', opts);
           }
 
-          timer.end = Date.now();
-          addLatencyMetric(timer, 'changePass');
+          setSession(user, function (err) {
+            if (err) {
+              return showError(err, 500, 'Unable to set session for ' + user.name, opts);
+            }
 
-          addMetric({name: 'changePass'})
+            timer.end = Date.now();
+            addLatencyMetric(timer, 'changePass');
 
-          return reply.redirect('/profile');
+            addMetric({name: 'changePass'})
+
+            return reply.redirect('/profile');
+          });
         });
       });
-
     });
-
   }
 }
 

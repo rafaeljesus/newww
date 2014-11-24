@@ -1,18 +1,18 @@
 var Hapi = require('hapi'),
     log = require('bole')('user-login'),
     uuid = require('node-uuid'),
-    murmurhash = require('murmurhash'),
-    metrics = require('newww-metrics')();
+    metrics = require('newww-metrics')(),
+    redisSessions = require("../../../adapters/redis-sessions");
+
 
 module.exports = {
   set: function set (request) {
     return function (user, next) {
-      var sid = murmurhash.v3(user.name, 55).toString(16),
-          timer = { start: Date.now() };
+      var timer = { start: Date.now() };
 
-      user.sid = sid;
+      user.sid = redisSessions.generateRandomUserHash(user.name);
 
-      request.server.app.cache.set(sid, user, 0, function (err) {
+      request.server.app.cache.set(user.sid, user, 0, function (err) {
         if (err) {
           var errId = uuid.v1();
           log.error(errId + ' ' + Hapi.error.internal('there was an error setting the cache'));
@@ -29,7 +29,7 @@ module.exports = {
           action: 'setSession'
         });
 
-        request.auth.session.set({sid: sid});
+        request.auth.session.set({user: user.name, sid: user.sid});
         return next(null);
       });
     }
@@ -37,14 +37,11 @@ module.exports = {
 
   del: function del (request) {
     return function (user, next) {
-      var sid = murmurhash.v3(user.name, 55).toString(16),
-          timer = { start: Date.now() };
-
-      user.sid = sid;
+      var timer = { start: Date.now() };
 
       request.server.methods.user.logoutUser(user.token, function () {
 
-        request.server.app.cache.drop(sid, function (err) {
+        request.server.app.cache.drop(user.sid, function (err) {
           if (err) {
             var errId = uuid.v1();
             log.error(errId + ' ' + Hapi.error.internal('there was an error clearing the cache'));
@@ -61,6 +58,7 @@ module.exports = {
           });
 
           request.auth.session.clear();
+
           return next(null);
         });
       });

@@ -105,10 +105,32 @@ describe('Changing the password', function () {
 
   });
 
-  it('removes all of user\'s existing sessions from redis when they change password', function(done) {
-    expect(process.env.SESSION_SALT).to.exist;
-    done();
-  })
+  // describe('redis-requiring session stuff', function() {
+  //
+  //   before(function(done) {
+  //     // execSync('redis-server --port 1337');
+  //     done()
+  //   })
+  //
+  //   after(function(done) {
+  //     // execSync('killall redis-server');
+  //     done()
+  //   })
+  //
+  //   it('has a SESSION_SALT environment variable', function(done) {
+  //     expect(process.env.SESSION_SALT).to.exist;
+  //     done();
+  //   })
+  //
+  //
+  //   it('removes user\'s existing sessions from redis when user changes password', function(done) {
+  //     logSomeoneIn("zeke-test", "23456", function() {
+  //       console.log("bob-1 got logged in")
+  //       done()
+  //     })
+  //   })
+  //
+  // })
 
 });
 

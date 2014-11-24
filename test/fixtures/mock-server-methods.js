@@ -301,7 +301,7 @@ module.exports = function (server) {
       },
 
       signupUser: function (acct, next) {
-        return next(null, users[acct.name]);
+        return next(null, users.fakeusercli);
       }
     }
   };

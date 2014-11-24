@@ -9,8 +9,16 @@ module.exports = function signupUser (acct, next) {
     metrics.addCouchLatencyMetric(timer, 'signupUser');
 
     if (er || cr && cr.statusCode >= 400 || data && data.error) {
-        var error = "Failed creating account.  CouchDB said: "
-                  + ((er && er.message) || (data && data.error))
+
+      var error;
+
+      if (data.error === 'conflict') {
+        error = "The username already exists";
+        return next(Hapi.error.conflict(error));
+      }
+
+      error = "Failed creating account.  CouchDB said: "
+            + ((er && er.message) || (data && data.error))
 
       return next(Hapi.error.forbidden(error));
     }

@@ -41,16 +41,23 @@ module.exports = function (cookieCrumb) {
       crumb: cookieCrumb
     },
     good: {
-      name: 'fakeusercli',
+      name: 'fakeusercligood',
       password: '12345',
       verify: '12345',
       email: 'fakeusercli@boom.com',
       crumb: cookieCrumb
     },
     goodPassWithUmlaut: {
-      name: 'fakeusercli',
+      name: 'fakeusercliumlaut',
       password: 'one two threë',
       verify: 'one two threë',
+      email: 'fakeusercli@boom.com',
+      crumb: cookieCrumb
+    },
+    alreadyExists: {
+      name: 'fakeusercli',
+      password: '12345',
+      verify: '12345',
       email: 'fakeusercli@boom.com',
       crumb: cookieCrumb
     }

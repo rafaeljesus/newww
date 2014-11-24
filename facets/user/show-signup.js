@@ -7,7 +7,8 @@ var Joi = require('joi'),
     metrics = require('newww-metrics')();
 
 module.exports = function signup (request, reply) {
-  var signupUser = request.server.methods.user.signupUser,
+  var getUser = request.server.methods.user.getUser,
+      signupUser = request.server.methods.user.signupUser,
       setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request),
       showError = request.server.methods.errors.showError(reply),
@@ -37,55 +38,61 @@ module.exports = function signup (request, reply) {
 
     var data = request.payload;
 
-    Joi.validate(data, schema, joiOptions, function (err, value) {
+    Joi.validate(data, schema, joiOptions, function (err, validatedUser) {
 
       if (err) {
         opts.errors = err.details;
       }
 
-      if (data.password !== data.verify) {
-        opts.errors.push({message: new Error("Passwords don't match").message});
+      if (validatedUser.password !== validatedUser.verify) {
+        opts.errors.push({message: new Error("passwords don't match").message});
       }
 
-      userValidate.username(data.name) && opts.errors.push({ message: userValidate.username(data.name).message});
+      userValidate.username(validatedUser.name) && opts.errors.push({ message: userValidate.username(validatedUser.name).message});
 
-      if (opts.errors.length) {
-
-        timer.end = Date.now();
-        addLatencyMetric(timer, 'signup-form-error');
-
-        addMetric({name: 'signup-form-error'});
-
-        return reply.view('user/signup-form', opts);
-      }
-
-      delSession(value, function (er) {
-
-        if (er) {
-          return showError(er, 500, 'Unable to delete the session for user ' + data.name, opts);
+      getUser(validatedUser.name, function (err, userExists) {
+        if (userExists) {
+          opts.errors.push({message: new Error("username already exists").message})
         }
 
-        signupUser(value, function (er, user) {
+        if (opts.errors.length) {
+
+          timer.end = Date.now();
+          addLatencyMetric(timer, 'signup-form-error');
+
+          addMetric({name: 'signup-form-error'});
+
+          return reply.view('user/signup-form', opts).code(400);
+        }
+
+        delSession(validatedUser, function (er) {
 
           if (er) {
-            return showError(er, 403, 'Failed to create account', opts);
+            return showError(er, 500, 'Unable to delete the session for user ' + data.name, opts);
           }
 
-          setSession(user, function (err) {
+          signupUser(validatedUser, function (er, user) {
 
-            if (err) {
-              return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
+            if (er) {
+              return showError(er, 403, 'Failed to create account', opts);
             }
 
-            timer.end = Date.now();
-            addLatencyMetric(timer, 'signup');
+            setSession(user, function (err) {
 
-            addMetric({name: 'signup'});
+              if (err) {
+                return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
+              }
 
-            return reply.redirect('/profile-edit');
+              timer.end = Date.now();
+              addLatencyMetric(timer, 'signup');
+
+              addMetric({name: 'signup'});
+
+              return reply.redirect('/profile-edit');
+            });
           });
-        });
 
+        });
       });
     });
 

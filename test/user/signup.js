@@ -63,17 +63,27 @@ describe('Signing up a new user', function () {
     });
   });
 
+  it('renders an error if the username already exists', function (done) {
+    server.inject(postSignup(forms.alreadyExists), function (resp) {
+      expect(resp.statusCode).to.equal(400);
+      expect(source.template).to.equal('user/signup-form');
+      expect(source.context.errors[0]).to.have.deep.property('message', 'username already exists');
+      done();
+    });
+  });
+
   it('fails validation with incomplete form fields', function (done) {
     server.inject(postSignup(forms.incomplete), function (resp) {
-      expect(resp.statusCode).to.equal(200);
+      expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'verify is required');
       done();
-    });  })
+    });
+  });
 
   it('fails validation with a bad email address', function (done) {
     server.inject(postSignup(forms.badEmail), function (resp) {
-      expect(resp.statusCode).to.equal(200);
+      expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'email must be a valid email');
       done();
@@ -82,7 +92,7 @@ describe('Signing up a new user', function () {
 
   it('fails validation with a bad username (dot)', function (done) {
     server.inject(postSignup(forms.badUsernameDot), function (resp) {
-      expect(resp.statusCode).to.equal(200);
+      expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username may not start with "."');
       done();
@@ -91,7 +101,7 @@ describe('Signing up a new user', function () {
 
   it('fails validation with a bad username (uppercase)', function (done) {
     server.inject(postSignup(forms.badUsernameCaps), function (resp) {
-      expect(resp.statusCode).to.equal(200);
+      expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username must be lowercase');
       done();
@@ -100,7 +110,7 @@ describe('Signing up a new user', function () {
 
   it('fails validation with a bad username (encodeURI)', function (done) {
     server.inject(postSignup(forms.badUsernameEncodeURI), function (resp) {
-      expect(resp.statusCode).to.equal(200);
+      expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/signup-form');
       expect(source.context.errors[0]).to.have.deep.property('message', 'Username may not contain non-url-safe chars');
       done();
@@ -109,9 +119,9 @@ describe('Signing up a new user', function () {
 
   it('fails validation with non-matching passwords', function (done) {
     server.inject(postSignup(forms.invalidPassMatch), function (resp) {
-      expect(resp.statusCode).to.equal(200);
+      expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/signup-form');
-      expect(source.context.errors[0]).to.have.deep.property('message', 'Passwords don\'t match');
+      expect(source.context.errors[0]).to.have.deep.property('message', 'passwords don\'t match');
       done();
     });
   });
@@ -131,7 +141,6 @@ describe('Signing up a new user', function () {
       done();
     });
   });
-
 });
 
 after(function (done) {

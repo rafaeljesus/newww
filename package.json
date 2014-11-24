@@ -81,6 +81,7 @@
   "devDependencies": {
     "bistre": "^1.0.0",
     "browserify": "^5.8.0",
+    "dotenv": "^0.4.0",
     "grunt": "^0.4.5",
     "gulp": "^3.6.2",
     "gulp-concat": "^2.2.0",

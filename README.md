@@ -125,11 +125,14 @@ Let's bring back semi-colons and comma-last. No rhyme or reason; just cuz.
 
 ## Running the server locally
 
-First, clone this repo.
+First, clone this repo. Then copy some configuration files, and modify them to suit your needs:
 
-Second, copy numbat-config.example.js to numbat-config.js. Feel free to
-modify it to suit your needs. You can also create a config.admin.js to
-override any of the config.js values.
+
+```sh
+cp numbat-config.example.js numbat-config.js
+cp .env.example .env
+touch config.admin.js
+```
 
 If you have a reasonably new machine, we strongly recommend using Virtualbox
 and Vagrant to run a pre-configured VM containing [couchdb](http://couchdb.apache.org/),

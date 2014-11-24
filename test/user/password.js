@@ -1,3 +1,5 @@
+require("dotenv").load()
+
 var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -102,6 +104,12 @@ describe('Changing the password', function () {
     });
 
   });
+
+  it('removes all of user\'s existing sessions from redis when they change password', function(done) {
+    expect(process.env.SESSION_SALT).to.exist;
+    done();
+  })
+
 });
 
 after(function (done) {

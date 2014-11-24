@@ -96,7 +96,7 @@ config.couch = {
 };
 
 config.session = {
-  password: 'i dunno, something secure probably?',
+  password: 'i dunno, something secure probably? Definitely!',
   cookie: 's',
   expiresIn: 14 * 24 * 60 * 60 * 1000 // 2 wks
 };

@@ -18,23 +18,16 @@ var redis = require('redis'),
 var redisSessions = require('../../adapters/redis-sessions'),
     redisProcess;
 
-// prepare the server
 before(function (done) {
-
   var redisConfig = '--port ' + config.port;
-
   redisProcess = spawn('redis-server', [redisConfig]);
-
   done();
 });
 
-// after(function(done) {
-//   try {
-//     redisProcess.kill('SIGKILL');
-//   } catch (er) {}
-
-//   done();
-// });
+after(function(done) {
+  redisProcess.kill('SIGKILL');
+  done();
+});
 
 describe('redis-requiring session stuff', function() {
   var client;
@@ -45,12 +38,14 @@ describe('redis-requiring session stuff', function() {
   before(function (done) {
     client = redis.createClient(config.port, config.host);
     client.auth(config.password, function () {});
-
     client.on("error", function (err) {
       console.log("Error " + err);
     });
-
     done();
+  });
+
+  after('cleans up the db', function (done) {
+    client.del([prefix+bob1, prefix+bob2, prefix+alice1], done)
   });
 
   it('has a SESSION_SALT environment variable', function(done) {
@@ -120,9 +115,4 @@ describe('redis-requiring session stuff', function() {
     });
   });
 
-  after('cleans up the db', function (done) {
-    client.del([prefix+bob1, prefix+bob2, prefix+alice1], done)
-  });
-
 });
-

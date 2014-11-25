@@ -62,6 +62,7 @@ ul.columnar
     columns 1
 
 .package-widget
+
   &:hover
     a
       color npmred !important
@@ -73,26 +74,27 @@ ul.columnar
     vertical-align top
     margin 0
     padding 0
-    max-width 90%
+    max-width 100%
     @extend .ellipsis
 
-  a
-    &.name
-      text-decoration none
-      transform all 0.1s
-      color greigh2
-      @extend .red-on-hover
-      &:before
-        color greigh5
-        line-height packageWidgetHeadingHeight
-        padding-right 6px
+  a.name
+    @extend .red-on-hover
+    @extend .iconic
+    text-decoration none
+    color greigh2
+    &:before
+      @extend .iconic-before
+      content "\e617"
+      color greigh5
+      line-height packageWidgetHeadingHeight
+      padding-right 6px
 
   p
     font-size 15px
     margin 0
-    max-width 90%
-    padding-left 22px
+    max-width 100%
     color greigh3
+    padding-left 23px
     @extend .ellipsis
 
   .quiet
@@ -103,6 +105,31 @@ ul.columnar
       @extend .red-on-hover
       font-weight 400
 
+
+.package-widget-with-logo
+
+  .package-logo
+    display block
+    text-align center
+    height 140px
+    line-height 140px
+    img
+      display inline-block
+      max-width 80%
+      max-height 100%
+      vertical-align middle
+
+  .package-details
+    margin-top 20px
+    h3,p
+      text-align center
+
+  a.name
+    &:before
+      content none
+
+  p
+    padding-left 0
 
 .box
   margin 0 0 30px
@@ -129,10 +156,8 @@ ul.columnar
     text-overflow ellipsis
     padding-right 10px
     border-bottom 1px solid greigh5
-
     &:last-child
       border-bottom none
-
     &.address
       line-height 1.5
       padding-top 0.5em

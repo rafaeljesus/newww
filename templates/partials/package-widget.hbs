@@ -1,12 +1,19 @@
-<div class="package-widget">
+<div class="package-widget {{#if logo}}package-widget-with-logo{{/if}}">
 
-  <h3>
-    <a class="name icon-package-hex" href="/packages/{{name}}">{{name}}</a>
-  </h3>
+  {{#if logo}}
+    <a class="package-logo" href="/packages/{{name}}">
+      <img src="{{logo}}" alt="{{name}} logo">
+    </a>
+  {{/if}}
 
-  <p class="description">{{description}}</p>
+  <div class="package-details">
+    <h3>
+      <a class="name" href="/packages/{{name}}">{{name}}</a>
+    </h3>
 
-  {{#if version}}
+    <p class="description">{{description}}</p>
+
+    {{#if version}}
     <p class="author quiet">
 
       {{#unless lastPublished}} {{#unless publishedBy}}
@@ -18,19 +25,17 @@
       {{#if lastPublished}} {{#if publishedBy}}
 
         published
-
         {{lastPublished}}
-
         by
-
         <a href="/~{{publishedBy.name}}">{{publishedBy.name}}</a>
 
       {{/if}} {{/if}}
     </p>
-  {{/if}}
+    {{/if}}
 
-  {{#if dlWeek}}
-    <p class="quiet">{{pluralize dlWeek "download" true}} in the last week</p>
-  {{/if}}
+    {{#if dlWeek}}
+      <p class="quiet">{{pluralize dlWeek "download" true}} in the last week</p>
+    {{/if}}
+  </div>
 
 </div>

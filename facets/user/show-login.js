@@ -59,6 +59,9 @@ module.exports = function login (request, reply) {
 
             // Temporarily lock users out after several failed login attempts
             redis.incr(loginAttemptsKey, function(err, attempts) {
+              if (err) {
+                log.error("redis: unable to increment " + loginAttemptsKey)
+              }
 
               // Set expiry after key is created
               attempts = Number(attempts)
@@ -67,7 +70,7 @@ module.exports = function login (request, reply) {
                 redis.expire(loginAttemptsKey, lockoutInterval, function(err) {
                   console.log("set the expiry")
                   if (err) {
-                    log.error("unable to set expiry of " + loginAttemptsKey)
+                    log.error("redis: unable to set expiry of " + loginAttemptsKey)
                   }
                 })
               }

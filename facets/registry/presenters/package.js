@@ -333,12 +333,15 @@ function removeSuperfluousContentFromReadme (data) {
 
   // Badges
   [
-    '//nodei.co',
-    '//img.shields.io',
-    '//ci.testling.com',
-    '//badges.github.io'
+    'badges.github.io',
+    'ci.testling.com',
+    'coveralls.io',
+    'david-dm.org',
+    'img.shields.io',
+    'nodei.co',
+    'travis-ci.org'
   ].forEach(function(host){
-    $("p:has(img[src*='"+host+"'])").addClass("superfluous")
+    $("p:has(img[src*='//"+host+"'])").addClass("superfluous")
   })
 
   // Unruly H1s

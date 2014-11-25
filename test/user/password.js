@@ -1,12 +1,11 @@
-require("dotenv").load()
-
 var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Lab.expect,
+    redisSessions = require('../../adapters/redis-sessions');
 
 var server, source, cache, cookieCrumb,
     fakeuser = require('../fixtures/users').fakeuser,
@@ -57,6 +56,29 @@ describe('Getting to the password page', function () {
 });
 
 describe('Changing the password', function () {
+
+  // mock out drop keys method
+  var oldDropKeys;
+  before(function (done) {
+    oldDropKeys = redisSessions.dropKeysWithPrefix;
+    redisSessions.dropKeysWithPrefix = function (name, cb) {
+
+      if (name === 'fakeusercli') {
+        return cb(new Error('redis is borken'));
+      }
+
+      return cb(null);
+    }
+
+    done();
+  })
+
+  // un-mock it for other tests :-)
+  after(function (done) {
+    redisSessions.dropKeysWithPrefix = oldDropKeys;
+    done();
+  })
+
   it('redirects an unauthorized user to the login page', function (done) {
     var options = {
       url: '/password',
@@ -85,6 +107,30 @@ describe('Changing the password', function () {
     });
   });
 
+  it('renders an error if unable to drop sessions for the user', function (done) {
+    var options = {
+      url: '/password',
+      method: 'post',
+      payload: fakeChangePass,
+      credentials: fakeuser,
+      headers: { cookie: 'crumb=' + cookieCrumb }
+    };
+
+    // force redis error
+    options.credentials.name = 'fakeusercli';
+
+    options.payload.crumb = cookieCrumb;
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(500);
+      expect(source.template).to.include('errors/internal');
+
+      // undo the damage from earlier
+      fakeuser.name = 'fakeuser';
+      done();
+    });
+  });
+
   it('allows authorized password changes to go through', function (done) {
     var options = {
       url: '/password',
@@ -97,41 +143,12 @@ describe('Changing the password', function () {
     options.payload.crumb = cookieCrumb;
 
     server.inject(options, function (resp) {
-      // console.log(resp)
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile');
       done();
     });
 
   });
-
-  // describe('redis-requiring session stuff', function() {
-  //
-  //   before(function(done) {
-  //     // execSync('redis-server --port 1337');
-  //     done()
-  //   })
-  //
-  //   after(function(done) {
-  //     // execSync('killall redis-server');
-  //     done()
-  //   })
-  //
-  //   it('has a SESSION_SALT environment variable', function(done) {
-  //     expect(process.env.SESSION_SALT).to.exist;
-  //     done();
-  //   })
-  //
-  //
-  //   it('removes user\'s existing sessions from redis when user changes password', function(done) {
-  //     logSomeoneIn("zeke-test", "23456", function() {
-  //       console.log("bob-1 got logged in")
-  //       done()
-  //     })
-  //   })
-  //
-  // })
-
 });
 
 after(function (done) {

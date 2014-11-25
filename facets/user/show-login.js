@@ -84,8 +84,8 @@ module.exports = function login (request, reply) {
             return;
           }
 
-          console.log("Login received, user available, setting session")
-          console.log("User is",user)
+          // log.info("Login received, user available, setting session")
+          // log.info("User is",user)
 
           setSession(user, function (err) {
             if (err) {

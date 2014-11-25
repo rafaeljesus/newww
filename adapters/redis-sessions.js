@@ -24,6 +24,8 @@ var userPrefixHash = function(name) {
 
 module.exports = client;
 
+client.userPrefixHash = userPrefixHash;
+
 client.getKeysWithPrefix = function(prefix, callback) {
   client.keys("hapi-cache:%7Csessions:"+userPrefixHash(prefix)+"*", callback)
 }

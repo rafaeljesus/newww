@@ -167,7 +167,7 @@ function getPackageData (data, cb) {
       var latest = p['dist-tags'] && p['dist-tags'].latest;
 
       if (latest) {
-        d.lastPublished = moment(p.time[latest]).fromNow();
+        d.lastPublished = p.time && moment(p.time[latest]).fromNow();
 
         var latestVersion = p.versions[latest];
 

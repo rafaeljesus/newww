@@ -8,13 +8,24 @@
 
   {{#if version}}
     <p class="author quiet">
+
+      {{#unless lastPublished}} {{#unless publishedBy}}
+        version
+      {{/unless}} {{/unless}}
+
       <a class="version" href="/packages/{{name}}">{{version}}</a>
-      published
-      {{lastPublished}}
-      {{#if publishedBy}}
+
+      {{#if lastPublished}} {{#if publishedBy}}
+
+        published
+
+        {{lastPublished}}
+
         by
+
         <a href="/~{{publishedBy.name}}">{{publishedBy.name}}</a>
-      {{/if}}
+
+      {{/if}} {{/if}}
     </p>
   {{/if}}
 

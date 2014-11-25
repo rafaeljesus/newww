@@ -99,7 +99,7 @@ describe('Getting to the login page', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(400);
       expect(source.template).to.equal('user/login');
-      expect(source.context).to.have.deep.property('error.type', 'invalid')
+      expect(source.context.error).to.match(/invalid username or password/i)
       done();
     });
   });

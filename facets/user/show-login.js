@@ -2,7 +2,12 @@ var Hapi = require('hapi'),
     uuid = require('node-uuid'),
     log = require('bole')('user-login'),
     url = require('url'),
-    metrics = require('newww-metrics')();
+    metrics = require('newww-metrics')(),
+    fmt = require("util").format,
+    redis = require("../../adapters/redis-sessions");
+
+var lockoutInterval = 60; // seconds
+var maxAttemptsBeforeLockout = 5;
 
 module.exports = function login (request, reply) {
   var loginUser = request.server.methods.user.loginUser,
@@ -31,55 +36,86 @@ module.exports = function login (request, reply) {
         type: 'missing'
       };
     } else {
-      // console.log("Post received, about to login")
-      loginUser(request.payload, function (er, user) {
-        if (er || !user) {
-          var errId = uuid.v1();
 
-          log.error(errId + ' ' + Hapi.error.badRequest('Invalid username or password'), request.payload.name);
-          opts.error = {
-            type: 'invalid',
-            errId: errId
-          };
+      var loginAttemptsKey = "login-attempts-"+request.payload.name
+      redis.get(loginAttemptsKey, function(err, attempts) {
 
-          timer.end = Date.now();
-          addLatencyMetric(timer, 'login-error');
-
-          addMetric({name: 'login-error'})
-          return reply.view('user/login', opts).code(400);
+        // Lock 'em out...
+        attempts = Number(attempts)
+        if (attempts >= maxAttemptsBeforeLockout) {
+          opts.errors = [
+            {message: fmt("Login has been disabled for %d seconds to protect your account from attacks. Consider resetting your password.", lockoutInterval)}
+          ]
+          return reply.view('user/login', opts).code(403);
         }
-        // console.log("Login received, user available, setting session")
-        // console.log("User is",user)
 
-        setSession(user, function (err) {
-          if (err) {
-            return showError(err, 500, 'could not set session for ' + user.name, opts);
+        // User is not above the login attempt threshold, so try to log in...
+        loginUser(request.payload, function (er, user) {
+          if (er || !user) {
+            var errId = uuid.v1();
+
+            log.error(errId + ' ' + Hapi.error.badRequest('Invalid username or password'), request.payload.name);
+            opts.error = 'Invalid username or password';
+
+            // Temporarily lock users out after several failed login attempts
+            redis.incr(loginAttemptsKey, function(err, attempts) {
+
+              // Set expiry after key is created
+              attempts = Number(attempts)
+              if (attempts === 1) {
+                console.log("about to set expiry")
+                redis.expire(loginAttemptsKey, lockoutInterval, function(err) {
+                  console.log("set the expiry")
+                  if (err) {
+                    log.error("unable to set expiry of " + loginAttemptsKey)
+                  }
+                })
+              }
+
+              timer.end = Date.now();
+              addLatencyMetric(timer, 'login-error');
+              addMetric({name: 'login-error'})
+              return reply.view('user/login', opts).code(400);
+            });
+
+            return;
           }
 
-          if (user && user.mustChangePass) {
+          console.log("Login received, user available, setting session")
+          console.log("User is",user)
+
+          setSession(user, function (err) {
+            if (err) {
+              return showError(err, 500, 'could not set session for ' + user.name, opts);
+            }
+
+            if (user && user.mustChangePass) {
+              timer.end = Date.now();
+              addLatencyMetric(timer, 'login-must-change-pass');
+
+              addMetric({name: 'login-must-change-pass'})
+              return reply.redirect('/password');
+            }
+
+            var donePath = '/';
+            if (request.query.done) {
+              // Make sure that we don't ever leave this domain after login
+              // resolve against a fqdn, and take the resulting pathname
+              var done = url.resolveObject('https://example.com/login', request.query.done.replace(/\\/g, '/'))
+              donePath = done.pathname
+            }
+
             timer.end = Date.now();
-            addLatencyMetric(timer, 'login-must-change-pass');
+            addLatencyMetric(timer, 'login-complete');
 
-            addMetric({name: 'login-must-change-pass'})
-            return reply.redirect('/password');
-          }
-
-          var donePath = '/';
-          if (request.query.done) {
-            // Make sure that we don't ever leave this domain after login
-            // resolve against a fqdn, and take the resulting pathname
-            var done = url.resolveObject('https://example.com/login', request.query.done.replace(/\\/g, '/'))
-            donePath = done.pathname
-          }
-
-          timer.end = Date.now();
-          addLatencyMetric(timer, 'login-complete');
-
-          addMetric({name: 'login-complete'})
-          // console.log("Sending logged-in user to " + donePath)
-          return reply.redirect(donePath);
+            addMetric({name: 'login-complete'})
+            // console.log("Sending logged-in user to " + donePath)
+            return reply.redirect(donePath);
+          });
         });
+
       });
+
     }
   }
 

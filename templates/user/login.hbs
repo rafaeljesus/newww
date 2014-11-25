@@ -5,13 +5,7 @@
     <h2>{{t "user.login.subtitle"}}</h2>
   </hgroup>
 
-  {{#if error}}
-    <p class='error'>
-      {{t "user.login.error.invalid"}}<br>
-      {{{t "user.login.error.invalidContext"}}}
-      <code>{{error.errId}}</code>
-    </p>
-  {{/if}}
+  {{> errors}}
 
   <form action='' method='post'>
     <label for="name">{{t "user.login.form.username"}}</label>

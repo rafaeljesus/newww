@@ -62,10 +62,6 @@ var unauthenticatedRoutes = [
     method: "GET",
     handler: require('./facets/company/show-homepage')
   },{
-    path: "/about",
-    method: "GET",
-    handler: require('./facets/company/show-about')(config.company)
-  },{
     path: "/contact",
     method: "GET",
     handler: require('./facets/company/show-contact')

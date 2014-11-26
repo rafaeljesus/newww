@@ -56,6 +56,8 @@ config.csp = {
     'https://www.google-analytics.com',
     'https://fonts.googleapis.com',
     'https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js',
+    'https://js.hsforms.net/',
+    'https://forms.hubspot.com/'
   ],
   styleSrc: [
     'self',

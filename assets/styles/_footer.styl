@@ -34,22 +34,24 @@ footer
   display inline-block
   color greigh4
   text-decoration none
+  position relative
   &:before, &:after
     content "\2665"
-    line-height 3
-    padding-top 5px
     color rgba(npmred, 0)
     font-size 14px
     transition all 0.3s
+    transform translate3d(0,0,0)
+    position absolute
+    top 1px
   &:before
-    padding-right -5px
+    left -10px
   &:after
-    padding-left -5px
+    right -10px
   &:hover
     color rgba(npmred, 1)
     &:before, &:after
       color rgba(npmred, 1)
     &:before
-      padding-right 5px
+      left -15px
     &:after
-      padding-left 5px
+      right -15px

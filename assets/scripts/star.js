@@ -17,7 +17,6 @@ star.init = function() {
   // Check the checkbox if we arrived from the login page
   // and there's a #star fragment in the URL
   if (String(document.referrer).match("/login") && String(location.hash).match("#star")) {
-    console.log("post-login starring...")
     star.form.checkbox.prop("checked", true);
   }
 }
@@ -54,6 +53,4 @@ star.onError = function (xhr, status, error) {
     window.location = "/login?done="+location.pathname+"#star"
     return
   }
-
-  console.error(xhr)
 }

@@ -36,17 +36,6 @@
 
 </div>
 
-<div class="container banner">
-  <h2 class="centered">npm is Pretty Easy to Install</h2>
-  <p class="centered">
-    The npm command-line tool is bundled with Node.js. If you already
-    have Node.js installed, then you have npm too.
-  </p>
-  <p class="centered">
-    <a class="button" href="#">Download the Node.js Installer for Mac OS X</a>
-  </p>
-</div>
-
 <h2 class="centered ruled">
   <a id="explicit" href="#explicit">Packages People 'npm install' a Lot</a>
 </h2>
@@ -72,4 +61,27 @@
   {{#each depended}}
     <li>{{> package-widget}}</li>
   {{/each}}
+</ul>
+
+<ul class="columnar">
+  <li>
+    <h3><a href="http://nodejs.org/download/">Install npm</a></h3>
+    <p>
+      The npm command-line tool is bundled with Node.js, so if you already
+      have Node.js installed then you have npm too. If not, go
+      <a href="http://nodejs.org/download/">download the Node.js installer</a>.
+    </p>
+  </li>
+
+  <li>
+    <h3><a href="https://docs.npmjs.com">Learn the Ropes</a></h3>
+    <p>
+      We've got a new docs site featuring videos and tutorials to help you make your javascript dreams a reality. Head on over to <a href="https://docs.npmjs.com/">docs.npmjs.com</a>
+    </p>
+  </li>
+
+  <li>
+    <h3><a href="/whoshiring">Get a Job</a></h3>
+    <div class="hiring-container" data-template="vanilla"></div>
+  </li>
 </ul>

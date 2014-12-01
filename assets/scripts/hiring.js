@@ -3,6 +3,7 @@ var chunk = require("chunk")
 var templates = {
   sidebar: require("../templates/hiring-sidebar.hbs"),
   full: require("../templates/hiring-full.hbs"),
+  vanilla: require("../templates/hiring-vanilla.hbs"),
 }
 
 var fetchCompanies = function() {

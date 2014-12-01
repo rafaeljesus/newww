@@ -8,12 +8,31 @@
   100%
     opacity 1
 
+// #what-npm-is-for
+//   line-height 1.2
+//   display inline-block
+//   margin-bottom 20px
+//   @media only screen and (max-width: mobileMaxWidth)
+//     margin-bottom 0
+//   &:after
+//     -webkit-animation cursor-blink 0.8s linear infinite
+//     -moz-animation cursor-blink 0.8s linear infinite
+//     -o-animation cursor-blink 0.8s linear infinite
+//     animation cursor-blink 0.8s linear infinite
+//     content "|"
+//     color npmred
+//     padding-left 3px
+
 #what-npm-is-for
   line-height 1.2
   display inline-block
   margin-bottom 20px
+  color npmred
+  width 200px
+  text-align left
   @media only screen and (max-width: mobileMaxWidth)
     margin-bottom 0
+    text-align center
   &:after
     -webkit-animation cursor-blink 0.8s linear infinite
     -moz-animation cursor-blink 0.8s linear infinite
@@ -22,6 +41,8 @@
     content "|"
     color npmred
     padding-left 3px
+  &.disabled:after
+    content none
 
 #home-stats
   position relative

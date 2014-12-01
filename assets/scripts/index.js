@@ -8,6 +8,7 @@ window.payments = require("./payments")()
 window.github = require("./github")()
 window.pretty_numbers = require("./pretty-numbers")()
 window.mousetrap = require("mousetrap")
+window.private_npm_beta = require("./private-npm-beta")()
 require("./what-npm-is-for")()
 
 $(function () {

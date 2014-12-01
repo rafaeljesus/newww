@@ -20,8 +20,7 @@ module.exports = function login (request, reply) {
   if (request.auth.isAuthenticated) {
     timer.end = Date.now();
     addLatencyMetric(timer, 'login-redirect-to-home');
-
-    return reply().redirect('/');
+    return reply().redirect('/~'+ request.auth.credentials.name);
   }
 
   var opts = {
@@ -102,7 +101,8 @@ module.exports = function login (request, reply) {
               return reply.redirect('/password');
             }
 
-            var donePath = '/';
+            var donePath = '/~'+user.name;
+
             if (request.query.done) {
               // Make sure that we don't ever leave this domain after login
               // resolve against a fqdn, and take the resulting pathname

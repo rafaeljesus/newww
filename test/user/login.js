@@ -43,7 +43,7 @@ describe('Getting to the login page', function () {
     });
   });
 
-  it('redirects already authenticated users to the homepage', function (done) {
+  it('redirects already authenticated users to their profile', function (done) {
     var options = {
       url: '/login',
       credentials: fakeuser
@@ -51,7 +51,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.equal('http://0.0.0.0:80/');
+      expect(resp.headers.location).to.equal('http://0.0.0.0:80/~fakeuser');
       done();
     });
   });
@@ -107,7 +107,7 @@ describe('Getting to the login page', function () {
     });
   });
 
-  it('redirects user to homepage if all goes well', function (done) {
+  it('redirects user to their profile page if all goes well', function (done) {
     var options = {
       url: '/login',
       method: 'POST',
@@ -121,7 +121,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.equal('http://0.0.0.0:80/');
+      expect(resp.headers.location).to.equal('http://0.0.0.0:80/~fakeuser');
       done();
     });
   });
@@ -209,7 +209,7 @@ describe('Getting to the login page', function () {
 
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(302);
-        expect(resp.headers.location).to.equal('http://0.0.0.0:80/');
+        expect(resp.headers.location).to.equal('http://0.0.0.0:80/~fakeuser');
         done();
       });
     });

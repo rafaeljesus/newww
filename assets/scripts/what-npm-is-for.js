@@ -28,6 +28,7 @@ var what_npm_is_for = function() {
     .type('angular').pause(pause).delete(7)
     .type('bower').pause(pause).delete(5)
     .type('jquery').pause(pause).delete(6)
+    .type('nodebots').pause(pause).delete(8)
     .type('gulp').pause(pause).delete(4)
     .type('browserify').pause(pause).delete(10)
     .type('grunt').pause(pause).delete(5)

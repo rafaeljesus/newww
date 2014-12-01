@@ -99,6 +99,7 @@ var unauthenticatedRoutes = [
     handler: require('./facets/company/show-whoshiring-payments')(config.company.stripe),
     config: {
       plugins: {
+        // tolerate Ajax
         crumb: {
           source: 'payload',
           restful: true
@@ -141,30 +142,41 @@ var unauthenticatedRoutes = [
       return reply.redirect("/package/" + request.params.package).code(301);
     }
   },{
+    // Redirect to home, because who cares
     path: "/browse/all",
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect("/").code(301);
     }
   },{
+    // Redirect to /~user#packages
     path: "/browse/author/{user}",
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect(fmt("/~%s#packages", request.params.user)).code(301);
     }
   },{
+    // Users, ordered descending by how many packages they've starred
     path: "/browse/userstar",
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect("/").code(301);
     }
   },{
+    // Redirect to /~user#starred
     path: "/browse/userstar/{user}",
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect(fmt("/~%s#starred", request.params.user)).code(301);
     }
   },{
+    // Catch-all for all other browse pages
+    // - top keywords
+    // - packages that have a certain keywords
+    // - recently updated packages
+    // - prolific authors
+    // - most depended-upon packages
+    // - all the packages that depend on the given package
     path: "/browse/{p*}",
     method: "GET",
     handler: require('./facets/registry/show-browse')
@@ -184,6 +196,7 @@ var unauthenticatedRoutes = [
     handler: require('./facets/registry/show-star'),
     config: {
       plugins: {
+        // tolerate Ajax
         crumb: {
           source: 'payload',
           restful: true
@@ -284,6 +297,7 @@ var unauthenticatedRoutes = [
 
 var authenticatedRoutes = [
   {
+    // shortcut for viewing your own stars
     path: "/star",
     method: "GET",
     handler: require('./facets/registry/show-star'),
@@ -324,6 +338,9 @@ var authenticatedRoutes = [
     method: "POST",
     handler: require('./facets/user/show-email-edit')(config.user.mail)
   },{
+    // confirm or revert
+    // /email-edit/confirm/1234567
+    // /email-edit/revert/1234567
     path: "/email-edit/{token*2}",
     method: "GET",
     handler: require('./facets/user/show-email-edit')(config.user.mail)

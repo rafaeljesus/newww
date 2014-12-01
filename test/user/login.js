@@ -3,8 +3,11 @@ var Lab = require('lab'),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
+    beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Lab.expect,
+    redis = require("../../adapters/redis-sessions");
 
 var server, source, cache, cookieCrumb,
     fakeuser = require('../fixtures/users').fakeuser,
@@ -141,6 +144,77 @@ describe('Getting to the login page', function () {
       done();
     });
   });
+
+  describe("login attempts", function() {
+
+    beforeEach(function(done) {
+      redis.originalGet = redis.get;
+      redis.originalIncr = redis.incr;
+      done();
+    })
+
+    afterEach(function(done) {
+      redis.get = redis.originalGet;
+      redis.incr = redis.originalIncr;
+      done();
+    })
+
+    it('renders login page and 403 if user has attempted to log in too many times', function (done) {
+      var attempts = 10;
+      var options = {
+        url: '/login',
+        method: 'POST',
+        payload: {
+          name: 'fakeuser',
+          password: '12345',
+          crumb: cookieCrumb,
+        },
+        headers: { cookie: 'crumb=' + cookieCrumb }
+      };
+
+      redis.get = function(key, callback) {
+        if (key === "login-attempts-fakeuser") {
+          return callback(null, attempts)
+        }
+        return redis.originalGet(key, callback)
+      }
+
+      server.inject(options, function (resp) {
+        expect(resp.statusCode).to.equal(403);
+        expect(source.context.errors).to.exist;
+        expect(source.context.errors[0].message).to.match(/Login has been disabled/i);
+        done();
+      });
+    });
+
+    it('allows user to log in if failed attempt count exists but is within limits', function (done) {
+      var attempts = 4;
+      var options = {
+        url: '/login',
+        method: 'POST',
+        payload: {
+          name: 'fakeuser',
+          password: '12345',
+          crumb: cookieCrumb,
+        },
+        headers: { cookie: 'crumb=' + cookieCrumb }
+      };
+
+      redis.get = function(key, callback) {
+        if (key === "login-attempts-fakeuser") {
+          return callback(null, attempts)
+        }
+        return redis.originalGet(key, callback)
+      }
+
+      server.inject(options, function (resp) {
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.headers.location).to.equal('http://0.0.0.0:80/');
+        done();
+      });
+    });
+
+  })
 
 });
 

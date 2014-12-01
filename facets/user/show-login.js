@@ -40,6 +40,10 @@ module.exports = function login (request, reply) {
       var loginAttemptsKey = "login-attempts-"+request.payload.name
       redis.get(loginAttemptsKey, function(err, attempts) {
 
+        if (err) {
+          log.error("redis: unable to get " + loginAttemptsKey)
+        }
+
         // Lock 'em out...
         attempts = Number(attempts)
         if (attempts >= maxAttemptsBeforeLockout) {
@@ -66,9 +70,7 @@ module.exports = function login (request, reply) {
               // Set expiry after key is created
               attempts = Number(attempts)
               if (attempts === 1) {
-                console.log("about to set expiry")
                 redis.expire(loginAttemptsKey, lockoutInterval, function(err) {
-                  console.log("set the expiry")
                   if (err) {
                     log.error("redis: unable to set expiry of " + loginAttemptsKey)
                   }

@@ -20,12 +20,14 @@ var what_npm_is_for = function() {
   var typist = malarkey(el, opts)
 
   typist
-    .clear()
-    .type(initialText).pause(pause).delete(initialText.length)
+    // .clear()
+    // .type(initialText).pause(pause).delete(initialText.length)
+    .pause(2400).delete(initialText.length)
     .type('browsers').pause(pause).delete(8)
     .type('mobile').pause(pause).delete(6)
     .type('angular').pause(pause).delete(7)
     .type('bower').pause(pause).delete(5)
+    .type('jquery').pause(pause).delete(6)
     .type('gulp').pause(pause).delete(4)
     .type('browserify').pause(pause).delete(10)
     .type('grunt').pause(pause).delete(5)

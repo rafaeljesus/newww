@@ -20,13 +20,15 @@ var paths = {
   scripts: {
     browserify: ["./assets/scripts/*.js"],
     vendor: ["./assets/scripts/vendor/*.js"]
-  }
+  },
+  templates: ['./assets/templates/*.hbs']
 };
 
 gulp.task('watch', function(){
   gulp.watch(paths.fonts, ['fonts']);
   gulp.watch(paths.styles, ['styles']);
   gulp.watch(paths.scripts.browserify, ['browserify']);
+  gulp.watch(paths.templates, ['browserify']);
   gulp.watch(paths.scripts.vendor, ['concat']);
 });
 

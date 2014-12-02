@@ -1,5 +1,4 @@
-newww
-=====
+# newww
 
 [![Build Status](https://travis-ci.org/npm/newww.png)](https://travis-ci.org/npm/newww)
 
@@ -9,9 +8,36 @@ post](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability).
 If you'd like to contribute to this project,
 [please do](https://github.com/npm/newww/blob/master/CONTRIBUTING.md)!
 
-## General Layout
+## Application Structure
 
-There are two major pieces to the app, facets and services.
+Let's take a tour of the app.
+
+### Assets
+
+The [assets](assets) directory contains all the frontend stuff: JavaScript, stylesheets, images, fonts, robots.txt, favicon.ico, etc. The [gulp process](gulpfile.js) watches this directory for file changes, and outputs everything to the [static](static) directory, which is [ignored by git](.gitignore) to prevent automated version control noise.
+
+- Browserify [assets/scripts/index.js](assets/scripts/index.js)
+- Concatenate non-browserify JavaScripts in [assets/scripts/vendor](assets/scripts/vendor)
+
+### Styles
+
+We're using Stylus because it's great. The [gulp process](gulpfile.js) converts [assets/styles/index.styl](assets/styles/index.styl) to [static/styles/index.css](static/styles/index.css).
+
+### Templates
+
+We're using [Handlebars](http://handlebarsjs.com/) as our templating engine. Server-rendered templates live in [templates](templates). Frontend templates live in [assets/templates](assets/templates). They are browserified into the bundled JS file using the `hbsfy` transform.
+
+### Locales
+
+A rudimentary localization effort is under way. The [locales](locales) directory contains javascript files that export translations of various strings used throughout the app.
+
+### Content Security Policy (CSP)
+
+We use the [blankie](https://github.com/nlf/blankie) Hapi plugin to enforce a strict content security policy that disallows execution of unsafe Javascript. It's defined in [config.js](config.js).
+
+### Routes
+
+Every route in the application is defined in [routes.js](routes.js).
 
 ### Facets
 
@@ -80,9 +106,10 @@ testing utility. Site-wide tests are currently located in the `test/` folder
 and can be run with `npm test`. Service-specific tests are located in their
 respective `service/[name]/test/` folders.
 
-## Templating and Styling
-
-We're using [Handlebars](http://handlebarsjs.com/) as our templating engine and [Stylus](http://learnboost.github.io/stylus/) as our CSS preprocessor. The Stylus-to-CSS conversion happens as part of our gulp process.
+```sh
+npm install
+npm test
+```
 
 ## Code
 

@@ -12,7 +12,7 @@ function getPage (repo) {
 
   return function (name, next) {
 
-    Joi.validate(name, Joi.string().alphanum(), function (err, validName) {
+    Joi.validate(name, Joi.string().regex(/^[a-zA-Z0-9-_]+$/), function (err, validName) {
       if (err) {
         return next(err, null);
       }

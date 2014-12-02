@@ -3,45 +3,28 @@ newww
 
 [![Build Status](https://travis-ci.org/npm/newww.png)](https://travis-ci.org/npm/newww)
 
-We're using [Hapi](https://github.com/spumko/hapi) as a framework for the
-next iteration of the npm website. We wrote all about why we chose Hapi in
-[a blog
+We're using [Hapi](https://github.com/spumko/hapi) as our framework for the npm website. We wrote all about why we chose Hapi in [a blog
 post](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability).
-If you'd like to contribute to this project and/or get an understanding of
-what the goals and roadmap of the project are, check out the
-[CONTRIBUTING.md](https://github.com/npm/newww/blob/master/CONTRIBUTING.md)
-file.
+
+If you'd like to contribute to this project,
+[please do](https://github.com/npm/newww/blob/master/CONTRIBUTING.md)!
 
 ## General Layout
 
-There are two major pieces to the app, facets and services. Both are
-implemented as Hapi plugins, though the way they are used in the application
-are intentionally different.
+There are two major pieces to the app, facets and services.
 
 ### Facets
 
-A **facet** is a mostly-self-involved piece of the website. Each facet is
-entirely self-contained, and includes the following pieces:
+A **facet** is a way of separating different business-logic bits of the app. They're essentially just folders for holding handlers (aka controllers) for various routes.
 
-* Routes (in `index.js`)
-* Template controls (`show-[thing].js` for getting information from services and `presenters/[thing].js` for template-based utilities)
-* Templates (`[thing].hbs`)
-* Facet-specific tests (`test/*.js`).
-
-Template partials are *not* housed in facets, as they are cross-facet (i.e.
-headers, footers, etc).
-
-By self-containing each facet, we can turn them into microservices (which
-can be installed with npm) later, should we choose to do so.
-
-There are currently four facets:
+There are currently five facets:
 
 * The **company** facet focuses on all the npm, Inc. bits:
-	* /
-	* About page
-	* Team page
+	* / (Home)
 	* Business partnerships (i.e. the Who's Hiring? page)
-	* FAQ
+	* Static documents (i.e. jobs, about, contact, policies)
+
+* The **enterprise** facet takes care of our npm Enterprise signup process.
 
 * The **user** facet focuses on all the things that users who visit the site might care about:
 	* Login/logout
@@ -50,7 +33,6 @@ There are currently four facets:
 	* Viewing profiles
 	* Setting/Resetting passwords
 	* Signing up
-	* Starring packages
 
 * The **registry** facet focuses on the bits that specifically pertain to the registry/using npm:
 	* Package pages
@@ -58,6 +40,7 @@ There are currently four facets:
 	* Browsing (i.e. keywords)
 	* Search
 	* Download counts
+  * Starring packages
 
 * The **ops** facet focuses on the things that we care about from an operational standpoint, but don't really fall into any of the other buckets:
 	* Healthchecks
@@ -65,34 +48,27 @@ There are currently four facets:
 
 ### Services
 
-A service is a shared resource, like our couchDB instance. Services have
-methods that can be called from any facet.
+A service is a Hapi plugin that can be used by any handler. They're a lot like models, but they are completely encapsulated so that they can (eventually) be spun out into entirely independent services. This may change eventually, though, because the separated tests make it hard to keep track of all the moving pieces.
 
-For example:
+An example:
 
-_In `services/hapi-couchdb/`:_
+_In `services/downloads/`:_
 
-```
-  service.method('getPackageFromCouch', function (package, next) {
-    anonCouch.get('/registry/' + package, function (er, cr, data) {
-      next(er, data);
-    });
-  });
+```js
+  service.method('downloads.getAllDownloadsForPackage', ...);
 ```
 
-_Then, in `facets/registry/package-page.js`:_
+_Then, in `facets/registry/show-package.js`:_
 
-```
-  var getPackageFromCouch = request.server.methods.getPackageFromCouch;
+```js
+  var getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;
 
-	// stuff before getting package
+  // Show download count for the last day, week, and month
+  getAllDownloadsForPackage(pkg.name, function (err, downloads) {
 
-  getPackageFromCouch(couchLookupName(name), function (er, data) {
+    opts.package.downloads = downloads;
 
-	// stuff now that we have the package
-
-	reply.view('package-page', pkg);
-
+    reply.view('registry/package-page', opts);
   });
 
 ```
@@ -101,32 +77,20 @@ _Then, in `facets/registry/package-page.js`:_
 
 There are tests! We're using [Lab](https://github.com/spumko/lab) as our
 testing utility. Site-wide tests are currently located in the `test/` folder
-and can be run with `npm test`. Facet-specific tests are located in their
-respective `facet/[name]/test/` folders.
-
-Expect this bit to evolve as things get more complex. But for now, just
-having tests is a HUGE improvement.
+and can be run with `npm test`. Service-specific tests are located in their
+respective `service/[name]/test/` folders.
 
 ## Templating and Styling
 
-We're using [Handlebars](http://handlebarsjs.com/) as our templating engine.
-Think of it as a compromise between Jade and EJS; also an opportunity to
-learn a new templating language. It's got its ups and downs, but so far so
-good. (Plus the spumko team uses it, so all the integration is basically
-done for us.)
-
-We're sticking with [Stylus](http://learnboost.github.io/stylus/) as our CSS
-preprocessor. The Stylus-to-CSS conversion happens as an npm prestart
-script.
+We're using [Handlebars](http://handlebarsjs.com/) as our templating engine and [Stylus](http://learnboost.github.io/stylus/) as our CSS preprocessor. The Stylus-to-CSS conversion happens as part of our gulp process.
 
 ## Code
 
-Let's bring back semi-colons and comma-last. No rhyme or reason; just cuz.
+We're using semi-colons and comma-last. No rhyme or reason; just cuz.
 
 ## Running the server locally
 
 First, clone this repo. Then copy some configuration files, and modify them to suit your needs:
-
 
 ```sh
 cp numbat-config.example.js numbat-config.js
@@ -169,9 +133,6 @@ Note that you should be *inside* the VM and at /vagrant when you do this:
 
 `npm install`
 
-Most of the dependencies are checked-in, but a few will get installed when
-you run this.
-
 ### 3. Start your databases
 
 Again, from inside the VM at /vagrant, run
@@ -179,32 +140,22 @@ Again, from inside the VM at /vagrant, run
 `npm run dev-db`
 
 You should see couch, redis and elasticsearch all being started. This can
-take a little while, so wait until you see "STARTING DEV SITE NOW". Once it's
-running, you can see the site by going to
-
-[https://localhost:15443/](https://localhost:15443/)
-
-That's it! You are good to go. You can edit the code from outside the VM and
-the changes will be reflected in the VM. When you're done, remember to exit
-the vm and run
-
-`vagrant suspend`
-
-which will save the VM. `vagrant up` will bring it back much faster after the
-first run.
+take a little while the first time you start up (the couch instance will replicate a few popular packages from the main registry), so wait until you see "STARTING DEV SITE NOW".
 
 ### 4. Start the web server
 
-In a separate terminal outside of vagrant, run `npm run dev`. (You can also
+In a separate terminal outside of vagrant but inside the `newww` directory, run `npm run dev`. (You can also
 run `npm run dev` from inside vagrant, but you'll need to change your host to
 '0.0.0.0' in `config.js`. We recommend running it outside of vagrant, but
 it's totally up to you.)
 
 For ease of development, we've got a Gulpfile that uses
-[gulp](http://gulpjs.com/). It watches appropriate directories and restarts
-stuff for you when other stuff changes. Fortunately, you don't have to use
-gulp if you don't want to; just change the `start` line in the root
-`package.json` to `start: "node server.js"`.
+[gulp](http://gulpjs.com/). It watches appropriate directories and restarts stuff for you when other stuff changes. Now, you don't have to use gulp if you don't want to; just change the `start` line in the root `package.json` to `start: "node server.js"`.
+
+At this point you should be able to go to `https://localhost:15443`.
+
+That's it! You are good to go. You can edit the code from outside the VM and the changes will be reflected in the VM. When you're done, remember to exit the vm and run `vagrant suspend` which will save the VM. `vagrant up` will bring it back much faster after the
+first run.
 
 ### Under the hood
 
@@ -229,4 +180,4 @@ You should also have access to both the
 [head](http://mobz.github.io/elasticsearch-head/) and
 [kopf](https://github.com/lmenezes/elasticsearch-kopf) Elasticsearch
 plugins, accessible at http://localhost:9200/_plugin/head/ and
-http://localhost:9200/_plugin/kopf/, respectively.  
+http://localhost:9200/_plugin/kopf/, respectively.

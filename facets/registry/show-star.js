@@ -15,7 +15,6 @@ module.exports = function (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    
     namespace: 'registry-star',
     isXhr: true
   };
@@ -24,7 +23,7 @@ module.exports = function (request, reply) {
     return reply.redirect('browse/userstar/' + opts.user.name);
   }
 
-  if (typeof opts.user === 'undefined') {
+  if (!opts.user) {
     return showError(null, 403, 'user isn\'t logged in', opts);
   }
 

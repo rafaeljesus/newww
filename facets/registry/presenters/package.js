@@ -339,6 +339,7 @@ function removeSuperfluousContentFromReadme (data) {
     'david-dm.org',
     'img.shields.io',
     'nodei.co',
+    'saucelabs.com',
     'travis-ci.org'
   ].forEach(function(host){
     $("p:has(img[src*='//"+host+"'])").addClass("superfluous")

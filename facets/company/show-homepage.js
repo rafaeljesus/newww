@@ -18,7 +18,7 @@ module.exports = function (request, reply) {
       updated: cached.updated || [],
       depended: cached.depended || [],
       starred: cached.starred || [],
-      authors: cached.authors || [],
+      // authors: cached.authors || [],
       downloads: cached.downloads,
       totalPackages: cached.totalPackages,
       explicit: require("../../lib/explicit-installs.json").slice(0,15).map(function(pkg) {
@@ -78,17 +78,17 @@ module.exports = function (request, reply) {
 
 function load (request, cb) {
   var registry = request.server.methods.registry,
-      recentAuthors = registry.getRecentAuthors,
+      // recentAuthors = registry.getRecentAuthors,
       addMetric = metrics.addMetric,
       downloads = request.server.methods.downloads.getAllDownloads;
 
-  var n = 5,
+  var n = 4,
       cached = {};
 
   // registry.getStarredPackages(false, 0, 12, next('starred'));
   registry.getDependedUpon(false, 0, 12, next('depended'));
   registry.getUpdated(0, 12, next('updated'));
-  recentAuthors(TWO_WEEKS, 0, 12, next('authors'));
+  // recentAuthors(TWO_WEEKS, 0, 12, next('authors'));
   downloads(next('downloads'));
   registry.packagesCreated(next('totalPackages'));
 

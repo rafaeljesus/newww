@@ -35,7 +35,7 @@ module.exports = function (request, reply) {
         delete pkg.versions
 
         // Add logos
-        logos = {
+        var logos = {
           bower: "https://i.cloudup.com/Ka0R3QvWRs.png",
           browserify: "https://d21ii91i3y6o6h.cloudfront.net/gallery_images/from_proof/1647/small/1405586570/browserify-2-hexagon-sticker.png",
           "coffee-script": "https://cldup.com/kyDqUBuW3k.png",

@@ -7,7 +7,7 @@ var anonCouch = require('../../../adapters/couchDB').anonCouch,
     day = 1000 * 60 * 60 * 24;
 
 module.exports = function recentAuthors (age, skip, limit, cb) {
-  log.info('lookup recent authors: ', arg, skip, limit);
+  log.info('lookup recent authors: ', age, skip, limit);
   var timer = {};
 
   timer.start = Date.now();

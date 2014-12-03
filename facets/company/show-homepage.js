@@ -54,7 +54,7 @@ module.exports = function (request, reply) {
           yo: "https://cldup.com/P3MQgWdDyG.png",
         }
 
-        for (name in logos) {
+        for (var name in logos) {
           if (name === pkg.name) {
             pkg.logo = logos[name]
           }

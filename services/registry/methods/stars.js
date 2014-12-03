@@ -1,6 +1,7 @@
 var Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
     validatePackageName = require("validate-npm-package-name"),
+    log = require('bole')('registry-stars'),
     metrics = require('newww-metrics')();
 
 var timer = {};
@@ -21,6 +22,7 @@ module.exports = {
         return next(Hapi.error.internal(er || data.error));
       }
 
+      log.info(package + ' starred by ' + username);
       return next(null, data);
     });
   },
@@ -40,6 +42,7 @@ module.exports = {
         return next(Hapi.error.internal(er || data.error));
       }
 
+      log.info(package + ' unstarred by ' + username);
       return next(null, data);
     });
   }

@@ -37,7 +37,7 @@ module.exports = function (type, arg, skip, limit, next) {
   var u = '/registry/_design/app/_view/' + browseUtils[type].viewName;
 
   u += '?' + qs.stringify(query)
-
+  log.info('browse url: ', u)
   anonCouch.get(u, function (er, cr, data) {
     if (er) {
       var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };

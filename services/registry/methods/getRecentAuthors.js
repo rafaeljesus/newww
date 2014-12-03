@@ -1,11 +1,13 @@
 var anonCouch = require('../../../adapters/couchDB').anonCouch,
     metrics = require('newww-metrics')(),
+    log = require('bole')('registry-get-recent-authors'),
     qs = require('querystring'),
     AC = require('async-cache'),
     maxAge = 1000 * 60 * 60 * 24 * 365,
     day = 1000 * 60 * 60 * 24;
 
 module.exports = function recentAuthors (age, skip, limit, cb) {
+  log.info('lookup recent authors: ', arg, skip, limit);
   var timer = {};
 
   timer.start = Date.now();

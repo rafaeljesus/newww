@@ -122,6 +122,7 @@ function packageDisplay (key, value) {
 
 
 exports.transform = function transform (type, arg, data, skip, limit, next) {
+  log.info('transforming ', type, arg, skip, limit);
   if (!data.rows) {
     log.warn('no rows?', type, arg, data, skip, limit)
     return []
@@ -146,6 +147,7 @@ exports.transform = function transform (type, arg, data, skip, limit, next) {
 
   if (type.match(/all|updated|depended|^star/) && !arg ||
       type.match(/keyword|author|depended|userstar/) && arg) {
+    log.info('getting package data for ' + type + ' with arg ' + arg);
     return getPackageData(data, function (er, data) {
       return next(er, data);
     });

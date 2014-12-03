@@ -31,7 +31,7 @@ var popularPackages = ["underscore", "async", "request", "lodash",
 "chai", "ncp", "mustache", "npm", "open", "requirejs", "aws-sdk",
 "http-proxy", "temp", "graceful-fs", "hiredis", "socket.io-client", "gulp",
 "oauth", "inquirer", "iconv-lite", "yargs", "escodegen", "uuid", "bower",
-"log4js", "eventemitter2", "promise", "cli-table"]
+"log4js", "eventemitter2", "promise", "cli-table", "es6-shim"]
 
 var packagesByZeke = ["app-cloner-heroku", "app-json-fetcher",
 "app-profiler-heroku", "app.json", "apps", "bitbucket-url-to-object",

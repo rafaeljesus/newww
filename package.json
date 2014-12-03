@@ -75,7 +75,7 @@
     "sanitizer": "^0.1.1",
     "schemeless": "^1.0.0",
     "scooter": "^1.2.0",
-    "similarity": "^1.0.0",
+    "similarity": "^1.0.1",
     "stripe": "^2.7.3",
     "stylus": "^0.45.0",
     "validate-npm-package-name": "^1.0.0"

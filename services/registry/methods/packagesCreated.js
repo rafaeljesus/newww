@@ -1,9 +1,12 @@
 var Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
+    log = require('bole')('registry-packages-created'),
     metrics = require('newww-metrics')();
 
 module.exports = function packagesCreated (next) {
   var timer = { start: Date.now() };
+
+  log.info('looking up number of packages created');
 
   anonCouch.get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey="name"&endkey="name"&stale=update_after', function (er, cr, data) {
 

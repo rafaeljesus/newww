@@ -135,16 +135,9 @@ config.npme = {
 };
 
 // ==== facet options ====
-config.company = {
-  stripe: {
-    "secretkey": "stripesecretkey",
-    "publickey": "stripepublickey"
-  },
-  package: require('./package.json'),
-  contributors: fs.readFileSync(__dirname + '/AUTHORS', 'utf8'),
-  registry: "http://registry.npmjs.org/",
-  registryCouch: config.couch.registryCouch,
-  HEAD: config.HEAD
+config.stripe = {
+  "secretkey": "stripesecretkey",
+  "publickey": "stripepublickey"
 };
 
 config.user = {

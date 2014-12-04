@@ -44,7 +44,7 @@
     "hapi": "6.4.0",
     "hapi-auth-cookie": "^1.0.3",
     "hbsfy": "^2.2.0",
-    "highlight.js": "8.2.0",
+    "highlight.js": "^8.4.0",
     "hiredis": "^0.1.17",
     "hoek": "^2.9.0",
     "is-url": "^1.1.0",

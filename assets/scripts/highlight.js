@@ -1,5 +1,4 @@
-var Highlight = require("highlight.js/lib/highlight");
-var hl = module.exports = new Highlight();
+var hl = module.exports = require('highlight.js/lib/highlight');
 
 hl.registerLanguage("bash", require('highlight.js/lib/languages/bash'));
 hl.registerLanguage("css", require('highlight.js/lib/languages/css'));

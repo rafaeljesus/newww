@@ -166,6 +166,14 @@ module.exports = function (server) {
 
     registry: {
       getBrowseData: function (type, arg, skip, limit, next) {
+        var opts = {};
+
+        // type can optionally pass along opts.
+        if (typeof type === 'object') {
+          opts = type;
+          type = opts.type;
+        }
+
         return next(null, browse[type]);
       },
 

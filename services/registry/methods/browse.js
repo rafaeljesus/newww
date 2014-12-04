@@ -7,6 +7,17 @@ var Hapi = require('hapi'),
     metrics = require('newww-metrics')();
 
 module.exports = function (type, arg, skip, limit, next) {
+  var opts = {};
+
+  // if type if an object, rather than a
+  // string, assume that it is an options object.
+  // this allows us to vary behavior, as an example,
+  // only looking up dependent packages in some cases.
+  if (typeof type === 'object') {
+    opts = type;
+    type = opts.type;
+  }
+
   var timer = { start: Date.now() };
   var utils = browseUtils[type];
 
@@ -51,7 +62,7 @@ module.exports = function (type, arg, skip, limit, next) {
       return next(null, []);
     }
 
-    browseUtils.transform(type, arg, data, skip, limit, function (err, data) {
+    browseUtils.transform(type, arg, data, skip, limit, opts, function (err, data) {
 
       timer.end = Date.now();
 

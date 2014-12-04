@@ -121,7 +121,14 @@ function packageDisplay (key, value) {
 };
 
 
-exports.transform = function transform (type, arg, data, skip, limit, next) {
+exports.transform = function transform (type, arg, data, skip, limit, opts, next) {
+
+  // opts is an optional parameter.
+  if (typeof opts === 'function') {
+    next = opts;
+    opts = {};
+  }
+
   log.info('transforming ', type, arg, skip, limit);
   if (!data.rows) {
     log.warn('no rows?', type, arg, data, skip, limit)
@@ -145,8 +152,9 @@ exports.transform = function transform (type, arg, data, skip, limit, next) {
     }).slice(skip, skip + limit)
   }
 
+  // don't lookup dependent package if opts.noPackageData is truthy.
   if (type.match(/all|updated|depended|^star/) && !arg ||
-      type.match(/keyword|author|depended|userstar/) && arg) {
+      type.match(/keyword|author|depended|userstar/) && arg && !opts.noPackageData) {
     log.info('getting package data for ' + type + ' with arg ' + arg);
     return getPackageData(data, function (er, data) {
       return next(er, data);

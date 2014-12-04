@@ -55,7 +55,10 @@ module.exports = function (request, reply) {
     }
 
     timer.start = Date.now();
-    getBrowseData('depended', opts.name, 0, 1000, function (er, dependents) {
+
+    // on the package page, we should not load dependent package-data,
+    // this is too slow!
+    getBrowseData({type: 'depended', noPackageData: true}, opts.name, 0, 1000, function (er, dependents) {
       timer.end = Date.now();
       addMetric({
         name: 'latency',

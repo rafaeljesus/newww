@@ -360,6 +360,10 @@ var authenticatedRoutes = [
     path: "/password",
     method: "POST",
     handler: require('./facets/user/show-password')
+  },{
+    path: "/settings/billing",
+    method: "GET",
+    handler: require('./facets/user/billing')
   }
 
 ]

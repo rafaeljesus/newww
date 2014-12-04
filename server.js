@@ -37,6 +37,7 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     appendNext: 'done',
     redirectTo: '/login',
     cookie: config.session.cookie,
+    clearInvalid: true,
     validateFunc: function (session, cb) {
       cache.get(session.sid, function (err, cached) {
 

@@ -1,0 +1,48 @@
+{{> profile-secondary-nav}}
+
+<div class="container narrow">
+
+  <hgroup>
+    <h1>Your Billing Info</h1>
+  </hgroup>
+
+  {{> errors}}
+
+  <form action="" method="POST" id="billing-form">
+    <span class="payment-errors"></span>
+
+    <div class="form-row">
+      <label>
+        <span>Card Number</span>
+        <input type="text" size="20" data-stripe="number"/>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label>
+        <span>Card security code</span>
+        <input type="text" size="4" data-stripe="cvc"/>
+      </label>
+      <p class="help-text">Usually 3 digits; sometimes 4</p>
+    </div>
+
+    <div class="form-row">
+      <label>
+        <span>Expiration Month</span>
+        <input type="text" size="2" data-stripe="exp-month" placeholder="MM" />
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label>
+        <span>Expiration Year</span>
+        <input type="text" size="4" data-stripe="exp-year" placeholder="YYYY" />
+      </label>
+    </div>
+
+    {{> form_security}}
+    <input type="submit" class="full-width" value="Submit Billing Info">
+
+  </form>
+
+</div>

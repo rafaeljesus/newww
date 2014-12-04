@@ -5,6 +5,8 @@ var transform = require('./presenters/profile').transform,
     metrics = require('newww-metrics')();
 
 module.exports = function (options) {
+  if (!options) options = {}
+
   return function (request, reply) {
     var billing = request.server.methods.user.billing;
     var showError = request.server.methods.errors.showError(reply);
@@ -14,10 +16,7 @@ module.exports = function (options) {
       title: 'Billing',
     }
 
-    console.log("WAT")
-
     if (request.method === 'get' || request.method === 'head') {
-      console.log("WHOOPP")
       return reply.view('user/billing', opts);
     }
   }

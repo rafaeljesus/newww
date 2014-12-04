@@ -46,7 +46,7 @@ describe('billing page', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('user/billing');
-      // expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+      expect(resp.result).to.include('id="billing-form"');
       done();
     });
   });

@@ -363,7 +363,7 @@ var authenticatedRoutes = [
   },{
     path: "/settings/billing",
     method: "GET",
-    handler: require('./facets/user/billing')
+    handler: require('./facets/user/billing')()
   }
 
 ]

@@ -98,9 +98,10 @@ module.exports = function (options) {
 function handle (request, reply, email2) {
   var opts = {
     user: request.auth.credentials,
-
     namespace: NAMESPACE
   };
+
+  var showError = request.server.methods.errors.showError(reply);
 
   var confTok = crypto.randomBytes(18).toString('hex'),
       confHash = sha(confTok),
@@ -133,16 +134,19 @@ function handle (request, reply, email2) {
 
   var n = 2;
 
-  request.server.app.cache.set(revKey, rev, 0, cb);
-  request.server.app.cache.set(confKey, conf, 0, cb);
-
-  function cb (er) {
-    if (er) {
-      return showError(er, 500, 'Could not set value to the cache', opts);
-    } else if (--n == 0) {
-      sendEmails(conf, rev, request, reply);
+  request.server.app.cache.set(revKey, rev, 0, function (err) {
+    if (err) {
+      return showError(err, 500, 'Could not set revKey to the cache', opts);
     }
-  }
+
+    request.server.app.cache.set(confKey, conf, 0, function (er) {
+      if (er) {
+        return showError(err, 500, 'Could not set confKey to the cache', opts);
+      }
+
+      return sendEmails(conf, rev, request, reply);
+    });
+  });
 }
 
 function sendEmails (conf, rev, request, reply) {

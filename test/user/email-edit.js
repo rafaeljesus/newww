@@ -6,7 +6,15 @@ var Lab = require('lab'),
     it = lab.test,
     expect = Lab.expect;
 
-var server, source, cache, revUrl, confUrl, cookieCrumb,
+var redis = require('redis'),
+    spawn = require('child_process').spawn,
+    config = require('../../config').server.cache;
+
+    config.port = 6379;
+    config.password = '';
+
+var server, source, revUrl, confUrl, cookieCrumb,
+    client, oldCache, redisProcess,
     fakeuser = require('../fixtures/users').fakeuser,
     fakeusercli = require('../fixtures/users').fakeusercli,
     newEmail = 'new@fakeuser.com',
@@ -28,10 +36,44 @@ before(function (done) {
   server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
-    cache = request.server.app.cache._cache.connection.cache['|sessions'];
     source = request.response.source;
     next();
   });
+});
+
+before(function (done) {
+  var redisConfig = '--port ' + config.port;
+  redisProcess = spawn('redis-server', [redisConfig]);
+  client = redis.createClient(config.port, config.host);
+  client.auth(config.password, function () {});
+  client.on("error", function (err) {
+    console.log("Error " + err);
+  });
+
+  oldCache = server.app.cache;
+  server.app.cache.get = function (key, cb) {
+    client.get(key, function (er, val) {
+      if (val) {
+        var obj = {item: JSON.parse(val)}
+        return cb(er, obj);
+      }
+
+      return cb(er, val);
+    });
+  };
+
+  server.app.cache.set = function (key, val, ttl, cb) {
+    return client.set(key, JSON.stringify(val), cb);
+  };
+
+  done();
+});
+
+after(function(done) {
+  client.flushdb();
+  server.app.cache = oldCache;
+  redisProcess.kill('SIGKILL');
+  done();
 });
 
 describe('Accessing the email-edit page', function () {
@@ -276,10 +318,4 @@ describe('Reverting an email change', function () {
       done();
     });
   });
-});
-
-after(function (done) {
-  fakeuser.email = oldEmail;
-  server.app.cache._cache.connection.stop();
-  done();
 });

@@ -219,6 +219,7 @@ describe('Getting to the login page', function () {
 });
 
 after(function (done) {
+  redis.flushdb();
   server.app.cache._cache.connection.stop();
   done();
 });

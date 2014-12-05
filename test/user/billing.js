@@ -51,4 +51,23 @@ describe('billing page', function () {
     });
   });
 
+  it('injects stripe public key and script', function (done) {
+
+    var stripePublicKey = require("../../config").stripe.publickey;
+    expect(stripePublicKey.length);
+
+    var options = {
+      url: '/settings/billing',
+      credentials: fakeuser
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      expect(source.template).to.equal('user/billing');
+      expect(resp.result).to.include('https://js.stripe.com/v2/');
+      expect(resp.result).to.equal(stripePublicKey);
+      done();
+    });
+  });
+
 });

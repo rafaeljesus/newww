@@ -41,7 +41,7 @@ module.exports = function (request, reply) {
 
       getPackage.cache.drop(pkg, function (er, resp) {
         if (er) {
-          return showError([err, util.format("unable to drop cache for %s", pkg)], 500, 'not ok', opts);
+          return showError([er, util.format("unable to drop cache for %s", pkg)], 500, 'not ok', opts);
         }
 
         timer.end = Date.now();
@@ -51,17 +51,17 @@ module.exports = function (request, reply) {
         return reply(username + ' starred ' + pkg).code(200);
       });
     });
+
   } else {
 
     unstar(pkg, username, function (err, data) {
-
       if (err) {
         return showError([err, util.format("%s was unable to unstar %s", username, pkg)], 500, 'not ok', opts);
       }
 
       getPackage.cache.drop(pkg, function (er, resp) {
         if (er) {
-          return showError([err, util.format("unable to drop cache for %s", pkg)], 500, 'not ok', opts);
+          return showError([er, util.format("unable to drop cache for %s", pkg)], 500, 'not ok', opts);
         }
 
         timer.end = Date.now();

@@ -8,7 +8,8 @@ var present = require(__dirname + '/../../presenters/user'),
 module.exports = function(options) {
   return function(request, reply) {
     var getUser = request.server.methods.user.getUser,
-      getBrowseData = request.server.methods.registry.getBrowseData,
+      getUserStars = request.server.methods.registry.getUserStars,
+      getAuthors = request.server.methods.registry.getAuthors,
       showError = request.server.methods.errors.showError(reply),
       addMetric = metrics.addMetric,
       addLatencyMetric = metrics.addPageLatencyMetric,
@@ -49,12 +50,12 @@ module.exports = function(options) {
         return reply.view('user/profile-not-found', opts).code(404);
       }
 
-      getBrowseData('userstar', profileName, 0, 1000, function(err, starred) {
+      getUserStars(profileName, 0, 1000, function(err, starred) {
         if (err) {
           return showError(err, 500, 'Unable to get stars for user ' + profileName, opts);
         }
 
-        getBrowseData('author', profileName, 0, 1000, function(err, packages) {
+        getAuthors(profileName, 0, 1000, function(err, packages) {
           if (err) {
             return showError(err, 500, 'Unable to get modules by user ' + profileName, opts);
           }

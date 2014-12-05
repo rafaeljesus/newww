@@ -1,12 +1,14 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
-var Hapi = require('hapi'),
+var async = require('async'),
+    Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
     metrics = require('newww-metrics')(),
     parseLanguageHeader = require('accept-language-parser').parse,
     fmt = require('util').format,
-    moment = require('moment');
+    moment = require('moment'),
+    once = require('once');
 
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };
@@ -66,11 +68,9 @@ module.exports = function (request, reply) {
 
     timer.end = Date.now();
     metrics.addPageLatencyMetric(timer, 'homepage');
-
     metrics.addMetric({name: 'homepage'});
 
     return reply.view('company/index', opts);
-
   });
 }
 
@@ -80,29 +80,35 @@ function load (request, cb) {
   var registry = request.server.methods.registry,
       // recentAuthors = registry.getRecentAuthors,
       addMetric = metrics.addMetric,
-      downloads = request.server.methods.downloads.getAllDownloads;
-
-  var n = 4,
+      downloads = request.server.methods.downloads.getAllDownloads,
       cached = {};
 
-  // registry.getStarredPackages(false, 0, 12, next('starred'));
-  registry.getDependedUpon(false, 0, 12, next('depended'));
-  registry.getUpdated(0, 12, next('updated'));
-  // recentAuthors(TWO_WEEKS, 0, 12, next('authors'));
-  downloads(next('downloads'));
-  registry.packagesCreated(next('totalPackages'));
+  async.parallel([
+    function(cb) { cbWithTimeout('depended', registry.getDependedUpon, [false, 0, 12], cached, cb); },
+    function(cb) { cbWithTimeout('updated', registry.getUpdated, [0, 12], cached, cb); },
+    function(cb) { cbWithTimeout('downloads', downloads, [], cached, cb); },
+    function(cb) { cbWithTimeout('totalPackages', registry.packagesCreated, [], cached, cb); }
+  ], function(err) {
+    if (err) log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error'), err);
+    return cb(null, cached);
+  });
+}
 
-  function next (which) {
-    return function (err, data) {
+function cbWithTimeout(which, method, args, cached, cb) {
+  var timeout = process.env.API_TIMEOUT ? parseInt(process.env.API_TIMEOUT) : 3000; // maximum execution time when loading data.
 
-      if (err) {
-        log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);
-      }
+  cb = once(cb); // make it so CB can only be executed once.
 
-      cached[which] = data;
-      if (--n === 0) {
-        return cb(null, cached);
-      }
-    }
-  }
+  args.push(function(err, data) {
+    if (err) log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);
+    if (data) cached[which] = data;
+    return cb();
+  });
+
+  setTimeout(function() {
+    if (!cb.called) log.warn(uuid.v1() + ' ' + Hapi.error.internal('timeout loading ' + which));
+    return cb();
+  }, timeout);
+
+  method.apply(this, args); // actually execute the method passed in.
 }

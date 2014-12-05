@@ -65,7 +65,7 @@ describe('billing page', function () {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('user/billing');
       expect(resp.result).to.include('https://js.stripe.com/v2/');
-      expect(resp.result).to.equal(stripePublicKey);
+      expect(resp.result).to.include(stripePublicKey);
       done();
     });
   });

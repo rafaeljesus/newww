@@ -14,7 +14,7 @@ module.exports = function (options) {
       user: transform(request.auth.credentials, options),
       namespace: 'billing',
       title: 'Billing',
-      stripePublicKey: require("../../config").stripe.publickey
+      stripePublicKey: process.env.STRIPE_PUBLIC_KEY
     }
 
     if (request.method === 'get' || request.method === 'head') {

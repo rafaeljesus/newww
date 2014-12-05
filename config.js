@@ -134,12 +134,6 @@ config.npme = {
   trial_seats: 2
 };
 
-// ==== facet options ====
-config.stripe = {
-  "secretkey": "stripesecretkey",
-  "publickey": "stripepublickey"
-};
-
 config.user = {
   profileFields: {
     fullname: [ 'Full Name', '%s' ],

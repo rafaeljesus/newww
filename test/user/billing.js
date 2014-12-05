@@ -52,9 +52,8 @@ describe('billing page', function () {
   });
 
   it('injects stripe public key and script', function (done) {
-
-    var stripePublicKey = require("../../config").stripe.publickey;
-    expect(stripePublicKey.length);
+    var oldStripeKey = process.env.STRIPE_PUBLIC_KEY
+    process.env.STRIPE_PUBLIC_KEY = "I am a zebra"
 
     var options = {
       url: '/settings/billing',
@@ -65,7 +64,8 @@ describe('billing page', function () {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('user/billing');
       expect(resp.result).to.include('https://js.stripe.com/v2/');
-      expect(resp.result).to.include(stripePublicKey);
+      expect(resp.result).to.include("I am a zebra");
+      process.env.STRIPE_PUBLIC_KEY = oldStripeKey
       done();
     });
   });

@@ -84,7 +84,7 @@ var unauthenticatedRoutes = [
   },{
     path: "/joinwhoshiring",
     method: "GET",
-    handler: require('./facets/company/show-whoshiring-payments')(config.stripe),
+    handler: require('./facets/company/show-whoshiring-payments'),
     config: {
       plugins: {
         blankie: {
@@ -96,7 +96,7 @@ var unauthenticatedRoutes = [
   },{
     path: "/joinwhoshiring",
     method: "POST",
-    handler: require('./facets/company/show-whoshiring-payments')(config.stripe),
+    handler: require('./facets/company/show-whoshiring-payments'),
     config: {
       plugins: {
         // tolerate Ajax

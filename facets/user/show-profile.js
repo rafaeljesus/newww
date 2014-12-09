@@ -86,21 +86,6 @@ module.exports = function(options) {
             delete opts.profile[field]
           })
 
-          if (opts.profile.packages) {
-            opts.profile.packages = opts.profile.packages.map(function(pkg) {
-              pkg.nameTruncated = (pkg.name.length > 20) ? pkg.name.slice(0,20) + "..." : pkg.name;
-              return pkg
-            })
-          }
-
-          if (opts.profile.starred) {
-            opts.profile.starred = opts.profile.starred.map(function(pkg) {
-              pkg.nameTruncated = (pkg.name.length > 20) ? pkg.name.slice(0,20) + "..." : pkg.name;
-              return pkg
-            })
-          }
-
-
           timer.end = Date.now();
           addLatencyMetric(timer, 'showProfile');
           addMetric({

@@ -10,9 +10,7 @@ var updateExpansion = function(event) {
   }
 
   var expansion = expansions[Math.floor(Math.random()*expansions.length)]
-  $("#npm-expansions").fadeOut(fadeDuration, function() {
-    $(this).text(expansion).fadeIn(fadeDuration)
-  })
+  $("#npm-expansions").text(expansion)
   return false
 }
 

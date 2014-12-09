@@ -36,7 +36,7 @@ module.exports = function (options) {
       return reply(mail);
 
     } else {
-      var mailSettings = options.user.mail;
+      var mailSettings = options.mail;
 
       if (!mailSettings.mailTransportModule ||
           !mailSettings.mailTransportSettings) {

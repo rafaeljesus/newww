@@ -9,7 +9,7 @@
 
   <form action="" method="post">
     <label for="name">{{t "user.signup.form.username"}}</label>
-    <input type="text" id="name" name="name" />
+    <input type="text" id="name" name="name" autocorrect="off" autocapitalize="off" />
     <p class="help-text">{{t "user.signup.form.nameHelp"}}</p>
 
     <label for="password">{{t "user.signup.form.password"}}</label>
@@ -19,7 +19,7 @@
     <input type="password" id="verify" name="verify" />
 
     <label for="email">{{t "user.signup.form.email"}}</label>
-    <input type="text" id="email" name="email" />
+    <input type="text" id="email" name="email" autocorrect="off" autocapitalize="off" />
     <p class="help-text">{{{t "user.signup.form.emailHelp"}}}</p>
 
     <input type="submit" class="full-width" value="{{t "user.signup.form.submit"}}" />

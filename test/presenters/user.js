@@ -18,6 +18,30 @@ describe("email", function(){
 
 })
 
+describe("gravatar", function(){
+
+  it("creates avatar", function(done) {
+    var user = present({email: "zeke@sikelianos.com"})
+    expect(user.avatar).to.exist
+    done()
+  })
+
+  it("creates avatarMedium", function(done) {
+    var user = present({email: "zeke@sikelianos.com"})
+    expect(user.avatarMedium).to.exist
+    expect(user.avatarMedium).to.include("size=100")
+    done()
+  })
+
+  it("creates avatarLarge", function(done) {
+    var user = present({email: "zeke@sikelianos.com"})
+    expect(user.avatarLarge).to.exist
+    expect(user.avatarLarge).to.include("size=496")
+    done()
+  })
+
+})
+
 describe("meta", function () {
 
   it("is an object with key-value pairs", function(done){

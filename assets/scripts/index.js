@@ -19,7 +19,8 @@ $(function () {
   // Add active class to links that point to the current page
   $("a[href='" + location.pathname + "']").addClass("active")
 
-  mousetrap.bind('* * *', function() {
+  // Toggle display of superfluous README content
+  mousetrap.bind(['command+i', 'ctrl+i'], function() {
     $('.superfluous').toggle()
   })
 })

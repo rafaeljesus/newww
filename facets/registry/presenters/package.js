@@ -335,6 +335,7 @@ function removeSuperfluousContentFromReadme (data) {
 
   // Badges
   [
+    'badge.fury.io',
     'badges.github.io',
     'badges.gitter.im',
     'ci.testling.com',

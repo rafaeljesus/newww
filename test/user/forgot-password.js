@@ -141,8 +141,8 @@ describe('Looking up a user', function () {
     it('renders an error if the email doesn\'t exist', function (done) {
       server.inject(postName('blah@boom.com'), function (resp) {
         expect(source.template).to.equal('user/password-recovery-form');
-        expect(source.context.error).to.equal('Bad email, no user found with this email');
-        expect(resp.statusCode).to.equal(404);
+        expect(source.context.error).to.equal('No user found with email address blah@boom.com');
+        expect(resp.statusCode).to.equal(400);
         done();
       });
     });

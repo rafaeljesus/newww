@@ -192,6 +192,11 @@ function lookupUserByEmail (email, request, reply) {
       return reply.view('user/password-recovery-form', opts);
     }
 
+    if (!usernames || !usernames.length) {
+      opts.error = "No user found with email address " + email
+      return reply.view('user/password-recovery-form', opts).code(400);
+    }
+
     timer.end = Date.now();
     metrics.addPageLatencyMetric(timer, 'emailLookup');
 

@@ -3,7 +3,8 @@ var Joi = require('joi'),
     Hapi = require('hapi'),
     log = require('bole')('user-signup'),
     uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    metrics = require('newww-metrics')(),
+    log = require('bole')('show-signup');
 
 module.exports = function signup (request, reply) {
   var getUser = request.server.methods.user.getUser,
@@ -67,7 +68,7 @@ module.exports = function signup (request, reply) {
         delSession(validatedUser, function (er) {
 
           if (er) {
-            return showError(er, 500, 'Unable to delete the session for user ' + data.name, opts);
+            log.error(String(er));
           }
 
           signupUser(validatedUser, function (er, user) {

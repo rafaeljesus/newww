@@ -1,6 +1,2 @@
 User-agent: *
-Disallow: /
-
-# When we're ready to move to production, replace above with:
-# User-agent: *
-# Disallow: /browse/
+Disallow: /browse/

@@ -18,24 +18,38 @@ describe("csp (content security policy)", function () {
       done();
     })
 
-    it("allows self", function (done) {
-      expect(csp.default.scriptSrc).to.include('self');
-      done();
+    describe("scriptSrc", function(){
+      it("allows self", function (done) {
+        expect(csp.default.scriptSrc).to.include('self');
+        done();
+      })
+
+      it("allows google-analytics.com", function (done) {
+        expect(csp.default.scriptSrc).to.include('https://www.google-analytics.com');
+        done();
+      })
+
+      it("does not allow unsafe-inline", function (done) {
+        expect(csp.default.scriptSrc).to.not.include('unsafe-inline');
+        done();
+      })
+
+      it("has many allowable script sources", function (done) {
+        expect(csp.default.scriptSrc.length).to.be.above(5);
+        done();
+      })
     })
 
-    it("allows google-analytics.com", function (done) {
-      expect(csp.default.scriptSrc).to.include('https://www.google-analytics.com');
-      done();
-    })
+    describe("frameSrc", function(){
+      it("only has one allowance", function (done) {
+        expect(csp.default.frameSrc.length).to.equal(1)
+        done();
+      })
 
-    it("does not allow unsafe-inline", function (done) {
-      expect(csp.default.scriptSrc).to.not.include('unsafe-inline');
-      done();
-    })
-
-    it("has a total of seven allowable script sources", function (done) {
-      expect(csp.default.scriptSrc).to.have.length(7);
-      done();
+      it("allows checkout.stripe.com", function (done) {
+        expect(csp.default.frameSrc).to.include('https://checkout.stripe.com');
+        done();
+      })
     })
 
   })
@@ -46,12 +60,14 @@ describe("csp (content security policy)", function () {
       done();
     })
 
-    it("allows the same scripts as default, plus some others", function (done) {
-      csp.default.scriptSrc.forEach(function(src){
-        expect(csp.enterprise.scriptSrc).to.include(src);
-      });
-      expect(csp.enterprise.scriptSrc.length).to.be.above(csp.default.scriptSrc.length);
-      done();
+    describe("scriptSrc", function(){
+      it("allows the same scripts as the default CSP, plus some others", function (done) {
+        csp.default.scriptSrc.forEach(function(src){
+          expect(csp.enterprise.scriptSrc).to.include(src);
+        });
+        expect(csp.enterprise.scriptSrc.length).to.be.above(csp.default.scriptSrc.length);
+        done();
+      })
     })
   })
 

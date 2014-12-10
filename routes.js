@@ -83,15 +83,7 @@ var unauthenticatedRoutes = [
   },{
     path: "/joinwhoshiring",
     method: "GET",
-    handler: require('./facets/company/show-whoshiring-payments'),
-    config: {
-      plugins: {
-        blankie: {
-          scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com'],
-          frameSrc: 'https://checkout.stripe.com'
-        }
-      }
-    }
+    handler: require('./facets/company/show-whoshiring-payments')
   },{
     path: "/joinwhoshiring",
     method: "POST",

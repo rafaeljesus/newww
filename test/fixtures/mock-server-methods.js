@@ -291,7 +291,7 @@ module.exports = function (server) {
         } else if (email === users.fakeuser.email) {
           return next(null, ['fakeuser', 'fakeusercli']);
         } else {
-          return next(Hapi.error.notFound("Bad email, no user found with this email"));
+          return next(null, []);
         }
       },
 

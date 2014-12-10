@@ -1,12 +1,18 @@
-var merge = require("lodash").merge
-var URL = require("url")
-var isURL = require("is-url")
-var atty = new RegExp("^@")
+var merge = require("lodash").merge,
+    URL = require("url"),
+    isURL = require("is-url"),
+    gravatar = require("gravatar").url,
+    atty = new RegExp("^@");
 
 module.exports = function(user) {
   user = merge({}, user)
 
   user.emailObfuscated = obfuscateEmail(user.email)
+
+  var gr = user.email ? 'retro' : 'mm'
+  user.avatar = gravatar(user.email || '', {size:50, default:gr}, true)
+  user.avatarMedium = gravatar(user.email || '', {size:100, default:gr}, true)
+  user.avatarLarge = gravatar(user.email || '', {size:496, default:gr}, true)
 
   user.meta = deriveMetaObjectFromFieldsArray(user.fields)
   return user

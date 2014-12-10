@@ -74,6 +74,21 @@ nav
     background npmred
     transition all 0.1s
 
+    &:first-child
+      float left
+      padding 0
+      text-transform lowercase
+      display inline-block
+      min-width 240px
+      text-align left
+
+      @media only screen and (max-width: mobileMaxWidth)
+        display none
+
+      &:hover
+        background none
+        border none
+
     &:hover, &.active
       color rgba(background-color, 1)
       text-decoration none
@@ -91,16 +106,6 @@ nav
         color npmred
         background greigh6
         border-bottom 1px solid white
-
-  h2
-    float left
-    font-weight 400
-    font-size 14px
-    line-height 39px
-    color background-color
-
-    @media only screen and (max-width: mobileMaxWidth)
-      display none
 
   .container
     @media only screen and (max-width: mobileMaxWidth)

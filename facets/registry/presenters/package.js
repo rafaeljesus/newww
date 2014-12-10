@@ -281,6 +281,8 @@ function gravatarPerson (p) {
 }
 
 function getRandomAssortment (items, urlRoot, name) {
+  if (!items.length) return items;
+
   var l = items.length || 0;
   var MAX_SHOW = 20;
 
@@ -333,6 +335,7 @@ function removeSuperfluousContentFromReadme (data) {
 
   // Badges
   [
+    'badge.fury.io',
     'badges.github.io',
     'badges.gitter.im',
     'ci.testling.com',

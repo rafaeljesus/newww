@@ -1,6 +1,6 @@
 {
   "name": "newww",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "The npmjs.com website",
   "main": "server.js",
   "scripts": {
@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "accept-language-parser": "^1.0.2",
+    "async": "^0.9.0",
     "async-cache": "^0.1.5",
     "blankie": "^0.1.2",
     "bole": "^0.1.0",
@@ -61,7 +62,7 @@
     "node-uuid": "^1.4.1",
     "nodemailer": "^1.0.0",
     "nodemailer-ses-transport": "^1.1.0",
-    "npm-expansions": "^1.0.0",
+    "npm-expansions": "^1.14.0",
     "npm-humans": "^2.0.1",
     "npm-typeahead": "^0.2.0",
     "npm-user-validate": "^0.1.0",
@@ -78,6 +79,7 @@
     "similarity": "^1.0.1",
     "stripe": "^2.7.3",
     "stylus": "^0.45.0",
+    "truncate": "^1.0.4",
     "validate-npm-package-name": "^1.0.0"
   },
   "devDependencies": {

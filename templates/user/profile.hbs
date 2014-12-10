@@ -15,7 +15,7 @@
       <ul class="bullet-free">
         {{#each packages}}
           <li>
-            <a href="{{url}}">{{name}}</a> {{description}}
+            <a href="{{url}}">{{truncate name 20}}</a> {{description}}
           </li>
         {{/each}}
       </ul>
@@ -30,7 +30,7 @@
       <ul class="bullet-free">
         {{#each starred}}
           <li>
-            <a href="{{url}}">{{name}}</a> {{description}}
+            <a href="{{url}}">{{truncate name 20}}</a> {{description}}
           </li>
         {{/each}}
       </ul>

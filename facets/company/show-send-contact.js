@@ -26,8 +26,8 @@ module.exports = function (options) {
 
     var mail = {
       to: data.inquire === "support" ? "support <support@npmjs.com>" : "npm <npm@npmjs.com>",
-      from: '"' + data.name + '" <' + data.email + '>',
-      subject: data.subject,
+      from: "Support Contact Form <support@npmjs.com>",
+      subject: data.subject + " - FROM: " + '"' + data.name + '" <' + data.email + '>',
       text: data.message
     };
 
@@ -36,7 +36,7 @@ module.exports = function (options) {
       return reply(mail);
 
     } else {
-      var mailSettings = config.user.mail;
+      var mailSettings = options;
 
       if (!mailSettings.mailTransportModule ||
           !mailSettings.mailTransportSettings) {

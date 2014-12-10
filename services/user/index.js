@@ -8,7 +8,7 @@ exports.register = function User (service, options, next) {
   service.method('user.logoutUser', userMethods.logout);
 
   service.method('user.getUser', require('./methods/getUser'), {
-    cache: { expiresIn: 60 * SECOND, segment: '##user' }
+    cache: { expiresIn: 5 * 60 * SECOND, segment: '##user' }
   });
 
   service.method('user.lookupUserByEmail', require('./methods/emailLookup'));

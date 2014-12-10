@@ -9,7 +9,7 @@ module.exports = [
   require('scooter'),
   {
     plugin: require('blankie'),
-    options: config.csp
+    options: require('../lib/csp').default
   },
   {
     plugin: require('../services/user'),

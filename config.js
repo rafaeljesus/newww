@@ -49,49 +49,6 @@ if (process.env.NODE_ENV === 'dev') {
     }
 }
 
-config.csp = {
-  defaultSrc: 'self',
-  scriptSrc: [
-    'self',
-    'https://www.google-analytics.com',
-    'https://fonts.googleapis.com',
-    'https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js',
-    'https://js.hsforms.net/',
-    'https://js.stripe.com/v2/',
-    'https://forms.hubspot.com/'
-  ],
-  styleSrc: [
-    'self',
-    'unsafe-inline',
-    'https://fonts.googleapis.com'
-  ],
-  imgSrc: '*',
-  connectSrc: [
-    'self',
-    'https://typeahead.npmjs.com/',
-    'https://partners.npmjs.com/',
-    'https://api.github.com',
-  ],
-  fontSrc: [
-    'self',
-    'https://fonts.gstatic.com'
-  ],
-  // objectSrc: Values for the object-src directive,
-  // mediaSrc: Values for the media-src directive,
-  // frameSrc: Values for the frame-src directive,
-  // sandbox: Values for the sandbox directive,
-  reportUri: '/-/csplog'
-}
-
-// Allow extra script sources on enterprise signup pages
-config.enterpriseCspScriptSrc = config.csp.scriptSrc.concat(
-  'https://js.hs-analytics.net',
-  'https://js.hsforms.net/forms/current.js',
-  'https://forms.hubspot.com',
-  'https://internal.hubapi.com',
-  'https://api.hubapi.com'
-);
-
 // ===== service options =====
 config.couch = {
   "couchAuth": "admin:admin",

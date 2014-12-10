@@ -1,4 +1,5 @@
 var config = require('./config'),
+    csp = require('./lib/csp'),
     ops = require('./facets/ops'),
     fmt = require('util').format,
     validatePackageName = require('validate-npm-package-name'),
@@ -6,9 +7,7 @@ var config = require('./config'),
 
 var enterpriseConfig = {
   plugins: {
-    blankie: {
-      scriptSrc: config.enterpriseCspScriptSrc
-    }
+    blankie: csp.enterprise
   }
 }
 

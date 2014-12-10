@@ -74,10 +74,14 @@ nav
     background npmred
     transition all 0.1s
 
-    &:first-child 
+    &:first-child
       float left
       padding 0
       text-transform lowercase
+      display inline-block
+      min-width 240px
+      text-align left
+
       @media only screen and (max-width: mobileMaxWidth)
         display none
 

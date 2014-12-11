@@ -14,6 +14,8 @@ module.exports = function getDownloads (url) {
       url: endpoint,
       json: true
     }, function (err, resp, body) {
+      body = body || {};
+
       if (body.error) {
         log.warn(uuid.v1() + ' ' + Hapi.error.internal('error downloading from ' + endpoint), err);
         err = body;

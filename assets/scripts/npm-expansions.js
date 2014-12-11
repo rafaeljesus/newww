@@ -1,6 +1,5 @@
 window.expansions = require("npm-expansions")
 var $ = require("jquery")
-var fadeDuration = 200
 var clickCount = -1
 
 var updateExpansion = function(event) {

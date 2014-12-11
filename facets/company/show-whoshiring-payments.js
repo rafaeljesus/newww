@@ -1,76 +1,81 @@
 var Joi = require('joi'),
-    Hapi = require('hapi'),
-    log = require('bole')('company-whoshiring-payments'),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')(),
-    stripe = require('stripe')(process.env.STRIPE_SECRET_KEY),
-    VALID_CHARGE_AMOUNTS = [35000, 100000];
+Hapi = require('hapi'),
+log = require('bole')('company-whoshiring-payments'),
+uuid = require('node-uuid'),
+metrics = require('newww-metrics')();
 
-module.exports = function (request, reply) {
-  var addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      showError = request.server.methods.errors.showError(reply),
-      timer = { start: Date.now() };
+module.exports = function (options) {
+  var stripe = require('stripe')(options.secretkey),
+  VALID_CHARGE_AMOUNTS = [35000, 100000];
 
-  var opts = {
-    user: request.auth.credentials,
-    title: "Join the Who's Hiring Page",
-    namespace: 'company-whoshiring-payments',
-    stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-  };
+  return function (request, reply) {
+    var addMetric = metrics.addMetric,
+    addLatencyMetric = metrics.addPageLatencyMetric,
+    showError = request.server.methods.errors.showError(reply),
+    timer = { start: Date.now() };
 
-  if (request.method === 'get') {
-    timer.end = Date.now();
-    addLatencyMetric(timer, 'whoshiring-payments');
-    addMetric({name: 'whoshiring-payments'});
-    return reply.view('company/payments', opts);
-  }
+    var opts = {
+      user: request.auth.credentials,
+      title: "Join the Who's Hiring Page",
+      namespace: 'company-whoshiring-payments',
+      stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+    };
 
-  opts.isXhr = true;
-
-  var schema = Joi.object().keys({
-    email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
-    id: Joi.string().token(),
-    amount: Joi.number(),
-    livemode: Joi.string(),
-    created: Joi.string(),
-    used: Joi.string(),
-    object: Joi.string(),
-    type: Joi.string(),
-    card: Joi.object()
-  });
-
-  Joi.validate(request.payload, schema, function (err, token) {
-    if (err) {
-      return showError(err, 403, 'validation error', opts);
+    if (request.method === 'get') {
+      opts.stripeKey = options.publickey;
+      timer.end = Date.now();
+      addLatencyMetric(timer, 'whoshiring-payments');
+      addMetric({name: 'whoshiring-payments'});
+      return reply.view('company/payments', opts);
     }
 
-    if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
-      return showError(token.amount, 403, 'invalid charge amount error', opts);
-    }
+    opts.isXhr = true;
 
-    var stripeStart = Date.now();
-    stripe.charges.create({
-      amount: token.amount,
-      currency: "usd",
-      card: token.id, // obtained with Stripe.js
-      description: "Charge for " + token.email
-    }, function(err, charge) {
+    var schema = Joi.object().keys({
+      id: Joi.string().token(),
+      livemode: Joi.string(),
+      created: Joi.string(),
+      used: Joi.string(),
+      object: Joi.string(),
+      type: Joi.string(),
+      card: Joi.object(),
+      email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
+      verification_allowed: Joi.string(),
+      amount: Joi.number(),
+    });
+
+    Joi.validate(request.payload, schema, function (err, token) {
       if (err) {
-        return showError(token.amount, 500, 'internal stripe error', opts);
+        return showError(err, 403, 'validation error', opts);
       }
 
-      timer.end = Date.now();
-      addMetric({
-        name: 'latency',
-        value: timer.end - stripeStart,
-        type: 'stripe'
+      if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
+        return showError(token.amount, 403, 'invalid charge amount error', opts);
+      }
+
+      var stripeStart = Date.now();
+      stripe.charges.create({
+        amount: token.amount,
+        currency: "usd",
+        card: token.id, // obtained with Stripe.js
+        description: "Charge for " + token.email
+      }, function(err, charge) {
+        if (err) {
+          return showError(token.amount, 500, 'internal stripe error', opts);
+        }
+
+        timer.end = Date.now();
+        addMetric({
+          name: 'latency',
+          value: timer.end - stripeStart,
+          type: 'stripe'
+        });
+
+        addLatencyMetric(timer, 'whoshiring-paymentProcessed');
+
+        addMetric({name: 'whoshiring-paymentProcessed'});
+        return reply('Stripe charge successful').code(200);
       });
-
-      addLatencyMetric(timer, 'whoshiring-paymentProcessed');
-
-      addMetric({name: 'whoshiring-paymentProcessed'});
-      return reply('Stripe charge successful').code(200);
     });
-  });
+  };
 }

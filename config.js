@@ -136,8 +136,8 @@ config.npme = {
 
 // ==== facet options ====
 config.stripe = {
-  "secretkey": "stripesecretkey",
-  "publickey": "stripepublickey"
+  "secretkey": "sk_test_bxAixWI4b6LJJZlPSmX8z6hu",
+  "publickey": "pk_test_dxl0gkFmBMdyGvhgt7Q86KwH"
 };
 
 config.user = {

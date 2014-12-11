@@ -6,6 +6,10 @@ module.exports = function() {
   $(handleBillingForm)
 }
 
+var noKey = function() {
+  console.error("No element with found with data-stripe-public-keys attribute");
+}
+
 var handleBillingForm = function() {
 
   // External stripe scripts are not loaded on all pages
@@ -14,9 +18,14 @@ var handleBillingForm = function() {
   try {
     stripePublicKey = $("#billing-form").data('stripePublicKey');
   } catch(e) {
-    console.error("No element with found with data-stripe-public-keys attribute");
-    return;
+    return noKey();
   }
+
+  if (!stripePublicKey) {
+    return noKey();
+  }
+
+  console.log("stripePublicKey", stripePublicKey)
 
   Stripe.setPublishableKey(stripePublicKey);
 

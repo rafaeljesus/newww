@@ -8,7 +8,7 @@
 
   {{> errors}}
 
-  <form action="" method="POST" id="billing-form">
+  <form action="" method="POST" id="billing-form" data-stripe-public-key="{{stripePublicKey}}">
 
     <label for="card-number">Card Number</label>
     <input type="text" size="20" data-stripe="number" id="card-number" />
@@ -30,7 +30,3 @@
 </div>
 
 <script type="text/javascript" src="https://js.stripe.com/v2/"></script>
-
-<script type="text/javascript">
-  Stripe.setPublishableKey("{{stripePublicKey}}");
-</script>

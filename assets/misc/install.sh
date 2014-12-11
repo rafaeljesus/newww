@@ -17,7 +17,16 @@ if [ "x$0" = "xsh" ]; then
   # on some systems, you can just do cat>npm-install.sh
   # which is a bit cuter.  But on others, &1 is already closed,
   # so catting to another script file won't do anything.
-  curl -s https://www.npmjs.org/install.sh > npm-install-$$.sh
+  # Follow Location: headers, and fail on errors
+  curl -f -L -s https://www.npmjs.org/install.sh > npm-install-$$.sh
+  ret=$?
+  if [ $ret -eq 0 ]; then
+    (exit 0)
+  else
+    rm npm-install-$$.sh
+    echo "Failed to download script" >&2
+    exit $ret
+  fi
   sh npm-install-$$.sh
   ret=$?
   rm npm-install-$$.sh
@@ -27,7 +36,7 @@ fi
 # See what "npm_config_*" things there are in the env,
 # and make them permanent.
 # If this fails, it's not such a big deal.
-configures="$(env | grep 'npm_config_' | sed -e 's|^npm_config_||g')"
+configures="`env | grep 'npm_config_' | sed -e 's|^npm_config_||g'`"
 
 npm_config_loglevel="error"
 if [ "x$npm_debug" = "x" ]; then
@@ -42,7 +51,7 @@ fi
 export npm_config_loglevel
 
 # make sure that node exists
-node=$(which node 2>&1)
+node=`which node 2>&1`
 ret=$?
 if [ $ret -eq 0 ] && [ -x "$node" ]; then
   (exit 0)
@@ -78,7 +87,7 @@ if [ -z "$tar" ]; then
   tar="${npm_config_tar}"
 fi
 if [ -z "$tar" ]; then
-  tar=$(which tar 2>&1)
+  tar=`which tar 2>&1`
   ret=$?
 fi
 
@@ -108,11 +117,11 @@ fi
 MAKE=NOMAKE
 
 if [ "x$MAKE" = "x" ]; then
-  make=$(which gmake 2>&1)
+  make=`which gmake 2>&1`
   if [ $? -eq 0 ] && [ -x "$make" ]; then
     (exit 0)
   else
-    make=$(which make 2>&1)
+    make=`which make 2>&1`
     if [ $? -eq 0 ] && [ -x "$make" ]; then
       (exit 0)
     else
@@ -137,7 +146,7 @@ else
   clean="no"
 fi
 
-node_version=$("$node" --version 2>&1)
+node_version=`"$node" --version 2>&1`
 ret=$?
 if [ $ret -ne 0 ]; then
   echo "You need node to run this program." >&2
@@ -194,7 +203,7 @@ cd "$TMP" \
   && curl -SsL "$url" \
      | $tar -xzf - \
   && cd "$TMP"/* \
-  && (ver=$("$node" bin/read-package-json.js package.json version)
+  && (ver=`"$node" bin/read-package-json.js package.json version`
       isnpm10=0
       if [ $ret -eq 0 ]; then
         if [ -d node_modules ]; then

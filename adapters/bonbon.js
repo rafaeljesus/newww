@@ -2,15 +2,17 @@ var
     bole      = require('bole'),
     Hapi      = require('hapi'),
     Hoek      = require('hoek'),
-    metrics   = require('newww-metrics')(),
     npmHumans = require("npm-humans"),
     url       = require('url'),
     uuid      = require('node-uuid');
 
 exports.register = function(plugin, options, next) {
 
+  var metrics = require('./metrics')();
+
   plugin.ext('onPreHandler', function(request, next) {
 
+    request.metrics = metrics;
     request.logger = bole(uuid.v1());
     request.timing = {
       start: Date.now(), // TODO see if hapi does any of this for us

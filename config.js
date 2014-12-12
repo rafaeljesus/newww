@@ -106,9 +106,7 @@ config.session = {
 
 config.metrics = {
   collector: {
-    host: 'localhost',
-    port: 3333,
-    udp: true
+    uri: 'udp://localhost:3333'
   },
   prefix: 'npm-www-dev'
 }

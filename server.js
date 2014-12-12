@@ -1,8 +1,7 @@
 var Hapi = require('hapi'),
     Hoek = require('hoek'),
     config = require('./config.js'),
-    url = require('url'),
-    MetricsClient = require('newww-metrics');
+    url = require('url');
 
 // set up the logger
 var bole = require('bole'),
@@ -20,8 +19,8 @@ var server = new Hapi.Server(config.host, config.port, config.server)
 var couchDB = require('./adapters/couchDB');
 couchDB.init(config.couch);
 
-// configure metrics
-var metrics = new MetricsClient(config.metrics);
+// configure metrics as a side effect
+var metrics = require('./adapters/metrics')(config.metrics);
 
 server.pack.register(require('hapi-auth-cookie'), function (err) {
   if (err) throw err;

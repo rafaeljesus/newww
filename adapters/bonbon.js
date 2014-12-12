@@ -1,11 +1,21 @@
-var Hoek = require('hoek'),
-    Hapi = require('hapi'),
-    url = require('url'),
-    npmHumans = require("npm-humans");
+var
+    accesslog = require('accesslog'),
+    bole      = require('bole'),
+    Hapi      = require('hapi'),
+    Hoek      = require('hoek'),
+    metrics   = require('newww-metrics')(),
+    npmHumans = require("npm-humans"),
+    url       = require('url'),
+    uuid      = require('node-uuid');
 
 exports.register = function(plugin, options, next) {
 
   plugin.ext('onPreHandler', function(request, next) {
+
+    request.logger = bole(uuid.v1());
+    request.timing = {
+      start: Date.now(), // TODO see if hapi does any of this for us
+    };
 
     if (request.method !== "post") {
       return next();
@@ -55,6 +65,21 @@ exports.register = function(plugin, options, next) {
     }
 
     next();
+  });
+
+  plugin.ext('onPostHandler', function(request, next) {
+
+    metrics.client.metric({
+      name:  'latency',
+      value: Date.now() - request.timing.start,
+      type:  request.timing.type,
+      page:  request.timing.page,
+    });
+
+    accesslog(request, request.response, function(logline) {
+      request.logger.info(logline);
+      next();
+    })
   });
 
   next();

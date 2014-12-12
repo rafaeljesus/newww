@@ -1,5 +1,4 @@
 var
-    accesslog = require('accesslog'),
     bole      = require('bole'),
     Hapi      = require('hapi'),
     Hoek      = require('hoek'),
@@ -76,10 +75,10 @@ exports.register = function(plugin, options, next) {
       page:  request.timing.page,
     });
 
-    accesslog(request, request.response, function(logline) {
-      request.logger.info(logline);
-      next();
-    })
+    // TODO log request info in as close to common log format as possible
+    request.logger.info([request.method.toUpperCase(), request.path, request.response.statusCode].join(' '));
+
+    next();
   });
 
   next();

@@ -1,6 +1,5 @@
 var elasticsearch = require('elasticsearch'),
     Hapi = require('hapi'),
-    log = require('bole')('registry-search'),
     merge = require('lodash').merge;
 
 module.exports = function (options) {

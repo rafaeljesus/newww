@@ -2,8 +2,7 @@ var NAMESPACE = 'enterprise-trial-signup';
 
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
-    nodemailer = require('nodemailer'),
-    log = require('bole')(NAMESPACE);
+    nodemailer = require('nodemailer');
 
 var config = require('../../config');
 
@@ -24,7 +23,7 @@ module.exports = function trialSignup (request, reply) {
   postToHubspot(config.license.hubspot.form_npme_agreed_ula, data, function (er) {
 
     if (er) {
-      log.warn("Could not hit ULA notification form on Hubspot");
+      request.logger.warn("Could not hit ULA notification form on Hubspot");
       return showError(er, 500, "could not register agreement to the license", opts);
     }
 

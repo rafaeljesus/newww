@@ -1,6 +1,5 @@
 var sanitizer = require('sanitizer'),
     Hapi = require('hapi'),
-    log = require('bole')('registry-browse'),
     merge = require('lodash').merge,
     chunk = require('chunk');
 

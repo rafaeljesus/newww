@@ -3,9 +3,7 @@ var NAMESPACE = 'user-email-edit';
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
     nodemailer = require('nodemailer'),
-    crypto = require('crypto'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid');
+    crypto = require('crypto');
 
 var transport, mailer;
 

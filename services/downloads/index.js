@@ -1,7 +1,5 @@
 var Hapi = require('hapi'),
     request = require('request'),
-    log = require('bole')('downloads'),
-    uuid = require('node-uuid'),
     SECOND = 1000;
 
 var timer = {};
@@ -38,5 +36,3 @@ exports.register = function Downloads (service, options, next) {
 exports.register.attributes = {
   pkg: require('./package.json')
 };
-
-

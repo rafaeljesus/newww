@@ -2,8 +2,7 @@ var NAMESPACE = 'enterprise-contact-me';
 
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
-    Joi = require('joi'),
-    log = require('bole')(NAMESPACE);
+    Joi = require('joi');
 
 var config = require('../../config').license;
 
@@ -29,8 +28,7 @@ module.exports = function contactMe (request, reply) {
   postToHubspot(config.hubspot.form_npme_contact_me, data, function(er) {
 
       if (er) {
-        log.warn("Could not contact hubspot");
-
+        request.logger.warn("Could not contact hubspot");
         return showError(er, 500, 'Could not register user to be contacted', opts);
       } else {
 

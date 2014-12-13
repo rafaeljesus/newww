@@ -1,6 +1,4 @@
 var Hapi = require('hapi'),
-    log = require('bole')('registry-star'),
-    uuid = require('node-uuid'),
     util = require('util');
 
 module.exports = function (request, reply) {

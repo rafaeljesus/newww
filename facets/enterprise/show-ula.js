@@ -2,8 +2,7 @@ var NAMESPACE = 'enterprise-ula';
 
 var Hoek = require('hoek'),
     Joi = require('joi'),
-    Hapi = require('hapi'),
-    log = require('bole')(NAMESPACE);
+    Hapi = require('hapi');
 
 var config = require('../../config').license;
 

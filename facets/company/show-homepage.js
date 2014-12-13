@@ -2,8 +2,6 @@ var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
 var async = require('async'),
     Hapi = require('hapi'),
-    log = require('bole')('company-homepage'),
-    uuid = require('node-uuid'),
     parseLanguageHeader = require('accept-language-parser').parse,
     fmt = require('util').format,
     moment = require('moment'),
@@ -86,26 +84,27 @@ function load (request, cb) {
     function(cb) { cbWithTimeout('downloads', downloads, [], cached, cb); },
     function(cb) { cbWithTimeout('totalPackages', registry.packagesCreated, [], cached, cb); }
   ], function(err) {
-    if (err) log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error'), err);
+    if (err) request.logger.warn(Hapi.error.internal('download error'), err);
     return cb(null, cached);
   });
-}
 
-function cbWithTimeout(which, method, args, cached, cb) {
-  var timeout = process.env.API_TIMEOUT ? parseInt(process.env.API_TIMEOUT) : 3000; // maximum execution time when loading data.
 
-  cb = once(cb); // make it so CB can only be executed once.
+  function cbWithTimeout(which, method, args, cached, cb) {
+    var timeout = process.env.API_TIMEOUT ? parseInt(process.env.API_TIMEOUT) : 3000; // maximum execution time when loading data.
 
-  args.push(function(err, data) {
-    if (err) log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);
-    if (data) cached[which] = data;
-    return cb();
-  });
+    cb = once(cb); // make it so CB can only be executed once.
 
-  setTimeout(function() {
-    if (!cb.called) log.warn(uuid.v1() + ' ' + Hapi.error.internal('timeout loading ' + which));
-    return cb();
-  }, timeout);
+    args.push(function(err, data) {
+      if (err) request.logger.warn(Hapi.error.internal('download error for ' + which), err);
+      if (data) cached[which] = data;
+      return cb();
+    });
 
-  method.apply(this, args); // actually execute the method passed in.
+    setTimeout(function() {
+      if (!cb.called) request.logger.warn(Hapi.error.internal('timeout loading ' + which));
+      return cb();
+    }, timeout);
+
+    method.apply(this, args); // actually execute the method passed in.
+  }
 }

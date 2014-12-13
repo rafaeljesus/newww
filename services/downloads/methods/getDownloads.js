@@ -1,7 +1,6 @@
 var Hapi = require('hapi'),
     request = require('request'),
     log = require('bole')('downloads'),
-    uuid = require('node-uuid'),
     timer = {};
 
 module.exports = function getDownloads (url) {
@@ -16,7 +15,7 @@ module.exports = function getDownloads (url) {
       body = body || {error: 'empty body'};
 
       if (body.error) {
-        log.warn(uuid.v1() + ' ' + Hapi.error.internal('error downloading from ' + endpoint), err);
+        log.warn(Hapi.error.internal('error downloading from ' + endpoint), err);
         err = new Error(body);
       }
 

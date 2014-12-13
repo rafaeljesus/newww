@@ -1,5 +1,4 @@
 var Hapi = require('hapi'),
-    log = require('bole')('registry-recentauthors'),
     merge = require('lodash').merge;
 
 var pageSize = 100,

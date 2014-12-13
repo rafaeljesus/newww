@@ -3,8 +3,7 @@ var NAMESPACE = 'enterprise-verify';
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
     url = require('url'),
-    nodemailer = require('nodemailer'),
-    log = require('bole')(NAMESPACE);
+    nodemailer = require('nodemailer');
 
 var config = require('../../config');
 

@@ -1,7 +1,7 @@
 var Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
     log = require('bole')('registry-get-package'),
-    metrics = require('newww-metrics')();
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function getPackage (package, next) {
 

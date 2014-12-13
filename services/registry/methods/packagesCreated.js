@@ -1,7 +1,7 @@
 var Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
     log = require('bole')('registry-packages-created'),
-    metrics = require('newww-metrics')();
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function packagesCreated (next) {
   var timer = { start: Date.now() };
@@ -11,7 +11,12 @@ module.exports = function packagesCreated (next) {
   anonCouch.get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey="name"&endkey="name"&stale=update_after', function (er, cr, data) {
 
     timer.end = Date.now();
-    metrics.addCouchLatencyMetric(timer, 'packagesCreated');
+    metrics.metric({
+  name: 'latency',
+  value: timer.end - timer.start,
+  type: 'couch',
+  action: 'packagesCreated'
+});
 
     if (er || data.error) {
       return next(Hapi.error.internal(er || data.error));

@@ -1,7 +1,5 @@
 var Hapi = require('hapi'),
     log = require('bole')('registry-recentauthors'),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')(),
     merge = require('lodash').merge;
 
 var pageSize = 100,
@@ -10,10 +8,7 @@ var pageSize = 100,
 // url is something like /recent-authors/:since
 module.exports = function RecentAuthors (request, reply) {
   var recentAuthors = request.server.methods.registry.getRecentAuthors,
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = { start: Date.now() };
+      showError = request.server.methods.errors.showError(reply);
 
   var opts = {
     user: request.auth.credentials,
@@ -39,7 +34,7 @@ module.exports = function RecentAuthors (request, reply) {
 
   recentAuthors(age, start, limit, function (err, authors) {
     if (err) {
-      log.warn(uuid.v1() + ' ' + Hapi.error.internal('error retrieving recent authors'), err);
+      request.logger.warn(Hapi.error.internal('error retrieving recent authors'), err);
     }
 
     var items = authors.filter(function (a) { return a.name });
@@ -58,10 +53,8 @@ module.exports = function RecentAuthors (request, reply) {
 
     opts.paginate = opts.prevPage || opts.nextPage;
 
-    timer.end = Date.now();
-    addLatencyMetric(timer, 'recentauthors');
-
-    addMetric({ name: 'recentauthors' });
+    request.timing.page = 'recentauthors';
+    request.metrics.metric({ name: 'recentauthors' });
 
     reply.view('registry/recentauthors', opts);
   });

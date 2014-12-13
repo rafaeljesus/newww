@@ -3,10 +3,7 @@ var NAMESPACE = 'user-forgot';
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
     nodemailer = require('nodemailer'),
-    crypto = require('crypto'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    crypto = require('crypto');
 
 var transport, mailer;
 
@@ -48,13 +45,13 @@ module.exports = function (options) {
     if (request.method === 'get' || request.method === 'head') {
 
       if (request.params && request.params.token) {
-        return token(request, reply);
+        return processToken(request, reply);
       }
 
       timer.end = Date.now();
-      metrics.addPageLatencyMetric(timer, 'password-recovery-form');
+      request.timing.page = 'password-recovery-form';
 
-      metrics.addMetric({name: 'password-recovery-form'});
+      request.metrics.metric({name: 'password-recovery-form'});
       return reply.view('user/password-recovery-form', opts);
     }
   };
@@ -62,7 +59,7 @@ module.exports = function (options) {
 
 // ======= functions =======
 
-function token (request, reply) {
+function processToken(request, reply) {
   var opts = {
         user: request.auth.credentials,
         namespace: NAMESPACE
@@ -98,11 +95,11 @@ function token (request, reply) {
           mustChangePass: true
         };
 
-    log.warn('About to change password', { name: name });
+    request.logger.warn('About to change password', { name: name });
 
     request.server.methods.user.changePass(newAuth, function (err, data) {
       if (err) {
-      return showError(er, 500, 'Failed to set password for ' + newAuth.name, opts);
+        return showError(err, 500, 'Failed to set password for ' + newAuth.name, opts);
       }
 
       cache.drop(pwKey, function (err) {
@@ -113,9 +110,9 @@ function token (request, reply) {
         opts.user = null;
 
         timer.end = Date.now();
-        metrics.addPageLatencyMetric(timer, 'password-changed');
+        request.timing.page = 'password-changed';
 
-        metrics.addMetric({ name: 'password-changed' });
+        request.metrics.metric({ name: 'password-changed' });
         return reply.view('user/password-changed', opts);
       });
     });
@@ -139,9 +136,9 @@ function handle(request, reply) {
     opts.error = "All fields are required";
 
     timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'password-recovery-error');
+    request.timing.page = 'password-recovery-error';
 
-    metrics.addMetric({ name: 'password-recovery-error' });
+    request.metrics.metric({ name: 'password-recovery-error' });
     return reply.view('user/password-recovery-form', opts).code(400);
   }
 
@@ -151,9 +148,9 @@ function handle(request, reply) {
     opts.error = "Need a valid username or email address";
 
     timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'password-recovery-error');
+    request.timing.page = 'password-recovery-error';
 
-    metrics.addMetric({ name: 'password-recovery-error' });
+    request.metrics.metric({ name: 'password-recovery-error' });
     return reply.view('user/password-recovery-form', opts).code(400);
   }
 
@@ -176,9 +173,9 @@ function lookupUserByEmail (email, request, reply) {
       opts.error = er.message;
 
       timer.end = Date.now();
-      metrics.addPageLatencyMetric(timer, 'password-recovery-error');
+      request.timing.page = 'password-recovery-error';
 
-      metrics.addMetric({ name: 'password-recovery-error' });
+      request.metrics.metric({ name: 'password-recovery-error' });
       return reply.view('user/password-recovery-form', opts).code(404);
     }
 
@@ -186,9 +183,9 @@ function lookupUserByEmail (email, request, reply) {
       opts.users = usernames;
 
       timer.end = Date.now();
-      metrics.addPageLatencyMetric(timer, 'password-recovery-multiuser');
+      request.timing.page = 'password-recovery-multiuser';
 
-      metrics.addMetric({ name: 'password-recovery-multiuser' });
+      request.metrics.metric({ name: 'password-recovery-multiuser' });
       return reply.view('user/password-recovery-form', opts);
     }
 
@@ -198,9 +195,9 @@ function lookupUserByEmail (email, request, reply) {
     }
 
     timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'emailLookup');
+    request.timing.page = 'emailLookup';
 
-    metrics.addMetric({ name: 'emailLookup' });
+    request.metrics.metric({ name: 'emailLookup' });
     return lookupUserByUsername(usernames[0].trim(), request, reply);
   })
 }
@@ -216,9 +213,9 @@ function lookupUserByUsername (name, request, reply) {
       opts.error = er.message;
 
       timer.end = Date.now();
-      metrics.addPageLatencyMetric(timer, 'password-recovery-error');
+      request.timing.page = 'password-recovery-error';
 
-      metrics.addMetric({ name: 'password-recovery-error' });
+      request.metrics.metric({ name: 'password-recovery-error' });
       return reply.view('user/password-recovery-form', opts).code(404);
     }
 
@@ -227,9 +224,9 @@ function lookupUserByUsername (name, request, reply) {
       opts.error = "Username does not have an email address; please contact support"
 
       timer.end = Date.now();
-      metrics.addPageLatencyMetric(timer, 'password-recovery-error');
+      request.timing.page = 'password-recovery-error';
 
-      metrics.addMetric({ name: 'password-recovery-error' });
+      request.metrics.metric({ name: 'password-recovery-error' });
       return reply.view('user/password-recovery-form', opts).code(400);
     }
 
@@ -238,16 +235,16 @@ function lookupUserByUsername (name, request, reply) {
       opts.error = "Username's email address is invalid; please contact support";
 
       timer.end = Date.now();
-      metrics.addPageLatencyMetric(timer, 'password-recovery-error');
+      request.timing.page = 'password-recovery-error';
 
-      metrics.addMetric({ name: 'password-recovery-error' });
+      request.metrics.metric({ name: 'password-recovery-error' });
       return reply.view('user/password-recovery-form', opts).code(400);
     }
 
     timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'getUser');
+    request.timing.page = 'getUser';
 
-    metrics.addMetric({ name: 'getUser' });
+    request.metrics.metric({ name: 'getUser' });
     return sendEmail(name, email, request, reply);
   });
 }
@@ -289,9 +286,9 @@ function sendEmail(name, email, request, reply) {
 
     if (devMode) {
       timer.end = Date.now();
-      metrics.addPageLatencyMetric(timer, 'sendForgotEmail');
+      request.timing.page = 'sendForgotEmail';
 
-      metrics.addMetric({ name: 'sendForgotEmail' });
+      request.metrics.metric({ name: 'sendForgotEmail' });
       return reply(mail);
     } else {
       mailer.sendMail(mail, function (er, result) {
@@ -302,9 +299,9 @@ function sendEmail(name, email, request, reply) {
         opts.sent = true;
 
         timer.end = Date.now();
-        metrics.addPageLatencyMetric(timer, 'sendForgotEmail');
+        request.timing.page = 'sendForgotEmail';
 
-        metrics.addMetric({ name: 'sendForgotEmail' });
+        request.metrics.metric({ name: 'sendForgotEmail' });
         return reply.view('user/password-recovery-form', opts);
       });
     }

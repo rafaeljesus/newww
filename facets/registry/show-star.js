@@ -1,17 +1,13 @@
 var Hapi = require('hapi'),
     log = require('bole')('registry-star'),
     uuid = require('node-uuid'),
-    util = require('util'),
-    metrics = require('newww-metrics')();
+    util = require('util');
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
       star = request.server.methods.registry.star,
       unstar = request.server.methods.registry.unstar,
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = { start: Date.now() };
+      showError = request.server.methods.errors.showError(reply);
 
   var opts = {
     user: request.auth.credentials,
@@ -44,10 +40,8 @@ module.exports = function (request, reply) {
           return showError([er, util.format("unable to drop cache for %s", pkg)], 500, 'not ok', opts);
         }
 
-        timer.end = Date.now();
-        addLatencyMetric(timer, 'star');
-
-        addMetric({ name: 'star', package: pkg });
+        request.timing.page = 'star';
+        request.metrics.metric({ name: 'star', package: pkg });
         return reply(username + ' starred ' + pkg).code(200);
       });
     });
@@ -64,10 +58,9 @@ module.exports = function (request, reply) {
           return showError([er, util.format("unable to drop cache for %s", pkg)], 500, 'not ok', opts);
         }
 
-        timer.end = Date.now();
-        addLatencyMetric(timer, 'unstar');
+        request.timing.page = 'unstar';
+        request.metrics.metric({ name: 'unstar', package: pkg });
 
-        addMetric({ name: 'unstar', package: pkg });
         return reply(username + ' unstarred ' + pkg).code(200);
       });
     });

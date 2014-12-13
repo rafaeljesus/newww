@@ -5,8 +5,7 @@ var Hapi = require('hapi'),
     nodemailer = require('nodemailer'),
     crypto = require('crypto'),
     log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    uuid = require('node-uuid');
 
 var transport, mailer;
 
@@ -50,11 +49,11 @@ module.exports = function (options) {
         }
       } else {
         timer.end = Date.now();
-        metrics.addPageLatencyMetric(timer, 'email-edit');
+        request.timing.page = 'email-edit';
 
         opts.title = 'Edit Profile';
 
-        metrics.addMetric({ name: 'email-edit' });
+        request.metrics.metric({ name: 'email-edit' });
         return reply.view('user/email-edit', opts);
       }
     }
@@ -67,9 +66,9 @@ module.exports = function (options) {
         opts.error = {email: true};
 
         timer.end = Date.now();
-        metrics.addPageLatencyMetric(timer, 'email-edit-error');
+        request.timing.page = 'email-edit-error';
 
-        metrics.addMetric({ name: 'email-edit-error' });
+        request.metrics.metric({ name: 'email-edit-error' });
         return reply.view('user/email-edit', opts).code(400);
       }
 
@@ -82,9 +81,9 @@ module.exports = function (options) {
         opts.error = {password: true};
 
         timer.end = Date.now();
-        metrics.addPageLatencyMetric(timer, 'email-edit-error');
+        request.timing.page = 'email-edit-error';
 
-        metrics.addMetric({ name: 'email-edit-error' });
+        request.metrics.metric({ name: 'email-edit-error' });
         return reply.view('user/email-edit', opts).code(403);
       }
 
@@ -159,7 +158,8 @@ function sendEmails (conf, rev, request, reply) {
   var name = conf.name,
       urlStart = host + '/email-edit/',
       confUrl = urlStart + 'confirm/' + encodeURIComponent(conf.token),
-      revUrl = urlStart + 'revert/' + encodeURIComponent(rev.token);
+      revUrl = urlStart + 'revert/' + encodeURIComponent(rev.token),
+      showError = request.server.methods.errors.showError(reply);
 
   // we need to move the construction of these emails to somewhere else...
   // maybe we can consider https://github.com/andris9/nodemailer-html-to-text ?
@@ -181,12 +181,12 @@ function sendEmails (conf, rev, request, reply) {
 
   if (devMode) {
     timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
+    request.timing.page = 'email-edit-send-emails';
     opts.confirm = JSON.stringify(confMail);
     opts.revert = JSON.stringify(revMail);
     opts.submitted = true;
 
-    metrics.addMetric({ name: 'email-edit-send-emails' });
+    request.metrics.metric({ name: 'email-edit-send-emails' });
     return reply.view('user/email-edit', opts);
   }
 
@@ -203,9 +203,9 @@ function sendEmails (conf, rev, request, reply) {
 
       opts.submitted = true;
       timer.end = Date.now();
-      metrics.addPageLatencyMetric(timer, 'email-edit-send-emails');
+      request.timing.page = 'email-edit-send-emails';
 
-      metrics.addMetric({ name: 'email-edit-send-emails' });
+      request.metrics.metric({ name: 'email-edit-send-emails' });
       return reply.view('user/email-edit', opts);
     });
   });
@@ -274,9 +274,8 @@ function confirm (request, reply) {
             }
 
             timer.end = Date.now();
-            metrics.addPageLatencyMetric(timer, 'confirmEmailChange');
-
-            metrics.addMetric({ name: 'confirmEmailChange' });
+            request.timing.page = 'confirmEmailChange';
+            request.metrics.metric({ name: 'confirmEmailChange' });
 
             opts.title = "Edit Profile";
 
@@ -356,9 +355,9 @@ function revert (request, reply) {
               }
 
               timer.end = Date.now();
-              metrics.addPageLatencyMetric(timer, 'revertEmailChange');
+              request.timing.page = 'revertEmailChange';
 
-              metrics.addMetric({ name: 'revertEmailChange' });
+              request.metrics.metric({ name: 'revertEmailChange' });
 
               opts.title = "Edit Profile";
 

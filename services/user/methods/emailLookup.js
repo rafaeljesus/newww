@@ -3,7 +3,7 @@ var Hapi = require('hapi'),
     uuid = require('node-uuid'),
     qs = require('querystring'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
-    metrics = require('newww-metrics')();
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function lookupUserByEmail (email, next) {
   var query = {
@@ -16,7 +16,7 @@ module.exports = function lookupUserByEmail (email, next) {
   var timer = { start: Date.now() };
 
   adminCouch.get(pe, function (er, cr, data) {
-    var er = er || cr && cr.statusCode >= 400 || data && data.error;
+    er = er || cr && cr.statusCode >= 400 || data && data.error;
 
     if (er) {
       log.error(uuid.v1() + ' ' + Hapi.error.notFound('Unable to find ' + email + ' in couch'), er);
@@ -29,7 +29,12 @@ module.exports = function lookupUserByEmail (email, next) {
     });
 
     timer.end = Date.now();
-    metrics.addCouchLatencyMetric(timer, 'lookupUserByEmail');
+    metrics.metric({
+  name: 'latency',
+  value: timer.end - timer.start,
+  type: 'couch',
+  action: 'lookupUserByEmail'
+});
 
     return next(null, usernames);
   });

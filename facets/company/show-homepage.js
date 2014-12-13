@@ -4,7 +4,6 @@ var async = require('async'),
     Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
-    metrics = require('newww-metrics')(),
     parseLanguageHeader = require('accept-language-parser').parse,
     fmt = require('util').format,
     moment = require('moment'),
@@ -66,9 +65,8 @@ module.exports = function (request, reply) {
       })
     };
 
-    timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'homepage');
-    metrics.addMetric({name: 'homepage'});
+    request.timing.page = 'homepage';
+    request.metrics.metric({name: 'homepage', value: 1});
 
     return reply.view('company/index', opts);
   });
@@ -79,7 +77,6 @@ module.exports = function (request, reply) {
 function load (request, cb) {
   var registry = request.server.methods.registry,
       // recentAuthors = registry.getRecentAuthors,
-      addMetric = metrics.addMetric,
       downloads = request.server.methods.downloads.getAllDownloads,
       cached = {};
 

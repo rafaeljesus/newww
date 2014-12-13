@@ -1,9 +1,6 @@
-var metrics = require('newww-metrics')();
-
 module.exports = function fallbackHandler (request, reply) {
   var name = request.params.p,
-      opts = { user: request.auth.credentials },
-      timer = { start: Date.now() };
+      opts = { user: request.auth.credentials };
 
   request.server.methods.registry.getPackage(name, function (err, package) {
 
@@ -11,10 +8,9 @@ module.exports = function fallbackHandler (request, reply) {
       reply.redirect('/package/' + package._id);
     }
 
-    timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, '404-not-found');
-
-    metrics.addMetric({name: '404'});
+    request.timing.page = '404-not-found';
+    request.metrics.metric({name: '404'});
+    
     reply.view('errors/registry-not-found', opts).code(404);
   });
 };

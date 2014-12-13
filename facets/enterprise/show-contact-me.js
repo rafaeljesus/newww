@@ -3,9 +3,7 @@ var NAMESPACE = 'enterprise-contact-me';
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
     Joi = require('joi'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    log = require('bole')(NAMESPACE);
 
 var config = require('../../config').license;
 

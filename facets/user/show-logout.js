@@ -1,12 +1,7 @@
-var metrics = require('newww-metrics')();
-
 module.exports = function logout (request, reply) {
   var delSession = request.server.methods.user.delSession(request),
       showError = request.server.methods.errors.showError(reply),
-      user = request.auth.credentials,
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = { start: Date.now() };
+      user = request.auth.credentials;
 
   if (!user) return redirectToHome();
 
@@ -19,11 +14,9 @@ module.exports = function logout (request, reply) {
   });
 
   function redirectToHome () {
-    timer.end = Date.now();
-    addLatencyMetric(timer, 'logout');
+    request.timing.page = 'logout';
+    request.matrics.metric({ name: 'logout' });
 
-    addMetric({ name: 'logout' });
     return reply.redirect('/');
   }
 }
-

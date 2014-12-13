@@ -1,10 +1,7 @@
 var Hapi = require('hapi'),
     crypto = require('crypto'),
     userValidate = require('npm-user-validate'),
-    log = require('bole')('user-password'),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
-    var redisSessions = require("../../adapters/redis-sessions");
+    redisSessions = require("../../adapters/redis-sessions");
 
 module.exports = function (request, reply) {
   var opts = {
@@ -17,14 +14,10 @@ module.exports = function (request, reply) {
   var changePass = request.server.methods.user.changePass,
       loginUser = request.server.methods.user.loginUser,
       setSession = request.server.methods.user.setSession(request),
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = { start: Date.now() };
+      showError = request.server.methods.errors.showError(reply);
 
   if (request.method === 'get' || request.method === 'head') {
-    timer.end = Date.now();
-    addLatencyMetric(timer, 'password');
+    request.timing.page = 'password';
 
     return reply.view('user/password', opts);
   }
@@ -41,24 +34,20 @@ module.exports = function (request, reply) {
     if (hashCurrent !== hashProf) {
       opts.error = {current: true};
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'password-error');
-
-      addMetric({ name: 'password-error' });
+      request.timing.page = 'password-error';
+      request.metrics.metric({ name: 'password-error' });
       return reply.view('user/password', opts).code(403);
     }
 
     if (data.new !== data.verify) {
       opts.error = {verify: true};
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'password-error');
-
-      addMetric({ name: 'password-error' });
+      request.timing.page = 'password-error';
+      request.metrics.metric({ name: 'password-error' });
       return reply.view('user/password', opts).code(403);
     }
 
-    log.warn('Changing password', { name: prof.name });
+    request.logger.warn('Changing password', { name: prof.name });
 
     var newAuth = { name: prof.name, password: data.new };
     newAuth.mustChangePass = false;
@@ -74,7 +63,7 @@ module.exports = function (request, reply) {
           return showError(err, 500, 'Unable to drop all sessions for ' + newAuth.name, opts);
         }
 
-        log.info("cleared all sessions for user " + newAuth.name);
+        request.logger.info("cleared all sessions for user " + newAuth.name);
 
         loginUser(newAuth, function (er, user) {
           if (er) {
@@ -86,10 +75,8 @@ module.exports = function (request, reply) {
               return showError(err, 500, 'Unable to set session for ' + user.name, opts);
             }
 
-            timer.end = Date.now();
-            addLatencyMetric(timer, 'changePass');
-
-            addMetric({name: 'changePass'})
+            request.timing.page = 'changePass';
+            request.metrics.metric({name: 'changePass'})
 
             return reply.redirect('/profile');
           });

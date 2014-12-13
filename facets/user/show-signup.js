@@ -1,20 +1,13 @@
 var Joi = require('joi'),
     userValidate = require('npm-user-validate'),
-    Hapi = require('hapi'),
-    log = require('bole')('user-signup'),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')(),
-    log = require('bole')('show-signup');
+    Hapi = require('hapi');
 
 module.exports = function signup (request, reply) {
   var getUser = request.server.methods.user.getUser,
       signupUser = request.server.methods.user.signupUser,
       setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request),
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = { start: Date.now() };
+      showError = request.server.methods.errors.showError(reply);
 
   var opts = {
     user: request.auth.credentials,
@@ -57,10 +50,8 @@ module.exports = function signup (request, reply) {
 
         if (opts.errors.length) {
 
-          timer.end = Date.now();
-          addLatencyMetric(timer, 'signup-form-error');
-
-          addMetric({name: 'signup-form-error'});
+          request.timing.page = 'signup-form-error';
+          request.metrics.metric({name: 'signup-form-error'});
 
           return reply.view('user/signup-form', opts).code(400);
         }
@@ -68,7 +59,7 @@ module.exports = function signup (request, reply) {
         delSession(validatedUser, function (er) {
 
           if (er) {
-            log.error(String(er));
+            request.logger.error(er);
           }
 
           signupUser(validatedUser, function (er, user) {
@@ -83,10 +74,8 @@ module.exports = function signup (request, reply) {
                 return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
               }
 
-              timer.end = Date.now();
-              addLatencyMetric(timer, 'signup');
-
-              addMetric({name: 'signup'});
+              request.timing.page = 'signup';
+              request.metrics.metric({name: 'signup'});
 
               return reply.redirect('/profile-edit');
             });
@@ -101,10 +90,8 @@ module.exports = function signup (request, reply) {
 
   if (request.method === 'get' || request.method === 'head') {
 
-    timer.end = Date.now();
-    addLatencyMetric(timer, 'signup-form');
-
-    addMetric({ name: 'signup-form' });
+    request.timing.page = 'signup-form';
+    request.metrics.metric({ name: 'signup-form' });
     return reply.view('user/signup-form', opts);
   }
 };

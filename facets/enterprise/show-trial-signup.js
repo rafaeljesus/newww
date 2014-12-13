@@ -3,9 +3,7 @@ var NAMESPACE = 'enterprise-trial-signup';
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
     nodemailer = require('nodemailer'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    log = require('bole')(NAMESPACE);
 
 var config = require('../../config');
 
@@ -40,7 +38,7 @@ module.exports = function trialSignup (request, reply) {
       }
 
       if (customer && customer.id + '' === request.payload.customer_id + '') {
-        return createTrial(request, reply, customer);
+        return createTrialAccount(request, reply, customer);
       }
 
       return showError(null, 500, "unable to verify customer record", opts);
@@ -48,7 +46,7 @@ module.exports = function trialSignup (request, reply) {
   });
 }
 
-function createTrial (request, reply, customer) {
+function createTrialAccount(request, reply, customer) {
   var createTrial = request.server.methods.npme.createTrial,
       showError = request.server.methods.errors.showError(reply);
 
@@ -117,4 +115,3 @@ function sendVerificationEmail (request, reply, customer, trial) {
     });
   }
 }
-

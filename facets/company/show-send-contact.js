@@ -4,15 +4,12 @@ var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
     nodemailer = require('nodemailer'),
     crypto = require('crypto'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    log = require('bole')(NAMESPACE);
 
 var transport, mailer;
 
 module.exports = function (options) {
   return function (request, reply) {
-    // var timer = { start: Date.now() };
 
     var showError = request.server.methods.errors.showError(reply);
 

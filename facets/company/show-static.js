@@ -1,5 +1,3 @@
-var metrics = require('newww-metrics')();
-
 module.exports = function (type, text) {
   return function (request, reply) {
     var opts = { user: request.auth.credentials },
@@ -7,10 +5,8 @@ module.exports = function (type, text) {
 
     opts.text = text;
 
-    timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'static-' + type);
-
-    metrics.addMetric({name: 'static-' + type});
+    request.timing.page = 'static-' + type;
+    request.metrics.metric({name: 'static-' + type});
 
     reply.view('static', opts);
   };

@@ -70,10 +70,10 @@ exports.register = function(plugin, options, next) {
 
   plugin.ext('onPostHandler', function(request, next) {
 
-    metrics.client.metric({
+    metrics.metric({
       name:  'latency',
       value: Date.now() - request.timing.start,
-      type:  request.timing.type,
+      type:  request.timing.type || 'pageload',
       page:  request.timing.page,
     });
 

@@ -1,5 +1,5 @@
 var anonCouch = require('../../../adapters/couchDB').anonCouch,
-    metrics = require('newww-metrics')(),
+    metrics = require('../../adapters/metrics')(),
     log = require('bole')('registry-get-recent-authors'),
     qs = require('querystring'),
     AC = require('async-cache'),
@@ -43,7 +43,7 @@ module.exports = function recentAuthors (age, skip, limit, cb) {
       u += qs.stringify(query);
       anonCouch.get(u, function (er, cr, data) {
         if (!er && !data.rows) {
-          var er = new Error('no data returned');
+          er = new Error('no data returned');
           er.code = er.status = 404;
         }
         if (er) {

@@ -1,8 +1,7 @@
 var elasticsearch = require('elasticsearch'),
     Hapi = require('hapi'),
     log = require('bole')('registry-search'),
-    merge = require('lodash').merge,
-    metrics = require('newww-metrics')();
+    merge = require('lodash').merge;
 
 module.exports = function (options) {
   var client = new elasticsearch.Client({
@@ -20,9 +19,7 @@ module.exports = function (options) {
       return reply.redirect('/');
     }
 
-    var addMetric = metrics.addMetric,
-        addLatencyMetric = metrics.addPageLatencyMetric,
-        showError = request.server.methods.errors.showError(reply),
+    var showError = request.server.methods.errors.showError(reply),
         timer = { start: Date.now() };
 
     var page = Math.abs(parseInt(request.query.page, 10)) || 1;
@@ -95,7 +92,7 @@ module.exports = function (options) {
 
     client.search(searchQuery, function (error, response) {
       timer.end = Date.now();
-      addMetric({
+      request.metrics.metric({
         name: 'latency',
         value: timer.end - timer.start,
         type: 'elasticsearch',
@@ -112,10 +109,8 @@ module.exports = function (options) {
         return showError(error, 500, 'elasticsearch failed searching ' + request.query.q, opts);
       }
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'search');
-
-      addMetric({ name: 'search', search: request.query.q });
+      request.timing.page = 'search';
+      request.metrics.metric({ name: 'search', search: request.query.q });
 
       merge(opts, {
         title: 'results for ',

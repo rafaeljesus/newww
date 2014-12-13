@@ -1,6 +1,5 @@
 var req = require('request');
 var marked = require('marked');
-var metrics = require('newww-metrics')();
 
 module.exports = function (request, reply) {
   var opts = {
@@ -19,9 +18,8 @@ module.exports = function (request, reply) {
 
     opts.md = content;
 
-    timer.end = Date.now();
-    metrics.addPageLatencyMetric(timer, 'policy-' + policy);
-    metrics.addMetric({name: 'policy-' + policy});
+    request.timing.page = 'policy-' + policy;
+    request.metrics.metric({name: 'policy-' + policy});
 
     return reply.view('company/corporate', opts);
   });

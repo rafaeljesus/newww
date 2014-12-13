@@ -2,7 +2,6 @@ var Hapi = require('hapi'),
     request = require('request'),
     log = require('bole')('downloads'),
     uuid = require('node-uuid'),
-    metrics = require('newww-metrics')(),
     timer = {};
 
 module.exports = function getDownloads (url) {
@@ -20,14 +19,6 @@ module.exports = function getDownloads (url) {
         log.warn(uuid.v1() + ' ' + Hapi.error.internal('error downloading from ' + endpoint), err);
         err = new Error(body);
       }
-
-      timer.end = Date.now();
-      metrics.addMetric({
-        name: 'latency',
-        value: timer.end - timer.start,
-        type: 'downloads',
-        action: endpoint
-      });
 
       return next(err, body.downloads || 0);
     });

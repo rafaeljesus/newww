@@ -1,6 +1,5 @@
 var Hapi = require('hapi'),
-    presentPackage = require('./presenters/package'),
-    metrics = require('newww-metrics')();
+    presentPackage = require('./presenters/package');
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
@@ -19,7 +18,7 @@ module.exports = function (request, reply) {
   }
 
   request.timing.type = 'pageload';
-  metrics.client.metric({ name: 'showPackage', package: request.params.package, value: 1 });
+  request.metrics.metric({ name: 'showPackage', package: request.params.package, value: 1 });
 
   opts.name = request.params.package
 
@@ -58,7 +57,7 @@ module.exports = function (request, reply) {
 
     getBrowseData({type: 'depended', noPackageData: true}, opts.name, 0, 1000, function (er, dependents) {
 
-      metrics.client.metric({
+      request.metrics.metric({
         name:   'latency',
         value:  Date.now() - request.timing.browse_start,
         type:   'couchdb',

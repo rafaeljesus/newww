@@ -1,17 +1,14 @@
 var Joi = require('joi'),
     Hapi = require('hapi'),
     log = require('bole')('company-whoshiring-payments'),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    uuid = require('node-uuid');
 
 module.exports = function (options) {
   var stripe = require('stripe')(options.secretkey),
       VALID_CHARGE_AMOUNTS = [35000, 100000];
 
   return function (request, reply) {
-    var addMetric = metrics.addMetric,
-        addLatencyMetric = metrics.addPageLatencyMetric,
-        showError = request.server.methods.errors.showError(reply),
+    var showError = request.server.methods.errors.showError(reply),
         timer = { start: Date.now() };
 
     var opts = {
@@ -25,9 +22,9 @@ module.exports = function (options) {
       opts.stripeKey = options.publickey;
 
       timer.end = Date.now();
-      addLatencyMetric(timer, 'whoshiring-payments');
 
-      addMetric({name: 'whoshiring-payments'});
+      request.timing.page = 'whoshiring-payments';
+      request.metrics.metric({name: 'whoshiring-payments'});
       return reply.view('company/payments', opts);
     }
 
@@ -66,16 +63,15 @@ module.exports = function (options) {
           return showError(token.amount, 500, 'internal stripe error', opts);
         }
 
-        timer.end = Date.now();
-        addMetric({
+        request.metrics.metric({
           name: 'latency',
-          value: timer.end - stripeStart,
+          value: Date.now() - stripeStart,
           type: 'stripe'
         });
 
-        addLatencyMetric(timer, 'whoshiring-paymentProcessed');
+        request.timing.page = 'whoshiring-paymentProcessed';
+        request.metrics.metric({name: 'whoshiring-paymentProcessed'});
 
-        addMetric({name: 'whoshiring-paymentProcessed'});
         return reply('Stripe charge successful').code(200);
       });
     });

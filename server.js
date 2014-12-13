@@ -63,7 +63,7 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     server.route(require('./routes'))
 
     server.start(function() {
-      metrics.addMetric({
+      metrics.metric({
         env: process.env.NODE_ENV,
         name: 'server.start'
       });

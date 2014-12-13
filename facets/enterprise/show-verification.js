@@ -4,9 +4,7 @@ var Hoek = require('hoek'),
     Hapi = require('hapi'),
     url = require('url'),
     nodemailer = require('nodemailer'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    log = require('bole')(NAMESPACE);
 
 var config = require('../../config');
 
@@ -18,7 +16,7 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
 
   var opts = {
     user: request.auth.credentials,
-    
+
     namespace: NAMESPACE
   };
 

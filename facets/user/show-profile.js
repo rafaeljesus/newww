@@ -1,25 +1,16 @@
 var present = require(__dirname + '/../../presenters/user'),
   merge = require("lodash").merge,
-  Hapi = require('hapi'),
-  log = require('bole')('user-profile'),
-  uuid = require('node-uuid'),
-  metrics = require('newww-metrics')();
+  Hapi = require('hapi');
 
 module.exports = function(options) {
   return function(request, reply) {
     var getUser = request.server.methods.user.getUser,
       getUserStars = request.server.methods.registry.getUserStars,
       getAuthors = request.server.methods.registry.getAuthors,
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = {
-        start: Date.now()
-      };
+      showError = request.server.methods.errors.showError(reply);
 
     var opts = {
       user: request.auth.credentials,
-
       namespace: 'user-profile'
     };
 
@@ -38,12 +29,10 @@ module.exports = function(options) {
 
     function showProfile(err, showprofile) {
       if (err) {
-        opts.errId = uuid.v1();
-        log.error(opts.errId + Hapi.error.notFound('Profile for ' + profileName + ' not found'), err);
+        request.logger.error(Hapi.error.notFound('Profile for ' + profileName + ' not found'), err);
         opts.name = profileName;
-        timer.end = Date.now();
-        addLatencyMetric(timer, 'profile-not-found');
-        addMetric({
+        request.timing.page = 'profile-not-found';
+        request.metrics.metric({
           name: 'profile-not-found',
           value: opts.name
         });
@@ -86,9 +75,8 @@ module.exports = function(options) {
             delete opts.profile[field]
           })
 
-          timer.end = Date.now();
-          addLatencyMetric(timer, 'showProfile');
-          addMetric({
+          request.timing.page = 'showProfile';
+          request.metrics.metric({
             name: 'showProfile'
           });
 

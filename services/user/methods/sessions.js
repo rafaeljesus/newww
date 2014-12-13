@@ -1,7 +1,7 @@
 var Hapi = require('hapi'),
     log = require('bole')('user-login'),
     uuid = require('node-uuid'),
-    metrics = require('newww-metrics')(),
+    metrics = require('../../adapters/metrics')(),
     redisSessions = require("../../../adapters/redis-sessions");
 
 

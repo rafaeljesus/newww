@@ -1,7 +1,6 @@
 var Hapi = require('hapi'),
     uuid = require('node-uuid'),
-    log = require('bole'),
-    metrics = require('newww-metrics')();
+    log = require('bole');
 
 module.exports = function showError (reply) {
 
@@ -35,13 +34,14 @@ module.exports = function showError (reply) {
       template = 'errors/registry-not-found';
     }
 
+/*
     metrics.addMetric({
       name: 'error',
       message: message,
       value: 1,
       code: code
     });
-
+*/
     log(opts.namespace).error(opts.errId + ' ' + error, err);
 
     if (opts.isXhr) {

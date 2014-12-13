@@ -2,8 +2,7 @@ var sanitizer = require('sanitizer'),
     Hapi = require('hapi'),
     log = require('bole')('registry-browse'),
     merge = require('lodash').merge,
-    chunk = require('chunk'),
-    metrics = require('newww-metrics')();
+    chunk = require('chunk');
 
 var pageSize = 60;
 var possibleTypes = ['all', 'keyword', 'author', 'updated', 'depended', 'star', 'userstar'];
@@ -16,14 +15,11 @@ module.exports = function (request, reply) {
   };
 
   var getBrowseData = request.server.methods.registry.getBrowseData,
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = { start: Date.now() };
+    showError = request.server.methods.errors.showError(reply);
 
   // the url will be something like /browse/{type?}/{arg?}/{page}
-  var params = request.params.p || '',
-      page, type, arg;
+  var params = request.params.p || '';
+  var page, type, arg;
 
   // grab the page number, if it's in the url
   page = Math.abs(parseInt(request.query.page, 10)) || 1;
@@ -68,12 +64,16 @@ module.exports = function (request, reply) {
 
     var key = [type, arg, start, limit].join(', ');
 
-    timer.end = Date.now();
-    addLatencyMetric(timer, 'browse ' + key);
-
-    addMetric({
+    request.timing.page = 'browse ' + key;
+    request.metrics.metric({
       name: 'browse',
       value: key
+    });
+    request.metrics.metric({
+      name: 'latency',
+      value: Date.now() - timer.start,
+      type: 'couch',
+      action: type
     });
 
     merge(opts, {

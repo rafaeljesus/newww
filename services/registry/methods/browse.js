@@ -4,7 +4,7 @@ var Hapi = require('hapi'),
     browseUtils = require('../browseUtils'),
     log = require('bole')('registry-service-browse'),
     uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function (type, arg, skip, limit, next) {
   var opts = {};

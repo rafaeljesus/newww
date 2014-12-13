@@ -2,7 +2,7 @@ var CouchLogin = require('couch-login'),
     Hapi = require('hapi'),
     log = require('bole')('user-login'),
     uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    metrics = require('../../adapters/metrics')();
 
 module.exports = function (options, service) {
 
@@ -32,7 +32,12 @@ module.exports = function (options, service) {
           }
 
           timer.end = Date.now();
-          metrics.addCouchLatencyMetric(timer, 'login');
+          metrics.metric({
+  name: 'latency',
+  value: timer.end - timer.start,
+  type: 'couch',
+  action: 'login'
+});
 
           // attach the token to the user data so we can save it in the session
           data.token = loginCouch.token

@@ -73,18 +73,18 @@ module.exports = function (request, reply) {
 
       pkg.dependents = dependents;
 
-      presentPackage(pkg, function (er, pkg) {
+      presentPackage(pkg, function (er, sanitizedPackage) {
         if (er) {
           return showError(er, 500, 'An error occurred with presenting package ' + opts.name, opts);
         }
 
-        pkg.isStarred = opts.user && pkg.users && pkg.users[opts.user.name] || false;
+        sanitizedPackage.isStarred = opts.user && sanitizedPackage.users && sanitizedPackage.users[opts.user.name] || false;
 
-        opts.package = pkg;
-        opts.title = pkg.name;
+        opts.package = sanitizedPackage;
+        opts.title = sanitizedPackage.name;
 
         // Show download count for the last day, week, and month
-        return getAllDownloadsForPackage(pkg.name, handleDownloads);
+        return getAllDownloadsForPackage(sanitizedPackage.name, handleDownloads);
 
         function handleDownloads(er, downloadData) {
           if (er) {
@@ -97,6 +97,7 @@ module.exports = function (request, reply) {
           addLatencyMetric(timer, 'showPackage');
 
           addMetric({ name: 'showPackage', package: request.params.package });
+
 
           return reply.view('registry/package-page', opts);
         }

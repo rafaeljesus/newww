@@ -12,6 +12,8 @@ var marked = require('marked'),
 
 module.exports = function presentPackage (data, cb) {
 
+  data = elevateLatestVersionInfo(data);
+
   if (data.time && data['dist-tags']) {
     var v = data['dist-tags'].latest
     var t = data.time[v]
@@ -34,8 +36,6 @@ module.exports = function presentPackage (data, cb) {
 
     setLicense(data, v)
   }
-
-  data = elevateLatestVersionInfo(data);
 
   data.showMaintainers = data.maintainers && data.publisherIsInMaintainersList
 
@@ -67,7 +67,7 @@ module.exports = function presentPackage (data, cb) {
     delete data.homepage
   }
 
-  if (data.readme && data.readme.length) console.log('README EXISTS')
+  // if (data.readme && data.readme.length) console.log('README EXISTS')
 
     // homepage: discard if github repo URL
   if (data.homepage && url.parse(data.homepage).hostname.match(/^(www\.)?github\.com/i)) {

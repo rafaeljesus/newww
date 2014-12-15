@@ -351,13 +351,16 @@ var authenticatedRoutes = [
     path: "/password",
     method: "POST",
     handler: require('./facets/user/show-password')
-  },{
+  }
+]
+
+if (process.env.FEATURE_R2) {
+  authenticatedRoutes.push({
     path: "/settings/billing",
     method: "GET",
     handler: require('./facets/user/billing')()
-  }
-
-]
+  })
+}
 
 // Apply unathenticated route config to all the public routes
 unauthenticatedRoutes = unauthenticatedRoutes.map(function(route){

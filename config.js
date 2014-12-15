@@ -49,7 +49,6 @@ if (process.env.NODE_ENV === 'dev') {
     }
 }
 
-// ===== service options =====
 config.couch = {
   "couchAuth": "admin:admin",
   "registryCouch": "http://localhost:15984/"

@@ -7,7 +7,7 @@ module.exports = function() {
 }
 
 var noKey = function() {
-  console.error("No element with found with data-stripe-public-keys attribute");
+  console.error("No element found with data-stripe-public-keys attribute");
 }
 
 var handleBillingForm = function() {

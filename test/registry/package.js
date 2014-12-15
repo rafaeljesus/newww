@@ -127,6 +127,21 @@ describe('Modifying the package before sending to the template', function () {
   });
 });
 
+describe('dealing with older package pages (ca 2012)', function () {
+  it('gets the package page for the benchmark package', function (done) {
+    var options = {
+      url: '/package/benchmark'
+    };
+
+    server.inject(options, function (resp) {
+      expect(p.name).to.equal('benchmark');
+      expect(p.readme).to.include('<h1 id="benchmark');
+      expect(p.readme).to.not.include('# Benchmark');
+      done();
+    });
+  })
+});
+
 describe('getting package download information', function () {
   it('sends an object of data if the user is not logged in', function (done) {
     var options = {

@@ -1,0 +1,1196 @@
+{
+  "_id": "benchmark",
+  "_rev": "244-0900fa06d72854d11177be6af1c3a840",
+  "name": "benchmark",
+  "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+  "dist-tags": {
+    "latest": "1.0.0"
+  },
+  "versions": {
+    "0.1.337": {
+      "name": "benchmark",
+      "version": "0.1.337",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/benchmark.js/issues"
+      },
+      "repositories": [
+        {
+          "type": "git",
+          "url": "https://github.com/mathiasbynens/benchmark.js"
+        }
+      ],
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.337",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.3.1",
+      "dist": {
+        "shasum": "c5a1b5b19176fab26da33718c6895675007a164f",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.337.tgz"
+      }
+    },
+    "0.1.338": {
+      "name": "benchmark",
+      "version": "0.1.338",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/benchmark.js/issues"
+      },
+      "repositories": [
+        {
+          "type": "git",
+          "url": "https://github.com/mathiasbynens/benchmark.js"
+        }
+      ],
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.338",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.3.1",
+      "dist": {
+        "shasum": "33dcd8d61186db9ed2f027f80121342cf2a6730a",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.338.tgz"
+      }
+    },
+    "0.1.339": {
+      "name": "benchmark",
+      "version": "0.1.339",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/benchmark.js/issues"
+      },
+      "repositories": [
+        {
+          "type": "git",
+          "url": "https://github.com/mathiasbynens/benchmark.js"
+        }
+      ],
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.339",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.3.1",
+      "dist": {
+        "shasum": "67158d32f127bba29a93486c2267fd3c665108fd",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.339.tgz"
+      }
+    },
+    "0.1.340": {
+      "name": "benchmark",
+      "version": "0.1.340",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.340",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.3.1",
+      "dist": {
+        "shasum": "f645f9e9a56c05187e3f929800cdfa53469de7fd",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.340.tgz"
+      }
+    },
+    "0.1.341": {
+      "name": "benchmark",
+      "version": "0.1.341",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.341",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.3.5-pre",
+      "dist": {
+        "shasum": "fce337b212a78cd8ac590b86a008b0e4383b2d59",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.341.tgz"
+      }
+    },
+    "0.1.342": {
+      "name": "benchmark",
+      "version": "0.1.342",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.342",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.3.1",
+      "dist": {
+        "shasum": "f6b947bcd1f5e16a0dbc203399d0653ee2616039",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.342.tgz"
+      }
+    },
+    "0.1.343": {
+      "name": "benchmark",
+      "version": "0.1.343",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.343",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.3.1",
+      "dist": {
+        "shasum": "a0f6105e654be1300637bc0a39eb1d0aa2cbeb28",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.343.tgz"
+      }
+    },
+    "0.1.344": {
+      "name": "benchmark",
+      "version": "0.1.344",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/Benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/Benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.344",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.3.8-pre",
+      "dist": {
+        "shasum": "7f9c51dc6d4079e769367304ac8f41d9daa6a59a",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.344.tgz"
+      }
+    },
+    "0.1.345": {
+      "name": "benchmark",
+      "version": "0.1.345",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/Benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/Benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.345",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.4.0",
+      "dist": {
+        "shasum": "708509c3170f38e921700b6268727fc486e87661",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.345.tgz"
+      }
+    },
+    "0.1.346": {
+      "name": "benchmark",
+      "version": "0.1.346",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/Benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/Benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.346",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.5.0-pre",
+      "dist": {
+        "shasum": "de14ae9c4b698b71f0d4a51876a22f757eb51919",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.346.tgz"
+      }
+    },
+    "0.1.347": {
+      "name": "benchmark",
+      "version": "0.1.347",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/Benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/Benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.347",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.4.1",
+      "dist": {
+        "shasum": "803f341f9e809898cea6c85b94b304734db390a7",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.347.tgz"
+      }
+    },
+    "0.1.348": {
+      "name": "benchmark",
+      "version": "0.1.348",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/Benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/Benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.348",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.5.0-pre",
+      "dist": {
+        "shasum": "83637ebaebb2927396b60a7a680a27d3af806f8c",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.348.tgz"
+      }
+    },
+    "0.1.349": {
+      "name": "benchmark",
+      "version": "0.1.349",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/Benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/Benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.1.349",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.5.0-pre",
+      "dist": {
+        "shasum": "65424d57539e5c10383cec36c70855242f2b16c3",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.1.349.tgz"
+      }
+    },
+    "0.2.0": {
+      "name": "benchmark",
+      "version": "0.2.0",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/Benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/Benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.2.0",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.4.1",
+      "dist": {
+        "shasum": "b71abe69c45569cd8dfaeb0c224b7a618b7cde3d",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.2.0.tgz"
+      }
+    },
+    "0.2.1": {
+      "name": "benchmark",
+      "version": "0.2.1",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/mathiasbynens/Benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mathiasbynens/Benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_id": "benchmark@0.2.1",
+      "_nodeSupported": true,
+      "_npmVersion": "0.2.12-1",
+      "_nodeVersion": "v0.5.0-pre",
+      "dist": {
+        "shasum": "a139296df09244956f0ef0a04a73040c1f430f24",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.2.1.tgz"
+      }
+    },
+    "0.2.2": {
+      "name": "benchmark",
+      "version": "0.2.2",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "Mathias Bynens",
+          "email": "mathias@benchmarkjs.com",
+          "url": "http://mathiasbynens.be/"
+        },
+        {
+          "name": "John-David Dalton",
+          "email": "john@fusejs.com",
+          "url": "http://allyoucanleet.com/"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/bestiejs/benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/bestiejs/benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "dependencies": {},
+      "devDependencies": {},
+      "_id": "benchmark@0.2.2",
+      "_engineSupported": true,
+      "_npmVersion": "1.0.6",
+      "_nodeVersion": "v0.4.1",
+      "_defaultsLoaded": true,
+      "dist": {
+        "shasum": "9c6bcf8d997c7102c050f075ee8e622e1d66b206",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.2.2.tgz"
+      },
+      "scripts": {}
+    },
+    "0.3.0": {
+      "name": "benchmark",
+      "version": "0.3.0",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "node",
+        "narwhal",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "jdalton",
+          "email": "john@fusejs.com"
+        },
+        {
+          "name": "mathias",
+          "email": "mathias@qiwi.be"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/bestiejs/benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/bestiejs/benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "docs",
+        "test": "tests"
+      },
+      "_npmUser": {
+        "name": "jdalton",
+        "email": "john@fusejs.com"
+      },
+      "_id": "benchmark@0.3.0",
+      "dependencies": {},
+      "devDependencies": {},
+      "_engineSupported": true,
+      "_npmVersion": "1.0.105",
+      "_nodeVersion": "v0.6.1",
+      "_defaultsLoaded": true,
+      "dist": {
+        "shasum": "08be6316908a32e610ab0ac5cc6aed5f4fcd6891",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-0.3.0.tgz"
+      }
+    },
+    "1.0.0": {
+      "name": "benchmark",
+      "version": "1.0.0",
+      "description": "A benchmarking library that works on nearly all JavaScript platforms, supports high-resolution timers, and returns statistically significant results.",
+      "homepage": "http://benchmarkjs.com/",
+      "main": "benchmark",
+      "keywords": [
+        "benchmark",
+        "narwhal",
+        "node",
+        "performance",
+        "ringo",
+        "speed"
+      ],
+      "licenses": [
+        {
+          "type": "MIT",
+          "url": "http://mths.be/mit"
+        }
+      ],
+      "author": {
+        "name": "Mathias Bynens",
+        "email": "mathias@benchmarkjs.com",
+        "url": "http://mathiasbynens.be/"
+      },
+      "maintainers": [
+        {
+          "name": "jdalton",
+          "email": "john@fusejs.com"
+        },
+        {
+          "name": "mathias",
+          "email": "mathias@qiwi.be"
+        }
+      ],
+      "bugs": {
+        "email": "bugs@benchmarkjs.com",
+        "url": "https://github.com/bestiejs/benchmark.js/issues"
+      },
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/bestiejs/benchmark.js.git"
+      },
+      "engines": [
+        "node",
+        "rhino"
+      ],
+      "directories": {
+        "doc": "./doc",
+        "test": "./test"
+      },
+      "readme": "# Benchmark.js <sup>v1.0.0</sup>\n\nA [robust](http://calendar.perfplanet.com/2010/bulletproof-javascript-benchmarks/ \"Bulletproof JavaScript benchmarks\") benchmarking library that works on nearly all JavaScript platforms<sup><a name=\"fnref1\" href=\"#fn1\">1</a></sup>, supports high-resolution timers, and returns statistically significant results. As seen on [jsPerf](http://jsperf.com/).\n\n## BestieJS\n\nBenchmark.js is part of the BestieJS *\"Best in Class\"* module collection. This means we promote solid browser/environment support, ES5 precedents, unit testing, and plenty of documentation.\n\n## Documentation\n\nThe documentation for Benchmark.js can be viewed here: <http://benchmarkjs.com/docs>\n\nFor a list of upcoming features, check out our [roadmap](https://github.com/bestiejs/benchmark.js/wiki/Roadmap).\n\n## Support\n\nBenchmark.js has been tested in at least Adobe AIR 3.1, Chrome 5-21, Firefox 1.5-13, IE 6-9, Opera 9.25-12.01, Safari 3-6, Node.js 0.8.6, Narwhal 0.3.2, RingoJS 0.8, and Rhino 1.7RC5.\n\n## Installation and usage\n\nIn a browser or Adobe AIR:\n\n~~~ html\n<script src=\"benchmark.js\"></script>\n~~~\n\nOptionally, expose Java’s nanosecond timer by adding the `nano` applet to the `<body>`:\n\n~~~ html\n<applet code=\"nano\" archive=\"nano.jar\"></applet>\n~~~\n\nOr enable Chrome’s microsecond timer by using the [command line switch](http://peter.sh/experiments/chromium-command-line-switches/#enable-benchmarking):\n\n --enable-benchmarking\n\nVia [npm](http://npmjs.org/):\n\n~~~ bash\nnpm install benchmark\n~~~\n\nIn [Node.js](http://nodejs.org/) and [RingoJS v0.8.0+](http://ringojs.org/):\n\n~~~ js\nvar Benchmark = require('benchmark');\n~~~\n\nOptionally, use the [microtime module](https://github.com/wadey/node-microtime) by Wade Simmons:\n\n~~~ bash\nnpm install microtime\n~~~\n\nIn [RingoJS v0.7.0-](http://ringojs.org/):\n\n~~~ js\nvar Benchmark = require('benchmark').Benchmark;\n~~~\n\nIn [Rhino](http://www.mozilla.org/rhino/):\n\n~~~ js\nload('benchmark.js');\n~~~\n\nIn an AMD loader like [RequireJS](http://requirejs.org/):\n\n~~~ js\nrequire({\n 'paths': {\n 'benchmark': 'path/to/benchmark'\n }\n},\n['benchmark'], function(Benchmark) {\n console.log(Benchmark.version);\n});\n\n// or with platform.js\n// https://github.com/bestiejs/platform.js\nrequire({\n 'paths': {\n 'benchmark': 'path/to/benchmark',\n 'platform': 'path/to/platform'\n }\n},\n['benchmark', 'platform'], function(Benchmark, platform) {\n Benchmark.platform = platform;\n console.log(Benchmark.platform.name);\n});\n~~~\n\nUsage example:\n\n~~~ js\nvar suite = new Benchmark.Suite;\n\n// add tests\nsuite.add('RegExp#test', function() {\n /o/.test('Hello World!');\n})\n.add('String#indexOf', function() {\n 'Hello World!'.indexOf('o') > -1;\n})\n// add listeners\n.on('cycle', function(event) {\n console.log(String(event.target));\n})\n.on('complete', function() {\n console.log('Fastest is ' + this.filter('fastest').pluck('name'));\n})\n// run async\n.run({ 'async': true });\n\n// logs:\n// > RegExp#test x 4,161,532 +-0.99% (59 cycles)\n// > String#indexOf x 6,139,623 +-1.00% (131 cycles)\n// > Fastest is String#indexOf\n~~~\n\n## Authors\n\n* [Mathias Bynens](http://mathiasbynens.be/)\n [![twitter/mathias](http://gravatar.com/avatar/24e08a9ea84deb17ae121074d0f17125?s=70)](https://twitter.com/mathias \"Follow @mathias on Twitter\")\n* [John-David Dalton](http://allyoucanleet.com/)\n [![twitter/jdalton](http://gravatar.com/avatar/299a3d891ff1920b69c364d061007043?s=70)](https://twitter.com/jdalton \"Follow @jdalton on Twitter\")\n\n## Contributors\n\n* [Kit Cambridge](http://kitcambridge.github.com/)\n [![twitter/kitcambridge](http://gravatar.com/avatar/6662a1d02f351b5ef2f8b4d815804661?s=70)](https://twitter.com/kitcambridge \"Follow @kitcambridge on Twitter\")\n",
+      "_id": "benchmark@1.0.0",
+      "dist": {
+        "shasum": "2f1e2fa4c359f11122aa183082218e957e390c73",
+        "tarball": "http://registry.npmjs.org/benchmark/-/benchmark-1.0.0.tgz"
+      }
+    }
+  },
+  "maintainers": [
+    {
+      "name": "jdalton",
+      "email": "john@fusejs.com"
+    },
+    {
+      "name": "mathias",
+      "email": "mathias@qiwi.be"
+    }
+  ],
+  "time": {
+    "modified": "2013-07-09T05:56:25.715Z",
+    "created": "2010-12-28T19:42:44.681Z",
+    "0.1.337": "2010-12-28T19:42:45.114Z",
+    "0.1.4": "2010-12-28T19:43:36.607Z",
+    "0.1.1338": "2010-12-28T20:04:16.669Z",
+    "0.1.338": "2010-12-28T20:13:29.768Z",
+    "0.1.339": "2011-01-02T22:47:10.191Z",
+    "0.1.340": "2011-01-09T14:10:05.136Z",
+    "0.1.341": "2011-01-13T21:39:09.723Z",
+    "0.1.342": "2011-01-18T08:53:47.472Z",
+    "0.1.343": "2011-01-27T22:08:59.724Z",
+    "0.1.344": "2011-02-06T19:24:05.453Z",
+    "0.1.345": "2011-02-14T11:31:23.556Z",
+    "0.1.346": "2011-03-01T15:53:50.665Z",
+    "0.1.347": "2011-03-10T10:11:34.927Z",
+    "0.1.348": "2011-03-18T09:49:23.309Z",
+    "0.1.349": "2011-04-04T07:07:08.418Z",
+    "0.2.0": "2011-04-18T17:56:09.543Z",
+    "0.2.1": "2011-04-25T08:43:27.729Z",
+    "0.2.2": "2011-06-07T18:42:36.013Z",
+    "0.3.0": "2011-12-04T10:35:35.688Z",
+    "1.0.0": "2012-08-16T08:31:05.948Z"
+  },
+  "author": {
+    "name": "Mathias Bynens",
+    "email": "mathias@benchmarkjs.com",
+    "url": "http://mathiasbynens.be/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bestiejs/benchmark.js.git"
+  },
+  "users": {
+    "mathias": true,
+    "getify": true,
+    "d10": true,
+    "maxzhang": true,
+    "koma": true,
+    "jdalton": true,
+    "fanchangyong": true,
+    "buzzdecafe": true,
+    "t204newstar": true,
+    "noyobo": true,
+    "andreas-marschke": true,
+    "jamescostian": true
+  },
+  "_attachments": {}
+}

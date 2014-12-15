@@ -83,7 +83,7 @@
     "stripe": "^2.7.3",
     "stylus": "^0.45.0",
     "truncate": "^1.0.4",
-    "validate-npm-package-name": "^1.0.0"
+    "validate-npm-package-name": "^1.2.0"
   },
   "devDependencies": {
     "async-cache": "^0.1.5",

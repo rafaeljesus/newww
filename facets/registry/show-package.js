@@ -1,7 +1,8 @@
 var Hapi = require('hapi'),
     presentPackage = require('./presenters/package'),
     log = require('bole')('registry-package'),
-    metrics = require('newww-metrics')();
+    metrics = require('newww-metrics')(),
+    validatePackageName = require('validate-npm-package-name');
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
@@ -34,9 +35,11 @@ module.exports = function (request, reply) {
 
     if (er || pkg.error) {
 
-      opts.package = {
-        name: opts.name
+      // Add package to view context if path is a valid package name
+      if (validatePackageName(opts.name).valid) {
+        opts.package = {name: opts.name};
       }
+
       return reply.view('errors/not-found', opts).code(404);
     }
 

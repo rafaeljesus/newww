@@ -1,7 +1,7 @@
 var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
-    before = lab.before,
+    beforeEach = lab.beforeEach,
     it = lab.test,
     expect = Lab.expect,
     cheerio = require("cheerio");
@@ -9,8 +9,7 @@ var Lab = require('lab'),
 var server, p, source, cookieCrumb;
 var oriReadme = require('../fixtures/fake.json').readme;
 
-// prepare the server
-before(function (done) {
+beforeEach(function (done) {
   server = require('../fixtures/setupServer')(done);
 
   server.ext('onPreResponse', function (request, next) {
@@ -215,23 +214,62 @@ describe('getting package download information', function () {
       done();
     });
   });
+});
 
-  // it('sends an array of data (for graphing) if the user is logged in', function (done) {
-  //   var options = {
-  //     url: '/package/fake',
-  //     credentials: {
-  //       user: 'fakeuser'
-  //     }
-  //   };
+describe('requesting nonexistent packages', function () {
+  var name = 'a-package-that-does-not-exist';
+  var options = {
+    url: '/package/' + name
+  }
 
-  //   server.inject(options, function (resp) {
-  //     console.log(source.context.package.downloads)
-  //     expect(data).to.be.an('array');
-  //     expect(data[0]).to.have.property('downloads');
-  //     expect(data[0]).to.have.property('day');
-  //     expect(data[0]).to.not.have.property('week');
-  //     expect(data[0]).to.not.have.property('month');
-  //     done();
-  //   });
-  // });
+  it('returns a 404', function (done) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(404);
+      done();
+    });
+  });
+
+  it('adds package.name to view context', function (done) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(404);
+      expect(source.context.package.name).to.exist
+      done();
+    });
+  });
+
+  it('renders the 404 template', function (done) {
+    server.inject(options, function (resp) {
+      expect(source.template).to.equal('errors/not-found');
+      done();
+    });
+  });
+});
+
+describe('requesting invalid packages', function () {
+  var name = '_.escape';
+  var options = {
+    url: '/package/' + name
+  }
+
+  it('returns a 404', function (done) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(404);
+      done();
+    });
+  });
+
+  it('does NOT add package.name to view context', function (done) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(404);
+      expect(source.context.package).to.not.exist
+      done();
+    });
+  });
+
+  it('renders the 404 template', function (done) {
+    server.inject(options, function (resp) {
+      expect(source.template).to.equal('errors/not-found');
+      done();
+    });
+  });
 });

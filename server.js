@@ -2,6 +2,7 @@ var Hapi = require('hapi'),
     Hoek = require('hoek'),
     config = require('./config.js'),
     url = require('url');
+    replify = require('replify');
 
 // set up the logger
 var bole = require('bole'),
@@ -59,6 +60,9 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
       // DO NOT PASS GO, DO NOT COLLECT $200. Throw the error.
       throw err;
     }
+
+    replify({ name: 'www-'+config.port }, server, { 'config': config,  });
+    log.info('server repl socket at /tmp/rpl/www-'+config.port+'.sock');
 
     server.route(require('./routes'))
 

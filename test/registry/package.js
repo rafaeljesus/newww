@@ -126,16 +126,76 @@ describe('Modifying the package before sending to the template', function () {
   });
 });
 
-describe('dealing with older package pages (ca 2012)', function () {
-  it('gets the package page for the benchmark package', function (done) {
+describe('readmes are always sanitized', function () {
+  it('even if they are not on the top level', function (done) {
     var options = {
-      url: '/package/benchmark'
+      url: '/package/no_top_level_readme'
     };
 
     server.inject(options, function () {
       expect(p.name).to.equal('benchmark');
       expect(p.readme).to.include('<h1 id="benchmark');
       expect(p.readme).to.not.include('# Benchmark');
+      done();
+    });
+  });
+
+  it('even if there is no readme', function (done) {
+    var options = {
+      url: '/package/no_readme'
+    };
+
+    server.inject(options, function () {
+      expect(p.name).to.equal('benchmark');
+      expect(p.readme).to.equal('');
+      done();
+    });
+  });
+
+  it('even if it causes marked to throw', function (done) {
+    var options = {
+      url: '/package/throw_marked'
+    };
+
+    server.inject(options, function () {
+      expect(p.name).to.equal('benchmark');
+      expect(p.readme).to.equal('');
+      done();
+    });
+  });
+
+  it('even if it is not markdown', function (done) {
+    var options = {
+      url: '/package/not_markdown'
+    };
+
+    server.inject(options, function () {
+      expect(p.name).to.equal('benchmark');
+      expect(p.readme).to.equal('<p></p><p>hello</p><p></p>\n');
+      done();
+    });
+  });
+
+  it('even if it is a non-markdown readme from a file', function (done) {
+    var options = {
+      url: '/package/not_markdown_readme_from_file'
+    };
+
+    server.inject(options, function () {
+      expect(p.name).to.equal('benchmark');
+      expect(p.readme).to.equal('<pre>&lt;p&gt;hello&lt;/p&gt;&lt;script&gt;console.log(&apos;boom&apos;)&lt;/script&gt;</pre>');
+      done();
+    });
+  });
+
+  it('even if it is a markdown readme from a file', function (done) {
+    var options = {
+      url: '/package/markdown_readme_from_file'
+    };
+
+    server.inject(options, function () {
+      expect(p.name).to.equal('benchmark');
+      expect(p.readme).to.equal('<p>hello</p>\n<h2 id=\"boom\">boom</h2>\n');
       done();
     });
   });

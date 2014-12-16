@@ -184,6 +184,10 @@ module.exports = function (server) {
           return next(null, pkgs[pkgName]);
         }
 
+        if (pkgs.benchmark[pkgName]) {
+          return next(null, pkgs.benchmark[pkgName]);
+        }
+
         return next(Hapi.error.notFound('Username not found: ' + pkgName));
       },
 

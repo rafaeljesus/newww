@@ -1,7 +1,7 @@
 var Hapi = require('hapi'),
     Hoek = require('hoek'),
     config = require('./config.js'),
-    url = require('url');
+    url = require('url'),
     replify = require('replify');
 
 // set up the logger

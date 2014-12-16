@@ -33,7 +33,7 @@ module.exports = function (server) {
           return next(null, policies[name]);
         }
 
-        return next(new Error('Not Found'))
+        return next(new Error('Not Found'));
       }
     },
 
@@ -79,6 +79,7 @@ module.exports = function (server) {
               template = 'errors/not-found';
               break;
             case 500:
+              /* falls through */
             default:
               template = 'errors/internal';
               break;
@@ -86,7 +87,7 @@ module.exports = function (server) {
 
 
           return reply.view(template, opts).code(code);
-        }
+        };
       }
     },
 
@@ -234,7 +235,7 @@ module.exports = function (server) {
     user: {
       changeEmail: function (name, email, next) {
         if (name !== 'fakeuser') {
-          return next(Hapi.error.notFound('Username not found: ' + username));
+          return next(Hapi.error.notFound('Username not found: ' + name));
         }
 
         users.fakeuser.email = email;
@@ -264,7 +265,7 @@ module.exports = function (server) {
             request.auth.session.clear();
             return next(null);
           });
-        }
+        };
       },
 
       getUser: function (username, next) {
@@ -281,7 +282,7 @@ module.exports = function (server) {
         }
 
         if (auth.name !== 'fakeuser' || passHash(auth) !== users.fakeuser.derived_key) {
-          return next('Username and/or Password is wrong')
+          return next('Username and/or Password is wrong');
         }
         return next(null, users.fakeuser);
       },
@@ -314,7 +315,7 @@ module.exports = function (server) {
             request.auth.session.set({sid: sid});
             return next(null);
           });
-        }
+        };
       },
 
       signupUser: function (acct, next) {
@@ -339,5 +340,5 @@ module.exports = function (server) {
 };
 
 function passHash (auth) {
-  return crypto.pbkdf2Sync(auth.password, users[auth.name].salt, users[auth.name].iterations, 20).toString('hex')
+  return crypto.pbkdf2Sync(auth.password, users[auth.name].salt, users[auth.name].iterations, 20).toString('hex');
 }

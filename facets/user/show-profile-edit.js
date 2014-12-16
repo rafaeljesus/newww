@@ -7,7 +7,7 @@ module.exports = function (options) {
   return function (request, reply) {
     var saveProfile = request.server.methods.user.saveProfile,
         setSession = request.server.methods.user.setSession(request),
-        showError = request.server.methods.errors.showError(reply);
+        showError = request.server.methods.errors.showError(request, reply);
 
     var opts = {
       user: transform(request.auth.credentials, options),

@@ -8,7 +8,7 @@ var config = require('../../config').license;
 
 module.exports = function createHubspotLead (request, reply) {
   var postToHubspot = request.server.methods.npme.sendData,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,
@@ -57,7 +57,7 @@ module.exports = function createHubspotLead (request, reply) {
 function getOrCreateCustomer (request, reply, data) {
   var getCustomer = request.server.methods.npme.getCustomer,
       createCustomer = request.server.methods.npme.createCustomer,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,

@@ -13,7 +13,7 @@ module.exports = function (request, reply) {
   request.server.methods.corp.getPolicy(policy, function (err, content) {
 
     if (err) {
-      return request.server.methods.errors.showError(reply)(err, 404, "could not find policy " + policy, opts);
+      return request.server.methods.errors.showError(request, reply)(err, 404, "could not find policy " + policy, opts);
     }
 
     opts.md = content;

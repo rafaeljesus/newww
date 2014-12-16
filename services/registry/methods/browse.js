@@ -4,7 +4,7 @@ var Hapi = require('hapi'),
     browseUtils = require('../browseUtils'),
     log = require('bole')('registry-service-browse'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function (type, arg, skip, limit, next) {
   var opts = {};
@@ -18,7 +18,7 @@ module.exports = function (type, arg, skip, limit, next) {
     type = opts.type;
   }
 
-  var timer = { start: Date.now() };
+  var start = Date.now();
   var utils = browseUtils[type];
 
   var query = {};
@@ -54,21 +54,28 @@ module.exports = function (type, arg, skip, limit, next) {
       var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };
       log.error(uuid.v1() + ' ' + Hapi.error.internal('Error fetching browse data'), erObj);
 
-      timer.end = Date.now();
-
       var key = [type, arg, skip, limit].join(',')
-      metrics.addCouchLatencyMetric(timer, 'browse ' + key);
+      metrics.metric({
+        name:   'latency',
+        value:  Date.now() - start,
+        type:   'couchdb',
+        browse: 'browse ' + key
+      });
 
       return next(null, []);
     }
 
+    start = Date.now();
     browseUtils.transform(type, arg, data, skip, limit, opts, function (err, data) {
 
-      timer.end = Date.now();
+      metrics.metric({
+        name:   'latency',
+        value:  Date.now() - start,
+        type:   'transformation',
+        browse: 'browse ' + key
+      });
 
       var key = [type, arg, skip, limit].join(',')
-      metrics.addCouchLatencyMetric(timer, 'browse ' + key);
-
       return next(er, data)
 
     });

@@ -5,8 +5,7 @@ module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
       getBrowseData = request.server.methods.registry.getBrowseData,
       getDownloadsForPackage = request.server.methods.downloads.getDownloadsForPackage,
-      getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage,
-      showError = request.server.methods.errors.showError(reply);
+      getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;
 
   if (request.params.version) {
     return reply.redirect('/package/' + request.params.package)
@@ -17,21 +16,29 @@ module.exports = function (request, reply) {
     namespace: 'registry-package'
   }
 
+  request.timing.page = 'showPackage';
   request.timing.type = 'pageload';
   request.metrics.metric({ name: 'showPackage', package: request.params.package, value: 1 });
 
   opts.name = request.params.package
 
   if (opts.name !== encodeURIComponent(opts.name)) {
-    return showError([opts.name, encodeURIComponent(opts.name)], 400, 'Invalid Package Name', opts);
+    request.logger.info('request for invalid package name: ' + opts.name);
+    reply.view('errors/invalid', opts).code(400);
+    return;
   }
 
   getPackage(opts.name, function (er, pkg) {
 
-    if (er || pkg.error) {
-
+    if (er) {
       request.logger.error(er, 'fetching package ' + opts.name);
+      opts.package = {
+        name: opts.name
+      }
+      return reply.view('errors/internal', opts).code(500);
+    }
 
+    if (!pkg) {
       opts.package = {
         name: opts.name
       }
@@ -42,9 +49,7 @@ module.exports = function (request, reply) {
       // reply with unpublished package page
       var t = pkg.time.unpublished.time
       pkg.unpubFromNow = require('moment')(t).format('ddd MMM DD YYYY HH:mm:ss Z');
-
       opts.package = pkg;
-
       request.timing.page = 'showUnpublishedPackage';
 
       return reply.view('registry/unpublished-package-page', opts);
@@ -65,43 +70,42 @@ module.exports = function (request, reply) {
       });
 
       if (er) {
-        request.logger.error(er, 'getting depended browse data; package=' + opts.name);
-        // TODO think about this error
-        return showError(er, 500, 'Unable to get depended data from couch for ' + opts.name, opts);
+        var msg = 'getting depended browse data; package=' + opts.name;
+        request.logger.error(er, msg);
+        request.metrics.metric({
+          name:    'error',
+          message: msg,
+          value:   1,
+          type:    'couchdb'
+        });
+        pkg.dependents = [];
+      } else {
+        pkg.dependents = dependents;
       }
-
-      pkg.dependents = dependents;
 
       presentPackage(pkg, function (er, cleanedPackage) {
         if (er) {
-          // TODO think about this error
-          request.logger.error(er, 'presentPackage() responded with error; package=' + opts.name);
-          return showError(er, 500, 'An error occurred with presenting package ' + opts.name, opts);
+          request.logger.info(er, 'presentPackage() responded with error; package=' + opts.name);
+          reply.view('errors/internal', opts).code(500);
+          return;
         }
 
         cleanedPackage.isStarred = opts.user && cleanedPackage.users && cleanedPackage.users[opts.user.name] || false;
-
         opts.package = cleanedPackage;
         opts.title = cleanedPackage.name;
 
-        // Show download count for the last day, week, and month
-        return getAllDownloadsForPackage(cleanedPackage.name, handleDownloads);
-
-        // TODO consider refactoring
-        function handleDownloads(er, downloadData) {
+        return getAllDownloadsForPackage(cleanedPackage.name, function(er, downloadData) {
           if (er) {
-            // TODO think about this error
-            request.logger.error(er, 'getAllDownloadsForPackage(); package=' + opts.name);
-            return showError(er, 500, 'An error occurred with getting download counts for ' + opts.name, opts);
+            request.logger.info(er, 'getAllDownloadsForPackage(); package=' + opts.name);
+            opts.package.downloads = false; // don't render them
+          }
+          else {
+            opts.package.downloads = downloadData;
           }
 
-          opts.package.downloads = downloadData
-
-          request.timing.page = 'showPackage';
-
           return reply.view('registry/package-page', opts);
-        }
-      })
-    })
-  })
-}
+        });
+      });
+    });
+  });
+};

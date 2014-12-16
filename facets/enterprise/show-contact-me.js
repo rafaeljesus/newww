@@ -10,7 +10,7 @@ var config = require('../../config').license;
 // hit the hubspot contact-me form instead, and thank them
 module.exports = function contactMe (request, reply) {
   var postToHubspot = request.server.methods.npme.sendData,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,

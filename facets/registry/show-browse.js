@@ -14,7 +14,7 @@ module.exports = function (request, reply) {
   };
 
   var getBrowseData = request.server.methods.registry.getBrowseData,
-    showError = request.server.methods.errors.showError(reply);
+    showError = request.server.methods.errors.showError(request, reply);
 
   // the url will be something like /browse/{type?}/{arg?}/{page}
   var params = request.params.p || '';

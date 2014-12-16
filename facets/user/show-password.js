@@ -14,7 +14,7 @@ module.exports = function (request, reply) {
   var changePass = request.server.methods.user.changePass,
       loginUser = request.server.methods.user.loginUser,
       setSession = request.server.methods.user.setSession(request),
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   if (request.method === 'get' || request.method === 'head') {
     request.timing.page = 'password';

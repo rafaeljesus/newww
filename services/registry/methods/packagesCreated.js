@@ -1,7 +1,7 @@
 var Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
     log = require('bole')('registry-packages-created'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function packagesCreated (next) {
   var timer = { start: Date.now() };

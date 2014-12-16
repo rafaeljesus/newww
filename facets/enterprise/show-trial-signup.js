@@ -11,7 +11,7 @@ var config = require('../../config');
 module.exports = function trialSignup (request, reply) {
   var postToHubspot = request.server.methods.npme.sendData,
       getCustomer = request.server.methods.npme.getCustomer,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,
@@ -47,7 +47,7 @@ module.exports = function trialSignup (request, reply) {
 
 function createTrialAccount(request, reply, customer) {
   var createTrial = request.server.methods.npme.createTrial,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,
@@ -65,7 +65,7 @@ function createTrialAccount(request, reply, customer) {
 }
 
 function sendVerificationEmail (request, reply, customer, trial) {
-  var showError = request.server.methods.errors.showError(reply);
+  var showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,

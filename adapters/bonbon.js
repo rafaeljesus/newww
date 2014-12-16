@@ -13,9 +13,10 @@ exports.register = function(plugin, options, next) {
   plugin.ext('onPreHandler', function(request, next) {
 
     request.metrics = metrics;
-    request.logger = bole(uuid.v1());
+    request.correlationID = uuid.v1();
+    request.logger = bole(request.correlationID);
     request.timing = {
-      start: Date.now(), // TODO see if hapi does any of this for us
+      start: Date.now(),
     };
 
     if (request.method !== "post") {
@@ -44,6 +45,8 @@ exports.register = function(plugin, options, next) {
       }
     }
 
+    options.correlationID = request.correlationID;
+
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
       if (options.canonicalHost) {
         if (request.url.query.page || request.url.query.q) {
@@ -70,9 +73,10 @@ exports.register = function(plugin, options, next) {
 
   plugin.ext('onPostHandler', function(request, next) {
 
+    var latency = Date.now() - request.timing.start;
     metrics.metric({
       name:  'latency',
-      value: Date.now() - request.timing.start,
+      value: latency,
       type:  request.timing.type || 'pageload',
       page:  request.timing.page,
     });

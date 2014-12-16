@@ -15,7 +15,7 @@ module.exports = function (options) {
   return function (request, reply) {
     timer.start = Date.now();
 
-    var showError = request.server.methods.errors.showError(reply);
+    var showError = request.server.methods.errors.showError(request, reply);
 
     var opts = {
       user: request.auth.credentials,
@@ -65,7 +65,7 @@ function processToken(request, reply) {
         namespace: NAMESPACE
       },
       cache = request.server.app.cache,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var token = request.params.token,
       hash = sha(token),
@@ -250,7 +250,7 @@ function lookupUserByUsername (name, request, reply) {
 }
 
 function sendEmail(name, email, request, reply) {
-  var showError = request.server.methods.errors.showError(reply);
+  var showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,

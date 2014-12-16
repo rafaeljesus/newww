@@ -1,6 +1,6 @@
 module.exports = function logout (request, reply) {
   var delSession = request.server.methods.user.delSession(request),
-      showError = request.server.methods.errors.showError(reply),
+      showError = request.server.methods.errors.showError(request, reply),
       user = request.auth.credentials;
 
   if (!user) return redirectToHome();

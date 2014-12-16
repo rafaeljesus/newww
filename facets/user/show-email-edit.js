@@ -13,7 +13,7 @@ module.exports = function (options) {
   return function (request, reply) {
     timer.start = Date.now();
 
-    var showError = request.server.methods.errors.showError(reply);
+    var showError = request.server.methods.errors.showError(request, reply);
 
     var opts = {
       user: request.auth.credentials,
@@ -98,7 +98,7 @@ function handle (request, reply, email2) {
     namespace: NAMESPACE
   };
 
-  var showError = request.server.methods.errors.showError(reply);
+  var showError = request.server.methods.errors.showError(request, reply);
 
   var confTok = crypto.randomBytes(18).toString('hex'),
       confHash = sha(confTok),
@@ -157,7 +157,7 @@ function sendEmails (conf, rev, request, reply) {
       urlStart = host + '/email-edit/',
       confUrl = urlStart + 'confirm/' + encodeURIComponent(conf.token),
       revUrl = urlStart + 'revert/' + encodeURIComponent(rev.token),
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   // we need to move the construction of these emails to somewhere else...
   // maybe we can consider https://github.com/andris9/nodemailer-html-to-text ?
@@ -212,7 +212,7 @@ function sendEmails (conf, rev, request, reply) {
 function confirm (request, reply) {
   var methods = request.server.methods,
       setSession = request.server.methods.user.setSession(request),
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
         user: request.auth.credentials,
@@ -288,7 +288,7 @@ function confirm (request, reply) {
 function revert (request, reply) {
   var methods = request.server.methods,
       setSession = request.server.methods.user.setSession(request),
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
         user: request.auth.credentials,

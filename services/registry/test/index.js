@@ -46,14 +46,13 @@ describe('getting packages from couch', function () {
     });
   });
 
-  it('returns an error for packages that don\'t exist', function (done) {
+  it('returns null for packages that don\'t exist', function (done) {
     var couch = nock(config.registryCouch)
         .get('/registry/goober')
         .reply(404, {"error":"not_found","reason":"missing"})
 
     server.methods.registry.getPackage('goober', function (er, pkg) {
-      expect(er).to.exist;
-      expect(er.output.statusCode).to.equal(404);
+      expect(er).to.not.exist;
       expect(pkg).to.not.exist;
       done();
     })

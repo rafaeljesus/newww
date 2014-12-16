@@ -182,7 +182,7 @@ module.exports = function (server) {
           return next(null, pkgs[pkgName]);
         }
 
-        return next(Hapi.error.notFound('Username not found: ' + pkgName));
+        return next();
       },
 
       getAllPackages: function (skip, limit, next) {
@@ -233,7 +233,7 @@ module.exports = function (server) {
     user: {
       changeEmail: function (name, email, next) {
         if (name !== 'fakeuser') {
-          return next(Hapi.error.notFound('Username not found: ' + username));
+          return next(Hapi.error.notFound('Username not found: ' + name));
         }
 
         users.fakeuser.email = email;

@@ -1,8 +1,8 @@
 var Hapi = require('hapi'),
     log = require('bole')('user-login'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')(),
-    redisSessions = require("../../../adapters/redis-sessions");
+    metrics = require('../../../adapters/metrics')(),
+    redisSessions = require('../../../adapters/redis-sessions');
 
 
 module.exports = {

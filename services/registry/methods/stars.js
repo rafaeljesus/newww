@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
     validatePackageName = require("validate-npm-package-name"),
     log = require('bole')('registry-stars'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('../../../adapters/metrics')();
 
 var timer = {};
 

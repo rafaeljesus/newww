@@ -7,7 +7,7 @@ module.exports = function signup (request, reply) {
       signupUser = request.server.methods.user.signupUser,
       setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request),
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,

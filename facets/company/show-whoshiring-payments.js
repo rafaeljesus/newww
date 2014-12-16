@@ -6,7 +6,7 @@ module.exports = function (options) {
       VALID_CHARGE_AMOUNTS = [35000, 100000];
 
   return function (request, reply) {
-    var showError = request.server.methods.errors.showError(reply),
+    var showError = request.server.methods.errors.showError(request, reply),
         timer = { start: Date.now() };
 
     var opts = {

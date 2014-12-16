@@ -2,7 +2,7 @@ var CouchLogin = require('couch-login'),
     Hapi = require('hapi'),
     log = require('bole')('user-login'),
     uuid = require('node-uuid'),
-    metrics = require('../../adapters/metrics')();
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function (options, service) {
 

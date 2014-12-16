@@ -18,7 +18,7 @@ module.exports = function (options) {
       return reply.redirect('/');
     }
 
-    var showError = request.server.methods.errors.showError(reply),
+    var showError = request.server.methods.errors.showError(request, reply),
         timer = { start: Date.now() };
 
     var page = Math.abs(parseInt(request.query.page, 10)) || 1;

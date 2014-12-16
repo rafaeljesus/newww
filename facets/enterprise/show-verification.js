@@ -11,7 +11,7 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
   var verifyTrial = request.server.methods.npme.verifyTrial,
       getCustomer = request.server.methods.npme.getCustomer,
       getLicenses = request.server.methods.npme.getLicenses,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,

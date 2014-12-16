@@ -7,7 +7,7 @@ var pageSize = 100,
 // url is something like /recent-authors/:since
 module.exports = function RecentAuthors (request, reply) {
   var recentAuthors = request.server.methods.registry.getRecentAuthors,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,

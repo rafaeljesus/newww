@@ -7,7 +7,7 @@ module.exports = function(options) {
     var getUser = request.server.methods.user.getUser,
       getUserStars = request.server.methods.registry.getUserStars,
       getAuthors = request.server.methods.registry.getAuthors,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
     var opts = {
       user: request.auth.credentials,

@@ -10,7 +10,7 @@ var transport, mailer;
 module.exports = function (options) {
   return function (request, reply) {
 
-    var showError = request.server.methods.errors.showError(reply);
+    var showError = request.server.methods.errors.showError(request, reply);
 
     var opts = {
       user: request.auth.credentials,

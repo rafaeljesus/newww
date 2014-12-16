@@ -5,7 +5,7 @@ module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
       star = request.server.methods.registry.star,
       unstar = request.server.methods.registry.unstar,
-      showError = request.server.methods.errors.showError(reply);
+      showError = request.server.methods.errors.showError(request, reply);
 
   var opts = {
     user: request.auth.credentials,

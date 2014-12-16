@@ -1,8 +1,7 @@
 var Hapi = require('hapi'),
     log = require('bole')('downloads'),
-    uuid = require('node-uuid'),
     getDownloads = require('./getDownloads'),
-    metrics = require('../../adapters/metrics')(),
+    metrics = require('../../../adapters/metrics')(),
     timer = {};
 
 module.exports = function getAllDownloads (url) {
@@ -23,14 +22,14 @@ module.exports = function getAllDownloads (url) {
     function cb (which) {
       return function (err, data) {
         if (err) {
-          log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);
+          log.warn(Hapi.error.internal('download error for ' + which), err);
         }
 
         dls[which] = data || 0;
 
         if (--n === 0) {
           timer.end = Date.now();
-          metrics.addMetric({
+          metrics.metric({
             name: 'latency',
             value: timer.end - timer.start,
             type: 'downloads',

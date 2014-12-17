@@ -1,25 +1,30 @@
 var Hapi = require('hapi'),
     request = require('request'),
-    log = require('bole')('downloads'),
-    timer = {};
+    log = require('bole')('downloads');
 
 module.exports = function getDownloads (url) {
-  return function (period, detail, package, next) {
-    timer.start = Date.now();
-    var endpoint = url + detail + '/' + period + '/' + (package || '');
+  return function (period, detail, package, callback) {
 
-    request.get({
-      url: endpoint,
-      json: true
-    }, function (err, resp, body) {
-      body = body || {error: 'empty body'};
+    var opts = {
+      url:     url + detail + '/' + period + '/' + (package || ''),
+      json:    true,
+      timeout: 2000,
+    };
 
-      if (body.error) {
-        log.warn(Hapi.error.internal('error downloading from ' + endpoint), err);
-        err = new Error(body);
+    request.get(opts, function (err, resp, body) {
+
+      if (err) {
+        log.warn(err);
+        log.warn(err.code + ' error downloading from ' + opts.url);
+        return callback(err);
       }
 
-      return next(err, body.downloads || 0);
+      if (!body) {
+        log.warn('we got no body back from ' + opts.url);
+        return callback(null, 0);
+      }
+
+      callback(null, body.downloads || 0);
     });
   };
 }

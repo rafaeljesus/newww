@@ -1,11 +1,10 @@
-var Hapi = require('hapi'),
+var async = require('async'),
+    Hapi = require('hapi'),
     presentPackage = require('./presenters/package');
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
-      getBrowseData = request.server.methods.registry.getBrowseData,
-      getDownloadsForPackage = request.server.methods.downloads.getDownloadsForPackage,
-      getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;
+      getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
 
   if (request.params.version) {
     return reply.redirect('/package/' + request.params.package)
@@ -32,16 +31,12 @@ module.exports = function (request, reply) {
 
     if (er) {
       request.logger.error(er, 'fetching package ' + opts.name);
-      opts.package = {
-        name: opts.name
-      }
+      opts.package = { name: opts.name };
       return reply.view('errors/internal', opts).code(500);
     }
 
     if (!pkg) {
-      opts.package = {
-        name: opts.name
-      }
+      opts.package = { name: opts.name }
       return reply.view('errors/not-found', opts).code(404);
     }
 
@@ -55,32 +50,20 @@ module.exports = function (request, reply) {
       return reply.view('registry/unpublished-package-page', opts);
     }
 
-    // on the package page, we should not load dependent package-data,
-    // this is too slow!
+    var tasks = {
+      dependents: function(cb) { fetchDependents(request, opts.name, cb); },
+      downloads: function(cb) { getDownloadData(opts.name, cb); },
+    };
 
-    request.timing.browse_start = Date.now();
+    async.parallel(tasks, function(err, results) {
 
-    getBrowseData({type: 'depended', noPackageData: true}, opts.name, 0, 1000, function (er, dependents) {
-
-      request.metrics.metric({
-        name:   'latency',
-        value:  Date.now() - request.timing.browse_start,
-        type:   'couchdb',
-        browse: 'depended'
-      });
-
-      if (er) {
-        var msg = 'getting depended browse data; package=' + opts.name;
-        request.logger.error(er, msg);
-        request.metrics.metric({
-          name:    'error',
-          message: msg,
-          value:   1,
-          type:    'couchdb'
-        });
+      if (err) {
+        // this really shouldn't happen! but we defend against it if it does.
         pkg.dependents = [];
+        pkg.downloads = false;
       } else {
-        pkg.dependents = dependents;
+        pkg.downloads = results.downloads[0];
+        pkg.dependents = results.dependents;
       }
 
       presentPackage(pkg, function (er, cleanedPackage) {
@@ -93,19 +76,40 @@ module.exports = function (request, reply) {
         cleanedPackage.isStarred = opts.user && cleanedPackage.users && cleanedPackage.users[opts.user.name] || false;
         opts.package = cleanedPackage;
         opts.title = cleanedPackage.name;
-
-        return getAllDownloadsForPackage(cleanedPackage.name, function(er, downloadData) {
-          if (er) {
-            request.logger.info(er, 'getAllDownloadsForPackage(); package=' + opts.name);
-            opts.package.downloads = false; // don't render them
-          }
-          else {
-            opts.package.downloads = downloadData;
-          }
-
-          return reply.view('registry/package-page', opts);
-        });
+        reply.view('registry/package-page', opts);
       });
     });
   });
-};
+}
+
+function fetchDependents(request, name, callback) {
+
+  var getBrowseData = request.server.methods.registry.getBrowseData;
+  var results = [];
+  request.timing.browse_start = Date.now();
+
+  getBrowseData({type: 'depended', noPackageData: true}, name, 0, 1000, function (er, dependents) {
+
+    request.metrics.metric({
+      name:   'latency',
+      value:  Date.now() - request.timing.browse_start,
+      type:   'couchdb',
+      browse: 'depended'
+    });
+
+    if (er) {
+      var msg = 'getting depended browse data; package=' + name;
+      request.logger.error(er, msg);
+      request.metrics.metric({
+        name:    'error',
+        message: msg,
+        value:   1,
+        type:    'couchdb'
+      });
+    } else {
+      results = dependents;
+    }
+
+    callback(null, results);
+  });
+}

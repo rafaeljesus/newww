@@ -4,29 +4,40 @@ var transform = require('./presenters/profile').transform,
     log = require('bole')('billing'),
     metrics = require('newww-metrics')();
 
-var licenseAPI = new (require('../../lib/license-api'))();
-
-var billing = module.exports = {}
+var Customer = new (require('../../lib/customer-api'))();
+var billing = module.exports = {};
 
 billing.getBillingInfo = function (request, reply) {
   var opts = {
     namespace: 'billing',
     title: 'Billing',
     stripePublicKey: process.env.STRIPE_PUBLIC_KEY
-  }
+  };
 
-  licenseAPI.getUser(request.auth.credentials.name, function(err, resp, body) {
+  Customer.get(request.auth.credentials.name, function(err, resp, body) {
     if (resp && resp.statusCode == 200) {
-      opts.customer = body
+      opts.customer = body;
     }
     return reply.view('user/billing', opts);
-  })
-}
-
-billing.createBillingInfo = function(request, reply) {
-
+  });
 }
 
 billing.updateBillingInfo = function(request, reply) {
+
+  var showError = request.server.methods.errors.showError(reply);
+
+  var billingInfo = {
+    name: request.auth.credentials.name,
+    email: request.auth.credentials.email,
+    card: request.payload.stripeToken
+  }
+  
+  Customer.update(billingInfo, function(err, resp, body) {
+    if (err) return showError(err);
+
+    if (resp && resp.statusCode == 200) {
+      return reply.redirect('/settings/billing')
+    }
+  })
 
 }

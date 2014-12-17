@@ -78,10 +78,10 @@ describe('GET /settings/billing', function () {
   });
 
   describe("paid user", function() {
-    var customerGet
+    var getCustomerMock
 
     beforeEach(function(done){
-      customerGet = nock(process.env.BILLING_API)
+      getCustomerMock = nock(process.env.BILLING_API)
         .get('/stripe/'+fakeuser.name)
         .reply(200, fs.readFileSync(__dirname + '/../fixtures/billing/customer.json', 'utf-8'));
 
@@ -91,7 +91,7 @@ describe('GET /settings/billing', function () {
     it("calls the license API", function(done){
       options.credentials = fakeuser
       server.inject(options, function (resp) {
-        customerGet.done();
+        getCustomerMock.done();
         done();
       });
     })
@@ -99,7 +99,7 @@ describe('GET /settings/billing', function () {
     it("adds billing data to view context", function(done){
       options.credentials = fakeuser
       server.inject(options, function (resp) {
-        customerGet.done();
+        getCustomerMock.done();
         expect(source.context).to.exist;
         expect(source.context.customer).to.exist;
         expect(source.context.customer.status).to.equal("active");
@@ -111,8 +111,8 @@ describe('GET /settings/billing', function () {
     it("displays redacted version of existing billing info", function(done) {
       options.credentials = fakeuser
       server.inject(options, function (resp) {
-        console.log(resp.result)
         var $ = cheerio.load(resp.result)
+        expect($(".customer-info").length);
         expect($(".card-last4").text()).to.equal("4242");
         expect($(".card-brand").text()).to.equal("Visa");
         expect($(".card-exp-month").text()).to.equal("12");
@@ -123,45 +123,94 @@ describe('GET /settings/billing', function () {
 
   })
 
-  // describe("unpaid user", function(){
-  //
-  //   it("does not display billing info, because it does not exist", function() {
-  //
-  //   })
-  //
-  //
-  // })
+  describe("unpaid user", function(){
+    var getCustomerMock
+
+    beforeEach(function(done){
+      getCustomerMock = nock(process.env.BILLING_API)
+        .get('/stripe/'+fakeuser.name)
+        .reply(404);
+
+      done()
+    })
+
+    it("does not display billing info, because it does not exist", function(done) {
+      options.credentials
+      server.inject(options, function (resp) {
+        var $ = cheerio.load(resp.result)
+        expect($("body").length);
+        expect($(".customer-info").length).to.equal(0);
+        expect($(".card-brand").length).to.equal(0);
+        expect($(".card-exp-month").length).to.equal(0);
+        expect($(".card-exp-year").length).to.equal(0);
+        done();
+      });
+    })
+
+
+  })
 
 });
 
-// describe('POST /settings/billing', function () {
-//   var options
-//
-//   before(function(done) {
-//     options = {
-//       method: 'post',
-//       url: '/settings/billing'
-//     }
-//     done()
-//   })
-//
-//   it('redirects to login page if not logged in', function (done) {
-//     server.inject(options, function (resp) {
-//       expect(resp.statusCode).to.equal(302);
-//       expect(resp.headers.location).to.include('login');
-//       done();
-//     });
-//   });
-//
-//   it('sends billing info to the billing API', function (done) {
-//     options.credentials = fakeuser
-//
-//     server.inject(options, function (resp) {
-//       expect(resp.statusCode).to.equal(200);
-//       expect(source.template).to.equal('user/billing');
-//       expect(resp.result).to.include('id="payment-form"');
-//       done();
-//     });
-//   });
-//
-// });
+describe('POST /settings/billing', function () {
+  var options
+
+  before(function(done) {
+    options = {
+      method: 'post',
+      url: '/settings/billing'
+    }
+    done()
+  })
+
+  it('redirects to login page if not logged in', function (done) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.headers.location).to.include('login');
+      done();
+    });
+  });
+
+  describe("existing paid user", function() {
+
+    it('sends updated billing info to the billing API', function (done) {
+
+      server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
+        var header = resp.headers['set-cookie'];
+        expect(header.length).to.equal(1);
+        var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+        expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+
+        var opts = {
+          url: '/settings/billing',
+          method: 'POST',
+          credentials: fakeuser,
+          payload: {
+            stripeToken: 'tok_1234567890',
+            crumb: cookieCrumb
+          },
+          headers: { cookie: 'crumb=' + cookieCrumb }
+        }
+
+        var getCustomerMock = nock(process.env.BILLING_API)
+          .get('/stripe/'+fakeuser.name)
+          .times(2) // once before update, once after
+          .reply(200);
+
+        var updateCustomerMock = nock(process.env.BILLING_API)
+          .post('/stripe/'+fakeuser.name)
+          .reply(200);
+
+        server.inject(opts, function (resp) {
+          expect(resp.statusCode).to.equal(302);
+          getCustomerMock.done();
+          updateCustomerMock.done();
+          expect(resp.headers.location).to.match(/\/settings\/billing$/);
+          done();
+        });
+      });
+
+    });
+
+  });
+});

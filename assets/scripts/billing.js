@@ -3,11 +3,12 @@ var dataEl;
 var stripePublicKey;
 
 module.exports = function() {
+  // When the DOM is ready...
   $(init)
 }
 
 var noKey = function() {
-  console.error("No element found with data-stripe-public-keys attribute");
+  console.error("No element found with data-stripe-public-key attribute");
 }
 
 var init = function() {
@@ -26,6 +27,7 @@ var init = function() {
   }
 
   Stripe.setPublishableKey(stripePublicKey);
+
   $('#payment-form').submit(onSubmit);
 }
 
@@ -38,9 +40,7 @@ var onSubmit = function(e) {
     exp_year: $('#card-exp-year').val()
   };
 
-  console.log("formData", formData);
-
-  // Disable the submit button to prevent repeated clicks
+  // Disable submit button to prevent repeated clicks
   $form.find('input[type=submit]').prop('disabled', true);
 
   Stripe.card.createToken(formData, stripeResponseHandler);
@@ -50,7 +50,6 @@ var onSubmit = function(e) {
 }
 
 var stripeResponseHandler = function(status, response) {
-  console.log(response)
   var $form = $('#payment-form');
 
   if (response.error) {
@@ -61,7 +60,9 @@ var stripeResponseHandler = function(status, response) {
     return;
   }
 
-  var token = response.id;
+  // Inject generated token into form
   $form.append($('<input type="hidden" name="stripeToken" />').val(response.id));
-  // $form.get(0).submit();
+
+  // Auto-submit the form
+  $form.get(0).submit();
 }

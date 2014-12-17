@@ -10,7 +10,7 @@ window.pretty_numbers = require("./pretty-numbers")()
 window.mousetrap = require("mousetrap")
 window.private_npm_beta = require("./private-npm-beta")()
 require("./what-npm-is-for")()
-require("./stripe")()
+require("./billing")()
 
 $(function () {
   $(".autoselect-wrapper input").on("click", function () {

@@ -6,21 +6,40 @@
     <h1>Your Billing Info</h1>
   </hgroup>
 
+  {{#if customer}}
+    <p>
+      You are a paying customer! You're paying with a
+      <span class="card-brand">{{customer.card.brand}}</span>
+      card ending in
+      <span class="card-last4">{{customer.card.last4}}</span>
+      which expires
+      <span class="card-exp-month">{{customer.card.exp_month}}</span>
+      <span class="card-exp-year">{{customer.card.exp_year}}</span>
+    </p>
+
+    <p>
+      If you wish to update your billing info, fill out the form below.
+    </p>
+  {{/if}}
+
   {{> errors}}
 
-  <form action="" method="POST" id="billing-form" data-stripe-public-key="{{stripePublicKey}}">
+  <!-- stripe error container -->
+  <p class="error billing-error" style="display:none;"></p>
+
+  <form action="" method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}">
 
     <label for="card-number">Card Number</label>
-    <input type="text" size="20" data-stripe="number" id="card-number" />
+    <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
 
     <label for="card-cvc">Card security code</label>
-    <input type="text" size="4" data-stripe="cvc" placeholder="123" class="cvc" id="card-exp-cvc" />
+    <input required="required" type="text" size="4" data-stripe="cvc" placeholder="123" class="cvc" id="card-cvc" />
 
     <label for="card-exp-month">Expiration Month</label>
-    <input type="text" size="2" data-stripe="exp-month" placeholder="MM" id="card-exp-month" />
+    <input required="required" type="text" size="2" data-stripe="exp-month" placeholder="MM" id="card-exp-month" />
 
     <label for="card-exp-year">Expiration Year</label>
-    <input type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
+    <input required="required" type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
 
     {{> form_security}}
     <input type="submit" class="full-width" value="Update Billing Info">

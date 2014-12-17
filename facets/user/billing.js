@@ -4,21 +4,29 @@ var transform = require('./presenters/profile').transform,
     log = require('bole')('billing'),
     metrics = require('newww-metrics')();
 
-module.exports = function (options) {
-  if (!options) options = {}
+var licenseAPI = new (require('../../lib/license-api'))();
 
-  return function (request, reply) {
-    var billing = request.server.methods.user.billing;
-    var showError = request.server.methods.errors.showError(reply);
-    var opts = {
-      user: transform(request.auth.credentials, options),
-      namespace: 'billing',
-      title: 'Billing',
-      stripePublicKey: process.env.STRIPE_PUBLIC_KEY
-    }
+var billing = module.exports = {}
 
-    if (request.method === 'get' || request.method === 'head') {
-      return reply.view('user/billing', opts);
-    }
+billing.getBillingInfo = function (request, reply) {
+  var opts = {
+    namespace: 'billing',
+    title: 'Billing',
+    stripePublicKey: process.env.STRIPE_PUBLIC_KEY
   }
+
+  licenseAPI.getUser(request.auth.credentials.name, function(err, resp, body) {
+    if (resp && resp.statusCode == 200) {
+      opts.customer = body
+    }
+    return reply.view('user/billing', opts);
+  })
+}
+
+billing.createBillingInfo = function(request, reply) {
+
+}
+
+billing.updateBillingInfo = function(request, reply) {
+
 }

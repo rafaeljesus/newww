@@ -1,0 +1,10 @@
+{
+  "status": "active",
+  "email": "bencoe@gmail.com",
+  "card": {
+    "brand": "Visa",
+    "last4": "4242",
+    "exp_month": 12,
+    "exp_year": 2015
+  }
+}

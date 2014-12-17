@@ -355,11 +355,18 @@ var authenticatedRoutes = [
 ]
 
 if (process.env.FEATURE_R2) {
-  authenticatedRoutes.push({
+  authenticatedRoutes.push(
+  {
     path: "/settings/billing",
     method: "GET",
-    handler: require('./facets/user/billing')()
-  })
+    handler: require('./facets/user/billing').getBillingInfo
+  },{
+    path: "/settings/billing",
+    method: "POST",
+    handler: require('./facets/user/billing').createBillingInfo
+  }
+  )
+
 }
 
 // Apply unathenticated route config to all the public routes

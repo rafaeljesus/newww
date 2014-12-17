@@ -194,7 +194,6 @@ describe('POST /settings/billing', function () {
 
         var getCustomerMock = nock(process.env.BILLING_API)
           .get('/stripe/'+fakeuser.name)
-          .times(2) // once before update, once after
           .reply(200);
 
         var updateCustomerMock = nock(process.env.BILLING_API)
@@ -205,7 +204,7 @@ describe('POST /settings/billing', function () {
           expect(resp.statusCode).to.equal(302);
           getCustomerMock.done();
           updateCustomerMock.done();
-          expect(resp.headers.location).to.match(/\/settings\/billing$/);
+          expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
         });
       });
@@ -213,4 +212,52 @@ describe('POST /settings/billing', function () {
     });
 
   });
+
+  describe("new paid user", function() {
+
+    it('sends new billing info to the billing API', function (done) {
+
+      server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
+        var header = resp.headers['set-cookie'];
+        expect(header.length).to.equal(1);
+        var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+        expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+
+        var opts = {
+          url: '/settings/billing',
+          method: 'POST',
+          credentials: fakeuser,
+          payload: {
+            stripeToken: 'tok_1234567890',
+            crumb: cookieCrumb
+          },
+          headers: { cookie: 'crumb=' + cookieCrumb }
+        }
+
+        var getCustomerMockPre = nock(process.env.BILLING_API)
+          .get('/stripe/'+fakeuser.name)
+          .reply(404);
+
+        var updateCustomerMock = nock(process.env.BILLING_API)
+          .put('/stripe', {
+            name:fakeuser.name,
+            email:fakeuser.email,
+            card:"tok_1234567890"
+          })
+          .reply(200);
+
+        server.inject(opts, function (resp) {
+          expect(resp.statusCode).to.equal(302);
+          getCustomerMockPre.done();
+          updateCustomerMock.done();
+          expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
+          done();
+        });
+      });
+
+    });
+
+  });
+
+
 });

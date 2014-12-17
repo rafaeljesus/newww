@@ -23,7 +23,6 @@ billing.getBillingInfo = function (request, reply) {
 }
 
 billing.updateBillingInfo = function(request, reply) {
-
   var showError = request.server.methods.errors.showError(reply);
 
   var billingInfo = {
@@ -31,12 +30,11 @@ billing.updateBillingInfo = function(request, reply) {
     email: request.auth.credentials.email,
     card: request.payload.stripeToken
   }
-  
+
   Customer.update(billingInfo, function(err, resp, body) {
     if (err) return showError(err);
-
     if (resp && resp.statusCode == 200) {
-      return reply.redirect('/settings/billing')
+      return reply.redirect('/settings/billing?updated=1')
     }
   })
 

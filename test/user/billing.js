@@ -120,11 +120,20 @@ describe('GET /settings/billing', function () {
       options.credentials = fakeuser
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
-        expect($(".customer-info").length);
+        expect($(".card-info").length);
         expect($(".card-last4").text()).to.equal("4242");
         expect($(".card-brand").text()).to.equal("Visa");
         expect($(".card-exp-month").text()).to.equal("12");
         expect($(".card-exp-year").text()).to.equal("2020");
+        done();
+      });
+    });
+
+    it("does NOT render expired license info", function(done) {
+      options.credentials = fakeuser
+      server.inject(options, function (resp) {
+        var $ = cheerio.load(resp.result)
+        expect(!$(".error.license-expired").length);
         done();
       });
     });
@@ -142,10 +151,11 @@ describe('GET /settings/billing', function () {
       done()
     })
 
-    it("has an expired license", function(done){
+    it("has an expired license and past_due status", function(done){
       options.credentials = fakeuser
       server.inject(options, function (resp) {
         getCustomerMock.done();
+        expect(source.context.customer.status).to.equal("past_due");
         expect(source.context.customer.license_expired).to.equal(true);
         done();
       });
@@ -155,8 +165,8 @@ describe('GET /settings/billing', function () {
       options.credentials = fakeuser
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
-        expect($(".customer-info").length);
-        expect($(".card-exp-year").text()).to.equal("2020");
+        expect($(".error.license-expired").text()).to.include("license has expired");
+        expect($(".error.license-expired").text()).to.include("status is past_due");
         done();
       });
     });
@@ -179,7 +189,7 @@ describe('GET /settings/billing', function () {
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
         expect($("body").length);
-        expect($(".customer-info").length).to.equal(0);
+        expect($(".card-info").length).to.equal(0);
         expect($(".card-brand").length).to.equal(0);
         expect($(".card-exp-month").length).to.equal(0);
         expect($(".card-exp-year").length).to.equal(0);

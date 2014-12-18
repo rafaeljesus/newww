@@ -1,6 +1,6 @@
 {
   "email": "bencoe@gmail.com",
-  "status": "active",
+  "status": "past_due",
   "license_expired": true,
   "next_billing_date": "",
   "next_billing_amount": "",

@@ -7,12 +7,22 @@
   </hgroup>
 
   {{#if customer}}
-    <p class="customer-info">
-      You're paying with a
+
+    {{#if customer.license_expired }}
+      <p class="error license-expired">
+        Your license has expired, and your account
+        status is <strong>{{customer.status}}</strong>.
+        Any private packages you've created still exist, but you
+        will not be able to access them until your license is renewed.
+      </p>
+    {{/if}}
+
+    <p class="card-info">
+      The card we have on file is a
       <span class="card-brand">{{customer.card.brand}}</span>
-      card ending in
+      ending in
       <span class="card-last4">{{customer.card.last4}}</span>
-      which expires
+      that expires
       <span class="card-exp-month">{{customer.card.exp_month}}</span>
       <span class="card-exp-year">{{customer.card.exp_year}}</span>
     </p>

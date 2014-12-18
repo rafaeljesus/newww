@@ -1,10 +1,11 @@
 {
-  "status": "active",
   "email": "bencoe@gmail.com",
+  "status": "active",
+  "license_expired": false,
   "card": {
     "brand": "Visa",
     "last4": "4242",
     "exp_month": 12,
-    "exp_year": 2015
+    "exp_year": 2020
   }
 }

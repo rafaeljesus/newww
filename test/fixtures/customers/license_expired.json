@@ -1,0 +1,13 @@
+{
+  "email": "bencoe@gmail.com",
+  "status": "active",
+  "license_expired": true,
+  "next_billing_date": "",
+  "next_billing_amount": "",
+  "card": {
+    "brand": "Visa",
+    "last4": "4242",
+    "exp_month": 12,
+    "exp_year": 2020
+  }
+}

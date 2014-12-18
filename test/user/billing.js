@@ -18,6 +18,13 @@ var server,
     cookieCrumb,
     fakeuser = require('../fixtures/users').fakeuser;
 
+var fixtures = {
+  customers: {
+    happy: fs.readFileSync(__dirname + '/../fixtures/customers/happy.json', 'utf-8'),
+    license_expired: fs.readFileSync(__dirname + '/../fixtures/customers/license_expired.json', 'utf-8')
+  }
+}
+
 before(function (done) {
   server = require('../fixtures/setupServer')(done);
   server.ext('onPreResponse', function (request, next) {
@@ -83,7 +90,7 @@ describe('GET /settings/billing', function () {
     beforeEach(function(done){
       getCustomerMock = nock(process.env.BILLING_API)
         .get('/stripe/'+fakeuser.name)
-        .reply(200, fs.readFileSync(__dirname + '/../fixtures/billing/customer.json', 'utf-8'));
+        .reply(200, fixtures.customers.happy);
 
       done()
     })
@@ -103,6 +110,7 @@ describe('GET /settings/billing', function () {
         expect(source.context).to.exist;
         expect(source.context.customer).to.exist;
         expect(source.context.customer.status).to.equal("active");
+        expect(source.context.customer.license_expired).to.equal(false);
         expect(source.context.customer.card.brand).to.equal("Visa");
         done();
       });
@@ -116,7 +124,39 @@ describe('GET /settings/billing', function () {
         expect($(".card-last4").text()).to.equal("4242");
         expect($(".card-brand").text()).to.equal("Visa");
         expect($(".card-exp-month").text()).to.equal("12");
-        expect($(".card-exp-year").text()).to.equal("2015");
+        expect($(".card-exp-year").text()).to.equal("2020");
+        done();
+      });
+    });
+
+  })
+
+  describe("paid user with expired license", function() {
+    var getCustomerMock
+
+    beforeEach(function(done){
+      getCustomerMock = nock(process.env.BILLING_API)
+      .get('/stripe/'+fakeuser.name)
+      .reply(200, fixtures.customers.license_expired);
+
+      done()
+    })
+
+    it("has an expired license", function(done){
+      options.credentials = fakeuser
+      server.inject(options, function (resp) {
+        getCustomerMock.done();
+        expect(source.context.customer.license_expired).to.equal(true);
+        done();
+      });
+    })
+
+    it("renders information about the expired license", function(done) {
+      options.credentials = fakeuser
+      server.inject(options, function (resp) {
+        var $ = cheerio.load(resp.result)
+        expect($(".customer-info").length);
+        expect($(".card-exp-year").text()).to.equal("2020");
         done();
       });
     });

@@ -27,7 +27,8 @@ module.exports = function contactMe (request, reply) {
   postToHubspot(config.hubspot.form_npme_contact_me, data, function(er) {
 
       if (er) {
-        request.logger.warn('Could not contact hubspot to register user');
+        request.logger.error('Could not contact hubspot to register user');
+        request.logger.error(er);
         return reply.view('errors/internal', opts).code(500);
       } else {
 

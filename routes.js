@@ -364,6 +364,10 @@ if (featureFlag("R2")) {
     path: "/settings/billing",
     method: "POST",
     handler: require('./facets/user/billing').updateBillingInfo
+  }, {
+    path: "/settings/billing/cancel",
+    method: "POST",
+    handler: require('./facets/user/billing').deleteBillingInfo
   })
 }
 

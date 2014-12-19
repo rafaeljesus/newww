@@ -1,5 +1,3 @@
-process.env.FEATURE_R2 = "true";
-
 var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -41,7 +39,7 @@ it("has a billing host ENV var", function(done) {
 describe('GET /settings/billing', function () {
   var options
 
-  before(function(done){
+  beforeEach(function(done){
     options = {
       method: "get",
       url: "/settings/billing"
@@ -53,6 +51,44 @@ describe('GET /settings/billing', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('login');
+      done();
+    });
+  });
+
+  it('displays cancellation notice if `canceled` query param is present', function (done) {
+    options = {
+      method: "get",
+      url: "/settings/billing?canceled=1",
+      credentials: fakeuser
+    }
+    server.inject(options, function (resp) {
+      expect(source.context.canceled).to.be.true;
+      var $ = cheerio.load(resp.result)
+      expect($(".cancellation-notice").text()).to.include('cancelled your private npm');
+      done();
+    });
+  });
+
+  // it('displays update notice if `updated` query param is present', function (done) {
+  //   options = {
+  //     method: "get",
+  //     url: "/settings/billing?updated=1",
+  //     credentials: fakeuser
+  //   }
+  //   server.inject(options, function (resp) {
+  //     expect(source.context.updated).to.be.true;
+  //     expect($(".update-notice").text()).to.include('yop your private npm');
+  //     done();
+  //   });
+  // });
+
+  it('does not render notices by default', function (done) {
+    options.credentials = fakeuser
+    server.inject(options, function (resp) {
+      expect(source.context.canceled).to.be.false;
+      expect(source.context.updated).to.be.false;
+      expect(resp.result).to.not.include('cancellation-notice');
+      expect(resp.result).to.not.include('update-notice');
       done();
     });
   });
@@ -309,5 +345,59 @@ describe('POST /settings/billing', function () {
 
   });
 
+
+});
+
+
+describe('POST /settings/billing/cancel', function () {
+  var options
+
+  before(function(done) {
+    options = {
+      method: 'post',
+      url: '/settings/billing/cancel'
+    }
+    done()
+  })
+
+  it('redirects to login page if not logged in', function (done) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.headers.location).to.include('login');
+      done();
+    });
+  });
+
+  it('deletes the customer record', function (done) {
+
+    server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+
+      var opts = {
+        method: 'post',
+        url: '/settings/billing/cancel',
+        credentials: fakeuser,
+        payload: {
+          crumb: cookieCrumb
+        },
+        headers: { cookie: 'crumb=' + cookieCrumb }
+      }
+
+      var deleteCustomerMock = nock(process.env.BILLING_API)
+        .delete('/stripe/'+fakeuser.name)
+        .reply(200);
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(302);
+        deleteCustomerMock.done();
+        expect(resp.headers.location).to.match(/\/settings\/billing\?canceled=1$/);
+        done();
+      });
+    });
+
+  });
 
 });

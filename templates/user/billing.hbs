@@ -6,17 +6,31 @@
     <h1>Your Billing Info</h1>
   </hgroup>
 
+  {{#if canceled}}
+    <p class="notice cancellation-notice">
+      You have successfully cancelled your private npm subscription. Your free account
+      still exists, as do any private modules that you created. Your private modules
+      are still accessible to any other paid users you've shared them with. If you decide
+      to start paying again, those modules will be waiting for you.
+    </p>
+  {{/if}}
+
+  {{#if updated}}
+    <p class="notice update-notice">
+      You have successfully updated your billing information.
+    </p>
+  {{/if}}
+
+  {{#if customer.license_expired }}
+    <p class="error license-expired">
+      Your license has expired, and your account
+      status is <strong>{{customer.status}}</strong>.
+      Any private packages you've created still exist, but you
+      will not be able to access them until your license is renewed.
+    </p>
+  {{/if}}
+
   {{#if customer}}
-
-    {{#if customer.license_expired }}
-      <p class="error license-expired">
-        Your license has expired, and your account
-        status is <strong>{{customer.status}}</strong>.
-        Any private packages you've created still exist, but you
-        will not be able to access them until your license is renewed.
-      </p>
-    {{/if}}
-
     <p class="card-info">
       The card we have on file is a
       <span class="card-brand">{{customer.card.brand}}</span>

@@ -10,7 +10,9 @@ var marked = require('marked'),
     cheerio = require('cheerio'),
     log = require('bole')('registry-package-presenter');
 
-module.exports = function package (data, cb) {
+module.exports = function presentPackage (data, cb) {
+
+  data = elevateLatestVersionInfo(data);
 
   if (data.time && data['dist-tags']) {
     var v = data['dist-tags'].latest
@@ -42,22 +44,14 @@ module.exports = function package (data, cb) {
   }
 
   if (data.readme && !data.readmeSrc) {
-    data.readmeSrc = data.readme
-    parseReadme(data, function (er, readme) {
-      if (er) {
-        return cb(er);
-      }
-
-      data.readme = readme;
-    })
+    data.readmeSrc = data.readme;
   }
+  data.readme = parseReadme(data);
 
   gravatarPeople(data)
 
   data.starredBy = getRandomAssortment(Object.keys(data.users || {}).sort(), '/browse/star/', data.name)
   data.dependents = getRandomAssortment(data.dependents, '/browse/depended/', data.name)
-
-  data = elevateLatestVersionInfo(data);
 
   if (data.dependencies) {
     data.dependencies = processDependencies(data.dependencies);
@@ -73,7 +67,9 @@ module.exports = function package (data, cb) {
     delete data.homepage
   }
 
-  // homepage: discard if github repo URL
+  // if (data.readme && data.readme.length) console.log('README EXISTS')
+
+    // homepage: discard if github repo URL
   if (data.homepage && url.parse(data.homepage).hostname.match(/^(www\.)?github\.com/i)) {
     delete data.homepage
   }
@@ -150,25 +146,27 @@ function urlPolicy (pkgData) {
   }
 }
 
-function parseReadme (data, cb) {
-  var p
+function parseReadme (data) {
+
+  if (!data.readme || !data.readme.length) return '';
+
+  var parsed
   if (typeof data.readmeFilename !== 'string' ||
       (data.readmeFilename.match(/\.(m?a?r?k?d?o?w?n?)$/i) &&
        !data.readmeFilename.match(/\.$/))) {
     try {
-      p = marked.parse(data.readme);
+      parsed = marked.parse(data.readme);
+      parsed = parsed.replace(/<([a-zA-Z]+)([^>]*)\/>/g, '<$1$2></$1>');
+      return sanitizer.sanitize(parsed, urlPolicy(data));
     } catch (er) {
-      return cb(new Error('error parsing readme'));
+      // fall through and parse like it isn't markdown
     }
-    p = p.replace(/<([a-zA-Z]+)([^>]*)\/>/g, '<$1$2></$1>');
-  } else {
-    var p = data.readme
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-    p = '<pre>' + sanitizer.sanitize(p, urlPolicy(p)) + '</pre>'
   }
-  return cb(null, sanitizer.sanitize(p, urlPolicy(data)));
+  parsed = data.readme
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+  return '<pre>' + sanitizer.sanitize(parsed, urlPolicy(parsed)) + '</pre>';
 }
 
 

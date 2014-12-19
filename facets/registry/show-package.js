@@ -1,6 +1,7 @@
 var async = require('async'),
     Hapi = require('hapi'),
-    presentPackage = require('./presenters/package');
+    presentPackage = require('./presenters/package'),
+    validatePackageName = require('validate-npm-package-name');
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
@@ -31,6 +32,11 @@ module.exports = function (request, reply) {
 
     if (er) {
       request.logger.error(er, 'fetching package ' + opts.name);
+
+// Add package to view context if path is a valid package name
+      if (validatePackageName(opts.name).valid)
+        opts.package = {name: opts.name};
+
       opts.package = { name: opts.name };
       return reply.view('errors/internal', opts).code(500);
     }

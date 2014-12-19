@@ -69,18 +69,19 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  // it('displays update notice if `updated` query param is present', function (done) {
-  //   options = {
-  //     method: "get",
-  //     url: "/settings/billing?updated=1",
-  //     credentials: fakeuser
-  //   }
-  //   server.inject(options, function (resp) {
-  //     expect(source.context.updated).to.be.true;
-  //     expect($(".update-notice").text()).to.include('yop your private npm');
-  //     done();
-  //   });
-  // });
+  it('displays update notice if `updated` query param is present', function (done) {
+    options = {
+      method: "get",
+      url: "/settings/billing?updated=1",
+      credentials: fakeuser
+    }
+    server.inject(options, function (resp) {
+      expect(source.context.updated).to.be.true;
+      var $ = cheerio.load(resp.result)
+      expect($(".update-notice").text()).to.include('successfully updated');
+      done();
+    });
+  });
 
   it('does not render notices by default', function (done) {
     options.credentials = fakeuser
@@ -147,12 +148,14 @@ describe('GET /settings/billing', function () {
         expect(source.context.customer).to.exist;
         expect(source.context.customer.status).to.equal("active");
         expect(source.context.customer.license_expired).to.equal(false);
+        expect(source.context.customer.next_billing_amount).to.equal(700);
+        expect(source.context.customer.next_billing_date).to.be.a("date");
         expect(source.context.customer.card.brand).to.equal("Visa");
         done();
       });
     })
 
-    it("displays redacted version of existing billing info", function(done) {
+    it("renders redacted version of existing billing info", function(done) {
       options.credentials = fakeuser
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
@@ -165,11 +168,39 @@ describe('GET /settings/billing', function () {
       });
     });
 
+    it("renders a hidden cancellation form", function(done) {
+      options.credentials = fakeuser
+      server.inject(options, function (resp) {
+        var $ = cheerio.load(resp.result)
+        var form = $("#cancel-subscription");
+        expect(form.length).to.equal(1);
+        expect(form.attr("method")).to.equal("post");
+        expect(form.attr("action")).to.equal("/settings/billing/cancel");
+        expect(form.css('display')).to.equal("none");
+
+        expect($("#cancel-subscription-toggler").length).to.equal(1);
+        done();
+      });
+    });
+
+    // it("displays account expiration date in cancellation form", function(done) {
+    //   options.credentials = fakeuser
+    //   server.inject(options, function (resp) {
+    //     var $ = cheerio.load(resp.result)
+    //     var form = $("#cancel-subscription");
+    //     expect(form.length).to.equal(1);
+    //     expect(form.attr("method")).to.equal("post");
+    //     expect(form.attr("action")).to.equal("/settings/billing/cancel");
+    //     expect(form.css('display')).to.equal("none");
+    //     done();
+    //   });
+    // });
+
     it("does NOT render expired license info", function(done) {
       options.credentials = fakeuser
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
-        expect(!$(".error.license-expired").length);
+        expect($(".error.license-expired").length).to.equal(0);
         done();
       });
     });
@@ -233,6 +264,15 @@ describe('GET /settings/billing', function () {
       });
     })
 
+    it("does not render a cancellation form", function(done) {
+      options.credentials = fakeuser
+      server.inject(options, function (resp) {
+        var $ = cheerio.load(resp.result);
+        var form = $("#cancel-subscription");
+        expect(form.length).to.equal(0);
+        done();
+      });
+    });
 
   })
 

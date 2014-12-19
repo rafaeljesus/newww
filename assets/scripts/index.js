@@ -11,6 +11,7 @@ window.mousetrap = require("mousetrap")
 window.private_npm_beta = require("./private-npm-beta")()
 require("./what-npm-is-for")()
 require("./billing")()
+require("./billing-cancel")()
 
 $(function () {
   $(".autoselect-wrapper input").on("click", function () {

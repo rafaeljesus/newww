@@ -39,6 +39,13 @@
       that expires
       <span class="card-exp-month">{{customer.card.exp_month}}</span>
       <span class="card-exp-year">{{customer.card.exp_year}}</span>.
+    </p>
+
+    <p>
+      You will next be billed {{customer.next_billing_date}}.
+    </p>
+
+    <p>
       To use a different card, fill out the form below.
     </p>
   {{/if}}
@@ -66,6 +73,31 @@
     <input type="submit" class="full-width" value="Update Billing Info">
 
   </form>
+
+  {{#if customer}}
+    <p style="padding-top:50px">
+      Want to stop paying us?
+      <a href="#" id="cancel-subscription-toggler">Click here...</a>
+    </p>
+
+    <form id="cancel-subscription" action="/settings/billing/cancel" method="post" style="display:none">
+
+      <p>
+        Cancelling your private npm subscription is not so scary. It will have the following effects:
+      </p>
+
+      <ul>
+        <li>Your private subscription will remain active until {{customer.next_billing_date}}</li>
+        <li>Your regular npm account will still exist.</li>
+        <li>You can still access and publish to the public registry in all its glory.</li>
+        <li>You will NOT have access to any private modules.</li>
+        <li>Any private modules you've created will still be accessible to any paying users you've shared them with.</li>
+        <li>Should you decide to resume your paid subscription, your private modules will still exist.</li>
+      </ul>
+
+      <input type="submit" value="Cancel my private npm subscription">
+    </form>
+  {{/if}}
 
 </div>
 

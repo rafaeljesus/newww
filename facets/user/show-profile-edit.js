@@ -6,8 +6,7 @@ var transform = require('./presenters/profile').transform,
 module.exports = function (options) {
   return function (request, reply) {
     var saveProfile = request.server.methods.user.saveProfile,
-        setSession = request.server.methods.user.setSession(request),
-        showError = request.server.methods.errors.showError(request, reply);
+        setSession = request.server.methods.user.setSession(request);
 
     var opts = {
       user: transform(request.auth.credentials, options),
@@ -38,12 +37,16 @@ module.exports = function (options) {
 
         saveProfile(opts.user, function (err, data) {
           if (err) {
-            return new Error('ruh roh, something went wrong')
+            request.logger.warn(err);
+            request.logger.warn('unable to save profile; user=' + opts.user.name);
+            return reply.view('errors/internal', opts).code(500);
           }
 
           setSession(opts.user, function (err) {
             if (err) {
-              return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
+              // TODO this is an error with our cache. Does the user really need to see it?
+              request.logger.warn('unable to set session; user=' + opts.user.name);
+              return reply.view('errors/internal', opts).code(500);
             }
 
             request.timing.page = 'saveProfile';

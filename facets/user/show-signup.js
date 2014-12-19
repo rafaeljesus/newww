@@ -6,8 +6,7 @@ module.exports = function signup (request, reply) {
   var getUser = request.server.methods.user.getUser,
       signupUser = request.server.methods.user.signupUser,
       setSession = request.server.methods.user.setSession(request),
-      delSession = request.server.methods.user.delSession(request),
-      showError = request.server.methods.errors.showError(request, reply);
+      delSession = request.server.methods.user.delSession(request);
 
   var opts = {
     user: request.auth.credentials,
@@ -65,13 +64,18 @@ module.exports = function signup (request, reply) {
           signupUser(validatedUser, function (er, user) {
 
             if (er) {
-              return showError(er, 403, 'Failed to create account', opts);
+              request.logger.warn('Failed to create account.');
+              return reply.view('errors/internal', opts).code(403);
             }
+
+            request.logger.info('created new user ' + opts.user.name);
 
             setSession(user, function (err) {
 
               if (err) {
-                return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
+                request.logger.warn('Unable to set the session for new user ' +opts.user.name);
+                // TODO why show an error here?
+                return reply.view('errors/internal', opts).code(500);
               }
 
               request.timing.page = 'signup';

@@ -6,8 +6,7 @@ module.exports = function(options) {
   return function(request, reply) {
     var getUser = request.server.methods.user.getUser,
       getUserStars = request.server.methods.registry.getUserStars,
-      getAuthors = request.server.methods.registry.getAuthors,
-      showError = request.server.methods.errors.showError(request, reply);
+      getAuthors = request.server.methods.registry.getAuthors;
 
     var opts = {
       user: request.auth.credentials,
@@ -19,7 +18,11 @@ module.exports = function(options) {
     if (request.info.referrer.indexOf('profile-edit') !== -1) {
       return getUser.cache.drop(profileName, function(er, resp) {
         if (er) {
-          return showError(er, 500, 'Unable to drop key ' + profileName, opts);
+          // TODO this is an error with our cache, not with the operation! why
+          // show this error to the user?
+          request.logger.warn('unable to drop key from cache; key=' + profileName);
+          return reply.view('errors/internal', opts).code(500);
+
         }
         return getUser(profileName, showProfile);
       });
@@ -41,12 +44,16 @@ module.exports = function(options) {
 
       getUserStars(profileName, 0, 1000, function(err, starred) {
         if (err) {
-          return showError(err, 500, 'Unable to get stars for user ' + profileName, opts);
+          // TODO why show an error here? Why not just render the page with the data we have?
+          request.logger.warn('unable to get stars for user ' + profileName);
+          return reply.view('errors/internal', opts).code(500);
         }
 
         getAuthors(profileName, 0, 1000, function(err, packages) {
           if (err) {
-            return showError(err, 500, 'Unable to get modules by user ' + profileName, opts);
+            // TODO why show an error here? Why not just render the page with the data we have?
+            request.logger.warn('unable to get stars for user ' + profileName);
+            return reply.view('errors/internal', opts).code(500);
           }
 
           opts.profile = {

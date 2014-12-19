@@ -1,19 +1,15 @@
-var req = require('request');
-var marked = require('marked');
 
 module.exports = function (request, reply) {
-  var opts = {
-    user: request.auth.credentials
-  };
-
-  var timer = { start: Date.now() };
-
+  
+  var opts = { user: request.auth.credentials };
   var policy = request.params.policy || 'README';
 
   request.server.methods.corp.getPolicy(policy, function (err, content) {
 
     if (err) {
-      return request.server.methods.errors.showError(request, reply)(err, 404, "could not find policy " + policy, opts);
+      request.logger.warn('could not find policy ' + policy);
+      reply.view('errors/not-found', opts).code(404);
+      return;
     }
 
     opts.md = content;

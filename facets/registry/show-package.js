@@ -1,5 +1,6 @@
 var async = require('async'),
     Hapi = require('hapi'),
+    moment = require('moment'),
     presentPackage = require('./presenters/package'),
     validatePackageName = require('validate-npm-package-name');
 
@@ -33,11 +34,11 @@ module.exports = function (request, reply) {
     if (er) {
       request.logger.error(er, 'fetching package ' + opts.name);
 
-// Add package to view context if path is a valid package name
-      if (validatePackageName(opts.name).valid)
+      // Add package to view context if path is a valid package name
+      if (validatePackageName(opts.name).valid) {
         opts.package = {name: opts.name};
+      }
 
-      opts.package = { name: opts.name };
       return reply.view('errors/internal', opts).code(500);
     }
 
@@ -47,9 +48,9 @@ module.exports = function (request, reply) {
     }
 
     if (pkg.time && pkg.time.unpublished) {
-      // reply with unpublished package page
+
       var t = pkg.time.unpublished.time
-      pkg.unpubFromNow = require('moment')(t).format('ddd MMM DD YYYY HH:mm:ss Z');
+      pkg.unpubFromNow = moment(t).format('ddd MMM DD YYYY HH:mm:ss Z');
       opts.package = pkg;
       request.timing.page = 'showUnpublishedPackage';
 

@@ -4,7 +4,7 @@ var async = require('async'),
     presentPackage = require('./presenters/package'),
     validatePackageName = require('validate-npm-package-name');
 
-module.exports = function (request, reply) {
+function showPackage(request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
       getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
 
@@ -120,3 +120,6 @@ function fetchDependents(request, name, callback) {
     callback(null, results);
   });
 }
+
+module.exports = showPackage;
+showPackage.fetchDependents = fetchDependents;

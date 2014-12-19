@@ -18,9 +18,6 @@ module.exports = function (options) {
       return reply.redirect('/');
     }
 
-    var showError = request.server.methods.errors.showError(request, reply),
-        timer = { start: Date.now() };
-
     var page = Math.abs(parseInt(request.query.page, 10)) || 1;
     var perPage  = parseInt(options.perPage);
     var searchQuery = {
@@ -89,11 +86,11 @@ module.exports = function (options) {
       }
     };
 
+    var start = Date.now();
     client.search(searchQuery, function (error, response) {
-      timer.end = Date.now();
       request.metrics.metric({
         name: 'latency',
-        value: timer.end - timer.start,
+        value: Date.now() - start,
         type: 'elasticsearch',
         query: request.query.q
       });
@@ -105,7 +102,8 @@ module.exports = function (options) {
       };
 
       if (error) {
-        return showError(error, 500, 'elasticsearch failed searching ' + request.query.q, opts);
+        request.logger.warn('elasticsearch failed searching ' + request.query.q);
+        return reply.view('errors/internal', opts).code(500);
       }
 
       request.timing.page = 'search';

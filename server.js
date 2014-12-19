@@ -1,4 +1,6 @@
-var Hapi = require('hapi'),
+var _ = require('lodash'),
+    assert = require('assert'),
+    Hapi = require('hapi'),
     Hoek = require('hoek'),
     config = require('./config.js'),
     url = require('url'),
@@ -13,8 +15,18 @@ bole.output({
   stream: process.stdout
 });
 
+// Demand configuration that we require.
+assert(config && _.isObject(config), 'we require a configuration object');
+assert(config.host && config.port, 'config must include `host` and `port`');
+assert(config.user && _.isObject(config.user), 'config must include a `user` stanza');
+assert(config.user.mail && _.isObject(config.user.mail), 'config.user must include a `mail` stanza');
+assert(config.user.mail.mailTransportModule && _.isString(config.user.mail.mailTransportModule), 'config must specify a `mailTransportModule`');
+assert(config.user.mail.mailTransportSettings && _.isObject(config.user.mail.mailTransportSettings), 'config must include `mailTransportSettings`');
+assert(config.user.mail.emailFrom && _.isString(config.user.mail.emailFrom), 'config must include a `emailFrom` settins');
+
 // set up the server
 var server = new Hapi.Server(config.host, config.port, config.server)
+
 
 // configure couch
 var couchDB = require('./adapters/couchDB');

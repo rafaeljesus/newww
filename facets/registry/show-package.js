@@ -12,16 +12,12 @@ function showPackage(request, reply) {
     return reply.redirect('/package/' + request.params.package)
   }
 
-  var opts = {
-    user: request.auth.credentials,
-    namespace: 'registry-package'
-  }
+  var opts = { };
 
   request.timing.page = 'showPackage';
-  request.timing.type = 'pageload';
   request.metrics.metric({ name: 'showPackage', package: request.params.package, value: 1 });
 
-  opts.name = request.params.package
+  opts.name = request.params.package;
 
   if (opts.name !== encodeURIComponent(opts.name)) {
     request.logger.info('request for invalid package name: ' + opts.name);

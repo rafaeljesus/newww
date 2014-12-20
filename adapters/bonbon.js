@@ -60,6 +60,7 @@ exports.register = function(plugin, options, next) {
     switch (request.response.variety) {
       case "view":
         request.response.source.context = Hoek.applyToDefaults(options, request.response.source.context);
+        request.response.source.context.user = request.auth.credentials;
         break;
       case "plain":
         if (typeof(request.response.source) === "object") {

@@ -1,6 +1,7 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
 var async = require('async'),
+    browse = require('../../services/registry/methods/browse'),
     Hapi = require('hapi'),
     log = require('bole')('company-homepage'),
     uuid = require('node-uuid'),
@@ -77,20 +78,51 @@ module.exports = function (request, reply) {
 // ======= functions =======
 
 function load (request, cb) {
-  var registry = request.server.methods.registry,
-      // recentAuthors = registry.getRecentAuthors,
-      addMetric = metrics.addMetric,
-      downloads = request.server.methods.downloads.getAllDownloads,
-      cached = {};
+  var redis = request.server.app.cache._cache.connection.client,
+    registry = request.server.methods.registry,
+    // recentAuthors = registry.getRecentAuthors,
+    addMetric = metrics.addMetric,
+    downloads = request.server.methods.downloads.getAllDownloads,
+    cached = {};
 
   async.parallel([
-    function(cb) { cbWithTimeout('depended', registry.getDependedUpon, [false, 0, 12], cached, cb); },
-    function(cb) { cbWithTimeout('updated', registry.getUpdated, [0, 12], cached, cb); },
+    function(cb) { cbWithTimeout('depended', cachedBrowse, ['depended', redis, false, 0, 12], cached, cb); },
+    function(cb) { cbWithTimeout('updated', cachedBrowse, ['updated', redis, false, 0, 12], cached, cb); },
     function(cb) { cbWithTimeout('downloads', downloads, [], cached, cb); },
     function(cb) { cbWithTimeout('totalPackages', registry.packagesCreated, [], cached, cb); }
   ], function(err) {
     if (err) log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error'), err);
     return cb(null, cached);
+  });
+}
+
+// perform browse, caching the results in redis with a TTL.
+function cachedBrowse(browseMethod, redis, arg, skip, limit, cb) {
+  var key = 'show-homepage:' + browseMethod,
+    ttl = 300; // 5 minute cache.
+
+  redis.get(key, function(err, value) {
+    var cached = null;
+
+    try {
+      if (value) cached = JSON.parse(value);
+    } catch (e) {
+      // if we cache bad JSON data, it will
+      // fall out of the cache within the TTL.
+    }
+
+    if (cached) {
+      return cb(null, cached);
+    } else {
+      browse(browseMethod, false, skip, limit, function(err, data) {
+        if (data) {
+          redis.setex(key, ttl, JSON.stringify(data), function() {
+            log.info('wrote ' + browseMethod + ' view to redis cache.');
+          });
+        }
+        return cb(err, data);
+      });
+    }
   });
 }
 

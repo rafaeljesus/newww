@@ -1,7 +1,5 @@
 var Hapi = require('hapi'),
-    config = require('../../config'),
-    metricsConfig = config.metrics,
-    MetricsClient = require('newww-metrics');
+    config = require('../../config');
 
 var serverOptions = {
   views: config.server.views
@@ -10,7 +8,7 @@ var serverOptions = {
 module.exports = function (done) {
   process.env.NODE_ENV = 'dev';
 
-  var metrics = new MetricsClient(metricsConfig);
+  var metrics = require('../../adapters/metrics')(config.metrics);
 
   var server = Hapi.createServer(serverOptions);
   server.methods = require('./mock-server-methods')(server);

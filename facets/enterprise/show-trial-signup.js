@@ -13,6 +13,8 @@ module.exports = function trialSignup (request, reply) {
       getCustomer = request.server.methods.npme.getCustomer,
       showError = request.server.methods.errors.showError(request, reply);
 
+console.log('HELLO HELLO HELLO');
+
   var opts = {
     user: request.auth.credentials,
 
@@ -21,6 +23,8 @@ module.exports = function trialSignup (request, reply) {
 
   var data = { email: request.payload.customer_email };
   postToHubspot(config.license.hubspot.form_npme_agreed_ula, data, function (er) {
+
+    console.log('HUBSPOT SAYS HI');
 
     if (er) {
       request.logger.warn("Could not hit ULA notification form on Hubspot");
@@ -98,10 +102,6 @@ function sendVerificationEmail (request, reply, customer, trial) {
   } else {
     var mailSettings = config.user.mail;
 
-    if (!mailSettings.mailTransportModule ||
-        !mailSettings.mailTransportSettings) {
-      return showError(null, 500, 'Mail settings are missing!', opts);
-    }
     var transport = require(mailSettings.mailTransportModule);
     var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
 

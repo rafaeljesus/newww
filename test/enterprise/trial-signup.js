@@ -71,7 +71,10 @@ describe('Getting to the thank-you page', function () {
         headers: { cookie: 'crumb=' + cookieCrumb }
       };
 
+      console.log('got past first inject');
+
       server.inject(opts, function (resp) {
+        console.log('got past second inject');
         expect(resp.statusCode).to.equal(500);
         expect(source.template).to.equal('errors/internal');
         done();

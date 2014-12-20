@@ -98,7 +98,8 @@ function load (request, cb) {
 
 // perform browse, caching the results in redis with a TTL.
 function cachedBrowse(browseMethod, redis, arg, skip, limit, cb) {
-  var key = 'show-homepage:' + browseMethod;
+  var key = 'show-homepage:' + browseMethod,
+    ttl = 300; // 5 minute cache.
 
   redis.get(key, function(err, value) {
     var cached = null;
@@ -106,7 +107,8 @@ function cachedBrowse(browseMethod, redis, arg, skip, limit, cb) {
     try {
       if (value) cached = JSON.parse(value);
     } catch (e) {
-      log.warn(uuid.v1() + ' ' + e); // probably just a null value.
+      // if we cache bad JSON data, it will
+      // fall out of the cache within the TTL.
     }
 
     if (cached) {
@@ -114,8 +116,8 @@ function cachedBrowse(browseMethod, redis, arg, skip, limit, cb) {
     } else {
       browse(browseMethod, false, skip, limit, function(err, data) {
         if (data) {
-          redis.setex(key, 300, JSON.stringify(data), function() {
-            log.info(uuid.v1() + 'wrote ' + browseMethod + ' view to redis cache.');
+          redis.setex(key, ttl, JSON.stringify(data), function() {
+            log.info('wrote ' + browseMethod + ' view to redis cache.');
           });
         }
         return cb(err, data);

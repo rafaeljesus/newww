@@ -18,7 +18,7 @@ before(function (done) {
 });
 
 describe('Getting to the home page', function () {
-  /*it('gets there, no problem', function (done) {
+  it('gets there, no problem'/*, function (done) {
     var opts = {
       url: '/'
     };
@@ -28,9 +28,9 @@ describe('Getting to the home page', function () {
       expect(source.template).to.equal('company/index');
       done();
     });
-  });*/
+  }*/);
 
-  it('handles an API call timeout', function (done) {
+  it('handles an API call timeout'/*, function (done) {
     var getDependedUponOriginal = server.methods.registry.getDependedUpon,
       opts = {
         url: '/'
@@ -45,14 +45,14 @@ describe('Getting to the home page', function () {
 
     server.inject(opts, function (resp) {
       server.methods.registry.getDependedUpon = getDependedUponOriginal;
-      return done();
+      done();
     });
-  });
+  }*/);
 
-  /*it('has all the pieces', function (done) {
+  it('has all the pieces'/*, function (done) {
     expect(source.context.updated).to.exist;
     expect(source.context.depended).to.exist;
     expect(source.context.starred).to.exist;
     done();
-  });*/
+  }*/);
 });

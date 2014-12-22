@@ -68,12 +68,12 @@ module.exports = function signup (request, reply) {
               return reply.view('errors/internal', opts).code(403);
             }
 
-            request.logger.info('created new user ' + opts.user.name);
+            request.logger.info('created new user ' + user.name);
 
             setSession(user, function (err) {
 
               if (err) {
-                request.logger.warn('Unable to set the session for new user ' +opts.user.name);
+                request.logger.warn('Unable to set the session for new user ' + user.name);
                 // TODO why show an error here?
                 return reply.view('errors/internal', opts).code(500);
               }

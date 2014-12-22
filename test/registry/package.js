@@ -251,24 +251,23 @@ describe('requesting invalid packages', function () {
     url: '/package/' + name
   }
 
-  it('returns a 404', function (done) {
+  it('returns a 400', function (done) {
     server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(404);
+      expect(resp.statusCode).to.equal(400);
       done();
     });
   });
 
   it('does NOT add package.name to view context', function (done) {
     server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(404);
       expect(source.context.package).to.not.exist
       done();
     });
   });
 
-  it('renders the 404 template', function (done) {
+  it('renders the invalid input template', function (done) {
     server.inject(options, function (resp) {
-      expect(source.template).to.equal('errors/not-found');
+      expect(source.template).to.equal('errors/invalid');
       done();
     });
   });

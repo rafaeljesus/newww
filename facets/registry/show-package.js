@@ -19,7 +19,7 @@ function showPackage(request, reply) {
 
   opts.name = request.params.package;
 
-  if (opts.name !== encodeURIComponent(opts.name)) {
+  if (!validatePackageName(opts.name).valid) {
     request.logger.info('request for invalid package name: ' + opts.name);
     reply.view('errors/invalid', opts).code(400);
     return;
@@ -27,19 +27,13 @@ function showPackage(request, reply) {
 
   getPackage(opts.name, function (er, pkg) {
 
+    opts.package = { name: opts.name };
     if (er) {
       request.logger.error(er, 'fetching package ' + opts.name);
-
-      // Add package to view context if path is a valid package name
-      if (validatePackageName(opts.name).valid) {
-        opts.package = {name: opts.name};
-      }
-
       return reply.view('errors/internal', opts).code(500);
     }
 
     if (!pkg) {
-      opts.package = { name: opts.name }
       return reply.view('errors/not-found', opts).code(404);
     }
 

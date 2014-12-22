@@ -13,8 +13,6 @@ module.exports = function trialSignup (request, reply) {
       getCustomer = request.server.methods.npme.getCustomer,
       showError = request.server.methods.errors.showError(request, reply);
 
-console.log('HELLO HELLO HELLO');
-
   var opts = {
     user: request.auth.credentials,
 
@@ -24,14 +22,13 @@ console.log('HELLO HELLO HELLO');
   var data = { email: request.payload.customer_email };
   postToHubspot(config.license.hubspot.form_npme_agreed_ula, data, function (er) {
 
-    console.log('HUBSPOT SAYS HI');
-
     if (er) {
       request.logger.warn("Could not hit ULA notification form on Hubspot");
       return showError(er, 500, "could not register agreement to the license", opts);
     }
 
     getCustomer(data.email, function (err, customer) {
+
       if (err) {
         return showError(err, 500, "Unknown problem with customer record", opts);
       }
@@ -50,6 +47,7 @@ console.log('HELLO HELLO HELLO');
 }
 
 function createTrialAccount(request, reply, customer) {
+
   var createTrial = request.server.methods.npme.createTrial,
       showError = request.server.methods.errors.showError(request, reply);
 

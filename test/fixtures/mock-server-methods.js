@@ -65,7 +65,7 @@ module.exports = function (server) {
     },
 
     errors: {
-      showError: function (reply) {
+      showError: function (request, reply) {
         return function (err, code, message, opts) {
           opts.errId = '12345';
 

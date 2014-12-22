@@ -196,10 +196,14 @@ nav
   float left
   margin-right 7%
 
+  img
+    display block
+    width 125px
+    height 49px
+
   @media only screen and (max-width: mobileMaxWidth)
     margin 0
     img
-      display block
       width 80px
 
 #npm-search
@@ -235,7 +239,7 @@ nav
   position absolute
   top 0
   right 0
-  height 47px
+  height 45px
   width 46px
   border 0
   text-indent -9999em
@@ -243,16 +247,19 @@ nav
   outline 0
   border-left 1px solid greigh5
   border-radius 0 2px 2px 0
-  background url(../images/ico-search.png) no-repeat 50% 50%
+  background url(../images/ico-search.svg) no-repeat 50% 50%
+  background-size 16px 16px
 
 
   &:hover
-    width 47px
+    width 49px
     height 46px
     top -1px
     right -1px
-    border-left 0
-    background: npmred url(../images/ico-search-hover.png) no-repeat 50% 50%
+    border 1px solid darken(npmred, 15%)
+    border-bottom none
+    background: npmred url(../images/ico-search-hover.svg) no-repeat 50% 50%
+    background-size 16px 16px
 
 
 #user-info

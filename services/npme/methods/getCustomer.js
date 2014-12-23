@@ -21,7 +21,7 @@ module.exports = function getCustomer (options) {
       }
 
       log.error('unexpected status code from hubspot; status=' + resp.statusCode + '; customer=' + email);
-      callback(new Error('status code ' + resp.statusCode));
+      callback(new Error('unexpected status code: ' + resp.statusCode));
     });
   };
 };

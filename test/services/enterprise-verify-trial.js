@@ -2,15 +2,13 @@ var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
-    after = lab.after,
     it = lab.test,
     expect = Lab.expect;
 
 var Hapi = require('hapi'),
-    npme = require('../index'),
-    request = require('request'),
+    npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../../config');
+    config = require('../../config');
 
 var server;
 
@@ -87,7 +85,7 @@ describe('verifying a trial in hubspot', function () {
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.exist;
-      expect(err.message).to.equal('problem verifying trial');
+      expect(err.message).to.equal('problem verifying trial for ' + verificationKey);
       expect(verifiedTrial).to.not.exist;
       done();
     });
@@ -105,7 +103,7 @@ describe('verifying a trial in hubspot', function () {
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.exist;
-      expect(err.message).to.equal('problem starting trial');
+      expect(err.message).to.equal('problem starting trial for ' + trialId);
       expect(verifiedTrial).to.not.exist;
       done();
     });

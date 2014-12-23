@@ -2,15 +2,15 @@ var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
-    after = lab.after,
     it = lab.test,
     expect = Lab.expect;
 
 var Hapi = require('hapi'),
-    npme = require('../index'),
-    request = require('request'),
+    npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../../config');
+    config = require('../../config');
+
+config.license.api = 'https://billing.website.com';
 
 var server;
 
@@ -73,7 +73,7 @@ describe('creating a customer in hubspot', function () {
 
     server.methods.npme.createCustomer(data, function (err, customer) {
       expect(err).to.exist;
-      expect(err.message).to.equal('unable to create customer');
+      expect(err.message).to.equal('unable to create customer ' + data.email);
       expect(customer).to.not.exist;
       done();
     });

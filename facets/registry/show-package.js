@@ -59,7 +59,11 @@ function showPackage(request, reply) {
         pkg.dependents = [];
         pkg.downloads = false;
       } else {
-        pkg.downloads = results.downloads[0];
+        if (Array.isArray(pkg.downloads))
+          pkg.downloads = results.downloads[0];
+        else
+          pkg.downloads = results.downloads;
+
         pkg.dependents = results.dependents;
       }
 

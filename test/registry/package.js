@@ -201,12 +201,14 @@ describe('readmes are always sanitized', function () {
 });
 
 describe('getting package download information', function () {
-  it('sends an object of data if the user is not logged in', function (done) {
+  it('send a downloads data object', function (done) {
     var options = {
       url: '/package/fake'
     };
 
     server.inject(options, function () {
+
+      expect(source.context.package).to.have.property('downloads');
       expect(source.context.package.downloads).to.be.an('object');
       expect(source.context.package.downloads).to.have.property('day');
       expect(source.context.package.downloads).to.have.property('week');

@@ -1,8 +1,4 @@
-var NAMESPACE = 'enterprise-trial-signup';
-
-var Hoek = require('hoek'),
-    Hapi = require('hapi'),
-    nodemailer = require('nodemailer');
+var nodemailer = require('nodemailer');
 
 var config = require('../../config');
 
@@ -10,70 +6,68 @@ var config = require('../../config');
 
 module.exports = function trialSignup (request, reply) {
   var postToHubspot = request.server.methods.npme.sendData,
-      getCustomer = request.server.methods.npme.getCustomer,
-      showError = request.server.methods.errors.showError(request, reply);
+      getCustomer = request.server.methods.npme.getCustomer;
 
-  var opts = {
-    user: request.auth.credentials,
+  var opts = {};
 
-    namespace: NAMESPACE
-  };
-
+  // we can trust the email is fine because we've verified it in the show-ula handler
   var data = { email: request.payload.customer_email };
+
   postToHubspot(config.license.hubspot.form_npme_agreed_ula, data, function (er) {
 
     if (er) {
-      request.logger.warn("Could not hit ULA notification form on Hubspot");
-      return showError(er, 500, "could not register agreement to the license", opts);
+      request.logger.error('Could not hit ULA notification form on Hubspot');
+      request.logger.error(er);
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     getCustomer(data.email, function (err, customer) {
 
       if (err) {
-        return showError(err, 500, "Unknown problem with customer record", opts);
+        request.logger.error('Unknown problem with customer record');
+        request.logger.error(err);
+        reply.view('errors/internal', opts).code(500);
+        return;
       }
 
       if (!customer) {
-        return showError(err, 500, "Unable to locate customer record", opts);
+        request.logger.error('Unable to locate customer error ' + data.email);
+        reply.view('errors/internal', opts).code(500);
+        return;
       }
 
       if (customer && customer.id + '' === request.payload.customer_id + '') {
         return createTrialAccount(request, reply, customer);
       }
 
-      return showError(null, 500, "unable to verify customer record", opts);
-    })
+      request.logger.error('Unable to verify customer record ', data.email);
+      reply.view('errors/internal', opts).code(500);
+    });
   });
-}
+};
 
 function createTrialAccount(request, reply, customer) {
 
-  var createTrial = request.server.methods.npme.createTrial,
-      showError = request.server.methods.errors.showError(request, reply);
+  var createTrial = request.server.methods.npme.createTrial;
 
-  var opts = {
-    user: request.auth.credentials,
-
-    namespace: NAMESPACE
-  };
+  var opts = {};
 
   createTrial(customer, function (er, trial) {
     if (er) {
-      return showError(er, 500, "There was an error with creating a trial", opts);
+      request.logger.error('There was an error with creating a trial for ', customer.id);
+      request.logger.error(er)
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     return sendVerificationEmail(request, reply, customer, trial);
-  })
+  });
 }
 
 function sendVerificationEmail (request, reply, customer, trial) {
-  var showError = request.server.methods.errors.showError(request, reply);
 
-  var opts = {
-    user: request.auth.credentials,
-
-    namespace: NAMESPACE
-  };
+  var opts = {};
 
   var from = config.user.mail.emailFrom;
 
@@ -103,9 +97,12 @@ function sendVerificationEmail (request, reply, customer, trial) {
     var transport = require(mailSettings.mailTransportModule);
     var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
 
-    mailer.sendMail(mail, function (er, result) {
+    mailer.sendMail(mail, function (er) {
       if (er) {
-        return showError(er, 500, "Unable to send verification email", opts);
+        request.logger.error('Unable to send verification email to ', customer);
+        request.logger.error(er);
+        reply.view('errors/internal', opts).code(500);
+        return;
       }
 
       return reply.view('enterprise/thanks', opts);

@@ -1,10 +1,9 @@
 var request = require('request'),
-    log = require('bole')('npme-create-customer'),
-    uuid = require('node-uuid');
+    log = require('bole')('npme-create-customer');
 
 module.exports = function createCustomer (options) {
 
-  return function (data, next) {
+  return function (data, callback) {
 
     var customerEndpoint = options.api + '/customer';
 
@@ -17,17 +16,18 @@ module.exports = function createCustomer (options) {
       }
     }, function(er, resp, newCustomer) {
 
-      // stop if we couldn't create the customer
-      if(resp.statusCode != 200) {
-        log.warn("customer creation failed: ", resp.statusCode)
-        log.warn(newCustomer)
-
-        er = er || new Error('unable to create customer');
-
-        return next(er);
+      if (resp.statusCode === 200) {
+        return callback(null, newCustomer);
       }
 
-      return next(null, newCustomer);
+      log.warn('customer creation for user ' + data.email + ' failed with statusCode ' + resp.statusCode);
+      log.warn(newCustomer);
+
+      er = er || new Error('unable to create customer ' + data.email);
+
+      log.error(er);
+
+      return callback(er);
     });
-  }
-}
+  };
+};

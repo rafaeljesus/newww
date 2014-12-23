@@ -1,5 +1,4 @@
-var Hapi = require('hapi'),
-    anonCouch = require('../../../adapters/couchDB').anonCouch,
+var anonCouch = require('../../../adapters/couchDB').anonCouch,
     log = require('bole')('registry-get-package'),
     metrics = require('../../../adapters/metrics')();
 
@@ -30,7 +29,7 @@ module.exports = function getPackage(package, callback) {
       return callback(null, data);
     }
 
-    log.info('unexpected status code from registry; status=' + response.statusCode + '; package=' + package);
+    log.error('unexpected status code from registry; status=' + response.statusCode + '; package=' + package);
     callback(new Error('status code ' + response.statusCode));
   });
-}
+};

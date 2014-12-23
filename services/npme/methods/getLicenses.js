@@ -1,8 +1,8 @@
 var request = require('request'),
-    log = require('bole')('npme-get-license')
+    log = require('bole')('npme-get-license');
 
 module.exports = function getLicenses (options) {
-  return function (productId, customerId, next) {
+  return function (productId, customerId, callback) {
 
     var licenseEndpoint = options.api + '/license';
 
@@ -12,16 +12,16 @@ module.exports = function getLicenses (options) {
     }, function (er, resp, body) {
 
       if (resp.statusCode === 404) {
-        return next(null, null); // no error, but no license either
+        return callback(null, null); // no error, but no license either
       }
-      else if (resp.statusCode === 200) {
+
+      if (resp.statusCode === 200) {
         log.info("found licenses ", body);
-        return next(null, body.licenses);
+        return callback(null, body.licenses);
       }
 
-      var err = new Error("unexpected status code: " + resp.statusCode);
-
-      return next(err);
+      log.error('unexpected status code from hubspot; status=' + resp.statusCode + '; customer=' + customerId);
+      callback(new Error('status code ' + resp.statusCode));
     });
-  }
-}
+  };
+};

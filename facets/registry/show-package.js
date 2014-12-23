@@ -1,5 +1,4 @@
 var async = require('async'),
-    Hapi = require('hapi'),
     moment = require('moment'),
     presentPackage = require('./presenters/package'),
     validatePackageName = require('validate-npm-package-name');
@@ -9,7 +8,7 @@ function showPackage(request, reply) {
       getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
 
   if (request.params.version) {
-    return reply.redirect('/package/' + request.params.package)
+    return reply.redirect('/package/' + request.params.package);
   }
 
   var opts = { };
@@ -39,7 +38,7 @@ function showPackage(request, reply) {
 
     if (pkg.time && pkg.time.unpublished) {
 
-      var t = pkg.time.unpublished.time
+      var t = pkg.time.unpublished.time;
       pkg.unpubFromNow = moment(t).format('ddd MMM DD YYYY HH:mm:ss Z');
       opts.package = pkg;
       request.timing.page = 'showUnpublishedPackage';
@@ -59,10 +58,11 @@ function showPackage(request, reply) {
         pkg.dependents = [];
         pkg.downloads = false;
       } else {
-        if (Array.isArray(pkg.downloads))
+        if (Array.isArray(pkg.downloads)) {
           pkg.downloads = results.downloads[0];
-        else
+        } else {
           pkg.downloads = results.downloads;
+        }
 
         pkg.dependents = results.dependents;
       }

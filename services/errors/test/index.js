@@ -9,18 +9,9 @@ var Lab = require('lab'),
 var Hapi = require('hapi'),
     errors = require('../index.js'),
     sinon = require('sinon'),
-    MetricsClient = require('newww-metrics');
-
-var config = {
-  metrics: {
-    collector: {
-      host: 'localhost',
-      port: 3333,
-      udp: true
-    },
-    prefix: 'npm-www-dev'
-  }
-}
+    config = require('../../config'),
+    metrics = require('../../adapters/metrics')(config.metrics)
+    ;
 
 var server;
 
@@ -34,7 +25,6 @@ var createReplyMock = function () {
 
 before(function (done) {
   server = Hapi.createServer();
-  var metrics = new MetricsClient(config.metrics);
   server.pack.register(errors, done);
 });
 

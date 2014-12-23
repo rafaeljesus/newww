@@ -4,24 +4,21 @@ var Hapi = require('hapi'),
     log = require('bole')('registry-stars'),
     metrics = require('../../../adapters/metrics')();
 
-var timer = {};
-
 module.exports = {
   star: function star (package, username, next) {
-    timer.start = Date.now();
+    var start = Date.now();
 
     if (!validatePackageName(package).valid) {
       return next(Hapi.error.badRequest("Invalid package name"));
     }
 
     adminCouch.put('/registry/_design/app/_update/star/' + package, username, function (er, cr, data) {
-      timer.end = Date.now();
       metrics.metric({
-  name: 'latency',
-  value: timer.end - timer.start,
-  type: 'couch',
-  action: 'star'
-});
+        name: 'latency',
+        value: Date.now() - start,
+        type: 'couch',
+        action: 'star'
+      });
 
       if (er || cr && cr.statusCode !== 201 || !data || data.error) {
         return next(Hapi.error.internal(er || data.error));
@@ -33,20 +30,19 @@ module.exports = {
   },
 
   unstar: function unstar (package, username, next) {
-    timer.start = Date.now();
+    var start = Date.now();
 
     if (!validatePackageName(package).valid) {
       return next(Hapi.error.badRequest("Invalid package name"));
     }
 
     adminCouch.put('/registry/_design/app/_update/unstar/' + package, username, function (er, cr, data) {
-      timer.end = Date.now();
       metrics.metric({
-  name: 'latency',
-  value: timer.end - timer.start,
-  type: 'couch',
-  action: 'unstar'
-});
+        name: 'latency',
+        value: Date.now() - start,
+        type: 'couch',
+        action: 'unstar'
+      });
 
       if (er || cr && cr.statusCode !== 201 || !data || data.error) {
         return next(Hapi.error.internal(er || data.error));

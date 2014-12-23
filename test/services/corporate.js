@@ -7,17 +7,14 @@ var Lab = require('lab'),
     it = lab.test,
     expect = Lab.expect,
     Hapi = require('hapi'),
-    corporate = require('../index.js'),
+    corporate = require('../../services/corporate'),
     nock = require('nock'),
-    metricsConfig = require('../../../config').metrics,
-    MetricsClient = require('newww-metrics'),
+    config = require('../../config'),
+    metrics = require('../../adapters/metrics')(config.metrics),
     server;
 
 before(function (done) {
   server = Hapi.createServer('localhost', '8123');
-
-  var metrics = new MetricsClient(metricsConfig);
-
   server.pack.register(corporate, function () {
     server.start(done);
   });

@@ -34,5 +34,6 @@ exports.register = function Downloads (service, options, next) {
 };
 
 exports.register.attributes = {
-  pkg: require('./package.json')
+    "name": "newww-service-downloads",
+    "version": "0.0.1",
 };

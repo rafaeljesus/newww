@@ -1,5 +1,5 @@
 var Hapi = require('hapi'),
-    anonCouch = require('../../../adapters/couchDB').anonCouch,
+    CouchDB = require('../../../adapters/couchDB'),
     qs = require('querystring'),
     browseUtils = require('../browseUtils'),
     log = require('bole')('registry-service-browse'),
@@ -8,6 +8,7 @@ var Hapi = require('hapi'),
 
 module.exports = function (type, arg, skip, limit, next) {
   var opts = {};
+  var anonCouch = CouchDB.anonCouch;
 
   // if type if an object, rather than a
   // string, assume that it is an options object.
@@ -48,7 +49,8 @@ module.exports = function (type, arg, skip, limit, next) {
   var u = '/registry/_design/app/_view/' + browseUtils[type].viewName;
 
   u += '?' + qs.stringify(query)
-  log.info('browse url: ', u)
+  log.info('browse url: ', u);
+
   anonCouch.get(u, function (er, cr, data) {
     if (er) {
       var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };

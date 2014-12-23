@@ -8,25 +8,24 @@ var Lab = require('lab'),
 
 var Hapi = require('hapi'),
     nock = require('nock'),
-    config = require('../../../config').couch,
-    metricsConfig = require('../../../config').metrics,
-    couch = require('../index.js'),
-    MetricsClient = require('newww-metrics');
+    couchDB = require('../../adapters/couchDB'),
+    config = require('../../config'),
+    couchConfig = config.couch,
+    couch = require('../../services/registry'),
+    metrics = require('../../adapters/metrics')(config.metrics)
+    ;
 
 var server;
 
 before(function (done) {
   // configure couch
-  var couchDB = require('../../../adapters/couchDB');
-  couchDB.init(config);
-
-  var metrics = new MetricsClient(metricsConfig);
+  couchDB.init(couchConfig);
 
   server = Hapi.createServer('localhost', '7110');
   server.pack.register([
     {
       plugin: couch,
-      options: config
+      options: couchConfig
     }
   ], function () {
     server.start(done);
@@ -36,9 +35,9 @@ before(function (done) {
 describe('getting packages from couch', function () {
   it('successfully grabs a package', function (done) {
 
-    var couch = nock(config.registryCouch)
+    var couch = nock(couchConfig.registryCouch)
         .get('/registry/request')
-        .reply(200, require('./fixtures/request'))
+        .reply(200, require('../fixtures/request.json'))
 
     server.methods.registry.getPackage('request', function (er, pkg) {
       expect(er).to.not.exist;
@@ -49,7 +48,7 @@ describe('getting packages from couch', function () {
   });
 
   it('returns null for packages that don\'t exist', function (done) {
-    var couch = nock(config.registryCouch)
+    var couch = nock(couchConfig.registryCouch)
         .get('/registry/goober')
         .reply(404, {"error":"not_found","reason":"missing"})
 
@@ -62,10 +61,12 @@ describe('getting packages from couch', function () {
 });
 
 describe('browsing', function () {
+
   it('gets all the packages', function (done) {
-    var couch = nock(config.registryCouch)
+
+    var couch = nock(couchConfig.registryCouch)
         .get('/registry/_design/app/_view/browseAll?group_level=1&skip=0&limit=10&stale=update_after')
-        .reply(200, require('./fixtures/browse').browseAll)
+        .reply(200, require('../fixtures/browse').browseAll)
 
     server.methods.registry.getAllPackages(0, 10, function (er, data) {
       expect(er).to.not.exist;
@@ -76,9 +77,9 @@ describe('browsing', function () {
   });
 
   it('gets the top 10 most recently updated packages', function (done) {
-    var couch = nock(config.registryCouch)
+    var couch = nock(couchConfig.registryCouch)
         .get('/registry/_design/app/_view/browseUpdated?group_level=2&skip=0&limit=10&descending=true&stale=update_after')
-        .reply(200, require('./fixtures/browse').updated)
+        .reply(200, require('../fixtures/browse').updated)
 
     server.methods.registry.getUpdated(0, 10, function (er, data) {
       expect(er).to.not.exist;
@@ -90,9 +91,9 @@ describe('browsing', function () {
 
   describe('by keyword', function () {
     it('gets the first 10 keywords', function (done) {
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/byKeyword?group_level=1&stale=update_after')
-          .reply(200, require('./fixtures/browse').allKeywords)
+          .reply(200, require('../fixtures/browse').allKeywords)
 
       server.methods.registry.getAllByKeyword(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -105,9 +106,9 @@ describe('browsing', function () {
     it('gets the first 10 packages matching a keyword', function (done) {
       var keyword = 'angular';
 
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/byKeyword?group_level=2&startkey=%5B%22' + keyword +'%22%5D&endkey=%5B%22' + keyword +'%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
-          .reply(200, require('./fixtures/browse').byKeyword)
+          .reply(200, require('../fixtures/browse').byKeyword)
 
       server.methods.registry.getAllByKeyword(keyword, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -120,9 +121,9 @@ describe('browsing', function () {
 
   describe('by author', function () {
     it('gets the first 10 authors', function (done) {
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseAuthors?group_level=1&stale=update_after')
-          .reply(200, require('./fixtures/browse').allAuthors)
+          .reply(200, require('../fixtures/browse').allAuthors)
 
       server.methods.registry.getAuthors(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -135,9 +136,9 @@ describe('browsing', function () {
     it('gets the first 10 packages matching an author', function (done) {
       var author = 'substack';
 
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseAuthors?group_level=2&startkey=%5B%22' + author + '%22%5D&endkey=%5B%22' + author + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
-          .reply(200, require('./fixtures/browse').byAuthor)
+          .reply(200, require('../fixtures/browse').byAuthor)
 
       server.methods.registry.getAuthors(author, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -150,9 +151,9 @@ describe('browsing', function () {
 
   describe('by depended upon', function () {
     it('gets the first 10 depended upon', function (done) {
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/dependedUpon?group_level=1&stale=update_after')
-          .reply(200, require('./fixtures/browse').allDepended)
+          .reply(200, require('../fixtures/browse').allDepended)
 
       server.methods.registry.getDependedUpon(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -165,9 +166,9 @@ describe('browsing', function () {
     it('gets the first 10 packages that depend upon a specific package', function (done) {
       var pkg = 'underscore';
 
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/dependedUpon?group_level=2&startkey=%5B%22' + pkg + '%22%5D&endkey=%5B%22' + pkg + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
-          .reply(200, require('./fixtures/browse').byDependedUpon)
+          .reply(200, require('../fixtures/browse').byDependedUpon)
 
       server.methods.registry.getDependedUpon(pkg, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -180,9 +181,9 @@ describe('browsing', function () {
 
   describe('by starred packages', function () {
     it('gets the top 10 starred packages', function (done) {
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseStarPackage?group_level=1&stale=update_after')
-          .reply(200, require('./fixtures/browse').stars)
+          .reply(200, require('../fixtures/browse').stars)
 
       server.methods.registry.getStarredPackages(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -198,9 +199,9 @@ describe('browsing', function () {
     it('gets the first 10 packages that depend upon a specific package', function (done) {
       var pkg = 'underscore';
 
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseStarPackage?group_level=3&startkey=%5B%22' + pkg + '%22%5D&endkey=%5B%22' + pkg + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
-          .reply(200, require('./fixtures/browse').usersWhoStarredPackage)
+          .reply(200, require('../fixtures/browse').usersWhoStarredPackage)
 
       server.methods.registry.getStarredPackages(pkg, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -213,9 +214,9 @@ describe('browsing', function () {
 
   describe('by user stars', function () {
     it('gets the top 10 users who have starred packages', function (done) {
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseStarUser?group_level=1&stale=update_after')
-          .reply(200, require('./fixtures/browse').userstars)
+          .reply(200, require('../fixtures/browse').userstars)
 
       server.methods.registry.getUserStars(false, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -231,9 +232,9 @@ describe('browsing', function () {
     it('gets the first 10 packages that have been starred by a specific user', { timeout: 5000 }, function (done) {
       var user = 'substack';
 
-      var couch = nock(config.registryCouch)
+      var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseStarUser?group_level=2&startkey=%5B%22' + user + '%22%5D&endkey=%5B%22' + user + '%22%2C%7B%7D%5D&skip=0&limit=10&stale=update_after')
-          .reply(200, require('./fixtures/browse').starsByUser)
+          .reply(200, require('../fixtures/browse').starsByUser)
 
       server.methods.registry.getUserStars(user, 0, 10, function (er, data) {
         expect(er).to.not.exist;
@@ -249,10 +250,10 @@ describe('getting recent authors', function () {
   it('gets the top 10 recent authors', function (done) {
     var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
-    var couch = nock(config.registryCouch)
+    var couch = nock(couchConfig.registryCouch)
         .filteringPath(/startkey=[^&]*/g, 'startkey=XXX')
         .get('/registry/_design/app/_view/browseAuthorsRecent?group_level=2&startkey=XXX&stale=update_after').twice()
-        .reply(200, require('./fixtures/browse').authors)
+        .reply(200, require('../fixtures/browse').authors)
 
 
     server.methods.registry.getRecentAuthors(TWO_WEEKS, 0, 10, function (er, authors) {
@@ -269,8 +270,10 @@ describe('getting recent authors', function () {
 
 describe('starring a package', function () {
   it('adds a star to a package', function (done) {
-    var couch = nock(config.registryCouch)
+    var couch = nock(couchConfig.registryCouch)
+        .log(console.log)
         .put('/registry/_design/app/_update/star/request', 'boom')
+        .twice()
         .reply(201, { ok: 'starred'})
 
     server.methods.registry.star('request', 'boom', function (er, data) {
@@ -293,11 +296,12 @@ describe('starring a package', function () {
 
 describe('unstarring a package', function () {
   it('removes a star from a package', function (done) {
-    var couch = nock(config.registryCouch)
-        .put('/registry/_design/app/_update/unstar/request', 'boom')
-        .reply(201, { ok: 'unstarred'})
+    var couch = nock(couchConfig.registryCouch)
+        .log(console.log)
+        .put('/registry/_design/app/_update/unstar/splort', 'boom')
+        .reply(201, { ok: 'unstarred'});
 
-    server.methods.registry.unstar('request', 'boom', function (er, data) {
+    server.methods.registry.unstar('splort', 'boom', function (er, data) {
       expect(er).to.not.exist;
       expect(data).to.exist;
       expect(data.ok).to.equal('unstarred');
@@ -317,7 +321,7 @@ describe('unstarring a package', function () {
 describe('getting total number of packages', function () {
   it('gets the number of packages in the registry', function (done) {
 
-    var couch = nock(config.registryCouch)
+    var couch = nock(couchConfig.registryCouch)
         .filteringPath(/startkey=[^&]*/g, 'startkey=XXX')
         .get('/registry/_design/app/_view/fieldsInUse?group_level=1&startkey=XXX&endkey=%22name%22&stale=update_after')
         .reply(200, { rows: [ { key: 'name', value: 3681 } ] })

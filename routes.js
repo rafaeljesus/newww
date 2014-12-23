@@ -48,6 +48,12 @@ var unauthenticatedRoutes = [
       file: './static/misc/install.sh'
     }
   },{
+    path: '/opensearch.xml',
+    method: 'GET',
+    handler: {
+      file: './static/misc/opensearch.xml'
+    }
+  },{
     path: '/static/{path*}',
     method: 'GET',
     handler: {

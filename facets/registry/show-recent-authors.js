@@ -6,13 +6,9 @@ var pageSize = 100,
 
 // url is something like /recent-authors/:since
 module.exports = function RecentAuthors (request, reply) {
-  var recentAuthors = request.server.methods.registry.getRecentAuthors,
-      showError = request.server.methods.errors.showError(request, reply);
+  var recentAuthors = request.server.methods.registry.getRecentAuthors;
 
-  var opts = {
-    user: request.auth.credentials,
-    namespace: 'registry-recentauthors'
-  }
+  var opts = { };
 
   // grab the page number, if it's in the url
   var page = Math.abs(parseInt(request.query.page, 10)) || 1;
@@ -21,12 +17,13 @@ module.exports = function RecentAuthors (request, reply) {
   since = since ? new Date(since) : new Date(Date.now() - TWO_WEEKS);
 
   if (!since.getTime()) {
-    opts.url = request.server.info.uri + request.url.path;
-    return showError(opts.url, 404, 'The requested url is invalid', opts);
+    request.logger.warn('The requested url is invalid');
+    reply.view('errors/not-found', opts).code(404);
+    return;
   }
 
-  var age = Date.now() - since.getTime()
-  since = since.toISOString().slice(0, 10)
+  var age = Date.now() - since.getTime();
+  since = since.toISOString().slice(0, 10);
 
   var start = (page - 1) * pageSize,
       limit = pageSize;
@@ -57,4 +54,4 @@ module.exports = function RecentAuthors (request, reply) {
 
     reply.view('registry/recentauthors', opts);
   });
-}
+};

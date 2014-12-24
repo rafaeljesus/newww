@@ -1,4 +1,4 @@
-var browse = require('./browse'),
+var browse = require('./getBrowseData'),
     log = require('bole')('registry-browse-author');
 
 module.exports = function getAuthors (arg, skip, limit, next) {

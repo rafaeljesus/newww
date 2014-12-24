@@ -7,8 +7,6 @@ module.exports = function postForm (options) {
         .replace(":portal_id", options.hubspot.portal_id)
         .replace(":form_guid", formGuid);
 
-        console.log(hubspot)
-
     request.post(hubspot, function (er, resp) {
 
       // we can ignore 302 responses

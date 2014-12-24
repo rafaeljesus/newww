@@ -2,7 +2,6 @@ var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
-    after = lab.after,
     it = lab.test,
     expect = Lab.expect;
 
@@ -12,8 +11,7 @@ var Hapi = require('hapi'),
     config = require('../../config'),
     couchConfig = config.couch,
     couch = require('../../services/registry'),
-    metrics = require('../../adapters/metrics')(config.metrics)
-    ;
+    metrics = require('../../adapters/metrics')(config.metrics);
 
 var server;
 
@@ -37,7 +35,7 @@ describe('getting packages from couch', function () {
 
     var couch = nock(couchConfig.registryCouch)
         .get('/registry/request')
-        .reply(200, require('../fixtures/request.json'))
+        .reply(200, require('../fixtures/request.json'));
 
     server.methods.registry.getPackage('request', function (er, pkg) {
       expect(er).to.not.exist;
@@ -50,13 +48,13 @@ describe('getting packages from couch', function () {
   it('returns null for packages that don\'t exist', function (done) {
     var couch = nock(couchConfig.registryCouch)
         .get('/registry/goober')
-        .reply(404, {"error":"not_found","reason":"missing"})
+        .reply(404, {"error":"not_found","reason":"missing"});
 
     server.methods.registry.getPackage('goober', function (er, pkg) {
       expect(er).to.not.exist;
       expect(pkg).to.not.exist;
       done();
-    })
+    });
   });
 });
 
@@ -66,11 +64,10 @@ describe('browsing', function () {
 
     var couch = nock(couchConfig.registryCouch)
         .get('/registry/_design/app/_view/browseAll?group_level=1&skip=0&limit=10&stale=update_after')
-        .reply(200, require('../fixtures/browse').browseAll)
+        .reply(200, require('../fixtures/browse').browseAll);
 
     server.methods.registry.getAllPackages(0, 10, function (er, data) {
       expect(er).to.not.exist;
-      expect(data).to.be.an.Array;
       expect(data).to.have.length(10);
       done();
     });
@@ -83,7 +80,7 @@ describe('browsing', function () {
 
     server.methods.registry.getUpdated(0, 10, function (er, data) {
       expect(er).to.not.exist;
-      expect(data).to.be.an.Array;
+      expect(data).to.be.an.array;
       expect(data).to.have.length(10);
       done();
     });
@@ -271,7 +268,6 @@ describe('getting recent authors', function () {
 describe('starring a package', function () {
   it('adds a star to a package', function (done) {
     var couch = nock(couchConfig.registryCouch)
-        .log(console.log)
         .put('/registry/_design/app/_update/star/request', 'boom')
         .twice()
         .reply(201, { ok: 'starred'})
@@ -297,7 +293,6 @@ describe('starring a package', function () {
 describe('unstarring a package', function () {
   it('removes a star from a package', function (done) {
     var couch = nock(couchConfig.registryCouch)
-        .log(console.log)
         .put('/registry/_design/app/_update/unstar/splort', 'boom')
         .reply(201, { ok: 'unstarred'});
 

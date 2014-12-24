@@ -9,6 +9,7 @@ var Hapi = require('hapi'),
 module.exports = function (type, arg, skip, limit, next) {
   var opts = {};
   var anonCouch = CouchDB.anonCouch;
+  var key = [type, arg, skip, limit].join(',');
 
   // if type if an object, rather than a
   // string, assume that it is an options object.
@@ -36,19 +37,19 @@ module.exports = function (type, arg, skip, limit, next) {
   // manually, since couchdb can't do this.
   // otherwise, just fetch paginatedly
   if (arg || !utils.transformKeyArg) {
-    query.skip = skip
-    query.limit = limit
+    query.skip = skip;
+    query.limit = limit;
   }
 
-  if (type === 'updated') query.descending = true
+  if (type === 'updated') { query.descending = true; }
 
   // We are always ok with getting stale data, rather than wait for
   // couch to generate new view data.
-  query.stale = 'update_after'
+  query.stale = 'update_after';
 
   var u = '/registry/_design/app/_view/' + browseUtils[type].viewName;
 
-  u += '?' + qs.stringify(query)
+  u += '?' + qs.stringify(query);
   log.info('browse url: ', u);
 
   anonCouch.get(u, function (er, cr, data) {
@@ -56,7 +57,6 @@ module.exports = function (type, arg, skip, limit, next) {
       var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };
       log.error(uuid.v1() + ' ' + Hapi.error.internal('Error fetching browse data'), erObj);
 
-      var key = [type, arg, skip, limit].join(',')
       metrics.metric({
         name:   'latency',
         value:  Date.now() - start,
@@ -68,7 +68,7 @@ module.exports = function (type, arg, skip, limit, next) {
     }
 
     start = Date.now();
-    browseUtils.transform(type, arg, data, skip, limit, opts, function (err, data) {
+    browseUtils.transform(type, arg, data, skip, limit, opts, function (er, transformedData) {
 
       metrics.metric({
         name:   'latency',
@@ -77,9 +77,7 @@ module.exports = function (type, arg, skip, limit, next) {
         browse: 'browse ' + key
       });
 
-      var key = [type, arg, skip, limit].join(',')
-      return next(er, data)
-
+      return next(null, transformedData);
     });
   });
-}
+};

@@ -1,4 +1,4 @@
-var browse = require('./browse'),
+var browse = require('./getBrowseData'),
     log = require('bole')('registry-browse-starred-packages');
 
 module.exports = function getStarredPackages (arg, skip, limit, next) {

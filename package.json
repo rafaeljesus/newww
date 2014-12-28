@@ -88,7 +88,6 @@
     "gulp-uglify": "^0.3.0",
     "hapi-auth-cookie": "^1.2.0",
     "imagemin-pngcrush": "^1.0.0",
-    "jshint": "^2.5.10",
     "lodash": "^2.4.1",
     "npm2es": "git://github.com/npm/npm2es",
     "numbat-collector": "0.0.5",

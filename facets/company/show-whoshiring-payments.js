@@ -1,32 +1,22 @@
-var Joi = require('joi'),
-    Hapi = require('hapi');
+var Joi = require('joi');
 
 module.exports = function (options) {
   var stripe = require('stripe')(options.secretkey),
       VALID_CHARGE_AMOUNTS = [35000, 100000];
 
   return function (request, reply) {
-    var showError = request.server.methods.errors.showError(request, reply),
-        timer = { start: Date.now() };
 
     var opts = {
-      user: request.auth.credentials,
-
       title: "Join the Who's Hiring Page",
-      namespace: 'company-whoshiring-payments'
     };
 
     if (request.method === 'get') {
       opts.stripeKey = options.publickey;
 
-      timer.end = Date.now();
-
       request.timing.page = 'whoshiring-payments';
       request.metrics.metric({name: 'whoshiring-payments'});
       return reply.view('company/payments', opts);
     }
-
-    opts.isXhr = true;
 
     var schema = Joi.object().keys({
       id: Joi.string().token(),
@@ -42,12 +32,18 @@ module.exports = function (options) {
     });
 
     Joi.validate(request.payload, schema, function (err, token) {
+
       if (err) {
-        return showError(err, 403, 'validation error', opts);
+        request.logger.error('validation error');
+        request.logger.error(err);
+        reply('validation error').code(403);
+        return;
       }
 
       if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
-        return showError(token.amount, 403, 'invalid charge amount error', opts);
+        request.logger.error('invalid charge amount: ' + token.amount + '; email=' + token.email);
+        reply('invalid charge amount error').code(403);
+        return;
       }
 
       var stripeStart = Date.now();
@@ -57,8 +53,12 @@ module.exports = function (options) {
         card: token.id, // obtained with Stripe.js
         description: "Charge for " + token.email
       }, function(err, charge) {
+
         if (err) {
-          return showError(token.amount, 500, 'internal stripe error', opts);
+          request.logger.error('internal stripe error; amount=' + token.amount + '; email=' + token.email);
+          request.logger.error(err);
+          reply('internal stripe error').code(500);
+          return;
         }
 
         request.metrics.metric({
@@ -67,6 +67,8 @@ module.exports = function (options) {
           type: 'stripe'
         });
 
+        request.logger.info('Successful charge: ', charge);
+
         request.timing.page = 'whoshiring-paymentProcessed';
         request.metrics.metric({name: 'whoshiring-paymentProcessed'});
 
@@ -74,4 +76,4 @@ module.exports = function (options) {
       });
     });
   };
-}
+};

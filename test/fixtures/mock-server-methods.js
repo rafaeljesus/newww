@@ -64,33 +64,6 @@ module.exports = function (server) {
       }
     },
 
-    errors: {
-      showError: function (request, reply) {
-        return function (err, code, message, opts) {
-          opts.errId = '12345';
-
-          if (opts.isXhr) {
-            return reply(message).code(code);
-          }
-
-          var template;
-          switch (code) {
-            case 404:
-              template = 'errors/not-found';
-              break;
-            case 500:
-              /* falls through */
-            default:
-              template = 'errors/internal';
-              break;
-          }
-
-
-          return reply.view(template, opts).code(code);
-        };
-      }
-    },
-
     npme: {
       createCustomer: function (data, next) {
         return next(null, enterprise.newUser);

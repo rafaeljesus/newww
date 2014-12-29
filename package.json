@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "lab --verbose --colors --ignore '$$bole' && node allPlugins t",
+    "test": "lab --verbose --colors --ignore '$$bole'",
     "coverage": "lab --coverage --ignore '$$bole' -r html > test/coverage.html && open test/coverage.html",
     "prepublish": "gulp build",
     "dev": "gulp dev",

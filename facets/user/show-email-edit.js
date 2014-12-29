@@ -1,25 +1,16 @@
-var NAMESPACE = 'user-email-edit';
 
-var Hapi = require('hapi'),
-    userValidate = require('npm-user-validate'),
+var userValidate = require('npm-user-validate'),
     nodemailer = require('nodemailer'),
     crypto = require('crypto');
 
 var transport, mailer;
 
-var from, host, devMode, timer = {};
+var from, host, devMode;
 
 module.exports = function (options) {
   return function (request, reply) {
-    timer.start = Date.now();
 
-    var showError = request.server.methods.errors.showError(request, reply);
-
-    var opts = {
-      user: request.auth.credentials,
-
-      namespace: NAMESPACE
-    };
+    var opts = { };
 
     from = options.emailFrom;
     host = options.canonicalHost;
@@ -29,24 +20,23 @@ module.exports = function (options) {
     if (process.env.NODE_ENV === 'dev') {
       devMode = true;
     } else {
-      if (!options.mailTransportModule ||
-          !options.mailTransportSettings) {
-        return showError(null, 500, 'Mail settings are missing!', opts);
-      }
       transport = require(options.mailTransportModule);
       mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
     }
 
     if (request.method === 'get' || request.method === 'head') {
       if (request.params && request.params.token) {
-        var action_token = request.params.token.split('/');
         switch (request.params.token.split('/')[0]) {
-          case 'revert': return revert(request, reply);
-          case 'confirm': return confirm(request, reply);
-          default: return showError(request.url.path, 404, 'Page not found', opts);
+          case 'revert':
+            return revert(request, reply);
+          case 'confirm':
+            return confirm(request, reply);
+          default:
+            request.logger.warn('Page not found: ', request.url.path);
+            reply.view('errors/not-found', opts).code(404);
+            return;
         }
       } else {
-        timer.end = Date.now();
         request.timing.page = 'email-edit';
 
         opts.title = 'Edit Profile';
@@ -63,7 +53,6 @@ module.exports = function (options) {
       if (!email2 || userValidate.email(email2)) {
         opts.error = {email: true};
 
-        timer.end = Date.now();
         request.timing.page = 'email-edit-error';
 
         request.metrics.metric({ name: 'email-edit-error' });
@@ -78,7 +67,6 @@ module.exports = function (options) {
       if (pwHash !== profHash) {
         opts.error = {password: true};
 
-        timer.end = Date.now();
         request.timing.page = 'email-edit-error';
 
         request.metrics.metric({ name: 'email-edit-error' });
@@ -93,20 +81,13 @@ module.exports = function (options) {
 // ======== functions ======
 
 function handle (request, reply, email2) {
-  var opts = {
-    user: request.auth.credentials,
-    namespace: NAMESPACE
-  };
-
-  var showError = request.server.methods.errors.showError(request, reply);
+  var opts = { };
 
   var confTok = crypto.randomBytes(18).toString('hex'),
       confHash = sha(confTok),
       confKey = 'email_change_conf_' + confHash,
-      confLink = '/email-edit/confirm/' + confHash,
       revTok = crypto.randomBytes(18).toString('hex'),
       revHash = sha(revTok),
-      revLink = '/email-edit/revert/' + revHash,
       revKey = 'email_change_rev_' + revHash;
 
   var email1 = opts.user.email,
@@ -129,16 +110,21 @@ function handle (request, reply, email2) {
     confHash: confHash
   };
 
-  var n = 2;
-
   request.server.app.cache.set(revKey, rev, 0, function (err) {
+
     if (err) {
-      return showError(err, 500, 'Could not set revKey to the cache', opts);
+      request.logger.error('Could not set the revKey to the cache: ', revKey);
+      request.logger.error(err);
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     request.server.app.cache.set(confKey, conf, 0, function (er) {
       if (er) {
-        return showError(err, 500, 'Could not set confKey to the cache', opts);
+        request.logger.error('Could not set the confKey to the cache: ', confKey);
+        request.logger.error(err);
+        reply.view('errors/internal', opts).code(500);
+        return;
       }
 
       return sendEmails(conf, rev, request, reply);
@@ -147,17 +133,12 @@ function handle (request, reply, email2) {
 }
 
 function sendEmails (conf, rev, request, reply) {
-  var opts = {
-    user: request.auth.credentials,
-
-    namespace: NAMESPACE
-  };
+  var opts = { };
 
   var name = conf.name,
       urlStart = host + '/email-edit/',
       confUrl = urlStart + 'confirm/' + encodeURIComponent(conf.token),
-      revUrl = urlStart + 'revert/' + encodeURIComponent(rev.token),
-      showError = request.server.methods.errors.showError(request, reply);
+      revUrl = urlStart + 'revert/' + encodeURIComponent(rev.token);
 
   // we need to move the construction of these emails to somewhere else...
   // maybe we can consider https://github.com/andris9/nodemailer-html-to-text ?
@@ -178,7 +159,6 @@ function sendEmails (conf, rev, request, reply) {
   };
 
   if (devMode) {
-    timer.end = Date.now();
     request.timing.page = 'email-edit-send-emails';
     opts.confirm = JSON.stringify(confMail);
     opts.revert = JSON.stringify(revMail);
@@ -189,18 +169,25 @@ function sendEmails (conf, rev, request, reply) {
   }
 
   // don't send the confmail until we know the revert mail was sent!
-  mailer.sendMail(revMail, function (er, result) {
+  mailer.sendMail(revMail, function (er) {
+
     if (er) {
-      return showError(er, 500, 'Unable to send revert email', opts);
+      request.logger.error('Unable to send revert email to ' + revMail.to);
+      request.logger.error(er);
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
-    mailer.sendMail(confMail, function (er, result) {
+    mailer.sendMail(confMail, function (er) {
+
       if (er) {
-        return showError(er, 500, 'Unable to send confirmation email', opts);
+        request.logger.error('Unable to send confirmation email to ' + confMail.to);
+        request.logger.error(er);
+        reply.view('errors/internal', opts).code(500);
+        return;
       }
 
       opts.submitted = true;
-      timer.end = Date.now();
       request.timing.page = 'email-edit-send-emails';
 
       request.metrics.metric({ name: 'email-edit-send-emails' });
@@ -211,67 +198,79 @@ function sendEmails (conf, rev, request, reply) {
 
 function confirm (request, reply) {
   var methods = request.server.methods,
-      setSession = request.server.methods.user.setSession(request),
-      showError = request.server.methods.errors.showError(request, reply);
+      setSession = request.server.methods.user.setSession(request);
 
-  var opts = {
-        user: request.auth.credentials,
-        namespace: NAMESPACE
-      },
+  var opts = { },
       cache = request.server.app.cache;
 
   var token = request.params.token.split('/')[1],
       confHash = sha(token),
-      confKey = 'email_change_conf_' + confHash,
-      timer = {};
+      confKey = 'email_change_conf_' + confHash;
 
   cache.get(confKey, function (er, cached) {
+
     if (er) {
-      return showError(confKey, 500, 'Error getting token from Redis', opts);
+      request.logger.error('Unable to get token from Redis: ' + confKey);
+      request.logger.error(er);
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     if (!cached) {
-      return showError(confKey, 500, 'Token not found, or invalid', opts);
+      request.logger.error('Token not found or invalid: ' + confKey);
+      reply.view('errors/not-found', opts).code(404);
+      return;
     }
 
     var name = cached.item.name;
     if (name !== opts.user.name) {
-      return showError({changeEmailFor: name, loggedInAs: opts.user.name}, 500, 'This request was for someone else', opts);
+      request.logger.error(opts.user.name + ' attempted to change email for ' + name);
+      // TODO we should really bubble this one up to the user!
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
-    var email1 = cached.item.email1,
-        email2 = cached.item.email2,
-        confTok = cached.item.token,
+    var email2 = cached.item.email2,
         hash = cached.item.hash;
 
     if (hash !== confHash) {
-      return showError({hash: hash, confHash: confHash}, 500, 'Math is broken, sorry', opts);
+      request.logger.error('these should be equal: hash=' + hash + '; confHash: ' + confHash);
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     cache.drop(confKey, function (err) {
+
       if (err) {
-        return showError(err, 500, 'Unable to drop key ' + confKey, opts);
+        request.logger.warn('Unable to drop key ' + confKey);
       }
 
       methods.user.changeEmail(opts.user.name, email2, function (er) {
+
         if (er) {
-          return showError(er, 500, 'Unable to change email for ' + opts.user.name + ' to ' + email2, opts);
+          request.logger.error('Unable to change email for ' + opts.user.name + ' to ' + email2);
+          request.logger.error(er);
+          reply.view('errors/internal', opts).code(500);
+          return;
         }
 
         opts.user.email = email2;
         opts.confirmed = true;
 
         setSession(opts.user, function (err) {
+
           if (err) {
-            return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
+            request.logger.error('Unable to set the session for user ' + opts.user.name);
+            request.logger.error(err);
+            reply.view('errors/internal', opts).code(500);
+            return;
           }
 
-          methods.user.getUser.cache.drop(opts.user.name, function (er, resp) {
+          methods.user.getUser.cache.drop(opts.user.name, function (er) {
             if (er) {
-              return showError(er, 500, 'Unable to drop profile for ' + opts.user.name, opts);
+              request.logger.warn('Unable to drop profile cache for ' + opts.user.name);
             }
 
-            timer.end = Date.now();
             request.timing.page = 'confirmEmailChange';
             request.metrics.metric({ name: 'confirmEmailChange' });
 
@@ -287,72 +286,86 @@ function confirm (request, reply) {
 
 function revert (request, reply) {
   var methods = request.server.methods,
-      setSession = request.server.methods.user.setSession(request),
-      showError = request.server.methods.errors.showError(request, reply);
+      setSession = request.server.methods.user.setSession(request);
 
-  var opts = {
-        user: request.auth.credentials,
-        namespace: NAMESPACE
-      },
+  var opts = { },
       cache = request.server.app.cache;
 
   var token = request.params.token.split('/')[1],
       revHash = sha(token),
-      revKey = 'email_change_rev_' + revHash,
-      timer = {};
+      revKey = 'email_change_rev_' + revHash;
 
   cache.get(revKey, function (er, cached) {
+
     if (er) {
-      return showError(revKey, 500, 'Error getting token from Redis', opts);
+      request.logger.error('Error getting revert token from redis: ', revKey);
+      reply.view('errors/internal', opts).code(500);
+      request.logger.error(er);
+      return;
     }
 
     if (!cached) {
-      return showError(revKey, 500, 'Token not found, or invalid', opts);
+      request.logger.error('Token not found or invalid: ' + revKey);
+      reply.view('errors/not-found', opts).code(404);
+      return;
     }
 
     var name = cached.item.name;
     if (name !== opts.user.name) {
-      return showError({changeEmailFor: name, loggedInAs: opts.user.name}, 500, 'This request was for someone else', opts);
+      request.logger.error(opts.user.name + ' attempted to revert email for ' + name);
+      // TODO we should really bubble this one up to the user!
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     var email1 = cached.item.email1,
-        email2 = cached.item.email2,
         confHash = cached.item.confHash,
         confKey = 'email_change_conf_' + confHash,
         hash = cached.item.hash;
 
     if (hash !== revHash) {
-      return showError({hash: hash, confHash: confHash}, 500, 'Math is broken, sorry', opts);
+      request.logger.error('these should be equal: hash=' + hash + '; revHash: ' + revHash);
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     cache.drop(confKey, function (err) {
+
       if (err) {
-        return showError(err, 500, 'Unable to drop key ' + confKey, opts);
+        request.logger.warn('Unable to drop key ' + confKey);
       }
 
       cache.drop(revKey, function (err) {
+
         if (err) {
-          return showError(err, 500, 'Unable to drop key ' + revKey, opts);
+          request.logger.warn('Unable to drop key ' + revKey);
         }
 
         methods.user.changeEmail(opts.user.name, email1, function (er) {
+
           if (er) {
-            return showError(er, 500, 'Unable to change email for ' + opts.user.name + ' to ' + email1, opts);
+            request.logger.error('Unable to revert email for ' + opts.user.name + ' to ' + email1);
+            request.logger.error(er);
+            reply.view('errors/internal', opts).code(500);
+            return;
           }
 
           opts.user.email = email1;
 
           setSession(opts.user, function (err) {
+
             if (err) {
-              return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
+              request.logger.error('Unable to set the session for user ' + opts.user.name);
+              request.logger.error(err);
+              reply.view('errors/internal', opts).code(500);
+              return;
             }
 
-            methods.user.getUser.cache.drop(opts.user.name, function (er, resp) {
+            methods.user.getUser.cache.drop(opts.user.name, function (er) {
               if (er) {
-                return showError(er, 500, 'Unable to drop profile for ' + opts.user.name, opts);
+                request.logger.warn('Unable to drop profile cache for ' + opts.user.name);
               }
 
-              timer.end = Date.now();
               request.timing.page = 'revertEmailChange';
 
               request.metrics.metric({ name: 'revertEmailChange' });
@@ -369,9 +382,9 @@ function revert (request, reply) {
 }
 
 function sha (s) {
-  return crypto.createHash("sha1").update(s).digest("hex")
+  return crypto.createHash("sha1").update(s).digest("hex");
 }
 
 function pbkdf2 (pass, salt, iterations) {
-  return crypto.pbkdf2Sync(pass, salt, iterations, 20).toString('hex')
+  return crypto.pbkdf2Sync(pass, salt, iterations, 20).toString('hex');
 }

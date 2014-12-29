@@ -8,26 +8,24 @@ var Lab = require('lab'),
 
 var Hapi = require('hapi'),
     nock = require('nock'),
-    config = require('../../../config').couch,
-    metricsConfig = require('../../../config').metrics,
-    couch = require('../index.js'),
-    MetricsClient = require('newww-metrics');
+    config = require('../../config'),
+    couchDB = require('../../adapters/couchDB'),
+    couchConfig = config.couch,
+    couch = require('../../services/user'),
+    metrics = require('../../adapters/metrics')(config.metrics);
 
-var couchdb = require('./fixtures/fake-couch')(config),
+var couchdb = require('../fixtures/fake-couch')(couchConfig),
     server;
 
 before(function (done) {
   // configure couch
-  var couchDB = require('../../../adapters/couchDB');
-  couchDB.init(config);
-
-  var metrics = new MetricsClient(metricsConfig);
+  couchDB.init(couchConfig);
 
   server = Hapi.createServer('localhost', '6110');
   server.pack.register([
     {
       plugin: couch,
-      options: config
+      options: couchConfig
     }
   ], function () {
     server.start(done);

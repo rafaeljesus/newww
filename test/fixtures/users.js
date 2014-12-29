@@ -56,7 +56,7 @@ exports.fakeuser = {
   "derived_key": "a7a5bcffa127d44e214fbb0c3148b89c23100c9a",
   "password_scheme": "pbkdf2",
   "iterations": 10
-}
+};
 
 exports.fakeuserNewProfile = {
   fullname: 'Fake User',
@@ -64,13 +64,13 @@ exports.fakeuserNewProfile = {
   twitter: 'fakeuser',
   homepage: '',
   freenode: ''
-}
+};
 
 exports.fakeuserChangePassword = {
   current: '12345',
   new: 'abcde',
   verify: 'abcde'
-}
+};
 
 exports.fakeusercli = {
   "_id": "org.couchdb.user:fakeusercli",
@@ -85,7 +85,7 @@ exports.fakeusercli = {
   "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
   "salt": "67bbd97d32e397ded845e279fb371ea7",
   "mustChangePass": true
-}
+};
 
 exports.npmEmployee = {
   "_id": "org.couchdb.user:seldo",
@@ -99,7 +99,7 @@ exports.npmEmployee = {
   "date": "2014-04-26T00:54:43.315Z",
   "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
   "salt": "67bbd97d32e397ded845e279fb371ea7"
-}
+};
 
 exports.fakeuserCliFields = [{
   name: 'fullname',
@@ -136,7 +136,7 @@ exports.fakeuserCliFields = [{
   value: '',
   title: 'IRC Handle',
   show: ''
-}]
+}];
 
 exports.fakeusernoemail = {
   "_id": "org.couchdb.user:fakeusernoemail",
@@ -150,7 +150,7 @@ exports.fakeusernoemail = {
   "date": "2014-04-26T00:54:43.315Z",
   "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
   "salt": "67bbd97d32e397ded845e279fb371ea7"
-}
+};
 
 exports.fakeuserbademail = {
   "_id": "org.couchdb.user:fakeuserbademail",
@@ -164,7 +164,7 @@ exports.fakeuserbademail = {
   "date": "2014-04-26T00:54:43.315Z",
   "derived_key": "1b3bf7b17b4d1363f07e2701bf6ed7e220ebaaf3",
   "salt": "67bbd97d32e397ded845e279fb371ea7"
-}
+};
 
 
 exports.full_meta = {
@@ -205,4 +205,35 @@ exports.full_meta = {
     "title": "IRC Handle",
     "show": ""
   }]
-}
+};
+
+exports.blah = {
+   "_id": "org.couchdb.user:blah",
+   "_rev": "1-821953ad240c90ef437c0b2347bf8a00",
+   "name": "blah",
+   "roles": [
+   ],
+   "type": "user",
+   "password_scheme": "pbkdf2",
+   "derived_key": "c7bf5866f967d940eeb3142eb89f622ff6adbea9",
+   "salt": "7547cc3cc579545aede05490c636d21ce3ec46928260bee6d83d8f52003d",
+   "iterations": 10,
+   "date": "2014-06-12T00:15:19.641Z",
+   "verify": "12345",
+   "email": "raquel@npmjs.com"
+};
+
+exports.boom = {
+  "_id": "org.couchdb.user:boom",
+  "_rev": "1-7adf7e546de1852cec39894c0d652fb4",
+  "name": "boom",
+  "roles": [],
+  "type": "user",
+  "password_scheme": "pbkdf2",
+  "derived_key": "120282c09ab56981ae498477bf554079d230501f",
+  "salt": "85794feca38d8fa85aae809b9fa420c2bf4ed91a4e43a979f3c9e9ad60b3",
+  "iterations": 10,
+  "date": "2014-07-21T20:16:41.055Z",
+  "email": "boom@boom.com",
+  "sid": "c53f9ebc"
+};

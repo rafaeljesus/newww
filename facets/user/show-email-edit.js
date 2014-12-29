@@ -59,10 +59,12 @@ module.exports = function (options) {
         return reply.view('user/email-edit', opts).code(400);
       }
 
-      var salt = opts.user.salt,
-          pwHash = opts.user.password_sha ? sha(data.password + salt) :
-                   pbkdf2(data.password, salt, parseInt(opts.user.iterations, 10)),
-          profHash = opts.user.password_sha || opts.user.derived_key;
+      var user = request.auth.credentials;
+
+      var salt = user.salt,
+          pwHash = user.password_sha ? sha(data.password + salt) :
+                   pbkdf2(data.password, salt, parseInt(user.iterations, 10)),
+          profHash = user.password_sha || user.derived_key;
 
       if (pwHash !== profHash) {
         opts.error = {password: true};
@@ -90,8 +92,8 @@ function handle (request, reply, email2) {
       revHash = sha(revTok),
       revKey = 'email_change_rev_' + revHash;
 
-  var email1 = opts.user.email,
-      name = opts.user.name;
+  var email1 = request.auth.credentials.email,
+      name = request.auth.credentials.name;
 
   var conf = {
     name: name,
@@ -201,6 +203,7 @@ function confirm (request, reply) {
       setSession = request.server.methods.user.setSession(request);
 
   var opts = { },
+      user = request.auth.credentials,
       cache = request.server.app.cache;
 
   var token = request.params.token.split('/')[1],
@@ -223,8 +226,8 @@ function confirm (request, reply) {
     }
 
     var name = cached.item.name;
-    if (name !== opts.user.name) {
-      request.logger.error(opts.user.name + ' attempted to change email for ' + name);
+    if (name !== user.name) {
+      request.logger.error(user.name + ' attempted to change email for ' + name);
       // TODO we should really bubble this one up to the user!
       reply.view('errors/internal', opts).code(500);
       return;
@@ -245,30 +248,30 @@ function confirm (request, reply) {
         request.logger.warn('Unable to drop key ' + confKey);
       }
 
-      methods.user.changeEmail(opts.user.name, email2, function (er) {
+      methods.user.changeEmail(user.name, email2, function (er) {
 
         if (er) {
-          request.logger.error('Unable to change email for ' + opts.user.name + ' to ' + email2);
+          request.logger.error('Unable to change email for ' + user.name + ' to ' + email2);
           request.logger.error(er);
           reply.view('errors/internal', opts).code(500);
           return;
         }
 
-        opts.user.email = email2;
+        user.email = email2;
         opts.confirmed = true;
 
-        setSession(opts.user, function (err) {
+        setSession(user, function (err) {
 
           if (err) {
-            request.logger.error('Unable to set the session for user ' + opts.user.name);
+            request.logger.error('Unable to set the session for user ' + user.name);
             request.logger.error(err);
             reply.view('errors/internal', opts).code(500);
             return;
           }
 
-          methods.user.getUser.cache.drop(opts.user.name, function (er) {
+          methods.user.getUser.cache.drop(user.name, function (er) {
             if (er) {
-              request.logger.warn('Unable to drop profile cache for ' + opts.user.name);
+              request.logger.warn('Unable to drop profile cache for ' + user.name);
             }
 
             request.timing.page = 'confirmEmailChange';
@@ -289,6 +292,7 @@ function revert (request, reply) {
       setSession = request.server.methods.user.setSession(request);
 
   var opts = { },
+      user = request.auth.credentials,
       cache = request.server.app.cache;
 
   var token = request.params.token.split('/')[1],
@@ -311,8 +315,8 @@ function revert (request, reply) {
     }
 
     var name = cached.item.name;
-    if (name !== opts.user.name) {
-      request.logger.error(opts.user.name + ' attempted to revert email for ' + name);
+    if (name !== user.name) {
+      request.logger.error(user.name + ' attempted to revert email for ' + name);
       // TODO we should really bubble this one up to the user!
       reply.view('errors/internal', opts).code(500);
       return;
@@ -341,29 +345,29 @@ function revert (request, reply) {
           request.logger.warn('Unable to drop key ' + revKey);
         }
 
-        methods.user.changeEmail(opts.user.name, email1, function (er) {
+        methods.user.changeEmail(user.name, email1, function (er) {
 
           if (er) {
-            request.logger.error('Unable to revert email for ' + opts.user.name + ' to ' + email1);
+            request.logger.error('Unable to revert email for ' + user.name + ' to ' + email1);
             request.logger.error(er);
             reply.view('errors/internal', opts).code(500);
             return;
           }
 
-          opts.user.email = email1;
+          user.email = email1;
 
-          setSession(opts.user, function (err) {
+          setSession(user, function (err) {
 
             if (err) {
-              request.logger.error('Unable to set the session for user ' + opts.user.name);
+              request.logger.error('Unable to set the session for user ' + user.name);
               request.logger.error(err);
               reply.view('errors/internal', opts).code(500);
               return;
             }
 
-            methods.user.getUser.cache.drop(opts.user.name, function (er) {
+            methods.user.getUser.cache.drop(user.name, function (er) {
               if (er) {
-                request.logger.warn('Unable to drop profile cache for ' + opts.user.name);
+                request.logger.warn('Unable to drop profile cache for ' + user.name);
               }
 
               request.timing.page = 'revertEmailChange';

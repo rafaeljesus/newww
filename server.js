@@ -1,9 +1,7 @@
-var _ = require('lodash'),
-    assert = require('assert'),
-    Hapi = require('hapi'),
-    Hoek = require('hoek'),
-    config = require('./config.js'),
-    url = require('url'),
+var _       = require('lodash'),
+    assert  = require('assert'),
+    config  = require('./config.js'),
+    Hapi    = require('hapi'),
     replify = require('replify');
 
 // set up the logger
@@ -25,7 +23,7 @@ assert(config.user.mail.mailTransportSettings && _.isObject(config.user.mail.mai
 assert(config.user.mail.emailFrom && _.isString(config.user.mail.emailFrom), 'config must include a `emailFrom` settins');
 
 // set up the server
-var server = new Hapi.Server(config.host, config.port, config.server)
+var server = new Hapi.Server(config.host, config.port, config.server);
 
 
 // configure couch
@@ -36,7 +34,7 @@ couchDB.init(config.couch);
 var metrics = require('./adapters/metrics')(config.metrics);
 
 server.pack.register(require('hapi-auth-cookie'), function (err) {
-  if (err) throw err;
+  if (err) { throw err; }
 
   var cache = server.cache('sessions', {
     expiresIn: config.session.expiresIn
@@ -60,8 +58,8 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
           return cb(null, false);
         }
 
-        return cb(null, true, cached.item)
-      })
+        return cb(null, true, cached.item);
+      });
     }
   });
 
@@ -76,7 +74,7 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     replify({ name: 'www-'+config.port }, server, { 'config': config,  });
     log.info('server repl socket at /tmp/rpl/www-'+config.port+'.sock');
 
-    server.route(require('./routes'))
+    server.route(require('./routes'));
 
     server.start(function() {
       metrics.metric({

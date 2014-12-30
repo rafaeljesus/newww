@@ -1,10 +1,9 @@
-var
-    bole      = require('bole'),
+var bole      = require('bole'),
     Hapi      = require('hapi'),
     Hoek      = require('hoek'),
     npmHumans = require("npm-humans"),
-    url       = require('url'),
-    uuid      = require('node-uuid');
+    toCommonLogFormat = require('hapi-common-log'),
+    url       = require('url');
 
 exports.register = function(plugin, options, next) {
 
@@ -13,8 +12,7 @@ exports.register = function(plugin, options, next) {
   plugin.ext('onPreHandler', function(request, next) {
 
     request.metrics = metrics;
-    request.correlationID = uuid.v1();
-    request.logger = bole(request.correlationID);
+    request.logger = bole(request.id);
     request.timing = {
       start: Date.now(),
     };
@@ -30,12 +28,12 @@ exports.register = function(plugin, options, next) {
     delete request.payload.honey;
 
     return next();
-  })
+  });
 
   plugin.ext('onPreResponse', function(request, next) {
 
     if ('json' in request.query) {
-      var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "auth.credentials.name"))
+      var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "auth.credentials.name"));
       if (process.env.NODE_ENV === "dev" || isNpmEmployee) {
         var ctx = Hoek.reach(request, 'response.source.context');
         if (ctx) {
@@ -45,7 +43,7 @@ exports.register = function(plugin, options, next) {
       }
     }
 
-    options.correlationID = request.correlationID;
+    options.correlationID = request.id;
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
       if (options.canonicalHost) {
@@ -83,7 +81,7 @@ exports.register = function(plugin, options, next) {
     });
 
     // TODO log request info in as close to common log format as possible
-    request.logger.info([request.method.toUpperCase(), request.path, request.response.statusCode].join(' '));
+    request.logger.info(toCommonLogFormat(request), latency + 'ms');
 
     next();
   });

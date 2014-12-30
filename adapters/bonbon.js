@@ -81,7 +81,7 @@ exports.register = function(plugin, options, next) {
     });
 
     // TODO log request info in as close to common log format as possible
-    request.logger.info(toCommonLogFormat(request), latency + 'ms');
+    request.logger.info(toCommonLogFormat(request, {ipHeader: 'fastly-client-ip'}), latency + 'ms');
 
     next();
   });

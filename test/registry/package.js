@@ -222,7 +222,7 @@ describe('requesting nonexistent packages', function () {
   var name = 'a-package-that-does-not-exist';
   var options = {
     url: '/package/' + name
-  }
+  };
 
   it('returns a 404', function (done) {
     server.inject(options, function (resp) {
@@ -234,13 +234,13 @@ describe('requesting nonexistent packages', function () {
   it('adds package.name to view context', function (done) {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.context.package.name).to.exist
+      expect(source.context.package.name).to.exist;
       done();
     });
   });
 
   it('renders the 404 template', function (done) {
-    server.inject(options, function (resp) {
+    server.inject(options, function () {
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -251,25 +251,25 @@ describe('requesting invalid packages', function () {
   var name = '_.escape';
   var options = {
     url: '/package/' + name
-  }
+  };
 
   it('returns a 400', function (done) {
     server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(400);
+      expect(resp.statusCode).to.equal(404);
       done();
     });
   });
 
   it('does NOT add package.name to view context', function (done) {
-    server.inject(options, function (resp) {
-      expect(source.context.package).to.not.exist
+    server.inject(options, function () {
+      expect(source.context.package).to.not.exist;
       done();
     });
   });
 
   it('renders the invalid input template', function (done) {
-    server.inject(options, function (resp) {
-      expect(source.template).to.equal('errors/invalid');
+    server.inject(options, function () {
+      expect(source.template).to.equal('errors/not-found');
       done();
     });
   });

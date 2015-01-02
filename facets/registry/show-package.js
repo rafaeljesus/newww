@@ -20,7 +20,7 @@ function showPackage(request, reply) {
 
   if (!validatePackageName(opts.name).valid) {
     request.logger.info('request for invalid package name: ' + opts.name);
-    reply.view('errors/invalid', opts).code(400);
+    reply.view('errors/not-found', opts).code(404);
     return;
   }
 

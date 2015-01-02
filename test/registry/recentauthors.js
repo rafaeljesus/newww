@@ -2,7 +2,6 @@ var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
-    after = lab.after,
     it = lab.test,
     expect = Lab.expect;
 
@@ -26,10 +25,9 @@ describe('getting to the recentauthors page', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('registry/recentauthors');
-      expect(source.context.errId).to.not.exist;
       done();
     });
-  })
+  });
 
   it('renders an error if the url is invalid', function (done) {
     var opts = {

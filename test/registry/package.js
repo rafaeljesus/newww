@@ -71,36 +71,6 @@ describe('Modifying the package before sending to the template', function () {
     done();
   });
 
-  it('marks first H1 element as superfluous, if similar to package name', function (done) {
-    expect(p.readmeSrc).to.include("# fake");
-    expect(p.readmeSrc).to.include("# Another H1");
-    var $ = cheerio.load(p.readme);
-    expect($("h1.superfluous").length).to.equal(1);
-    expect($("h1.superfluous").text()).to.equal("fake");
-    expect($("h1:not(.superfluous)").length).to.equal(1);
-    expect($("h1:not(.superfluous)").text()).to.equal("Another H1");
-    done();
-  });
-
-  it('removes shields.io badges from the README', function (done) {
-    expect(p.readmeSrc).to.include("img.shields.io");
-    var $ = cheerio.load(p.readme);
-    expect($("p:has(img[src*='img.shields.io'])").hasClass("superfluous")).to.be.true;
-    done();
-  });
-
-  it('removes nodei.co badges from the README', function (done) {
-    expect(p.readmeSrc).to.include("nodei.co");
-    var $ = cheerio.load(p.readme);
-    expect($("p:has(img[src*='nodei.co'])").hasClass("superfluous")).to.be.true;
-    done();
-  });
-
-  it('turns relative URLs into real URLs', function (done) {
-    expect(p.readme).to.include('/blob/master');
-    done();
-  });
-
   it('includes the dependencies', function (done) {
     expect(p.dependencies).to.exist;
     done();
@@ -120,81 +90,6 @@ describe('Modifying the package before sending to the template', function () {
       expect(resp.statusCode).to.equal(200);
       expect(source.template).to.equal('registry/unpublished-package-page');
       expect(source.context.package.unpubFromNow).to.exist;
-      done();
-    });
-  });
-});
-
-describe('readmes are always sanitized', function () {
-  it('even if they are not on the top level', function (done) {
-    var options = {
-      url: '/package/no_top_level_readme'
-    };
-
-    server.inject(options, function () {
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.include('<h1 id="benchmark');
-      expect(p.readme).to.not.include('# Benchmark');
-      done();
-    });
-  });
-
-  it('even if there is no readme', function (done) {
-    var options = {
-      url: '/package/no_readme'
-    };
-
-    server.inject(options, function () {
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('');
-      done();
-    });
-  });
-
-  it('even if it causes marked to throw', function (done) {
-    var options = {
-      url: '/package/throw_marked'
-    };
-
-    server.inject(options, function () {
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('');
-      done();
-    });
-  });
-
-  it('even if it is not markdown', function (done) {
-    var options = {
-      url: '/package/not_markdown'
-    };
-
-    server.inject(options, function () {
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('<p></p><p>hello</p><p></p>\n');
-      done();
-    });
-  });
-
-  it('even if it is a non-markdown readme from a file', function (done) {
-    var options = {
-      url: '/package/not_markdown_readme_from_file'
-    };
-
-    server.inject(options, function () {
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('<pre>&lt;p&gt;hello&lt;/p&gt;&lt;script&gt;console.log(&apos;boom&apos;)&lt;/script&gt;</pre>');
-      done();
-    });
-  });
-
-  it('even if it is a markdown readme from a file', function (done) {
-    var options = {
-      url: '/package/markdown_readme_from_file'
-    };
-
-    server.inject(options, function () {
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('<p>hello</p>\n<h2 id=\"boom\">boom</h2>\n');
       done();
     });
   });

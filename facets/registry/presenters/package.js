@@ -1,6 +1,5 @@
 var marked = require('marked'),
     fmt = require('util').format,
-    sanitizer = require('sanitizer'),
     gravatar = require('gravatar').url,
     moment = require('moment'),
     url = require('url'),
@@ -8,6 +7,7 @@ var marked = require('marked'),
     similarity = require('similarity'),
     gh = require('github-url-to-object'),
     cheerio = require('cheerio'),
+    marky = require('marky-markdown'),
     log = require('bole')('registry-package-presenter');
 
 module.exports = function presentPackage (data, cb) {
@@ -46,7 +46,8 @@ module.exports = function presentPackage (data, cb) {
   if (data.readme && !data.readmeSrc) {
     data.readmeSrc = data.readme;
   }
-  data.readme = parseReadme(data);
+
+  data.readme = marky(data.readmeSrc, {package: data}).html();
 
   gravatarPeople(data)
 
@@ -67,9 +68,7 @@ module.exports = function presentPackage (data, cb) {
     delete data.homepage
   }
 
-  // if (data.readme && data.readme.length) console.log('README EXISTS')
-
-    // homepage: discard if github repo URL
+  // homepage: discard if github repo URL
   if (data.homepage && url.parse(data.homepage).hostname.match(/^(www\.)?github\.com/i)) {
     delete data.homepage
   }
@@ -98,75 +97,8 @@ module.exports = function presentPackage (data, cb) {
     data.starCount = Object.keys(data.users).length
   }
 
-  removeSuperfluousContentFromReadme(data)
 
   return cb(null, data);
-}
-
-function urlPolicy (pkgData) {
-  var gh = pkgData && pkgData.repository ? ghurl(pkgData.repository.url) : null
-  return function (u, effect, ltype, hints) {
-    if (u.scheme_ === null && u.domain_ === null) {
-      if (!gh) return null
-      // temporary fix for relative links in github readmes, until a more general fix is needed
-      var v = url.parse(gh)
-      if (u.path_) {
-        if (hints && hints.XML_TAG === 'a') {
-          // if the tag is an anchor, we can link to the github html
-          v.pathname = v.pathname + '/blob/master/' + u.path_;
-        } else {
-          // else we link to the raw file
-          v.pathname = v.pathname + '/raw/master/' + u.path_;
-        }
-      }
-      u = {
-        protocol: v.protocol,
-        host: v.host,
-        pathname: v.pathname,
-        query: u.query_,
-        hash: u.fragment_
-      }
-    } else {
-      u = {
-        protocol: u.scheme_ + ':',
-        host: u.domain_ + (u.port_ ? ':' + u.port_ : ''),
-        pathname: u.path_,
-        query: u.query_,
-        hash: u.fragment_
-      }
-    }
-    u = url.parse(url.format(u))
-    if (!u) return null
-    if (u.protocol === 'http:' &&
-        (u.hostname && u.hostname.match(/gravatar.com$/))) {
-      // use encrypted gravatars
-      return url.format('https://secure.gravatar.com' + u.pathname)
-    }
-    return url.format(u)
-  }
-}
-
-function parseReadme (data) {
-
-  if (!data.readme || !data.readme.length) return '';
-
-  var parsed
-  if (typeof data.readmeFilename !== 'string' ||
-      (data.readmeFilename.match(/\.(m?a?r?k?d?o?w?n?)$/i) &&
-       !data.readmeFilename.match(/\.$/))) {
-    try {
-      parsed = marked.parse(data.readme);
-      parsed = parsed.replace(/<([a-zA-Z]+)([^>]*)\/>/g, '<$1$2></$1>');
-      return sanitizer.sanitize(parsed, urlPolicy(data));
-    } catch (er) {
-      // fall through and parse like it isn't markdown
-    }
-  }
-  parsed = data.readme
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-  return '<pre>' + sanitizer.sanitize(parsed, urlPolicy(parsed)) + '</pre>';
 }
 
 

@@ -1,4 +1,4 @@
-#readme
+.readme
   margin 0
 
   h1
@@ -8,18 +8,42 @@
     line-height 1.2
     @extend .ellipsis
     overflow-y hidden
+    &.package-name
+      margin-top 20px
+    a
+      color text-color
+      text-decoration none
 
-  hgroup
-    margin 20px 0
-    h2
-      text-align left
-      font-weight 300
-      margin 0
-      line-height 1.2
+  h1.package-name-redundant
+    display none
+
+  p.package-description
+    text-align left
+    font-weight 300
+    line-height 1.2
+    font-size 24px
+    margin 0
+    padding 0
+
+  p.package-description-redundant
+    display none
 
   h2
     text-transform none
     font-weight 700
+    color text-color
+    a
+      font-weight 700
+      color text-color
+      text-decoration none
+      &:before
+        content "#"
+        color greigh5
+        margin-left -20px
+        padding-right 10px
+      &:hover
+        &:before
+          color greigh3
 
   h3,h4,h5
     font-size 20px
@@ -46,9 +70,6 @@
 
   pre
     overflow-x auto
-
-  .superfluous
-    display none
 
 // Grabbed all the themes from this repo:
 // https://github.com/isagalaev/highlight.js/tree/master/src/styles

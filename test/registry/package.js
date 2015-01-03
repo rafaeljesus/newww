@@ -274,3 +274,22 @@ describe('requesting invalid packages', function () {
     });
   });
 });
+
+describe('seeing stars', function () {
+  it('highlights the star if the user is logged in and has starred the package', function (done) {
+    var pkgName = 'fake';
+
+    var options = {
+      url: '/package/' + pkgName,
+      credentials: { name: 'fakeuser' }
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      expect(source.context.package.name).to.equal(pkgName);
+      expect(source.context.package.isStarred).to.be.true;
+      expect(resp.result).to.include('<input id="star-input" type="checkbox" name="isStarred" value="true" checked>');
+      done();
+    });
+  });
+});

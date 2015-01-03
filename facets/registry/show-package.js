@@ -74,7 +74,9 @@ function showPackage(request, reply) {
           return;
         }
 
-        cleanedPackage.isStarred = opts.user && cleanedPackage.users && cleanedPackage.users[opts.user.name] || false;
+        var loggedInUser = request.auth.credentials;
+
+        cleanedPackage.isStarred = loggedInUser && cleanedPackage.users && cleanedPackage.users[loggedInUser.name] || false;
         opts.package = cleanedPackage;
         opts.title = cleanedPackage.name;
         reply.view('registry/package-page', opts);

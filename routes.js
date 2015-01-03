@@ -391,7 +391,7 @@ function fallback(request, reply) {
 
     request.server.methods.registry.getPackage(route, function(err, package) {
 
-      if (package && !package.error) {
+      if (package) {
         return reply.redirect('/package/' + package._id);
       }
 

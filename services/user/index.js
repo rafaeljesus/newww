@@ -30,5 +30,6 @@ exports.register = function User (service, options, next) {
 };
 
 exports.register.attributes = {
-  pkg: require('./package.json')
+  "name": "newww-service-user",
+  "version": "0.0.1",
 };

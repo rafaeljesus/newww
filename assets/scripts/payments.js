@@ -1,5 +1,4 @@
-var $ = require("jquery"),
-    log = require('bole')('stripe')
+var $ = require("jquery");
 
 module.exports = function () {
 

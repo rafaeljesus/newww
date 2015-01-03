@@ -19,6 +19,6 @@ exports.register = function npmE (service, options, next) {
 exports.register.attributes = {
   name: "newww-service-npme",
   version: "1.0.0"
-}
+};
 
 

@@ -3,18 +3,12 @@ var NAMESPACE = 'company-send-contact';
 var Hapi = require('hapi'),
     userValidate = require('npm-user-validate'),
     nodemailer = require('nodemailer'),
-    crypto = require('crypto'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    crypto = require('crypto');
 
 var transport, mailer;
 
-module.exports = function (options) {
+module.exports = function showSendContact(options) {
   return function (request, reply) {
-    // var timer = { start: Date.now() };
-
-    var showError = request.server.methods.errors.showError(reply);
 
     var opts = {
       user: request.auth.credentials,
@@ -38,17 +32,14 @@ module.exports = function (options) {
     } else {
       var mailSettings = options;
 
-      if (!mailSettings.mailTransportModule ||
-          !mailSettings.mailTransportSettings) {
-        return showError(null, 500, 'Mail settings are missing!', opts);
-      }
-
       var transport = require(mailSettings.mailTransportModule);
       var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
 
       mailer.sendMail(mail, function (er, result) {
         if (er) {
-          return showError(er, 500, "Unable to send verification email", opts);
+          request.logger.error('unable to send verification email');
+          request.logger.error(er);
+          return reply.view('errors/internal', opts).code(500);
         }
 
         opts.sent = true;

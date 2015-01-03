@@ -28,7 +28,7 @@ var postEmail = function (emailOpts) {
     credentials: fakeuser,
     payload: emailOpts,
     headers: { cookie: 'crumb=' + cookieCrumb }
-  }
+  };
 };
 
 // prepare the server
@@ -54,7 +54,7 @@ before(function (done) {
   server.app.cache.get = function (key, cb) {
     client.get(key, function (er, val) {
       if (val) {
-        var obj = {item: JSON.parse(val)}
+        var obj = {item: JSON.parse(val)};
         return cb(er, obj);
       }
 
@@ -213,9 +213,8 @@ describe('Confirming an email change', function () {
     };
 
     server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(500);
-      expect(source.template).to.equal('errors/internal');
-      expect(source.context.errId).to.exist;
+      expect(resp.statusCode).to.equal(404);
+      expect(source.template).to.equal('errors/not-found');
       done();
     });
   });
@@ -229,7 +228,6 @@ describe('Confirming an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(500);
       expect(source.template).to.equal('errors/internal');
-      expect(source.context.errId).to.exist;
       done();
     });
   });
@@ -281,9 +279,8 @@ describe('Reverting an email change', function () {
     };
 
     server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(500);
-      expect(source.template).to.equal('errors/internal');
-      expect(source.context.errId).to.exist;
+      expect(resp.statusCode).to.equal(404);
+      expect(source.template).to.equal('errors/not-found');
       done();
     });
   });
@@ -300,7 +297,6 @@ describe('Reverting an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(500);
       expect(source.template).to.equal('errors/internal');
-      expect(source.context.errId).to.exist;
       done();
     });
   });

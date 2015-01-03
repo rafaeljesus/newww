@@ -201,12 +201,14 @@ describe('readmes are always sanitized', function () {
 });
 
 describe('getting package download information', function () {
-  it('sends an object of data if the user is not logged in', function (done) {
+  it('send a downloads data object', function (done) {
     var options = {
       url: '/package/fake'
     };
 
     server.inject(options, function () {
+
+      expect(source.context.package).to.have.property('downloads');
       expect(source.context.package.downloads).to.be.an('object');
       expect(source.context.package.downloads).to.have.property('day');
       expect(source.context.package.downloads).to.have.property('week');
@@ -220,7 +222,7 @@ describe('requesting nonexistent packages', function () {
   var name = 'a-package-that-does-not-exist';
   var options = {
     url: '/package/' + name
-  }
+  };
 
   it('returns a 404', function (done) {
     server.inject(options, function (resp) {
@@ -232,13 +234,13 @@ describe('requesting nonexistent packages', function () {
   it('adds package.name to view context', function (done) {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.context.package.name).to.exist
+      expect(source.context.package.name).to.exist;
       done();
     });
   });
 
   it('renders the 404 template', function (done) {
-    server.inject(options, function (resp) {
+    server.inject(options, function () {
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -249,9 +251,9 @@ describe('requesting invalid packages', function () {
   var name = '_.escape';
   var options = {
     url: '/package/' + name
-  }
+  };
 
-  it('returns a 404', function (done) {
+  it('returns a 400', function (done) {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(404);
       done();
@@ -259,15 +261,14 @@ describe('requesting invalid packages', function () {
   });
 
   it('does NOT add package.name to view context', function (done) {
-    server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(404);
-      expect(source.context.package).to.not.exist
+    server.inject(options, function () {
+      expect(source.context.package).to.not.exist;
       done();
     });
   });
 
-  it('renders the 404 template', function (done) {
-    server.inject(options, function (resp) {
+  it('renders the invalid input template', function (done) {
+    server.inject(options, function () {
       expect(source.template).to.equal('errors/not-found');
       done();
     });

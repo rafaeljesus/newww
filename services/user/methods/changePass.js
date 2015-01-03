@@ -1,12 +1,17 @@
 var Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
-    metrics = require('newww-metrics')();
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function changePass (auth, next) {
   var timer = { start: Date.now() };
   adminCouch.changePass(auth, function (er, cr, data) {
     timer.end = Date.now();
-    metrics.addCouchLatencyMetric(timer, 'changePass');
+    metrics.metric({
+  name: 'latency',
+  value: timer.end - timer.start,
+  type: 'couch',
+  action: 'changePass'
+});
 
     if (er || cr.statusCode >= 400 || data && data.message) {
       var error = er && er.message || data && data.message;

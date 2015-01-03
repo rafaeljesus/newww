@@ -1,10 +1,9 @@
 var request = require('request'),
-    log = require('bole')('npme-create-trial'),
-    uuid = require('node-uuid');
+    log = require('bole')('npme-create-trial');
 
 module.exports = function createTrial (options) {
 
-  return function (customer, next) {
+  return function (customer, callback) {
 
     var trialEndpoint = options.license.api + '/trial',
         productId = options.npme.product_id;
@@ -18,20 +17,22 @@ module.exports = function createTrial (options) {
       switch (resp.statusCode) {
         case 200:
           // they already have a trial
-          return next(null, trial);
-          break;
+          return callback(null, trial);
         case 404:
           // do not already have a trial, so create one
-          return createNewTrial(customer, next);
-          break;
+          return createNewTrial(customer, callback);
         default:
-          return next(er || new Error('Error with getting trial info for ' + customer.email));
-          break;
+          var msg = 'Error with getting trial info for ' + customer.email;
+          log.error(msg);
+          er = er || new Error(msg);
+          log.error(er);
+
+          return callback(er);
       }
     });
-  }
+  };
 
-  function createNewTrial (customer, next) {
+  function createNewTrial (customer, callback) {
 
     var trialEndpoint = options.license.api + '/trial',
         productId = options.npme.product_id,
@@ -48,12 +49,15 @@ module.exports = function createTrial (options) {
       }
     }, function (err, resp, trial) {
 
-      if (resp.statusCode !== 200) {
-        return next(err || new Error('Error with creating a trial for ' + customer.email));
+      if (resp.statusCode === 200) {
+        return callback(null, trial);
       }
 
-      return next(null, trial);
-
+      var msg = 'Error with creating a trial for ' + customer.email;
+      err = err || new Error(msg);
+      log.error(msg);
+      log.error(err);
+      return callback(err);
     });
   }
-}
+};

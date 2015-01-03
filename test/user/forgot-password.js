@@ -198,7 +198,6 @@ describe('Using a token', function () {
 
     server.inject(options, function (resp) {
       expect(source.template).to.equal('errors/internal');
-      expect(source.context.errId).to.exist;
       expect(resp.statusCode).to.equal(500);
       done();
     });

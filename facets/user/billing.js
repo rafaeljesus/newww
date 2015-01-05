@@ -1,8 +1,7 @@
 var transform = require('./presenters/profile').transform,
     Hapi = require('hapi'),
     Joi = require('joi'),
-    log = require('bole')('billing'),
-    metrics = require('newww-metrics')();
+    log = require('bole')('billing');
 
 var Customer = new (require('../../lib/customer-api'))();
 var billing = module.exports = {};

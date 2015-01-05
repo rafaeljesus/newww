@@ -76,7 +76,7 @@
     "redis": "^0.12.1",
     "repl-client": "~0.3.0",
     "replify": "~1.2.0",
-    "request": "^2.37.0",
+    "request": "^2.51.0",
     "sanitizer": "^0.1.1",
     "schemeless": "^1.0.0",
     "scooter": "^1.2.0",

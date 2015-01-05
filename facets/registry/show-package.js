@@ -58,7 +58,8 @@ function showPackage(request, reply) {
         pkg.dependents = [];
         pkg.downloads = false;
       } else {
-        if (Array.isArray(pkg.downloads)) {
+
+        if (Array.isArray(results.downloads)) {
           pkg.downloads = results.downloads[0];
         } else {
           pkg.downloads = results.downloads;

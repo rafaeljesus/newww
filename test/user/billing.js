@@ -31,11 +31,6 @@ before(function (done) {
   });
 });
 
-it("has a billing host ENV var", function(done) {
-  expect(process.env.BILLING_API).to.exist;
-  done();
-})
-
 describe('GET /settings/billing', function () {
   var options
 

@@ -30,15 +30,15 @@ module.exports = function (request, reply) {
 
   Joi.validate(request.payload, schema, function (err, token) {
     if (err) {
-      request.logger.error('invalid payment information');
+      request.logger.error('validation error');
       request.logger.error(err);
-      return reply.view('errors/internal', opts).code(500);
+      return reply('validation error').code(403);
     }
 
     if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
       request.logger.error('internal charge amount error; token amount is ', token.amount);
       request.logger.error(err);
-      return reply.view('errors/internal', opts).code(403);
+      return reply('invalid charge amount error').code(403);
     }
 
     var stripeStart = Date.now();
@@ -51,7 +51,7 @@ module.exports = function (request, reply) {
       if (err) {
         request.logger.error('internal stripe error; token amount is ', token.amount);
         request.logger.error(err);
-        return reply.view('errors/internal', opts).code(500);
+        return reply('internal stripe error').code(500);
       }
 
       metrics.metric({

@@ -24,7 +24,6 @@ billing.getBillingInfo = function (request, reply) {
 }
 
 billing.updateBillingInfo = function(request, reply) {
-  var showError = request.server.methods.errors.showError(reply);
 
   var billingInfo = {
     name: request.auth.credentials.name,
@@ -33,7 +32,8 @@ billing.updateBillingInfo = function(request, reply) {
   }
 
   Customer.update(billingInfo, function(err, resp, body) {
-    if (err) return showError(err);
+    // if (err) return showError(err);
+    console.log("updateBillingInfo end")
     if (resp && resp.statusCode == 200) {
       return reply.redirect('/settings/billing?updated=1')
     }
@@ -42,10 +42,9 @@ billing.updateBillingInfo = function(request, reply) {
 }
 
 billing.deleteBillingInfo = function(request, reply) {
-  var showError = request.server.methods.errors.showError(reply);
 
   Customer.del(request.auth.credentials.name, function(err, resp, body) {
-    if (err) return showError(err);
+    // if (err) return showError(err);
     if (resp && resp.statusCode == 200) {
       return reply.redirect('/settings/billing?canceled=1')
     }

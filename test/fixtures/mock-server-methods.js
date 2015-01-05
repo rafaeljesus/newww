@@ -50,11 +50,11 @@ module.exports = function (server) {
       },
 
       getAllDownloadsForPackage: function (name, next) {
-        var d = {
-          day: 0,
-          week: 0,
-          month: 0
-        };
+        var d = [
+                  { day: 32789, week: 268291, month: 1480446 },
+                  null,
+                  { msec: 3, error: null }
+                ];
 
         return next(null, d);
       },

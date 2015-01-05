@@ -8,7 +8,6 @@ var Lab = require('lab'),
 
 var server, source, u = {};
 var users = require('../fixtures/users'),
-    fakeuser = users.fakeuser,
     fakeBrowse = require('../fixtures/browseData');
 
 var username1 = 'fakeuser',
@@ -33,7 +32,7 @@ describe('Retreiving profiles from the registry', function () {
   it('gets a website-registered user from the registry', function (done) {
     var options = {
       url: '/~' + username1
-    }
+    };
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
@@ -44,7 +43,7 @@ describe('Retreiving profiles from the registry', function () {
   it('gets a cli-registered user from the registry', function (done) {
     var options = {
       url: '/~' + username2
-    }
+    };
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
@@ -60,10 +59,12 @@ describe('Retreiving profiles from the registry', function () {
   it('renders an error page with a user that doesn\'t exist', function (done) {
     var options = {
       url: '/~blerg'
-    }
+    };
 
     server.inject(options, function (resp) {
       expect(source.template).to.equal('user/profile-not-found');
+      expect(source.context.correlationID).to.exist;
+      expect(resp.payload).to.include(source.context.correlationID);
       done();
     });
   });
@@ -72,19 +73,19 @@ describe('Retreiving profiles from the registry', function () {
     before(function (done) {
       process.env.NODE_ENV = 'production';
       done();
-    })
+    });
 
     after(function (done) {
       process.env.NODE_ENV = 'dev';
       done();
-    })
+    });
 
 
     it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
       var options = {
         url: '/~' + username1 + '?json',
         credentials: users.npmEmployee
-      }
+      };
       expect(process.env.NODE_ENV).to.equal("production");
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(200);
@@ -99,7 +100,7 @@ describe('Retreiving profiles from the registry', function () {
       var options = {
         url: '/~' + username1 + '?json',
         credentials: users.fakeuser
-      }
+      };
       expect(process.env.NODE_ENV).to.equal("production");
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(200);
@@ -113,7 +114,7 @@ describe('Retreiving profiles from the registry', function () {
       var options = {
         url: '/~' + username1 + '?json',
         credentials: users.fakeuser
-      }
+      };
       expect(process.env.NODE_ENV).to.equal("production");
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(200);
@@ -129,7 +130,7 @@ describe('Retreiving profiles from the registry', function () {
       var options = {
         url: '/~' + username1 + '?json',
         credentials: null
-      }
+      };
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(resp.headers['content-type']).to.match(/json/);
@@ -137,8 +138,7 @@ describe('Retreiving profiles from the registry', function () {
         done();
       });
     });
-
-  })
+  });
 });
 
 
@@ -151,7 +151,7 @@ describe('Modifying the profile before sending it to the template', function () 
   });
 
   it('includes stars', function (done) {
-    expect(fakeBrowse['userstar'].length).to.be.gt(20);
+    expect(fakeBrowse.userstar.length).to.be.gt(20);
     done();
   });
 

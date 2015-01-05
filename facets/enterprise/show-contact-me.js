@@ -2,18 +2,14 @@ var NAMESPACE = 'enterprise-contact-me';
 
 var Hoek = require('hoek'),
     Hapi = require('hapi'),
-    Joi = require('joi'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    Joi = require('joi');
 
 var config = require('../../config').license;
 
 // if they decide not to agree to the ULA
 // hit the hubspot contact-me form instead, and thank them
 module.exports = function contactMe (request, reply) {
-  var postToHubspot = request.server.methods.npme.sendData,
-      showError = request.server.methods.errors.showError(reply);
+  var postToHubspot = request.server.methods.npme.sendData;
 
   var opts = {
     user: request.auth.credentials,
@@ -31,13 +27,12 @@ module.exports = function contactMe (request, reply) {
   postToHubspot(config.hubspot.form_npme_contact_me, data, function(er) {
 
       if (er) {
-        log.warn("Could not contact hubspot");
-
-        return showError(er, 500, 'Could not register user to be contacted', opts);
+        request.logger.error('Could not contact hubspot to register user');
+        request.logger.error(er);
+        return reply.view('errors/internal', opts).code(500);
       } else {
 
-        opts.title = "We will contact you shortly";
-
+        opts.title = 'We will contact you shortly';
         return reply.view('enterprise/contact-me', opts);
       }
     }

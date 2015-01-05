@@ -1,32 +1,19 @@
+
 var Joi = require('joi'),
-    Hapi = require('hapi'),
-    log = require('bole')('company-whoshiring-payments'),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')(),
     stripe = require('stripe')(process.env.STRIPE_SECRET_KEY),
     VALID_CHARGE_AMOUNTS = [35000, 100000];
 
 module.exports = function (request, reply) {
-  var addMetric = metrics.addMetric,
-  addLatencyMetric = metrics.addPageLatencyMetric,
-  showError = request.server.methods.errors.showError(reply),
-  timer = { start: Date.now() };
 
   var opts = {
-    user: request.auth.credentials,
     title: "Join the Who's Hiring Page",
-    namespace: 'company-whoshiring-payments',
     stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
   };
 
   if (request.method === 'get') {
-    timer.end = Date.now();
-    addLatencyMetric(timer, 'whoshiring-payments');
-    addMetric({name: 'whoshiring-payments'});
+    request.timing.page = 'whoshiring-paymentShow';
     return reply.view('company/payments', opts);
   }
-
-  opts.isXhr = true;
 
   var schema = Joi.object().keys({
     id: Joi.string().token(),
@@ -43,11 +30,15 @@ module.exports = function (request, reply) {
 
   Joi.validate(request.payload, schema, function (err, token) {
     if (err) {
-      return showError(err, 403, 'validation error', opts);
+      request.logger.error('invalid payment information');
+      request.logger.error(err);
+      return reply.view('errors/internal', opts).code(500);
     }
 
     if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
-      return showError(token.amount, 403, 'invalid charge amount error', opts);
+      request.logger.error('internal charge amount error; token amount is ', token.amount);
+      request.logger.error(err);
+      return reply.view('errors/internal', opts).code(403);
     }
 
     var stripeStart = Date.now();
@@ -58,19 +49,18 @@ module.exports = function (request, reply) {
       description: "Charge for " + token.email
     }, function(err, charge) {
       if (err) {
-        return showError(token.amount, 500, 'internal stripe error', opts);
+        request.logger.error('internal stripe error; token amount is ', token.amount);
+        request.logger.error(err);
+        return reply.view('errors/internal', opts).code(500);
       }
 
-      timer.end = Date.now();
-      addMetric({
-        name: 'latency',
-        value: timer.end - stripeStart,
-        type: 'stripe'
+      metrics.metric({
+        name:  'latency',
+        value: Date.now() - stripeStart,
+        type:  'stripe'
       });
 
-      addLatencyMetric(timer, 'whoshiring-paymentProcessed');
-
-      addMetric({name: 'whoshiring-paymentProcessed'});
+      request.timing.page = 'whoshiring-paymentProcessed';
       return reply('Stripe charge successful').code(200);
     });
   });

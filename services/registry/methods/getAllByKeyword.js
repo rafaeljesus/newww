@@ -1,4 +1,4 @@
-var browse = require('./browse'),
+var browse = require('./getBrowseData'),
     log = require('bole')('registry-browse-by-keyword');
 
 module.exports = function getAllByKeyword (arg, skip, limit, next) {

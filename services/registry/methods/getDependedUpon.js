@@ -1,4 +1,4 @@
-var browse = require('./browse'),
+var browse = require('./getBrowseData'),
     log = require('bole')('registry-browse-depended');
 
 module.exports = function getDependedUpon (arg, skip, limit, next) {

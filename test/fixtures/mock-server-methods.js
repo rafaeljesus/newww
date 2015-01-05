@@ -7,7 +7,8 @@ var enterprise = require('./enterprise-data');
 var users = require('./users');
 var pkgs = {
       fake: require('./fake.json'),
-      unpub: require('./fake-unpublished')
+      unpub: require('./fake-unpublished'),
+      benchmark: require('./benchmark.json')
     };
 var policies = require('./policies');
 
@@ -32,7 +33,7 @@ module.exports = function (server) {
           return next(null, policies[name]);
         }
 
-        return next(new Error('Not Found'))
+        return next(new Error('Not Found'));
       }
     },
 
@@ -60,32 +61,6 @@ module.exports = function (server) {
 
       getDownloadsForPackage: function (period, detail, package, next) {
         return next(null, [{day: '2014-07-12', downloads: 0}, {day: '2014-07-13', downloads: 0}]);
-      }
-    },
-
-    errors: {
-      showError: function (reply) {
-        return function (err, code, message, opts) {
-          opts.errId = '12345';
-
-          if (opts.isXhr) {
-            return reply(message).code(code);
-          }
-
-          var template;
-          switch (code) {
-            case 404:
-              template = 'errors/not-found';
-              break;
-            case 500:
-            default:
-              template = 'errors/internal';
-              break;
-          }
-
-
-          return reply.view(template, opts).code(code);
-        }
       }
     },
 
@@ -182,7 +157,11 @@ module.exports = function (server) {
           return next(null, pkgs[pkgName]);
         }
 
-        return next(Hapi.error.notFound('Username not found: ' + pkgName));
+        if (pkgs.benchmark[pkgName]) {
+          return next(null, pkgs.benchmark[pkgName]);
+        }
+
+        return next();
       },
 
       getAllPackages: function (skip, limit, next) {
@@ -233,7 +212,7 @@ module.exports = function (server) {
     user: {
       changeEmail: function (name, email, next) {
         if (name !== 'fakeuser') {
-          return next(Hapi.error.notFound('Username not found: ' + username));
+          return next(Hapi.error.notFound('Username not found: ' + name));
         }
 
         users.fakeuser.email = email;
@@ -263,7 +242,7 @@ module.exports = function (server) {
             request.auth.session.clear();
             return next(null);
           });
-        }
+        };
       },
 
       getUser: function (username, next) {
@@ -280,7 +259,7 @@ module.exports = function (server) {
         }
 
         if (auth.name !== 'fakeuser' || passHash(auth) !== users.fakeuser.derived_key) {
-          return next('Username and/or Password is wrong')
+          return next('Username and/or Password is wrong');
         }
         return next(null, users.fakeuser);
       },
@@ -313,7 +292,7 @@ module.exports = function (server) {
             request.auth.session.set({sid: sid});
             return next(null);
           });
-        }
+        };
       },
 
       signupUser: function (acct, next) {
@@ -338,5 +317,5 @@ module.exports = function (server) {
 };
 
 function passHash (auth) {
-  return crypto.pbkdf2Sync(auth.password, users[auth.name].salt, users[auth.name].iterations, 20).toString('hex')
+  return crypto.pbkdf2Sync(auth.password, users[auth.name].salt, users[auth.name].iterations, 20).toString('hex');
 }

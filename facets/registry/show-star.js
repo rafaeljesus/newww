@@ -1,22 +1,11 @@
-var Hapi = require('hapi'),
-    log = require('bole')('registry-star'),
-    uuid = require('node-uuid'),
-    util = require('util'),
-    metrics = require('newww-metrics')();
 
 module.exports = function (request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
       star = request.server.methods.registry.star,
-      unstar = request.server.methods.registry.unstar,
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = { start: Date.now() };
+      unstar = request.server.methods.registry.unstar;
 
   var opts = {
-    user: request.auth.credentials,
-    namespace: 'registry-star',
-    isXhr: true
+    user: request.auth.credentials
   };
 
   if (request.method === 'get') {
@@ -24,52 +13,65 @@ module.exports = function (request, reply) {
   }
 
   if (!opts.user) {
-    return showError(null, 403, 'user isn\'t logged in', opts);
+    request.logger.error('user is not logged in');
+    reply('user is not logged in').code(403);
+    return;
   }
 
   var username = opts.user.name,
       body = request.payload,
       pkg = body.name,
-      starIt = !!body.isStarred.match(/true/i)
+      starIt = !!body.isStarred.match(/true/i);
 
   if (starIt) {
-    star(pkg, username, function (err, data) {
+    star(pkg, username, function (err) {
 
       if (err) {
-        return showError([err, util.format("%s was unable to star %s", username, pkg)], 500, 'not ok', opts);
+        request.logger.error(username + ' was unable to star ' + pkg);
+        request.logger.error(err);
+        reply('not ok').code(500);
+        return;
       }
 
-      getPackage.cache.drop(pkg, function (er, resp) {
+      getPackage.cache.drop(pkg, function (er) {
+
         if (er) {
-          return showError([er, util.format("unable to drop cache for %s", pkg)], 500, 'not ok', opts);
+          request.logger.error('unable to drop cache for ' + pkg);
+          request.logger.error(er);
+          reply('not ok').code(500);
+          return;
         }
 
-        timer.end = Date.now();
-        addLatencyMetric(timer, 'star');
-
-        addMetric({ name: 'star', package: pkg });
+        request.timing.page = 'star';
+        request.metrics.metric({ name: 'star', package: pkg });
         return reply(username + ' starred ' + pkg).code(200);
       });
     });
 
   } else {
 
-    unstar(pkg, username, function (err, data) {
+    unstar(pkg, username, function (err) {
+
       if (err) {
-        return showError([err, util.format("%s was unable to unstar %s", username, pkg)], 500, 'not ok', opts);
+        request.logger.error(username + ' was unable to unstar ' + pkg);
+        request.logger.error(err);
+        reply('not ok').code(500);
+        return;
       }
 
-      getPackage.cache.drop(pkg, function (er, resp) {
+      getPackage.cache.drop(pkg, function (er) {
         if (er) {
-          return showError([er, util.format("unable to drop cache for %s", pkg)], 500, 'not ok', opts);
+          request.logger.error('unable to drop cache for ' + pkg);
+          request.logger.error(er);
+          reply('not ok').code(500);
+          return;
         }
 
-        timer.end = Date.now();
-        addLatencyMetric(timer, 'unstar');
+        request.timing.page = 'unstar';
+        request.metrics.metric({ name: 'unstar', package: pkg });
 
-        addMetric({ name: 'unstar', package: pkg });
         return reply(username + ' unstarred ' + pkg).code(200);
       });
     });
   }
-}
+};

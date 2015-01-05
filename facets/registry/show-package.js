@@ -1,106 +1,121 @@
-var Hapi = require('hapi'),
+var async = require('async'),
+    moment = require('moment'),
     presentPackage = require('./presenters/package'),
-    log = require('bole')('registry-package'),
-    metrics = require('newww-metrics')();
+    validatePackageName = require('validate-npm-package-name');
 
-module.exports = function (request, reply) {
+function showPackage(request, reply) {
   var getPackage = request.server.methods.registry.getPackage,
-      getBrowseData = request.server.methods.registry.getBrowseData,
-      getDownloadsForPackage = request.server.methods.downloads.getDownloadsForPackage,
-      getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage,
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric;
-
-  var timer = { start: Date.now() };
+      getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
 
   if (request.params.version) {
-    return reply.redirect('/package/' + request.params.package)
+    return reply.redirect('/package/' + request.params.package);
   }
 
-  var opts = {
-    user: request.auth.credentials,
+  var opts = { };
 
-    namespace: 'registry-package'
-  }
+  request.timing.page = 'showPackage';
+  request.metrics.metric({ name: 'showPackage', package: request.params.package, value: 1 });
 
-  opts.name = request.params.package
+  opts.name = request.params.package;
 
-  if (opts.name !== encodeURIComponent(opts.name)) {
-    return showError([opts.name, encodeURIComponent(opts.name)], 400, 'Invalid Package Name', opts);
+  if (!validatePackageName(opts.name).valid) {
+    request.logger.info('request for invalid package name: ' + opts.name);
+    reply.view('errors/not-found', opts).code(404);
+    return;
   }
 
   getPackage(opts.name, function (er, pkg) {
 
-    if (er || pkg.error) {
+    opts.package = { name: opts.name };
+    if (er) {
+      request.logger.error(er, 'fetching package ' + opts.name);
+      return reply.view('errors/internal', opts).code(500);
+    }
 
-      opts.package = {
-        name: opts.name
-      }
+    if (!pkg) {
       return reply.view('errors/not-found', opts).code(404);
     }
 
     if (pkg.time && pkg.time.unpublished) {
-      // reply with unpublished package page
-      var t = pkg.time.unpublished.time
-      pkg.unpubFromNow = require('moment')(t).format('ddd MMM DD YYYY HH:mm:ss Z');
 
+      var t = pkg.time.unpublished.time;
+      pkg.unpubFromNow = moment(t).format('ddd MMM DD YYYY HH:mm:ss Z');
       opts.package = pkg;
+      request.timing.page = 'showUnpublishedPackage';
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'showUnpublishedPackage');
-
-      addMetric({ name: 'showPackage', package: request.params.package });
       return reply.view('registry/unpublished-package-page', opts);
     }
 
-    timer.start = Date.now();
+    var tasks = {
+      dependents: function(cb) { fetchDependents(request, opts.name, cb); },
+      downloads: function(cb) { getDownloadData(opts.name, cb); },
+    };
 
-    // on the package page, we should not load dependent package-data,
-    // this is too slow!
-    getBrowseData({type: 'depended', noPackageData: true}, opts.name, 0, 1000, function (er, dependents) {
-      timer.end = Date.now();
-      addMetric({
-        name: 'latency',
-        value: timer.end - timer.start,
-        type: 'couchdb',
-        browse: ['depended', opts.name, 0, 1000].join(', ')
-      });
+    async.parallel(tasks, function(err, results) {
 
-      if (er) {
-        return showError(er, 500, 'Unable to get depended data from couch for ' + opts.name, opts);
+      if (err) {
+        // this really shouldn't happen! but we defend against it if it does.
+        pkg.dependents = [];
+        pkg.downloads = false;
+      } else {
+        if (Array.isArray(pkg.downloads)) {
+          pkg.downloads = results.downloads[0];
+        } else {
+          pkg.downloads = results.downloads;
+        }
+
+        pkg.dependents = results.dependents;
       }
 
-      pkg.dependents = dependents;
-
-      presentPackage(pkg, function (er, pkg) {
+      presentPackage(pkg, function (er, cleanedPackage) {
         if (er) {
-          return showError(er, 500, 'An error occurred with presenting package ' + opts.name, opts);
+          request.logger.info(er, 'presentPackage() responded with error; package=' + opts.name);
+          reply.view('errors/internal', opts).code(500);
+          return;
         }
 
-        pkg.isStarred = opts.user && pkg.users && pkg.users[opts.user.name] || false;
+        var loggedInUser = request.auth.credentials;
 
-        opts.package = pkg;
-        opts.title = pkg.name;
-
-        // Show download count for the last day, week, and month
-        return getAllDownloadsForPackage(pkg.name, handleDownloads);
-
-        function handleDownloads(er, downloadData) {
-          if (er) {
-            return showError(er, 500, 'An error occurred with getting download counts for ' + opts.name, opts);
-          }
-
-          opts.package.downloads = downloadData
-
-          timer.end = Date.now();
-          addLatencyMetric(timer, 'showPackage');
-
-          addMetric({ name: 'showPackage', package: request.params.package });
-
-          return reply.view('registry/package-page', opts);
-        }
-      })
-    })
-  })
+        cleanedPackage.isStarred = loggedInUser && cleanedPackage.users && cleanedPackage.users[loggedInUser.name] || false;
+        opts.package = cleanedPackage;
+        opts.title = cleanedPackage.name;
+        reply.view('registry/package-page', opts);
+      });
+    });
+  });
 }
+
+function fetchDependents(request, name, callback) {
+
+  var getBrowseData = request.server.methods.registry.getBrowseData;
+  var results = [];
+  request.timing.browse_start = Date.now();
+
+  getBrowseData({type: 'depended', noPackageData: true}, name, 0, 1000, function (er, dependents) {
+
+    request.metrics.metric({
+      name:   'latency',
+      value:  Date.now() - request.timing.browse_start,
+      type:   'couchdb',
+      browse: 'depended'
+    });
+
+    if (er) {
+      var msg = 'getting depended browse data; package=' + name;
+      request.logger.error(er, msg);
+      request.metrics.metric({
+        name:    'error',
+        message: msg,
+        value:   1,
+        type:    'couchdb'
+      });
+    } else {
+      results = dependents;
+    }
+
+    callback(null, results);
+  });
+}
+
+module.exports = showPackage;
+showPackage.fetchDependents = fetchDependents;

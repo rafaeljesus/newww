@@ -1,5 +1,4 @@
-var path = require('path'),
-    log = require('bole')('ops');
+var path = require('path');
 
 module.exports = {
   ping: function (request, reply) {
@@ -30,7 +29,7 @@ module.exports = {
       data = {msg: data};
     }
 
-    log.warn('content-security-policy validation', data);
+    request.logger.warn('content-security-policy validation', data);
     return reply('ok').code(200);
   }
-}
+};

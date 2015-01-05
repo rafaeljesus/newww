@@ -1,8 +1,6 @@
 var elasticsearch = require('elasticsearch'),
     Hapi = require('hapi'),
-    log = require('bole')('registry-search'),
-    merge = require('lodash').merge,
-    metrics = require('newww-metrics')();
+    merge = require('lodash').merge;
 
 module.exports = function (options) {
   var client = new elasticsearch.Client({
@@ -19,11 +17,6 @@ module.exports = function (options) {
     if (!request.query || !request.query.q) {
       return reply.redirect('/');
     }
-
-    var addMetric = metrics.addMetric,
-        addLatencyMetric = metrics.addPageLatencyMetric,
-        showError = request.server.methods.errors.showError(reply),
-        timer = { start: Date.now() };
 
     var page = Math.abs(parseInt(request.query.page, 10)) || 1;
     var perPage  = parseInt(options.perPage);
@@ -93,11 +86,11 @@ module.exports = function (options) {
       }
     };
 
+    var start = Date.now();
     client.search(searchQuery, function (error, response) {
-      timer.end = Date.now();
-      addMetric({
+      request.metrics.metric({
         name: 'latency',
-        value: timer.end - timer.start,
+        value: Date.now() - start,
         type: 'elasticsearch',
         query: request.query.q
       });
@@ -109,13 +102,12 @@ module.exports = function (options) {
       };
 
       if (error) {
-        return showError(error, 500, 'elasticsearch failed searching ' + request.query.q, opts);
+        request.logger.warn('elasticsearch failed searching ' + request.query.q);
+        return reply.view('errors/internal', opts).code(500);
       }
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'search');
-
-      addMetric({ name: 'search', search: request.query.q });
+      request.timing.page = 'search';
+      request.metrics.metric({ name: 'search', search: request.query.q });
 
       merge(opts, {
         title: 'results for ',

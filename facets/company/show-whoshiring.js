@@ -1,5 +1,3 @@
-var metrics = metrics = require('newww-metrics')();
-
 module.exports = function (request, reply) {
   var timer = { start: Date.now() };
 
@@ -7,10 +5,8 @@ module.exports = function (request, reply) {
     user: request.auth.credentials
   };
 
-  timer.end = Date.now();
-  metrics.addPageLatencyMetric(timer, 'whoshiring');
-
-  metrics.addMetric({name: 'whoshiring'});
+  request.timing.page = 'whoshiring';
+  request.metrics.metric({name: 'whoshiring'});
 
   reply.view('company/whoshiring', opts);
 };

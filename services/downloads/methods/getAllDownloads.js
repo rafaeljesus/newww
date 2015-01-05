@@ -1,46 +1,49 @@
-var Hapi = require('hapi'),
+var
+    async = require('async'),
+    Hapi = require('hapi'),
     log = require('bole')('downloads'),
-    uuid = require('node-uuid'),
-    getDownloads = require('./getDownloads'),
-    metrics = require('newww-metrics')(),
+    makeDownloadFetchFunc = require('./getDownloads'),
+    metrics = require('../../../adapters/metrics')(),
     timer = {};
 
 module.exports = function getAllDownloads (url) {
   return function (package, next) {
-    timer.start = Date.now();
+    var start = Date.now();
+
     if (typeof package === 'function') {
       next = package;
       package = null;
     }
 
+    var getDownloads = makeDownloadFetchFunc(url);
+
     var n = 3,
         dls = {};
 
-    getDownloads(url)('last-day', 'point', package, cb('day'));
-    getDownloads(url)('last-week', 'point', package, cb('week'));
-    getDownloads(url)('last-month', 'point', package, cb('month'));
+    var tasks = {
+      day:   function(cb) { getDownloads('last-day', 'point', package, cb); },
+      week:  function(cb) { getDownloads('last-week', 'point', package, cb); },
+      month: function(cb) { getDownloads('last-month', 'point', package, cb); },
+    };
 
-    function cb (which) {
-      return function (err, data) {
-        if (err) {
-          log.warn(uuid.v1() + ' ' + Hapi.error.internal('download error for ' + which), err);
-        }
+    async.parallel(tasks, function(err, results) {
 
-        dls[which] = data || 0;
-
-        if (--n === 0) {
-          timer.end = Date.now();
-          metrics.addMetric({
-            name: 'latency',
-            value: timer.end - timer.start,
-            type: 'downloads',
-            action: 'all downloads' + (package ? ' for ' + package : '')
-          });
-
-          next(null, dls);
-        }
-
+      if (err) {
+        return next();
       }
-    }
+
+      metrics.metric({
+        name: 'latency',
+        value: Date.now() - start,
+        type: 'downloads',
+        action: 'all downloads' + (package ? ' for ' + package : '')
+      });
+
+      dls.day = results.day || 0;
+      dls.week = results.week || 0;
+      dls.month = results.month || 0;
+
+      next(null, dls);
+    });
   }
 }

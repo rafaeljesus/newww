@@ -107,6 +107,9 @@ describe('redis-requiring session stuff', function() {
       expect(err).to.not.exist;
 
       redisSessions.getKeysWithPrefix('', function (er, keys) {
+
+        expect(er).to.not.exist;
+
         expect(keys).to.be.length(1);
         expect(keys[0]).to.include(aliceHash);
         expect(keys[0]).to.not.include(bobHash);

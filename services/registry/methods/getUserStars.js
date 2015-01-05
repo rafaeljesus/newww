@@ -1,4 +1,4 @@
-var browse = require('./browse'),
+var browse = require('./getBrowseData'),
     log = require('bole')('registry-browse-user-stars');
 
 module.exports = function getUserStars (arg, skip, limit, next) {

@@ -1,20 +1,20 @@
 var Lab = require('lab'),
-    describe = Lab.experiment,
-    before = Lab.before,
-    it = Lab.test,
+    lab = exports.lab = Lab.script(),
+    describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
+    it = lab.test,
     expect = Lab.expect;
 
 var Hapi = require('hapi'),
-    downloads = require('../index.js'),
-    config = require('../../../config').metrics,
-    MetricsClient = require('newww-metrics');
+    downloads = require('../../services/downloads'),
+    config = require('../../config'),
+    metrics = require('../../adapters/metrics')(config.metrics);
 
 var server;
 
 before(function (done) {
   server = Hapi.createServer('localhost', '8000');
-
-  var metrics = new MetricsClient(config);
 
   server.pack.register([
     {
@@ -27,9 +27,10 @@ before(function (done) {
 });
 
 describe('Getting download counts for a specific package', function () {
-  it('fails with incorrect parameters', function (done) {
+  it('returns empty counts with incorrect parameters', function (done) {
     server.methods.downloads.getDownloadsForPackage('last-something', 'point', 'request', function (er, data) {
-      expect(er.error).to.equal('Invalid period specified');
+      expect(er).to.not.exist;
+      expect(data).to.equal(0);
       done();
     });
   });

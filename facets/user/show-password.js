@@ -1,10 +1,7 @@
 var Hapi = require('hapi'),
     crypto = require('crypto'),
     userValidate = require('npm-user-validate'),
-    log = require('bole')('user-password'),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
-    var redisSessions = require("../../adapters/redis-sessions");
+    redisSessions = require("../../adapters/redis-sessions");
 
 module.exports = function (request, reply) {
   var opts = {
@@ -16,15 +13,10 @@ module.exports = function (request, reply) {
 
   var changePass = request.server.methods.user.changePass,
       loginUser = request.server.methods.user.loginUser,
-      setSession = request.server.methods.user.setSession(request),
-      showError = request.server.methods.errors.showError(reply),
-      addMetric = metrics.addMetric,
-      addLatencyMetric = metrics.addPageLatencyMetric,
-      timer = { start: Date.now() };
+      setSession = request.server.methods.user.setSession(request);
 
   if (request.method === 'get' || request.method === 'head') {
-    timer.end = Date.now();
-    addLatencyMetric(timer, 'password');
+    request.timing.page = 'password';
 
     return reply.view('user/password', opts);
   }
@@ -41,55 +33,59 @@ module.exports = function (request, reply) {
     if (hashCurrent !== hashProf) {
       opts.error = {current: true};
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'password-error');
-
-      addMetric({ name: 'password-error' });
+      request.timing.page = 'password-error';
+      request.metrics.metric({ name: 'password-error' });
       return reply.view('user/password', opts).code(403);
     }
 
     if (data.new !== data.verify) {
       opts.error = {verify: true};
 
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'password-error');
-
-      addMetric({ name: 'password-error' });
+      request.timing.page = 'password-error';
+      request.metrics.metric({ name: 'password-error' });
       return reply.view('user/password', opts).code(403);
     }
 
-    log.warn('Changing password', { name: prof.name });
+    request.logger.warn('Changing password', { name: prof.name });
 
     var newAuth = { name: prof.name, password: data.new };
     newAuth.mustChangePass = false;
 
     changePass(newAuth, function (er, data) {
       if (er) {
-        return showError(er, 500, 'Failed to set the password for ' + newAuth.name, opts);
+        request.logger.warn('Failed to change password; user=' + newAuth.name);
+        request.logger.warn(er);
+        return reply.view('errors/internal', opts).code(500);
       }
 
       // Log out all of this user's existing sessions across all devices
       redisSessions.dropKeysWithPrefix(newAuth.name, function(err){
         if (err) {
-          return showError(err, 500, 'Unable to drop all sessions for ' + newAuth.name, opts);
+          // TODO do we want this error to bubble up to the user?
+          request.logger.warn('Unable to drop all sessions; user=' + newAuth.name);
+          request.logger.warn(er);
+          return reply.view('errors/internal', opts).code(500);
         }
 
-        log.info("cleared all sessions for user " + newAuth.name);
+        request.logger.info("cleared all sessions; user=" + newAuth.name);
 
         loginUser(newAuth, function (er, user) {
           if (er) {
-            return showError(er, 500, 'Unable to login user', opts);
+            request.logger.warn('Unable to log user in; user=' + newAuth.name);
+            request.logger.warn(er);
+            return reply.view('errors/internal', opts).code(500);
           }
 
           setSession(user, function (err) {
             if (err) {
-              return showError(err, 500, 'Unable to set session for ' + user.name, opts);
+              // TODO consider the visibility of this error
+              request.logger.warn('Unable to set session; user=' + user.name);
+              request.logger.warn(er);
+              return reply.view('errors/internal', opts).code(500);
             }
 
-            timer.end = Date.now();
-            addLatencyMetric(timer, 'changePass');
-
-            addMetric({name: 'changePass'})
+            request.timing.page = 'changePass';
+            request.metrics.metric({name: 'changePass'})
 
             return reply.redirect('/profile');
           });

@@ -32,8 +32,11 @@ billing.updateBillingInfo = function(request, reply) {
   }
 
   Customer.update(billingInfo, function(err, resp, body) {
-    // if (err) return showError(err);
-    console.log("updateBillingInfo end")
+    if (err) {
+      request.logger.error(err);
+      return reply.view('errors/internal', opts).code(500);
+    }
+
     if (resp && resp.statusCode == 200) {
       return reply.redirect('/settings/billing?updated=1')
     }
@@ -44,7 +47,11 @@ billing.updateBillingInfo = function(request, reply) {
 billing.deleteBillingInfo = function(request, reply) {
 
   Customer.del(request.auth.credentials.name, function(err, resp, body) {
-    // if (err) return showError(err);
+    if (err) {
+      request.logger.error(err);
+      return reply.view('errors/internal', opts).code(500);
+    }
+
     if (resp && resp.statusCode == 200) {
       return reply.redirect('/settings/billing?canceled=1')
     }

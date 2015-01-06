@@ -53,7 +53,7 @@ function processToken(request, reply) {
       hash = sha(token),
       pwKey = 'pwrecover_' + hash;
 
-  cache.get(pwKey, function (err, cached) {
+  cache.get(pwKey, function (err, item, cached) {
     if (err) {
       request.logger.error('Error getting token from redis', pwKey);
       request.logger.error(err);

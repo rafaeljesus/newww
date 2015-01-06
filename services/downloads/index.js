@@ -4,9 +4,9 @@ var Hapi = require('hapi'),
 
 var timer = {};
 
-exports.register = function Downloads (service, options, next) {
+exports.register = function Downloads (server, options, next) {
 
-  service.method('downloads.getDownloadsForPackage', require('./methods/getDownloads')(options.url), {
+  server.method('downloads.getDownloadsForPackage', require('./methods/getDownloads')(options.url), {
     cache: {
       staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
       staleIn: 60 * 60 * SECOND, // refresh after an hour
@@ -14,7 +14,7 @@ exports.register = function Downloads (service, options, next) {
     }
   });
 
-  service.method('downloads.getAllDownloadsForPackage', require('./methods/getAllDownloads')(options.url), {
+  server.method('downloads.getAllDownloadsForPackage', require('./methods/getAllDownloads')(options.url), {
     cache: {
       staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
       staleIn: 60 * 60 * SECOND, // refresh after an hour
@@ -22,7 +22,7 @@ exports.register = function Downloads (service, options, next) {
     }
   });
 
-  service.method('downloads.getAllDownloads', require('./methods/getAllDownloads')(options.url), {
+  server.method('downloads.getAllDownloads', require('./methods/getAllDownloads')(options.url), {
     cache: {
       staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
       staleIn: 60 * 60 * SECOND, // refresh after an hour
@@ -30,10 +30,10 @@ exports.register = function Downloads (service, options, next) {
     }
   });
 
-  next();
+  return next();
 };
 
 exports.register.attributes = {
-    "name": "newww-service-downloads",
-    "version": "0.0.1",
+  "name": "newww-service-downloads",
+  "version": "0.0.1",
 };

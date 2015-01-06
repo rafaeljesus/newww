@@ -1,20 +1,24 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
-var server, serverResponse, source, ctx;
+var server;
 
+// prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+after(function (done) {
+  server.stop(done);
 });
 
 describe('Getting to the thank-you page', function () {
@@ -42,7 +46,8 @@ describe('Getting to the thank-you page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source.context.mail).to.exist;
+        var source = resp.request.response.source;
+        expect(source.context.mail).to.exist();
         var mail = JSON.parse(source.context.mail);
         expect(mail.to).to.include('exists@bam.com')
         done();
@@ -73,6 +78,7 @@ describe('Getting to the thank-you page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(500);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('errors/internal');
         done();
       });
@@ -102,6 +108,7 @@ describe('Getting to the thank-you page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(500);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('errors/internal');
         done();
       });

@@ -1,4 +1,5 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
@@ -6,22 +7,24 @@ var Lab = require('lab'),
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
-    expect = Lab.expect,
+    expect = Code.expect,
     redis = require("../../adapters/redis-sessions");
 
-var server, source, cache, cookieCrumb,
+var server, cookieCrumb,
     fakeuser = require('../fixtures/users').fakeuser,
     fakeusercli = require('../fixtures/users').fakeusercli;
 
 // prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    cache = request.server.app.cache._cache.connection.cache['|sessions'];
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+after(function (done) {
+  redis.flushdb();
+  server.stop(done);
 });
 
 describe('Getting to the login page', function () {
@@ -37,6 +40,7 @@ describe('Getting to the login page', function () {
       cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
 
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/login');
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
@@ -51,7 +55,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.equal('http://0.0.0.0:80/~fakeuser');
+      expect(resp.headers.location).to.equal('/~fakeuser');
       done();
     });
   });
@@ -81,8 +85,9 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(400);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/login');
-      expect(source.context).to.have.deep.property('error.type', 'missing')
+      expect(source.context.error).to.contain({ type: 'missing' });
       done();
     });
   });
@@ -101,6 +106,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(400);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/login');
       expect(source.context.error).to.match(/invalid username or password/i)
       done();
@@ -121,7 +127,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.equal('http://0.0.0.0:80/~fakeuser');
+      expect(resp.headers.location).to.equal('/~fakeuser');
       done();
     });
   });
@@ -151,13 +157,13 @@ describe('Getting to the login page', function () {
       redis.originalGet = redis.get;
       redis.originalIncr = redis.incr;
       done();
-    })
+    });
 
     afterEach(function(done) {
       redis.get = redis.originalGet;
       redis.incr = redis.originalIncr;
       done();
-    })
+    });
 
     it('renders login page and 403 if user has attempted to log in too many times', function (done) {
       var attempts = 10;
@@ -177,11 +183,12 @@ describe('Getting to the login page', function () {
           return callback(null, attempts)
         }
         return redis.originalGet(key, callback)
-      }
+      };
 
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(403);
-        expect(source.context.errors).to.exist;
+        var source = resp.request.response.source;
+        expect(source.context.errors).to.exist();
         expect(source.context.errors[0].message).to.match(/Login has been disabled/i);
         done();
       });
@@ -209,17 +216,9 @@ describe('Getting to the login page', function () {
 
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(302);
-        expect(resp.headers.location).to.equal('http://0.0.0.0:80/~fakeuser');
+        expect(resp.headers.location).to.equal('/~fakeuser');
         done();
       });
     });
-
-  })
-
-});
-
-after(function (done) {
-  redis.flushdb();
-  server.app.cache._cache.connection.stop();
-  done();
+  });
 });

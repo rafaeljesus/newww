@@ -1,18 +1,27 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect,
+    expect = Code.expect,
     sinon = require('sinon'),
     elasticsearch = require('elasticsearch');
 
 var fakeSearch = require('../fixtures/fake-search.json'),
     server;
 
+// prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
+  });
+});
+
+after(function (done) {
+  server.stop(done);
 });
 
 sinon.stub(elasticsearch, 'Client', function(){
@@ -24,20 +33,15 @@ sinon.stub(elasticsearch, 'Client', function(){
 });
 
 describe('Rendering the view', function () {
-  var source;
   it('Should use the index template to render the view', function (done) {
     var options =  {
       url: '/search?q=express',
       method: 'GET'
     };
 
-    server.ext('onPreResponse', function (request, next){
-      source = request.response.source;
-      next();
-    });
-
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('registry/search');
       done();
     });
@@ -48,11 +52,6 @@ describe('Rendering the view', function () {
       url: '/search/food-trucks',
       method: 'GET'
     };
-
-    server.ext('onPreResponse', function (request, next){
-      source = request.response.source;
-      next();
-    });
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
@@ -70,6 +69,7 @@ describe('Rendering the view', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/search');
         expect(source.context.page).to.equal(pageNum);
         expect(source.context.nextPage).to.equal(pageNum + 1);
@@ -86,10 +86,11 @@ describe('Rendering the view', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/search');
         expect(source.context.page).to.equal(1);
         expect(source.context.nextPage).to.equal(2);
-        expect(source.context.prevPage).to.not.exist;
+        expect(source.context.prevPage).to.not.exist();
         done();
       });
     });
@@ -102,13 +103,13 @@ describe('Rendering the view', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/search');
         expect(source.context.page).to.equal(1);
         expect(source.context.nextPage).to.equal(2);
-        expect(source.context.prevPage).to.not.exist;
+        expect(source.context.prevPage).to.not.exist();
         done();
       });
     });
   });
-
 });

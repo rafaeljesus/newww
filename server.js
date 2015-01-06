@@ -23,8 +23,9 @@ assert(config.user.mail.mailTransportSettings && _.isObject(config.user.mail.mai
 assert(config.user.mail.emailFrom && _.isString(config.user.mail.emailFrom), 'config must include a `emailFrom` settins');
 
 // set up the server
-var server = new Hapi.Server(config.host, config.port, config.server);
-
+var server = new Hapi.Server(config.server);
+server.connection(config.connection);
+server.views(config.views);
 
 // configure couch
 var couchDB = require('./adapters/couchDB');
@@ -33,7 +34,7 @@ couchDB.init(config.couch);
 // configure metrics as a side effect
 var metrics = require('./adapters/metrics')(config.metrics);
 
-server.pack.register(require('hapi-auth-cookie'), function (err) {
+server.register(require('hapi-auth-cookie'), function (err) {
   if (err) { throw err; }
 
   var cache = server.cache('sessions', {
@@ -64,7 +65,7 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
   });
 
   var plugins = require('./adapters/plugins');
-  server.pack.register(plugins, function(err) {
+  server.register(plugins, function(err) {
     if (err) {
       // actually, if there's something wrong with plugin loading,
       // DO NOT PASS GO, DO NOT COLLECT $200. Throw the error.

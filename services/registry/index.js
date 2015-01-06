@@ -8,67 +8,66 @@ function setCache (name, minutes) {
   };
 }
 
-exports.register = function Registry (service, options, next) {
+exports.register = function Registry (server, options, next) {
 
-  service.method([
+  server.method([
     {
       name: 'registry.getBrowseData',
-      fn: require('./methods/getBrowseData'),
+      method: require('./methods/getBrowseData'),
       options: { cache: setCache('browse', 10) }
     },
     {
       name: 'registry.getPackage',
-      fn: require('./methods/getPackage'),
+      method: require('./methods/getPackage'),
       options: { cache: setCache('package') }
     },
     {
       name: 'registry.getAllPackages',
-      fn: require('./methods/getAllPackages'),
+      method: require('./methods/getAllPackages'),
       options: { cache: setCache('allPackages', 5) }
     },
     {
       name: 'registry.getAllByKeyword',
-      fn: require('./methods/getAllByKeyword'),
+      method: require('./methods/getAllByKeyword'),
       options: { cache: setCache('byKeyword') }
     },
     {
       name: 'registry.getAuthors',
-      fn: require('./methods/getAuthors'),
+      method: require('./methods/getAuthors'),
       options: { cache: setCache('byAuthor') }
     },
     {
       name: 'registry.getDependedUpon',
-      fn: require('./methods/getDependedUpon'),
+      method: require('./methods/getDependedUpon'),
       options: { cache: setCache('depended', 10) }
     },
     {
       name: 'registry.getStarredPackages',
-      fn: require('./methods/getStarredPackages'),
+      method: require('./methods/getStarredPackages'),
       options: { cache: setCache('browseStar', 10) }
     },
     {
       name: 'registry.getUserStars',
-      fn: require('./methods/getUserStars'),
+      method: require('./methods/getUserStars'),
       options: { cache: setCache('userStars') }
     },
     {
       name: 'registry.getUpdated',
-      fn: require('./methods/getUpdated'),
+      method: require('./methods/getUpdated'),
       options: { cache: setCache('updated') }
     },
-
     {
       name: 'registry.getRecentAuthors',
-      fn: require('./methods/getRecentAuthors'),
+      method: require('./methods/getRecentAuthors'),
       options: { cache: setCache('authors') }
     }
   ]);
 
 
-  service.method('registry.star', require('./methods/stars').star);
-  service.method('registry.unstar', require('./methods/stars').unstar);
+  server.method('registry.star', require('./methods/stars').star);
+  server.method('registry.unstar', require('./methods/stars').unstar);
 
-  service.method('registry.packagesCreated', require('./methods/packagesCreated'), {
+  server.method('registry.packagesCreated', require('./methods/packagesCreated'), {
     cache: {
       staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
       staleIn: 10 * SECOND, // refresh after 10 seconds
@@ -76,7 +75,7 @@ exports.register = function Registry (service, options, next) {
     }
   });
 
-  next();
+  return next();
 };
 
 exports.register.attributes = {

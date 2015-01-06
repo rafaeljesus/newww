@@ -1,9 +1,10 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
@@ -13,11 +14,12 @@ var Hapi = require('hapi'),
 var server;
 
 before(function (done) {
-  server = Hapi.createServer('localhost', '9111');
+  server = new Hapi.Server();
+  server.connection({ host: 'localhost', port: '9111' });
 
-  server.pack.register([
+  server.register([
     {
-      plugin: npme,
+      register: npme,
       options: config
     }
   ], function () {
@@ -37,7 +39,7 @@ describe('getting a customer from hubspot', function () {
     server.methods.npme.getCustomer(email, function (err, customer) {
 
       expect(err).to.be.null;
-      expect(customer).to.exist;
+      expect(customer).to.exist();
       expect(customer.name).to.equal("boom");
       done();
     });
@@ -67,9 +69,9 @@ describe('getting a customer from hubspot', function () {
 
     server.methods.npme.getCustomer(email, function (err, customer) {
 
-      expect(err).to.exist;
+      expect(err).to.exist();
       expect(err.message).to.equal("unexpected status code: 400")
-      expect(customer).to.not.exist;
+      expect(customer).to.not.exist();
       done();
     });
   });

@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
     metrics = require('../../../adapters/metrics')();
 
@@ -15,7 +16,7 @@ module.exports = function getUser (name, next) {
     });
 
     if (er || cr && cr.statusCode !== 200 || !data || data.error) {
-      return next(Hapi.error.notFound('Username not found: ' + name));
+      return next(Boom.notFound('Username not found: ' + name));
     }
 
     return next(null, data);

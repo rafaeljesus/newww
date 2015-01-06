@@ -1,6 +1,7 @@
 var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
 var async = require('async'),
+    Boom = require('boom'),
     browse = require('../../services/registry/methods/getBrowseData'),
     Hapi = require('hapi'),
     parseLanguageHeader = require('accept-language-parser').parse,
@@ -86,7 +87,7 @@ function load (request, cb) {
     function(cb) { cbWithTimeout('downloads', downloads, [], cached, cb); },
     function(cb) { cbWithTimeout('totalPackages', registry.packagesCreated, [], cached, cb); }
   ], function(err) {
-    if (err) request.logger.warn(Hapi.error.internal('download error'), err);
+    if (err) request.logger.warn(Boom.internal('download error'), err);
     return cb(null, cached);
   });
 
@@ -127,13 +128,13 @@ function load (request, cb) {
     cb = once(cb); // make it so CB can only be executed once.
 
     args.push(function(err, data) {
-      if (err) request.logger.warn(Hapi.error.internal('download error for ' + which), err);
+      if (err) request.logger.warn(Boom.internal('download error for ' + which), err);
       if (data) cached[which] = data;
       return cb();
     });
 
     setTimeout(function() {
-      if (!cb.called) request.logger.warn(Hapi.error.internal('timeout loading ' + which));
+      if (!cb.called) request.logger.warn(Boom.internal('timeout loading ' + which));
       return cb();
     }, timeout);
 

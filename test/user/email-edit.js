@@ -1,10 +1,11 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var redis = require('redis'),
     spawn = require('child_process').spawn,
@@ -13,7 +14,7 @@ var redis = require('redis'),
     config.port = 6379;
     config.password = '';
 
-var server, source, revUrl, confUrl, cookieCrumb,
+var server, revUrl, confUrl, cookieCrumb,
     client, oldCache, redisProcess,
     fakeuser = require('../fixtures/users').fakeuser,
     fakeusercli = require('../fixtures/users').fakeusercli,
@@ -33,11 +34,9 @@ var postEmail = function (emailOpts) {
 
 // prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
 });
 
@@ -55,10 +54,10 @@ before(function (done) {
     client.get(key, function (er, val) {
       if (val) {
         var obj = {item: JSON.parse(val)};
-        return cb(er, obj);
+        return cb(er, obj.item, obj);
       }
 
-      return cb(er, val);
+      return cb(er, null);
     });
   };
 
@@ -71,9 +70,11 @@ before(function (done) {
 
 after(function(done) {
   client.flushdb();
-  server.app.cache = oldCache;
-  redisProcess.kill('SIGKILL');
-  done();
+  server.stop(function () {
+    server.app.cache = oldCache;
+    redisProcess.kill('SIGKILL');
+    done();
+  });
 });
 
 describe('Accessing the email-edit page', function () {
@@ -104,6 +105,7 @@ describe('Accessing the email-edit page', function () {
       emailEdits = emailEdits(cookieCrumb);
 
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
@@ -143,6 +145,7 @@ describe('Requesting an email change', function () {
   it('renders an error if an email address is not provided', function (done) {
     server.inject(postEmail(emailEdits.missingEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
       expect(source.context.error.email).to.be.true;
       done();
@@ -152,6 +155,7 @@ describe('Requesting an email change', function () {
   it('renders an error if an invalid email address is provided', function (done) {
     server.inject(postEmail(emailEdits.invalidEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
       expect(source.context.error.email).to.be.true;
       done();
@@ -161,6 +165,7 @@ describe('Requesting an email change', function () {
   it('renders an error if the password is invalid', function (done) {
     server.inject(postEmail(emailEdits.invalidPassword), function (resp) {
       expect(resp.statusCode).to.equal(403);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
       expect(source.context.error.password).to.be.true;
       done();
@@ -169,13 +174,14 @@ describe('Requesting an email change', function () {
 
   it('sends two emails if everything goes properly', function (done) {
     server.inject(postEmail(emailEdits.newEmail), function (resp) {
+      var source = resp.request.response.source;
       var confJSON = JSON.parse(source.context.confirm);
       var revJSON = JSON.parse(source.context.revert);
       confUrl = confJSON.text.match(/\/email-edit\/confirm\/[\/\w \.-]*\/?/)[0];
       revUrl = revJSON.text.match(/\/email-edit\/revert\/[\/\w \.-]*\/?/)[0];
       expect(resp.statusCode).to.equal(200);
-      expect(confJSON).to.have.deep.property('subject', 'npm Email Confirmation');
-      expect(revJSON).to.have.deep.property('subject', 'npm Email Change Alert');
+      expect(confJSON).to.contain({ subject: 'npm Email Confirmation' });
+      expect(revJSON).to.contain({ subject: 'npm Email Change Alert' });
       done();
     });
   });
@@ -214,6 +220,7 @@ describe('Confirming an email change', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -227,6 +234,7 @@ describe('Confirming an email change', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(500);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/internal');
       done();
     });
@@ -241,6 +249,7 @@ describe('Confirming an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(fakeuser.email).to.equal(newEmail);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit-confirmation');
       done();
     });
@@ -280,6 +289,7 @@ describe('Reverting an email change', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -296,6 +306,7 @@ describe('Reverting an email change', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(500);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/internal');
       done();
     });
@@ -310,6 +321,7 @@ describe('Reverting an email change', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(fakeuser.email).to.equal(oldEmail);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit-confirmation');
       done();
     });

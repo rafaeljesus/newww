@@ -1,9 +1,10 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
@@ -13,11 +14,12 @@ var Hapi = require('hapi'),
 var server;
 
 before(function (done) {
-  server = Hapi.createServer('localhost', '9113');
+  server = new Hapi.Server();
+  server.connection({ host: 'localhost', port: '9113' });
 
-  server.pack.register([
+  server.register([
     {
-      plugin: npme,
+      register: npme,
       options: config
     }
   ], function () {
@@ -48,8 +50,8 @@ describe('creating a trial in hubspot', function () {
         .reply(200, {id: '54321'})
 
     server.methods.npme.createTrial(customer, function (err, trial) {
-      expect(err).to.not.exist;
-      expect(trial).to.exist;
+      expect(err).to.not.exist();
+      expect(trial).to.exist();
       expect(trial.id).to.equal('54321');
       done();
     });
@@ -70,8 +72,8 @@ describe('creating a trial in hubspot', function () {
         .reply(200, {id: 'abcde'})
 
     server.methods.npme.createTrial(customer, function (err, trial) {
-      expect(err).to.not.exist;
-      expect(trial).to.exist;
+      expect(err).to.not.exist();
+      expect(trial).to.exist();
       expect(trial.id).to.equal('abcde');
       done();
     });
@@ -92,8 +94,8 @@ describe('creating a trial in hubspot', function () {
         .reply(400)
 
     server.methods.npme.createTrial(customer, function (err, trial) {
-      expect(err).to.exist;
-      expect(trial).to.not.exist;
+      expect(err).to.exist();
+      expect(trial).to.not.exist();
       expect(err.message).to.equal('Error with getting trial info for error@bam.com');
       done();
     });
@@ -121,8 +123,8 @@ describe('creating a trial in hubspot', function () {
         .reply(400)
 
     server.methods.npme.createTrial(customer, function (err, trial) {
-      expect(err).to.exist;
-      expect(trial).to.not.exist;
+      expect(err).to.exist();
+      expect(trial).to.not.exist();
       expect(err.message).to.equal('Error with creating a trial for error@bam.com');
       done();
     });

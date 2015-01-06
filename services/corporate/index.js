@@ -1,23 +1,23 @@
 var SECOND = 1000;
 var MINUTE = 60 * SECOND;
 
-exports.register = function (service, options, next) {
+exports.register = function (server, options, next) {
 
-  service.method('corp.getPage', require('./methods/getPage').static, {
+  server.method('corp.getPage', require('./methods/getPage').static, {
     cache: {
       expiresIn: 5 * MINUTE,
       segment: '##staticpage'
     }
   });
 
-  service.method('corp.getPolicy', require('./methods/getPage').policy, {
+  server.method('corp.getPolicy', require('./methods/getPage').policy, {
     cache: {
       expiresIn: 5 * MINUTE,
       segment: '##staticpolicy'
     }
   });
 
-  next();
+  return next();
 }
 
 exports.register.attributes = {

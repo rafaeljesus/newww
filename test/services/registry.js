@@ -1,9 +1,10 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var Hapi = require('hapi'),
     nock = require('nock'),
@@ -19,10 +20,11 @@ before(function (done) {
   // configure couch
   couchDB.init(couchConfig);
 
-  server = Hapi.createServer('localhost', '7110');
-  server.pack.register([
+  server = new Hapi.Server();
+  server.connection({ host: 'localhost', port: '7110' });
+  server.register([
     {
-      plugin: couch,
+      register: couch,
       options: couchConfig
     }
   ], function () {
@@ -38,8 +40,8 @@ describe('getting packages from couch', function () {
         .reply(200, require('../fixtures/request.json'));
 
     server.methods.registry.getPackage('request', function (er, pkg) {
-      expect(er).to.not.exist;
-      expect(pkg).to.exist;
+      expect(er).to.not.exist();
+      expect(pkg).to.exist();
       expect(pkg.name).to.equal('request');
       done();
     });
@@ -51,8 +53,8 @@ describe('getting packages from couch', function () {
         .reply(404, {"error":"not_found","reason":"missing"});
 
     server.methods.registry.getPackage('goober', function (er, pkg) {
-      expect(er).to.not.exist;
-      expect(pkg).to.not.exist;
+      expect(er).to.not.exist();
+      expect(pkg).to.not.exist();
       done();
     });
   });
@@ -67,7 +69,7 @@ describe('browsing', function () {
         .reply(200, require('../fixtures/browse').browseAll);
 
     server.methods.registry.getAllPackages(0, 10, function (er, data) {
-      expect(er).to.not.exist;
+      expect(er).to.not.exist();
       expect(data).to.have.length(10);
       done();
     });
@@ -79,7 +81,7 @@ describe('browsing', function () {
         .reply(200, require('../fixtures/browse').updated)
 
     server.methods.registry.getUpdated(0, 10, function (er, data) {
-      expect(er).to.not.exist;
+      expect(er).to.not.exist();
       expect(data).to.be.an.array;
       expect(data).to.have.length(10);
       done();
@@ -93,7 +95,7 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').allKeywords)
 
       server.methods.registry.getAllByKeyword(false, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
         done();
@@ -108,7 +110,7 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').byKeyword)
 
       server.methods.registry.getAllByKeyword(keyword, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
         done();
@@ -123,7 +125,7 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').allAuthors)
 
       server.methods.registry.getAuthors(false, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
         done();
@@ -138,7 +140,7 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').byAuthor)
 
       server.methods.registry.getAuthors(author, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
         done();
@@ -153,7 +155,7 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').allDepended)
 
       server.methods.registry.getDependedUpon(false, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
         done();
@@ -168,7 +170,7 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').byDependedUpon)
 
       server.methods.registry.getDependedUpon(pkg, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
         done();
@@ -183,12 +185,12 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').stars)
 
       server.methods.registry.getStarredPackages(false, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
-        expect(data[0]).to.have.property('name');
-        expect(data[0]).to.have.property('description');
-        expect(data[0]).to.have.property('url');
+        expect(data[0]).to.contain('name');
+        expect(data[0]).to.contain('description');
+        expect(data[0]).to.contain('url');
         done();
       })
     });
@@ -201,7 +203,7 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').usersWhoStarredPackage)
 
       server.methods.registry.getStarredPackages(pkg, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
         done();
@@ -216,12 +218,12 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').userstars)
 
       server.methods.registry.getUserStars(false, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
-        expect(data[0]).to.have.property('name');
-        expect(data[0]).to.have.property('description');
-        expect(data[0]).to.have.property('url');
+        expect(data[0]).to.contain('name');
+        expect(data[0]).to.contain('description');
+        expect(data[0]).to.contain('url');
         done();
       })
     });
@@ -234,7 +236,7 @@ describe('browsing', function () {
           .reply(200, require('../fixtures/browse').starsByUser)
 
       server.methods.registry.getUserStars(user, 0, 10, function (er, data) {
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
         expect(data).to.be.an.Array;
         expect(data).to.have.length(10);
         done();
@@ -254,12 +256,12 @@ describe('getting recent authors', function () {
 
 
     server.methods.registry.getRecentAuthors(TWO_WEEKS, 0, 10, function (er, authors) {
-      expect(er).to.not.exist;
+      expect(er).to.not.exist();
       expect(authors).to.be.an.Array;
       expect(authors).to.have.length(10);
-      expect(authors[0]).to.have.property('name');
-      expect(authors[0]).to.have.property('description');
-      expect(authors[0]).to.have.property('url');
+      expect(authors[0]).to.contain('name');
+      expect(authors[0]).to.contain('description');
+      expect(authors[0]).to.contain('url');
       done();
     })
   });
@@ -273,8 +275,8 @@ describe('starring a package', function () {
         .reply(201, { ok: 'starred'})
 
     server.methods.registry.star('request', 'boom', function (er, data) {
-      expect(er).to.not.exist;
-      expect(data).to.exist;
+      expect(er).to.not.exist();
+      expect(data).to.exist();
       expect(data.ok).to.equal('starred');
       done();
     });
@@ -282,7 +284,7 @@ describe('starring a package', function () {
 
   it('does not star invalid package names', function (done) {
     server.methods.registry.star('request%2f', 'boom', function (er, data) {
-      expect(er).to.exist;
+      expect(er).to.exist();
       expect(er.message).to.equal('Invalid package name');
       done();
     });
@@ -297,8 +299,8 @@ describe('unstarring a package', function () {
         .reply(201, { ok: 'unstarred'});
 
     server.methods.registry.unstar('splort', 'boom', function (er, data) {
-      expect(er).to.not.exist;
-      expect(data).to.exist;
+      expect(er).to.not.exist();
+      expect(data).to.exist();
       expect(data.ok).to.equal('unstarred');
       done();
     });
@@ -306,7 +308,7 @@ describe('unstarring a package', function () {
 
   it('does not remove star from invalid package names', function (done) {
     server.methods.registry.unstar('request%2f', 'boom', function (er, data) {
-      expect(er).to.exist;
+      expect(er).to.exist();
       expect(er.message).to.equal('Invalid package name');
       done();
     });
@@ -322,9 +324,9 @@ describe('getting total number of packages', function () {
         .reply(200, { rows: [ { key: 'name', value: 3681 } ] })
 
     server.methods.registry.packagesCreated(function (er, packages) {
-      expect(er).to.not.exist;
+      expect(er).to.not.exist();
       expect(packages).to.be.a.number;
-      expect(packages).to.be.gt(0);
+      expect(packages).to.be.above(0);
       done();
     })
   });

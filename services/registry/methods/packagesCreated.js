@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
     log = require('bole')('registry-packages-created'),
     metrics = require('../../../adapters/metrics')();
@@ -18,7 +19,7 @@ module.exports = function packagesCreated (next) {
     });
 
     if (er || data.error) {
-      return next(Hapi.error.internal(er || data.error));
+      return next(Boom.internal(er || data.error));
     }
 
     if (data.rows && data.rows.length > 0 && data.rows[0].value) {

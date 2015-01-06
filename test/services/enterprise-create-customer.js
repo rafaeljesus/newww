@@ -1,9 +1,10 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
@@ -15,11 +16,12 @@ config.license.api = 'https://billing.website.com';
 var server;
 
 before(function (done) {
-  server = Hapi.createServer('localhost', '9119');
+  server = new Hapi.Server();
+  server.connection({ host: 'localhost', port: '9119' });
 
-  server.pack.register([
+  server.register([
     {
-      plugin: npme,
+      register: npme,
       options: config
     }
   ], function () {
@@ -47,7 +49,7 @@ describe('creating a customer in hubspot', function () {
         .reply(200, data);
 
     server.methods.npme.createCustomer(data, function (err, customer) {
-      expect(err).to.not.exist;
+      expect(err).to.not.exist();
       expect(customer).to.equal.data;
       done();
     });
@@ -72,9 +74,9 @@ describe('creating a customer in hubspot', function () {
         .reply(400);
 
     server.methods.npme.createCustomer(data, function (err, customer) {
-      expect(err).to.exist;
+      expect(err).to.exist();
       expect(err.message).to.equal('unable to create customer ' + data.email);
-      expect(customer).to.not.exist;
+      expect(customer).to.not.exist();
       done();
     });
   });

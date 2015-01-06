@@ -157,7 +157,7 @@ describe('GET /settings/billing', function () {
         expect($(".card-info").length);
         expect($(".card-last4").text()).to.equal("4242");
         expect($(".card-brand").text()).to.equal("Visa");
-        expect($(".card-exp-month").text()).to.equal("12");
+        expect($(".card-exp-month").text()).to.equal("December");
         expect($(".card-exp-year").text()).to.equal("2020");
         done();
       });

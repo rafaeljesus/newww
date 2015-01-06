@@ -57,6 +57,7 @@
     "malarkey": "^1.1.0",
     "marked": "^0.3.2",
     "moment": "^2.6.0",
+    "month": "^1.0.0",
     "mousetrap": "0.0.1",
     "murmurhash": "0.0.2",
     "nib": "^1.0.2",

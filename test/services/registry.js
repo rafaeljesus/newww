@@ -82,7 +82,7 @@ describe('browsing', function () {
 
     server.methods.registry.getUpdated(0, 10, function (er, data) {
       expect(er).to.not.exist();
-      expect(data).to.be.an.array;
+      expect(data).to.be.an.array();
       expect(data).to.have.length(10);
       done();
     });
@@ -96,7 +96,7 @@ describe('browsing', function () {
 
       server.methods.registry.getAllByKeyword(false, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         done();
       });
@@ -111,7 +111,7 @@ describe('browsing', function () {
 
       server.methods.registry.getAllByKeyword(keyword, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         done();
       });
@@ -126,7 +126,7 @@ describe('browsing', function () {
 
       server.methods.registry.getAuthors(false, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         done();
       });
@@ -141,7 +141,7 @@ describe('browsing', function () {
 
       server.methods.registry.getAuthors(author, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         done();
       });
@@ -156,7 +156,7 @@ describe('browsing', function () {
 
       server.methods.registry.getDependedUpon(false, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         done();
       });
@@ -171,7 +171,7 @@ describe('browsing', function () {
 
       server.methods.registry.getDependedUpon(pkg, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         done();
       });
@@ -186,7 +186,7 @@ describe('browsing', function () {
 
       server.methods.registry.getStarredPackages(false, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         expect(data[0]).to.contain('name');
         expect(data[0]).to.contain('description');
@@ -204,7 +204,7 @@ describe('browsing', function () {
 
       server.methods.registry.getStarredPackages(pkg, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         done();
       });
@@ -219,7 +219,7 @@ describe('browsing', function () {
 
       server.methods.registry.getUserStars(false, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         expect(data[0]).to.contain('name');
         expect(data[0]).to.contain('description');
@@ -237,7 +237,7 @@ describe('browsing', function () {
 
       server.methods.registry.getUserStars(user, 0, 10, function (er, data) {
         expect(er).to.not.exist();
-        expect(data).to.be.an.Array;
+        expect(data).to.be.an.array();
         expect(data).to.have.length(10);
         done();
       });
@@ -257,7 +257,7 @@ describe('getting recent authors', function () {
 
     server.methods.registry.getRecentAuthors(TWO_WEEKS, 0, 10, function (er, authors) {
       expect(er).to.not.exist();
-      expect(authors).to.be.an.Array;
+      expect(authors).to.be.an.array();
       expect(authors).to.have.length(10);
       expect(authors[0]).to.contain('name');
       expect(authors[0]).to.contain('description');
@@ -325,7 +325,7 @@ describe('getting total number of packages', function () {
 
     server.methods.registry.packagesCreated(function (er, packages) {
       expect(er).to.not.exist();
-      expect(packages).to.be.a.number;
+      expect(packages).to.be.a.number();
       expect(packages).to.be.above(0);
       done();
     })

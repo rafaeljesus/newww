@@ -50,7 +50,7 @@ describe('creating a customer in hubspot', function () {
 
     server.methods.npme.createCustomer(data, function (err, customer) {
       expect(err).to.not.exist();
-      expect(customer).to.equal.data;
+      expect(customer).to.deep.equal(data);
       done();
     });
   });

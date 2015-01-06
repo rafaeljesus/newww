@@ -129,7 +129,7 @@ describe('Modifying the profile', function () {
       var source = resp.request.response.source;
       expect(source.context.user).to.exist();
       expect(source.context.error).to.exist();
-      expect(source.context.error.details).to.be.an.array;
+      expect(source.context.error.details).to.be.an.array();
       var names = source.context.error.details.map(function(detail){
         return detail.path
       })

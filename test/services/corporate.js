@@ -65,7 +65,7 @@ describe('getting pages from GitHub', function () {
     server.methods.corp.getPolicy('error', function (er, content) {
       expect(er).to.exist();
       expect(er).to.equal('Not Found');
-      expect(content).to.be.null;
+      expect(content).to.be.null();
       done();
     });
   });
@@ -75,7 +75,7 @@ describe('getting pages from GitHub', function () {
       expect(er).to.exist();
       var message = er.details[0].message;
       expect(message).to.equal('value fails to match the required pattern');
-      expect(content).to.be.null;
+      expect(content).to.be.null();
       done();
     });
   })

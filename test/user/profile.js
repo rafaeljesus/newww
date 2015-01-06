@@ -109,7 +109,7 @@ describe('Retreiving profiles from the registry', function () {
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(resp.headers['content-type']).to.match(/json/);
-        expect(resp.result).to.be.an.object;
+        expect(resp.result).to.be.an.object();
         done();
       });
     });
@@ -155,7 +155,7 @@ describe('Retreiving profiles from the registry', function () {
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(resp.headers['content-type']).to.match(/json/);
-        expect(resp.result).to.be.an.object;
+        expect(resp.result).to.be.an.object();
         done();
       });
     });

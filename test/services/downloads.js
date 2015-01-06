@@ -47,17 +47,17 @@ describe('Getting download counts for a specific package', function () {
 
   it('gets a point with valid parameters', function (done) {
     server.methods.downloads.getDownloadsForPackage('last-month', 'point', 'request', function (er, data) {
-      expect(er).to.be.null;
+      expect(er).to.be.null();
       expect(data).to.exist();
       expect(data).to.be.above(0);
-      expect(data).to.not.be.null;
+      expect(data).to.not.be.null();
       done();
     });
   });
 
   it('gets a range with valid parameters', function (done) {
     server.methods.downloads.getDownloadsForPackage('last-month', 'range', 'request', function (er, data) {
-      expect(er).to.be.null;
+      expect(er).to.be.null();
       expect(data).to.be.an.array();
       expect(data[0]).to.contain('day');
       expect(data[0]).to.contain('downloads');

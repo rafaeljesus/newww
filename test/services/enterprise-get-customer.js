@@ -38,7 +38,7 @@ describe('getting a customer from hubspot', function () {
 
     server.methods.npme.getCustomer(email, function (err, customer) {
 
-      expect(err).to.be.null;
+      expect(err).to.be.null();
       expect(customer).to.exist();
       expect(customer.name).to.equal("boom");
       done();
@@ -54,8 +54,8 @@ describe('getting a customer from hubspot', function () {
 
     server.methods.npme.getCustomer(email, function (err, customer) {
 
-      expect(err).to.be.null;
-      expect(customer).to.be.null;
+      expect(err).to.be.null();
+      expect(customer).to.be.null();
       done();
     });
   });

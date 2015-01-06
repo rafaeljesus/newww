@@ -147,7 +147,7 @@ describe('Requesting an email change', function () {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
-      expect(source.context.error.email).to.be.true;
+      expect(source.context.error.email).to.be.true();
       done();
     });
   });
@@ -157,7 +157,7 @@ describe('Requesting an email change', function () {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
-      expect(source.context.error.email).to.be.true;
+      expect(source.context.error.email).to.be.true();
       done();
     });
   });
@@ -167,7 +167,7 @@ describe('Requesting an email change', function () {
       expect(resp.statusCode).to.equal(403);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
-      expect(source.context.error.password).to.be.true;
+      expect(source.context.error.password).to.be.true();
       done();
     });
   });

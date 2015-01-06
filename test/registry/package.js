@@ -73,11 +73,11 @@ describe('Retreiving packages from the registry', function () {
 
       // removes shields.io badges from the README
       expect(p.readmeSrc).to.include("img.shields.io");
-      expect($("p:has(img[src*='img.shields.io'])").hasClass("superfluous")).to.be.true;
+      expect($("p:has(img[src*='img.shields.io'])").hasClass("superfluous")).to.be.true();
 
       // removes nodei.co badges from the README
       expect(p.readmeSrc).to.include("nodei.co");
-      expect($("p:has(img[src*='nodei.co'])").hasClass("superfluous")).to.be.true;
+      expect($("p:has(img[src*='nodei.co'])").hasClass("superfluous")).to.be.true();
 
       // turns relative URLs into real URLs
       expect(p.readme).to.include('/blob/master');
@@ -285,7 +285,7 @@ describe('seeing stars', function () {
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.context.package.name).to.equal(pkgName);
-      expect(source.context.package.isStarred).to.be.true;
+      expect(source.context.package.isStarred).to.be.true();
       expect(resp.result).to.include('<input id="star-input" type="checkbox" name="isStarred" value="true" checked>');
       done();
     });

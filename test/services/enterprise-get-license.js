@@ -57,8 +57,8 @@ describe('getting licenses from hubspot', function () {
 
     server.methods.npme.getLicenses(productId, customerId, function (err, licenses) {
 
-      expect(err).to.be.null;
-      expect(licenses).to.be.null;
+      expect(err).to.be.null();
+      expect(licenses).to.be.null();
       done();
     });
   });

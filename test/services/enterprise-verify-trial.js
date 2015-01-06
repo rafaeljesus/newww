@@ -40,7 +40,7 @@ describe('verifying a trial in hubspot', function () {
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.not.exist();
-      expect(verifiedTrial.verified).to.be.true;
+      expect(verifiedTrial.verified).to.be.true();
       done();
     });
   });
@@ -55,8 +55,8 @@ describe('verifying a trial in hubspot', function () {
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.not.exist();
-      expect(verifiedTrial.id).to.equal.trialId;
-      expect(verifiedTrial.verified).to.be.true;
+      expect(verifiedTrial.id).to.equal(trialId);
+      expect(verifiedTrial.verified).to.be.true();
       done();
     });
   });

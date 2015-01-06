@@ -45,12 +45,12 @@
         <tr>
           <td>Expiration</td>
           <td>
-            <span class="card-exp-month">{{month-name customer.card.exp_month}}</span>/
+            <span class="card-exp-month">{{month-name customer.card.exp_month}}</span>
             <span class="card-exp-year">{{customer.card.exp_year}}</td></span>
         </tr>
         <tr>
           <td>Next billing date</td>
-          <td data-date="{{customer.next_billing_date}}" data-date-format="%B %d, %Y">
+          <td data-date="{{customer.next_billing_date}}" data-date-format="%B %e %Y">
             {{customer.next_billing_date}}
           </td>
         </tr>
@@ -58,8 +58,12 @@
     </table>
 
     <p>
-      To use a different card, fill out the form below.
+      You can also
+      <a href="#" id="update-subscription-toggler">update payment info</a>
+      or
+      <a href="#" id="cancel-subscription-toggler">stop paying us</a>.
     </p>
+
   {{/if}}
 
   {{> errors}}
@@ -67,7 +71,7 @@
   <!-- stripe error container -->
   <p class="error billing-error" style="display:none;"></p>
 
-  <form action="" method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}">
+  <form action="" method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
 
     <label for="card-number">Card Number</label>
     <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
@@ -87,11 +91,6 @@
   </form>
 
   {{#if customer}}
-    <p style="padding-top:50px">
-      Want to stop paying us?
-      <a href="#" id="cancel-subscription-toggler">Click here...</a>
-    </p>
-
     <form id="cancel-subscription" action="/settings/billing/cancel" method="post" style="display:none">
 
       <p>
@@ -101,7 +100,7 @@
       <ul>
         <li>
           Your private subscription will remain active until
-          <strong data-date="{{customer.next_billing_date}}" data-date-format="%B %d, %Y">
+          <strong data-date="{{customer.next_billing_date}}" data-date-format="%B %e %Y">
             {{customer.next_billing_date}}
           </strong>
         </li>

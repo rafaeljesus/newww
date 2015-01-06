@@ -73,6 +73,7 @@
     "number-grouper": "0.0.1",
     "parse-link-header": "^0.2.0",
     "pkgs": "^1.1.0",
+    "prettydate": "0.0.1",
     "redis": "^0.12.1",
     "repl-client": "~0.3.0",
     "replify": "~1.2.0",

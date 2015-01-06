@@ -12,6 +12,7 @@ window.private_npm_beta = require("./private-npm-beta")()
 require("./what-npm-is-for")()
 require("./billing")()
 require("./billing-cancel")()
+require("./date-formatting")()
 
 $(function () {
   $(".autoselect-wrapper input").on("click", function () {

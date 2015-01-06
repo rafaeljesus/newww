@@ -31,19 +31,29 @@
   {{/if}}
 
   {{#if customer}}
-    <p class="card-info">
-      The card we have on file is a
-      <span class="card-brand">{{customer.card.brand}}</span>
-      ending in
-      <span class="card-last4">{{customer.card.last4}}</span>
-      that expires
-      <span class="card-exp-month">{{customer.card.exp_month}}</span>
-      <span class="card-exp-year">{{customer.card.exp_year}}</span>.
-    </p>
 
-    <p>
-      You will next be billed {{customer.next_billing_date}}.
-    </p>
+    <table class="ruled">
+      <tbody>
+        <tr>
+          <td>Card Type</td>
+          <td>{{customer.card.brand}}</td>
+        </tr>
+        <tr>
+          <td>Last 4</td>
+          <td>{{customer.card.last4}}</td>
+        </tr>
+        <tr>
+          <td>Expiration</td>
+          <td>{{customer.card.exp_month}}/{{customer.card.exp_year}}</td>
+        </tr>
+        <tr>
+          <td>Next bill date</td>
+          <td data-date="{{customer.next_billing_date}}" data-date-format="%B %d, %Y">
+            {{customer.next_billing_date}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
     <p>
       To use a different card, fill out the form below.

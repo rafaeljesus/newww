@@ -163,6 +163,15 @@ describe('GET /settings/billing', function () {
       });
     });
 
+    it("displays a submit button with update verbiage", function(done){
+      options.credentials = fakeuser
+      server.inject(options, function (resp) {
+        var $ = cheerio.load(resp.result)
+        expect($("#payment-form input[type=submit]").attr("value")).to.equal("update billing info");
+        done();
+      });
+    })
+
     it("renders a hidden cancellation form", function(done) {
       options.credentials = fakeuser
       server.inject(options, function (resp) {
@@ -247,14 +256,23 @@ describe('GET /settings/billing', function () {
     })
 
     it("does not display billing info, because it does not exist", function(done) {
-      options.credentials
+      options.credentials = fakeuser
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
-        expect($("body").length);
+        expect($("body").length).to.equal(1);
         expect($(".card-info").length).to.equal(0);
         expect($(".card-brand").length).to.equal(0);
         expect($(".card-exp-month").length).to.equal(0);
         expect($(".card-exp-year").length).to.equal(0);
+        done();
+      });
+    })
+
+    it("displays a submit button with creation verbiage", function(done){
+      options.credentials = fakeuser
+      server.inject(options, function (resp) {
+        var $ = cheerio.load(resp.result)
+        expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
         done();
       });
     })

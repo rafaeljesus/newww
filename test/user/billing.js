@@ -187,18 +187,18 @@ describe('GET /settings/billing', function () {
       });
     });
 
-    // it("displays account expiration date in cancellation form", function(done) {
-    //   options.credentials = fakeuser
-    //   server.inject(options, function (resp) {
-    //     var $ = cheerio.load(resp.result)
-    //     var form = $("#cancel-subscription");
-    //     expect(form.length).to.equal(1);
-    //     expect(form.attr("method")).to.equal("post");
-    //     expect(form.attr("action")).to.equal("/settings/billing/cancel");
-    //     expect(form.css('display')).to.equal("none");
-    //     done();
-    //   });
-    // });
+    it("displays account expiration date in cancellation form", function(done) {
+      options.credentials = fakeuser
+      server.inject(options, function (resp) {
+        var $ = cheerio.load(resp.result)
+        var form = $("#cancel-subscription");
+        expect(form.length).to.equal(1);
+        expect(form.attr("method")).to.equal("post");
+        expect(form.attr("action")).to.equal("/settings/billing/cancel");
+        expect(form.css('display')).to.equal("none");
+        done();
+      });
+    });
 
     it("does NOT render expired license info", function(done) {
       options.credentials = fakeuser

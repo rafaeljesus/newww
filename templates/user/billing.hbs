@@ -32,22 +32,24 @@
 
   {{#if customer}}
 
-    <table class="ruled">
+    <table class="ruled card-info">
       <tbody>
         <tr>
           <td>Card Type</td>
-          <td>{{customer.card.brand}}</td>
+          <td class="card-brand">{{customer.card.brand}}</td>
         </tr>
         <tr>
-          <td>Last 4</td>
-          <td>{{customer.card.last4}}</td>
+          <td>Last 4 Digits</td>
+          <td class="card-last4">{{customer.card.last4}}</td>
         </tr>
         <tr>
           <td>Expiration</td>
-          <td>{{customer.card.exp_month}}/{{customer.card.exp_year}}</td>
+          <td>
+            <span class="card-exp-month">{{customer.card.exp_month}}</span>/
+            <span class="card-exp-year">{{customer.card.exp_year}}</td></span>
         </tr>
         <tr>
-          <td>Next bill date</td>
+          <td>Next billing date</td>
           <td data-date="{{customer.next_billing_date}}" data-date-format="%B %d, %Y">
             {{customer.next_billing_date}}
           </td>

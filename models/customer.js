@@ -2,13 +2,13 @@ var request = require('request');
 var _ = require('lodash');
 
 var api = module.exports = function(opts) {
-  _.extend({
-    billingApi: process.env.BILLING_API || 'https://billing-api-example.com'
+  _.extend(this, {
+    host: process.env.BILLING_API || 'https://billing-api-example.com'
   }, opts);
 }
 
 api.prototype.get = function(name, callback) {
-  var url = process.env.BILLING_API + '/stripe/' + name;
+  var url = this.host + '/stripe/' + name;
   request.get({url: url, json: true}, function(err, resp, body){
 
     // Coerce integer into date
@@ -16,7 +16,6 @@ api.prototype.get = function(name, callback) {
       body.next_billing_date = new Date(body.next_billing_date)
     }
 
-    // console.log("get customer", err, resp, body)
     return callback(err, resp, body)
   });
 }
@@ -28,14 +27,12 @@ api.prototype.update = function(body, callback) {
     switch (resp.statusCode) {
       case 200:
         // Customer exists; Update
-        console.log("about to update", url)
-        url = process.env.BILLING_API + '/stripe/' + body.name;
+        url = this.host + '/stripe/' + body.name;
         request.post({url: url, json: true, body: body}, callback);
         break
       case 404:
         // Customer does not exist; Create
-        console.log("about to create", url)
-        url = process.env.BILLING_API + '/stripe'
+        url = this.host + '/stripe'
         request.put({url: url, json: true, body: body}, callback);
         break;
       default:
@@ -46,6 +43,6 @@ api.prototype.update = function(body, callback) {
 }
 
 api.prototype.del = function(name, callback) {
-  var url = process.env.BILLING_API + '/stripe/' + name;
+  var url = this.host + '/stripe/' + name;
   request.del({url: url, json: true}, callback);
 }

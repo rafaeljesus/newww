@@ -3,7 +3,7 @@ var transform = require('./presenters/profile').transform,
     Joi = require('joi'),
     log = require('bole')('billing');
 
-var Customer = new (require('../../lib/customer-api'))();
+var Customer = new (require('../../models/customer'))();
 var billing = module.exports = {};
 
 billing.getBillingInfo = function (request, reply) {

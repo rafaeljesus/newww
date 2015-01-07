@@ -37,8 +37,9 @@ var metrics = require('./adapters/metrics')(config.metrics);
 server.register(require('hapi-auth-cookie'), function (err) {
   if (err) { throw err; }
 
-  var cache = server.cache('sessions', {
-    expiresIn: config.session.expiresIn
+  var cache = server.cache({
+    expiresIn: config.session.expiresIn,
+    segment: '|sessions'
   });
 
   server.app.cache = cache;
@@ -50,7 +51,7 @@ server.register(require('hapi-auth-cookie'), function (err) {
     cookie: config.session.cookie,
     clearInvalid: true,
     validateFunc: function (session, cb) {
-      cache.get(session.sid, function (err, cached) {
+      cache.get(session.sid, function (err, item, cached) {
 
         if (err) {
           return cb(err, false);
@@ -59,7 +60,7 @@ server.register(require('hapi-auth-cookie'), function (err) {
           return cb(null, false);
         }
 
-        return cb(null, true, cached.item);
+        return cb(null, true, item);
       });
     }
   });

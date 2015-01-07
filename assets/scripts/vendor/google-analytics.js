@@ -9,8 +9,7 @@ ga('send', 'pageview');
 
 $(document).ready(function () {
   $('.ad a').click(function (e) {
-    var id = $(this).parent().data('id')
-    ga('send', 'event', 'Hiring Ads', 'click', id)
+    ga('send', 'event', 'Hiring Ads', 'click', $(this).attr("title"))
   })
 
   $('.npme-group a, .npme-details a').click(function (e) {

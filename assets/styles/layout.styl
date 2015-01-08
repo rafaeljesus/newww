@@ -199,47 +199,29 @@ ul.humans
     float left
     display block
     margin 0
-    padding 3px 0
+    padding 0
     position relative
-
-  a
-    display block
-    position relative
-    width maintainerAvatarSize
     height maintainerAvatarSize
     margin-right 10px
     margin-bottom 10px
 
-  img, span
+  a
     display block
-    position absolute
-    width maintainerAvatarSize
+    position relative
+    text-decoration none
 
   img
+    display inline-block
+    width maintainerAvatarSize
+    height maintainerAvatarSize
     border-radius 3px
     transition all 0.3s
 
   span
+    padding-left 3px
+    display inline-block
     line-height maintainerAvatarSize
-    text-align center
-    opacity 0
-    transition all 0.3s
-    text-overflow ellipsis
-    overflow hidden
-    padding 0 6px
-    text-decoration none
-
-  a:hover
-    img
-      opacity 0
-    span
-      text-decoration underline
-
-  &:hover
-    span
-      opacity 1
-    img
-      opacity 0.1
+    vertical-align top
 
 .ad
   padding 10px

@@ -13,7 +13,7 @@ exports.all = {
       name: name,
       url: '/package/' + name,
       value: value
-    }
+    };
   }
 };
 
@@ -28,7 +28,7 @@ exports.keyword = {
 exports.updated = {
   viewName: 'browseUpdated',
   groupLevel: 2,
-  transformKey: function (key, value) {
+  transformKey: function (key) {
     var time = key[0],
         name = key[1];
 
@@ -36,7 +36,7 @@ exports.updated = {
       name: name,
       url: '/package/' + name,
       value: time
-    }
+    };
   },
 };
 
@@ -68,16 +68,16 @@ exports.star = {
       name: name,
       url: '/package/' + name,
       value: num
-    }
+    };
   },
-  transformKeyArg: function (key, value) {
+  transformKeyArg: function (key) {
     var name = key[2];
 
     return {
       name: name,
       description: '',
       url: '/profile/' + name
-    }
+    };
   }
 };
 
@@ -94,7 +94,7 @@ exports.userstar = {
       description: num + ' packages',
       url: '/profile/' + name,
       value: num
-    }
+    };
   },
   transformKeyArg: packageDisplay
 };
@@ -109,16 +109,16 @@ function countDisplay (key, value, type) {
     url: '/browse/' + type + '/' + name,
     value: num
   };
-};
+}
 
-function packageDisplay (key, value) {
+function packageDisplay (key) {
   var name = key[1];
 
   return {
     name: name,
     url: '/package/' + name
   };
-};
+}
 
 
 exports.transform = function transform (type, arg, data, skip, limit, opts, next) {
@@ -131,8 +131,8 @@ exports.transform = function transform (type, arg, data, skip, limit, opts, next
 
   log.info('transforming ', type, arg, skip, limit);
   if (!data.rows) {
-    log.warn('no rows?', type, arg, data, skip, limit)
-    return []
+    log.warn('no rows?', type, arg, data, skip, limit);
+    return next(null, []);
   }
 
   data = data.rows.map(function (row) {
@@ -148,8 +148,8 @@ exports.transform = function transform (type, arg, data, skip, limit, opts, next
     data = data.sort(function (a, b) {
       return a.value === b.value ? (
         a.name === b.name ? 0 : a.name < b.name ? -1 : 1
-      ) : a.value > b.value ? -1 : 1
-    }).slice(skip, skip + limit)
+      ) : a.value > b.value ? -1 : 1;
+    }).slice(skip, skip + limit);
   }
 
   // don't lookup dependent package if opts.noPackageData is truthy.
@@ -157,12 +157,12 @@ exports.transform = function transform (type, arg, data, skip, limit, opts, next
       type.match(/keyword|author|depended|userstar/) && arg && !opts.noPackageData) {
     log.info('getting package data for ' + type + ' with arg ' + arg);
     return getPackageData(data, function (er, data) {
-      return next(er, data);
+      return next(null, data);
     });
   }
 
   return next(null, data);
-}
+};
 
 function getPackageData (data, cb) {
   var names = data.map(function (d) {
@@ -187,6 +187,6 @@ function getPackageData (data, cb) {
       }
     });
 
-    return cb(null, data);
+    return cb(null, data || []);
   });
 }

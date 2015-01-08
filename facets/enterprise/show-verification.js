@@ -1,50 +1,53 @@
-var NAMESPACE = 'enterprise-verify';
-
 var Hoek = require('hoek'),
-    Hapi = require('hapi'),
-    url = require('url'),
-    nodemailer = require('nodemailer'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    nodemailer = require('nodemailer');
 
 var config = require('../../config');
 
 module.exports = function verifyEnterpriseTrial (request, reply) {
   var verifyTrial = request.server.methods.npme.verifyTrial,
       getCustomer = request.server.methods.npme.getCustomer,
-      getLicenses = request.server.methods.npme.getLicenses,
-      showError = request.server.methods.errors.showError(reply);
+      getLicenses = request.server.methods.npme.getLicenses;
 
-  var opts = {
-    user: request.auth.credentials,
-    
-    namespace: NAMESPACE
-  };
+  var opts = { };
 
   if (!request.query.v) {
-    return showError(request.url, 404, 'Could not find verification key', opts);
+    request.logger.error('Could not find verification key', request.query);
+    reply.view('errors/not-found', opts).code(404);
+    return;
   }
 
   verifyTrial(request.query.v, function (err, trial) {
+
     if (err) {
-      return showError(err, 500, 'There was a problem with verifying the trial', opts);
+      request.logger.error('Unable to verify the trial', request.query.v);
+      request.logger.error(err);
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     getCustomer(trial.customer_id, function (err, customer) {
+
       if (err) {
-        return showError(err, 500, 'could not get customer from hubspot', opts);
+        request.logger.error('Unable to get customer from hubspot', trial.customer_id);
+        request.logger.error(err);
+        reply.view('errors/internal', opts).code(500);
+        return;
       }
 
       getLicenses(config.npme.product_id, trial.customer_id, function (err, licenses) {
 
         if (err) {
-          return showError(err, 500, 'could not get licenses from hubspot', opts);
+          request.logger.error('Unable to get licenses from hubspot for customer ' + trial.customer_id);
+          request.logger.error(err);
+          reply.view('errors/internal', opts).code(500);
+          return;
         }
 
         // zero licenses bad, more than one license confusing
-        if (licenses.length != 1) {
-          return showError(licenses.length, 400, 'zero or more than one license for ' + trial.customer_id, opts);
+        if (licenses.length !== 1) {
+          request.logger.error('zero or more than one license for ' + trial.customer_id, 'licenses: ', licenses);
+          reply.view('errors/internal', opts).code(400);
+          return;
         }
 
         var mailSettings = config.user.mail;
@@ -81,7 +84,7 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
           email: customer.email,
           license_key: license.license_key,
           supportEmail: from
-        }
+        };
 
         opts = Hoek.applyToDefaults(opts, enterpriseOpts);
 
@@ -91,16 +94,17 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
           return reply.view('enterprise/complete', opts);
 
         } else {
-          if (!mailSettings.mailTransportModule ||
-              !mailSettings.mailTransportSettings) {
-            return showError(null, 500, 'Mail settings are missing!', opts);
-          }
+
           var transport = require(mailSettings.mailTransportModule);
           var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
 
-          mailer.sendMail(mail, function (er, result) {
+          mailer.sendMail(mail, function (er) {
+
             if (er) {
-              return showError(er, 500, "Unable to send license to email", opts);
+              request.logger.error('Unable to send license to email', opts.email);
+              request.logger.error(er);
+              reply.view('errors/internal', opts).code(500);
+              return;
             }
 
             return reply.view('enterprise/complete', opts);
@@ -110,4 +114,4 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
     });
 
   });
-}
+};

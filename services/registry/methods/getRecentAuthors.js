@@ -1,5 +1,5 @@
 var anonCouch = require('../../../adapters/couchDB').anonCouch,
-    metrics = require('newww-metrics')(),
+    metrics = require('../../../adapters/metrics')(),
     log = require('bole')('registry-get-recent-authors'),
     qs = require('querystring'),
     AC = require('async-cache'),
@@ -8,9 +8,7 @@ var anonCouch = require('../../../adapters/couchDB').anonCouch,
 
 module.exports = function recentAuthors (age, skip, limit, cb) {
   log.info('lookup recent authors: ', age, skip, limit);
-  var timer = {};
 
-  timer.start = Date.now();
   skip = skip || 0;
   limit = limit || 100;
   var key = JSON.stringify([age, skip, limit]);
@@ -41,9 +39,12 @@ module.exports = function recentAuthors (age, skip, limit, cb) {
       query.stale = 'update_after';
 
       u += qs.stringify(query);
+
+      var timerStart = Date.now();
+
       anonCouch.get(u, function (er, cr, data) {
         if (!er && !data.rows) {
-          var er = new Error('no data returned');
+          er = new Error('no data returned');
           er.code = er.status = 404;
         }
         if (er) {
@@ -76,8 +77,12 @@ module.exports = function recentAuthors (age, skip, limit, cb) {
           return b.value - a.value;
         }).slice(skip, skip + limit);
 
-        timer.end = Date.now();
-        metrics.addCouchLatencyMetric(timer,'recentAuthors');
+        metrics.metric({
+          name:   'latency',
+          value:  Date.now() - timerStart,
+          type:   'couchdb',
+          browse: 'recentAuthors'
+        });
 
         cb(null, data.rows);
       });

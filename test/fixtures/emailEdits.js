@@ -1,7 +1,6 @@
 var fakeuser = require('./users').fakeuser,
     newEmail = 'new@fakeuser.com';
 
-
 module.exports = function (cookieCrumb) {
   return {
     newEmail: {
@@ -31,5 +30,5 @@ module.exports = function (cookieCrumb) {
       email: newEmail,
       crumb: cookieCrumb
     }
-  }
-}
+  };
+};

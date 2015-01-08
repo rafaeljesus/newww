@@ -1,19 +1,12 @@
 var transform = require('./presenters/profile').transform,
     Hapi = require('hapi'),
     Joi = require('joi'),
-    log = require('bole')('user-profile-edit'),
-    uuid = require('node-uuid'),
-    merge = require('lodash').merge,
-    metrics = require('newww-metrics')();
+    merge = require('lodash').merge;
 
 module.exports = function (options) {
   return function (request, reply) {
     var saveProfile = request.server.methods.user.saveProfile,
-        setSession = request.server.methods.user.setSession(request),
-        showError = request.server.methods.errors.showError(reply),
-        addMetric = metrics.addMetric,
-        addLatencyMetric = metrics.addPageLatencyMetric,
-        timer = { start: Date.now() };
+        setSession = request.server.methods.user.setSession(request);
 
     var opts = {
       user: transform(request.auth.credentials, options),
@@ -44,18 +37,20 @@ module.exports = function (options) {
 
         saveProfile(opts.user, function (err, data) {
           if (err) {
-            return new Error('ruh roh, something went wrong')
+            request.logger.warn(err);
+            request.logger.warn('unable to save profile; user=' + opts.user.name);
+            return reply.view('errors/internal', opts).code(500);
           }
 
           setSession(opts.user, function (err) {
             if (err) {
-              return showError(err, 500, 'Unable to set the session for user ' + opts.user.name, opts);
+              // TODO this is an error with our cache. Does the user really need to see it?
+              request.logger.warn('unable to set session; user=' + opts.user.name);
+              return reply.view('errors/internal', opts).code(500);
             }
 
-            timer.end = Date.now();
-            addLatencyMetric(timer, 'saveProfile');
-
-            addMetric({ name: 'saveProfile' });
+            request.timing.page = 'saveProfile';
+            request.metrics.metric({ name: 'saveProfile' });
             return reply.redirect('/profile');
           });
 
@@ -64,9 +59,7 @@ module.exports = function (options) {
     }
 
     if (request.method === 'head' || request.method === 'get' || opts.error) {
-      timer.end = Date.now();
-      addLatencyMetric(timer, 'profile-edit');
-
+      request.timing.page = 'profile-edit';
       opts.title = 'Edit Profile';
       return reply.view('user/profile-edit', opts);
     }

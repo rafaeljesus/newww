@@ -83,7 +83,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(403);
-      expect(resp.result).to.equal('user isn\'t logged in');
+      expect(resp.result).to.equal('user is not logged in');
       done();
     });
   });

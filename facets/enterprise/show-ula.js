@@ -1,22 +1,12 @@
-var NAMESPACE = 'enterprise-ula';
-
 var Hoek = require('hoek'),
-    Joi = require('joi'),
-    Hapi = require('hapi'),
-    log = require('bole')(NAMESPACE),
-    uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    Joi = require('joi');
 
 var config = require('../../config').license;
 
 module.exports = function createHubspotLead (request, reply) {
-  var postToHubspot = request.server.methods.npme.sendData,
-      showError = request.server.methods.errors.showError(reply);
+  var postToHubspot = request.server.methods.npme.sendData;
 
-  var opts = {
-    user: request.auth.credentials,
-    namespace: NAMESPACE
-  };
+  var opts = { };
 
   var schema = Joi.object().keys({
     firstname: Joi.string().required(),
@@ -50,44 +40,49 @@ module.exports = function createHubspotLead (request, reply) {
 
   postToHubspot(config.hubspot.form_npme_signup, data, function (er) {
     if (er) {
-      return showError(er, 500, 'Could not register details to hubspot', opts);
+      request.logger.error('Could not send signup data to hubspot');
+      request.logger.error(er);
+      reply.view('errors/internal', opts).code(500);
+      return;
     }
 
     return getOrCreateCustomer(request, reply, data);
   });
-}
+};
 
 function getOrCreateCustomer (request, reply, data) {
   var getCustomer = request.server.methods.npme.getCustomer,
-      createCustomer = request.server.methods.npme.createCustomer,
-      showError = request.server.methods.errors.showError(reply);
+      createCustomer = request.server.methods.npme.createCustomer;
 
-  var opts = {
-    user: request.auth.credentials,
-
-    namespace: NAMESPACE
-  };
+  var opts = { };
 
   getCustomer(data.email, function (err, customer) {
 
     if (err) {
-      return showError(err, 500, "There was an unknown problem with the customer error", opts);
+      request.logger.error('There was an error with getting customer ' + data.email);
+      request.logger.error(err);
+      reply.view('errors/internal', opts);
+      return;
     }
 
     if (customer) {
       // they're already a customer
-      return showClickThroughAgreement(reply, customer)
+      return showClickThroughAgreement(reply, customer);
     }
 
     // new customer, needs to be created
     createCustomer(data, function (err, newCustomer) {
+
       if (err) {
-        return showError(err, 500, "There was a problem creating the customer record", opts);
+        request.logger.error('There was an error creating customer ' + data.email);
+        request.logger.error(err);
+        reply.view('errors/internal', opts).code(500);
+        return;
       }
 
       return showClickThroughAgreement(reply, newCustomer);
     });
-  })
+  });
 }
 
 function showClickThroughAgreement (reply, customer) {

@@ -50,44 +50,17 @@ module.exports = function (server) {
       },
 
       getAllDownloadsForPackage: function (name, next) {
-        var d = {
-          day: 0,
-          week: 0,
-          month: 0
-        };
+        var d = [
+                  { day: 32789, week: 268291, month: 1480446 },
+                  null,
+                  { msec: 3, error: null }
+                ];
 
         return next(null, d);
       },
 
       getDownloadsForPackage: function (period, detail, package, next) {
         return next(null, [{day: '2014-07-12', downloads: 0}, {day: '2014-07-13', downloads: 0}]);
-      }
-    },
-
-    errors: {
-      showError: function (reply) {
-        return function (err, code, message, opts) {
-          opts.errId = '12345';
-
-          if (opts.isXhr) {
-            return reply(message).code(code);
-          }
-
-          var template;
-          switch (code) {
-            case 404:
-              template = 'errors/not-found';
-              break;
-            case 500:
-              /* falls through */
-            default:
-              template = 'errors/internal';
-              break;
-          }
-
-
-          return reply.view(template, opts).code(code);
-        };
       }
     },
 
@@ -188,7 +161,7 @@ module.exports = function (server) {
           return next(null, pkgs.benchmark[pkgName]);
         }
 
-        return next(Hapi.error.notFound('Username not found: ' + pkgName));
+        return next();
       },
 
       getAllPackages: function (skip, limit, next) {

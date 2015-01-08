@@ -8,13 +8,17 @@ ga('require', 'displayfeatures');
 ga('send', 'pageview');
 
 $(document).ready(function () {
-  $('.ad a').click(function (e) {
-    var id = $(this).parent().data('id')
-    ga('send', 'event', 'Hiring Ads', 'click', id)
-  })
+  $(document).on('click', '.hiring-widget a', function (e) {
+    ga('send', 'event', 'Hiring Ads', 'click', $(this).parent().data('id'));
+  });
 
-  $('.npme-group a, .npme-details a').click(function (e) {
-    ga('send', 'event', 'npm Enterprise', 'click')
-  })
+  $(document).on('click', '.ad a', function (e) {
+    ga('send', 'event', 'Hiring Ads', 'click', $(this).attr("title"));
+  });
 
-})
+  // how often are people going to the npm Enterprise page?
+  $('nav a[href="/enterprise"]').click(function (e) {
+    ga('send', 'event', 'npm Enterprise', 'click');
+  });
+
+});

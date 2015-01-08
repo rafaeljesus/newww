@@ -1,10 +1,9 @@
 var request = require('request'),
-    log = require('bole')('npme-verify-trial'),
-    uuid = require('node-uuid');
+    log = require('bole')('npme-verify-trial');
 
 module.exports = function verifyTrial (options) {
 
-  return function (verificationKey, next) {
+  return function (verificationKey, callback) {
 
     var trialEndpoint = options.api + '/trial';
 
@@ -15,17 +14,20 @@ module.exports = function verifyTrial (options) {
     }, function (er, resp, trial) {
 
       if (resp.statusCode === 404) {
+        log.error('unable to find verification key ' + verificationKey);
+
         // can't find a trial for that key
-        return next(new Error('verification key not found'));
+        return callback(new Error('verification key not found'));
       }
 
       if (resp.statusCode !== 200) {
-        return next(new Error('problem verifying trial'));
+        log.error('unexpected status code from hubspot; status=' + resp.statusCode + '; verificationKey=' + verificationKey);
+        return callback(new Error('problem verifying trial for ' + verificationKey));
       }
 
       // they already have a trial, but has it been verified?
       if (trial.verified) {
-        return next(null, trial);
+        return callback(null, trial);
       }
 
       request.put({
@@ -33,12 +35,13 @@ module.exports = function verifyTrial (options) {
         json: true
       }, function (er, resp, verifiedTrial) {
 
-        if (resp.statusCode !== 200) {
-          return next(new Error('problem starting trial'));
+        if (resp.statusCode === 200) {
+          return callback(null, verifiedTrial);
         }
 
-        return next(null, verifiedTrial);
+        log.error('unexpected status code from hubspot; status=' + resp.statusCode+ '; trial=', trial);
+        return callback(new Error('problem starting trial for ' + trial.id));
       });
     });
-  }
-}
+  };
+};

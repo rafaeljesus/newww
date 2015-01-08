@@ -2,15 +2,15 @@ var Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
-    after = lab.after,
     it = lab.test,
     expect = Lab.expect;
 
 var Hapi = require('hapi'),
-    npme = require('../index'),
-    request = require('request'),
+    npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../../config');
+    config = require('../../config');
+
+config.license.hubspot.portal_id = 123456;
 
 var server;
 

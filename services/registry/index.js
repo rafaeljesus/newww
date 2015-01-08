@@ -6,14 +6,14 @@ function setCache (name, minutes) {
     expiresIn: (minutes || 1) * MINUTE,
     segment: '##' + name
   };
-};
+}
 
 exports.register = function Registry (service, options, next) {
 
   service.method([
     {
       name: 'registry.getBrowseData',
-      fn: require('./methods/browse'),
+      fn: require('./methods/getBrowseData'),
       options: { cache: setCache('browse', 10) }
     },
     {
@@ -80,5 +80,6 @@ exports.register = function Registry (service, options, next) {
 };
 
 exports.register.attributes = {
-  pkg: require('./package.json')
+  "name": "newww-service-registry",
+  "version": "0.0.1",
 };

@@ -1,8 +1,7 @@
-var Hapi = require('hapi'),
-    Hoek = require('hoek'),
-    config = require('./config.js'),
-    url = require('url'),
-    MetricsClient = require('newww-metrics'),
+var _       = require('lodash'),
+    assert  = require('assert'),
+    config  = require('./config.js'),
+    Hapi    = require('hapi'),
     replify = require('replify');
 
 // set up the logger
@@ -14,18 +13,28 @@ bole.output({
   stream: process.stdout
 });
 
+// Demand configuration that we require.
+assert(config && _.isObject(config), 'we require a configuration object');
+assert(config.host && config.port, 'config must include `host` and `port`');
+assert(config.user && _.isObject(config.user), 'config must include a `user` stanza');
+assert(config.user.mail && _.isObject(config.user.mail), 'config.user must include a `mail` stanza');
+assert(config.user.mail.mailTransportModule && _.isString(config.user.mail.mailTransportModule), 'config must specify a `mailTransportModule`');
+assert(config.user.mail.mailTransportSettings && _.isObject(config.user.mail.mailTransportSettings), 'config must include `mailTransportSettings`');
+assert(config.user.mail.emailFrom && _.isString(config.user.mail.emailFrom), 'config must include a `emailFrom` settins');
+
 // set up the server
-var server = new Hapi.Server(config.host, config.port, config.server)
+var server = new Hapi.Server(config.host, config.port, config.server);
+
 
 // configure couch
 var couchDB = require('./adapters/couchDB');
 couchDB.init(config.couch);
 
-// configure metrics
-var metrics = new MetricsClient(config.metrics);
+// configure metrics as a side effect
+var metrics = require('./adapters/metrics')(config.metrics);
 
 server.pack.register(require('hapi-auth-cookie'), function (err) {
-  if (err) throw err;
+  if (err) { throw err; }
 
   var cache = server.cache('sessions', {
     expiresIn: config.session.expiresIn
@@ -49,8 +58,8 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
           return cb(null, false);
         }
 
-        return cb(null, true, cached.item)
-      })
+        return cb(null, true, cached.item);
+      });
     }
   });
 
@@ -65,10 +74,10 @@ server.pack.register(require('hapi-auth-cookie'), function (err) {
     replify({ name: 'www-'+config.port }, server, { 'config': config,  });
     log.info('server repl socket at /tmp/rpl/www-'+config.port+'.sock');
 
-    server.route(require('./routes'))
+    server.route(require('./routes'));
 
     server.start(function() {
-      metrics.addMetric({
+      metrics.metric({
         env: process.env.NODE_ENV,
         name: 'server.start'
       });

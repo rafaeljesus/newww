@@ -17,7 +17,6 @@ module.exports = [
   },
   require('../services/registry'),
   require('../services/corporate'),
-  require('../services/errors'),
   {
     plugin: require('../services/npme'),
     options: config

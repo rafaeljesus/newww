@@ -2,7 +2,7 @@ var Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
     log = require('bole')('user-changeEmail'),
     uuid = require('node-uuid'),
-    metrics = require('newww-metrics')();
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function changeEmail (name, email, next) {
   var timer = { start: Date.now() };
@@ -18,7 +18,12 @@ module.exports = function changeEmail (name, email, next) {
     }
 
     timer.end = Date.now();
-    metrics.addCouchLatencyMetric(timer, 'changeEmail');
+    metrics.metric({
+  name: 'latency',
+  value: timer.end - timer.start,
+  type: 'couch',
+  action: 'changeEmail'
+});
     return next(null);
   });
 };

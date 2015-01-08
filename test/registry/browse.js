@@ -38,7 +38,6 @@ describe('getting to the browse page', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
       expect(source.template).to.equal('errors/not-found');
-      expect(source.context.errId).to.exist;
       done();
     });
   });

@@ -62,6 +62,20 @@
 
 	</ul>
 
+  {{#if showMaintainers}}
+    <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
+    <ul class="humans">
+      {{#each maintainers}}
+        <li>
+          <a href="/~{{name}}" {{#unless ../singleMaintainer}}rel="tipsy"{{/unless}} title="{{name}}">
+            {{#if avatarMedium}}<img src="{{avatarMedium}}" alt="{{name}}">{{/if}}
+            {{#if ../singleMaintainer}}<span>{{name}}</span>{{/if}}
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
+
   <h3>Stats</h3>
   <ul class="box">
     {{#if downloads}}
@@ -134,20 +148,6 @@
         {{/if}}
       {{/each}}
     </p>
-  {{/if}}
-
-  {{#if showMaintainers}}
-    <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
-    <ul class="humans">
-      {{#each maintainers}}
-        <li>
-          <a href="/~{{name}}">
-            {{#if avatarMedium}}<img src="{{avatarMedium}}">{{/if}}
-            <span>{{name}}</span>
-          </a>
-        </li>
-      {{/each}}
-    </ul>
   {{/if}}
 
   <div class="hiring-container" data-template="sidebar"></div>

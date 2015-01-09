@@ -45,10 +45,12 @@
 
     <li>
       <strong>{{version}}</strong>
-      {{#unless singleVersion}}
-        is the latest of
-        {{versionsCount}} releases
-      {{/unless}}
+      is the latest
+      {{#if singleVersion}}
+        release
+      {{else}}
+        of {{versionsCount}} releases
+      {{/if}}
     </li>
 
     {{#if repository.url}}

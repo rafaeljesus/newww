@@ -180,6 +180,16 @@ ul.columnar
       color background-color
       background npmred
 
+#profile
+  padding-top 30px
+
+a.avatar
+  max-width 100%
+  display block
+  img
+    width 100%
+    border-radius 5px
+
 // Lists
 
 ol
@@ -191,6 +201,14 @@ ol, ul
     li
       list-style none
       padding 5px 0
+
+ul.meta
+  @extend .vanilla-list
+  li
+    border-top 1px solid greigh5
+    line-height 2
+    &:first-child
+      border none
 
 ul.humans
   list-style none

@@ -1,21 +1,21 @@
-.readme
+.markdown
   margin 0
 
   h1
-    margin 0
+    margin 20px 0 5px 0
     padding 0
     text-align left
     line-height 1.2
     @extend .ellipsis
     overflow-y hidden
-    &.package-name
-      margin-top 20px
     a
       color text-color
       text-decoration none
+    &.package-name
+      margin-bottom 0
 
-  h1.package-name-redundant
-    display none
+    &.package-name-redundant
+      display none
 
   p.package-description
     text-align left
@@ -28,25 +28,38 @@
   p.package-description-redundant
     display none
 
-  h2
-    text-transform none
-    font-weight 700
+  h2,h3,h4,h5,h6
+    &.deep-link
+      a
+        &:before
+          content "#"
+          color greigh5
+          margin-left -20px
+          padding-right 10px
+          transition all 0.2s
+          @media only screen and (max-width: mobileMaxWidth)
+            display none
+        &:hover
+          &:before
+            color greigh2
+
+  // h1.deep-link
+  //   a:before
+  //     display none
+
+  h2,h3,h4,h5,h6
     color text-color
+    font-weight 700
     a
       font-weight 700
       color text-color
       text-decoration none
-      &:before
-        content "#"
-        color greigh5
-        margin-left -20px
-        padding-right 10px
-      &:hover
-        &:before
-          color greigh3
 
-  h3,h4,h5
+  h3
     font-size 20px
+
+  h4,h5,h6
+    font-size 18px
 
   ol, ul
     ol, ul
@@ -54,12 +67,12 @@
 
   p, li
     font-size 16px
+    a
+      font-weight 400
 
   p
     margin 15px 0
 
-  a
-    font-weight 400
 
   img
     max-width 100%
@@ -70,6 +83,8 @@
 
   pre
     overflow-x auto
+    code
+      display block
 
 // Grabbed all the themes from this repo:
 // https://github.com/isagalaev/highlight.js/tree/master/src/styles

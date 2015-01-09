@@ -14,8 +14,6 @@ section
   &.static-content
     margin-top 20px
     margin-bottom 20px
-    h1
-      margin 20px 0
 
   &:after
     content: ""
@@ -176,7 +174,6 @@ ul.columnar
     padding 1px 11px
     color npmred
     text-decoration none
-    text-transform lowercase
 
     &:hover, &.active
       border-color darken(npmred, 20%)
@@ -187,6 +184,13 @@ ul.columnar
 
 ol
   list-style-position inside
+
+ol, ul
+  .bullet-free
+    @extend .vanilla-list
+    li
+      list-style none
+      padding 5px 0
 
 ul.humans
   list-style none

@@ -195,6 +195,11 @@ a.avatar
 ol
   list-style-position inside
 
+ul
+  margin 25px 0 25px 35px
+  li
+    list-style disc
+
 ol, ul
   .bullet-free
     @extend .vanilla-list
@@ -327,3 +332,31 @@ div.scroll-beyond-300
 img.roomy-and-flexible
   max-width 100%
   margin 40px 0
+
+.npm-install
+  position relative
+  &:before
+    position absolute
+    top 0
+    left 0
+    font-size npmInstallHeight
+    line-height npmInstallHeight
+    color greigh5
+    vertical-align top
+
+.autoselect-wrapper > input[type=text]
+    @extend .unstyled-text-input
+    code-font()
+    margin 0
+    padding 0 0 0 30px
+    line-height npmInstallHeight
+    vertical-align top
+    display inline-block
+    width 100%
+    white-space nowrap
+    overflow visible
+    overflow-x auto
+    color greigh3
+    height npmInstallHeight+2px
+    cursor text
+    font-size npmInstallFontSize

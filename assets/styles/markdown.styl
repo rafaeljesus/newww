@@ -17,23 +17,19 @@
     &.package-name-redundant
       display none
 
-  p.package-description
-    text-align left
-    font-weight 300
-    line-height 1.2
-    font-size 24px
-    margin 0
-    padding 0
-
-  p.package-description-redundant
-    display none
-
   h2,h3,h4,h5,h6
+    color text-color
+    font-weight 700
+    a
+      font-weight 700
+      color text-color
+      text-decoration none
+
     &.deep-link
       a
         &:before
           content "#"
-          color greigh5
+          color greigh6
           margin-left -20px
           padding-right 10px
           transition all 0.2s
@@ -42,18 +38,6 @@
         &:hover
           &:before
             color greigh2
-
-  // h1.deep-link
-  //   a:before
-  //     display none
-
-  h2,h3,h4,h5,h6
-    color text-color
-    font-weight 700
-    a
-      font-weight 700
-      color text-color
-      text-decoration none
 
   h3
     font-size 20px
@@ -68,11 +52,21 @@
   p, li
     font-size 16px
     a
-      font-weight 400
+      font-weight 600
 
   p
     margin 15px 0
 
+    &.package-description
+      text-align left
+      font-weight 300
+      line-height 1.2
+      font-size 24px
+      margin 0
+      padding 0
+
+    &.package-description-redundant
+      display none
 
   img
     max-width 100%

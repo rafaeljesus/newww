@@ -2,8 +2,8 @@
   margin 0
 
   h1
-    margin 20px 0 5px 0
-    padding 0
+    margin 0
+    padding 20px 0 5px 0
     text-align left
     line-height 1.2
     @extend .ellipsis
@@ -12,7 +12,7 @@
       color text-color
       text-decoration none
     &.package-name
-      margin-bottom 0
+      padding-bottom 0
 
     &.package-name-redundant
       display none
@@ -29,9 +29,9 @@
       a
         &:before
           content "#"
-          color greigh5
+          color white
           margin-left -20px
-          padding-right 10px
+          padding-right 8px
           transition all 0.2s
           @media only screen and (max-width: mobileMaxWidth)
             display none
@@ -47,22 +47,19 @@
 
   ol, ul
     ol, ul
-      margin 0 0 0 35px
+      margin 0 0 0 20px
 
   p, li
     font-size 16px
     a
       font-weight 600
 
-  p
-    margin 15px 0
-
     &.package-description
       text-align left
       font-weight 300
       line-height 1.2
       font-size 24px
-      margin 0
+      margin 0 0 10px 0
       padding 0
       a
         font-weight 300
@@ -78,7 +75,7 @@
     max-width 100%
 
   .hljs
-    margin-bottom 15px
+    padding 0
 
   code
     code-font()
@@ -88,6 +85,11 @@
     overflow-x auto
     code
       display block
+      margin 0 0 15px 0
+      padding 8px
+      border-radius 2px
+      &.hljs
+        padding 8px
 
 // Grabbed all the themes from this repo:
 // https://github.com/isagalaev/highlight.js/tree/master/src/styles

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "lab --verbose --colors --ignore '$$bole' --assert code",
-    "coverage": "lab -a code --coverage --ignore '$$bole'  --assert code --reporter html > test/coverage.html && open test/coverage.html",
+    "coverage": "lab -a code --coverage --ignore '$$bole' --assert code --reporter html > test/coverage.html && open test/coverage.html",
     "prepublish": "gulp build",
     "dev": "gulp dev",
     "dev-db": "node dev/go.js",

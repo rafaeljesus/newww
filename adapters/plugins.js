@@ -3,30 +3,30 @@ var config = require('../config');
 // all those plugins
 module.exports = [
   {
-    plugin: require('crumb'),
+    register: require('crumb'),
     options: {cookieOptions: { isSecure: true }}
   },
   require('scooter'),
   {
-    plugin: require('blankie'),
+    register: require('blankie'),
     options: config.csp
   },
   {
-    plugin: require('../services/user'),
+    register: require('../services/user'),
     options: config.couch
   },
   require('../services/registry'),
   require('../services/corporate'),
   {
-    plugin: require('../services/npme'),
+    register: require('../services/npme'),
     options: config
   },
   {
-    plugin: require('../services/downloads'),
+    register: require('../services/downloads'),
     options: config.downloads
   },
   {
-    plugin: require('./bonbon'),
+    register: require('./bonbon'),
     options: {
       stamp: config.stamp,
       canonicalHost: config.canonicalHost,

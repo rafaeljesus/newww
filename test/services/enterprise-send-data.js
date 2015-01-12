@@ -1,9 +1,10 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
@@ -15,11 +16,12 @@ config.license.hubspot.portal_id = 123456;
 var server;
 
 before(function (done) {
-  server = Hapi.createServer('localhost', '9112');
+  server = new Hapi.Server();
+  server.connection({ host: 'localhost', port: '9112' });
 
-  server.pack.register([
+  server.register([
     {
-      plugin: npme,
+      register: npme,
       options: config
     }
   ], function () {
@@ -37,7 +39,7 @@ describe('posting a form to hubspot', function () {
     var data = {};
 
     server.methods.npme.sendData('12345', data, function (err) {
-      expect(err).to.not.exist;
+      expect(err).to.not.exist();
       done();
     });
   });
@@ -51,7 +53,7 @@ describe('posting a form to hubspot', function () {
     var data = {};
 
     server.methods.npme.sendData('12345', data, function (err) {
-      expect(err).to.not.exist;
+      expect(err).to.not.exist();
       done();
     });
   });
@@ -65,7 +67,7 @@ describe('posting a form to hubspot', function () {
     var data = {};
 
     server.methods.npme.sendData('12345', data, function (err) {
-      expect(err).to.exist;
+      expect(err).to.exist();
       expect(err.message).to.equal("unexpected status code: 400")
       done();
     });

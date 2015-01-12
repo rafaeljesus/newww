@@ -1,12 +1,13 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
-var server, source, cache, tokenUrl, cookieCrumb,
+var server, tokenUrl, cookieCrumb,
     users = require('../fixtures/users'),
     fakeuser = require('../fixtures/users').fakeuser,
     fakeusercli = require('../fixtures/users').fakeusercli;
@@ -25,13 +26,14 @@ var postName = function (name_email) {
 
 // prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    cache = request.server.app.cache._cache.connection.cache['|sessions'];
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+after(function (done) {
+  server.stop(done);
 });
 
 describe('Accessing the forgot password page', function () {
@@ -46,6 +48,7 @@ describe('Accessing the forgot password page', function () {
 
       cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
 
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/password-recovery-form');
       expect(resp.statusCode).to.equal(200);
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
@@ -68,6 +71,7 @@ describe('Accessing the forgot password page', function () {
 
   it('renders an error if no name or email is submitted', function (done) {
     server.inject(postName(), function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/password-recovery-form');
       expect(source.context.error).to.equal('All fields are required');
       expect(resp.statusCode).to.equal(400);
@@ -77,6 +81,7 @@ describe('Accessing the forgot password page', function () {
 
   it('renders an error if the username is invalid', function (done) {
     server.inject(postName('.baduser'), function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/password-recovery-form');
       expect(source.context.error).to.equal('Need a valid username or email address');
       expect(resp.statusCode).to.equal(400);
@@ -86,6 +91,7 @@ describe('Accessing the forgot password page', function () {
 
   it('renders an error if the email is invalid', function (done) {
     server.inject(postName('bad@email'), function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/password-recovery-form');
       expect(source.context.error).to.equal('Need a valid username or email address');
       expect(resp.statusCode).to.equal(400);
@@ -99,6 +105,7 @@ describe('Looking up a user', function () {
     it('renders an error if the username doesn\'t exist', function (done) {
       var name = 'blerg';
       server.inject(postName(name), function (resp) {
+        var source = resp.request.response.source;
         expect(source.template).to.equal('user/password-recovery-form');
         expect(source.context.error).to.equal('Username not found: ' + name);
         expect(resp.statusCode).to.equal(404);
@@ -109,6 +116,7 @@ describe('Looking up a user', function () {
     it('renders an error if the user does not have an email address', function (done) {
       var name = 'fakeusernoemail';
       server.inject(postName(name), function (resp) {
+        var source = resp.request.response.source;
         expect(source.template).to.equal('user/password-recovery-form');
         expect(source.context.error).to.equal('Username does not have an email address; please contact support');
         expect(resp.statusCode).to.equal(400);
@@ -119,6 +127,7 @@ describe('Looking up a user', function () {
     it('renders an error if the user\'s email address is invalid', function (done) {
       var name = 'fakeuserbademail';
       server.inject(postName(name), function (resp) {
+        var source = resp.request.response.source;
         expect(source.template).to.equal('user/password-recovery-form');
         expect(source.context.error).to.equal('Username\'s email address is invalid; please contact support');
         expect(resp.statusCode).to.equal(400);
@@ -129,6 +138,7 @@ describe('Looking up a user', function () {
     it('sends an email when everything finally goes right', function (done) {
       var name = 'fakeuser';
       server.inject(postName(name), function (resp) {
+        var source = resp.request.response.source;
         expect(source.to).to.include(name);
         expect(source.subject).to.equal('npm Password Reset');
         expect(resp.statusCode).to.equal(200);
@@ -140,6 +150,7 @@ describe('Looking up a user', function () {
   describe('by email', function () {
     it('renders an error if the email doesn\'t exist', function (done) {
       server.inject(postName('blah@boom.com'), function (resp) {
+        var source = resp.request.response.source;
         expect(source.template).to.equal('user/password-recovery-form');
         expect(source.context.error).to.equal('No user found with email address blah@boom.com');
         expect(resp.statusCode).to.equal(400);
@@ -149,9 +160,10 @@ describe('Looking up a user', function () {
 
     it('renders a list of emails if the email matches more than one username', function (done) {
       server.inject(postName(fakeuser.email), function (resp) {
+        var source = resp.request.response.source;
         expect(source.template).to.equal('user/password-recovery-form');
         expect(resp.statusCode).to.equal(200);
-        expect(source.context.error).to.not.exist;
+        expect(source.context.error).to.not.exist();
         expect(source.context.users).to.include(fakeuser.name);
         expect(source.context.users).to.include(fakeusercli.name);
         done();
@@ -170,6 +182,7 @@ describe('Looking up a user', function () {
       };
 
       server.inject(options, function (resp) {
+        var source = resp.request.response.source;
         expect(source.to).to.include(fakeusercli.name);
         expect(source.subject).to.equal('npm Password Reset');
         expect(resp.statusCode).to.equal(200);
@@ -179,6 +192,7 @@ describe('Looking up a user', function () {
 
     it('sends an email when everything finally goes right', function (done) {
       server.inject(postName(fakeusercli.email), function (resp) {
+        var source = resp.request.response.source;
         tokenUrl = source.text.match(/\/forgot\/[\/\w \.-]*\/?/)[0];
         expect(source.to).to.include(fakeusercli.name);
         expect(source.subject).to.equal('npm Password Reset');
@@ -191,12 +205,8 @@ describe('Looking up a user', function () {
 
 describe('Using a token', function () {
   it('renders an error if the token does not exist', function (done) {
-    var options = {
-      url: '/forgot/bogus',
-      method: 'GET'
-    };
-
-    server.inject(options, function (resp) {
+    server.inject('/forgot/bogus', function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/internal');
       expect(resp.statusCode).to.equal(500);
       done();
@@ -204,21 +214,12 @@ describe('Using a token', function () {
   });
 
   it('changes the password with a proper token', function (done) {
-    var options = {
-      url: tokenUrl,
-      method: 'GET'
-    };
-
-    server.inject(options, function (resp) {
+    server.inject(tokenUrl, function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/password-changed');
-      expect(source.context.password).to.exist;
+      expect(source.context.password).to.exist();
       expect(resp.statusCode).to.equal(200);
       done();
     });
   });
-});
-
-after(function (done) {
-  server.app.cache._cache.connection.stop();
-  done();
 });

@@ -1,30 +1,30 @@
 var SECOND = 1000;
 
-exports.register = function User (service, options, next) {
+exports.register = function User (server, options, next) {
 
-  var userMethods = require('./methods/user')(options, service);
+  var userMethods = require('./methods/user')(options, server);
 
-  service.method('user.loginUser', userMethods.login);
-  service.method('user.logoutUser', userMethods.logout);
+  server.method('user.loginUser', userMethods.login);
+  server.method('user.logoutUser', userMethods.logout);
 
-  service.method('user.getUser', require('./methods/getUser'), {
+  server.method('user.getUser', require('./methods/getUser'), {
     cache: { expiresIn: 5 * 60 * SECOND, segment: '##user' }
   });
 
-  service.method('user.lookupUserByEmail', require('./methods/emailLookup'));
+  server.method('user.lookupUserByEmail', require('./methods/emailLookup'));
 
-  service.method('user.signupUser', require('./methods/signupUser'));
+  server.method('user.signupUser', require('./methods/signupUser'));
 
-  service.method('user.saveProfile', require('./methods/saveProfile'));
+  server.method('user.saveProfile', require('./methods/saveProfile'));
 
-  service.method('user.changePass', require('./methods/changePass'));
+  server.method('user.changePass', require('./methods/changePass'));
 
-  service.method('user.changeEmail', require('./methods/changeEmail'));
+  server.method('user.changeEmail', require('./methods/changeEmail'));
 
   var sessionMethods = require('./methods/sessions');
 
-  service.method('user.setSession', sessionMethods.set);
-  service.method('user.delSession', sessionMethods.del);
+  server.method('user.setSession', sessionMethods.set);
+  server.method('user.delSession', sessionMethods.del);
 
   next();
 };

@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
     log = require('bole')('user-changeEmail'),
     uuid = require('node-uuid'),
@@ -13,8 +14,8 @@ module.exports = function changeEmail (name, email, next) {
     if (er || data.error || cr.statusCode >= 400) {
       er = er || new Error(data.error);
 
-      log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to update email for user ' + name + ' in couch'), er);
-      return next(Hapi.error.internal(er));
+      log.error(uuid.v1() + ' ' + Boom.internal('Unable to update email for user ' + name + ' in couch'), er);
+      return next(Boom.internal(er));
     }
 
     timer.end = Date.now();

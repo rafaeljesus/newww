@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     url = require('url'),
     fmt = require("util").format,
     redis = require("../../adapters/redis-sessions");
@@ -45,7 +46,7 @@ module.exports = function login (request, reply) {
         loginUser(request.payload, function (er, user) {
           if (er || !user) {
 
-            request.logger.error(Hapi.error.badRequest('Invalid username or password'), request.payload.name);
+            request.logger.error(Boom.badRequest('Invalid username or password'), request.payload.name);
             opts.error = 'Invalid username or password';
 
             // Temporarily lock users out after several failed login attempts

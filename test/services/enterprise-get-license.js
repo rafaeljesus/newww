@@ -1,9 +1,10 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
@@ -13,11 +14,12 @@ var Hapi = require('hapi'),
 var server;
 
 before(function (done) {
-  server = Hapi.createServer('localhost', '9115');
+  server = new Hapi.Server();
+  server.connection({ host: 'localhost', port: '9115' });
 
-  server.pack.register([
+  server.register([
     {
-      plugin: npme,
+      register: npme,
       options: config
     }
   ], function () {
@@ -37,8 +39,8 @@ describe('getting licenses from hubspot', function () {
 
     server.methods.npme.getLicenses(productId, customerId, function (err, licenses) {
 
-      expect(err).to.not.exist;
-      expect(licenses).to.be.an('array');
+      expect(err).to.not.exist();
+      expect(licenses).to.be.an.array();
       expect(licenses[0]).to.equal('1234-5678-90');
       done();
     });
@@ -55,8 +57,8 @@ describe('getting licenses from hubspot', function () {
 
     server.methods.npme.getLicenses(productId, customerId, function (err, licenses) {
 
-      expect(err).to.be.null;
-      expect(licenses).to.be.null;
+      expect(err).to.be.null();
+      expect(licenses).to.be.null();
       done();
     });
   });
@@ -72,9 +74,9 @@ describe('getting licenses from hubspot', function () {
 
     server.methods.npme.getLicenses(productId, customerId, function (err, licenses) {
 
-      expect(err).to.exist;
+      expect(err).to.exist();
       expect(err.message).to.equal('unexpected status code: 400');
-      expect(licenses).to.not.exist;
+      expect(licenses).to.not.exist();
       done();
     });
   });

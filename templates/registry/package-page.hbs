@@ -29,16 +29,27 @@
     </div>
   {{/if}}
 
-	<h3>Package Info</h3>
 	<ul class="box">
+
+    {{#if _npmUser}}
+      <li class="last-publisher">
+        <a href="/~{{_npmUser.name}}">
+          <img src="{{_npmUser.avatar}}" alt="{{_npmUser.name}}" />
+          <span>{{_npmUser.name}}</span>
+        </a>
+        {{#if fromNow}}
+          published {{fromNow}}
+        {{/if}}
+      </li>
+    {{/if}}
 
     <li>
       <strong>{{version}}</strong>
-      {{#if fromNow}}
-        published {{fromNow}}
-      {{/if}}
-      {{#if _npmUser}}
-        by <a href="/~{{_npmUser.name}}">{{_npmUser.name}}</a>
+      is the latest
+      {{#if singleVersion}}
+        release
+      {{else}}
+        of {{versionsCount}} releases
       {{/if}}
     </li>
 
@@ -60,10 +71,24 @@
       </li>
     {{/if}}
 
-	</ul>
+  </ul>
+
+  {{#if showMaintainers}}
+    <h3>Maintainers</h3>
+    <ul class="humans">
+      {{#each maintainers}}
+        <li>
+          <a href="/~{{name}}" rel="tipsy" title="{{name}}">
+            {{#if avatarMedium}}<img src="{{avatarMedium}}" alt="{{name}}">{{/if}}
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
 
   <h3>Stats</h3>
   <ul class="box">
+
     {{#if downloads}}
       <li><strong class="pretty-number">{{downloads.day}}</strong> {{pluralize downloads.day "downloads"}} in the last day</li>
       <li><strong class="pretty-number">{{downloads.week}}</strong> {{pluralize downloads.week "downloads"}} in the last week</li>
@@ -134,20 +159,6 @@
         {{/if}}
       {{/each}}
     </p>
-  {{/if}}
-
-  {{#if showMaintainers}}
-    <h3>Maintainer{{#unless singleMaintainer}}s{{/unless}}</h3>
-    <ul class="humans">
-      {{#each maintainers}}
-        <li>
-          <a href="/~{{name}}">
-            {{#if avatarMedium}}<img src="{{avatarMedium}}">{{/if}}
-            <span>{{name}}</span>
-          </a>
-        </li>
-      {{/each}}
-    </ul>
   {{/if}}
 
   <div class="hiring-container" data-template="sidebar"></div>

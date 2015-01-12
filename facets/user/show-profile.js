@@ -1,6 +1,7 @@
-var present = require(__dirname + '/../../presenters/user'),
-  merge = require("lodash").merge,
-  Hapi = require('hapi');
+var Boom = require('boom'),
+    present = require(__dirname + '/../../presenters/user'),
+    merge = require("lodash").merge,
+    Hapi = require('hapi');
 
 module.exports = function(options) {
   return function(request, reply) {
@@ -32,7 +33,7 @@ module.exports = function(options) {
 
     function showProfile(err, showprofile) {
       if (err) {
-        request.logger.error(Hapi.error.notFound('Profile for ' + profileName + ' not found'), err);
+        request.logger.error(Boom.notFound('Profile for ' + profileName + ' not found'), err);
         opts.name = profileName;
         request.timing.page = 'profile-not-found';
         request.metrics.metric({

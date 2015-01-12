@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     log = require('bole')('user-lookup-email'),
     uuid = require('node-uuid'),
     qs = require('querystring'),
@@ -19,9 +20,9 @@ module.exports = function lookupUserByEmail (email, next) {
     er = er || cr && cr.statusCode >= 400 || data && data.error;
 
     if (er) {
-      log.error(uuid.v1() + ' ' + Hapi.error.notFound('Unable to find ' + email + ' in couch'), er);
+      log.error(uuid.v1() + ' ' + Boom.notFound('Unable to find ' + email + ' in couch'), er);
 
-      return next(Hapi.error.notFound("Bad email, no user found with this email"));
+      return next(Boom.notFound("Bad email, no user found with this email"));
     }
 
     var usernames = data.rows.map(function (obj) {

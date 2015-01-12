@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     CouchDB = require('../../../adapters/couchDB'),
     qs = require('querystring'),
     browseUtils = require('../browseUtils'),
@@ -55,7 +56,7 @@ module.exports = function (type, arg, skip, limit, next) {
   anonCouch.get(u, function (er, cr, data) {
     if (er) {
       var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };
-      log.error(uuid.v1() + ' ' + Hapi.error.internal('Error fetching browse data'), erObj);
+      log.error(uuid.v1() + ' ' + Boom.internal('Error fetching browse data'), erObj);
 
       metrics.metric({
         name:   'latency',

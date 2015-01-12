@@ -1,17 +1,26 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var server, cookieCrumb,
     pkg = 'fake',
     user = { name: 'fakeuser' };
 
+// prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
+  });
+});
+
+after(function (done) {
+  server.stop(done);
 });
 
 describe('Accessing the star page via GET', function () {

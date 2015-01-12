@@ -21,7 +21,7 @@ If you're keen on tackling something, go for it! To contribute:
 * Push up your branch
 * Put in a pull request
 
-Not sure what to work on? Take a look at the issues under the [Help Wanted label](https://github.com/npm/newww/labels/help%20wanted)!
+Not sure what to work on? Take a look at the issues under the [Patch Welcome label](https://github.com/npm/newww/labels/patch%20welcome)!
 
 ### Tests
 

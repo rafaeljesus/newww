@@ -1,10 +1,11 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var Hapi = require('hapi'),
     nock = require('nock'),
@@ -21,10 +22,11 @@ before(function (done) {
   // configure couch
   couchDB.init(couchConfig);
 
-  server = Hapi.createServer('localhost', '6110');
-  server.pack.register([
+  server = new Hapi.Server();
+  server.connection({ host: 'localhost', port: '6110' });
+  server.register([
     {
-      plugin: couch,
+      register: couch,
       options: couchConfig
     }
   ], function () {
@@ -35,8 +37,8 @@ before(function (done) {
 describe('getting user info from couch', function () {
   it('successfully grabs a user', function (done) {
     server.methods.user.getUser('blah', function (er, user) {
-      expect(er).to.not.exist;
-      expect(user).to.exist;
+      expect(er).to.not.exist();
+      expect(user).to.exist();
       expect(user.name).to.equal('blah');
       done();
     });
@@ -44,9 +46,9 @@ describe('getting user info from couch', function () {
 
   it('fails if the user doesn\'t exist', function (done) {
     server.methods.user.getUser('boop', function (er, user) {
-      expect(er).to.exist;
+      expect(er).to.exist();
       expect(er.output.statusCode).to.equal(404);
-      expect(user).to.not.exist;
+      expect(user).to.not.exist();
       done();
     });
   });
@@ -60,8 +62,8 @@ describe('signing up a user', function () {
       verify: '12345',
       email: 'boom@boom.com'
     }, function (er, user) {
-      expect(er).to.not.exist;
-      expect(user).to.exist;
+      expect(er).to.not.exist();
+      expect(user).to.exist();
       expect(user.name).to.equal('boom');
       done();
     });
@@ -76,8 +78,8 @@ describe('saving a profile', function () {
     };
 
     server.methods.user.saveProfile(user, function (er, data) {
-      expect(er).to.not.exist;
-      expect(data).to.exist;
+      expect(er).to.not.exist();
+      expect(data).to.exist();
       expect(data.ok).to.equal('updated profile');
       done();
     });
@@ -87,8 +89,8 @@ describe('saving a profile', function () {
 describe('changing a password', function () {
   it('successfully changes a password with the proper inputs', function (done) {
     server.methods.user.changePass({name: 'boom', password: '12345'}, function (er, data) {
-      expect(er).to.not.exist;
-      expect(data).to.exist;
+      expect(er).to.not.exist();
+      expect(data).to.exist();
       expect(data.name).to.equal('boom');
       done();
     })
@@ -98,7 +100,7 @@ describe('changing a password', function () {
 describe('changing email', function () {
   it('successfully changes a user\'s email address', function (done) {
     server.methods.user.changeEmail('boom', 'boom@boom.net', function (er) {
-      expect(er).to.not.exist;
+      expect(er).to.not.exist();
       done();
     });
   });
@@ -132,14 +134,14 @@ describe('setting and deleting sessions', function () {
 
   it('sets a session', function (done) {
     server.methods.user.setSession(request)({name: 'boom'}, function (er) {
-      expect(er).to.be.null;
+      expect(er).to.be.null();
       done();
     });
   });
 
   it('deletes a session', function (done) {
     server.methods.user.delSession(request)({name: 'boom'}, function (er) {
-      expect(er).to.be.null;
+      expect(er).to.be.null();
       done();
     })
   });
@@ -148,18 +150,18 @@ describe('setting and deleting sessions', function () {
 describe('logging in and out', function () {
   it('allows a user to log in with proper credentials', function (done) {
     server.methods.user.loginUser({name: 'boom', password: '12345'}, function (er, user) {
-      expect(er).to.not.exist;
-      expect(user).to.exist;
+      expect(er).to.not.exist();
+      expect(user).to.exist();
       expect(user.name).to.equal('boom');
-      expect(user).to.have.property('token');
+      expect(user).to.contain('token');
       done();
     });
   });
 
   it('allows a user to log out', function (done) {
     server.methods.user.logoutUser('randomToken', function (er, data) {
-      expect(er).to.not.exist;
-      expect(data).to.exist;
+      expect(er).to.not.exist();
+      expect(data).to.exist();
       expect(data.statusCode).to.equal(200);
       done();
     });

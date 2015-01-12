@@ -2,10 +2,9 @@
   <ul class="columnar">
     {{#each this}}
       <li>
-        <div class="hiring-widget">
+        <div class="hiring-widget" data-id="{{name}}">
           <a href="{{url}}" class="hiring-widget-logo"><img src="{{logo_url}}"></a>
-          <!-- <h3><a href="{{url}}">{{name}}</a></h3> -->
-          <p>{{{description}}}</p>
+          <p data-id="{{name}}">{{{description}}}</p>
         </div>
       </li>
     {{/each}}

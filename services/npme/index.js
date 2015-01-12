@@ -1,19 +1,19 @@
 
-exports.register = function npmE (service, options, next) {
+exports.register = function npmE (server, options, next) {
 
-  service.method('npme.createCustomer', require('./methods/createCustomer')(options.license));
+  server.method('npme.createCustomer', require('./methods/createCustomer')(options.license));
 
-  service.method('npme.createTrial', require('./methods/createTrial')(options));
+  server.method('npme.createTrial', require('./methods/createTrial')(options));
 
-  service.method('npme.getCustomer', require('./methods/getCustomer')(options.license));
+  server.method('npme.getCustomer', require('./methods/getCustomer')(options.license));
 
-  service.method('npme.getLicenses', require('./methods/getLicenses')(options.license));
+  server.method('npme.getLicenses', require('./methods/getLicenses')(options.license));
 
-  service.method('npme.sendData', require('./methods/sendData')(options.license));
+  server.method('npme.sendData', require('./methods/sendData')(options.license));
 
-  service.method('npme.verifyTrial', require('./methods/verifyTrial')(options.license));
+  server.method('npme.verifyTrial', require('./methods/verifyTrial')(options.license));
 
-  next();
+  return next();
 };
 
 exports.register.attributes = {

@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
     metrics = require('../../../adapters/metrics')();
 
@@ -19,13 +20,13 @@ module.exports = function signupUser (acct, next) {
 
       if (data.error === 'conflict') {
         error = "The username already exists";
-        return next(Hapi.error.conflict(error));
+        return next(Boom.conflict(error));
       }
 
       error = "Failed creating account.  CouchDB said: " +
             ((er && er.message) || (data && data.error))
 
-      return next(Hapi.error.forbidden(error));
+      return next(Boom.forbidden(error));
     }
 
     return next(null, data);

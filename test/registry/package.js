@@ -1,22 +1,26 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
     it = lab.test,
-    expect = Lab.expect,
+    expect = Code.expect,
     cheerio = require("cheerio");
 
-var server, p, source, cookieCrumb;
+var server, cookieCrumb;
 var oriReadme = require('../fixtures/fake.json').readme;
 
+// prepare the server
 beforeEach(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    source = request.response.source;
-    p = source.context.package;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+afterEach(function (done) {
+  server.stop(done);
 });
 
 describe('Retreiving packages from the registry', function () {
@@ -33,52 +37,34 @@ describe('Retreiving packages from the registry', function () {
       cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
 
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.context.package.name).to.equal(pkgName);
       expect(resp.result).to.include('value="' + cookieCrumb + '"');
+      expect(source.template).to.equal('registry/package-page');
+
+      // Modifying the package before sending to the template
+
+      // adds publisher is in the maintainers list
+      var p = source.context.package;
+      expect(p.publisherIsInMaintainersList).to.exist();
+
+      // adds avatar information to author and maintainers
+      expect(p._npmUser.avatar).to.exist();
+      expect(p.maintainers[0].avatar).to.exist();
+      expect(p._npmUser.avatar).to.include('gravatar');
+
+      // adds an OSS license
+      expect(p.license).to.be.an.object();
+      expect(p.license.url).to.include('opensource.org');
+
+
+      // includes the dependencies
+      expect(p.dependencies).to.exist();
+
+      // includes the dependents
+      expect(p.dependents).to.exist();
       done();
     });
-  });
-
-  it('sends the package to the package-page template', function (done) {
-    expect(source.template).to.equal('registry/package-page');
-    done();
-  });
-});
-
-describe('Modifying the package before sending to the template', function () {
-  it('adds publisher is in the maintainers list', function (done) {
-    expect(p.publisherIsInMaintainersList).to.exist;
-    done();
-  });
-
-  it('adds avatar information to author and maintainers', function (done) {
-    expect(p._npmUser.avatar).to.exist;
-    expect(p.maintainers[0].avatar).to.exist;
-    expect(p._npmUser.avatar).to.include('gravatar');
-    done();
-  });
-
-  it('adds an OSS license', function (done) {
-    expect(p.license).to.be.an('object');
-    expect(p.license.url).to.include('opensource.org');
-    done();
-  });
-
-  it('turns the readme into HTML for viewing on the website', function (done) {
-    expect(p.readme).to.not.equal(oriReadme);
-    expect(p.readmeSrc).to.equal(oriReadme);
-    expect(p.readme).to.include('<a href=');
-    done();
-  });
-
-  it('includes the dependencies', function (done) {
-    expect(p.dependencies).to.exist;
-    done();
-  });
-
-  it('includes the dependents', function (done) {
-    expect(p.dependents).to.exist;
-    done();
   });
 
   it('treats unpublished packages specially', function (done) {
@@ -88,8 +74,9 @@ describe('Modifying the package before sending to the template', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('registry/unpublished-package-page');
-      expect(source.context.package.unpubFromNow).to.exist;
+      expect(source.context.package.unpubFromNow).to.exist();
       done();
     });
   });
@@ -101,13 +88,13 @@ describe('getting package download information', function () {
       url: '/package/fake'
     };
 
-    server.inject(options, function () {
-
-      expect(source.context.package).to.have.property('downloads');
-      expect(source.context.package.downloads).to.be.an('object');
-      expect(source.context.package.downloads).to.have.property('day');
-      expect(source.context.package.downloads).to.have.property('week');
-      expect(source.context.package.downloads).to.have.property('month');
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      expect(source.context.package).to.contain('downloads');
+      expect(source.context.package.downloads).to.be.an.object();
+      expect(source.context.package.downloads).to.contain('day');
+      expect(source.context.package.downloads).to.contain('week');
+      expect(source.context.package.downloads).to.contain('month');
       done();
     });
   });
@@ -129,13 +116,15 @@ describe('requesting nonexistent packages', function () {
   it('adds package.name to view context', function (done) {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.context.package.name).to.exist;
+      var source = resp.request.response.source;
+      expect(source.context.package.name).to.exist();
       done();
     });
   });
 
   it('renders the 404 template', function (done) {
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -156,14 +145,16 @@ describe('requesting invalid packages', function () {
   });
 
   it('does NOT add package.name to view context', function (done) {
-    server.inject(options, function () {
-      expect(source.context.package).to.not.exist;
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      expect(source.context.package).to.not.exist();
       done();
     });
   });
 
   it('renders the invalid input template', function (done) {
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -181,8 +172,9 @@ describe('seeing stars', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.context.package.name).to.equal(pkgName);
-      expect(source.context.package.isStarred).to.be.true;
+      expect(source.context.package.isStarred).to.be.true();
       expect(resp.result).to.include('<input id="star-input" type="checkbox" name="isStarred" value="true" checked>');
       done();
     });

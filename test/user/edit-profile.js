@@ -1,25 +1,26 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
-var server, source, cache, cookieCrumb,
+var server, cookieCrumb,
     fakeuser = require('../fixtures/users').fakeuser,
     fakeProfile = require('../fixtures/users').fakeuserNewProfile;
 
 // prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    cache = request.server.app.cache._cache.connection.cache['|sessions'];
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
 
+after(function (done) {
+  server.stop(done);
 });
 
 describe('Getting to the profile-edit page', function () {
@@ -48,6 +49,7 @@ describe('Getting to the profile-edit page', function () {
       cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
 
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/profile-edit');
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
@@ -98,15 +100,13 @@ describe('Modifying the profile', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile');
+      var cache = resp.request.server.app.cache._cache.connection.cache['|sessions'];
+      // modifies the profile properly
+      var cacheData = JSON.parse(cache['460002dc'].item);
+      expect(cacheData.github).to.equal(fakeProfile.github);
+      expect(cacheData.fields[3].value).to.equal(fakeProfile.twitter);
       done();
     });
-  });
-
-  it('modifies the profile properly', function (done) {
-    var cacheData = JSON.parse(cache['460002dc'].item);
-    expect(cacheData.github).to.equal(fakeProfile.github);
-    expect(cacheData.fields[3].value).to.equal(fakeProfile.twitter);
-    done();
   });
 
   it('rejects _id, name, and email from the payload', function (done) {
@@ -126,9 +126,10 @@ describe('Modifying the profile', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(400);
-      expect(source.context.user).to.exist;
-      expect(source.context.error).to.exist;
-      expect(source.context.error.details).to.be.an.array;
+      var source = resp.request.response.source;
+      expect(source.context.user).to.exist();
+      expect(source.context.error).to.exist();
+      expect(source.context.error.details).to.be.an.array();
       var names = source.context.error.details.map(function(detail){
         return detail.path
       })
@@ -140,9 +141,4 @@ describe('Modifying the profile', function () {
     });
 
   });
-});
-
-after(function (done) {
-  server.app.cache._cache.connection.stop();
-  done();
 });

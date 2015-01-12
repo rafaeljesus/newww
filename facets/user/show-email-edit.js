@@ -210,7 +210,7 @@ function confirm (request, reply) {
       confHash = sha(token),
       confKey = 'email_change_conf_' + confHash;
 
-  cache.get(confKey, function (er, cached) {
+  cache.get(confKey, function (er, item, cached) {
 
     if (er) {
       request.logger.error('Unable to get token from Redis: ' + confKey);
@@ -299,7 +299,7 @@ function revert (request, reply) {
       revHash = sha(token),
       revKey = 'email_change_rev_' + revHash;
 
-  cache.get(revKey, function (er, cached) {
+  cache.get(revKey, function (er, item, cached) {
 
     if (er) {
       request.logger.error('Error getting revert token from redis: ', revKey);

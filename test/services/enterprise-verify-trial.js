@@ -1,9 +1,10 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
@@ -13,11 +14,12 @@ var Hapi = require('hapi'),
 var server;
 
 before(function (done) {
-  server = Hapi.createServer('localhost', '9116');
+  server = new Hapi.Server();
+  server.connection({ host: 'localhost', port: '9116' });
 
-  server.pack.register([
+  server.register([
     {
-      plugin: npme,
+      register: npme,
       options: config
     }
   ], function () {
@@ -37,8 +39,8 @@ describe('verifying a trial in hubspot', function () {
         .reply(200, {verified: true})
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
-      expect(err).to.not.exist;
-      expect(verifiedTrial.verified).to.be.true;
+      expect(err).to.not.exist();
+      expect(verifiedTrial.verified).to.be.true();
       done();
     });
   });
@@ -52,9 +54,9 @@ describe('verifying a trial in hubspot', function () {
         .reply(200, {id: trialId, verified: true})
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
-      expect(err).to.not.exist;
-      expect(verifiedTrial.id).to.equal.trialId;
-      expect(verifiedTrial.verified).to.be.true;
+      expect(err).to.not.exist();
+      expect(verifiedTrial.id).to.equal(trialId);
+      expect(verifiedTrial.verified).to.be.true();
       done();
     });
   });
@@ -68,9 +70,9 @@ describe('verifying a trial in hubspot', function () {
         .reply(404)
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
-      expect(err).to.exist;
+      expect(err).to.exist();
       expect(err.message).to.equal('verification key not found');
-      expect(verifiedTrial).to.not.exist;
+      expect(verifiedTrial).to.not.exist();
       done();
     });
   });
@@ -84,9 +86,9 @@ describe('verifying a trial in hubspot', function () {
         .reply(400)
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
-      expect(err).to.exist;
+      expect(err).to.exist();
       expect(err.message).to.equal('problem verifying trial for ' + verificationKey);
-      expect(verifiedTrial).to.not.exist;
+      expect(verifiedTrial).to.not.exist();
       done();
     });
   });
@@ -102,9 +104,9 @@ describe('verifying a trial in hubspot', function () {
         .reply(400)
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
-      expect(err).to.exist;
+      expect(err).to.exist();
       expect(err.message).to.equal('problem starting trial for ' + trialId);
-      expect(verifiedTrial).to.not.exist;
+      expect(verifiedTrial).to.not.exist();
       done();
     });
   });

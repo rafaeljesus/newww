@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
     validatePackageName = require("validate-npm-package-name"),
     log = require('bole')('registry-stars'),
@@ -9,7 +10,7 @@ module.exports = {
     var start = Date.now();
 
     if (!validatePackageName(package).valid) {
-      return next(Hapi.error.badRequest("Invalid package name"));
+      return next(Boom.badRequest("Invalid package name"));
     }
 
     adminCouch.put('/registry/_design/app/_update/star/' + package, username, function (er, cr, data) {
@@ -21,7 +22,7 @@ module.exports = {
       });
 
       if (er || cr && cr.statusCode !== 201 || !data || data.error) {
-        return next(Hapi.error.internal(er || data.error));
+        return next(Boom.internal(er || data.error));
       }
 
       log.info(package + ' starred by ' + username);
@@ -33,7 +34,7 @@ module.exports = {
     var start = Date.now();
 
     if (!validatePackageName(package).valid) {
-      return next(Hapi.error.badRequest("Invalid package name"));
+      return next(Boom.badRequest("Invalid package name"));
     }
 
     adminCouch.put('/registry/_design/app/_update/unstar/' + package, username, function (er, cr, data) {
@@ -45,7 +46,7 @@ module.exports = {
       });
 
       if (er || cr && cr.statusCode !== 201 || !data || data.error) {
-        return next(Hapi.error.internal(er || data.error));
+        return next(Boom.internal(er || data.error));
       }
 
       log.info(package + ' unstarred by ' + username);

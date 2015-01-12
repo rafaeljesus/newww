@@ -1,25 +1,27 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect,
+    expect = Code.expect,
     redisSessions = require('../../adapters/redis-sessions');
 
-var server, source, cache, cookieCrumb,
+var server, cookieCrumb,
     fakeuser = require('../fixtures/users').fakeuser,
     fakeChangePass = require('../fixtures/users').fakeuserChangePassword;
 
 // prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    cache = request.server.app.cache._cache.connection.cache['|sessions'];
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+after(function (done) {
+  server.stop(done);
 });
 
 describe('Getting to the password page', function () {
@@ -48,6 +50,7 @@ describe('Getting to the password page', function () {
       cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
 
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('user/password');
       expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
@@ -123,6 +126,7 @@ describe('Changing the password', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(500);
+      var source = resp.request.response.source;
       expect(source.template).to.include('errors/internal');
 
       // undo the damage from earlier
@@ -149,9 +153,4 @@ describe('Changing the password', function () {
     });
 
   });
-});
-
-after(function (done) {
-  server.app.cache._cache.connection.stop();
-  done();
 });

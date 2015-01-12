@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     adminCouch = require('../../../adapters/couchDB').adminCouch,
     metrics = require('../../../adapters/metrics')();
 
@@ -15,7 +16,7 @@ module.exports = function changePass (auth, next) {
 
     if (er || cr.statusCode >= 400 || data && data.message) {
       var error = er && er.message || data && data.message;
-      return next(Hapi.error.forbidden(error));
+      return next(Boom.forbidden(error));
     }
 
     return next(null, data);

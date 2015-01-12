@@ -1,47 +1,44 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
-var server, serverResponse, source;
+var server;
 
+// prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+after(function (done) {
+  server.stop(done);
 });
 
 describe('getting contact info', function () {
   it('can be reached via the /contact route', function (done) {
-    var opts = {
-      url: '/contact'
-    };
-
-    server.inject(opts, function (resp) {
+    server.inject('/contact', function (resp) {
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('company/contact');
       done();
     });
   });
 
   it('can be reached via the /support route', function (done) {
-    var opts = {
-      url: '/support'
-    };
-
-    server.inject(opts, function (resp) {
+    server.inject('/support', function (resp) {
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('company/contact');
       done();
     });
   });
-
 });
 
 describe('sending a contact email', function () {
@@ -56,7 +53,7 @@ describe('sending a contact email', function () {
         inquire: 'support',
         message: 'This is a message.'
       }
-    }
+    };
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(403);
@@ -66,7 +63,6 @@ describe('sending a contact email', function () {
   });
 
   it('sends an email to support if it\'s a support inquiry', function (done) {
-
     server.inject({url: '/contact'}, function (resp) {
       var header = resp.headers['set-cookie'];
       expect(header.length).to.equal(1);
@@ -87,11 +83,12 @@ describe('sending a contact email', function () {
           crumb: cookieCrumb
         },
         headers: { cookie: 'crumb=' + cookieCrumb }
-      }
+      };
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source).to.be.an('object');
+        var source = resp.request.response.source;
+        expect(source).to.be.an.object();
         expect(source.to).to.include('support@npmjs.com')
         done();
       });
@@ -120,17 +117,17 @@ describe('sending a contact email', function () {
           crumb: cookieCrumb
         },
         headers: { cookie: 'crumb=' + cookieCrumb }
-      }
+      };
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        expect(source).to.be.an('object');
+        var source = resp.request.response.source;
+        expect(source).to.be.an.object();
         expect(source.to).to.include('npm@npmjs.com')
         done();
       });
     });
   });
-
 
   it('rejects submission if `honey` is in the payload', function (done) {
 
@@ -155,11 +152,11 @@ describe('sending a contact email', function () {
           crumb: cookieCrumb
         },
         headers: { cookie: 'crumb=' + cookieCrumb }
-      }
+      };
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(400);
-        expect(resp.result.error).to.exist;
+        expect(resp.result.error).to.exist();
         expect(resp.result.error).to.equal('Bad Request');
         done();
       });

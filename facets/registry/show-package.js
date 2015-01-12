@@ -92,7 +92,7 @@ function fetchDependents(request, name, callback) {
   var results = [];
   request.timing.browse_start = Date.now();
 
-  getBrowseData({type: 'depended', noPackageData: true}, name, 0, 1000, function (er, dependents) {
+  getBrowseData('depended', name, 0, 1000, true, function (er, dependents) {
 
     request.metrics.metric({
       name:   'latency',

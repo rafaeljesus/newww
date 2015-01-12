@@ -1,5 +1,4 @@
 var Boom = require('boom'),
-    Hapi = require('hapi'),
     CouchDB = require('../../../adapters/couchDB'),
     qs = require('querystring'),
     browseUtils = require('../browseUtils'),
@@ -7,8 +6,7 @@ var Boom = require('boom'),
     uuid = require('node-uuid'),
     metrics = require('../../../adapters/metrics')();
 
-module.exports = function (type, arg, skip, limit, next) {
-  var opts = {};
+module.exports = function (type, arg, skip, limit, noPackageData, next) {
   var anonCouch = CouchDB.anonCouch;
   var key = [type, arg, skip, limit].join(',');
 
@@ -16,9 +14,9 @@ module.exports = function (type, arg, skip, limit, next) {
   // string, assume that it is an options object.
   // this allows us to vary behavior, as an example,
   // only looking up dependent packages in some cases.
-  if (typeof type === 'object') {
-    opts = type;
-    type = opts.type;
+  if (typeof noPackageData === 'function') {
+    next = noPackageData;
+    noPackageData = false;
   }
 
   var start = Date.now();
@@ -69,7 +67,7 @@ module.exports = function (type, arg, skip, limit, next) {
     }
 
     start = Date.now();
-    browseUtils.transform(type, arg, data, skip, limit, opts, function (er, transformedData) {
+    browseUtils.transform(type, arg, data, skip, limit, noPackageData, function (er, transformedData) {
 
       metrics.metric({
         name:   'latency',

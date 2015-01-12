@@ -140,13 +140,11 @@ module.exports = function (server) {
     },
 
     registry: {
-      getBrowseData: function (type, arg, skip, limit, next) {
-        var opts = {};
+      getBrowseData: function (type, arg, skip, limit, noPackageData, next) {
 
-        // type can optionally pass along opts.
-        if (typeof type === 'object') {
-          opts = type;
-          type = opts.type;
+        if (typeof noPackageData === 'function') {
+          next = noPackageData;
+          noPackageData = false;
         }
 
         return next(null, browse[type]);

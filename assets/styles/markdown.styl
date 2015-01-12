@@ -28,10 +28,11 @@
     &.deep-link
       a
         &:before
+          display inline-block
           content "#"
           color white
           margin-left -20px
-          padding-right 8px
+          width 20px
           transition all 0.2s
           @media only screen and (max-width: mobileMaxWidth)
             display none

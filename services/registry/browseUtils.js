@@ -170,6 +170,9 @@ function getPackageData (data, cb) {
   });
 
   pkgs(names, {pick: ['name', 'versions', 'time', 'dist-tags']}, function (err, packages) {
+    if (err) {
+      return cb(err);
+    }
 
     packages.forEach(function (p) {
       var d = _.find(data, {name: p.name});

@@ -37,11 +37,12 @@ module.exports = function presentPackage (data, cb) {
     setLicense(data, v)
   }
 
-  data.showMaintainers = data.maintainers && data.publisherIsInMaintainersList
+  data.showMaintainers = data.maintainers
+    && data.maintainers.length > 1
+    && data.publisherIsInMaintainersList;
 
-  if (data.showMaintainers && data.maintainers.length === 1) {
-    data.singleMaintainer = true
-  }
+  data.versionsCount = Object.keys(data.versions).length
+  data.singleVersion = data.versionsCount === 1
 
   if (data.readme && !data.readmeSrc) {
     data.readmeSrc = data.readme;

@@ -75,7 +75,7 @@ describe('browsing', function () {
     });
   });
 
-  it('gets the top 10 most recently updated packages', function (done) {
+  it('gets the top 10 most recently updated packages', { timeout: 5000 }, function (done) {
     var couch = nock(couchConfig.registryCouch)
         .get('/registry/_design/app/_view/browseUpdated?group_level=2&skip=0&limit=10&descending=true&stale=update_after')
         .reply(200, require('../fixtures/browse').updated)
@@ -89,7 +89,7 @@ describe('browsing', function () {
   });
 
   describe('by keyword', function () {
-    it('gets the first 10 keywords', function (done) {
+    it('gets the first 10 keywords', { timeout: 5000 }, function (done) {
       var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/byKeyword?group_level=1&stale=update_after')
           .reply(200, require('../fixtures/browse').allKeywords)
@@ -102,7 +102,7 @@ describe('browsing', function () {
       });
     });
 
-    it('gets the first 10 packages matching a keyword', function (done) {
+    it('gets the first 10 packages matching a keyword', { timeout: 5000 }, function (done) {
       var keyword = 'angular';
 
       var couch = nock(couchConfig.registryCouch)
@@ -119,7 +119,7 @@ describe('browsing', function () {
   });
 
   describe('by author', function () {
-    it('gets the first 10 authors', function (done) {
+    it('gets the first 10 authors', { timeout: 5000 }, function (done) {
       var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseAuthors?group_level=1&stale=update_after')
           .reply(200, require('../fixtures/browse').allAuthors)
@@ -132,7 +132,7 @@ describe('browsing', function () {
       });
     });
 
-    it('gets the first 10 packages matching an author', function (done) {
+    it('gets the first 10 packages matching an author', { timeout: 5000 }, function (done) {
       var author = 'substack';
 
       var couch = nock(couchConfig.registryCouch)
@@ -149,7 +149,7 @@ describe('browsing', function () {
   });
 
   describe('by depended upon', function () {
-    it('gets the first 10 depended upon', function (done) {
+    it('gets the first 10 depended upon', { timeout: 5000 }, function (done) {
       var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/dependedUpon?group_level=1&stale=update_after')
           .reply(200, require('../fixtures/browse').allDepended)
@@ -162,7 +162,7 @@ describe('browsing', function () {
       });
     });
 
-    it('gets the first 10 packages that depend upon a specific package', function (done) {
+    it('gets the first 10 packages that depend upon a specific package', { timeout: 5000 }, function (done) {
       var pkg = 'underscore';
 
       var couch = nock(couchConfig.registryCouch)
@@ -179,7 +179,7 @@ describe('browsing', function () {
   });
 
   describe('by starred packages', function () {
-    it('gets the top 10 starred packages', function (done) {
+    it('gets the top 10 starred packages', { timeout: 5000 }, function (done) {
       var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseStarPackage?group_level=1&stale=update_after')
           .reply(200, require('../fixtures/browse').stars)
@@ -195,7 +195,7 @@ describe('browsing', function () {
       })
     });
 
-    it('gets the first 10 packages that depend upon a specific package', function (done) {
+    it('gets the first 10 packages that depend upon a specific package', { timeout: 5000 }, function (done) {
       var pkg = 'underscore';
 
       var couch = nock(couchConfig.registryCouch)
@@ -212,7 +212,7 @@ describe('browsing', function () {
   });
 
   describe('by user stars', function () {
-    it('gets the top 10 users who have starred packages', function (done) {
+    it('gets the top 10 users who have starred packages', { timeout: 5000 }, function (done) {
       var couch = nock(couchConfig.registryCouch)
           .get('/registry/_design/app/_view/browseStarUser?group_level=1&stale=update_after')
           .reply(200, require('../fixtures/browse').userstars)
@@ -246,7 +246,7 @@ describe('browsing', function () {
 });
 
 describe('getting recent authors', function () {
-  it('gets the top 10 recent authors', function (done) {
+  it('gets the top 10 recent authors', { timeout: 5000 }, function (done) {
     var TWO_WEEKS = 1000 * 60 * 60 * 24 * 14; // in milliseconds
 
     var couch = nock(couchConfig.registryCouch)

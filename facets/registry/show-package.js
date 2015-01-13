@@ -102,8 +102,9 @@ function fetchDependents(request, name, callback) {
     });
 
     if (er) {
-      var msg = 'getting depended browse data; package=' + name;
-      request.logger.error(er, msg);
+      var msg = 'unable to get depended browse data; package=' + name;
+      request.logger.error(msg);
+      request.logger.error(er);
       request.metrics.metric({
         name:    'error',
         message: msg,

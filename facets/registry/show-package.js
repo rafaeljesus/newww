@@ -68,7 +68,7 @@ function showPackage(request, reply) {
         pkg.dependents = results.dependents;
       }
 
-      presentPackage(pkg, function (er, cleanedPackage) {
+      presentPackage(request, pkg, function (er, cleanedPackage) {
         if (er) {
           request.logger.info(er, 'presentPackage() responded with error; package=' + opts.name);
           reply.view('errors/internal', opts).code(500);

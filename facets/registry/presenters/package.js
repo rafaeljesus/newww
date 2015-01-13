@@ -47,7 +47,9 @@ module.exports = function presentPackage (data, cb) {
     data.readmeSrc = data.readme;
   }
 
-  data.readme = marky(data.readmeSrc, {package: data}).html();
+  if (typeof data.readmeSrc === "string") {
+    data.readme = marky(data.readmeSrc, {package: data}).html();
+  }
 
   gravatarPeople(data)
 

@@ -26,7 +26,11 @@ function getPage (repo) {
           return next(err, null);
         }
 
-        return next(err, marky(content).html());
+        if (typeof content === "string") {
+          content = marky(content).html()
+        }
+
+        return next(err, content);
       });
     });
   };

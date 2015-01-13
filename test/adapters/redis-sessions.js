@@ -1,12 +1,13 @@
 require("dotenv").load()
 
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
 var redis = require('redis'),
     spawn = require('child_process').spawn,
@@ -49,7 +50,7 @@ describe('redis-requiring session stuff', function() {
   });
 
   it('has a SESSION_SALT environment variable', function(done) {
-    expect(process.env.SESSION_SALT).to.exist;
+    expect(process.env.SESSION_SALT).to.exist();
     done();
   })
 
@@ -73,15 +74,15 @@ describe('redis-requiring session stuff', function() {
     client.set(prefix + alice1, 'This is Alice on Opera');
 
     client.get(prefix + bob1, function (err, resp) {
-      expect(err).to.not.exist;
+      expect(err).to.not.exist();
       expect(resp).to.equal('This is Bob on Firefox');
 
       client.get(prefix + bob2, function (err, resp) {
-        expect(err).to.not.exist;
+        expect(err).to.not.exist();
         expect(resp).to.equal('This is Bob on Safari');
 
         client.get(prefix + alice1, function (err, resp) {
-          expect(err).to.not.exist;
+          expect(err).to.not.exist();
           expect(resp).to.equal('This is Alice on Opera');
 
           done();
@@ -92,7 +93,7 @@ describe('redis-requiring session stuff', function() {
 
   it('finds all existing keys with a certain prefix', function(done) {
     redisSessions.getKeysWithPrefix('bob', function (err, keys) {
-      expect(err).to.not.exist;
+      expect(err).to.not.exist();
       expect(keys).to.be.length(2);
       expect(keys[0]).to.include(bobHash);
       expect(keys[0]).to.not.include(aliceHash);
@@ -104,11 +105,11 @@ describe('redis-requiring session stuff', function() {
 
   it('removes all existing keys with a certain prefix', function(done) {
     redisSessions.dropKeysWithPrefix('bob', function (err) {
-      expect(err).to.not.exist;
+      expect(err).to.not.exist();
 
       redisSessions.getKeysWithPrefix('', function (er, keys) {
 
-        expect(er).to.not.exist;
+        expect(er).to.not.exist();
 
         expect(keys).to.be.length(1);
         expect(keys[0]).to.include(aliceHash);

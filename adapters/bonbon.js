@@ -1,15 +1,15 @@
 var bole      = require('bole'),
-    Hapi      = require('hapi'),
+    Boom      = require('boom'),
     Hoek      = require('hoek'),
     npmHumans = require("npm-humans"),
     toCommonLogFormat = require('hapi-common-log'),
     url       = require('url');
 
-exports.register = function(plugin, options, next) {
+exports.register = function(server, options, next) {
 
   var metrics = require('./metrics')();
 
-  plugin.ext('onPreHandler', function(request, next) {
+  server.ext('onPreHandler', function(request, reply) {
 
     request.metrics = metrics;
     request.logger = bole(request.id);
@@ -18,27 +18,37 @@ exports.register = function(plugin, options, next) {
     };
 
     if (request.method !== "post") {
-      return next();
+      return reply.continue();
     }
 
     if (request.payload.honey && request.payload.honey.length) {
-      return next(Hapi.Error.badRequest(request.path));
+      return reply(Boom.badRequest(request.path));
     }
 
     delete request.payload.honey;
 
-    return next();
+    return reply.continue();
   });
 
-  plugin.ext('onPreResponse', function(request, next) {
+  server.ext('onPreResponse', function(request, reply) {
 
+    // Allow npm employees to view JSON context for any page
+    // by adding a `?json` query parameter to the URL
     if ('json' in request.query) {
       var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "auth.credentials.name"));
       if (process.env.NODE_ENV === "dev" || isNpmEmployee) {
         var ctx = Hoek.reach(request, 'response.source.context');
+
         if (ctx) {
           var context = Hoek.applyToDefaults({}, ctx);
-          return next(context);
+
+          // If the `json` param is something other than an empty string,
+          // treat it as a (deep) key in the context object.
+          if (request.query.json.length > 1) {
+            context = Hoek.reach(context, request.query.json);
+          }
+
+          return reply(context);
         }
       }
     }
@@ -67,10 +77,10 @@ exports.register = function(plugin, options, next) {
         break;
     }
 
-    next();
+    return reply.continue();
   });
 
-  plugin.ext('onPostHandler', function(request, next) {
+  server.ext('onPostHandler', function(request, reply) {
 
     var latency = Date.now() - request.timing.start;
     metrics.metric({
@@ -83,10 +93,10 @@ exports.register = function(plugin, options, next) {
     // TODO log request info in as close to common log format as possible
     request.logger.info(toCommonLogFormat(request, {ipHeader: 'fastly-client-ip'}), latency + 'ms');
 
-    next();
+    return reply.continue();
   });
 
-  next();
+  return next();
 };
 
 exports.register.attributes = {

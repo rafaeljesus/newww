@@ -1,4 +1,5 @@
-var Hapi = require('hapi'),
+var Boom = require('boom'),
+    Hapi = require('hapi'),
     merge = require('lodash').merge;
 
 var pageSize = 100,
@@ -30,7 +31,7 @@ module.exports = function RecentAuthors (request, reply) {
 
   recentAuthors(age, start, limit, function (err, authors) {
     if (err) {
-      request.logger.warn(Hapi.error.internal('error retrieving recent authors'), err);
+      request.logger.warn(Boom.internal('error retrieving recent authors'), err);
     }
 
     var items = authors.filter(function (a) { return a.name });

@@ -1,20 +1,24 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
-var server, serverResponse, source, ctx;
+var server;
 
+// prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+after(function (done) {
+  server.stop(done);
 });
 
 describe('Getting to the contact me page', function () {
@@ -40,6 +44,7 @@ describe('Getting to the contact me page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/contact-me');
         done();
       });
@@ -68,6 +73,7 @@ describe('Getting to the contact me page', function () {
 
         server.inject(opts, function (resp) {
           expect(resp.statusCode).to.equal(400);
+          var source = resp.request.response.source;
           expect(source.template).to.equal('enterprise/index');
           done();
         });
@@ -96,8 +102,9 @@ describe('Getting to the contact me page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(500);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('errors/internal');
-        expect(source.context.correlationID).to.exist;
+        expect(source.context.correlationID).to.exist();
         expect(resp.payload).to.include(source.context.correlationID);
         done();
       });

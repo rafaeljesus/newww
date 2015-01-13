@@ -1,22 +1,26 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
     it = lab.test,
-    expect = Lab.expect,
+    expect = Code.expect,
     cheerio = require("cheerio");
 
-var server, p, source, cookieCrumb;
+var server, cookieCrumb;
 var oriReadme = require('../fixtures/fake.json').readme;
 
+// prepare the server
 beforeEach(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    source = request.response.source;
-    p = source.context.package;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+afterEach(function (done) {
+  server.stop(done);
 });
 
 describe('Retreiving packages from the registry', function () {
@@ -33,82 +37,58 @@ describe('Retreiving packages from the registry', function () {
       cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
 
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.context.package.name).to.equal(pkgName);
       expect(resp.result).to.include('value="' + cookieCrumb + '"');
+      expect(source.template).to.equal('registry/package-page');
+
+      // Modifying the package before sending to the template
+
+      // adds publisher is in the maintainers list
+      var p = source.context.package;
+      expect(p.publisherIsInMaintainersList).to.exist();
+
+      // adds avatar information to author and maintainers
+      expect(p._npmUser.avatar).to.exist();
+      expect(p.maintainers[0].avatar).to.exist();
+      expect(p._npmUser.avatar).to.include('gravatar');
+
+      // adds an OSS license
+      expect(p.license).to.be.an.object();
+      expect(p.license.url).to.include('opensource.org');
+
+      // turns the readme into HTML for viewing on the website', function (done) {
+      expect(p.readme).to.not.equal(oriReadme);
+      expect(p.readmeSrc).to.equal(oriReadme);
+      expect(p.readme).to.include('<a href=');
+
+      // marks first H1 element as superfluous, if similar to package name
+      expect(p.readmeSrc).to.include("# fake");
+      expect(p.readmeSrc).to.include("# Another H1");
+      var $ = cheerio.load(p.readme);
+      expect($("h1.superfluous").length).to.equal(1);
+      expect($("h1.superfluous").text()).to.equal("fake");
+      expect($("h1:not(.superfluous)").length).to.equal(1);
+      expect($("h1:not(.superfluous)").text()).to.equal("Another H1");
+
+      // removes shields.io badges from the README
+      expect(p.readmeSrc).to.include("img.shields.io");
+      expect($("p:has(img[src*='img.shields.io'])").hasClass("superfluous")).to.be.true();
+
+      // removes nodei.co badges from the README
+      expect(p.readmeSrc).to.include("nodei.co");
+      expect($("p:has(img[src*='nodei.co'])").hasClass("superfluous")).to.be.true();
+
+      // turns relative URLs into real URLs
+      expect(p.readme).to.include('/blob/master');
+
+      // includes the dependencies
+      expect(p.dependencies).to.exist();
+
+      // includes the dependents
+      expect(p.dependents).to.exist();
       done();
     });
-  });
-
-  it('sends the package to the package-page template', function (done) {
-    expect(source.template).to.equal('registry/package-page');
-    done();
-  });
-});
-
-describe('Modifying the package before sending to the template', function () {
-  it('adds publisher is in the maintainers list', function (done) {
-    expect(p.publisherIsInMaintainersList).to.exist;
-    done();
-  });
-
-  it('adds avatar information to author and maintainers', function (done) {
-    expect(p._npmUser.avatar).to.exist;
-    expect(p.maintainers[0].avatar).to.exist;
-    expect(p._npmUser.avatar).to.include('gravatar');
-    done();
-  });
-
-  it('adds an OSS license', function (done) {
-    expect(p.license).to.be.an('object');
-    expect(p.license.url).to.include('opensource.org');
-    done();
-  });
-
-  it('turns the readme into HTML for viewing on the website', function (done) {
-    expect(p.readme).to.not.equal(oriReadme);
-    expect(p.readmeSrc).to.equal(oriReadme);
-    expect(p.readme).to.include('<a href=');
-    done();
-  });
-
-  it('marks first H1 element as superfluous, if similar to package name', function (done) {
-    expect(p.readmeSrc).to.include("# fake");
-    expect(p.readmeSrc).to.include("# Another H1");
-    var $ = cheerio.load(p.readme);
-    expect($("h1.superfluous").length).to.equal(1);
-    expect($("h1.superfluous").text()).to.equal("fake");
-    expect($("h1:not(.superfluous)").length).to.equal(1);
-    expect($("h1:not(.superfluous)").text()).to.equal("Another H1");
-    done();
-  });
-
-  it('removes shields.io badges from the README', function (done) {
-    expect(p.readmeSrc).to.include("img.shields.io");
-    var $ = cheerio.load(p.readme);
-    expect($("p:has(img[src*='img.shields.io'])").hasClass("superfluous")).to.be.true;
-    done();
-  });
-
-  it('removes nodei.co badges from the README', function (done) {
-    expect(p.readmeSrc).to.include("nodei.co");
-    var $ = cheerio.load(p.readme);
-    expect($("p:has(img[src*='nodei.co'])").hasClass("superfluous")).to.be.true;
-    done();
-  });
-
-  it('turns relative URLs into real URLs', function (done) {
-    expect(p.readme).to.include('/blob/master');
-    done();
-  });
-
-  it('includes the dependencies', function (done) {
-    expect(p.dependencies).to.exist;
-    done();
-  });
-
-  it('includes the dependents', function (done) {
-    expect(p.dependents).to.exist;
-    done();
   });
 
   it('treats unpublished packages specially', function (done) {
@@ -118,8 +98,9 @@ describe('Modifying the package before sending to the template', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('registry/unpublished-package-page');
-      expect(source.context.package.unpubFromNow).to.exist;
+      expect(source.context.package.unpubFromNow).to.exist();
       done();
     });
   });
@@ -131,7 +112,9 @@ describe('readmes are always sanitized', function () {
       url: '/package/no_top_level_readme'
     };
 
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      var p = source.context.package;
       expect(p.name).to.equal('benchmark');
       expect(p.readme).to.include('<h1 id="benchmark');
       expect(p.readme).to.not.include('# Benchmark');
@@ -144,7 +127,9 @@ describe('readmes are always sanitized', function () {
       url: '/package/no_readme'
     };
 
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      var p = source.context.package;
       expect(p.name).to.equal('benchmark');
       expect(p.readme).to.equal('');
       done();
@@ -156,7 +141,9 @@ describe('readmes are always sanitized', function () {
       url: '/package/throw_marked'
     };
 
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      var p = source.context.package;
       expect(p.name).to.equal('benchmark');
       expect(p.readme).to.equal('');
       done();
@@ -168,7 +155,9 @@ describe('readmes are always sanitized', function () {
       url: '/package/not_markdown'
     };
 
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      var p = source.context.package;
       expect(p.name).to.equal('benchmark');
       expect(p.readme).to.equal('<p></p><p>hello</p><p></p>\n');
       done();
@@ -180,7 +169,9 @@ describe('readmes are always sanitized', function () {
       url: '/package/not_markdown_readme_from_file'
     };
 
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      var p = source.context.package;
       expect(p.name).to.equal('benchmark');
       expect(p.readme).to.equal('<pre>&lt;p&gt;hello&lt;/p&gt;&lt;script&gt;console.log(&apos;boom&apos;)&lt;/script&gt;</pre>');
       done();
@@ -192,7 +183,9 @@ describe('readmes are always sanitized', function () {
       url: '/package/markdown_readme_from_file'
     };
 
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      var p = source.context.package;
       expect(p.name).to.equal('benchmark');
       expect(p.readme).to.equal('<p>hello</p>\n<h2 id=\"boom\">boom</h2>\n');
       done();
@@ -206,13 +199,13 @@ describe('getting package download information', function () {
       url: '/package/fake'
     };
 
-    server.inject(options, function () {
-
-      expect(source.context.package).to.have.property('downloads');
-      expect(source.context.package.downloads).to.be.an('object');
-      expect(source.context.package.downloads).to.have.property('day');
-      expect(source.context.package.downloads).to.have.property('week');
-      expect(source.context.package.downloads).to.have.property('month');
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      expect(source.context.package).to.contain('downloads');
+      expect(source.context.package.downloads).to.be.an.object();
+      expect(source.context.package.downloads).to.contain('day');
+      expect(source.context.package.downloads).to.contain('week');
+      expect(source.context.package.downloads).to.contain('month');
       done();
     });
   });
@@ -234,13 +227,15 @@ describe('requesting nonexistent packages', function () {
   it('adds package.name to view context', function (done) {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(404);
-      expect(source.context.package.name).to.exist;
+      var source = resp.request.response.source;
+      expect(source.context.package.name).to.exist();
       done();
     });
   });
 
   it('renders the 404 template', function (done) {
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -261,14 +256,16 @@ describe('requesting invalid packages', function () {
   });
 
   it('does NOT add package.name to view context', function (done) {
-    server.inject(options, function () {
-      expect(source.context.package).to.not.exist;
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
+      expect(source.context.package).to.not.exist();
       done();
     });
   });
 
   it('renders the invalid input template', function (done) {
-    server.inject(options, function () {
+    server.inject(options, function (resp) {
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -286,8 +283,9 @@ describe('seeing stars', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
+      var source = resp.request.response.source;
       expect(source.context.package.name).to.equal(pkgName);
-      expect(source.context.package.isStarred).to.be.true;
+      expect(source.context.package.isStarred).to.be.true();
       expect(resp.result).to.include('<input id="star-input" type="checkbox" name="isStarred" value="true" checked>');
       done();
     });

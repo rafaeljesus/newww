@@ -1,4 +1,5 @@
-var CouchLogin = require('couch-login'),
+var Boom = require('boom'),
+    CouchLogin = require('couch-login'),
     Hapi = require('hapi'),
     log = require('bole')('user-login'),
     uuid = require('node-uuid'),
@@ -14,21 +15,21 @@ module.exports = function (options, service) {
         // console.log("anoncouch logged in as " + loginDetails.name)
         // console.log("token is " + loginCouch.token)
         if (er) {
-          log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to log in user ' + loginDetails.name), er);
+          log.error(uuid.v1() + ' ' + Boom.internal('Unable to log in user ' + loginDetails.name), er);
 
-          return next(Hapi.error.internal('Unable to log in user ' + loginDetails.name));
+          return next(Boom.internal('Unable to log in user ' + loginDetails.name));
         }
 
         if (cr.statusCode !== 200) {
-          log.error(uuid.v1() + ' ' + Hapi.error.forbidden('Invalid login credentials for ' + loginDetails.name), er);
+          log.error(uuid.v1() + ' ' + Boom.forbidden('Invalid login credentials for ' + loginDetails.name), er);
 
-          return next(Hapi.error.forbidden('Username and/or Password is wrong'));
+          return next(Boom.forbidden('Username and/or Password is wrong'));
         }
 
         // get the official details from loginCouch, not anonCouch
         loginCouch.get('/_users/org.couchdb.user:' + loginDetails.name, function (err, cr, data) {
           if (err) {
-            log.error(uuid.v1() + ' ' + Hapi.error.internal('Unable to get user ' + loginDetails.name + ' from couch'), err);
+            log.error(uuid.v1() + ' ' + Boom.internal('Unable to get user ' + loginDetails.name + ' from couch'), err);
           }
 
           timer.end = Date.now();

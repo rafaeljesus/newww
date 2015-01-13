@@ -1,20 +1,24 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect;
+    expect = Code.expect;
 
-var server, p, source;
+var server;
 
+// prepare the server
 before(function (done) {
-  server = require('../fixtures/setupServer')(done);
-
-  server.ext('onPreResponse', function (request, next) {
-    source = request.response.source;
-    next();
+  require('../fixtures/setupServer')(function (obj) {
+    server = obj;
+    done();
   });
+});
+
+after(function (done) {
+  server.stop(done);
 });
 
 describe('getting to the browse page', function () {
@@ -37,6 +41,7 @@ describe('getting to the browse page', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
+      var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
       done();
     });
@@ -51,6 +56,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.page).to.equal(pageNum);
         expect(source.context.nextPage).to.equal(pageNum + 1);
@@ -67,10 +73,11 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.page).to.equal(1);
         expect(source.context.nextPage).to.equal(2);
-        expect(source.context.prevPage).to.not.exist;
+        expect(source.context.prevPage).to.not.exist();
         done();
       });
     });
@@ -83,10 +90,11 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.page).to.equal(1);
         expect(source.context.nextPage).to.equal(2);
-        expect(source.context.prevPage).to.not.exist;
+        expect(source.context.prevPage).to.not.exist();
         done();
       });
     });
@@ -112,9 +120,10 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.type).to.equal('updated');
-        expect(source.context.arg).to.not.exist;
+        expect(source.context.arg).to.not.exist();
         done();
       });
     });
@@ -126,9 +135,10 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.type).to.equal('keyword');
-        expect(source.context.arg).to.not.exist;
+        expect(source.context.arg).to.not.exist();
         done();
       });
     });
@@ -140,6 +150,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.type).to.equal('keyword');
         expect(source.context.arg).to.equal('"grunt"');
@@ -154,9 +165,10 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.type).to.equal('author');
-        expect(source.context.arg).to.not.exist;
+        expect(source.context.arg).to.not.exist();
         done();
       });
     });
@@ -180,9 +192,10 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.type).to.equal('depended');
-        expect(source.context.arg).to.not.exist;
+        expect(source.context.arg).to.not.exist();
         done();
       });
     });
@@ -194,6 +207,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.type).to.equal('depended');
         expect(source.context.arg).to.equal('request');
@@ -208,9 +222,10 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.type).to.equal('star');
-        expect(source.context.arg).to.not.exist;
+        expect(source.context.arg).to.not.exist();
         done();
       });
     });
@@ -222,6 +237,7 @@ describe('getting to the browse page', function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
         expect(source.template).to.equal('registry/browse');
         expect(source.context.type).to.equal('star');
         expect(source.context.arg).to.equal('request');

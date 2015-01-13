@@ -121,13 +121,7 @@ function packageDisplay (key) {
 }
 
 
-exports.transform = function transform (type, arg, data, skip, limit, opts, next) {
-
-  // opts is an optional parameter.
-  if (typeof opts === 'function') {
-    next = opts;
-    opts = {};
-  }
+exports.transform = function transform (type, arg, data, skip, limit, noPackageData, next) {
 
   log.info('transforming ', type, arg, skip, limit);
   if (!data.rows) {
@@ -152,9 +146,9 @@ exports.transform = function transform (type, arg, data, skip, limit, opts, next
     }).slice(skip, skip + limit);
   }
 
-  // don't lookup dependent package if opts.noPackageData is truthy.
+  // don't lookup dependent package if noPackageData is truthy.
   if (type.match(/all|updated|depended|^star/) && !arg ||
-      type.match(/keyword|author|depended|userstar/) && arg && !opts.noPackageData) {
+      type.match(/keyword|author|depended|userstar/) && arg && !noPackageData) {
     log.info('getting package data for ' + type + ' with arg ' + arg);
     return getPackageData(data, function (er, data) {
       return next(null, data);
@@ -170,6 +164,9 @@ function getPackageData (data, cb) {
   });
 
   pkgs(names, {pick: ['name', 'versions', 'time', 'dist-tags']}, function (err, packages) {
+    if (err) {
+      return cb(err);
+    }
 
     packages.forEach(function (p) {
       var d = _.find(data, {name: p.name});

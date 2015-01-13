@@ -26,7 +26,7 @@ exports.fakeuser = {
     "show": "<a rel=\"me\" href=\"https://github.com/abcde\">abcde</a>"
   }, {
     "name": "twitter",
-    "value": "",
+    "value": "xyz",
     "title": "Twitter",
     "show": ""
   }, {

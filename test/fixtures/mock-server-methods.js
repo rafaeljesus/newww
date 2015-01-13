@@ -1,3 +1,4 @@
+var Boom = require('boom');
 var Hapi = require('hapi');
 var murmurhash = require('murmurhash');
 var crypto = require('crypto');
@@ -37,7 +38,6 @@ module.exports = function (server) {
       }
     },
 
-
     downloads: {
       getAllDownloads: function (next) {
         var d = {
@@ -50,11 +50,11 @@ module.exports = function (server) {
       },
 
       getAllDownloadsForPackage: function (name, next) {
-        var d = {
-          day: 0,
-          week: 0,
-          month: 0
-        };
+        var d = [
+                  { day: 32789, week: 268291, month: 1480446 },
+                  null,
+                  { msec: 3, error: null }
+                ];
 
         return next(null, d);
       },
@@ -140,13 +140,11 @@ module.exports = function (server) {
     },
 
     registry: {
-      getBrowseData: function (type, arg, skip, limit, next) {
-        var opts = {};
+      getBrowseData: function (type, arg, skip, limit, noPackageData, next) {
 
-        // type can optionally pass along opts.
-        if (typeof type === 'object') {
-          opts = type;
-          type = opts.type;
+        if (typeof noPackageData === 'function') {
+          next = noPackageData;
+          noPackageData = false;
         }
 
         return next(null, browse[type]);
@@ -212,7 +210,7 @@ module.exports = function (server) {
     user: {
       changeEmail: function (name, email, next) {
         if (name !== 'fakeuser') {
-          return next(Hapi.error.notFound('Username not found: ' + name));
+          return next(Boom.notFound('Username not found: ' + name));
         }
 
         users.fakeuser.email = email;
@@ -236,7 +234,7 @@ module.exports = function (server) {
 
           request.server.app.cache.drop(sid, function (err) {
             if (err) {
-              return next(Hapi.error.internal('there was an error clearing the cache'));
+              return next(Boom.internal('there was an error clearing the cache'));
             }
 
             request.auth.session.clear();
@@ -250,7 +248,7 @@ module.exports = function (server) {
           return next(null, users[username]);
         }
 
-        return next(Hapi.error.notFound('Username not found: ' + username));
+        return next(Boom.notFound('Username not found: ' + username));
       },
 
       loginUser: function (auth, next) {
@@ -286,7 +284,7 @@ module.exports = function (server) {
 
           server.app.cache.set(sid, user, 0, function (err) {
             if (err) {
-              return next(Hapi.error.internal('there was an error setting the cache'));
+              return next(Boom.internal('there was an error setting the cache'));
             }
 
             request.auth.session.set({sid: sid});

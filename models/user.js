@@ -40,3 +40,22 @@ User.prototype.getPackages = function(name, callback) {
     return callback(null, body)
   });
 }
+
+User.prototype.getStars = function(name, callback) {
+  var url = fmt("%s/%s/stars", this.host, name);
+
+  request.get({
+    url: url,
+    headers: {bearer: name},
+    json: true
+  }, function(err, resp, body){
+
+    if (err) return callback(err);
+    if (resp.statusCode > 399) {
+      var err = Error('error getting stars for user ' + name);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+    return callback(null, body)
+  });
+}

@@ -156,4 +156,63 @@ describe("User", function(){
 
   })
 
+  describe("getStars()", function() {
+
+    it("makes an external request for /{user}/stars", function(done) {
+      var starMock = nock(User.host)
+        .get('/bcoe/stars')
+        .reply(200, ['lodash', 'nock', 'yargs']);
+
+      User.getStars('bcoe', function(err, body) {
+        starMock.done()
+        expect(err).to.be.null()
+        expect(body).to.exist()
+        done()
+      })
+    })
+
+    it("returns the response body in the callback", function(done) {
+      var packageMock = nock(User.host)
+        .get('/ceej/stars')
+        .reply(200, ['blade', 'minimist']);
+
+      User.getStars('ceej', function(err, body) {
+        expect(err).to.be.null()
+        expect(body).to.be.an.array()
+        expect(body[0]).to.equal("blade")
+        expect(body[1]).to.equal("minimist")
+        packageMock.done()
+        done()
+      })
+    })
+
+    it("returns an error in the callback if the request failed", function(done) {
+      var packageMock = nock(User.host)
+        .get('/zeke/stars')
+        .reply(404);
+
+      User.getStars('zeke', function(err, body) {
+        expect(err).to.exist();
+        expect(err.message).to.equal("error getting stars for user zeke");
+        expect(err.statusCode).to.equal(404);
+        done();
+      })
+    })
+
+    it("includes bearer token in request header", function(done) {
+      var packageMock = nock(User.host, {
+          reqheaders: {bearer: 'rod11'}
+        })
+        .get('/rod11/stars')
+        .reply(200);
+
+      User.getStars('rod11', function(err, body) {
+        packageMock.done()
+        done()
+      })
+    })
+
+  })
+
+
 })

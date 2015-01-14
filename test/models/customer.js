@@ -25,7 +25,7 @@ describe("Customer", function(){
 
   describe("initialization", function() {
 
-    it("defaults to BILLING_API as host", function(done) {
+    it("defaults to process.env.BILLING_API as host", function(done) {
       var BILLING_API_OLD = process.env.BILLING_API
       process.env.BILLING_API = "https://billing-envy.com/"
       expect(new (require("../../models/customer"))().host).to.equal('https://billing-envy.com/')
@@ -143,46 +143,24 @@ describe("Customer", function(){
         })
       })
 
+      it("errors if email is missing", function(done){
+        delete billingInfo.email
+        Customer.update(billingInfo, function(err, customer) {
+          expect(err).to.exist()
+          expect(err.message).to.equal("email is a required property")
+          done()
+        })
+      })
+
+      it("errors if card is missing", function(done){
+        delete billingInfo.card
+        Customer.update(billingInfo, function(err, customer) {
+          expect(err).to.exist()
+          expect(err.message).to.equal("card is a required property")
+          done()
+        })
+      })
 
     })
-    //
-    // describe("existing customer"), function() {
-    //
-    // }
-
-    //
-    // it("returns the response body in the callback", function(done) {
-    //   var customerMock = nock(Customer.host)
-    //     .get('/fakeuser/package?format=mini')
-    //     .reply(200, [
-    //       {name: "foo", description: "It's a foo!"},
-    //       {name: "bar", description: "It's a bar!"}
-    //     ]);
-    //
-    //   Customer.getPackages(fixtures.users.fakeuser.name, function(err, body) {
-    //     expect(err).to.be.null
-    //     expect(body).to.be.an.array
-    //     expect(body[0].name).to.equal("foo")
-    //     expect(body[1].name).to.equal("bar")
-    //     customerMock.done()
-    //     done()
-    //   })
-    // })
-    //
-    // it("returns an error in the callback if the request failed", function(done) {
-    //   var customerMock = nock(Customer.host)
-    //     .get('/foo/package?format=mini')
-    //     .reply(404);
-    //
-    //   Customer.getPackages('foo', function(err, body) {
-    //     expect(err).to.exist;
-    //     expect(err.message).to.equal("error getting packages for user foo");
-    //     expect(err.statusCode).to.equal(404);
-    //     done();
-    //   })
-    // })
-
   })
-
-
 })

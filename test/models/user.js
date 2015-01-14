@@ -22,7 +22,7 @@ describe("User", function(){
 
   describe("initialization", function() {
 
-    it("defaults to USER_API as host", function(done) {
+    it("defaults to process.env.USER_API as host", function(done) {
       var USER_API_OLD = process.env.USER_API
       process.env.USER_API = "https://envy.com/"
       expect(new (require("../../models/user"))().host).to.equal('https://envy.com/')
@@ -66,7 +66,7 @@ describe("User", function(){
     })
 
     it("returns an error in the callback if the request failed", function(done) {
-      var packageMock = nock(User.host)
+      var userMock = nock(User.host)
         .get('/foo')
         .reply(404);
 
@@ -74,7 +74,19 @@ describe("User", function(){
         expect(err).to.exist();
         expect(err.message).to.equal("error getting user foo");
         expect(err.statusCode).to.equal(404);
+        userMock.done()
         done();
+      })
+    })
+
+    it("does not require a bearer token", function(done) {
+      var userMock = nock(User.host, {reqheaders: {}})
+        .get('/dogbreath')
+        .reply(200);
+
+      User.get('dogbreath', function(err, body) {
+        userMock.done()
+        done()
       })
     })
 
@@ -123,6 +135,22 @@ describe("User", function(){
         expect(err.message).to.equal("error getting packages for user foo");
         expect(err.statusCode).to.equal(404);
         done();
+      })
+    })
+
+    it("includes bearer token in request header", function(done) {
+      var packageMock = nock(User.host, {
+          reqheaders: {bearer: 'sally'}
+        })
+        .get('/sally/package?format=mini')
+        .reply(200, [
+          {name: "foo", description: "It's a foo!"},
+          {name: "bar", description: "It's a bar!"}
+        ]);
+
+      User.getPackages('sally', function(err, body) {
+        packageMock.done()
+        done()
       })
     })
 

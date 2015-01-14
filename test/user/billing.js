@@ -25,10 +25,6 @@ var fixtures = {
 
 before(function (done) {
   server = require('../fixtures/setupServer')(done);
-  server.ext('onPreResponse', function (request, next) {
-    source = request.response.source;
-    next();
-  });
 });
 
 describe('GET /settings/billing', function () {
@@ -57,7 +53,7 @@ describe('GET /settings/billing', function () {
       credentials: fakeuser
     }
     server.inject(options, function (resp) {
-      expect(source.context.canceled).to.be.true;
+      expect(request.response.source.context.canceled).to.be.true;
       var $ = cheerio.load(resp.result)
       expect($(".cancellation-notice").text()).to.include('cancelled your private npm');
       done();
@@ -71,7 +67,7 @@ describe('GET /settings/billing', function () {
       credentials: fakeuser
     }
     server.inject(options, function (resp) {
-      expect(source.context.updated).to.be.true;
+      expect(request.response.source.context.updated).to.be.true;
       var $ = cheerio.load(resp.result)
       expect($(".update-notice").text()).to.include('successfully updated');
       done();
@@ -81,8 +77,8 @@ describe('GET /settings/billing', function () {
   it('does not render notices by default', function (done) {
     options.credentials = fakeuser
     server.inject(options, function (resp) {
-      expect(source.context.canceled).to.be.false;
-      expect(source.context.updated).to.be.false;
+      expect(request.response.source.context.canceled).to.be.false;
+      expect(request.response.source.context.updated).to.be.false;
       expect(resp.result).to.not.include('cancellation-notice');
       expect(resp.result).to.not.include('update-notice');
       done();
@@ -94,7 +90,7 @@ describe('GET /settings/billing', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('user/billing');
+      expect(request.response.source.template).to.equal('user/billing');
       expect(resp.result).to.include('id="payment-form"');
       done();
     });
@@ -108,7 +104,7 @@ describe('GET /settings/billing', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
-      expect(source.template).to.equal('user/billing');
+      expect(request.response.source.template).to.equal('user/billing');
       expect(resp.result).to.include('https://js.stripe.com/v2/');
       expect(resp.result).to.include("I am a zebra");
       process.env.STRIPE_PUBLIC_KEY = oldStripeKey
@@ -139,13 +135,13 @@ describe('GET /settings/billing', function () {
       options.credentials = fakeuser
       server.inject(options, function (resp) {
         getCustomerMock.done();
-        expect(source.context).to.exist;
-        expect(source.context.customer).to.exist;
-        expect(source.context.customer.status).to.equal("active");
-        expect(source.context.customer.license_expired).to.equal(false);
-        expect(source.context.customer.next_billing_amount).to.equal(700);
-        expect(source.context.customer.next_billing_date).to.be.a.date();
-        expect(source.context.customer.card.brand).to.equal("Visa");
+        expect(request.response.source.context).to.exist;
+        expect(request.response.source.context.customer).to.exist;
+        expect(request.response.source.context.customer.status).to.equal("active");
+        expect(request.response.source.context.customer.license_expired).to.equal(false);
+        expect(request.response.source.context.customer.next_billing_amount).to.equal(700);
+        expect(request.response.source.context.customer.next_billing_date).to.be.a.date();
+        expect(request.response.source.context.customer.card.brand).to.equal("Visa");
         done();
       });
     })
@@ -226,8 +222,8 @@ describe('GET /settings/billing', function () {
       options.credentials = fakeuser
       server.inject(options, function (resp) {
         getCustomerMock.done();
-        expect(source.context.customer.status).to.equal("past_due");
-        expect(source.context.customer.license_expired).to.equal(true);
+        expect(request.response.source.context.customer.status).to.equal("past_due");
+        expect(request.response.source.context.customer.license_expired).to.equal(true);
         done();
       });
     })

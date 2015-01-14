@@ -3,7 +3,7 @@ var _ = require('lodash');
 
 var Customer = module.exports = function(opts) {
   _.extend(this, {
-    host: process.env.LICENSE_API
+    host: process.env.BILLING_API
   }, opts);
 }
 
@@ -31,12 +31,14 @@ Customer.prototype.get = function(name, callback) {
 Customer.prototype.update = function(body, callback) {
   var self = this
   var url
+  var props = ['name', 'email', 'card']
 
-  ['name', 'email', 'card'].forEach(function(property){
-    if (!body[property]) {
-      return callback(Error(property + " is a required property"))
+  for (var i in props) {
+    var prop = props[i]
+    if (!body[prop]) {
+      return callback(Error(prop + " is a required property"))
     }
-  })
+  }
 
   this.get(body.name, function(err, customer) {
 

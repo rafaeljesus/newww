@@ -24,7 +24,12 @@ User.prototype.get = function(name, callback) {
 
 User.prototype.getPackages = function(name, callback) {
   var url = fmt("%s/%s/package?format=mini", this.host, name);
-  request.get({url: url, json: true}, function(err, resp, body){
+
+  request.get({
+    url: url,
+    headers: {bearer: name},
+    json: true
+  }, function(err, resp, body){
 
     if (err) return callback(err);
     if (resp.statusCode > 399) {

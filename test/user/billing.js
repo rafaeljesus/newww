@@ -1,11 +1,12 @@
 var Lab = require('lab'),
+    Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     beforeEach = lab.beforeEach,
     after = lab.after,
     it = lab.test,
-    expect = Lab.expect,
+    expect = Code.expect,
     fs = require("fs"),
     nock = require("nock"),
     cheerio = require("cheerio");

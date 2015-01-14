@@ -4,7 +4,7 @@ var fmt = require('util').format;
 
 var User = module.exports = function(opts) {
   _.extend(this, {
-    host: process.env.USER_API || 'https://user-api-example.com'
+    host: process.env.USER_API
   }, opts);
 }
 

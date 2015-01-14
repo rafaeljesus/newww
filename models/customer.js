@@ -3,7 +3,7 @@ var _ = require('lodash');
 
 var Customer = module.exports = function(opts) {
   _.extend(this, {
-    host: process.env.BILLING_API || 'https://billing-api-example.com'
+    host: process.env.LICENSE_API
   }, opts);
 }
 

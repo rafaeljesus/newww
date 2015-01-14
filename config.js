@@ -47,6 +47,18 @@ if (process.env.NODE_ENV === 'dev') {
     }
 }
 
+config.views = {
+  engines: {
+    hbs: require('handlebars')
+  },
+  relativeTo: __dirname,
+  path: './templates',
+  helpersPath: './templates/helpers',
+  layoutPath: './templates/layouts',
+  partialsPath: './templates/partials',
+  layout: 'default'
+};
+
 config.couch = {
   "couchAuth": "admin:admin",
   "registryCouch": "http://localhost:15984/"

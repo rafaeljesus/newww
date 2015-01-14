@@ -1,12 +1,13 @@
-var Lab = require('lab'),
-  lab = exports.lab = Lab.script(),
-  describe = lab.experiment,
-  before = lab.before,
-  after = lab.after,
-  beforeEach = lab.beforeEach,
-  afterEach = lab.afterEach,
-  it = lab.test,
-  expect = Lab.expect;
+var Code = require('code'),
+    Lab = require('lab'),
+    lab = exports.lab = Lab.script(),
+    describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
+    beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
+    it = lab.test,
+    expect = Code.expect;
 
 var csp = require("../lib/csp");
 
@@ -14,7 +15,7 @@ describe("csp (content security policy)", function () {
 
   describe("default", function() {
     it("is an object", function (done) {
-      expect(csp.default).to.be.an('object');
+      expect(csp.default).to.be.an.object();
       done();
     })
 
@@ -56,7 +57,7 @@ describe("csp (content security policy)", function () {
 
   describe("enterprise", function() {
     it("is an object", function (done) {
-      expect(csp.enterprise).to.be.an('object');
+      expect(csp.enterprise).to.be.an.object();
       done();
     })
 

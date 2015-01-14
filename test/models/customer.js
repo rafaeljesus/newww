@@ -1,13 +1,18 @@
-var Lab = require('lab'),
+var Code = require('code'),
+    Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
-    beforeEach = lab.beforeEach,
     after = lab.after,
+    beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
     it = lab.test,
-    expect = Lab.expect,
-    nock = require("nock"),
-    Customer = new(require("../../models/customer"));
+    expect = Code.expect,
+    nock = require("nock");
+
+var Customer = new (require("../../models/customer"))({
+  host: "https://customer.com"
+});
 
 var fixtures = {
   customers: {
@@ -18,9 +23,21 @@ var fixtures = {
 
 describe("Customer", function(){
 
-  it("has a default host", function(done) {
-    expect(Customer.host).to.equal("https://billing-api-example.com")
-    done()
+  describe("initialization", function() {
+
+    it("defaults to BILLING_API as host", function(done) {
+      var BILLING_API_OLD = process.env.BILLING_API
+      process.env.BILLING_API = "https://billing-envy.com/"
+      expect(new (require("../../models/customer"))().host).to.equal('https://billing-envy.com/')
+      process.env.BILLING_API = BILLING_API_OLD
+      done()
+    })
+
+    it("accepts a custom host", function(done) {
+      expect(Customer.host).to.equal('https://customer.com')
+      done()
+    })
+
   })
 
   describe("get()", function() {
@@ -32,7 +49,7 @@ describe("Customer", function(){
 
       Customer.get('haxor', function(err, body) {
         customerMock.done()
-        expect(err).to.be.null
+        expect(err).to.be.null()
         done()
       })
     })
@@ -44,8 +61,8 @@ describe("Customer", function(){
 
       Customer.get('zozo', function(err, body) {
         customerMock.done()
-        expect(err).to.be.null
-        expect(body).to.be.an.object
+        expect(err).to.be.null()
+        expect(body).to.be.an.object()
         done()
       })
     })
@@ -57,7 +74,7 @@ describe("Customer", function(){
 
       Customer.get('foo', function(err, body) {
         customerMock.done()
-        expect(err).to.exist;
+        expect(err).to.exist();
         expect(err.message).to.equal("customer not found: foo");
         expect(err.statusCode).to.equal(404);
         done();
@@ -92,8 +109,8 @@ describe("Customer", function(){
         Customer.update(billingInfo, function(err, body) {
           getCustomerMock.done()
           createCustomerMock.done()
-          expect(err).to.be.null
-          expect(body).to.exist
+          expect(err).to.be.null()
+          expect(body).to.exist()
           done()
         })
       })
@@ -110,8 +127,8 @@ describe("Customer", function(){
         Customer.update(billingInfo, function(err, customer) {
           getCustomerMock.done()
           createCustomerMock.done()
-          expect(err).to.be.null
-          expect(customer).to.exist
+          expect(err).to.be.null()
+          expect(customer).to.exist()
           expect(customer.email).to.equal("bencoe@gmail.com")
           done()
         })
@@ -120,7 +137,7 @@ describe("Customer", function(){
       it("errors if name is missing", function(done){
         delete billingInfo.name
         Customer.update(billingInfo, function(err, customer) {
-          expect(err).to.exist
+          expect(err).to.exist()
           expect(err.message).to.equal("name is a required property")
           done()
         })

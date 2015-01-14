@@ -120,7 +120,7 @@ describe('GET /settings/billing', function () {
     var getCustomerMock
 
     beforeEach(function(done){
-      getCustomerMock = nock(process.env.BILLING_API)
+      getCustomerMock = nock(process.env.LICENSE_API)
         .get('/stripe/'+fakeuser.name)
         .reply(200, fixtures.customers.happy);
 
@@ -144,7 +144,7 @@ describe('GET /settings/billing', function () {
         expect(source.context.customer.status).to.equal("active");
         expect(source.context.customer.license_expired).to.equal(false);
         expect(source.context.customer.next_billing_amount).to.equal(700);
-        expect(source.context.customer.next_billing_date).to.be.a("date");
+        expect(source.context.customer.next_billing_date).to.be.a.date();
         expect(source.context.customer.card.brand).to.equal("Visa");
         done();
       });
@@ -215,7 +215,7 @@ describe('GET /settings/billing', function () {
     var getCustomerMock
 
     beforeEach(function(done){
-      getCustomerMock = nock(process.env.BILLING_API)
+      getCustomerMock = nock(process.env.LICENSE_API)
       .get('/stripe/'+fakeuser.name)
       .reply(200, fixtures.customers.license_expired);
 
@@ -248,7 +248,7 @@ describe('GET /settings/billing', function () {
     var getCustomerMock
 
     beforeEach(function(done){
-      getCustomerMock = nock(process.env.BILLING_API)
+      getCustomerMock = nock(process.env.LICENSE_API)
         .get('/stripe/'+fakeuser.name)
         .reply(404);
 
@@ -331,11 +331,11 @@ describe('POST /settings/billing', function () {
           headers: { cookie: 'crumb=' + cookieCrumb }
         }
 
-        var getCustomerMock = nock(process.env.BILLING_API)
+        var getCustomerMock = nock(process.env.LICENSE_API)
           .get('/stripe/'+fakeuser.name)
           .reply(200);
 
-        var updateCustomerMock = nock(process.env.BILLING_API)
+        var updateCustomerMock = nock(process.env.LICENSE_API)
           .post('/stripe/'+fakeuser.name)
           .reply(200);
 
@@ -373,11 +373,11 @@ describe('POST /settings/billing', function () {
           headers: { cookie: 'crumb=' + cookieCrumb }
         }
 
-        var getCustomerMockPre = nock(process.env.BILLING_API)
+        var getCustomerMockPre = nock(process.env.LICENSE_API)
           .get('/stripe/'+fakeuser.name)
           .reply(404);
 
-        var updateCustomerMock = nock(process.env.BILLING_API)
+        var updateCustomerMock = nock(process.env.LICENSE_API)
           .put('/stripe', {
             name:fakeuser.name,
             email:fakeuser.email,
@@ -439,7 +439,7 @@ describe('POST /settings/billing/cancel', function () {
         headers: { cookie: 'crumb=' + cookieCrumb }
       }
 
-      var deleteCustomerMock = nock(process.env.BILLING_API)
+      var deleteCustomerMock = nock(process.env.LICENSE_API)
         .delete('/stripe/'+fakeuser.name)
         .reply(200);
 

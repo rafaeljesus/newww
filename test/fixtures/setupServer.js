@@ -33,8 +33,7 @@ module.exports = function (done) {
       server.route(require('../../routes'));
 
       server.start(function () {
-
-          return done(server);
+        return done(server);
       });
     });
   });

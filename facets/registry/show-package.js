@@ -68,7 +68,7 @@ function showPackage(request, reply) {
         pkg.dependents = results.dependents;
       }
 
-      presentPackage(pkg, function (er, cleanedPackage) {
+      presentPackage(request, pkg, function (er, cleanedPackage) {
         if (er) {
           request.logger.info(er, 'presentPackage() responded with error; package=' + opts.name);
           reply.view('errors/internal', opts).code(500);
@@ -92,7 +92,7 @@ function fetchDependents(request, name, callback) {
   var results = [];
   request.timing.browse_start = Date.now();
 
-  getBrowseData({type: 'depended', noPackageData: true}, name, 0, 1000, function (er, dependents) {
+  getBrowseData('depended', name, 0, 1000, true, function (er, dependents) {
 
     request.metrics.metric({
       name:   'latency',
@@ -102,8 +102,9 @@ function fetchDependents(request, name, callback) {
     });
 
     if (er) {
-      var msg = 'getting depended browse data; package=' + name;
-      request.logger.error(er, msg);
+      var msg = 'unable to get depended browse data; package=' + name;
+      request.logger.error(msg);
+      request.logger.error(er);
       request.metrics.metric({
         name:    'error',
         message: msg,

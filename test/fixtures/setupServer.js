@@ -1,3 +1,5 @@
+require("dotenv").load()
+
 var Hapi = require('hapi'),
     config = require('../../config');
 

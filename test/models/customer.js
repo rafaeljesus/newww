@@ -25,11 +25,11 @@ describe("Customer", function(){
 
   describe("initialization", function() {
 
-    it("defaults to process.env.BILLING_API as host", function(done) {
-      var BILLING_API_OLD = process.env.BILLING_API
-      process.env.BILLING_API = "https://billing-envy.com/"
+    it("defaults to process.env.LICENSE_API as host", function(done) {
+      var LICENSE_API_OLD = process.env.LICENSE_API
+      process.env.LICENSE_API = "https://billing-envy.com/"
       expect(new (require("../../models/customer"))().host).to.equal('https://billing-envy.com/')
-      process.env.BILLING_API = BILLING_API_OLD
+      process.env.LICENSE_API = LICENSE_API_OLD
       done()
     })
 
@@ -163,4 +163,10 @@ describe("Customer", function(){
 
     })
   })
+
+  describe("del()", function() {
+    it("isn't tested yet")
+  })
+
+
 })

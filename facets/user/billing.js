@@ -15,9 +15,11 @@ billing.getBillingInfo = function (request, reply) {
     stripePublicKey: process.env.STRIPE_PUBLIC_KEY
   };
 
-  Customer.get(request.auth.credentials.name, function(err, resp, body) {
-    if (resp && resp.statusCode == 200) {
-      opts.customer = body;
+  // console.log("About to Customer.get", request.auth.credentials.name, Customer.host)
+
+  Customer.get(request.auth.credentials.name, function(err, customer) {
+    if (customer) {
+      opts.customer = customer;
     }
     return reply.view('user/billing', opts);
   });
@@ -31,29 +33,26 @@ billing.updateBillingInfo = function(request, reply) {
     card: request.payload.stripeToken
   }
 
-  Customer.update(billingInfo, function(err, resp, body) {
+  Customer.update(billingInfo, function(err, customer) {
     if (err) {
-      request.logger.error(err);
-      return reply.view('errors/internal', opts).code(500);
-    }
+      console.log("Customer.update error", err, Customer.host)
+      // Customer
 
-    if (resp && resp.statusCode == 200) {
-      return reply.redirect('/settings/billing?updated=1')
+      request.logger.error(err);
+      return reply.view('errors/internal').code(500);
     }
+    return reply.redirect('/settings/billing?updated=1')
   })
 
 }
 
 billing.deleteBillingInfo = function(request, reply) {
 
-  Customer.del(request.auth.credentials.name, function(err, resp, body) {
+  Customer.del(request.auth.credentials.name, function(err, customer) {
     if (err) {
       request.logger.error(err);
-      return reply.view('errors/internal', opts).code(500);
+      return reply.view('errors/internal').code(500);
     }
-
-    if (resp && resp.statusCode == 200) {
-      return reply.redirect('/settings/billing?canceled=1')
-    }
+    return reply.redirect('/settings/billing?canceled=1')
   })
 }

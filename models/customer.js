@@ -3,7 +3,7 @@ var _ = require('lodash');
 
 var Customer = module.exports = function(opts) {
   _.extend(this, {
-    host: process.env.BILLING_API
+    host: process.env.LICENSE_API
   }, opts);
 }
 
@@ -54,7 +54,7 @@ Customer.prototype.update = function(body, callback) {
     if (err) return callback(err);
 
     // Update existing customer
-    url = this.host + '/stripe/' + body.name;
+    url = self.host + '/stripe/' + body.name;
     return request.post({url: url, json: true, body: body}, function(err, resp, body){
       return err ? callback(err) : callback(null, body);
     });

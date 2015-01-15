@@ -55,6 +55,19 @@
     a
       font-weight 600
 
+  th
+    font-weight bold
+
+  td, th
+    padding 0 5px
+    background #F5F5F5
+
+  p
+    margin 15px 0
+
+    &.package-description-redundant
+      display none
+
     &.package-description
       text-align left
       font-weight 300
@@ -68,9 +81,6 @@
         text-decoration underline
         &:hover
           color npmred
-
-    &.package-description-redundant
-      display none
 
   img
     max-width 100%

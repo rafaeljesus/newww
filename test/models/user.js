@@ -95,12 +95,16 @@ describe("User", function(){
       var userMock = nock(User.host)
         .get('/eager-beaver')
         .reply(200, {
+          name: "eager-beaver",
           email: "eager-beaver@example.com"
         });
 
       var starMock = nock(User.host)
         .get('/eager-beaver/stars')
-        .reply(200, ['minimist','hapi']);
+        .reply(200, [
+          'minimist',
+          'hapi'
+        ]);
 
       var packageMock = nock(User.host)
         .get('/eager-beaver/package?format=mini')
@@ -110,12 +114,14 @@ describe("User", function(){
         ]);
 
       User.get('eager-beaver', {stars: true, packages: true}, function(err, user) {
+        expect(err).to.not.exist()
         userMock.done()
-        // packageMock.done()
-        // starMock.done()
+        packageMock.done()
+        starMock.done()
+        expect(user.name).to.equal('eager-beaver')
         expect(user.email).to.equal('eager-beaver@example.com')
-        // expect(user.packages).to.be.an.array()
-        // expect(user.stars).to.be.an.array()
+        expect(user.packages).to.be.an.array()
+        expect(user.stars).to.be.an.array()
         done()
       })
 

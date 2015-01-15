@@ -208,15 +208,15 @@ var unauthenticatedRoutes = [
   },{
     path: "/~{name}",
     method: "GET",
-    handler: require('./facets/user/show-profile')(config.user.profileFields)
+    handler: require('./facets/user/show-profile')
   },{
     path: "/profile/{name}",
     method: "GET",
-    handler: require('./facets/user/show-profile')(config.user.profileFields)
+    handler: require('./facets/user/show-profile')
   },{
     path: "/~/{name}",
     method: "GET",
-    handler: require('./facets/user/show-profile')(config.user.profileFields)
+    handler: require('./facets/user/show-profile')
   },{
     path: "/signup",
     method: "GET",
@@ -302,11 +302,11 @@ var authenticatedRoutes = [
   },{
     path: "/~",
     method: "GET",
-    handler: require('./facets/user/show-profile')(config.user.profileFields)
+    handler: require('./facets/user/show-profile')
   },{
     path: "/profile",
     method: "GET",
-    handler: require('./facets/user/show-profile')(config.user.profileFields)
+    handler: require('./facets/user/show-profile')
   },{
     path: "/profile-edit",
     method: "GET",

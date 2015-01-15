@@ -105,14 +105,24 @@ _Then, in `facets/registry/show-package.js`:_
 
 ## Tests
 
-There are tests! We're using [Lab](https://github.com/spumko/lab) as our
-testing utility. Site-wide tests are currently located in the `test/` folder
-and can be run with `npm test`. Service-specific tests are located in their
-respective `service/[name]/test/` folders.
+We're using [Lab](https://github.com/spumko/lab) as our testing utility and
+[Code](https://www.npmjs.com/package/code) for assertions.
 
 ```sh
 npm install
 npm test
+```
+
+If you have npm 2.0.0 or greater installed ([which you should](https://docs.npmjs.com/getting-started/installing-node)),
+you can pass [additional arguments](https://docs.npmjs.com/cli/run-script) to scripts. This handy feature
+allows for more granular control of the tests you want to run:
+
+```sh
+# a directory
+npm test -- test/handlers
+
+# a file
+npm test -- test/models/user.js
 ```
 
 ## Code

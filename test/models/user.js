@@ -90,36 +90,36 @@ describe("User", function(){
       })
     })
 
-    // it("allows option to load user stars and packages too", function(done) {
-    //
-    //   var userMock = nock(User.host)
-    //     .get('/eager-beaver')
-    //     .reply(200, {
-    //       email: "eager-beaver@example.com"
-    //     });
-    //
-    //   var starMock = nock(User.host)
-    //     .get('/eager-beaver/stars')
-    //     .reply(200, ['minimist','hapi']);
-    //
-    //   var packageMock = nock(User.host)
-    //     .get('/eager-beaver/package?format=mini')
-    //     .reply(200, [
-    //       {name: "foo", description: "It's a foo!"},
-    //       {name: "bar", description: "It's a bar!"}
-    //     ]);
-    //
-    //   User.get('eager-beaver', {stars: true, packages: true}, function(err, user) {
-    //     userMock.done()
-    //     packageMock.done()
-    //     starMock.done()
-    //     expect(user.email).to.equal('eager-beaver@example.com')
-    //     expect(user.packages).to.be.an.array()
-    //     expect(user.stars).to.be.an.array()
-    //     done()
-    //   })
-    //
-    // })
+    it("allows loading user stars and packages too", function(done) {
+
+      var userMock = nock(User.host)
+        .get('/eager-beaver')
+        .reply(200, {
+          email: "eager-beaver@example.com"
+        });
+
+      var starMock = nock(User.host)
+        .get('/eager-beaver/stars')
+        .reply(200, ['minimist','hapi']);
+
+      var packageMock = nock(User.host)
+        .get('/eager-beaver/package?format=mini')
+        .reply(200, [
+          {name: "foo", description: "It's a foo!"},
+          {name: "bar", description: "It's a bar!"}
+        ]);
+
+      User.get('eager-beaver', {stars: true, packages: true}, function(err, user) {
+        userMock.done()
+        // packageMock.done()
+        // starMock.done()
+        expect(user.email).to.equal('eager-beaver@example.com')
+        // expect(user.packages).to.be.an.array()
+        // expect(user.stars).to.be.an.array()
+        done()
+      })
+
+    })
 
   })
 

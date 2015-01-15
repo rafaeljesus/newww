@@ -1,4 +1,5 @@
 var request = require('request');
+var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
 
@@ -8,18 +9,43 @@ var User = module.exports = function(opts) {
   }, opts);
 }
 
-User.prototype.get = function(name, callback) {
-  var url = fmt("%s/%s", this.host, name);
-  request.get({url: url, json: true}, function(err, resp, body){
+User.prototype.get = function(name, options, callback) {
 
-    if (err) return callback(err);
-    if (resp.statusCode > 399) {
-      var err = Error('error getting user ' + name);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
-    return callback(null, body)
-  });
+  // options are optional!
+  if (!callback) {
+    callback = options
+    options = {}
+  }
+
+  var url = fmt("%s/%s", this.host, name);
+
+  return new Promise(function(resolve, reject) {
+    request.get({url: url, json: true}, function(err, resp, body){
+      if (err) return reject(err);
+      if (resp.statusCode > 399) {
+        var err = Error('error getting user ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  })
+  // .then(function(user){
+  //   return body
+  //   User.getStars(user.name, )
+  // })
+  .nodeify(callback);
+
+  // request.get({url: url, json: true}, function(err, resp, body){
+  //
+  //   if (err) return callback(err);
+  //   if (resp.statusCode > 399) {
+  //     var err = Error('error getting user ' + name);
+  //     err.statusCode = resp.statusCode;
+  //     return callback(err);
+  //   }
+  //   return callback(null, body)
+  // });
 }
 
 User.prototype.getPackages = function(name, callback) {

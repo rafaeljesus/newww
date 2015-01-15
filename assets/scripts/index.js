@@ -1,5 +1,5 @@
 window.$ = require("jquery")
-window.highlight = require("./highlight")
+// window.highlight = require("./highlight")
 window.hiring = require("./hiring")
 window.star = require("./star")()
 window.npm_expansions = require("./npm-expansions")
@@ -20,8 +20,9 @@ $(function () {
   // Add active class to links that point to the current page
   $("a[href='" + location.pathname + "']").addClass("active")
 
-  // Toggle display of superfluous README content
+  // Toggle display of hidden README content
   mousetrap.bind(['command+i', 'ctrl+i'], function() {
-    $('.superfluous').toggle()
+    $('.package-name-redundant, .package-description-redundant').toggle()
   })
+
 })

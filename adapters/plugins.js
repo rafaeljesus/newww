@@ -17,6 +17,7 @@ module.exports = [
   },
   require('../services/registry'),
   require('../services/corporate'),
+  require('../services/email'),
   {
     register: require('../services/npme'),
     options: config

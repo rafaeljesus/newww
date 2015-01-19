@@ -9,6 +9,8 @@
     {{#if sent}}
       <p>Thanks for reaching out! One of us will get back to you as soon as possible.</p>
 
+      {{#if mail}}{{mail}}{{/if}}
+
     {{else}}
       <form action="/send-contact" method="post">
         <label for="name">Name</label>

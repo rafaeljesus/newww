@@ -1,50 +1,29 @@
-var NAMESPACE = 'company-send-contact';
 
-var Hapi = require('hapi'),
-    userValidate = require('npm-user-validate'),
-    nodemailer = require('nodemailer'),
-    crypto = require('crypto');
+module.exports = function showSendContact(request, reply) {
+  var opts = { };
 
-var transport, mailer;
+  var data = request.payload;
 
-module.exports = function showSendContact(options) {
-  return function (request, reply) {
+  var mail = {
+    to: data.inquire === "support" ? "support <support@npmjs.com>" : "npm <npm@npmjs.com>",
+    from: "Support Contact Form <support@npmjs.com>",
+    subject: data.subject + " - FROM: " + '"' + data.name + '" <' + data.email + '>',
+    text: data.message
+  };
 
-    var opts = {
-      user: request.auth.credentials,
-      namespace: NAMESPACE
-    };
+  var sendEmail = request.server.methods.email.send;
 
-    var from = options.emailFrom;
-    var data = request.payload;
+  sendEmail(mail, function (er) {
 
-    var mail = {
-      to: data.inquire === "support" ? "support <support@npmjs.com>" : "npm <npm@npmjs.com>",
-      from: "Support Contact Form <support@npmjs.com>",
-      subject: data.subject + " - FROM: " + '"' + data.name + '" <' + data.email + '>',
-      text: data.message
-    };
-
-    if (process.env.NODE_ENV === 'dev') {
-
-      return reply(mail);
-
-    } else {
-      var mailSettings = options;
-
-      var transport = require(mailSettings.mailTransportModule);
-      var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
-
-      mailer.sendMail(mail, function (er, result) {
-        if (er) {
-          request.logger.error('unable to send verification email');
-          request.logger.error(er);
-          return reply.view('errors/internal', opts).code(500);
-        }
-
-        opts.sent = true;
-        return reply.view('company/contact', opts);
-      });
+    if (er) {
+      request.logger.error('unable to send verification email');
+      request.logger.error(er);
+      return reply.view('errors/internal', opts).code(500);
     }
-  }
-}
+
+    if (process.env.NODE_ENV === 'dev') { opts.mail = JSON.stringify(mail); }
+
+    opts.sent = true;
+    return reply.view('company/contact', opts);
+  });
+};

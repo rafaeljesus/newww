@@ -88,8 +88,10 @@ describe('sending a contact email', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source).to.be.an.object();
-        expect(source.to).to.include('support@npmjs.com')
+        expect(process.env.NODE_ENV).to.equal('dev');
+        var mail = JSON.parse(source.context.mail);
+        expect(mail.to).to.include('support@npmjs.com');
+        expect(source.template).to.equal('company/contact');
         done();
       });
     });
@@ -122,8 +124,10 @@ describe('sending a contact email', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source).to.be.an.object();
-        expect(source.to).to.include('npm@npmjs.com')
+        expect(process.env.NODE_ENV).to.equal('dev');
+        var mail = JSON.parse(source.context.mail);
+        expect(mail.to).to.include('npm@npmjs.com');
+        expect(source.template).to.equal('company/contact');
         done();
       });
     });

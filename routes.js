@@ -3,13 +3,13 @@ var config = require('./config'),
     ops = require('./facets/ops'),
     fmt = require('util').format,
     validatePackageName = require('validate-npm-package-name'),
-    Hoek = require("hoek")
+    Hoek = require("hoek");
 
 var enterpriseConfig = {
   plugins: {
     blankie: csp.enterprise
   }
-}
+};
 
 var unathenticatedRouteConfig = {
   config: {
@@ -85,7 +85,7 @@ var unauthenticatedRoutes = [
   },{
     path: "/send-contact",
     method: "POST",
-    handler: require('./facets/company/show-send-contact')(config.user.mail)
+    handler: require('./facets/company/show-send-contact')
   },{
     path: "/support",
     method: "GET",

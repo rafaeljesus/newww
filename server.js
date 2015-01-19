@@ -22,7 +22,7 @@ assert(config.user && _.isObject(config.user), 'config must include a `user` sta
 assert(config.user.mail && _.isObject(config.user.mail), 'config.user must include a `mail` stanza');
 assert(config.user.mail.mailTransportModule && _.isString(config.user.mail.mailTransportModule), 'config must specify a `mailTransportModule`');
 assert(config.user.mail.mailTransportSettings && _.isObject(config.user.mail.mailTransportSettings), 'config must include `mailTransportSettings`');
-assert(config.user.mail.emailFrom && _.isString(config.user.mail.emailFrom), 'config must include a `emailFrom` settins');
+assert(config.user.mail.emailFrom && _.isString(config.user.mail.emailFrom), 'config must include a `emailFrom` settings');
 
 // set up the server
 var server = new Hapi.Server(config.server);

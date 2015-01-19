@@ -25,6 +25,7 @@ beforeEach(function (done) {
 
 before(function (done) {
   oldCreateTransport = nodemailer.createTransport;
+
   nodemailer.createTransport = function () {
     return {
       sendMail: function (mail, cb) {
@@ -46,6 +47,12 @@ after(function (done) {
 });
 
 describe('send an email', function () {
+  it('has the proper environment variables', function (done) {
+    expect(process.env.MAIL_ACCESS_KEY_ID).to.exist();
+    expect(process.env.MAIL_SECRET_ACCESS_KEY).to.exist();
+    done();
+  });
+
   it('has no errors if sendMail has no errors', function (done) {
 
     var mail = {from: 'boom@npmjs.com', to: 'blah@npmjs.com'};

@@ -45,11 +45,11 @@ describe('Getting to the thank-you page', function () {
       };
 
       server.inject(opts, function (resp) {
-        expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
+        expect(resp.statusCode).to.equal(200);
         expect(source.context.mail).to.exist();
         var mail = JSON.parse(source.context.mail);
-        expect(mail.to).to.include('exists@bam.com')
+        expect(mail.to).to.include('exists@bam.com');
         done();
       });
     });

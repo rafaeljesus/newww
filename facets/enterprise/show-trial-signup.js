@@ -1,4 +1,3 @@
-var nodemailer = require('nodemailer');
 
 var config = require('../../config');
 
@@ -56,7 +55,7 @@ function createTrialAccount(request, reply, customer) {
   createTrial(customer, function (er, trial) {
     if (er) {
       request.logger.error('There was an error with creating a trial for ', customer.id);
-      request.logger.error(er)
+      request.logger.error(er);
       reply.view('errors/internal', opts).code(500);
       return;
     }
@@ -85,27 +84,20 @@ function sendVerificationEmail (request, reply, customer, trial) {
       "\r\n\r\nnpm loves you.\r\n"
   };
 
-  if (process.env.NODE_ENV === 'dev') {
+  request.server.methods.email.send(mail, function (er) {
 
-    opts.mail = JSON.stringify(mail);
+    if (er) {
+      request.logger.error('Unable to send verification email to ', customer);
+      request.logger.error(er);
+      reply.view('errors/internal', opts).code(500);
+      return;
+    }
+
+    if (process.env.NODE_ENV === 'dev') {
+      opts.mail = JSON.stringify(mail);
+    }
 
     return reply.view('enterprise/thanks', opts);
+  });
 
-  } else {
-    var mailSettings = config.user.mail;
-
-    var transport = require(mailSettings.mailTransportModule);
-    var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
-
-    mailer.sendMail(mail, function (er) {
-      if (er) {
-        request.logger.error('Unable to send verification email to ', customer);
-        request.logger.error(er);
-        reply.view('errors/internal', opts).code(500);
-        return;
-      }
-
-      return reply.view('enterprise/thanks', opts);
-    });
-  }
 }

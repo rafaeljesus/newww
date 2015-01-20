@@ -23,6 +23,10 @@
 
 <div class="sidebar">
 
+  {{#if deprecated}}
+    <p class="notice">{{deprecated}}</p>
+  {{/if}}
+
   {{#if installCommand}}
     <div class="autoselect-wrapper npm-install icon-download">
       <input type="text" value="{{installCommand}}" readonly>

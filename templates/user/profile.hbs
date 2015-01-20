@@ -9,13 +9,13 @@
     {{#if packages}}
       <h2 class="undecorated">
         <a id="packages" href="#packages">
-          {{pluralize packages.length "Packages" true}} by {{name}}
+          {{pluralize packages.count "Packages" true}} by {{name}}
         </a>
       </h2>
       <ul class="bullet-free">
-        {{#each packages}}
+        {{#each packages.items}}
           <li>
-            <a href="{{url}}">{{truncate name 20}}</a> {{description}}
+            <a href="/package/{{name}}">{{truncate name 50}}</a> {{description}}
           </li>
         {{/each}}
       </ul>

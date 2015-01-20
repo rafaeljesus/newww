@@ -81,7 +81,7 @@ server.register(require('hapi-auth-cookie'), function (err) {
     server.route(require('./routes'));
 
     server.models = {
-      User: require('./models/user').init(),
+      User: require('./models/user').init({debug: true}),
     };
 
     server.start(function() {

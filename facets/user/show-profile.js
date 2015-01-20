@@ -1,5 +1,3 @@
-// var present = require(__dirname + '/../../presenters/user');
-
 module.exports = function(request, reply) {
   var User = request.server.models.User
   var name = request.params.name || opts.user.name;
@@ -21,7 +19,10 @@ module.exports = function(request, reply) {
     }
 
     opts.profile = user
-    opts.profile.isSelf = opts.user && opts.user.name && name === opts.user.name
+    opts.profile.isSelf = !!opts.user
+      && !!opts.user.name
+      && name === opts.user.name
+
     return reply.view('user/profile', opts)
   })
 

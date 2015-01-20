@@ -14,7 +14,6 @@ var fakeBrowse = require('../fixtures/browseData');
 var username1 = 'fakeuser',
     username2 = 'fakeusercli';
 
-// prepare the server
 before(function (done) {
   require('../fixtures/setupServer')(function (obj) {
     server = obj;

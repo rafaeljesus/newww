@@ -1,4 +1,4 @@
-var User = module.exports = new(require("../../../models/user"))();
+var User = module.exports = require("../../../models/user").init();
 
 var fixtures = {
   user: {

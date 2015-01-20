@@ -9,6 +9,10 @@ var User = module.exports = function(opts) {
   }, opts);
 }
 
+User.init = function(opts) {
+  return new User(opts)
+}
+
 User.prototype.get = function(name, options, callback) {
   var self = this
   var user

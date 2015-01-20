@@ -8,7 +8,6 @@ var Code = require('code'),
     expect = Code.expect;
 
 var server, tokenUrl, cookieCrumb,
-    users = require('../fixtures/users'),
     fakeuser = require('../fixtures/users').fakeusercouch,
     fakeusercli = require('../fixtures/users').fakeusercli;
 
@@ -21,7 +20,7 @@ var postName = function (name_email) {
       crumb: cookieCrumb
     },
     headers: { cookie: 'crumb=' + cookieCrumb }
-  }
+  };
 };
 
 // prepare the server
@@ -138,9 +137,9 @@ describe('Looking up a user', function () {
     it('sends an email when everything finally goes right', function (done) {
       var name = 'fakeuser';
       server.inject(postName(name), function (resp) {
-        var source = resp.request.response.source;
-        expect(source.to).to.include(name);
-        expect(source.subject).to.equal('npm Password Reset');
+        var mail = JSON.parse(resp.request.response.source.context.mail);
+        expect(mail.to).to.include(name);
+        expect(mail.subject).to.equal('npm Password Reset');
         expect(resp.statusCode).to.equal(200);
         done();
       });
@@ -182,9 +181,9 @@ describe('Looking up a user', function () {
       };
 
       server.inject(options, function (resp) {
-        var source = resp.request.response.source;
-        expect(source.to).to.include(fakeusercli.name);
-        expect(source.subject).to.equal('npm Password Reset');
+        var mail = JSON.parse(resp.request.response.source.context.mail);
+        expect(mail.to).to.include(fakeusercli.name);
+        expect(mail.subject).to.equal('npm Password Reset');
         expect(resp.statusCode).to.equal(200);
         done();
       });
@@ -192,10 +191,10 @@ describe('Looking up a user', function () {
 
     it('sends an email when everything finally goes right', function (done) {
       server.inject(postName(fakeusercli.email), function (resp) {
-        var source = resp.request.response.source;
-        tokenUrl = source.text.match(/\/forgot\/[\/\w \.-]*\/?/)[0];
-        expect(source.to).to.include(fakeusercli.name);
-        expect(source.subject).to.equal('npm Password Reset');
+        var mail = JSON.parse(resp.request.response.source.context.mail);
+        tokenUrl = mail.text.match(/\/forgot\/[\/\w \.-]*\/?/)[0];
+        expect(mail.to).to.include(fakeusercli.name);
+        expect(mail.subject).to.equal('npm Password Reset');
         expect(resp.statusCode).to.equal(200);
         done();
       });

@@ -41,11 +41,11 @@
 
     {{#if isSelf}}
       <a href="http://en.gravatar.com/emails/" class="avatar">
-        <img src="{{#if avatarLarge}}{{avatarLarge}}{{else}}{{avatarMedium}}{{/if}}">
+        <img src="{{#if avatar.large}}{{avatar.large}}{{else}}{{avatar.medium}}{{/if}}">
       </a>
     {{else}}
       <a href="/~{{name}}" class="avatar">
-        <img src="{{#if avatarLarge}}{{avatarLarge}}{{else}}{{avatarMedium}}{{/if}}">
+        <img src="{{#if avatar.large}}{{avatar.large}}{{else}}{{avatar.medium}}{{/if}}">
       </a>
     {{/if}}
 

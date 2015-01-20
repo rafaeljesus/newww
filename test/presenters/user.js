@@ -18,25 +18,32 @@ describe("email", function(){
   });
 });
 
-describe("gravatar", function(){
+describe("avatar", function(){
 
-  it("creates avatar", function(done) {
+  it("is an object", function(done) {
     var user = present({email: "zeke@sikelianos.com"});
-    expect(user.avatar).to.exist();
+    expect(user.avatar).to.be.an.object();
     done();
   });
 
-  it("creates avatarMedium", function(done) {
+  it("has a small version", function(done) {
     var user = present({email: "zeke@sikelianos.com"});
-    expect(user.avatarMedium).to.exist();
-    expect(user.avatarMedium).to.include("size=100");
+    expect(user.avatar.small).to.exist();
+    expect(user.avatar.small).to.not.include("size=100");
     done();
   });
 
-  it("creates avatarLarge", function(done) {
+  it("has a medium version", function(done) {
     var user = present({email: "zeke@sikelianos.com"});
-    expect(user.avatarLarge).to.exist();
-    expect(user.avatarLarge).to.include("size=496");
+    expect(user.avatar.medium).to.exist();
+    expect(user.avatar.medium).to.include("size=100");
+    done();
+  });
+
+  it("has a large version", function(done) {
+    var user = present({email: "zeke@sikelianos.com"});
+    expect(user.avatar.large).to.exist();
+    expect(user.avatar.large).to.include("size=496");
     done();
   });
 });

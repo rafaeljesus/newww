@@ -6,16 +6,26 @@ var merge = require("lodash").merge,
 
 module.exports = function(user) {
   user = merge({}, user)
-
   user.emailObfuscated = obfuscateEmail(user.email)
-
-  var gr = user.email ? 'retro' : 'mm'
-  user.avatar = gravatar(user.email || '', {size:50, default:gr}, true)
-  user.avatarMedium = gravatar(user.email || '', {size:100, default:gr}, true)
-  user.avatarLarge = gravatar(user.email || '', {size:496, default:gr}, true)
-
+  user.avatar = createGravatars(user.email)
   user.meta = deriveMetaObjectFromFieldsArray(user.fields)
   return user
+}
+
+var obfuscateEmail = function(email) {
+  if (!email || typeof email != "string") return email
+  return Array.prototype.map.call(email, function (x) {
+    return '%' + x.charCodeAt(0).toString(16)
+  }).join('')
+}
+
+var createGravatars = function(email) {
+  if (!email) email = "";
+  return {
+    small: gravatar(email, {size:50, default:"https://www.npmjs.com/static/images/wombat-avatar-small.png"}, true),
+    medium: gravatar(email, {size:100, default:"https://www.npmjs.com/static/images/wombat-avatar-small.png"}, true),
+    large: gravatar(email, {size:496, default:"https://www.npmjs.com/static/images/wombat-avatar-large.png"}, true),
+  }
 }
 
 var deriveMetaObjectFromFieldsArray = function(fields) {
@@ -88,11 +98,4 @@ var sanitizeGitHubHandle = function(input) {
   if (input.match(atty)) return input.replace(atty, "")
 
   return input
-}
-
-var obfuscateEmail = function(email) {
-  if (!email || typeof email != "string") return email
-  return Array.prototype.map.call(email, function (x) {
-    return '%' + x.charCodeAt(0).toString(16)
-  }).join('')
 }

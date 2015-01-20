@@ -1,7 +1,7 @@
-var User = new (require(__dirname + '/../../models/user'))();
 // var present = require(__dirname + '/../../presenters/user');
 
 module.exports = function(request, reply) {
+  var User = request.server.models.User
   var name = request.params.name || opts.user.name;
   var opts = {
     user: request.auth.credentials,

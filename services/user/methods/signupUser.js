@@ -6,7 +6,7 @@ var Boom = require('boom'),
 
 module.exports = function signupUser (acct, next) {
   if (acct.npmweekly === "on") {
-    var mc = new mailchimp.Mailchimp('xxx');
+    var mc = new mailchimp.Mailchimp(process.env.MAILCHIMP_KEY);
     mc.lists.subscribe({id: 'e17fe5d778', email:{email:acct.email}});
   }
 

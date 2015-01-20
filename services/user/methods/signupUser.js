@@ -2,12 +2,20 @@ var Boom = require('boom'),
     Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
     metrics = require('../../../adapters/metrics')(),
-    mailchimp = require('mailchimp-api');
+    mailchimp = require('mailchimp-api'),
+    log = require('bole')('user-signup');
 
 module.exports = function signupUser (acct, next) {
   if (acct.npmweekly === "on") {
     var mc = new mailchimp.Mailchimp(process.env.MAILCHIMP_KEY);
-    mc.lists.subscribe({id: 'e17fe5d778', email:{email:acct.email}});
+    mc.lists.subscribe({id: 'e17fe5d778', email:{email:acct.email}}, function(data) {
+      // do nothing on success
+    }, function(error) {
+      log.error('Could not register user for npm Weekly: ' + acct.email);
+      if (error.error) {
+        log.error(error.error);
+      }
+    });
   }
 
   var timer = { start: Date.now() };

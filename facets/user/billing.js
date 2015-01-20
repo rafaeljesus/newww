@@ -1,8 +1,3 @@
-var transform = require('./presenters/profile').transform,
-    Hapi = require('hapi'),
-    Joi = require('joi'),
-    log = require('bole')('billing');
-
 var Customer = new (require('../../models/customer'))();
 var billing = module.exports = {};
 
@@ -14,8 +9,6 @@ billing.getBillingInfo = function (request, reply) {
     canceled: ('canceled' in request.query),
     stripePublicKey: process.env.STRIPE_PUBLIC_KEY
   };
-
-  // console.log("About to Customer.get", request.auth.credentials.name, Customer.host)
 
   Customer.get(request.auth.credentials.name, function(err, customer) {
     if (customer) {
@@ -35,9 +28,6 @@ billing.updateBillingInfo = function(request, reply) {
 
   Customer.update(billingInfo, function(err, customer) {
     if (err) {
-      console.log("Customer.update error", err, Customer.host)
-      // Customer
-
       request.logger.error(err);
       return reply.view('errors/internal').code(500);
     }

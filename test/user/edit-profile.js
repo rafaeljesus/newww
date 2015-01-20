@@ -98,6 +98,7 @@ describe('Modifying the profile', function () {
     options.payload.crumb = cookieCrumb;
 
     server.inject(options, function (resp) {
+
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile');
       var cache = resp.request.server.app.cache._cache.connection.cache['|sessions'];

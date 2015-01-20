@@ -49,7 +49,7 @@
 
       <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
         {{#if user}}
-          <a href="/~{{user.name}}"><img src="{{user.avatarMedium}}" id="user-avatar" /></a>
+          <a href="/~{{user.name}}"><img src="{{user.avatar.small}}" id="user-avatar" /></a>
           <ul>
             <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
             <li class="logout"><a href="/logout" class="subdued">log out</a></li>

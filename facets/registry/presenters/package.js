@@ -8,7 +8,8 @@ var marked = require('marked'),
     similarity = require('similarity'),
     gh = require('github-url-to-object'),
     cheerio = require('cheerio'),
-    log = require('bole')('registry-package-presenter');
+    log = require('bole')('registry-package-presenter'),
+    avatar = require("../../../lib/avatar");
 
 module.exports = function presentPackage (data, cb) {
 
@@ -193,16 +194,23 @@ function isPubInMaint (data) {
 }
 
 function gravatarPeople (data) {
-  gravatarPerson(data.author)
+  if (data.author) {
+    data.author.avatar = avatar(data.author.email)
+  }
 
-  if (data._npmUser) gravatarPerson(data._npmUser)
+  if (data._npmUser) {
+    data._npmUser.avatar = avatar(data._npmUser.email)
+  }
 
-  if (data.maintainers) data.maintainers.forEach(function (m) {
-    gravatarPerson(m)
-  })
+  if (Array.isArray(data.maintainers)) {
+    data.maintainers.forEach(function (maintainer) {
+      maintainer.avatar = avatar(maintainer.email)
+    })
+  }
+
   if (Array.isArray(data.contributors)) {
-    data.contributors.forEach(function (m) {
-      gravatarPerson(m)
+    data.contributors.forEach(function (contributor) {
+      contributor.avatar = avatar(contributor.email)
     })
   }
 }
@@ -268,15 +276,6 @@ function getOssLicenseUrlFromName (name) {
   return licenseMap[name.toLowerCase()]
          ? base + licenseMap[name.toLowerCase()]
          : base + name
-}
-
-function gravatarPerson (p) {
-  if (!p || typeof p !== 'object') {
-    return
-  }
-  p.avatar = gravatar(p.email || '', {s:50, d:'retro'}, true)
-  p.avatarMedium = gravatar(p.email || '', {s:100, d:'retro'}, true)
-  p.avatarLarge = gravatar(p.email || '', {s:496, d:'retro'}, true)
 }
 
 function getRandomAssortment (items, urlRoot, name) {

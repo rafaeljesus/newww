@@ -6,9 +6,11 @@ exports.fakeuser = {
   "salt": "b6da1cbb4e1e0a3a4903afc92ed73c11293848485d057f34c8ab3c6093ba",
   "date": "2014-04-16T18:16:44.025Z",
   "email": "b@fakeuser.com",
-  "avatar": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=50&d=retro",
-  "avatarMedium": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=100&d=retro",
-  "avatarLarge": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=496&d=retro",
+  "avatar": {
+    "small": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=50&d=retro",
+    "medium": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=100&d=retro",
+    "large": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=496&d=retro"
+  },
   "fields": [{
     "name": "fullname",
     "value": "Boom",
@@ -26,7 +28,7 @@ exports.fakeuser = {
     "show": "<a rel=\"me\" href=\"https://github.com/abcde\">abcde</a>"
   }, {
     "name": "twitter",
-    "value": "xyz",
+    "value": "fakeuser",
     "title": "Twitter",
     "show": ""
   }, {

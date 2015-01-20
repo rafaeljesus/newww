@@ -1,13 +1,13 @@
 var merge = require("lodash").merge,
     URL = require("url"),
     isURL = require("is-url"),
-    gravatar = require("gravatar").url,
+    avatar = require("../lib/avatar"),
     atty = new RegExp("^@");
 
 module.exports = function(user) {
   user = merge({}, user)
   user.emailObfuscated = obfuscateEmail(user.email)
-  user.avatar = createGravatars(user.email)
+  user.avatar = avatar(user.email)
   user.meta = deriveMetaObjectFromFieldsArray(user.fields)
   return user
 }
@@ -17,15 +17,6 @@ var obfuscateEmail = function(email) {
   return Array.prototype.map.call(email, function (x) {
     return '%' + x.charCodeAt(0).toString(16)
   }).join('')
-}
-
-var createGravatars = function(email) {
-  if (!email) email = "";
-  return {
-    small: gravatar(email, {size:50, default:"https://www.npmjs.com/static/images/wombat-avatar-small.png"}, true),
-    medium: gravatar(email, {size:100, default:"https://www.npmjs.com/static/images/wombat-avatar-small.png"}, true),
-    large: gravatar(email, {size:496, default:"https://www.npmjs.com/static/images/wombat-avatar-large.png"}, true),
-  }
 }
 
 var deriveMetaObjectFromFieldsArray = function(fields) {

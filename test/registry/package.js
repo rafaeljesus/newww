@@ -51,7 +51,10 @@ describe('Retreiving packages from the registry', function () {
       // adds avatar information to author and maintainers
       expect(p._npmUser.avatar).to.exist();
       expect(p.maintainers[0].avatar).to.exist();
-      expect(p._npmUser.avatar).to.include('gravatar');
+      expect(p._npmUser.avatar).to.be.an.object();
+      expect(p._npmUser.avatar.small).to.exist();
+      expect(p._npmUser.avatar.medium).to.exist();
+      expect(p._npmUser.avatar.large).to.exist();
 
       // adds an OSS license
       expect(p.license).to.be.an.object();

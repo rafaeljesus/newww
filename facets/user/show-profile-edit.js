@@ -1,4 +1,4 @@
-var transform = require('./presenters/profile').transform,
+var presenter = require('../../presenters/user'),
     Hapi = require('hapi'),
     Joi = require('joi'),
     merge = require('lodash').merge;
@@ -9,7 +9,7 @@ module.exports = function (options) {
         setSession = request.server.methods.user.setSession(request);
 
     var opts = {
-      user: transform(request.auth.credentials, options),
+      user: presenter(request.auth.credentials),
 
       namespace: 'user-profile-edit'
     }
@@ -25,7 +25,6 @@ module.exports = function (options) {
       });
 
       Joi.validate(request.payload, editableUserProperties, function (err, userChanges) {
-
         if (err) {
           opts.error = err;
           return reply.view('user/profile-edit', opts).code(400);
@@ -33,7 +32,7 @@ module.exports = function (options) {
 
         merge(opts.user, userChanges);
 
-        opts.user = transform(opts.user, options);
+        opts.user = presenter(opts.user);
 
         saveProfile(opts.user, function (err, data) {
           if (err) {

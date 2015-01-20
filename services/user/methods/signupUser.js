@@ -1,9 +1,15 @@
 var Boom = require('boom'),
     Hapi = require('hapi'),
     anonCouch = require('../../../adapters/couchDB').anonCouch,
-    metrics = require('../../../adapters/metrics')();
+    metrics = require('../../../adapters/metrics')(),
+    mailchimp = require('mailchimp-api');
 
 module.exports = function signupUser (acct, next) {
+  if (acct.npmweekly === "on") {
+    var mc = new mailchimp.Mailchimp('xxx');
+    mc.lists.subscribe({id: 'e17fe5d778', email:{email:acct.email}});
+  }
+
   var timer = { start: Date.now() };
   anonCouch.signup(acct, function (er, cr, data) {
     timer.end = Date.now();

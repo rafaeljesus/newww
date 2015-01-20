@@ -22,6 +22,11 @@
     <input type="text" id="email" name="email" autocorrect="off" autocapitalize="off" />
     <p class="help-text">{{{t "user.signup.form.emailHelp"}}}</p>
 
+    <label for="npmweekly">
+      <input type="checkbox" id="npmweekly" name="npmweekly" autocorrect="off" autocapitalize="off" />
+      {{t "user.signup.form.npmWeekly"}}
+    </label>
+
     <input type="submit" class="full-width" value="{{t "user.signup.form.submit"}}" />
     {{> form_security}}
   </form>

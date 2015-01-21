@@ -104,6 +104,20 @@ describe('Retreiving packages from the registry', function () {
       done();
     });
   });
+
+  it('creates an npm install command', function (done) {
+    var options = {
+      url: '/package/supercalifragilisticexpialidocious'
+    };
+
+    server.inject(options, function (resp) {
+      var pkg = resp.request.response.source.context.package;
+      console.log(pkg)
+      expect(pkg.installCommand).to.equal("npm i supercalifragilisticexpialidocious -g");
+      done();
+    });
+  });
+
 });
 
 describe('readmes are always sanitized', function () {

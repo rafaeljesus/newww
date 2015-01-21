@@ -16,17 +16,15 @@ User.init = function(opts) {
   return new User(opts)
 }
 
-User.log = function(msg) {
-  if (this.debug) {
-    return console.log(msg);
-  }
+User.prototype.log = function(msg) {
+  if (this.debug) console.log(msg)
 }
 
 User.prototype.get = function(name, options, callback) {
   var _this = this
   var user
   var url = fmt("%s/user/%s", this.host, name);
-  User.log(url)
+  this.log(url)
 
   if (!callback) {
     callback = options
@@ -66,7 +64,7 @@ User.prototype.get = function(name, options, callback) {
 
 User.prototype.getPackages = function(name, callback) {
   var url = fmt("%s/user/%s/package", this.host, name);
-  User.log(url)
+  this.log(url)
 
   return new Promise(function(resolve, reject) {
     request.get({
@@ -88,7 +86,7 @@ User.prototype.getPackages = function(name, callback) {
 
 User.prototype.getStars = function(name, callback) {
   var url = fmt("%s/user/%s/stars", this.host, name);
-  User.log(url)
+  this.log(url)
 
   return new Promise(function(resolve, reject) {
     request.get({

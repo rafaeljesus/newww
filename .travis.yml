@@ -5,8 +5,6 @@ node_js:
 services:
   - redis-server
 env:
-  - SESSION_SALT="some_random_salt_for_this_session_thing_yay"
-  - MAIL_ACCESS_KEY_ID="some_AWS_access_key_id"
-  - MAIL_SECRET_ACCESS_KEY="some_AWS_secret_access_key"
+  - SESSION_SALT="some_random_salt_for_this_session_thing_yay" MAIL_ACCESS_KEY_ID="some_AWS_access_key_id" MAIL_SECRET_ACCESS_KEY="some_AWS_secret_access_key"
 notifications:
   email: false

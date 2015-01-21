@@ -249,6 +249,10 @@ var unauthenticatedRoutes = [
     method: "POST",
     handler: require('./facets/user/show-signup')
   },{
+    path: "/confirm-email",
+    method: "GET",
+    handler: require('./facets/user/show-confirm-email')
+  },{
     path: "/login",
     method: "GET",
     handler: require('./facets/user/show-login')

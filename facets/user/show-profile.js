@@ -1,9 +1,12 @@
 module.exports = function(request, reply) {
-  var User = request.server.models.User
-  var name = request.params.name || opts.user.name;
+  var User = request.server.models.User;
+  var loggedInUsername = request.auth.credentials;
+
+  // Could be arriving from /~ or /~username
+  var name = request.params.name || loggedInUsername;
+
   var opts = {
     user: request.auth.credentials,
-    namespace: 'user-show',
     title: name,
   };
 
@@ -18,12 +21,10 @@ module.exports = function(request, reply) {
       }
     }
 
-    opts.profile = user
-    opts.profile.isSelf = !!opts.user
-      && !!opts.user.name
-      && name === opts.user.name
+    opts.profile = user;
+    opts.profile.isSelf = name === loggedInUsername;
 
-    return reply.view('user/profile', opts)
-  })
+    return reply.view('user/profile', opts);
+  });
 
-}
+};

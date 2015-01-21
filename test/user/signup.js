@@ -28,8 +28,8 @@ var postSignup = function (payload) {
     method: 'POST',
     payload: payload,
     headers: { cookie: 'crumb=' + cookieCrumb }
-  }
-}
+  };
+};
 
 describe('Signing up a new user', function () {
 

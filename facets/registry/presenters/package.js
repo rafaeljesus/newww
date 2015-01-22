@@ -44,11 +44,6 @@ module.exports = function presentPackage (request, data, cb) {
     data.readmeSrc = data.readme;
   }
 
-  if (typeof data.readmeSrc === "string") {
-    request.logger.info('passing readme through marky for ' + data.name);
-    data.readme = marky(data.readmeSrc, {package: data}).html();
-  }
-
   gravatarPeople(data);
 
   data.starredBy = getRandomAssortment(Object.keys(data.users || {}).sort(), '/browse/star/', data.name);
@@ -97,8 +92,17 @@ module.exports = function presentPackage (request, data, cb) {
     data.starCount = Object.keys(data.users).length;
   }
 
+  if (typeof data.readmeSrc === "string") {
+    request.logger.info('passing readme through marky for ' + data.name);
+    marky(data.readmeSrc, {package: data, highlightSyntax: false}, function(err, $){
+      if (err) return cb(err);
+      data.readme = $.html();
+      return cb(null, data);
+    })
+  } else {
+    return cb(null, data);
+  }
 
-  return cb(null, data);
 };
 
 

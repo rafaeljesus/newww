@@ -27,10 +27,15 @@ function getPage (repo) {
         }
 
         if (typeof content === "string") {
-          content = marky(content).html()
+          marky(content, {highlightSyntax: false}, function(err, $){
+            if (err) return next(err);
+            content = $.html()
+            return next(null, content);
+          })
+        } else {
+          return next(err, content);
         }
 
-        return next(err, content);
       });
     });
   };

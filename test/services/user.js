@@ -1,3 +1,5 @@
+require('dotenv').load();
+
 var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -65,6 +67,43 @@ describe('signing up a user', function () {
       expect(er).to.not.exist();
       expect(user).to.exist();
       expect(user.name).to.equal('boom');
+      done();
+    });
+  });
+});
+
+describe('the mailing list checkbox', function () {
+  var body = {"id":"e17fe5d778","email":{"email":"boom@boom.com"},"merge_vars":null,"email_type":"html","double_optin":true,"update_existing":false,"replace_interests":true,"send_welcome":false,"apikey":process.env.MAILCHIMP_KEY};
+
+  it('adds the user to the mailing list when checked', function (done) {
+    var mailchimp = nock('https://us9.api.mailchimp.com')
+      .post('/2.0/lists/subscribe.json', body)
+      .reply(201, '');
+
+    server.methods.user.signupUser({
+      name: 'boom',
+      password: '12345',
+      verify: '12345',
+      email: 'boom@boom.com',
+      npmweekly: 'on'
+    }, function (er, user) {
+      expect(mailchimp.isDone()).to.be.true();
+      done();
+    });
+  });
+
+  it('does not add the user to the mailing list when unchecked', function (done) {
+    var mailchimp = nock('https://us9.api.mailchimp.com')
+      .post('/2.0/lists/subscribe.json')
+      .reply(201, '');
+
+    server.methods.user.signupUser({
+      name: 'boom',
+      password: '12345',
+      verify: '12345',
+      email: 'boom@boom.com'
+    }, function (er, user) {
+      expect(mailchimp.isDone()).to.be.false();
       done();
     });
   });

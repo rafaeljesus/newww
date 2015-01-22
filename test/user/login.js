@@ -11,8 +11,7 @@ var Code = require('code'),
     redis = require("../../adapters/redis-sessions");
 
 var server, cookieCrumb,
-    fakeuser = require('../fixtures/users').fakeuser,
-    fakeusercli = require('../fixtures/users').fakeusercli;
+    fakeuser = require('../fixtures/users').fakeuser;
 
 // prepare the server
 before(function (done) {
@@ -108,7 +107,7 @@ describe('Getting to the login page', function () {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/login');
-      expect(source.context.error).to.match(/invalid username or password/i)
+      expect(source.context.error).to.match(/invalid username or password/i);
       done();
     });
   });
@@ -118,7 +117,7 @@ describe('Getting to the login page', function () {
       url: '/login',
       method: 'POST',
       payload: {
-        name: 'fakeuser',
+        name: 'forrest',
         password: '12345',
         crumb: cookieCrumb,
       },
@@ -127,7 +126,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.equal('/~fakeuser');
+      expect(resp.headers.location).to.equal('/~forrest');
       done();
     });
   });
@@ -137,7 +136,7 @@ describe('Getting to the login page', function () {
       url: '/login',
       method: 'POST',
       payload: {
-        name: 'fakeusercli',
+        name: 'forrestcli',
         password: '12345',
         crumb: cookieCrumb,
       },
@@ -180,9 +179,9 @@ describe('Getting to the login page', function () {
 
       redis.get = function(key, callback) {
         if (key === "login-attempts-fakeuser") {
-          return callback(null, attempts)
+          return callback(null, attempts);
         }
-        return redis.originalGet(key, callback)
+        return redis.originalGet(key, callback);
       };
 
       server.inject(options, function (resp) {
@@ -200,7 +199,7 @@ describe('Getting to the login page', function () {
         url: '/login',
         method: 'POST',
         payload: {
-          name: 'fakeuser',
+          name: 'forrest',
           password: '12345',
           crumb: cookieCrumb,
         },
@@ -208,15 +207,15 @@ describe('Getting to the login page', function () {
       };
 
       redis.get = function(key, callback) {
-        if (key === "login-attempts-fakeuser") {
-          return callback(null, attempts)
+        if (key === "login-attempts-forrest") {
+          return callback(null, attempts);
         }
-        return redis.originalGet(key, callback)
-      }
+        return redis.originalGet(key, callback);
+      };
 
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(302);
-        expect(resp.headers.location).to.equal('/~fakeuser');
+        expect(resp.headers.location).to.equal('/~forrest');
         done();
       });
     });

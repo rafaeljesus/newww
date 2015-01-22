@@ -5,9 +5,9 @@ var Boom = require('boom'),
     mailchimp = require('mailchimp-api'),
     log = require('bole')('user-signup');
 
-module.exports = function signupUser (acct, next) {
+function signupUser (acct, next) {
   if (acct.npmweekly === "on") {
-    var mc = new mailchimp.Mailchimp(process.env.MAILCHIMP_KEY);
+    var mc = signupUser.getMailchimp();
     mc.lists.subscribe({id: 'e17fe5d778', email:{email:acct.email}}, function(data) {
       // do nothing on success
     }, function(error) {
@@ -46,3 +46,9 @@ module.exports = function signupUser (acct, next) {
     return next(null, data);
   });
 }
+
+signupUser.getMailchimp = function getMailchimp () {
+  return new mailchimp.Mailchimp(process.env.MAILCHIMP_KEY);
+}
+
+module.exports = signupUser;

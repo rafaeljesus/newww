@@ -7,10 +7,10 @@ var Code = require('code'),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    sinon = require('sinon');
 
 var Hapi = require('hapi'),
-    nock = require('nock'),
     config = require('../../config'),
     couchDB = require('../../adapters/couchDB'),
     couchConfig = config.couch,
@@ -73,29 +73,27 @@ describe('signing up a user', function () {
 });
 
 describe('the mailing list checkbox', function () {
-  var body = {"id":"e17fe5d778","email":{"email":"boom@boom.com"},"merge_vars":null,"email_type":"html","double_optin":true,"update_existing":false,"replace_interests":true,"send_welcome":false,"apikey":process.env.MAILCHIMP_KEY};
+  var spy = sinon.spy(function (a, b, c) {});
+  var params = { id: 'e17fe5d778', email: {email:'boom@boom.com'} };
 
   it('adds the user to the mailing list when checked', function (done) {
-    var mailchimp = nock('https://us9.api.mailchimp.com')
-      .post('/2.0/lists/subscribe.json', body)
-      .reply(201, '');
-
+    spy.reset();
+    server.methods.user.signupUser.getMailchimp = function () {return {lists: {subscribe: spy}}};
     server.methods.user.signupUser({
       name: 'boom',
       password: '12345',
       verify: '12345',
       email: 'boom@boom.com',
-      npmweekly: 'on'
+      npmweekly: "on"
     }, function (er, user) {
-      expect(mailchimp.isDone()).to.be.true();
+      expect(spy.calledWith(params)).to.be.true();
       done();
     });
   });
 
   it('does not add the user to the mailing list when unchecked', function (done) {
-    var mailchimp = nock('https://us9.api.mailchimp.com')
-      .post('/2.0/lists/subscribe.json')
-      .reply(201, '');
+    spy.reset();
+    server.methods.user.signupUser.getMailchimp = function () {return {lists: {subscribe: spy}}};
 
     server.methods.user.signupUser({
       name: 'boom',
@@ -103,7 +101,7 @@ describe('the mailing list checkbox', function () {
       verify: '12345',
       email: 'boom@boom.com'
     }, function (er, user) {
-      expect(mailchimp.isDone()).to.be.false();
+      expect(spy.called).to.be.false();
       done();
     });
   });

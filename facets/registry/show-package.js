@@ -18,12 +18,6 @@ function showPackage(request, reply) {
 
   opts.name = request.params.package;
 
-  if (!validatePackageName(opts.name).valid) {
-    request.logger.info('request for invalid package name: ' + opts.name);
-    reply.view('errors/not-found', opts).code(404);
-    return;
-  }
-
   getPackage(opts.name, function (er, pkg) {
 
     opts.package = { name: opts.name };
@@ -33,6 +27,13 @@ function showPackage(request, reply) {
     }
 
     if (!pkg) {
+      if (!validatePackageName(opts.name).valid) {
+        delete opts.package; // to suppress the encouraging message
+        request.logger.info('request for invalid package name: ' + opts.name);
+        reply.view('errors/not-found', opts).code(404);
+        return;
+      }
+
       return reply.view('errors/not-found', opts).code(404);
     }
 

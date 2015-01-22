@@ -9,11 +9,20 @@
     {{> form_security ..}}
   </form>
 
-  {{#if readme}}
-    <div id="readme" class="markdown">
+  <div id="readme" class="markdown">
+    {{#if readme}}
       {{{readme}}}
-    </div>
-  {{/if}}
+    {{else}}
+      <h1 class="package-name">{{name}}</h1>
+      <p class="package-description">{{description}}</p>
+      <p class="">
+        Sadly, this package has no readme.
+        {{#if repository.url}}
+          <a href="{{repository.url}}">Go write one!</a>
+        {{/if}}
+      </p>
+    {{/if}}
+  </div>
 
 </div>
 

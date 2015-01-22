@@ -3,7 +3,7 @@ module.exports = function(request, reply) {
   var loggedInUsername = request.auth.credentials;
 
   // Could be arriving from /~ or /~username
-  var name = request.params.name || loggedInUsername;
+  var name = request.params.name || loggedInUsername.name;
 
   var opts = {
     user: request.auth.credentials,
@@ -22,7 +22,8 @@ module.exports = function(request, reply) {
     }
 
     opts.profile = user;
-    opts.profile.isSelf = name === loggedInUsername;
+    console.log(loggedInUsername)
+    opts.profile.isSelf = name === loggedInUsername.name;
 
     return reply.view('user/profile', opts);
   });

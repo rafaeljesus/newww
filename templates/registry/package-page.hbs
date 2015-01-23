@@ -2,20 +2,25 @@
 
 <div class="content">
 
-  <div id="readme">
-    <hgroup>
-      <h1>{{name}}
-        <form class="star">
-          <input type="hidden" name="name" value="{{name}}">
-          <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>
-          <label for="star-input" class="icon-star"></label>
-          {{> form_security ..}}
-        </form>
-      </h1>
-      <h2>{{description}}</h2>
-    </hgroup>
+  <form class="star">
+    <input type="hidden" name="name" value="{{name}}">
+    <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>
+    <label for="star-input" class="icon-star"></label>
+    {{> form_security ..}}
+  </form>
+
+  <div id="readme" class="markdown">
     {{#if readme}}
       {{{readme}}}
+    {{else}}
+      <h1 class="package-name">{{name}}</h1>
+      <p class="package-description">{{description}}</p>
+      <p class="">
+        Sadly, this package has no readme.
+        {{#if repository.url}}
+          <a href="{{repository.url}}">Go write one!</a>
+        {{/if}}
+      </p>
     {{/if}}
   </div>
 

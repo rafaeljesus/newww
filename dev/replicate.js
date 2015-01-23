@@ -49,7 +49,7 @@ var packagesByRockbot = ["couch-login", "googalytics", "newww",
 
 var crazyPackages = [
   'ifyouwanttogetthesumoftwonumberswherethosetwonumbersarechosenbyfindingthelargestoftwooutofthreenumbersandsquaringthemwhichismultiplyingthembyitselfthenyoushouldinputthreenumbersintothisfunctionanditwilldothatforyou',
-  'dezalgo', 'JSONStream'
+  'dezalgo', 'wzrd', 'JSONStream'
 ]
 
 function filterPackage (id, rev) {

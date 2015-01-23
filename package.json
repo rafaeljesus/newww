@@ -58,6 +58,7 @@
     "mailchimp-api": "^2.0.7",
     "malarkey": "^1.1.0",
     "marked": "^0.3.2",
+    "marky-markdown": "^2.0.1",
     "moment": "^2.6.0",
     "mousetrap": "0.0.1",
     "murmurhash": "0.0.2",

@@ -14,7 +14,7 @@ module.exports = function (done) {
   server.methods = require('./mock-server-methods')(server);
 
   server.register(require('hapi-auth-cookie'), function (err) {
-    if (err) throw err;
+    if (err) { throw err; }
 
     server.app.cache = server.cache({
       expiresIn: 30,

@@ -7,7 +7,7 @@ var lockoutInterval = 60; // seconds
 var maxAttemptsBeforeLockout = 5;
 
 module.exports = function login (request, reply) {
-  var User = request.server.models.User;
+  var User = new request.server.models.User();
 
   var setSession = request.server.methods.user.setSession(request);
 

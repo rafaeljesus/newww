@@ -3,12 +3,10 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
-    after = lab.after,
     it = lab.test,
     expect = Code.expect;
 
 var Hapi = require('hapi'),
-    nock = require('nock'),
     config = require('../../config'),
     couchDB = require('../../adapters/couchDB'),
     couchConfig = config.couch,
@@ -93,7 +91,7 @@ describe('changing a password', function () {
       expect(data).to.exist();
       expect(data.name).to.equal('boom');
       done();
-    })
+    });
   });
 });
 
@@ -130,7 +128,7 @@ describe('setting and deleting sessions', function () {
         }
       }
     }
-  }
+  };
 
   it('sets a session', function (done) {
     server.methods.user.setSession(request)({name: 'boom'}, function (er) {
@@ -143,7 +141,7 @@ describe('setting and deleting sessions', function () {
     server.methods.user.delSession(request)({name: 'boom'}, function (er) {
       expect(er).to.be.null();
       done();
-    })
+    });
   });
 });
 

@@ -108,6 +108,9 @@ User.prototype.getPackages = function(name, loggedInUsername, callback) {
   return new Promise(function(resolve, reject) {
     var opts = {
       url: url,
+      qs: {
+        per_page: 9999
+      },
       json: true
     };
 

@@ -55,6 +55,7 @@
     "joi": "^5.1.0",
     "jquery": "^2.1.1",
     "leven": "^1.0.1",
+    "mailchimp-api": "^2.0.7",
     "malarkey": "^1.1.0",
     "marked": "^0.3.2",
     "moment": "^2.6.0",

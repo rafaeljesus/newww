@@ -56,10 +56,7 @@ describe("User", function(){
         password: '12345'
       };
 
-      console.log(User, loginInfo)
-
       User.login(loginInfo, function (err, user) {
-        console.log('here: ', err, user)
         expect(err).to.be.null();
         expect(user).to.exist();
         userMock.done();

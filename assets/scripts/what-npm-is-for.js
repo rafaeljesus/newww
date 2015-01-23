@@ -33,7 +33,7 @@ var what_npm_is_for = function() {
     .type('browserify').pause(pause).delete(10)
     .type('grunt').pause(pause).delete(5)
     .type('tessel').pause(pause).delete(6)
-    .type('iojs').pause(pause).delete(4)
+    .type('io.js').pause(pause).delete(5)
     .type('JavaScript.').pause(1200)
     .call(function() {
       $(el).addClass("disabled")

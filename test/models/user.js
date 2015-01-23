@@ -149,6 +149,47 @@ describe("User", function(){
 
     });
 
+    it("includes the bearer token if user is logged in when loading user stars and packages", function(done) {
+
+      var userMock = nock(User.host)
+        .get('/user/eager-beaver')
+        .reply(200, {
+          name: "eager-beaver",
+          email: "eager-beaver@example.com"
+        });
+
+      var starMock = nock(User.host, {
+          reqheaders: {bearer: 'rockbot'}
+        })
+        .get('/user/eager-beaver/stars')
+        .reply(200, [
+          'minimist',
+          'hapi'
+        ]);
+
+      var packageMock = nock(User.host, {
+          reqheaders: {bearer: 'rockbot'}
+        })
+        .get('/user/eager-beaver/package')
+        .reply(200, [
+          {name: "foo", description: "It's a foo!"},
+          {name: "bar", description: "It's a bar!"}
+        ]);
+
+      User.get('eager-beaver', {stars: true, packages: true, loggedInUsername: 'rockbot'}, function(err, user) {
+        expect(err).to.not.exist();
+        userMock.done();
+        packageMock.done();
+        starMock.done();
+        expect(user.name).to.equal('eager-beaver');
+        expect(user.email).to.equal('eager-beaver@example.com');
+        expect(user.packages).to.be.an.array();
+        expect(user.stars).to.be.an.array();
+        done();
+      });
+
+    });
+
   });
 
   describe("getPackages()", function() {
@@ -199,10 +240,26 @@ describe("User", function(){
       });
     });
 
-    it("includes bearer token in request header", function(done) {
+    it("includes bearer token in request header if user is logged in", function(done) {
       var packageMock = nock(User.host, {
           reqheaders: {bearer: 'sally'}
         })
+        .get('/user/sally/package')
+        .reply(200, [
+          {name: "foo", description: "It's a foo!"},
+          {name: "bar", description: "It's a bar!"}
+        ]);
+
+      User.getPackages('sally', 'sally', function(err, body) {
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        packageMock.done();
+        done();
+      });
+    });
+
+    it("does not include bearer token in request header if user is not logged in", function(done) {
+      var packageMock = nock(User.host)
         .get('/user/sally/package')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
@@ -216,7 +273,6 @@ describe("User", function(){
         done();
       });
     });
-
   });
 
   describe("getStars()", function() {
@@ -264,10 +320,23 @@ describe("User", function(){
       });
     });
 
-    it("includes bearer token in request header", function(done) {
+    it("includes bearer token in request header if user is logged in", function(done) {
       var starMock = nock(User.host, {
           reqheaders: {bearer: 'rod11'}
         })
+        .get('/user/rod11/stars')
+        .reply(200, 'something');
+
+      User.getStars('rod11', 'rod11', function(err, body) {
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        starMock.done();
+        done();
+      });
+    });
+
+    it("does not include bearer token in request header if user is not logged in", function(done) {
+      var starMock = nock(User.host)
         .get('/user/rod11/stars')
         .reply(200, 'something');
 

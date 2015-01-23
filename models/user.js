@@ -20,48 +20,6 @@ User.prototype.log = function(msg) {
   if (this.debug) { console.log(msg); }
 };
 
-User.prototype.get = function(name, options, callback) {
-  var _this = this;
-  var user;
-  var url = fmt("%s/user/%s", this.host, name);
-  this.log(url);
-
-  if (!callback) {
-    callback = options;
-    options = {};
-  }
-
-  return new Promise(function(resolve, reject) {
-    request.get({url: url, json: true}, function(err, resp, body){
-      if (err) { return reject(err); }
-      if (resp.statusCode > 399) {
-        err = Error('error getting user ' + name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-      return resolve(body);
-    });
-  })
-  .then(function(_user){
-    user = _user;
-
-    if (_this.presenter) {
-      user = presenter(user);
-    }
-
-    return options.stars ? _this.getStars(user.name) : null;
-  })
-  .then(function(_stars){
-    if (_stars) { user.stars = _stars; }
-    return options.packages ? _this.getPackages(user.name) : null;
-  })
-  .then(function(_packages){
-    if (_packages) { user.packages = _packages; }
-    return user;
-  })
-  .nodeify(callback);
-};
-
 User.prototype.login = function(loginInfo, callback) {
   var url = fmt("%s/user/%s/login", this.host, loginInfo.name);
   this.log(url);
@@ -95,16 +53,69 @@ User.prototype.login = function(loginInfo, callback) {
   }).nodeify(callback);
 };
 
-User.prototype.getPackages = function(name, callback) {
+User.prototype.get = function(name, options, callback) {
+  var _this = this;
+  var user;
+  var url = fmt("%s/user/%s", this.host, name);
+  this.log(url);
+
+  if (!callback) {
+    callback = options;
+    options = {};
+  }
+
+  return new Promise(function(resolve, reject) {
+    request.get({url: url, json: true}, function(err, resp, body){
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error getting user ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  })
+  .then(function(_user){
+    user = _user;
+
+    if (_this.presenter) {
+      user = presenter(user);
+    }
+
+    return options.stars ? _this.getStars(user.name, options.loggedInUsername) : null;
+  })
+  .then(function(_stars){
+    if (_stars) { user.stars = _stars; }
+    return options.packages ? _this.getPackages(user.name, options.loggedInUsername) : null;
+  })
+  .then(function(_packages){
+    if (_packages) { user.packages = _packages; }
+    return user;
+  })
+  .nodeify(callback);
+};
+
+User.prototype.getPackages = function(name, loggedInUsername, callback) {
+
+  if (typeof loggedInUsername === 'function') {
+    callback = loggedInUsername;
+    loggedInUsername = false;
+  }
+
   var url = fmt("%s/user/%s/package", this.host, name);
   this.log(url);
 
   return new Promise(function(resolve, reject) {
-    request.get({
+    var opts = {
       url: url,
-      headers: {bearer: name},
       json: true
-    }, function(err, resp, body){
+    };
+
+    if (loggedInUsername) {
+      opts.headers = {bearer: loggedInUsername};
+    }
+
+    request.get(opts, function(err, resp, body){
 
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {
@@ -117,16 +128,27 @@ User.prototype.getPackages = function(name, callback) {
   }).nodeify(callback);
 };
 
-User.prototype.getStars = function(name, callback) {
+User.prototype.getStars = function(name, loggedInUsername, callback) {
+
+  if (typeof loggedInUsername === 'function') {
+    callback = loggedInUsername;
+    loggedInUsername = false;
+  }
+
   var url = fmt("%s/user/%s/stars", this.host, name);
   this.log(url);
 
   return new Promise(function(resolve, reject) {
-    request.get({
+    var opts = {
       url: url,
-      headers: {bearer: name},
       json: true
-    }, function(err, resp, body){
+    };
+
+    if (loggedInUsername) {
+      opts.headers = {bearer: loggedInUsername};
+    }
+
+    request.get(opts, function(err, resp, body){
 
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {

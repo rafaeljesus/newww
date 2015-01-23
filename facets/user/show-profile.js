@@ -9,7 +9,7 @@ module.exports = function(request, reply) {
     title: name
   };
 
-  User.get(name, {stars: true, packages: true}, function(err, user) {
+  User.get(name, {stars: true, packages: true, loggedInUsername: loggedInUser && loggedInUser.name}, function(err, user) {
 
     if (err) {
       request.logger.error(err);

@@ -27,11 +27,18 @@ function getPage (repo) {
         }
 
         if (typeof content === "string") {
-          marky(content, {highlightSyntax: false}, function(err, $){
-            if (err) return next(err);
-            content = $.html()
-            return next(null, content);
-          })
+          marky(
+            content,
+            {
+              sanitize: false,
+              highlightSyntax: false,
+            },
+            function(err, $){
+              if (err) return next(err);
+              content = $.html()
+              return next(null, content);
+            }
+          )
         } else {
           return next(err, content);
         }

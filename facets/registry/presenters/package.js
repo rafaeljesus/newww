@@ -94,7 +94,7 @@ module.exports = function presentPackage (request, data, cb) {
 
   if (typeof data.readmeSrc === "string") {
     request.logger.info('passing readme through marky for ' + data.name);
-    marky(data.readmeSrc, {package: data, highlightSyntax: false}, function(err, $){
+    marky(data.readmeSrc, {package: data, highlightSyntax: true}, function(err, $){
       if (err) return cb(err);
       data.readme = $.html();
       return cb(null, data);

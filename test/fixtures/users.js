@@ -1,7 +1,23 @@
 exports.fakeuser = {
-  "_id": "org.couchdb.user:fakeuser",
+  name: 'bob',
+  email: 'bob@boom.me',
+  email_verified: null,
+  verification_key: '12345',
+  resource: {
+    github: 'bob',
+    twitter: '',
+    homepage: 'http://boom.me',
+    appdotnet: 'bobob'
+  },
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
+exports.fakeusercouch = {
+  "_id": "org.couchdb.user:fakeusercouch",
   "_rev": "4-ee6a224abd5503882ac5150f9e8f5a7a",
-  "name": "fakeuser",
+  "name": "fakeusercouch",
   "type": "user",
   "salt": "b6da1cbb4e1e0a3a4903afc92ed73c11293848485d057f34c8ab3c6093ba",
   "date": "2014-04-16T18:16:44.025Z",
@@ -10,7 +26,7 @@ exports.fakeuser = {
     "small": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=50&d=retro",
     "medium": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=100&d=retro",
     "large": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=496&d=retro"
-  },
+   },
   "fields": [{
     "name": "fullname",
     "value": "Boom",
@@ -63,8 +79,7 @@ exports.fakeuser = {
 exports.fakeuserNewProfile = {
   fullname: 'Fake User',
   github: 'fakeuser',
-  twitter: 'fakeuser',
-  homepage: '',
+  twitter: 'fakeuser',  homepage: '',
   freenode: ''
 };
 

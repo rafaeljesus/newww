@@ -59,21 +59,21 @@
         </li>
       {{/if}}
 
-      {{#if resource.homepage}}
+      {{#if meta.homepage}}
         <li class="homepage">
-          <a href="{{resource.homepage}}">{{schemeless resource.homepage}}</a>
+          <a href="{{meta.homepage}}">{{schemeless meta.homepage}}</a>
         </li>
       {{/if}}
 
-      {{#if resource.github}}
+      {{#if meta.github}}
         <li class="github">
-          <a href="https://github.com/{{resource.github}}">@{{resource.github}}</a> on GitHub
+          <a href="https://github.com/{{meta.github}}">@{{meta.github}}</a> on GitHub
         </li>
       {{/if}}
 
-      {{#if resource.twitter}}
+      {{#if meta.twitter}}
         <li class="twitter">
-          <a href="https://twitter.com/{{resource.twitter}}">@{{resource.twitter}}</a> on Twitter
+          <a href="https://twitter.com/{{meta.twitter}}">@{{meta.twitter}}</a> on Twitter
         </li>
       {{/if}}
 
@@ -81,9 +81,9 @@
         <a href="/~{{name}}">@{{name}}</a> on npm
       </li>
 
-      {{#if resource.freenode}}
+      {{#if meta.freenode}}
         <li class="freenode">
-          <a href="irc://chat.freenode.net/npm">{{resource.freenode}}</a> on freenode
+          <a href="irc://chat.freenode.net/npm">{{meta.freenode}}</a> on freenode
         </li>
       {{/if}}
 

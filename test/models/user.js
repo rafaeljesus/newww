@@ -70,7 +70,7 @@ describe("User", function(){
 
     it("makes an external request for /{user}", function(done) {
       var userMock = nock(User.host)
-        .get('/user/fakeuser')
+        .get('/user/bob')
         .reply(200, fixtures.users.fakeuser);
 
       User.get(fixtures.users.fakeuser.name, function(err, body) {
@@ -83,12 +83,12 @@ describe("User", function(){
 
     it("returns the response body in the callback", function(done) {
       var userMock = nock(User.host)
-        .get('/user/fakeuser')
+        .get('/user/bob')
         .reply(200, fixtures.users.fakeuser);
 
       User.get(fixtures.users.fakeuser.name, function(err, body) {
         expect(err).to.be.null();
-        expect(body.name).to.equal("fakeuser");
+        expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
         userMock.done();
         done();
@@ -212,7 +212,7 @@ describe("User", function(){
 
     it("makes an external request for /{user}/package", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/fakeuser/package?per_page=9999')
+        .get('/user/bob/package?per_page=9999')
         .reply(200, []);
 
       User.getPackages(fixtures.users.fakeuser.name, function(err, body) {
@@ -225,7 +225,7 @@ describe("User", function(){
 
     it("returns the response body in the callback", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/fakeuser/package?per_page=9999')
+        .get('/user/bob/package?per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}

@@ -1,10 +1,13 @@
+require('dotenv').load();
+
 var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    sinon = require('sinon');
 
 var Hapi = require('hapi'),
     config = require('../../config'),
@@ -63,6 +66,41 @@ describe('signing up a user', function () {
       expect(er).to.not.exist();
       expect(user).to.exist();
       expect(user.name).to.equal('boom');
+      done();
+    });
+  });
+});
+
+describe('the mailing list checkbox', function () {
+  var spy = sinon.spy(function (a, b, c) {});
+  var params = { id: 'e17fe5d778', email: {email:'boom@boom.com'} };
+
+  it('adds the user to the mailing list when checked', function (done) {
+    spy.reset();
+    server.methods.user.signupUser.getMailchimp = function () {return {lists: {subscribe: spy}}};
+    server.methods.user.signupUser({
+      name: 'boom',
+      password: '12345',
+      verify: '12345',
+      email: 'boom@boom.com',
+      npmweekly: "on"
+    }, function (er, user) {
+      expect(spy.calledWith(params)).to.be.true();
+      done();
+    });
+  });
+
+  it('does not add the user to the mailing list when unchecked', function (done) {
+    spy.reset();
+    server.methods.user.signupUser.getMailchimp = function () {return {lists: {subscribe: spy}}};
+
+    server.methods.user.signupUser({
+      name: 'boom',
+      password: '12345',
+      verify: '12345',
+      email: 'boom@boom.com'
+    }, function (er, user) {
+      expect(spy.called).to.be.false();
       done();
     });
   });

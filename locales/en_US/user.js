@@ -10,6 +10,7 @@ module.exports = {
       verify: "Verify Password",
       email: "Email Address",
       emailHelp: "This <strong>will</strong> be public and shown on all the packages you publish. Accounts with invalid emails may be deleted without notice.",
+      npmWeekly: "Sign up for npm Weekly emails",
       submit: "Make it so"
     }
   },

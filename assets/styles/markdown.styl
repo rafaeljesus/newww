@@ -1,36 +1,60 @@
-#readme
+.markdown
   margin 0
 
   h1
     margin 0
-    padding 0
+    padding 20px 0 5px 0
     text-align left
     line-height 1.2
     @extend .ellipsis
     overflow-y hidden
     text-transform none
+    a
+      color text-color
+      text-decoration none
+    &.package-name
+      padding-bottom 0
 
-  hgroup
-    margin 20px 0
-    h2
-      text-align left
-      font-weight 300
-      margin 0
-      line-height 1.2
+    &.package-name-redundant
+      display none
 
-  h2
-    text-transform none
+  h2,h3,h4,h5,h6
+    color text-color
     font-weight 700
+    a
+      font-weight 700
+      color text-color
+      text-decoration none
 
-  h3,h4,h5
+    &.deep-link
+      a
+        &:before
+          display inline-block
+          content "#"
+          color white
+          margin-left -20px
+          width 20px
+          transition all 0.2s
+          @media only screen and (max-width: mobileMaxWidth)
+            display none
+        &:hover
+          &:before
+            color text-color
+
+  h3
     font-size 20px
+
+  h4,h5,h6
+    font-size 18px
 
   ol, ul
     ol, ul
-      margin 0 0 0 35px
+      margin 0 0 0 20px
 
   p, li
     font-size 16px
+    a
+      font-weight 600
 
   th
     font-weight bold
@@ -40,13 +64,28 @@
     background #F5F5F5
 
   p
-    margin 15px 0
+    &.package-description-redundant
+      display none
 
-  a
-    font-weight 400
+    &.package-description
+      text-align left
+      font-weight 300
+      line-height 1.2
+      font-size 24px
+      margin 0 0 10px 0
+      padding 0
+      a
+        font-weight 300
+        color text-color
+        text-decoration underline
+        &:hover
+          color npmred
 
   img
     max-width 100%
+
+  .hljs
+    padding 0
 
   code
     code-font()
@@ -54,9 +93,13 @@
 
   pre
     overflow-x auto
-
-  .superfluous
-    display none
+    code
+      display block
+      margin 0 0 15px 0
+      padding 8px
+      border-radius 2px
+      &.hljs
+        padding 8px
 
 // Grabbed all the themes from this repo:
 // https://github.com/isagalaev/highlight.js/tree/master/src/styles

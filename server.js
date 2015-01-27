@@ -1,4 +1,4 @@
-require("dotenv").load()
+require("dotenv").load();
 
 var _       = require('lodash'),
     assert  = require('assert'),

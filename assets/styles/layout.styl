@@ -14,8 +14,6 @@ section
   &.static-content
     margin-top 20px
     margin-bottom 20px
-    h1
-      margin 20px 0
 
   &:after
     content: ""
@@ -132,10 +130,9 @@ ul.columnar
     padding-left 0
 
 .box
-  margin 0 0 20px
+  margin 0
   font-size 16px
   color greigh3
-
 
   a:hover
     color npmred !important
@@ -190,17 +187,46 @@ table
     padding 1px 11px
     color npmred
     text-decoration none
-    text-transform lowercase
 
     &:hover, &.active
       border-color darken(npmred, 20%)
       color background-color
       background npmred
 
+#profile
+  padding-top 30px
+
+a.avatar
+  max-width 100%
+  display block
+  img
+    width 100%
+    border-radius 5px
+
 // Lists
 
 ol
   list-style-position inside
+
+ul
+  margin 0 0 15px 35px
+  li
+    list-style disc
+
+ol, ul
+  .bullet-free
+    @extend .vanilla-list
+    li
+      list-style none
+      padding 5px 0
+
+ul.meta
+  @extend .vanilla-list
+  li
+    border-top 1px solid greigh5
+    line-height 2
+    &:first-child
+      border none
 
 li.last-publisher
   line-height avatarSizeInline
@@ -319,3 +345,32 @@ div.scroll-beyond-300
 img.roomy-and-flexible
   max-width 100%
   margin 40px 0
+
+.npm-install
+  position relative
+  margin-bottom 20px
+  &:before
+    position absolute
+    top 0
+    left 0
+    font-size npmInstallHeight
+    line-height npmInstallHeight
+    color greigh5
+    vertical-align top
+
+.autoselect-wrapper > input[type=text]
+    @extend .unstyled-text-input
+    code-font()
+    margin 0
+    padding 0 0 0 30px
+    line-height npmInstallHeight
+    vertical-align top
+    display inline-block
+    width 100%
+    white-space nowrap
+    overflow visible
+    overflow-x auto
+    color greigh3
+    height npmInstallHeight+2px
+    cursor text
+    font-size npmInstallFontSize

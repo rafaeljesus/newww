@@ -1,0 +1,89 @@
+{{#with package}}
+
+<div class="content">
+
+  <div id="readme">
+    <hgroup>
+      <h1>{{name}}</h1>
+      <h2>{{description}}</h2>
+    </hgroup>
+  </div>
+
+  <h2 class="preserve-case">Access</h2>
+
+  <hr class="less-roomy">
+
+  <a class="fake-radio biggo">
+    <h3>Public</h3>
+    <p>Anyone can read. All collaborators can write.</p>
+  </a>
+
+  <a class="fake-radio active biggo">
+    <h3>Private</h3>
+    <p>Only collaborators can read and write.</p>
+  </a>
+
+  <h2 class="preserve-case">Collaborators</h2>
+
+  <hr class="less-roomy">
+
+  <table class="ruled humans">
+    <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>User</th>
+        <th>Access</th>
+        <th>Revoke</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {{#each collaborators}}
+        <tr>
+          <td class="avatar">
+            <a href="/~{{name}}">
+              <img src="{{avatar.small}}" alt="{{username}}" />
+            </a>
+          </td>
+          <td class="name">
+            <a href="/~{{name}}">{{fullname}}</a>
+          </td>
+          <td class="access">
+            <label class="glamorous">
+              <input type="radio" name="access-{{fullname}}" value="read-only" {{#if read_only}}checked="checked"{{/if}}>
+              <span>read-only</span>
+            </label>
+
+            <label class="glamorous">
+              <input type="radio" name="access-{{fullname}}" value="read-write" {{#unless read_only}}checked="checked"{{/unless}}>
+              <span>read-write</span>
+            </label>
+          </td>
+          <td>
+            <a href="#" class="delete-icon delete-collaborator">✖</a>
+          </td>
+        </tr>
+      {{/each}}
+
+      <tr>
+        <td class="avatar">
+          {{!-- <a href="/~{{name}}">
+            <img src="/static/images/wombat-avatar-small.png" />
+          </a> --}}
+        </td>
+        <td>
+          <input type="text" name="collaborator" value="" placeholder="Add another collaborator...">
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <ul>
+
+  </ul>
+
+
+</div>
+
+{{/with}}

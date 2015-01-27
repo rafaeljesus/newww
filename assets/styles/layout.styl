@@ -30,7 +30,7 @@ section
 
 .content
   float left
-  max-width fullColumnWidth - sidebarMaxWidth - 100px
+  width fullColumnWidth - sidebarMaxWidth - 100px
   margin-bottom 90px
 
   @media only screen and (max-width: fullColumnWidth)
@@ -163,18 +163,52 @@ ul.columnar
       padding-top 0.5em
 
 table
+  border-collapse collapse
   width 100%
   margin 15px 0
 
+  thead
+    display none
+
+  th
+    text-align left
+
   &.ruled
-    td
-      border-bottom 1px solid greigh5
+    td,th
+      border-bottom 1px solid greigh6
       padding-top 5px
       padding-bottom 5px
-      font-weight 600
+    tr
+      &:last-child td
+        border-bottom none
+
+  &.key-value
+    td
       &:first-child
         min-width 120px
         font-weight 400
+      &:last-child
+        font-weight 600
+
+  &.humans
+    tr th:first-child, td th:first-child
+      width avatarSizeMaintainers
+    td
+      line-height avatarSizeMaintainers
+      vertical-align top
+      padding-top 8px
+      padding-bottom 8px
+      &.avatar
+        width avatarSizeMaintainers
+        padding-right 8px
+        a
+          display block
+          width avatarSizeMaintainers
+          height avatarSizeMaintainers
+          img
+            width 100%
+            height 100%
+
 
 .pagination
   margin 50px 0

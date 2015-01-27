@@ -1,16 +1,15 @@
 module.exports = function(request, reply) {
   var User = request.server.models.User;
-  var loggedInUsername = request.auth.credentials;
+  var loggedInUser = request.auth.credentials;
 
   // Could be arriving from /~ or /~username
-  var name = request.params.name || loggedInUsername;
+  var name = request.params.name || loggedInUser.name;
 
   var opts = {
-    user: request.auth.credentials,
-    title: name,
+    title: name
   };
 
-  User.get(name, {stars: true, packages: true}, function(err, user) {
+  User.get(name, {stars: true, packages: true, loggedInUsername: loggedInUser && loggedInUser.name}, function(err, user) {
 
     if (err) {
       request.logger.error(err);
@@ -22,7 +21,7 @@ module.exports = function(request, reply) {
     }
 
     opts.profile = user;
-    opts.profile.isSelf = name === loggedInUsername;
+    opts.profile.isSelf = loggedInUser && name === loggedInUser.name;
 
     return reply.view('user/profile', opts);
   });

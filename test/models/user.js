@@ -2,10 +2,6 @@ var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    beforeEach = lab.beforeEach,
-    afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
     nock = require("nock");
@@ -23,19 +19,41 @@ describe("User", function(){
   describe("initialization", function() {
 
     it("defaults to process.env.USER_API as host", function(done) {
-      var USER_API_OLD = process.env.USER_API
-      process.env.USER_API = "https://envy.com/"
-      expect(new (require("../../models/user"))().host).to.equal('https://envy.com/')
-      process.env.USER_API = USER_API_OLD
-      done()
-    })
+      var USER_API_OLD = process.env.USER_API;
+      process.env.USER_API = "https://envy.com/";
+      expect(new (require("../../models/user"))().host).to.equal('https://envy.com/');
+      process.env.USER_API = USER_API_OLD;
+      done();
+    });
 
     it("accepts a custom host", function(done) {
-      expect(User.host).to.equal('https://user.com')
-      done()
-    })
+      expect(User.host).to.equal('https://user.com');
+      done();
+    });
 
-  })
+  });
+
+  describe("login", function () {
+
+    it("makes an external request for /{user}/login", function (done) {
+      var userMock = nock(User.host)
+        .post('/user/fakeuser/login')
+        .reply(200, fixtures.users.fakeuser);
+
+      var loginInfo = {
+        name: 'fakeuser',
+        password: '12345'
+      };
+
+      User.login(loginInfo, function (err, user) {
+        expect(err).to.be.null();
+        expect(user).to.exist();
+        userMock.done();
+        done();
+      });
+    });
+
+  });
 
   describe("get()", function() {
 
@@ -45,11 +63,12 @@ describe("User", function(){
         .reply(200, fixtures.users.fakeuser);
 
       User.get(fixtures.users.fakeuser.name, function(err, body) {
-        expect(err).to.be.null()
-        userMock.done()
-        done()
-      })
-    })
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        userMock.done();
+        done();
+      });
+    });
 
     it("returns the response body in the callback", function(done) {
       var userMock = nock(User.host)
@@ -57,13 +76,13 @@ describe("User", function(){
         .reply(200, fixtures.users.fakeuser);
 
       User.get(fixtures.users.fakeuser.name, function(err, body) {
-        expect(err).to.be.null()
-        expect(body.name).to.equal("fakeuser")
-        expect(body.email).to.exist()
-        userMock.done()
-        done()
-      })
-    })
+        expect(err).to.be.null();
+        expect(body.name).to.equal("fakeuser");
+        expect(body.email).to.exist();
+        userMock.done();
+        done();
+      });
+    });
 
     it("returns an error in the callback if the request failed", function(done) {
       var userMock = nock(User.host)
@@ -74,10 +93,11 @@ describe("User", function(){
         expect(err).to.exist();
         expect(err.message).to.equal("error getting user foo");
         expect(err.statusCode).to.equal(404);
-        userMock.done()
+        expect(body).to.not.exist();
+        userMock.done();
         done();
-      })
-    })
+      });
+    });
 
     it("does not require a bearer token", function(done) {
       var userMock = nock(User.host, {reqheaders: {}})
@@ -85,10 +105,12 @@ describe("User", function(){
         .reply(200);
 
       User.get('dogbreath', function(err, body) {
-        userMock.done()
-        done()
-      })
-    })
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        userMock.done();
+        done();
+      });
+    });
 
     it("allows loading user stars and packages too", function(done) {
 
@@ -114,20 +136,61 @@ describe("User", function(){
         ]);
 
       User.get('eager-beaver', {stars: true, packages: true}, function(err, user) {
-        expect(err).to.not.exist()
-        userMock.done()
-        packageMock.done()
-        starMock.done()
-        expect(user.name).to.equal('eager-beaver')
-        expect(user.email).to.equal('eager-beaver@example.com')
-        expect(user.packages).to.be.an.array()
-        expect(user.stars).to.be.an.array()
-        done()
-      })
+        expect(err).to.not.exist();
+        userMock.done();
+        packageMock.done();
+        starMock.done();
+        expect(user.name).to.equal('eager-beaver');
+        expect(user.email).to.equal('eager-beaver@example.com');
+        expect(user.packages).to.be.an.array();
+        expect(user.stars).to.be.an.array();
+        done();
+      });
 
-    })
+    });
 
-  })
+    it("includes the bearer token if user is logged in when loading user stars and packages", function(done) {
+
+      var userMock = nock(User.host)
+        .get('/user/eager-beaver')
+        .reply(200, {
+          name: "eager-beaver",
+          email: "eager-beaver@example.com"
+        });
+
+      var starMock = nock(User.host, {
+          reqheaders: {bearer: 'rockbot'}
+        })
+        .get('/user/eager-beaver/stars')
+        .reply(200, [
+          'minimist',
+          'hapi'
+        ]);
+
+      var packageMock = nock(User.host, {
+          reqheaders: {bearer: 'rockbot'}
+        })
+        .get('/user/eager-beaver/package')
+        .reply(200, [
+          {name: "foo", description: "It's a foo!"},
+          {name: "bar", description: "It's a bar!"}
+        ]);
+
+      User.get('eager-beaver', {stars: true, packages: true, loggedInUsername: 'rockbot'}, function(err, user) {
+        expect(err).to.not.exist();
+        userMock.done();
+        packageMock.done();
+        starMock.done();
+        expect(user.name).to.equal('eager-beaver');
+        expect(user.email).to.equal('eager-beaver@example.com');
+        expect(user.packages).to.be.an.array();
+        expect(user.stars).to.be.an.array();
+        done();
+      });
+
+    });
+
+  });
 
   describe("getPackages()", function() {
 
@@ -137,12 +200,12 @@ describe("User", function(){
         .reply(200, []);
 
       User.getPackages(fixtures.users.fakeuser.name, function(err, body) {
-        packageMock.done()
-        expect(err).to.be.null()
-        expect(body).to.exist()
-        done()
-      })
-    })
+        packageMock.done();
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        done();
+      });
+    });
 
     it("returns the response body in the callback", function(done) {
       var packageMock = nock(User.host)
@@ -153,14 +216,14 @@ describe("User", function(){
         ]);
 
       User.getPackages(fixtures.users.fakeuser.name, function(err, body) {
-        expect(err).to.be.null()
-        expect(body).to.be.an.array()
-        expect(body[0].name).to.equal("foo")
-        expect(body[1].name).to.equal("bar")
-        packageMock.done()
-        done()
-      })
-    })
+        expect(err).to.be.null();
+        expect(body).to.be.an.array();
+        expect(body[0].name).to.equal("foo");
+        expect(body[1].name).to.equal("bar");
+        packageMock.done();
+        done();
+      });
+    });
 
     it("returns an error in the callback if the request failed", function(done) {
       var packageMock = nock(User.host)
@@ -171,11 +234,13 @@ describe("User", function(){
         expect(err).to.exist();
         expect(err.message).to.equal("error getting packages for user foo");
         expect(err.statusCode).to.equal(404);
+        expect(body).to.not.exist();
+        packageMock.done();
         done();
-      })
-    })
+      });
+    });
 
-    it("includes bearer token in request header", function(done) {
+    it("includes bearer token in request header if user is logged in", function(done) {
       var packageMock = nock(User.host, {
           reqheaders: {bearer: 'sally'}
         })
@@ -185,13 +250,30 @@ describe("User", function(){
           {name: "bar", description: "It's a bar!"}
         ]);
 
-      User.getPackages('sally', function(err, body) {
-        packageMock.done()
-        done()
-      })
-    })
+      User.getPackages('sally', 'sally', function(err, body) {
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        packageMock.done();
+        done();
+      });
+    });
 
-  })
+    it("does not include bearer token in request header if user is not logged in", function(done) {
+      var packageMock = nock(User.host)
+        .get('/user/sally/package')
+        .reply(200, [
+          {name: "foo", description: "It's a foo!"},
+          {name: "bar", description: "It's a bar!"}
+        ]);
+
+      User.getPackages('sally', function(err, body) {
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        packageMock.done();
+        done();
+      });
+    });
+  });
 
   describe("getStars()", function() {
 
@@ -201,12 +283,12 @@ describe("User", function(){
         .reply(200, ['lodash', 'nock', 'yargs']);
 
       User.getStars('bcoe', function(err, body) {
-        starMock.done()
-        expect(err).to.be.null()
-        expect(body).to.exist()
-        done()
-      })
-    })
+        starMock.done();
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        done();
+      });
+    });
 
     it("returns the response body in the callback", function(done) {
       var starMock = nock(User.host)
@@ -214,14 +296,14 @@ describe("User", function(){
         .reply(200, ['blade', 'minimist']);
 
       User.getStars('ceej', function(err, body) {
-        expect(err).to.be.null()
-        expect(body).to.be.an.array()
-        expect(body[0]).to.equal("blade")
-        expect(body[1]).to.equal("minimist")
-        starMock.done()
-        done()
-      })
-    })
+        expect(err).to.be.null();
+        expect(body).to.be.an.array();
+        expect(body[0]).to.equal("blade");
+        expect(body[1]).to.equal("minimist");
+        starMock.done();
+        done();
+      });
+    });
 
     it("returns an error in the callback if the request failed", function(done) {
       var starMock = nock(User.host)
@@ -229,28 +311,41 @@ describe("User", function(){
         .reply(404);
 
       User.getStars('zeke', function(err, body) {
-        starMock.done()
+        starMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal("error getting stars for user zeke");
         expect(err.statusCode).to.equal(404);
+        expect(body).to.not.exist();
         done();
-      })
-    })
+      });
+    });
 
-    it("includes bearer token in request header", function(done) {
+    it("includes bearer token in request header if user is logged in", function(done) {
       var starMock = nock(User.host, {
           reqheaders: {bearer: 'rod11'}
         })
         .get('/user/rod11/stars')
-        .reply(200);
+        .reply(200, 'something');
+
+      User.getStars('rod11', 'rod11', function(err, body) {
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        starMock.done();
+        done();
+      });
+    });
+
+    it("does not include bearer token in request header if user is not logged in", function(done) {
+      var starMock = nock(User.host)
+        .get('/user/rod11/stars')
+        .reply(200, 'something');
 
       User.getStars('rod11', function(err, body) {
-        starMock.done()
-        done()
-      })
-    })
-
-  })
-
-
-})
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        starMock.done();
+        done();
+      });
+    });
+  });
+});

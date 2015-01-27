@@ -1,6 +1,6 @@
 var request = require('request');
 var Joi = require('joi');
-var marked = require('marked');
+var marky = require('marky-markdown');
 var fmt = require('util').format;
 
 module.exports = {
@@ -26,7 +26,23 @@ function getPage (repo) {
           return next(err, null);
         }
 
-        return next(err, marked.parse(content));
+        if (typeof content === "string") {
+          marky(
+            content,
+            {
+              sanitize: false,
+              highlightSyntax: false,
+            },
+            function(err, $){
+              if (err) return next(err);
+              content = $.html()
+              return next(null, content);
+            }
+          )
+        } else {
+          return next(err, content);
+        }
+
       });
     });
   };

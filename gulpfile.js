@@ -22,7 +22,17 @@ var paths = {
     browserify: ["./assets/scripts/*.js"],
     vendor: ["./assets/scripts/vendor/*.js"]
   },
-  templates: ['./assets/templates/*.hbs']
+  templates: ['./assets/templates/*.hbs'],
+  lintables: [
+    "./assets/scripts/**/*.js",
+    "./adapters/**/*.js",
+    "./facets/**/*.js",
+    "./lib/**/*.js",
+    "./locales/**/*.js",
+    "./presenters/**/*.js",
+    "./services/**/*.js",
+    "./test/**/*.js",
+  ]
 };
 
 gulp.task('watch', function(){
@@ -101,9 +111,9 @@ gulp.task('nodemon', function() {
 });
 
 gulp.task('lint', function() {
-  gulp.src('./**/*')
-      .pipe(jshint())
-      .pipe(jshint.reporter('default'));
+  gulp.src(paths.lintables)
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
 });
 
 gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat', 'lint']);

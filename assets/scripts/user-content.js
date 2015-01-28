@@ -3,26 +3,26 @@
 // checks whther someone has clicked on an
 // auto-generated id.
 var $ = require("jquery")
+var hashchange = require('green-mesa-hashchange')
 
 module.exports = function() {
   $(user_content)
 }
 
 var user_content = function() {
-  $(".content").on('click', 'a', function() {
-    var match = $(this).attr('href').match(/^#(.*)$/)
+
+  hashchange.update(function(hash) {
     var prefix = 'user-content-'
 
-    if (!match) return true // link was not anchor.
-
-    var anchor = $('#' + prefix + match[1] + ' a')
-
-    // we found a corresponding anchor #user-content-foo.
-    if (anchor.length) {
-      window.location.hash = prefix + match[1]
-      return false
+    if (hash.indexOf(prefix) === 0) {
+      hashchange.updateHash(hash.replace(prefix, ''))
+    } else {
+      var anchor = $('#' + prefix + hash)
+      if (anchor.length) $(document).scrollTop( anchor.offset().top )
     }
+  })
 
-    return true
+  $(document).ready(function() {
+    hashchange.update()
   })
 }

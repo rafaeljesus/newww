@@ -42,6 +42,7 @@
     "github-url-from-git": "^1.1.1",
     "github-url-to-object": "^1.4.0",
     "gravatar": "^1.0.6",
+    "green-mesa-hashchange": "^0.1.4",
     "handlebars": "^2.0.0-alpha.2",
     "handlebars-helper-pluralize": "^1.0.2",
     "hapi": "^8.1.0",

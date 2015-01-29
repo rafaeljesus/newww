@@ -44,7 +44,7 @@ function showPackage(request, reply) {
       opts.package = pkg;
       request.timing.page = 'showUnpublishedPackage';
 
-      return reply.view('registry/unpublished-package-page', opts);
+      return reply.view('registry/unpublished-package-page', opts).code(410);
     }
 
     var tasks = {
@@ -69,7 +69,7 @@ function showPackage(request, reply) {
         pkg.dependents = results.dependents;
       }
 
-      presentPackage(pkg, function (er, cleanedPackage) {
+      presentPackage(request, pkg, function (er, cleanedPackage) {
         if (er) {
           request.logger.info(er, 'presentPackage() responded with error; package=' + opts.name);
           reply.view('errors/internal', opts).code(500);

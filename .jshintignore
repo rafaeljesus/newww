@@ -1,0 +1,15 @@
+.git/
+node_modules
+assets/fonts/
+assets/images/
+assets/misc/
+assets/styles/
+assets/templates/
+AUTHORS
+LICENSE
+.gitignore
+.jshintignore
+.travis.yml
+CONTRIBUTING.md
+README.md
+Vagrantfile

@@ -144,8 +144,6 @@ nest.
 
 ## Nesting
 
-Don't nest. Ever.
-
 Nesting makes it harder to tell at a glance where css selector optimizations can be made.
 
 ```css

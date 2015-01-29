@@ -16,7 +16,6 @@ config.server = {
     engine: require('catbox-redis'),
     host: '127.0.0.1',
     port: '16379',
-    password: 'i-am-using-redis-in-development-mode-for-npm-www'
   },
   connections: {
     router: {
@@ -66,6 +65,7 @@ config.csp = {
     'https://www.google-analytics.com',
     'https://fonts.googleapis.com',
     'https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js',
+    'https://s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js',
     'https://js.hsforms.net/',
     'https://forms.hubspot.com/',
     'https://js.hs-analytics.net'

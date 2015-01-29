@@ -17,7 +17,7 @@ module.exports = function (config) {
                 .get('/_users/org.couchdb.user:blah')
                 .reply(200, require('./users').blah)
 
-                .get('/_users/org.couchdb.user:boom').thrice()
+                .get('/_users/org.couchdb.user:boom').times(5)
                 .reply(200, require('./users').boom)
 
                 .get('/_users/org.couchdb.user:boop')
@@ -30,7 +30,7 @@ module.exports = function (config) {
                 ]})
 
                 // --- modify user ---
-                .put('/_users/org.couchdb.user:boom')
+                .put('/_users/org.couchdb.user:boom').thrice()
                 .reply(201, require('./users').boom)
 
                 .put('/_users/org.couchdb.user:boom?rev=1-7adf7e546de1852cec39894c0d652fb4')
@@ -45,7 +45,7 @@ module.exports = function (config) {
                 .reply(201, { ok: 'updated email address' })
 
                 // --- log in ---
-                .post('/_session').twice()
+                .post('/_session').times(4)
                 .reply(200, require('./users').boom)
 
                 // --- log out ---

@@ -1,3 +1,5 @@
+require("dotenv").load();
+
 var _       = require('lodash'),
     assert  = require('assert'),
     config  = require('./config.js'),

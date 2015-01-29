@@ -3,8 +3,7 @@ var config = require('./config'),
     ops = require('./facets/ops'),
     fmt = require('util').format,
     validatePackageName = require('validate-npm-package-name'),
-    Hoek = require("hoek"),
-    featureFlag = require("./lib/feature-flags")
+    Hoek = require("hoek")
 
 var enterpriseConfig = {
   plugins: {
@@ -358,11 +357,7 @@ var authenticatedRoutes = [
     path: "/password",
     method: "POST",
     handler: require('./facets/user/show-password')
-  }
-]
-
-if (featureFlag("R2")) {
-  authenticatedRoutes.push({
+  },{
     path: "/settings/billing",
     method: "GET",
     handler: require('./facets/user/billing').getBillingInfo
@@ -374,8 +369,8 @@ if (featureFlag("R2")) {
     path: "/settings/billing/cancel",
     method: "POST",
     handler: require('./facets/user/billing').deleteBillingInfo
-  })
-}
+  }
+]
 
 // Apply unathenticated route config to all the public routes
 unauthenticatedRoutes = unauthenticatedRoutes.map(function(route){

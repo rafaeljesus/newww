@@ -73,7 +73,7 @@ describe('Retreiving packages from the registry', function () {
     };
 
     server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(200);
+      expect(resp.statusCode).to.equal(410);
       var source = resp.request.response.source;
       expect(source.template).to.equal('registry/unpublished-package-page');
       expect(source.context.package.unpubFromNow).to.exist();

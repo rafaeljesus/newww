@@ -44,7 +44,7 @@ function showPackage(request, reply) {
       opts.package = pkg;
       request.timing.page = 'showUnpublishedPackage';
 
-      return reply.view('registry/unpublished-package-page', opts);
+      return reply.view('registry/unpublished-package-page', opts).code(410);
     }
 
     var tasks = {

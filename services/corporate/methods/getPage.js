@@ -31,7 +31,7 @@ function getPage (repo) {
             content,
             {
               sanitize: false,
-              highlightSyntax: false,
+              highlightSyntax: true,
             },
             function(err, $){
               if (err) return next(err);

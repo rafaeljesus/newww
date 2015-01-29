@@ -9,6 +9,7 @@ window.github = require("./github")()
 window.pretty_numbers = require("./pretty-numbers")()
 window.mousetrap = require("mousetrap")
 window.private_npm_beta = require("./private-npm-beta")()
+require('./user-content')()
 require("./tooltips")()
 require("./what-npm-is-for")()
 require("./billing")()
@@ -27,5 +28,4 @@ $(function () {
   mousetrap.bind(['command+i', 'ctrl+i'], function() {
     $('.package-name-redundant, .package-description-redundant').toggle()
   })
-
 })

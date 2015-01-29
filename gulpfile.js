@@ -10,6 +10,7 @@ var gulp = require('gulp'),
     nodemon = require('gulp-nodemon'),
     rename = require('gulp-rename'),
     // imagemin = require('gulp-imagemin'),
+    jshint = require('gulp-jshint'),
     pngcrush = require('imagemin-pngcrush');
 
 var paths = {
@@ -21,7 +22,17 @@ var paths = {
     browserify: ["./assets/scripts/*.js"],
     vendor: ["./assets/scripts/vendor/*.js"]
   },
-  templates: ['./assets/templates/*.hbs']
+  templates: ['./assets/templates/*.hbs'],
+  lintables: [
+    "./assets/scripts/**/*.js",
+    "./adapters/**/*.js",
+    "./facets/**/*.js",
+    "./lib/**/*.js",
+    "./locales/**/*.js",
+    "./presenters/**/*.js",
+    "./services/**/*.js",
+    "./test/**/*.js",
+  ]
 };
 
 gulp.task('watch', function(){
@@ -97,6 +108,12 @@ gulp.task('nodemon', function() {
         .pipe(bistre({time: true}))
         .pipe(process.stderr);
     });
+});
+
+gulp.task('lint', function() {
+  gulp.src(paths.lintables)
+    .pipe(jshint())
+    .pipe(jshint.reporter('default'));
 });
 
 gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat']);

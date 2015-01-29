@@ -9,7 +9,6 @@ var what_npm_is_for = function() {
   var el = document.querySelector('#what-npm-is-for');
   if (!el) return;
   var initialText = el.textContent;
-  // var initialWord = initialText.match(/ (\w+)$/)[1];
   var pause = 800
   var opts = {
     speed: 40,
@@ -33,14 +32,10 @@ var what_npm_is_for = function() {
     .type('browserify').pause(pause).delete(10)
     .type('grunt').pause(pause).delete(5)
     .type('tessel').pause(pause).delete(6)
+    .type('io.js').pause(pause).delete(5)
     .type('javascript.').pause(1200)
     .call(function() {
       $(el).addClass("disabled")
     });
-
-  // var username = $('.username a').text()
-  // if (username) {
-  //   typist.pause(pause).delete(11).type("you, " + username + ".")
-  // }
 
 }

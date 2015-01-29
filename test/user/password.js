@@ -9,7 +9,7 @@ var Code = require('code'),
     redisSessions = require('../../adapters/redis-sessions');
 
 var server, cookieCrumb,
-    fakeuser = require('../fixtures/users').fakeuser,
+    fakeuser = require('../fixtures/users').fakeusercouch,
     fakeChangePass = require('../fixtures/users').fakeuserChangePassword;
 
 // prepare the server
@@ -130,7 +130,7 @@ describe('Changing the password', function () {
       expect(source.template).to.include('errors/internal');
 
       // undo the damage from earlier
-      fakeuser.name = 'fakeuser';
+      fakeuser.name = 'fakeusercouch';
       done();
     });
   });

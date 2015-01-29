@@ -2,12 +2,10 @@ var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
     it = lab.test,
     expect = Code.expect,
     present = require(__dirname + "/../../presenters/user"),
-    users = require(__dirname + "/../fixtures/users")
+    users = require(__dirname + "/../fixtures/users");
 
 describe("email", function(){
 
@@ -60,16 +58,18 @@ describe("meta", function () {
   it("discards pairs with empty key or values", function(done){
     var user = present({
       name: "mona",
-      fields: [
-        {name: "github", value: "mona"},
-        {name: "twitter", value: "mona"},
-        {name: "", value: "mona"},
-        {name: "ICQ", value: ""}
-      ]
+      resource: {
+        github: "mona",
+        twitter: "mona",
+        "": "mona",
+        ICQ: ''
+      }
     });
-    expect(Object.keys(user.meta)).to.have.length(2);
+    expect(Object.keys(user.meta)).to.have.length(4);
     expect(user.meta.github).to.exist();
     expect(user.meta.twitter).to.exist();
+    expect(user.meta.freenode).to.be.undefined();
+    expect(user.meta.ICQ).to.not.exist();
     done();
   });
 
@@ -78,9 +78,9 @@ describe("meta", function () {
     it("leaves fully-qualified URLs untouched", function(done){
       var user = present({
         name: "lisa",
-        fields: [
-          {name: "homepage", value: "https://lisa.org"},
-        ]
+        resource: {
+          homepage: "https://lisa.org"
+        }
       });
       expect(user.meta.homepage).to.equal("https://lisa.org");
       done();
@@ -89,9 +89,9 @@ describe("meta", function () {
     it("converts schemeless URLs into fully-qualified URLs", function(done){
       var user = present({
         name: "margaret",
-        fields: [
-          {name: "homepage", value: "margaret.com"},
-        ]
+        resource: {
+          homepage: "margaret.com"
+        }
       });
       expect(user.meta.homepage).to.equal("http://margaret.com");
       done();
@@ -100,10 +100,10 @@ describe("meta", function () {
     it("discards values that can't be turned into URLs", function(done){
       var user = present({
         name: "kate",
-        fields: [
-          {name: "twitter", value: "kate"},
-          {name: "homepage", value: "kate"},
-        ]
+        resource: {
+          twitter: "kate",
+          homepage: "kate"
+        }
       });
       expect(user.meta.homepage).to.not.exist();
       done();
@@ -115,9 +115,9 @@ describe("meta", function () {
     it("removes leading @ from username if present", function(done){
       var user = present({
         name: "eleanor",
-        fields: [
-          {name: "github", value: "@eleanor"},
-        ]
+        resource: {
+          github: "@eleanor"
+        }
       });
       expect(user.meta.github).to.equal("eleanor");
       done();
@@ -126,9 +126,9 @@ describe("meta", function () {
     it("extracts username if value is a URL", function(done){
       var user = present({
         name: "suzan",
-        fields: [
-          {name: "github", value: "https://github.com/suzan"},
-        ]
+        resource: {
+          github: "https://github.com/suzan"
+        }
       });
       expect(user.meta.github).to.equal("suzan");
       done();
@@ -137,9 +137,9 @@ describe("meta", function () {
     it("extracts username if value is a schemeless URL", function(done){
       var user = present({
         name: "jimbo",
-        fields: [
-          {name: "github", value: "github.com/jimbo"},
-        ]
+        resource: {
+          github: "github.com/jimbo"
+        }
       });
       expect(user.meta.github).to.equal("jimbo");
       done();
@@ -148,13 +148,13 @@ describe("meta", function () {
     it("is discarded if value is an empty string", function(done){
       var user = present({
         name: "suzan",
-        fields: [
-          {name: "twitter", value: "suzan"},
-          {name: "github", value: ""},
-        ]
+        resource: {
+          twitter: "suzan",
+          github: ""
+        }
       });
       expect(user.meta.twitter).to.equal("suzan");
-      expect(user.meta.github).to.not.exist();
+      expect(user.meta.github).to.be.empty();
       done();
     });
   });
@@ -163,9 +163,9 @@ describe("meta", function () {
     it("removes leading @ from username if present", function(done){
       var user = present({
         name: "eleanor",
-        fields: [
-          {name: "twitter", value: "@eleanor"},
-        ]
+        resource: {
+          twitter: "@eleanor"
+        }
       });
       expect(user.meta.twitter).to.equal("eleanor");
       done();
@@ -174,9 +174,9 @@ describe("meta", function () {
     it("extracts username if value is a URL", function(done){
       var user = present({
         name: "suzan",
-        fields: [
-          {name: "twitter", value: "https://twitter.com/suzan"},
-        ]
+        resource: {
+          twitter: "https://twitter.com/suzan"
+        }
       });
       expect(user.meta.twitter).to.equal("suzan");
       done();
@@ -185,9 +185,9 @@ describe("meta", function () {
     it("extracts username if value is a schemeless URL", function(done){
       var user = present({
         name: "suzan",
-        fields: [
-          {name: "twitter", value: "twitter.com/suzan"},
-        ]
+        resource: {
+          twitter: "twitter.com/suzan"
+        }
       });
       expect(user.meta.twitter).to.equal("suzan");
       done();
@@ -198,10 +198,10 @@ describe("meta", function () {
     it("is present", function(done){
       var user = present({
         name: "eleanor",
-        fields: [
-          {name: "twitter", value: "@eleanor"},
-          {name: "freenode", value: "eleanor1"},
-        ]
+        resource: {
+          twitter: "@eleanor",
+          freenode: "eleanor1"
+        }
       });
       expect(user.meta.freenode).to.equal("eleanor1");
       done();

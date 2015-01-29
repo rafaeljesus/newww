@@ -60,30 +60,6 @@ describe('Retreiving packages from the registry', function () {
       expect(p.license).to.be.an.object();
       expect(p.license.url).to.include('opensource.org');
 
-      // turns the readme into HTML for viewing on the website', function (done) {
-      expect(p.readme).to.not.equal(oriReadme);
-      expect(p.readmeSrc).to.equal(oriReadme);
-      expect(p.readme).to.include('<a href=');
-
-      // marks first H1 element as superfluous, if similar to package name
-      expect(p.readmeSrc).to.include("# fake");
-      expect(p.readmeSrc).to.include("# Another H1");
-      var $ = cheerio.load(p.readme);
-      expect($("h1.superfluous").length).to.equal(1);
-      expect($("h1.superfluous").text()).to.equal("fake");
-      expect($("h1:not(.superfluous)").length).to.equal(1);
-      expect($("h1:not(.superfluous)").text()).to.equal("Another H1");
-
-      // removes shields.io badges from the README
-      expect(p.readmeSrc).to.include("img.shields.io");
-      expect($("p:has(img[src*='img.shields.io'])").hasClass("superfluous")).to.be.true();
-
-      // removes nodei.co badges from the README
-      expect(p.readmeSrc).to.include("nodei.co");
-      expect($("p:has(img[src*='nodei.co'])").hasClass("superfluous")).to.be.true();
-
-      // turns relative URLs into real URLs
-      expect(p.readme).to.include('/blob/master');
 
       // includes the dependencies
       expect(p.dependencies).to.exist();
@@ -100,97 +76,10 @@ describe('Retreiving packages from the registry', function () {
     };
 
     server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(200);
+      expect(resp.statusCode).to.equal(410);
       var source = resp.request.response.source;
       expect(source.template).to.equal('registry/unpublished-package-page');
       expect(source.context.package.unpubFromNow).to.exist();
-      done();
-    });
-  });
-});
-
-describe('readmes are always sanitized', function () {
-  it('even if they are not on the top level', function (done) {
-    var options = {
-      url: '/package/no_top_level_readme'
-    };
-
-    server.inject(options, function (resp) {
-      var source = resp.request.response.source;
-      var p = source.context.package;
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.include('<h1 id="benchmark');
-      expect(p.readme).to.not.include('# Benchmark');
-      done();
-    });
-  });
-
-  it('even if there is no readme', function (done) {
-    var options = {
-      url: '/package/no_readme'
-    };
-
-    server.inject(options, function (resp) {
-      var source = resp.request.response.source;
-      var p = source.context.package;
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('');
-      done();
-    });
-  });
-
-  it('even if it causes marked to throw', function (done) {
-    var options = {
-      url: '/package/throw_marked'
-    };
-
-    server.inject(options, function (resp) {
-      var source = resp.request.response.source;
-      var p = source.context.package;
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('');
-      done();
-    });
-  });
-
-  it('even if it is not markdown', function (done) {
-    var options = {
-      url: '/package/not_markdown'
-    };
-
-    server.inject(options, function (resp) {
-      var source = resp.request.response.source;
-      var p = source.context.package;
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('<p></p><p>hello</p><p></p>\n');
-      done();
-    });
-  });
-
-  it('even if it is a non-markdown readme from a file', function (done) {
-    var options = {
-      url: '/package/not_markdown_readme_from_file'
-    };
-
-    server.inject(options, function (resp) {
-      var source = resp.request.response.source;
-      var p = source.context.package;
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('<pre>&lt;p&gt;hello&lt;/p&gt;&lt;script&gt;console.log(&apos;boom&apos;)&lt;/script&gt;</pre>');
-      done();
-    });
-  });
-
-  it('even if it is a markdown readme from a file', function (done) {
-    var options = {
-      url: '/package/markdown_readme_from_file'
-    };
-
-    server.inject(options, function (resp) {
-      var source = resp.request.response.source;
-      var p = source.context.package;
-      expect(p.name).to.equal('benchmark');
-      expect(p.readme).to.equal('<p>hello</p>\n<h2 id=\"boom\">boom</h2>\n');
       done();
     });
   });

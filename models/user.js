@@ -8,12 +8,11 @@ var User = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API,
     presenter: true,
-    debug: false
+    debug: false,
+    bearer: false
   }, opts);
-};
 
-User.init = function(opts) {
-  return new User(opts);
+  return this;
 };
 
 User.prototype.log = function(msg) {
@@ -95,12 +94,9 @@ User.prototype.get = function(name, options, callback) {
   .nodeify(callback);
 };
 
-User.prototype.getPackages = function(name, loggedInUsername, callback) {
+User.prototype.getPackages = function(name, callback) {
 
-  if (typeof loggedInUsername === 'function') {
-    callback = loggedInUsername;
-    loggedInUsername = false;
-  }
+  var _this = this;
 
   var url = fmt("%s/user/%s/package", this.host, name);
   this.log(url);
@@ -108,11 +104,14 @@ User.prototype.getPackages = function(name, loggedInUsername, callback) {
   return new Promise(function(resolve, reject) {
     var opts = {
       url: url,
+      qs: {
+        per_page: 9999
+      },
       json: true
     };
 
-    if (loggedInUsername) {
-      opts.headers = {bearer: loggedInUsername};
+    if (_this.bearer) {
+      opts.headers = {bearer: _this.bearer};
     }
 
     request.get(opts, function(err, resp, body){
@@ -128,12 +127,8 @@ User.prototype.getPackages = function(name, loggedInUsername, callback) {
   }).nodeify(callback);
 };
 
-User.prototype.getStars = function(name, loggedInUsername, callback) {
-
-  if (typeof loggedInUsername === 'function') {
-    callback = loggedInUsername;
-    loggedInUsername = false;
-  }
+User.prototype.getStars = function(name, callback) {
+  var _this = this;
 
   var url = fmt("%s/user/%s/stars", this.host, name);
   this.log(url);
@@ -144,8 +139,8 @@ User.prototype.getStars = function(name, loggedInUsername, callback) {
       json: true
     };
 
-    if (loggedInUsername) {
-      opts.headers = {bearer: loggedInUsername};
+    if (_this.bearer) {
+      opts.headers = {bearer: _this.bearer};
     }
 
     request.get(opts, function(err, resp, body){

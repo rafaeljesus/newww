@@ -20,7 +20,8 @@ module.exports = function signup (request, reply) {
       name: Joi.string().required(),
       password: Joi.string().required(),
       verify: Joi.string().required(),
-      email: Joi.string().email().required()
+      email: Joi.string().email().required(),
+      npmweekly: Joi.string()
     });
 
     var joiOptions = {
@@ -62,7 +63,6 @@ module.exports = function signup (request, reply) {
           }
 
           signupUser(validatedUser, function (er, user) {
-
             if (er) {
               request.logger.warn('Failed to create account.');
               return reply.view('errors/internal', opts).code(403);

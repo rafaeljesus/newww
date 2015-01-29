@@ -209,11 +209,11 @@ module.exports = function (server) {
 
     user: {
       changeEmail: function (name, email, next) {
-        if (name !== 'fakeuser') {
+        if (name !== 'fakeusercouch') {
           return next(Boom.notFound('Username not found: ' + name));
         }
 
-        users.fakeuser.email = email;
+        users.fakeusercouch.email = email;
         return next(null);
       },
 
@@ -256,17 +256,17 @@ module.exports = function (server) {
           return next(null, users.fakeusercli);
         }
 
-        if (auth.name !== 'fakeuser' || passHash(auth) !== users.fakeuser.derived_key) {
+        if (auth.name !== 'fakeusercouch' || passHash(auth) !== users.fakeusercouch.derived_key) {
           return next('Username and/or Password is wrong');
         }
-        return next(null, users.fakeuser);
+        return next(null, users.fakeusercouch);
       },
 
       lookupUserByEmail: function (email, next) {
         if (email === users.fakeusercli.email) {
           return next(null, ['fakeusercli']);
-        } else if (email === users.fakeuser.email) {
-          return next(null, ['fakeuser', 'fakeusercli']);
+        } else if (email === users.fakeusercouch.email) {
+          return next(null, ['fakeusercouch', 'fakeusercli']);
         } else {
           return next(null, []);
         }

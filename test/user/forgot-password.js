@@ -9,7 +9,7 @@ var Code = require('code'),
 
 var server, tokenUrl, cookieCrumb,
     users = require('../fixtures/users'),
-    fakeuser = require('../fixtures/users').fakeuser,
+    fakeuser = require('../fixtures/users').fakeusercouch,
     fakeusercli = require('../fixtures/users').fakeusercli;
 
 var postName = function (name_email) {

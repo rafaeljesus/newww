@@ -16,7 +16,7 @@ var redis = require('redis'),
 
 var server, revUrl, confUrl, cookieCrumb,
     client, oldCache, redisProcess,
-    fakeuser = require('../fixtures/users').fakeuser,
+    fakeuser = require('../fixtures/users').fakeusercouch,
     fakeusercli = require('../fixtures/users').fakeusercli,
     newEmail = 'new@fakeuser.com',
     oldEmail = fakeuser.email,

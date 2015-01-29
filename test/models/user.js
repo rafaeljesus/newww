@@ -2,6 +2,8 @@ var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
+    beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
     nock = require("nock");
@@ -10,14 +12,23 @@ var fixtures = {
   users: require("../fixtures/users")
 };
 
-var User = new (require("../../models/user"))({
-  host: "https://user.com"
+var User;
+
+beforeEach(function (done) {
+  User = new (require("../../models/user"))({
+    host: "https://user.com"
+  });
+  done();
+});
+
+afterEach(function (done) {
+  User = null;
+  done();
 });
 
 describe("User", function(){
 
   describe("initialization", function() {
-
     it("defaults to process.env.USER_API as host", function(done) {
       var USER_API_OLD = process.env.USER_API;
       process.env.USER_API = "https://envy.com/";
@@ -59,7 +70,7 @@ describe("User", function(){
 
     it("makes an external request for /{user}", function(done) {
       var userMock = nock(User.host)
-        .get('/user/fakeuser')
+        .get('/user/bob')
         .reply(200, fixtures.users.fakeuser);
 
       User.get(fixtures.users.fakeuser.name, function(err, body) {
@@ -72,12 +83,12 @@ describe("User", function(){
 
     it("returns the response body in the callback", function(done) {
       var userMock = nock(User.host)
-        .get('/user/fakeuser')
+        .get('/user/bob')
         .reply(200, fixtures.users.fakeuser);
 
       User.get(fixtures.users.fakeuser.name, function(err, body) {
         expect(err).to.be.null();
-        expect(body.name).to.equal("fakeuser");
+        expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
         userMock.done();
         done();
@@ -129,7 +140,7 @@ describe("User", function(){
         ]);
 
       var packageMock = nock(User.host)
-        .get('/user/eager-beaver/package')
+        .get('/user/eager-beaver/package?per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -151,6 +162,11 @@ describe("User", function(){
 
     it("includes the bearer token if user is logged in when loading user stars and packages", function(done) {
 
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+        bearer: "rockbot"
+      });
+
       var userMock = nock(User.host)
         .get('/user/eager-beaver')
         .reply(200, {
@@ -170,13 +186,13 @@ describe("User", function(){
       var packageMock = nock(User.host, {
           reqheaders: {bearer: 'rockbot'}
         })
-        .get('/user/eager-beaver/package')
+        .get('/user/eager-beaver/package?per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
         ]);
 
-      User.get('eager-beaver', {stars: true, packages: true, loggedInUsername: 'rockbot'}, function(err, user) {
+      User.get('eager-beaver', {stars: true, packages: true}, function(err, user) {
         expect(err).to.not.exist();
         userMock.done();
         packageMock.done();
@@ -196,7 +212,7 @@ describe("User", function(){
 
     it("makes an external request for /{user}/package", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/fakeuser/package')
+        .get('/user/bob/package?per_page=9999')
         .reply(200, []);
 
       User.getPackages(fixtures.users.fakeuser.name, function(err, body) {
@@ -209,7 +225,7 @@ describe("User", function(){
 
     it("returns the response body in the callback", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/fakeuser/package')
+        .get('/user/bob/package?per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -227,7 +243,7 @@ describe("User", function(){
 
     it("returns an error in the callback if the request failed", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/foo/package')
+        .get('/user/foo/package?per_page=9999')
         .reply(404);
 
       User.getPackages('foo', function(err, body) {
@@ -241,16 +257,22 @@ describe("User", function(){
     });
 
     it("includes bearer token in request header if user is logged in", function(done) {
+
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+        bearer: "sally"
+      });
+
       var packageMock = nock(User.host, {
           reqheaders: {bearer: 'sally'}
         })
-        .get('/user/sally/package')
+        .get('/user/sally/package?per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
         ]);
 
-      User.getPackages('sally', 'sally', function(err, body) {
+      User.getPackages('sally', function(err, body) {
         expect(err).to.be.null();
         expect(body).to.exist();
         packageMock.done();
@@ -260,7 +282,7 @@ describe("User", function(){
 
     it("does not include bearer token in request header if user is not logged in", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/sally/package')
+        .get('/user/sally/package?per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -321,13 +343,19 @@ describe("User", function(){
     });
 
     it("includes bearer token in request header if user is logged in", function(done) {
+
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+        bearer: "rod11"
+      });
+
       var starMock = nock(User.host, {
           reqheaders: {bearer: 'rod11'}
         })
         .get('/user/rod11/stars')
         .reply(200, 'something');
 
-      User.getStars('rod11', 'rod11', function(err, body) {
+      User.getStars('rod11', function(err, body) {
         expect(err).to.be.null();
         expect(body).to.exist();
         starMock.done();

@@ -54,7 +54,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.equal('/~fakeuser');
+      expect(resp.headers.location).to.equal('/~bob');
       done();
     });
   });

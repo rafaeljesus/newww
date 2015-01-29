@@ -5,88 +5,67 @@ var merge = require("lodash").merge,
     atty = new RegExp("^@");
 
 module.exports = function(user) {
-  user = merge({}, user)
-  user.emailObfuscated = obfuscateEmail(user.email)
-  user.avatar = avatar(user.email)
-  user.meta = deriveMetaObjectFromFieldsArray(user.fields)
-  return user
-}
+  user = merge({}, user);
+  user.emailObfuscated = obfuscateEmail(user.email);
+  user.avatar = avatar(user.email);
+  user.meta = deriveMetaObjectFromFieldsArray(user.resource);
+  return user;
+};
 
 var obfuscateEmail = function(email) {
-  if (!email || typeof email != "string") return email
+  if (!email || typeof email !== "string") { return email; }
   return Array.prototype.map.call(email, function (x) {
-    return '%' + x.charCodeAt(0).toString(16)
-  }).join('')
-}
+    return '%' + x.charCodeAt(0).toString(16);
+  }).join('');
+};
 
-var deriveMetaObjectFromFieldsArray = function(fields) {
-  var meta = {}
+var deriveMetaObjectFromFieldsArray = function(resources) {
+  var meta = {};
 
-  if (!Array.isArray(fields))
-    return meta
+  if (!resources) {
+    return meta;
+  }
 
-  fields
-    .filter(function(field){
-      return field.name && field.value
-    })
-    .forEach(function(field){
-      switch(field.name) {
-        case "homepage":
-          meta["homepage"] = sanitizeHomepage(field.value)
-          break;
-        case "github":
-          meta["github"] = sanitizeGitHubHandle(field.value)
-          break;
-        case "twitter":
-          meta["twitter"] = sanitizeTwitterHandle(field.value)
-          break;
-        case "freenode":
-          meta["freenode"] = field.value
-          break;
-      }
+  meta.homepage = resources.homepage && sanitizeHomepage(resources.homepage);
+  meta.github = resources.github && sanitizeGitHubHandle(resources.github);
+  meta.twitter = resources.twitter && sanitizeTwitterHandle(resources.twitter);
+  meta.freenode = resources.freenode;
 
-      // Remove any null or empty metadata
-      if (!meta[field.name]) {
-        delete meta[field.name]
-      }
-
-    })
-
-  return meta
-}
+  return meta;
+};
 
 var sanitizeHomepage = function(input) {
   // URL
-  if (isURL(input)) return input
+  if (isURL(input)) { return input; }
 
   // Not-fully-qualified URL
-  if (isURL("http://"+input)) return "http://"+input
-}
+  if (isURL("http://"+input)) { return "http://"+input; }
+};
 
 var sanitizeTwitterHandle = function(input) {
   // URL
-  if (isURL(input)) return URL.parse(input).path.replace("/", "")
+  if (isURL(input)) { return URL.parse(input).path.replace("/", ""); }
 
   // Not-fully-qualified URL
-  var twittery = new RegExp("^twitter.com/", "i")
-  if (input.match(twittery)) return input.replace(twittery, "")
+  var twittery = new RegExp("^twitter.com/", "i");
+  if (input.match(twittery)) { return input.replace(twittery, ""); }
 
   // Starts with @
-  if (input.match(atty)) return input.replace(atty, "")
+  if (input.match(atty)) { return input.replace(atty, ""); }
 
-  return input
-}
+  return input;
+};
 
 var sanitizeGitHubHandle = function(input) {
   // URL
-  if (isURL(input)) return URL.parse(input).path.replace("/", "")
+  if (isURL(input)) { return URL.parse(input).path.replace("/", ""); }
 
   // Not-fully-qualified URL
-  var githubby = new RegExp("^github.com/", "i")
-  if (input.match(githubby)) return input.replace(githubby, "")
+  var githubby = new RegExp("^github.com/", "i");
+  if (input.match(githubby)) { return input.replace(githubby, ""); }
 
   // Starts with @
-  if (input.match(atty)) return input.replace(atty, "")
+  if (input.match(atty)) { return input.replace(atty, ""); }
 
-  return input
-}
+  return input;
+};

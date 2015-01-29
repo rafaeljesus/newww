@@ -1,4 +1,15 @@
-var User = module.exports = require("../../../models/user").init();
+var _ = require('lodash');
+
+var User = module.exports = function(opts) {
+  _.extend(this, {
+    host: process.env.USER_API,
+    presenter: true,
+    debug: false,
+    bearer: false
+  }, opts);
+
+  return this;
+};
 
 var fixtures = {
   user: {
@@ -26,7 +37,7 @@ var fixtures = {
   ]
 };
 
-User.get = function(name, options, callback) {
+User.prototype.get = function(name, options, callback) {
   var res = fixtures.user;
 
   if (!callback) {
@@ -47,15 +58,15 @@ User.get = function(name, options, callback) {
   return callback(null, res);
 };
 
-User.getStars = function(name, callback) {
+User.prototype.getStars = function(name, callback) {
   return callback(null, fixtures.stars);
 };
 
-User.getPackages = function(name, callback) {
+User.prototype.getPackages = function(name, callback) {
   return callback(null, fixtures.packages);
 };
 
-User.login = function (loginInfo, callback) {
+User.prototype.login = function (loginInfo, callback) {
 
   if (loginInfo.name === fixtures.usercli.name &&
       loginInfo.password === fixtures.usercli.password) {

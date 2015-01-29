@@ -2,6 +2,7 @@ var fmt = require('util').format,
     gravatar = require('gravatar').url,
     moment = require('moment'),
     url = require('url'),
+    isUrl = require('is-url'),
     ghurl = require('github-url-from-git'),
     gh = require('github-url-to-object'),
     marky = require('marky-markdown');
@@ -58,8 +59,8 @@ module.exports = function presentPackage (request, data, cb) {
     data.homepage = data.homepage[0];
   }
 
-  // homepage: disallow non-string
-  if (data.homepage && typeof data.homepage !== 'string') {
+  // homepage: disallow non-URLs
+  if (data.homepage && !isUrl(data.homepage)) {
     delete data.homepage;
   }
 

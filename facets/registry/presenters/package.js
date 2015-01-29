@@ -96,16 +96,10 @@ module.exports = function presentPackage (request, data, cb) {
   }
 
   if (typeof data.readmeSrc === "string") {
-    request.logger.info('passing readme through marky for ' + data.name);
-    marky(data.readmeSrc, {package: data, highlightSyntax: true}, function(err, $){
-      if (err) return cb(err);
-      data.readme = $.html();
-      return cb(null, data);
-    })
-  } else {
-    return cb(null, data);
+    data.readme = marky(data.readmeSrc, {package: data}).html();
   }
 
+  return cb(null, data);
 };
 
 

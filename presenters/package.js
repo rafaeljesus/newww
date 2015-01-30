@@ -1,56 +1,47 @@
 var fmt = require('util').format,
-    gravatar = require('gravatar').url,
     moment = require('moment'),
     url = require('url'),
     ghurl = require('github-url-from-git'),
     gh = require('github-url-to-object'),
-    cheerio = require('cheerio'),
-    log = require('bole')('registry-package-presenter'),
-    avatar = require("../../../lib/avatar"),
+    avatar = require("../lib/avatar"),
     marky = require('marky-markdown');
 
-module.exports = function presentPackage (request, data, cb) {
-
-  data = elevateLatestVersionInfo(data);
-
-  if (data.time && data['dist-tags']) {
-    var v = data['dist-tags'].latest;
-    var t = data.time[v];
-    if (!data.versions[v]) {
-      request.logger.error('invalid package data: %s', data._id);
-      return cb(new Error('invalid package: '+ data._id));
-    }
-    data.version = v;
-    // check to see if there's a newer version of the readme than
-    // the one in the latest package
-    if (data.versions[v].readme && data.time[v] === data.time.modified) {
-      data.readme = data.versions[v].readme;
-      data.readmeSrc = null;
-    }
-    data.fromNow = moment(t).fromNow();
-    data._npmUser = data.versions[v]._npmUser || null;
-
-    // check if publisher is in maintainers list
-    data.publisherIsInMaintainersList = isPubInMaint(data);
-
-    setLicense(data, v);
+module.exports = function presentPackage (data, request) {
+  if (!request) {
+    request = {
+      logger: {
+        error: console.error,
+        info: console.log
+      }
+    };
   }
+
+  var t = data.last_published_at;
+
+  if (data.versions.indexOf(data.version) === -1) {
+    request.logger.error('invalid package data: %s', data._id);
+    return new Error('invalid package: '+ data._id);
+  }
+
+  data.fromNow = moment(t).fromNow();
+
+  // check if publisher is in maintainers list
+  data.publisherIsInMaintainersList = isPubInMaint(data);
+
+  setLicense(data);
 
   data.showMaintainers = data.maintainers &&
                          data.maintainers.length > 1 &&
                          data.publisherIsInMaintainersList;
 
-  data.versionsCount = Object.keys(data.versions).length;
+  data.versionsCount = data.versions && Object.keys(data.versions).length;
   data.singleVersion = data.versionsCount === 1;
-
-  if (data.readme && !data.readmeSrc) {
-    data.readmeSrc = data.readme;
-  }
 
   gravatarPeople(data);
 
-  data.starredBy = getRandomAssortment(Object.keys(data.users || {}).sort(), '/browse/star/', data.name);
-  data.dependents = getRandomAssortment(data.dependents, '/browse/depended/', data.name);
+  if (data.dependents) {
+    data.dependents = processDependents(data.dependents, '/browse/depended/', data.name);
+  }
 
   if (data.dependencies) {
     data.dependencies = processDependencies(data.dependencies);
@@ -91,17 +82,16 @@ module.exports = function presentPackage (request, data, cb) {
   }
 
   // Get star count
-  if (data.users) {
-    data.starCount = Object.keys(data.users).length;
+  if (data.stars) {
+    data.starCount = Object.keys(data.stars).length;
   }
 
   if (typeof data.readmeSrc === "string") {
     data.readme = marky(data.readmeSrc, {package: data}).html();
   }
 
-  return cb(null, data);
+  return data;
 };
-
 
 /* here's the potential situation: let's say I'm a hacker and I make a
 package that does Something Evil™ then I add you as a maintainer `npm
@@ -113,9 +103,9 @@ looks awesome, let me use it! and then I get all their bank account numbers
 and get super duper rich and become a VC and create LinkedIn for Cats */
 
 function isPubInMaint (data) {
-  if (data.maintainers && data._npmUser) {
+  if (data.maintainers && data.publisher) {
     for (var i = 0; i < data.maintainers.length; i++) {
-      if (data.maintainers[i].name === data._npmUser.name) {
+      if (data.maintainers[i].name === data.publisher.name) {
         return true;
       }
     }
@@ -125,42 +115,19 @@ function isPubInMaint (data) {
 }
 
 function gravatarPeople (data) {
-  if (data.author) {
-    data.author.avatar = avatar(data.author.email)
-  }
-
-  if (data._npmUser) {
-    data._npmUser.avatar = avatar(data._npmUser.email)
+  if (data.publisher) {
+    data.publisher.avatar = avatar(data.publisher.email);
   }
 
   if (Array.isArray(data.maintainers)) {
     data.maintainers.forEach(function (maintainer) {
-      maintainer.avatar = avatar(maintainer.email)
-    })
-  }
-
-  if (Array.isArray(data.contributors)) {
-    data.contributors.forEach(function (contributor) {
-      contributor.avatar = avatar(contributor.email)
-    })
+      maintainer.avatar = avatar(maintainer.email);
+    });
   }
 }
 
-function setLicense (data, v) {
-  var latestInfo = data.versions[v], license;
-
-  if (latestInfo.license) {
-    license = latestInfo.license;
-  } else if (latestInfo.licenses) {
-    license = latestInfo.licenses;
-  } else if (latestInfo.licence) {
-    license = latestInfo.licence;
-  } else if (latestInfo.licences) {
-    license = latestInfo.licences;
-  } else {
-    return;
-  }
-
+function setLicense (data) {
+  var license = data.license;
   data.license = {};
 
   if (Array.isArray(license)) { license = license[0]; }
@@ -210,7 +177,7 @@ function getOssLicenseUrlFromName (name) {
          base + name;
 }
 
-function getRandomAssortment (items, urlRoot, name) {
+function processDependents (items, urlRoot, name) {
   if (!items.length) { return items; }
 
   var l = items.length || 0;
@@ -227,18 +194,6 @@ function getRandomAssortment (items, urlRoot, name) {
   }
 
   return items;
-}
-
-function elevateLatestVersionInfo (data) {
-
-  var l = data['dist-tags'] && data['dist-tags'].latest && data.versions && data.versions[data['dist-tags'].latest];
-  if (l) {
-    Object.keys(l).forEach(function (k) {
-      data[k] = data[k] || l[k];
-    });
-  }
-
-  return data;
 }
 
 function processDependencies (dependencies, max) {

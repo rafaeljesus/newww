@@ -66,6 +66,7 @@ config.csp = {
     'https://fonts.googleapis.com',
     'https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js',
     'https://s3.amazonaws.com/downloads.mailchimp.com/js/mc-validate.js',
+    'https://npmjs.us9.list-manage.com',
     'https://js.hsforms.net/',
     'https://forms.hubspot.com/',
     'https://js.hs-analytics.net'

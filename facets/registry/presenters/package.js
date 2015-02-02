@@ -75,10 +75,12 @@ module.exports = function presentPackage (request, data, cb) {
   }
 
   // Create `npm install foo` command
-  data.installCommand = fmt("npm install %s", data.name);
-  if (data.preferGlobal) {
-    data.installCommand += " -g";
-  }
+  // Shorten to `npm i` for long package names
+  var installWord = (data.name.length > 15) ? "i" : "install"
+  var globalFlag = data.preferGlobal ? "-g" : ""
+  data.installCommand = fmt("npm %s %s %s", installWord, data.name, globalFlag)
+    .replace(/\s+/, " ")
+    .trim()
 
   // Infer GitHub API URL from bugs URL
   if (data.bugs && data.bugs.url && gh(data.bugs.url)) {

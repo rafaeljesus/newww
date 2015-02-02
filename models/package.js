@@ -13,16 +13,21 @@ var Package = module.exports = function (opts) {
     request: false
   }, opts);
 
+  if (!this.request) {
+    this.request = {
+      logger: {
+        error: console.error,
+        info: console.info
+      }
+    };
+  }
+
   return this;
 };
 
 Package.prototype.log = function(msg) {
   if (this.debug) {
-    if (this.request) {
-      request.logger.info(msg);
-    } else {
-      console.log(msg);
-    }
+    this.request.logger.info(msg);
   }
 };
 
@@ -45,12 +50,20 @@ Package.prototype.get = function(name, options, callback) {
     }
 
     request.get(opts, function(err, resp, body){
-      if (err) { return reject(err); }
+      if (err) {
+        _this.request.logger.err(err);
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error getting package ' + name);
         err.statusCode = resp.statusCode;
+        _this.request.logger.error(err);
         return reject(err);
       }
+      if (resp.statusCode === 404) {
+        return resolve(null);
+      }
+
       return resolve(body);
     });
   })

@@ -28,6 +28,7 @@ module.exports = function (done) {
 
     server.models = {
       User: require('../mocks/models/user'),
+      Package: require('../mocks/models/package')
     };
 
     server.register([{

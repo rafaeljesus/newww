@@ -86,8 +86,9 @@ module.exports = function presentPackage (data, request) {
     data.starCount = Object.keys(data.stars).length;
   }
 
-  if (typeof data.readmeSrc === "string") {
-    data.readme = marky(data.readmeSrc, {package: data}).html();
+  if (typeof data.readme === "string") {
+    request.logger.info('sending ' + data.name + ' to marky-markdown');
+    data.readme = marky(data.readme, {package: data}).html();
   }
 
   return data;
@@ -179,6 +180,13 @@ function getOssLicenseUrlFromName (name) {
 
 function processDependents (items, urlRoot, name) {
   if (!items.length) { return items; }
+
+  items = items.map(function (i) {
+    return {
+      name: i,
+      url: '/package/' + i
+    };
+  });
 
   var l = items.length || 0;
   var MAX_SHOW = 20;

@@ -120,8 +120,8 @@ describe("OSS license", function () {
   });
 });
 
-describe("dependencies, devDependencies, and dependents", function () {
-  it("should be included if they exist", function (done) {
+describe("different types of deps", function () {
+  it("should included dependents", function (done) {
     var package = present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -147,9 +147,81 @@ describe("dependencies, devDependencies, and dependents", function () {
       "version": "1.3.0",
       "last_published_at": "2013-06-11T09:36:32.285Z"
     });
+
+    expect(package.dependents).to.be.an.array();
+    expect(package.dependents).to.have.length(2);
+    var first = package.dependents[0];
+    expect(first.name).to.exist();
+    expect(first.url).to.exist();
+    expect(first.name).to.equal('connect-orientdb');
+    expect(first.url).to.equal('/package/connect-orientdb');
+
+    done();
+  });
+
+  it("should include dependencies", function (done) {
+    var package = present({
+      "versions": ["1.3.0"],
+      "name": "hello",
+      "dependents": [
+        "connect-orientdb",
+        "graphdb-orient"
+      ],
+      "publisher": {
+        "name": "ohai",
+        "email": "ohai@email.com"
+      },
+      "dependencies": {
+        "lodash": "*"
+      },
+      "devDependencies": {
+        "async": "*",
+        "tap": "0.4"
+      },
+      "maintainers": [{
+        "name": "ohai",
+        "email": "ohai@email.com"
+      }],
+      "version": "1.3.0",
+      "last_published_at": "2013-06-11T09:36:32.285Z"
+    });
+
     expect(package.dependencies).to.exist();
+    expect(package.dependencies).to.include('lodash');
+
+    done();
+  });
+
+  it("should include devDependencies", function (done) {
+    var package = present({
+      "versions": ["1.3.0"],
+      "name": "hello",
+      "dependents": [
+        "connect-orientdb",
+        "graphdb-orient"
+      ],
+      "publisher": {
+        "name": "ohai",
+        "email": "ohai@email.com"
+      },
+      "dependencies": {
+        "lodash": "*"
+      },
+      "devDependencies": {
+        "async": "*",
+        "tap": "0.4"
+      },
+      "maintainers": [{
+        "name": "ohai",
+        "email": "ohai@email.com"
+      }],
+      "version": "1.3.0",
+      "last_published_at": "2013-06-11T09:36:32.285Z"
+    });
+
     expect(package.devDependencies).to.exist();
-    expect(package.dependents).to.exist();
+    expect(package.devDependencies).to.include('async');
+
     done();
   });
 

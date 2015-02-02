@@ -1,5 +1,3 @@
-require("dotenv").load()
-
 var Hapi = require('hapi'),
     config = require('../../config');
 
@@ -27,6 +25,7 @@ module.exports = function (done) {
     });
 
     server.models = {
+      Customer: require('../mocks/models/customer'),
       User: require('../mocks/models/user'),
     };
 

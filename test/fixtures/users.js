@@ -14,6 +14,36 @@ exports.fakeuser = {
   deleted: null
 };
 
+exports.diana_delinquent = {
+  name: 'diana_delinquent',
+  email: 'diana@late.fee',
+  email_verified: null,
+  verification_key: '12345',
+  resource: {
+    github: 'diana_delinquent',
+    twitter: 'diana',
+    homepage: 'http://diana.com'
+  },
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
+exports.norbert_newbie = {
+  name: 'norbert_newbie',
+  email: 'norbert@newbies.com',
+  email_verified: null,
+  verification_key: '12345',
+  resource: {
+    github: 'norbs',
+    twitter: 'norbington',
+    homepage: 'http://norbert.name'
+  },
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
 exports.fakeusercouch = {
   "_id": "org.couchdb.user:fakeusercouch",
   "_rev": "4-ee6a224abd5503882ac5150f9e8f5a7a",

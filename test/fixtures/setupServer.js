@@ -25,6 +25,7 @@ module.exports = function (done) {
     });
 
     server.models = {
+      Customer: require('../mocks/models/customer'),
       User: require('../mocks/models/user'),
     };
 

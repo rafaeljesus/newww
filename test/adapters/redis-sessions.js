@@ -1,5 +1,3 @@
-require("dotenv").load()
-
 var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),

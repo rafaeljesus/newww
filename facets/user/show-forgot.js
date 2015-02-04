@@ -145,7 +145,9 @@ function lookupUserByEmail (email, request, reply) {
     user: request.auth.credentials
    };
 
-  request.server.methods.user.lookupUserByEmail(email, function (er, usernames) {
+   var User = new request.server.models.User();
+
+   User.lookupEmail(email, function (er, usernames) {
     if (er) {
       opts.error = er.message;
 
@@ -179,7 +181,9 @@ function lookupUserByEmail (email, request, reply) {
 function lookupUserByUsername (name, request, reply) {
   var opts = { };
 
-  request.server.methods.user.getUser(name, function (er, user) {
+  var User = new request.server.models.User();
+
+  User.get(name, function (er, user) {
     if (er) {
       opts.error = er.message;
 

@@ -2,6 +2,7 @@ var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
+var userValidate = require('npm-user-validate');
 var presenter = require(__dirname + '/../presenters/user');
 
 var User = module.exports = function(opts) {
@@ -92,6 +93,33 @@ User.prototype.get = function(name, options, callback) {
     return user;
   })
   .nodeify(callback);
+};
+
+User.prototype.lookupEmail = function(email, callback) {
+  var _this = this;
+
+  return new Promise(function (resolve, reject) {
+    if(userValidate.email(email)) {
+      var err = new Error('email is invalid');
+      err.statusCode = 400;
+      _this.log(err);
+      return reject(err);
+    }
+
+    var url = _this.host + "/user/" + email;
+    _this.log(url);
+
+    request.get({url: url, json: true}, function (err, resp, body) {
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error looking up username(s) for ' + email);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+  }).nodeify(callback);
 };
 
 User.prototype.getPackages = function(name, callback) {

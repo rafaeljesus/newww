@@ -376,4 +376,44 @@ describe("User", function(){
       });
     });
   });
+
+  describe("lookup users by email", function () {
+    it("returns an error for invalid email addresses", function (done) {
+      User.lookupEmail('barf', function (err, usernames) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(usernames).to.be.undefined();
+        done();
+      });
+    });
+
+    it("returns an array of email addresses", function (done) {
+      var lookupMock = nock(User.host)
+        .get('/user/ohai@boom.com')
+        .reply(200, ['user', 'user2']);
+
+      User.lookupEmail('ohai@boom.com', function (err, usernames) {
+        expect(err).to.not.exist();
+        expect(usernames).to.be.an.array();
+        expect(usernames[0]).to.equal('user');
+        expect(usernames[1]).to.equal('user2');
+        lookupMock.done();
+        done();
+      });
+    });
+
+    it("passes any errors on to the controller", function (done) {
+      var lookupMock = nock(User.host)
+        .get('/user/ohai@boom.com')
+        .reply(400, []);
+
+      User.lookupEmail('ohai@boom.com', function (err, usernames) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(usernames).to.not.exist();
+        lookupMock.done();
+        done();
+      });
+    });
+  });
 });

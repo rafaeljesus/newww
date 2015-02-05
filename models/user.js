@@ -53,6 +53,28 @@ User.prototype.login = function(loginInfo, callback) {
   }).nodeify(callback);
 };
 
+User.prototype.signup = function (user, callback) {
+  var url = this.host + "/user";
+
+  return new Promise(function (resolve, reject) {
+    var opts = {
+      url: url,
+      body: user,
+      json: true
+    };
+
+    request.put(opts, function (err, resp, body) {
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error creating user ' + user.name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};
+
 User.prototype.get = function(name, options, callback) {
   var _this = this;
   var user;

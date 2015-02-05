@@ -416,4 +416,44 @@ describe("User", function(){
       });
     });
   });
+
+  describe("signup", function () {
+    var signupInfo = {
+      name: 'hello',
+      password: '12345',
+      email: 'hello@hi.com'
+    };
+
+    var userObj = {
+      name: signupInfo.name
+    };
+
+    it("passes any errors along", function (done) {
+      var signupMock = nock(User.host)
+        .put('/user', signupInfo)
+        .reply(400);
+
+      User.signup(signupInfo, function (err, user) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(user).to.not.exist();
+        signupMock.done();
+        done();
+      });
+    });
+
+    it("returns a user object when successful", function (done) {
+      var signupMock = nock(User.host)
+        .put('/user', signupInfo)
+        .reply(200, userObj);
+
+      User.signup(signupInfo, function (err, user) {
+        expect(err).to.not.exist();
+        expect(user).to.exist();
+        expect(user.name).to.equal(signupInfo.name);
+        signupMock.done();
+        done();
+      });
+    });
+  });
 });

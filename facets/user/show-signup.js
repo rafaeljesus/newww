@@ -6,9 +6,9 @@ var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
 var ONE_WEEK = ONE_HOUR * 24 * 7;
 
 module.exports = function signup (request, reply) {
-  var getUser = request.server.methods.user.getUser,
-      setSession = request.server.methods.user.setSession(request),
-      signupUser = request.server.methods.user.signupUser,
+  var User = new request.server.models.User();
+
+  var setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request);
 
   var opts = {
@@ -43,7 +43,7 @@ module.exports = function signup (request, reply) {
 
       userValidate.username(validatedUser.name) && opts.errors.push({ message: userValidate.username(validatedUser.name).message});
 
-      getUser(validatedUser.name, function (err, userExists) {
+      User.get(validatedUser.name, function (err, userExists) {
         if (userExists) {
           opts.errors.push({message: new Error("username already exists").message});
         }
@@ -62,7 +62,7 @@ module.exports = function signup (request, reply) {
             request.logger.error(er);
           }
 
-          signupUser(validatedUser, function (er, user) {
+          User.signup(validatedUser, function (er, user) {
             if (er) {
               request.logger.warn('Failed to create account.');
               return reply.view('errors/internal', opts).code(403);

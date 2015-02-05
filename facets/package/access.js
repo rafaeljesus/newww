@@ -20,6 +20,8 @@ module.exports = function(request, reply) {
       return human
     })
 
+    package.private = require("alphabet").lower.indexOf(package.name.charAt(0)) < 13
+
     package.collaborators.forEach(function(collaborator) {
       collaborator.avatar = avatar(collaborator.email)
     })

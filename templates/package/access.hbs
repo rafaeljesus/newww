@@ -9,23 +9,21 @@
     <p class="package-description">{{description}}</p>
   </div>
 
-  <h2 class="preserve-case">Access</h2>
+  <h2>Access</h2>
 
-  <hr class="less-roomy">
+  {{#if private}}
+    <p class="notice">
+      The {{name}} package is <em>private</em>. Only the users below can access it.
+      <a href="#">Make it public...</a>
+    </p>
+  {{else}}
+    <p class="notice">
+      The {{name}} package is <em>public</em>. Anyone can read it, and only the users below can write.
+      <a href="#">Make it private...</a>
+    </p>
+  {{/if}}
 
-  <a class="fake-radio biggo">
-    <h3>Public</h3>
-    <p>Anyone can read. All collaborators can write.</p>
-  </a>
-
-  <a class="fake-radio active biggo">
-    <h3>Private</h3>
-    <p>Only collaborators can read and write.</p>
-  </a>
-
-  <h2 class="preserve-case">Collaborators</h2>
-
-  <hr class="less-roomy">
+  <h2>Collaborators</h2>
 
   <table class="ruled humans">
     <thead>

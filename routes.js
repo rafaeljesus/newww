@@ -139,6 +139,14 @@ var unauthenticatedRoutes = [
       return reply.redirect("/package/" + request.params.package).code(301);
     }
   },{
+    path: "/packages/{package}/access",
+    method: "GET",
+    handler: require('./facets/package/access')
+  },{
+    path: "/package/{package}/access",
+    method: "GET",
+    handler: require('./facets/package/access')
+  },{
     // Redirect to home, because who cares
     path: "/browse/all",
     method: "GET",

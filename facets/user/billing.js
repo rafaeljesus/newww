@@ -12,7 +12,7 @@ billing.getBillingInfo = function (request, reply) {
   };
 
   Customer.get(request.auth.credentials.name, function(err, customer) {
-    
+
     if (customer) {
       opts.customer = customer;
     }

@@ -9,14 +9,17 @@
 
   <form action='' method='post'>
     <label for="name">{{t "user.login.form.username"}}</label>
-    <input type="text" id="name" name="name" tabindex=2 autocorrect="off" autocapitalize="off" autofocus/>
+    <input type="text" id="name" name="name" required="required" tabindex=2 autocorrect="off" autocapitalize="off" autofocus/>
 
     <label for="password">{{t "user.login.form.password"}}</label>
-    <input type="password" id="password" name="password" tabindex=3 />
+    <input type="password" id="password" name="password" required="required" tabindex=3 />
 
     <input type="submit" class="full-width" value="{{t "user.login.form.submit"}}" />
 
-    <p><a href="/forgot">{{t "user.login.form.forgot"}}</a> | <a href="/signup">{{t "user.login.form.signup"}}</a></p>
+    <p class="center">
+      <a href="/forgot">{{t "user.login.form.forgot"}}</a> |
+      <a href="/signup">{{t "user.login.form.signup"}}</a>
+    </p>
     {{> form_security}}
   </form>
 

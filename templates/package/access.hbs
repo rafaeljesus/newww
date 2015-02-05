@@ -1,12 +1,12 @@
+{{> package-secondary-nav package}}
+
 {{#with package}}
 
 <div class="content">
 
-  <div id="readme">
-    <hgroup>
-      <h1>{{name}}</h1>
-      <h2>{{description}}</h2>
-    </hgroup>
+  <div class="markdown">
+    <h1>{{name}}</h1>
+    <p class="package-description">{{description}}</p>
   </div>
 
   <h2 class="preserve-case">Access</h2>

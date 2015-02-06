@@ -74,6 +74,12 @@ var unauthenticatedRoutes = [
     method: "GET",
     handler: require('./facets/company/show-homepage')
   },{
+    path: "/private-npm",
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/private-modules").code(301);
+    }
+  },{
     path: "/contact",
     method: "GET",
     handler: require('./facets/company/show-contact')

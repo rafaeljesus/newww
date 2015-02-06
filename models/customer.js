@@ -9,6 +9,7 @@ var Customer = module.exports = function(opts) {
 
 Customer.prototype.get = function(name, callback) {
   var url = this.host + '/stripe/' + name;
+  console.log(url)
   request.get({url: url, json: true}, function(err, resp, body){
 
     if (err) return callback(err);
@@ -41,6 +42,8 @@ Customer.prototype.update = function(body, callback) {
   }
 
   this.get(body.name, function(err, customer) {
+
+    console.log(err, customer)
 
     // Create new customer
     if (err && err.statusCode === 404) {

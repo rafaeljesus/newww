@@ -1,6 +1,4 @@
 var Boom = require('boom'),
-    Hapi = require('hapi'),
-    log = require('bole')('user-login'),
     metrics = require('../../../adapters/metrics')(),
     redisSessions = require('../../../adapters/redis-sessions');
 
@@ -14,7 +12,7 @@ module.exports = {
 
       request.server.app.cache.set(user.sid, user, 0, function (err) {
         if (err) {
-          log.error(Boom.internal('there was an error setting the cache'));
+          request.logger.error(Boom.internal('there was an error setting the cache'));
 
           metrics.metric({name: 'setSessionError'});
           return next(err);
@@ -31,26 +29,31 @@ module.exports = {
         request.auth.session.set({user: user.name, sid: user.sid});
         return next(null);
       });
-    }
+    };
   },
 
   del: function del (request) {
     return function (user, next) {
-      var timer = { start: Date.now() };
+      var start = Date.now();
 
       request.server.methods.user.logoutUser(user.token, function () {
 
+        if (!user.sid) {
+          request.auth.session.clear();
+          return next(null);
+        }
+
         request.server.app.cache.drop(user.sid, function (err) {
           if (err) {
-            log.error(Boom.internal('there was an error clearing the cache'));
+            request.logger.error(Boom.internal('there was an error clearing the cache'));
+            request.logger.error(err);
             metrics.metric({name: 'delSessionError'});
             return next(err);
           }
 
-          timer.end = Date.now();
           metrics.metric({
             name: 'latency',
-            value: timer.end - timer.start,
+            value: Date.now() - start,
             type: 'redis',
             action: 'delSession'
           });
@@ -60,6 +63,6 @@ module.exports = {
           return next(null);
         });
       });
-    }
+    };
   }
-}
+};

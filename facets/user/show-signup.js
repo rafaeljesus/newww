@@ -59,7 +59,7 @@ module.exports = function signup (request, reply) {
         delSession(validatedUser, function (er) {
 
           if (er) {
-            request.logger.error(er);
+            request.logger.warn(er);
           }
 
           User.signup(validatedUser, function (er, user) {

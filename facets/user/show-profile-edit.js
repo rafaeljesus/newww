@@ -26,7 +26,7 @@ module.exports = function (options) {
           return reply.view('user/profile-edit', opts).code(400);
         }
 
-        merge(loggedInUser, userChanges);
+        merge(loggedInUser.resource, userChanges);
 
         loggedInUser = presenter(loggedInUser);
 

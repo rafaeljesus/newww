@@ -109,7 +109,8 @@ exports.fakeusercouch = {
 exports.fakeuserNewProfile = {
   fullname: 'Fake User',
   github: 'fakeuser',
-  twitter: 'fakeuser',  homepage: '',
+  twitter: 'fakeuser',
+  homepage: '',
   freenode: ''
 };
 

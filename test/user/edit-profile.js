@@ -7,9 +7,23 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect;
 
-var server, cookieCrumb,
-    fakeuser = require('../fixtures/users').fakeusercouch,
-    fakeProfile = require('../fixtures/users').fakeuserNewProfile;
+var server, cookieCrumb;
+
+var fakeuser = {
+  name: 'bob',
+  email: 'hello@email.com',
+  resource: {
+    twitter: 'hello',
+  }
+};
+
+var fakeProfile = {
+  fullname: 'Fake User',
+  github: 'fakeuser',
+  twitter: 'fakeuser',
+  homepage: '',
+  freenode: ''
+};
 
 // prepare the server
 before(function (done) {
@@ -103,9 +117,9 @@ describe('Modifying the profile', function () {
       expect(resp.headers.location).to.include('profile');
       var cache = resp.request.server.app.cache._cache.connection.cache['|sessions'];
       // modifies the profile properly
-      var cacheData = JSON.parse(cache['50797e93'].item);
-      expect(cacheData.github).to.equal(fakeProfile.github);
-      expect(cacheData.fields[3].value).to.equal(fakeProfile.twitter);
+      var cacheData = JSON.parse(cache['8bdb39fa'].item);
+      expect(cacheData.resource.github).to.equal(fakeProfile.github);
+      expect(cacheData.resource.twitter).to.equal(fakeProfile.twitter);
       done();
     });
   });

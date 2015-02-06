@@ -27,7 +27,7 @@ describe('Getting to the profile-edit page', function () {
   it('redirects an unauthorized user to the login page', function (done) {
     var options = {
       url: '/profile-edit'
-    }
+    };
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(302);
@@ -128,12 +128,11 @@ describe('Modifying the profile', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
-      expect(source.context.user).to.exist();
       expect(source.context.error).to.exist();
       expect(source.context.error.details).to.be.an.array();
       var names = source.context.error.details.map(function(detail){
-        return detail.path
-      })
+        return detail.path;
+      });
       expect(names).to.include('_id');
       expect(names).to.include('name');
       expect(names).to.include('email');

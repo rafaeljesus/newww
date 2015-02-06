@@ -131,6 +131,10 @@ User.prototype.login = function (loginInfo, callback) {
   return callback(null, fixtures.user);
 };
 
+User.prototype.save = function (user, callback) {
+  return callback(null, fixtures.user);
+};
+
 User.prototype.signup = function (user, callback) {
   return callback(null, fixtures.user);
 }

@@ -456,4 +456,52 @@ describe("User", function(){
       });
     });
   });
+
+  describe("save", function () {
+    var profile = {
+      name: "npmjs",
+      resources: {
+        twitter: "npmjs",
+        github: ""
+      }
+    };
+
+    var userObj = {
+      name: "npmjs",
+      email: "support@npmjs.com",
+      resources: {
+        twitter: "npmjs",
+        github: ""
+      }
+    };
+
+    it("bubbles up any errors that might occur", function (done) {
+      var saveMock = nock(User.host)
+        .post('/user/npmjs', profile)
+        .reply(400);
+
+      User.save(profile, function (err, user) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(user).to.not.exist();
+        saveMock.done();
+        done();
+      });
+    });
+
+    it("hits the save url", function (done) {
+      var saveMock = nock(User.host)
+        .post('/user/npmjs', profile)
+        .reply(200, userObj);
+
+      User.save(profile, function (err, user) {
+        expect(err).to.not.exist();
+        expect(user).to.exist();
+        expect(user.name).to.equal('npmjs');
+        expect(user.email).to.equal('support@npmjs.com');
+        saveMock.done();
+        done();
+      });
+    });
+  });
 });

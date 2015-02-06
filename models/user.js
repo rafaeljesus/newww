@@ -16,65 +16,6 @@ var User = module.exports = function(opts) {
   return this;
 };
 
-User.prototype.log = function(msg) {
-  if (this.debug) { console.log(msg); }
-};
-
-User.prototype.login = function(loginInfo, callback) {
-  var url = fmt("%s/user/%s/login", this.host, loginInfo.name);
-  this.log(url);
-
-  return new Promise(function (resolve, reject) {
-
-    request.post({
-      url: url,
-      json: true,
-      body: {
-        password: loginInfo.password
-      }
-    }, function (err, resp, body) {
-
-      if (err) { return reject(err); }
-
-      if (resp.statusCode === 401) {
-        err = Error('password is incorrect for ' + loginInfo.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      if (resp.statusCode === 404) {
-        err = Error('user ' + loginInfo.name + ' not found');
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      return resolve(body);
-    });
-  }).nodeify(callback);
-};
-
-User.prototype.signup = function (user, callback) {
-  var url = this.host + "/user";
-
-  return new Promise(function (resolve, reject) {
-    var opts = {
-      url: url,
-      body: user,
-      json: true
-    };
-
-    request.put(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
-      if (resp.statusCode > 399) {
-        err = Error('error creating user ' + user.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-      return resolve(body);
-    });
-  }).nodeify(callback);
-};
-
 User.prototype.get = function(name, options, callback) {
   var _this = this;
   var user;
@@ -115,33 +56,6 @@ User.prototype.get = function(name, options, callback) {
     return user;
   })
   .nodeify(callback);
-};
-
-User.prototype.lookupEmail = function(email, callback) {
-  var _this = this;
-
-  return new Promise(function (resolve, reject) {
-    if(userValidate.email(email)) {
-      var err = new Error('email is invalid');
-      err.statusCode = 400;
-      _this.log(err);
-      return reject(err);
-    }
-
-    var url = _this.host + "/user/" + email;
-    _this.log(url);
-
-    request.get({url: url, json: true}, function (err, resp, body) {
-      if (err) { return reject(err); }
-      if (resp.statusCode > 399) {
-        err = Error('error looking up username(s) for ' + email);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      return resolve(body);
-    });
-  }).nodeify(callback);
 };
 
 User.prototype.getPackages = function(name, callback) {
@@ -205,4 +119,113 @@ User.prototype.getStars = function(name, callback) {
     });
   })
   .nodeify(callback);
+};
+
+User.prototype.log = function(msg) {
+  if (this.debug) { console.log(msg); }
+};
+
+User.prototype.login = function(loginInfo, callback) {
+  var url = fmt("%s/user/%s/login", this.host, loginInfo.name);
+  this.log(url);
+
+  return new Promise(function (resolve, reject) {
+
+    request.post({
+      url: url,
+      json: true,
+      body: {
+        password: loginInfo.password
+      }
+    }, function (err, resp, body) {
+
+      if (err) { return reject(err); }
+
+      if (resp.statusCode === 401) {
+        err = Error('password is incorrect for ' + loginInfo.name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('user ' + loginInfo.name + ' not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};
+
+User.prototype.lookupEmail = function(email, callback) {
+  var _this = this;
+
+  return new Promise(function (resolve, reject) {
+    if(userValidate.email(email)) {
+      var err = new Error('email is invalid');
+      err.statusCode = 400;
+      _this.log(err);
+      return reject(err);
+    }
+
+    var url = _this.host + "/user/" + email;
+    _this.log(url);
+
+    request.get({url: url, json: true}, function (err, resp, body) {
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error looking up username(s) for ' + email);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};
+
+User.prototype.save = function (user, callback) {
+console.log(user)
+  var url = this.host + "/user/" + user.name;
+
+  return new Promise(function (resolve, reject) {
+    var opts = {
+      url: url,
+      json: true,
+      body: user
+    };
+
+    request.post(opts, function (err, resp, body) {
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error updating profile for ' + user.name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};
+
+User.prototype.signup = function (user, callback) {
+  var url = this.host + "/user";
+
+  return new Promise(function (resolve, reject) {
+    var opts = {
+      url: url,
+      body: user,
+      json: true
+    };
+
+    request.put(opts, function (err, resp, body) {
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error creating user ' + user.name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  }).nodeify(callback);
 };

@@ -88,7 +88,6 @@ describe('Retreiving packages from the registry', function () {
 
     server.inject(options, function (resp) {
       var pkg = resp.request.response.source.context.package;
-      console.log(pkg)
       expect(pkg.installCommand).to.equal("npm i supercalifragilisticexpialidocious -g");
       done();
     });

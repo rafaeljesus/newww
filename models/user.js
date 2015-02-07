@@ -3,6 +3,7 @@ var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
 var userValidate = require('npm-user-validate');
+var mailchimp = require('mailchimp-api');
 var presenter = require(__dirname + '/../presenters/user');
 
 var User = module.exports = function(opts) {
@@ -45,11 +46,11 @@ User.prototype.get = function(name, options, callback) {
       user = presenter(user);
     }
 
-    return options.stars ? _this.getStars(user.name, options.loggedInUsername) : null;
+    return options.stars ? _this.getStars(user.name) : null;
   })
   .then(function(_stars){
     if (_stars) { user.stars = _stars; }
-    return options.packages ? _this.getPackages(user.name, options.loggedInUsername) : null;
+    return options.packages ? _this.getPackages(user.name) : null;
   })
   .then(function(_packages){
     if (_packages) { user.packages = _packages; }
@@ -186,7 +187,6 @@ User.prototype.lookupEmail = function(email, callback) {
 };
 
 User.prototype.save = function (user, callback) {
-console.log(user)
   var url = this.host + "/user/" + user.name;
 
   return new Promise(function (resolve, reject) {
@@ -209,6 +209,19 @@ console.log(user)
 };
 
 User.prototype.signup = function (user, callback) {
+
+  if (user.npmweekly === "on") {
+    var mc = this.getMailchimp();
+    mc.lists.subscribe({id: 'e17fe5d778', email:{email:user.email}}, function(data) {
+      // do nothing on success
+    }, function(error) {
+      // log.error('Could not register user for npm Weekly: ' + acct.email);
+      // if (error.error) {
+        // log.error(error.error);
+      // }
+    });
+  }
+
   var url = this.host + "/user";
 
   return new Promise(function (resolve, reject) {
@@ -227,5 +240,10 @@ User.prototype.signup = function (user, callback) {
       }
       return resolve(body);
     });
-  }).nodeify(callback);
+  })
+  .nodeify(callback);
+};
+
+User.prototype.getMailchimp = function getMailchimp () {
+  return new mailchimp.Mailchimp(process.env.MAILCHIMP_KEY);
 };

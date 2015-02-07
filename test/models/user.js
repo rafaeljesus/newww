@@ -6,18 +6,21 @@ var Code = require('code'),
     afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
-    nock = require("nock");
+    nock = require("nock"),
+    sinon = require("sinon");
 
 var fixtures = {
   users: require("../fixtures/users")
 };
 
-var User;
+var User, spy;
 
 beforeEach(function (done) {
   User = new (require("../../models/user"))({
     host: "https://user.com"
   });
+  spy = sinon.spy(function (a, b, c) {});
+  User.getMailchimp = function () {return {lists: {subscribe: spy}}};
   done();
 });
 
@@ -425,7 +428,8 @@ describe("User", function(){
     };
 
     var userObj = {
-      name: signupInfo.name
+      name: signupInfo.name,
+      email: "hello@hi.com"
     };
 
     it("passes any errors along", function (done) {
@@ -453,6 +457,39 @@ describe("User", function(){
         expect(user.name).to.equal(signupInfo.name);
         signupMock.done();
         done();
+      });
+    });
+
+    describe('the mailing list checkbox', function () {
+      var params = { id: 'e17fe5d778', email: {email:'boom@boom.com'} };
+
+      it('adds the user to the mailing list when checked', function (done) {
+        spy.reset();
+        User.signup({
+          name: 'boom',
+          password: '12345',
+          verify: '12345',
+          email: 'boom@boom.com',
+          npmweekly: "on"
+        }, function (er, user) {
+          expect(spy.calledWith(params)).to.be.true();
+          done();
+        });
+      });
+
+      it('does not add the user to the mailing list when unchecked', function (done) {
+        spy.reset();
+        User.getMailchimp = function () {return {lists: {subscribe: spy}}};
+
+        User.signup({
+          name: 'boom',
+          password: '12345',
+          verify: '12345',
+          email: 'boom@boom.com'
+        }, function (er, user) {
+          expect(spy.called).to.be.false();
+          done();
+        });
       });
     });
   });

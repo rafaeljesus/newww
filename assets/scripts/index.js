@@ -1,5 +1,4 @@
 window.$ = require("jquery")
-// window.highlight = require("./highlight")
 window.hiring = require("./hiring")
 window.star = require("./star")()
 window.npm_expansions = require("./npm-expansions")

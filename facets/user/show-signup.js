@@ -6,7 +6,7 @@ var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
 var ONE_WEEK = ONE_HOUR * 24 * 7;
 
 module.exports = function signup (request, reply) {
-  var User = new request.server.models.User();
+  var User = new request.server.models.User({logger: request.logger});
 
   var setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request);

@@ -1,6 +1,6 @@
 module.exports = function(request, reply) {
   var loggedInUser = request.auth.credentials;
-  var User = new request.server.models.User({bearer: loggedInUser && loggedInUser.name});
+  var User = new request.server.models.User({bearer: loggedInUser && loggedInUser.name, logger: request.logger});
 
   // Could be arriving from /~ or /~username
   var name = request.params.name || loggedInUser.name;

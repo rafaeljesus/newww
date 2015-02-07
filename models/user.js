@@ -11,8 +11,16 @@ var User = module.exports = function(opts) {
     host: process.env.USER_API,
     presenter: true,
     debug: false,
-    bearer: false
+    bearer: false,
+    logger: false
   }, opts);
+
+  if (!this.logger) {
+    this.logger = {
+      error: console.error,
+      info: console.log
+    };
+  }
 
   return this;
 };
@@ -123,7 +131,7 @@ User.prototype.getStars = function(name, callback) {
 };
 
 User.prototype.log = function(msg) {
-  if (this.debug) { console.log(msg); }
+  if (this.debug) { this.logger.info(msg); }
 };
 
 User.prototype.login = function(loginInfo, callback) {
@@ -209,16 +217,17 @@ User.prototype.save = function (user, callback) {
 };
 
 User.prototype.signup = function (user, callback) {
+  var _this = this;
 
   if (user.npmweekly === "on") {
     var mc = this.getMailchimp();
     mc.lists.subscribe({id: 'e17fe5d778', email:{email:user.email}}, function(data) {
       // do nothing on success
     }, function(error) {
-      // log.error('Could not register user for npm Weekly: ' + acct.email);
-      // if (error.error) {
-        // log.error(error.error);
-      // }
+      _this.logger.error('Could not register user for npm Weekly: ' + user.email);
+      if (error.error) {
+        _this.logger.error(error.error);
+      }
     });
   }
 

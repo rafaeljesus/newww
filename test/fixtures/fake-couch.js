@@ -8,7 +8,7 @@ module.exports = function (config) {
 
                 // --- get package ---
                 .get('/registry/request')
-                .reply(200, require('./request'))
+                .reply(200, require('./packages/request.json'))
 
                 .get('/registry/goober')
                 .reply(404, {"error":"not_found","reason":"missing"})

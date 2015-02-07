@@ -9,7 +9,7 @@ var users = require('./users');
 var pkgs = {
       fake: require('./fake.json'),
       unpub: require('./fake-unpublished'),
-      benchmark: require('./benchmark.json')
+      benchmark: require('./packages/benchmark.json')
     };
 var policies = require('./policies');
 

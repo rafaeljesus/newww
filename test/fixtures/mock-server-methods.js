@@ -4,13 +4,13 @@ var murmurhash = require('murmurhash');
 var crypto = require('crypto');
 
 var browse = require('./browse/index.js');
-var enterprise = require('./enterprise-data');
+var enterprise = require('./enterprise');
 var users = require('./users');
 var pkgs = {
-      fake: require('./packages/fake.json'),
-      unpublished: require('./packages/unpublished.json'),
-      benchmark: require('./packages/benchmark.json')
-    };
+  fake: require('./packages/fake.json'),
+  unpublished: require('./packages/unpublished.json'),
+  benchmark: require('./packages/benchmark.json')
+};
 var policies = require('./policies');
 
 module.exports = function (server) {
@@ -21,10 +21,6 @@ module.exports = function (server) {
         if (name === 'jobs') {
           return next(null, "<h1 id='jobs'>JOBS</h1>");
         }
-
-        // if (name === '%2f..%2fboom') {
-        //   return next();
-        // }
 
         return next(new Error('OMGBOOM'));
       },

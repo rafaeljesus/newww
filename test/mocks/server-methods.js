@@ -3,15 +3,15 @@ var Hapi = require('hapi');
 var murmurhash = require('murmurhash');
 var crypto = require('crypto');
 
-var browse = require('./browse/index.js');
-var enterprise = require('./enterprise');
-var users = require('./users');
+var browse = require('../fixtures/browse/index.js');
+var enterprise = require('../fixtures/enterprise');
+var users = require('../fixtures/users');
 var pkgs = {
-  fake: require('./packages/fake.json'),
-  unpublished: require('./packages/unpublished.json'),
-  benchmark: require('./packages/benchmark.json')
+  fake: require('../fixtures/packages/fake.json'),
+  unpublished: require('../fixtures/packages/unpublished.json'),
+  benchmark: require('../fixtures/packages/benchmark.json')
 };
-var policies = require('./policies');
+var policies = require('../fixtures/policies');
 
 module.exports = function (server) {
   var methods = {

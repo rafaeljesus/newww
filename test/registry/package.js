@@ -13,7 +13,7 @@ var oriReadme = require('../fixtures/packages/fake.json').readme;
 
 // prepare the server
 beforeEach(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });

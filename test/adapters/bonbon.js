@@ -13,7 +13,7 @@ var users = require('../fixtures/users');
 var username1 = 'fakeuser';
 
 beforeEach(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });

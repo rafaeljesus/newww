@@ -15,7 +15,7 @@ var username1 = 'fakeuser',
     username2 = 'fakeusercli';
 
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });

@@ -9,7 +9,7 @@ var Code = require('code'),
     sinon = require('sinon'),
     elasticsearch = require('elasticsearch');
 
-var fakeSearch = require('../fixtures/fake-search.json'),
+var fakeSearch = require('../fixtures/search.json'),
     server;
 
 // prepare the server

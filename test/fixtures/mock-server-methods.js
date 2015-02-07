@@ -3,7 +3,7 @@ var Hapi = require('hapi');
 var murmurhash = require('murmurhash');
 var crypto = require('crypto');
 
-var browse = require('./browseData');
+var browse = require('./browse/index.js');
 var enterprise = require('./enterprise-data');
 var users = require('./users');
 var pkgs = {

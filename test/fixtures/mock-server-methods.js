@@ -7,8 +7,8 @@ var browse = require('./browseData');
 var enterprise = require('./enterprise-data');
 var users = require('./users');
 var pkgs = {
-      fake: require('./fake.json'),
-      unpub: require('./fake-unpublished'),
+      fake: require('./packages/fake.json'),
+      unpublished: require('./packages/unpublished.json'),
       benchmark: require('./packages/benchmark.json')
     };
 var policies = require('./policies');

@@ -2,17 +2,7 @@ var Boom = require('boom');
 var Hapi = require('hapi');
 var murmurhash = require('murmurhash');
 var crypto = require('crypto');
-
-var browse = require('./browseData');
-var enterprise = require('./enterprise-data');
-var users = require('./users');
-var pkgs = {
-      fake: require('./fake.json'),
-      unpub: require('./fake-unpublished.json'),
-      supercalifragilisticexpialidocious: require('./fake-global.json'),
-      benchmark: require('./benchmark.json')
-    };
-var policies = require('./policies');
+var fixtures = require('../fixtures.js');
 
 module.exports = function (server) {
   var methods = {
@@ -23,16 +13,12 @@ module.exports = function (server) {
           return next(null, "<h1 id='jobs'>JOBS</h1>");
         }
 
-        // if (name === '%2f..%2fboom') {
-        //   return next();
-        // }
-
         return next(new Error('OMGBOOM'));
       },
 
       getPolicy: function (name, next) {
-        if (policies[name]) {
-          return next(null, policies[name]);
+        if (fixtures.policies[name]) {
+          return next(null, fixtures.policies[name]);
         }
 
         return next(new Error('Not Found'));
@@ -67,7 +53,7 @@ module.exports = function (server) {
 
     npme: {
       createCustomer: function (data, next) {
-        return next(null, enterprise.newUser);
+        return next(null, fixtures.enterprise.newUser);
       },
 
       createTrial: function (customer, next) {
@@ -80,19 +66,19 @@ module.exports = function (server) {
         switch (key) {
           case 'exists':
             // user already exists
-            return next(null, enterprise.existingUser);
+            return next(null, fixtures.enterprise.existingUser);
           case 'new':
             // user doesn't exist yet
             return next(null, null);
           case 'noLicense':
             // for license testing
-            return next(null, enterprise.noLicenseUser);
+            return next(null, fixtures.enterprise.noLicenseUser);
           case 'tooManyLicenses':
             // for license testing
-            return next(null, enterprise.tooManyLicensesUser);
+            return next(null, fixtures.enterprise.tooManyLicensesUser);
           case 'licenseBroken':
             // for license testing
-            return next(null, enterprise.licenseBrokenUser);
+            return next(null, fixtures.enterprise.licenseBrokenUser);
           default:
             // something went wrong with hubspot
             return next(new Error('something went wrong'));
@@ -104,11 +90,11 @@ module.exports = function (server) {
 
         switch (key) {
           case 'noLicense':
-            return next(null, enterprise.noLicense);
+            return next(null, fixtures.enterprise.noLicense);
           case 'tooManyLicenses':
-            return next(null, enterprise.tooManyLicenses);
+            return next(null, fixtures.enterprise.tooManyLicenses);
           case 'exists':
-            return next(null, enterprise.goodLicense);
+            return next(null, fixtures.enterprise.goodLicense);
           default:
             return next(new Error('license machine brokened'));
         }
@@ -125,15 +111,15 @@ module.exports = function (server) {
       verifyTrial: function (verificationKey, next) {
         switch (verificationKey) {
           case '12345':
-            return next(null, enterprise.newTrial);
+            return next(null, fixtures.enterprise.newTrial);
           case '23456':
-            return next(null, enterprise.noCustomerTrial);
+            return next(null, fixtures.enterprise.noCustomerTrial);
           case 'noLicense':
-            return next(null, enterprise.noLicenseTrial);
+            return next(null, fixtures.enterprise.noLicenseTrial);
           case 'tooManyLicenses':
-            return next(null, enterprise.tooManyLicensesTrial);
+            return next(null, fixtures.enterprise.tooManyLicensesTrial);
           case 'licenseBroken':
-            return next(null, enterprise.licenseBrokenTrial);
+            return next(null, fixtures.enterprise.licenseBrokenTrial);
           default:
             return next(new Error('cannot verify trial'));
         }
@@ -148,51 +134,52 @@ module.exports = function (server) {
           noPackageData = false;
         }
 
-        return next(null, browse[type]);
+        return next(null, fixtures.browse[type]);
       },
 
       getPackage: function (pkgName, next) {
-        if (pkgs[pkgName]) {
-          return next(null, pkgs[pkgName]);
+
+        if (fixtures.packages[pkgName]) {
+          return next(null, fixtures.packages[pkgName]);
         }
 
-        if (pkgs.benchmark[pkgName]) {
-          return next(null, pkgs.benchmark[pkgName]);
+        if (fixtures.packages.benchmark[pkgName]) {
+          return next(null, fixtures.packages.benchmark[pkgName]);
         }
 
         return next();
       },
 
       getAllPackages: function (skip, limit, next) {
-        return next(null, browse.all);
+        return next(null, fixtures.browse.all);
       },
 
       getAllByKeyword: function (arg, skip, limit, next) {
-        return next(null, browse.keyword);
+        return next(null, fixtures.browse.keyword);
       },
 
       getAuthors: function (arg, skip, limit, next) {
-        return next(null, browse.author);
+        return next(null, fixtures.browse.author);
       },
 
       getDependedUpon: function (arg, skip, limit, next) {
-        return next(null, browse.depended);
+        return next(null, fixtures.browse.depended);
       },
 
       getStarredPackages: function (arg, skip, limit, next) {
-        return next(null, browse.star);
+        return next(null, fixtures.browse.star);
       },
 
       getUserStars: function (arg, skip, limit, next) {
-        return next(null, browse.userstar);
+        return next(null, fixtures.browse.userstar);
       },
 
       getUpdated: function (skip, limit, next) {
-        return next(null, browse.updated);
+        return next(null, fixtures.browse.updated);
       },
 
       getRecentAuthors: function (arg, skip, limit, next) {
-        return next(null, browse.recentauthors);
+        return next(null, fixtures.browse.recentauthors);
       },
 
       packagesCreated: function (next) {
@@ -214,16 +201,16 @@ module.exports = function (server) {
           return next(Boom.notFound('Username not found: ' + name));
         }
 
-        users.fakeusercouch.email = email;
+        fixtures.users.fakeusercouch.email = email;
         return next(null);
       },
 
       changePass: function (auth, next) {
-        if (!users[auth.name].salt) {
+        if (!fixtures.users[auth.name].salt) {
           return next(null);
         }
 
-        users[auth.name].derived_key = passHash(auth);
+        fixtures.users[auth.name].derived_key = passHash(auth);
         return next(null);
       },
 
@@ -245,8 +232,8 @@ module.exports = function (server) {
       },
 
       getUser: function (username, next) {
-        if (users[username]) {
-          return next(null, users[username]);
+        if (fixtures.users[username]) {
+          return next(null, fixtures.users[username]);
         }
 
         return next(Boom.notFound('Username not found: ' + username));
@@ -254,19 +241,19 @@ module.exports = function (server) {
 
       loginUser: function (auth, next) {
         if (auth.name === 'fakeusercli') {
-          return next(null, users.fakeusercli);
+          return next(null, fixtures.users.fakeusercli);
         }
 
-        if (auth.name !== 'fakeusercouch' || passHash(auth) !== users.fakeusercouch.derived_key) {
+        if (auth.name !== 'fakeusercouch' || passHash(auth) !== fixtures.users.fakeusercouch.derived_key) {
           return next('Username and/or Password is wrong');
         }
-        return next(null, users.fakeusercouch);
+        return next(null, fixtures.users.fakeusercouch);
       },
 
       lookupUserByEmail: function (email, next) {
-        if (email === users.fakeusercli.email) {
+        if (email === fixtures.users.fakeusercli.email) {
           return next(null, ['fakeusercli']);
-        } else if (email === users.fakeusercouch.email) {
+        } else if (email === fixtures.users.fakeusercouch.email) {
           return next(null, ['fakeusercouch', 'fakeusercli']);
         } else {
           return next(null, []);
@@ -295,7 +282,7 @@ module.exports = function (server) {
       },
 
       signupUser: function (acct, next) {
-        return next(null, users.fakeusercli);
+        return next(null, fixtures.users.fakeusercli);
       }
     }
   };
@@ -316,5 +303,5 @@ module.exports = function (server) {
 };
 
 function passHash (auth) {
-  return crypto.pbkdf2Sync(auth.password, users[auth.name].salt, users[auth.name].iterations, 20).toString('hex');
+  return crypto.pbkdf2Sync(auth.password, fixtures.users[auth.name].salt, fixtures.users[auth.name].iterations, 20).toString('hex');
 }

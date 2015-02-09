@@ -14,7 +14,7 @@ var Hapi = require('hapi'),
     couch = require('../../services/user'),
     metrics = require('../../adapters/metrics')(config.metrics);
 
-var couchdb = require('../fixtures/fake-couch')(couchConfig),
+var couchdb = require('../mocks/couch')(couchConfig),
     server;
 
 before(function (done) {

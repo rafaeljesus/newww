@@ -20,7 +20,7 @@ var server, revUrl, confUrl, cookieCrumb,
     fakeusercli = require('../fixtures/users').fakeusercli,
     newEmail = 'new@fakeuser.com',
     oldEmail = fakeuser.email,
-    emailEdits = require('../fixtures/emailEdits');
+    emailEdits = require('../fixtures/email_edit');
 
 var postEmail = function (emailOpts) {
   return {
@@ -34,7 +34,7 @@ var postEmail = function (emailOpts) {
 
 // prepare the server
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });

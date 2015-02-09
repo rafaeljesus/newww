@@ -9,11 +9,11 @@ var Code = require('code'),
     cheerio = require("cheerio");
 
 var server, cookieCrumb;
-var oriReadme = require('../fixtures/fake.json').readme;
 
-// prepare the server
+// var oriReadme = require('../fixtures/packages/fake.json').readme;
+
 beforeEach(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
@@ -72,7 +72,7 @@ describe('Retreiving packages from the registry', function () {
 
   it('treats unpublished packages specially', function (done) {
     var options = {
-      url: '/package/unpub'
+      url: '/package/unpublished'
     };
 
     server.inject(options, function (resp) {

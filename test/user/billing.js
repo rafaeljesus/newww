@@ -21,7 +21,7 @@ var server,
     norbert_newbie = require('../fixtures/users').norbert_newbie;
 
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });

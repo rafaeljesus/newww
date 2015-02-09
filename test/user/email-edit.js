@@ -9,15 +9,16 @@ var Code = require('code'),
 
 var redis = require('redis'),
     spawn = require('child_process').spawn,
-    config = require('../../config').server.cache;
+    config = require('../../config').server.cache,
+    fixtures = require('../fixtures.js');
 
     config.port = 6379;
     config.password = '';
 
 var server, revUrl, confUrl, cookieCrumb,
     client, oldCache, redisProcess,
-    fakeuser = require('../fixtures/users').fakeusercouch,
-    fakeusercli = require('../fixtures/users').fakeusercli,
+    fakeuser = fixtures.users.fakeusercouch,
+    fakeusercli = fixtures.users.fakeusercli,
     newEmail = 'new@fakeuser.com',
     oldEmail = fakeuser.email,
     emailEdits = require('../fixtures/email_edit');

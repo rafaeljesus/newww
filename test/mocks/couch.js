@@ -1,4 +1,5 @@
 var nock = require('nock');
+var fixtures = require('../fixtures.js');
 
 module.exports = function (config) {
   // console.log(config.registryCouch)
@@ -9,17 +10,17 @@ module.exports = function (config) {
 
     // --- get package ---
     .get('/registry/request')
-    .reply(200, require('../fixtures/packages/request.json'))
+    .reply(200, fixtures.packages.request)
 
     .get('/registry/goober')
     .reply(404, {"error":"not_found","reason":"missing"})
 
     // --- get user ---
     .get('/_users/org.couchdb.user:blah')
-    .reply(200, require('../fixtures/users').blah)
+    .reply(200, fixtures.users.blah)
 
     .get('/_users/org.couchdb.user:boom').times(5)
-    .reply(200, require('../fixtures/users').boom)
+    .reply(200, fixtures.users.boom)
 
     .get('/_users/org.couchdb.user:boop')
     .reply(404, {"error":"not_found","reason":"missing"})
@@ -32,10 +33,10 @@ module.exports = function (config) {
 
     // --- modify user ---
     .put('/_users/org.couchdb.user:boom').thrice()
-    .reply(201, require('../fixtures/users').boom)
+    .reply(201, fixtures.users.boom)
 
     .put('/_users/org.couchdb.user:boom?rev=1-7adf7e546de1852cec39894c0d652fb4')
-    .reply(201, require('../fixtures/users').boom)
+    .reply(201, fixtures.users.boom)
 
     // --- modify profile ---
     .post('/_users/_design/_auth/_update/profile/blah')
@@ -47,7 +48,7 @@ module.exports = function (config) {
 
     // --- log in ---
     .post('/_session').times(4)
-    .reply(200, require('../fixtures/users').boom)
+    .reply(200, fixtures.users.boom)
 
     // --- log out ---
     .delete('/_session')
@@ -66,11 +67,11 @@ module.exports = function (config) {
 
     // --- browse ---
     .get('/registry/_design/app/_view/browseStarPackage?group_level=2&stale=update_after')
-    .reply(200, require('../fixtures/browse/starred'))
+    .reply(200, fixtures.browse.starred)
 
     // --- recent authors ---
     .get('/registry/_design/app/_view/browseAuthorsRecent?group_level=2&startkey=XXX&stale=update_after').twice()
-    .reply(200, require('../fixtures/browse/author'))
+    .reply(200, fixtures.browse.author)
 
   return couch;
 }

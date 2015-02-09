@@ -47,6 +47,10 @@ var fixtures = {
   ]
 };
 
+User.prototype.confirmEmail = function (user, callback) {
+  return callback(null, user);
+};
+
 User.prototype.get = function(name, options, callback) {
   var res = fixtures.user;
 
@@ -89,6 +93,23 @@ User.prototype.getPackages = function(name, callback) {
   return callback(null, fixtures.packages);
 };
 
+User.prototype.login = function (loginInfo, callback) {
+
+  if (loginInfo.name === fixtures.usercli.name &&
+      loginInfo.password === fixtures.usercli.password) {
+    return callback(null, fixtures.usercli);
+  }
+
+  if (loginInfo.name !== fixtures.user.name ||
+      loginInfo.password !== fixtures.user.password) {
+    var err = Error("password is incorrect for " + fixtures.user.name);
+    err.statusCode = 401;
+    return callback(err);
+  }
+
+  return callback(null, fixtures.user);
+};
+
 User.prototype.lookupEmail = function (email, callback) {
   if (userValidate.email(email)) {
     var err = new Error('email is invalid');
@@ -114,27 +135,10 @@ User.prototype.lookupEmail = function (email, callback) {
   return callback(null, names);
 };
 
-User.prototype.login = function (loginInfo, callback) {
-
-  if (loginInfo.name === fixtures.usercli.name &&
-      loginInfo.password === fixtures.usercli.password) {
-    return callback(null, fixtures.usercli);
-  }
-
-  if (loginInfo.name !== fixtures.user.name ||
-      loginInfo.password !== fixtures.user.password) {
-    var err = Error("password is incorrect for " + fixtures.user.name);
-    err.statusCode = 401;
-    return callback(err);
-  }
-
-  return callback(null, fixtures.user);
-};
-
 User.prototype.save = function (user, callback) {
   return callback(null, fixtures.user);
 };
 
 User.prototype.signup = function (user, callback) {
   return callback(null, fixtures.user);
-}
+};

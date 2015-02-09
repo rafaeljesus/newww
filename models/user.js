@@ -25,6 +25,31 @@ var User = module.exports = function(opts) {
   return this;
 };
 
+User.prototype.confirmEmail = function (user, callback) {
+  var url = fmt("%s/user/%s/verify", this.host, user.name);
+  this.log(url);
+
+  return new Promise(function(resolve, reject) {
+    var opts = {
+      url: url,
+      json: true,
+      body: {
+        verification_key: user.verification_key
+      }
+    };
+
+    request.post(opts, function (err, resp, body) {
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error verifying user ' + user.name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};
+
 User.prototype.get = function(name, options, callback) {
   var _this = this;
   var user;

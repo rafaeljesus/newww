@@ -4,6 +4,8 @@ module.exports = function confirmEmail (request, reply) {
   var opts = {},
       cache = request.server.app.cache;
 
+  var User = new request.server.models.User({logger: request.logger});
+
   if (!request.params || !request.params.token) {
     request.logger.warn('no token parameter');
     return reply.view('errors/not-found', opts).code(404);
@@ -27,29 +29,20 @@ module.exports = function confirmEmail (request, reply) {
       return;
     }
 
-    var name = cached.item.name,
-        email = cached.item.email,
-        verify = cached.item.token;
+    var name = cached.item.name;
 
-    if (verify !== token) {
+    if (cached.item.token !== token) {
       request.logger.error('token in cache does not match user token; cached=' + cached.item.token + '; token=' + token);
       reply.view('errors/internal', opts).code(500);
       return;
     }
 
-    var newPass = crypto.randomBytes(18).toString('base64'),
-        newAuth = {
-          name: name,
-          password: newPass,
-          mustChangePass: true
-        };
-
     request.logger.warn('Confirming email for user ' + name);
 
-    request.server.methods.user.confirmEmail(name, email, function (err) {
+    User.confirmEmail(cached.item, function (err) {
 
       if (err) {
-        request.logger.error('Failed to confirm email for ' + newAuth.name);
+        request.logger.error('Failed to confirm email for ' + name);
         request.logger.error(err);
         return reply.view('errors/internal', opts).code(500);
       }

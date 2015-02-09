@@ -50,7 +50,7 @@
     "hapi-common-log": "^1.1.0",
     "hbsfy": "^2.2.0",
     "highlight.js": "^8.4.0",
-    "hiredis": "^0.1.17",
+    "hiredis": "^0.2.0",
     "hoek": "^2.11.0",
     "is-url": "^1.1.0",
     "joi": "^5.1.0",

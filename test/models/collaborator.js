@@ -9,9 +9,7 @@ var Code = require('code'),
     nock = require("nock"),
     _ = require('lodash'),
     Collaborator,
-    fixtures = {
-      collaborators: _.merge()
-    }
+    fixtures = require("../fixtures.js")
 
 beforeEach(function (done) {
   Collaborator = new (require("../../models/collaborator"))({
@@ -28,16 +26,9 @@ afterEach(function (done) {
 describe("Collaborator", function(){
 
   describe("initialization", function() {
-    it("defaults to process.env.USER_API as host", function(done) {
-      var USER_API_OLD = process.env.USER_API;
-      process.env.USER_API = "https://envy.com/";
-      expect(new (require("../../models/customer"))().host).to.equal('https://envy.com/');
-      process.env.USER_API = USER_API_OLD;
-      done();
-    });
 
     it("accepts a custom host", function(done) {
-      expect(Collaborator.host).to.equal('https://user.com');
+      expect(Collaborator.host).to.equal('https://collaborator.com');
       done();
     });
   });
@@ -45,6 +36,18 @@ describe("Collaborator", function(){
   describe("list", function () {
 
     it("returns a collaborators object with usernames as keys", function (done) {
+      var mock = nock(Collaborator.host)
+        .get('/package/foo/collaborators')
+        .reply(200, fixtures.collaborators);
+
+      Collaborator.list("foo", function (err, collaborators) {
+        mock.done();
+        expect(err).to.be.null();
+        expect(collaborators).to.exist();
+        expect(collaborators).to.deepEqual(fixtures.collaborators);
+        done();
+      });
+
     });
   });
 

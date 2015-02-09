@@ -9,13 +9,13 @@ var Code = require('code'),
     nock = require("nock");
 
 var server;
-var fakeBrowse = require('../fixtures/browseData');
+var fakeBrowse = require('../fixtures/browse/index.js');
 
 var username1 = 'fakeuser',
     username2 = 'fakeusercli';
 
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });

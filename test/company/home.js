@@ -11,7 +11,7 @@ var server;
 
 // prepare the server
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
@@ -57,4 +57,19 @@ describe('Getting to the home page', function () {
       done();
     });
   }*/);
+});
+
+describe('redirects', function () {
+  it('redirects /private-npm to /private-modules', function (done) {
+    var opts = {
+      url: '/private-npm'
+    };
+
+    server.inject(opts, function (resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.match(/\/private-modules$/);
+      done();
+    });
+  });
+
 });

@@ -9,7 +9,7 @@ module.exports = function (done) {
   var server = new Hapi.Server();
   server.connection();
   server.views(config.views);
-  server.methods = require('./mock-server-methods')(server);
+  server.methods = require('./server-methods')(server);
 
   server.register(require('hapi-auth-cookie'), function (err) {
     if (err) { throw err; }

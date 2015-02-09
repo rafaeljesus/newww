@@ -9,11 +9,11 @@ var Code = require('code'),
     cheerio = require("cheerio");
 
 var server, cookieCrumb;
-var oriReadme = require('../fixtures/fake.json').readme;
 
-// prepare the server
+// var oriReadme = require('../fixtures/packages/fake.json').readme;
+
 beforeEach(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
@@ -72,7 +72,7 @@ describe('Retreiving packages from the registry', function () {
 
   it('treats unpublished packages specially', function (done) {
     var options = {
-      url: '/package/unpub'
+      url: '/package/unpublished'
     };
 
     server.inject(options, function (resp) {
@@ -83,6 +83,19 @@ describe('Retreiving packages from the registry', function () {
       done();
     });
   });
+
+  it('creates an npm install command', function (done) {
+    var options = {
+      url: '/package/supercalifragilisticexpialidocious'
+    };
+
+    server.inject(options, function (resp) {
+      var pkg = resp.request.response.source.context.package;
+      expect(pkg.installCommand).to.equal("npm i supercalifragilisticexpialidocious -g");
+      done();
+    });
+  });
+
 });
 
 describe('getting package download information', function () {

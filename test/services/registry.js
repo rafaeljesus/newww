@@ -1,4 +1,4 @@
-// 
+//
 // var Code = require('code'),
 //     Lab = require('lab'),
 //     lab = exports.lab = Lab.script(),
@@ -38,7 +38,7 @@
 //
 //     var couch = nock(couchConfig.registryCouch)
 //         .get('/registry/request')
-//         .reply(200, require('../fixtures/request.json'));
+//         .reply(200, require('../fixtures/packages/request.json'));
 //
 //     server.methods.registry.getPackage('request', function (er, pkg) {
 //       expect(er).to.not.exist();

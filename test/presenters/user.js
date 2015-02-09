@@ -5,7 +5,7 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect,
     present = require(__dirname + "/../../presenters/user"),
-    users = require(__dirname + "/../fixtures/users");
+    fixtures = require(__dirname + "/../fixtures.js");
 
 describe("email", function(){
 
@@ -49,7 +49,7 @@ describe("avatar", function(){
 describe("meta", function () {
 
   it("is an object with key-value pairs", function(done){
-    var user = present(users.full_meta);
+    var user = present(fixtures.users.full_meta);
     expect(user.meta).to.exist();
     expect(user.meta).to.be.an.object();
     done();

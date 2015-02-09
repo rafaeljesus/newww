@@ -1,10 +1,5 @@
 var _ = require('lodash');
-var fixtures = {
-  customers: {
-    happy: require(__dirname + '/../../fixtures/customers/happy.json'),
-    license_expired: require(__dirname + '/../../fixtures/customers/license_expired.json')
-  }
-}
+var fixtures = require('../../fixtures.js');
 
 var Customer = module.exports = function(opts) {
   _.extend(this, {

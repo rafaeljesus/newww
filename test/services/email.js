@@ -9,9 +9,7 @@ var Code = require('code'),
     expect = Code.expect,
     Hapi = require('hapi'),
     email = require('../../services/email'),
-    config = require('../../config'),
     nodemailer = require('nodemailer'),
-    metrics = require('../../adapters/metrics')(config.metrics),
     oldCreateTransport,
     server;
 
@@ -47,11 +45,6 @@ after(function (done) {
 });
 
 describe('send an email', function () {
-  it('has the proper environment variables', function (done) {
-    expect(process.env.MAIL_ACCESS_KEY_ID).to.exist();
-    expect(process.env.MAIL_SECRET_ACCESS_KEY).to.exist();
-    done();
-  });
 
   it('has no errors if sendMail has no errors', function (done) {
 

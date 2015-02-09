@@ -138,6 +138,7 @@ module.exports = function (server) {
       },
 
       getPackage: function (pkgName, next) {
+
         if (fixtures.packages[pkgName]) {
           return next(null, fixtures.packages[pkgName]);
         }

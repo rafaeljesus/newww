@@ -1,3 +1,6 @@
+// I contain all the fixtures!
+// require() me!
+
 module.exports = {
   browse: require("./fixtures/browse/index"),
   customers: require("./fixtures/customers/index"),

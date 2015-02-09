@@ -8,8 +8,7 @@ var Code = require('code'),
     expect = Code.expect;
 
 var server;
-var users = require('../fixtures/users');
-
+var fixtures = require('../fixtures.js');
 var username1 = 'fakeuser';
 
 beforeEach(function (done) {
@@ -35,7 +34,7 @@ describe("bonbon", function() {
   it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: users.npmEmployee
+      credentials: fixtures.users.npmEmployee
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
@@ -49,7 +48,7 @@ describe("bonbon", function() {
   it('returns the whole context object if `json` has no value', function (done) {
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: users.npmEmployee
+      credentials: fixtures.users.npmEmployee
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
@@ -63,7 +62,7 @@ describe("bonbon", function() {
   it('returns a subset of the context if `json` has a value', function (done) {
     var options = {
       url: '/~' + username1 + '?json=profile.meta',
-      credentials: users.npmEmployee
+      credentials: fixtures.users.npmEmployee
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
@@ -78,7 +77,7 @@ describe("bonbon", function() {
   it('does not allow logged-in non-employees to request the view context', function (done) {
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: users.fakeuser
+      credentials: fixtures.users.fakeuser
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
@@ -90,10 +89,10 @@ describe("bonbon", function() {
     });
   });
 
-  it('does not allow anonymous users to request the view context', function (done) {
+  it('does not allow anonymous fixtures.users to request the view context', function (done) {
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: users.fakeuser
+      credentials: fixtures.users.fakeuser
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {

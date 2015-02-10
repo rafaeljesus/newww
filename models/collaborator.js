@@ -14,28 +14,47 @@ var Collaborator = module.exports = function(opts) {
   return this;
 };
 
-
 Collaborator.prototype.list = function(package, callback) {
+  var _this = this;
   var url = fmt("%s/package/%s/collaborators", this.host, package);
-  return new Promise(function (resolve, reject) {
-    request.get({url: url, json: true}, function(err, resp, body){
-      if (err) { return reject(err); }
-      if (resp.statusCode > 399) {
-        err = Error('error getting collaborators for package: ' + package);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-      return resolve(body);
-    });
+  return new Promise(function(resolve, reject) {
+    request.get({
+        url: url,
+        json: true,
+        headers: {
+          bearer: _this.bearer
+        }
+      },
+      function(err, resp, body) {
+        if (err) {
+          return reject(err);
+        }
+        if (resp.statusCode > 399) {
+          err = Error('error getting collaborators for package: ' + package);
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+        return resolve(body);
+      });
   }).nodeify(callback);
 };
 
 Collaborator.prototype.add = function(package, collaborator, callback) {
+  var _this = this;
   var url = fmt("%s/package/%s/collaborators", this.host, package);
 
-  return new Promise(function (resolve, reject) {
-    request.put({url: url, json: true, body: collaborator}, function(err, resp, body){
-      if (err) { return reject(err); }
+  return new Promise(function(resolve, reject) {
+    request.put({
+      url: url,
+      json: true,
+      headers: {
+        bearer: _this.bearer
+      },
+      body: collaborator
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error adding collaborator to package: ' + package);
         err.statusCode = resp.statusCode;
@@ -43,16 +62,25 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
       }
       return resolve(body);
     });
-  }).nodeify(callback);
-};
+  }).nodeify(callback);};
 
 
 Collaborator.prototype.update = function(package, collaborator, callback) {
+  var _this = this;
   var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.username);
 
-  return new Promise(function (resolve, reject) {
-    request.post({url: url, json: true, body: collaborator}, function(err, resp, body){
-      if (err) { return reject(err); }
+  return new Promise(function(resolve, reject) {
+    request.post({
+      url: url,
+      json: true,
+      headers: {
+        bearer: _this.bearer
+      },
+      body: collaborator
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error updating collaborator access to package: ' + package);
         err.statusCode = resp.statusCode;
@@ -60,15 +88,15 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
       }
       return resolve(body);
     });
-  }).nodeify(callback);
-};
+  }).nodeify(callback);};
 
 
 Collaborator.prototype.del = function(package, collaborator, callback) {
+  var _this = this;
   var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.username);
 
   return new Promise(function (resolve, reject) {
-    request.del({url: url, json: true}, function(err, resp, body){
+    request.del({url: url, json: true, headers: {bearer: _this.bearer}}, function(err, resp, body){
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error('error removing collaborator from package: ' + package);

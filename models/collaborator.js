@@ -34,10 +34,10 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
   var url = fmt("%s/package/%s/collaborators", this.host, package);
 
   return new Promise(function (resolve, reject) {
-    request.put({url: url, json: true}, function(err, resp, body){
+    request.put({url: url, json: true, body: collaborator}, function(err, resp, body){
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {
-        err = Error('error getting user ' + name);
+        err = Error('error adding collaborator to package: ' + package);
         err.statusCode = resp.statusCode;
         return reject(err);
       }

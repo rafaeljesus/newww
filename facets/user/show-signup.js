@@ -49,9 +49,12 @@ module.exports = function signup (request, reply) {
         }
 
         if (opts.errors.length) {
-
           request.timing.page = 'signup-form-error';
           request.metrics.metric({name: 'signup-form-error'});
+
+          // give back the user input so the form can be
+          // partially re-populated
+          opts.userInput = validatedUser
 
           return reply.view('user/signup-form', opts).code(400);
         }

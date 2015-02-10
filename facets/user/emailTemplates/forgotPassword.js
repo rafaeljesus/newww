@@ -1,6 +1,6 @@
 module.exports = function (name, u, from) {
 
-  var text = "You are receiving this because you (or someone else) have "
+  var text = "You are receiving this because you (or someone else) "
       + "requested the reset of the '"
       + name
       + "' npm user account.\r\n\r\n"

@@ -5,7 +5,7 @@ module.exports = function (user, token, from) {
   var fromEmail = from || mailConfig.emailFrom;
   var u = mailConfig.canonicalHost + '/confirm-email/' + encodeURIComponent(token);
 
-  var text = "You are receiving this because you (or someone else) have " +
+  var text = "You are receiving this because you (or someone else) " +
       "signed up for an npm user account for the username '" +
       user.name +
       "'.\r\n\r\n" +

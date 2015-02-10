@@ -104,4 +104,74 @@ describe("Collaborator", function(){
 
   });
 
+  describe("update", function () {
+
+    it("updates a collaborator's access level on a package", function (done) {
+      var mock = nock(Collaborator.host)
+        .post('/package/plunk/collaborators/ralph_the_reader', ralph)
+        .reply(200, ralph);
+
+      Collaborator.update("plunk", ralph, function (err, collaborator) {
+        mock.done();
+        expect(err).to.be.null();
+        expect(collaborator).to.deep.equal(ralph);
+        done();
+      });
+
+    });
+
+    it("calls back with an error if something goes wrong", function (done) {
+      var mock = nock(Collaborator.host)
+        .post('/package/moomoo/collaborators/ralph_the_reader', ralph)
+        .reply(404);
+
+      Collaborator.update("moomoo", ralph, function (err, collaborator) {
+        mock.done();
+        expect(err).to.be.an.object();
+        expect(err.statusCode).to.equal(404);
+        expect(err.message).to.equal("error updating collaborator access to package: moomoo");
+        expect(collaborator).to.not.exist();
+        done();
+      });
+
+    });
+
+  });
+
+
+  describe("del", function () {
+
+    it("deletes a collaborator from a package", function (done) {
+      var mock = nock(Collaborator.host)
+        .delete('/package/grizzle/collaborators/ralph_the_reader')
+        .reply(200, ralph);
+
+      Collaborator.del("grizzle", ralph, function (err, collaborator) {
+        mock.done();
+        expect(err).to.be.null();
+        expect(collaborator).to.deep.equal(ralph);
+        done();
+      });
+
+    });
+
+    it("calls back with an error if something goes wrong", function (done) {
+      var mock = nock(Collaborator.host)
+        .delete('/package/snarfblatt/collaborators/ralph_the_reader')
+        .reply(404);
+
+      Collaborator.del("snarfblatt", ralph, function (err, collaborator) {
+        mock.done();
+        expect(err).to.be.an.object();
+        expect(err.statusCode).to.equal(404);
+        expect(err.message).to.equal("error removing collaborator from package: snarfblatt");
+        expect(collaborator).to.not.exist();
+        done();
+      });
+
+    });
+
+  });
+
+
 });

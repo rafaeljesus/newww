@@ -45,3 +45,37 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
     });
   }).nodeify(callback);
 };
+
+
+Collaborator.prototype.update = function(package, collaborator, callback) {
+  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.username);
+
+  return new Promise(function (resolve, reject) {
+    request.post({url: url, json: true, body: collaborator}, function(err, resp, body){
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error updating collaborator access to package: ' + package);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};
+
+
+Collaborator.prototype.del = function(package, collaborator, callback) {
+  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.username);
+
+  return new Promise(function (resolve, reject) {
+    request.del({url: url, json: true}, function(err, resp, body){
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error removing collaborator from package: ' + package);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};

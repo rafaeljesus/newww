@@ -16,11 +16,25 @@ var Collaborator = module.exports = function(opts) {
 
 
 Collaborator.prototype.list = function(package, callback) {
-  var url = fmt("package/%s/collaborators", package);
+  var url = fmt("%s/package/%s/collaborators", this.host, package);
+  return new Promise(function (resolve, reject) {
+    request.get({url: url, json: true}, function(err, resp, body){
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error getting collaborators for package: ' + package);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};
+
+Collaborator.prototype.add = function(package, collaborator, callback) {
+  var url = fmt("%s/package/%s/collaborators", this.host, package);
 
   return new Promise(function (resolve, reject) {
-
-    request.get({url: url, json: true}, function(err, resp, body){
+    request.put({url: url, json: true}, function(err, resp, body){
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error('error getting user ' + name);
@@ -29,5 +43,5 @@ Collaborator.prototype.list = function(package, callback) {
       }
       return resolve(body);
     });
-  }).nodeify(cb)
-});
+  }).nodeify(callback);
+};

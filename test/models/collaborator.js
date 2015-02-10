@@ -9,7 +9,7 @@ var Code = require('code'),
     nock = require("nock"),
     _ = require('lodash'),
     Collaborator,
-    fixtures = require("../fixtures.js")
+    fixtures = require("../fixtures.js");
 
 beforeEach(function (done) {
   Collaborator = new (require("../../models/collaborator"))({
@@ -44,11 +44,28 @@ describe("Collaborator", function(){
         mock.done();
         expect(err).to.be.null();
         expect(collaborators).to.exist();
-        expect(collaborators).to.deepEqual(fixtures.collaborators);
+        expect(collaborators).to.deep.equal(fixtures.collaborators);
         done();
       });
 
     });
+
+    it("calls back with an error if package is not found", function (done) {
+      var mock = nock(Collaborator.host)
+        .get('/package/ghost/collaborators')
+        .reply(404);
+
+      Collaborator.list("ghost", function (err, collaborators) {
+        mock.done();
+        expect(err).to.be.an.object();
+        expect(err.statusCode).to.equal(404);
+        expect(err.message).to.equal("error getting collaborators for package: ghost");
+        expect(collaborators).to.not.exist();
+        done();
+      });
+
+    });
+
   });
 
 });

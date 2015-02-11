@@ -141,6 +141,22 @@ var unauthenticatedRoutes = [
     handler: require('./facets/enterprise/show-verification'),
     config: enterpriseConfig
   },{
+    path: "/package/{package}/collaborators",
+    method: "GET",
+    handler: require('./facets/collaborator').list
+  },{
+    path: "/package/{package}/collaborators",
+    method: "PUT",
+    handler: require('./facets/collaborator').add
+  },{
+    path: "/package/{package}/collaborators/{username}",
+    method: "POST",
+    handler: require('./facets/collaborator').update
+  },{
+    path: "/package/{package}/collaborators/{username}",
+    method: "DELETE",
+    handler: require('./facets/collaborator').del
+  },{
     path: "/package/{package}/{version?}",
     method: "GET",
     handler: require('./facets/registry/show-package')

@@ -24,6 +24,14 @@ var unathenticatedRouteConfig = {
   }
 };
 
+var ajaxy = {
+  plugins: {
+    crumb: {
+      source: 'payload',
+      restful: true
+    }
+  }
+}
 
 // CAUTION: THESE ROUTES DO NOT REQUIRE AUTHENTICATION.
 // DO NOT PUT SENSITIVE ROUTES IN THIS ARRAY.
@@ -106,15 +114,7 @@ var unauthenticatedRoutes = [
     path: "/joinwhoshiring",
     method: "POST",
     handler: require('./facets/company/show-whoshiring-payments'),
-    config: {
-      plugins: {
-        // tolerate Ajax
-        crumb: {
-          source: 'payload',
-          restful: true
-        }
-      }
-    }
+    config: ajaxy
   },{
     path: "/enterprise",
     method: "GET",
@@ -151,7 +151,8 @@ var unauthenticatedRoutes = [
   },{
     path: "/package/{package}/collaborators/{username}",
     method: "POST",
-    handler: require('./facets/collaborator').update
+    handler: require('./facets/collaborator').update,
+    config: ajaxy
   },{
     path: "/package/{package}/collaborators/{username}",
     method: "DELETE",
@@ -227,15 +228,7 @@ var unauthenticatedRoutes = [
     path: "/star",
     method: "POST",
     handler: require('./facets/registry/show-star'),
-    config: {
-      plugins: {
-        // tolerate Ajax
-        crumb: {
-          source: 'payload',
-          restful: true
-        }
-      }
-    }
+    config: ajaxy
   },{
     path: "/search/{q?}",
     method: "GET",

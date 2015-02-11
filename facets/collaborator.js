@@ -19,7 +19,7 @@ collaborator.list = function (request, reply) {
 collaborator.add = function (request, reply) {
   var Collaborator = newCollaboratorClient(request)
 
-  Collaborator.add(request.params.package, request.payload, function(err, collaborator) {
+  Collaborator.add(request.params.package, request.payload.collaborator, function(err, collaborator) {
     if (err) {
       request.logger.error(err);
       return reply(err)
@@ -31,7 +31,7 @@ collaborator.add = function (request, reply) {
 collaborator.update = function (request, reply) {
   var Collaborator = newCollaboratorClient(request)
 
-  Collaborator.update(request.params.package, request.body, function(err, collaborator) {
+  Collaborator.update(request.params.package, request.payload.collaborator, function(err, collaborator) {
     if (err) {
       request.logger.error(err);
       return reply(err)

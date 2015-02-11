@@ -1,4 +1,5 @@
 var fixtures = require("../fixtures.js"),
+    generateCrumb = require("./crumb.js"),
     Lab = require('lab'),
     Code = require('code'),
     lab = exports.lab = Lab.script(),
@@ -11,8 +12,7 @@ var fixtures = require("../fixtures.js"),
     expect = Code.expect,
     server,
     source,
-    cache,
-    cookieCrumb;
+    cache;
 
 before(function (done) {
   require('../mocks/server')(function (obj) {
@@ -61,12 +61,44 @@ describe('PUT /package/foo/collaborators', function () {
       method: "put",
       url: "/package/foo/collaborators",
       credentials: fixtures.users.fakeuser,
-      payload: fixtures.collaborators.wrigley_the_writer
+      payload: {
+        collaborator: fixtures.collaborators.wrigley_the_writer
+      }
     }
     done()
   })
 
   it('calls back with a JSON object containing the new collaborator', function (done) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      expect(resp.result.collaborator).to.be.an.object();
+      expect(resp.result.collaborator).to.deep.equal(fixtures.collaborators.wrigley_the_writer);
+      done();
+    });
+  });
+
+});
+
+describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
+  var options
+
+  beforeEach(function(done){
+    generateCrumb(server, function(crumb) {
+      options = {
+        method: "post",
+        url: "/package/zing/collaborators/blah",
+        credentials: fixtures.users.fakeuser,
+        payload: {
+          crumb: crumb,
+          collaborator: fixtures.collaborators.wrigley_the_writer
+        },
+        headers: { cookie: 'crumb=' + crumb }
+      }
+      done()
+    })
+  })
+
+  it('calls back with a JSON object containing the updated collaborator', function (done) {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();

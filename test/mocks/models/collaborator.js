@@ -24,6 +24,6 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
   return callback(null, fixtures.collaborators[collaborator.username]);
 };
 
-Collaborator.prototype.del = function(package, collaborator, callback) {
-  return callback(null, fixtures.collaborators[collaborator.username]);
+Collaborator.prototype.del = function(package, username, callback) {
+  return callback(null, fixtures.collaborators[username]);
 };

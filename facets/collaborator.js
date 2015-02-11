@@ -43,7 +43,7 @@ collaborator.update = function (request, reply) {
 collaborator.del = function (request, reply) {
   var Collaborator = newCollaboratorClient(request)
 
-  Collaborator.del(request.params.package, function(err, collaborator) {
+  Collaborator.del(request.params.package, request.params.username, function(err, collaborator) {
     if (err) {
       request.logger.error(err);
       return reply(err)

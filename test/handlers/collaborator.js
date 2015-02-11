@@ -86,19 +86,47 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
     generateCrumb(server, function(crumb) {
       options = {
         method: "post",
-        url: "/package/zing/collaborators/blah",
+        url: "/package/zing/collaborators/wrigley_the_writer",
         credentials: fixtures.users.fakeuser,
         payload: {
           crumb: crumb,
           collaborator: fixtures.collaborators.wrigley_the_writer
         },
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {cookie: 'crumb='+crumb}
       }
       done()
     })
   })
 
   it('calls back with a JSON object containing the updated collaborator', function (done) {
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      expect(resp.result.collaborator).to.be.an.object();
+      expect(resp.result.collaborator).to.deep.equal(fixtures.collaborators.wrigley_the_writer);
+      done();
+    });
+  });
+
+});
+
+
+describe('DELETE /package/zing/collaborators/wrigley_the_writer', function () {
+  var options
+
+  beforeEach(function(done){
+    generateCrumb(server, function(crumb) {
+      options = {
+        method: "delete",
+        url: "/package/zing/collaborators/wrigley_the_writer",
+        credentials: fixtures.users.fakeuser,
+        payload: {crumb: crumb},
+        headers: {cookie: 'crumb='+crumb}
+      }
+      done()
+    })
+  })
+
+  it('calls back with a JSON object containing the deleted collaborator', function (done) {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();

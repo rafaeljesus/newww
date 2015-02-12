@@ -81,6 +81,7 @@ server.register(require('hapi-auth-cookie'), function (err) {
     server.route(require('./routes'));
 
     server.models = {
+      Collaborator: require('./models/collaborator'),
       Customer: require('./models/customer'),
       User: require('./models/user'),
       Package: require('./models/package')

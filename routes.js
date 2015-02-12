@@ -24,6 +24,14 @@ var unathenticatedRouteConfig = {
   }
 };
 
+var ajaxy = {
+  plugins: {
+    crumb: {
+      source: 'payload',
+      restful: true
+    }
+  }
+}
 
 // CAUTION: THESE ROUTES DO NOT REQUIRE AUTHENTICATION.
 // DO NOT PUT SENSITIVE ROUTES IN THIS ARRAY.
@@ -106,15 +114,7 @@ var unauthenticatedRoutes = [
     path: "/joinwhoshiring",
     method: "POST",
     handler: require('./facets/company/show-whoshiring-payments'),
-    config: {
-      plugins: {
-        // tolerate Ajax
-        crumb: {
-          source: 'payload',
-          restful: true
-        }
-      }
-    }
+    config: ajaxy
   },{
     path: "/enterprise",
     method: "GET",
@@ -141,6 +141,23 @@ var unauthenticatedRoutes = [
     handler: require('./facets/enterprise/show-verification'),
     config: enterpriseConfig
   },{
+    path: "/package/{package}/collaborators",
+    method: "GET",
+    handler: require('./facets/collaborator').list
+  },{
+    path: "/package/{package}/collaborators",
+    method: "PUT",
+    handler: require('./facets/collaborator').add
+  },{
+    path: "/package/{package}/collaborators/{username}",
+    method: "POST",
+    handler: require('./facets/collaborator').update,
+    config: ajaxy
+  },{
+    path: "/package/{package}/collaborators/{username}",
+    method: "DELETE",
+    handler: require('./facets/collaborator').del
+  },{
     path: "/package/{package}/{version?}",
     method: "GET",
     handler: require('./facets/registry/show-package')
@@ -151,11 +168,11 @@ var unauthenticatedRoutes = [
       return reply.redirect("/package/" + request.params.package).code(301);
     }
   },{
-    path: "/packages/{package}/access",
+    path: "/package/{package}/access",
     method: "GET",
     handler: require('./facets/package/access')
   },{
-    path: "/package/{package}/access",
+    path: "/package/{scope}/{package}/access",
     method: "GET",
     handler: require('./facets/package/access')
   },{
@@ -211,15 +228,7 @@ var unauthenticatedRoutes = [
     path: "/star",
     method: "POST",
     handler: require('./facets/registry/show-star'),
-    config: {
-      plugins: {
-        // tolerate Ajax
-        crumb: {
-          source: 'payload',
-          restful: true
-        }
-      }
-    }
+    config: ajaxy
   },{
     path: "/search/{q?}",
     method: "GET",

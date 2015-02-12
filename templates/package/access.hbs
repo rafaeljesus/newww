@@ -9,21 +9,15 @@
     <p class="package-description">{{description}}</p>
   </div>
 
-  <h2>Access</h2>
-
+  <p>
   {{#if private}}
-    <p class="notice">
       The {{name}} package is <em>private</em>. Only the users below can access it.
       <a href="#">Make it public...</a>
-    </p>
   {{else}}
-    <p class="notice">
       The {{name}} package is <em>public</em>. Anyone can read it, and only the users below can write.
       <a href="#">Make it private...</a>
-    </p>
   {{/if}}
-
-  <h2>Collaborators</h2>
+  </p>
 
   <table class="ruled humans">
     <thead>
@@ -40,20 +34,20 @@
         <tr>
           <td class="avatar">
             <a href="/~{{name}}">
-              <img src="{{avatar.small}}" alt="{{username}}" />
+              <img src="{{avatar.small}}" alt="{{name}}" />
             </a>
           </td>
           <td class="name">
-            <a href="/~{{name}}">{{fullname}}</a>
+            <a href="/~{{name}}">{{name}}</a>
           </td>
           <td class="access">
             <label class="glamorous">
-              <input type="radio" name="access-{{fullname}}" value="read-only" {{#if read_only}}checked="checked"{{/if}}>
+              <input type="radio" name="access-{{name}}" value="read-only" {{#unless write}}checked="checked"{{/unless}}>
               <span>read-only</span>
             </label>
 
             <label class="glamorous">
-              <input type="radio" name="access-{{fullname}}" value="read-write" {{#unless read_only}}checked="checked"{{/unless}}>
+              <input type="radio" name="access-{{name}}" value="read-write" {{#if write}}checked="checked"{{/if}}>
               <span>read-write</span>
             </label>
           </td>
@@ -64,23 +58,16 @@
       {{/each}}
 
       <tr>
-        <td class="avatar">
-          {{!-- <a href="/~{{name}}">
-            <img src="/static/images/wombat-avatar-small.png" />
-          </a> --}}
-        </td>
         <td>
-          <input type="text" name="collaborator" value="" placeholder="Add another collaborator...">
+          &nbsp;
+        </td>
+        <td colspan="1">
+          <input type="text" name="collaborator" value="" placeholder="Add a collaborator...">
         </td>
       </tr>
 
     </tbody>
   </table>
-
-  <ul>
-
-  </ul>
-
 
 </div>
 

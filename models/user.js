@@ -2,29 +2,21 @@ var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
-var presenter = require(__dirname + '/../presenters/user');
+var decorate = require(__dirname + '/../presenters/user');
 
 var User = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API,
-    presenter: true,
-    debug: false,
     bearer: false
   }, opts);
 
   return this;
 };
 
-User.prototype.log = function(msg) {
-  if (this.debug) { console.log(msg); }
-};
-
 User.prototype.login = function(loginInfo, callback) {
   var url = fmt("%s/user/%s/login", this.host, loginInfo.name);
-  this.log(url);
 
   return new Promise(function (resolve, reject) {
-
     request.post({
       url: url,
       json: true,
@@ -56,7 +48,6 @@ User.prototype.get = function(name, options, callback) {
   var _this = this;
   var user;
   var url = fmt("%s/user/%s", this.host, name);
-  this.log(url);
 
   if (!callback) {
     callback = options;
@@ -75,11 +66,7 @@ User.prototype.get = function(name, options, callback) {
     });
   })
   .then(function(_user){
-    user = _user;
-
-    if (_this.presenter) {
-      user = presenter(user);
-    }
+    user = decorate(_user);
 
     return options.stars ? _this.getStars(user.name, options.loggedInUsername) : null;
   })
@@ -95,11 +82,8 @@ User.prototype.get = function(name, options, callback) {
 };
 
 User.prototype.getPackages = function(name, callback) {
-
   var _this = this;
-
   var url = fmt("%s/user/%s/package", this.host, name);
-  this.log(url);
 
   return new Promise(function(resolve, reject) {
     var opts = {
@@ -129,9 +113,7 @@ User.prototype.getPackages = function(name, callback) {
 
 User.prototype.getStars = function(name, callback) {
   var _this = this;
-
   var url = fmt("%s/user/%s/stars", this.host, name);
-  this.log(url);
 
   return new Promise(function(resolve, reject) {
     var opts = {

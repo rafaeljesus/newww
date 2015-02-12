@@ -67,7 +67,7 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
 
 Collaborator.prototype.update = function(package, collaborator, callback) {
   var _this = this;
-  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.username);
+  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.name);
 
   return new Promise(function(resolve, reject) {
     request.post({
@@ -93,7 +93,7 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
 
 Collaborator.prototype.del = function(package, collaborator, callback) {
   var _this = this;
-  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.username);
+  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.name);
 
   return new Promise(function (resolve, reject) {
     request.del({url: url, json: true, headers: {bearer: _this.bearer}}, function(err, resp, body){

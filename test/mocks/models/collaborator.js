@@ -17,11 +17,11 @@ Collaborator.prototype.list = function(package, callback) {
 };
 
 Collaborator.prototype.add = function(package, collaborator, callback) {
-  return callback(null, fixtures.collaborators[collaborator.username]);
+  return callback(null, fixtures.collaborators[collaborator.name]);
 };
 
 Collaborator.prototype.update = function(package, collaborator, callback) {
-  return callback(null, fixtures.collaborators[collaborator.username]);
+  return callback(null, fixtures.collaborators[collaborator.name]);
 };
 
 Collaborator.prototype.del = function(package, username, callback) {

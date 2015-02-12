@@ -175,11 +175,11 @@ var unauthenticatedRoutes = [
   },{
     path: "/package/{package}/access",
     method: "GET",
-    handler: require('./facets/package/access')
+    handler: require('./handlers/access')
   },{
     path: "/package/{scope}/{package}/access",
     method: "GET",
-    handler: require('./facets/package/access')
+    handler: require('./handlers/access')
   },{
     // Redirect to home, because who cares
     path: "/browse/all",

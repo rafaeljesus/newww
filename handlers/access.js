@@ -1,6 +1,6 @@
 var http = require("request")
 var _ = require("lodash")
-var avatar = require("../../lib/avatar")
+var avatar = require("../lib/avatar")
 var humans = require("npm-humans")
 
 module.exports = function(request, reply) {

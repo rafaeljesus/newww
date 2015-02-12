@@ -143,20 +143,20 @@ var unauthenticatedRoutes = [
   },{
     path: "/package/{package}/collaborators",
     method: "GET",
-    handler: require('./facets/collaborator').list
+    handler: require('./handlers/collaborator').list
   },{
     path: "/package/{package}/collaborators",
     method: "PUT",
-    handler: require('./facets/collaborator').add
+    handler: require('./handlers/collaborator').add
   },{
     path: "/package/{package}/collaborators/{username}",
     method: "POST",
-    handler: require('./facets/collaborator').update,
+    handler: require('./handlers/collaborator').update,
     config: ajaxy
   },{
     path: "/package/{package}/collaborators/{username}",
     method: "DELETE",
-    handler: require('./facets/collaborator').del
+    handler: require('./handlers/collaborator').del
   },{
     path: "/package/{package}/{version?}",
     method: "GET",

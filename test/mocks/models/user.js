@@ -4,7 +4,6 @@ var User = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API,
     presenter: true,
-    debug: false,
     bearer: false
   }, opts);
 

@@ -1,23 +1,33 @@
-{{> package-secondary-nav package}}
+
 
 {{#with package}}
 
-<div class="content">
+<div class="tablet-width container">
+{{!-- <div class="content"> --}}
 
-  <div class="markdown">
+  <hgroup>
     <h1>{{name}}</h1>
-    <p class="package-description">{{description}}</p>
-  </div>
+    <h2>{{description}}</p>
+  </hgroup>
 
-  <p>
+  {{> package-secondary-nav this}}
+
+  <!--
+  <p class="notice">
   {{#if private}}
-      The {{name}} package is <em>private</em>. Only the users below can access it.
+      The {{name}} package is <strong>private</strong>.
       <a href="#">Make it public...</a>
   {{else}}
-      The {{name}} package is <em>public</em>. Anyone can read it, and only the users below can write.
+      The {{name}} package is <strong>public</strong>.
       <a href="#">Make it private...</a>
   {{/if}}
   </p>
+  -->
+
+  <div class="centered">
+    <input type="checkbox" class="toggle" value="private" {{#if private}}checked="checked"{{/if}} id="package-access-toggle">
+    <label for="package-access-toggle"><span></span></label>
+  </div>
 
   <table class="ruled humans">
     <thead>

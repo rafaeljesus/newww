@@ -167,6 +167,66 @@ form.star
 .honey
   display none
 
+toggleWidth = 140px
+toggleHeight = 32px
+togglePadding = 4px
+
+input.toggle
+  margin 20px 0
+  display none
+  + label
+    transition all 0.2s
+    display inline-block
+    width toggleWidth
+    height toggleHeight + (togglePadding*2)
+    border-radius (toggleHeight/2) + togglePadding
+    background greigh4
+    margin 0
+    padding togglePadding
+    cursor pointer
+    overflow hidden
+    position relative
+    &:before, &:after
+      transition all 0.2s
+      display block
+      position absolute
+      top 0px
+      line-height (toggleHeight + (togglePadding*2))
+      text-align center
+      text-transform uppercase
+      font-size 20px
+      font-weight 700
+      width (toggleWidth - toggleHeight)
+    &:before
+      left -(toggleWidth)
+      color white
+      content "private"
+    &:after
+      left toggleHeight
+      color white
+      content "public"
+    span
+      transition all 0.2s
+      display block
+      position absolute
+      width toggleHeight
+      height toggleHeight
+      border-radius (toggleHeight/2)
+      top togglePadding
+      left togglePadding
+      background white
+      content " "
+
+input.toggle:checked
+  + label
+    background npmred
+    &:before
+      left 0
+    &:after
+      left toggleWidth
+    span
+      left (toggleWidth - toggleHeight - togglePadding)
+
 label.glamorous
   cursor pointer
   display inline-block
@@ -175,7 +235,7 @@ label.glamorous
     display none
 
   input[type=radio]:checked + span, span:hover
-    background greigh3
+    background greigh4
     color white
 
   span

@@ -137,38 +137,10 @@ function setLicense (package) {
     if (parsedLicense && parsedLicense.protocol && parsedLicense.protocol.match(/^https?:$/)) {
       package.license.url = package.license.type = parsedLicense.href;
     } else {
-      package.license.url = getOssLicenseUrlFromName(license);
+      package.license.url = require("oss-license-name-to-url")(license);
       package.license.name = license;
     }
   }
-}
-
-function getOssLicenseUrlFromName (name) {
-  var base = 'http://opensource.org/licenses/';
-
-  var licenseMap = {
-    'bsd': 'BSD-2-Clause',
-    'mit': 'MIT',
-    'x11': 'MIT',
-    'mit/x11': 'MIT',
-    'apache 2.0': 'Apache-2.0',
-    'apache2': 'Apache-2.0',
-    'apache 2': 'Apache-2.0',
-    'apache-2': 'Apache-2.0',
-    'apache': 'Apache-2.0',
-    'gpl': 'GPL-3.0',
-    'gplv3': 'GPL-3.0',
-    'gplv2': 'GPL-2.0',
-    'gpl3': 'GPL-3.0',
-    'gpl2': 'GPL-2.0',
-    'lgpl': 'LGPL-2.1',
-    'lgplv2.1': 'LGPL-2.1',
-    'lgplv2': 'LGPL-2.1'
-  };
-
-  return licenseMap[name.toLowerCase()] ?
-         base + licenseMap[name.toLowerCase()] :
-         base + name;
 }
 
 function processDependents (items, urlRoot, name) {

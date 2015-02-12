@@ -7,84 +7,84 @@ var fmt = require('util').format,
     avatar = require("../lib/avatar"),
     marky = require('marky-markdown');
 
-module.exports = function presentPackage (data) {
+module.exports = function (package) {
 
-  var t = data.last_published_at;
+  var t = package.last_published_at;
 
-  if (data.versions && data.versions.indexOf(data.version) === -1) {
-    return new Error('invalid package: '+ data._id);
+  if (package.versions && package.versions.indexOf(package.version) === -1) {
+    return new Error('invalid package: '+ package._id);
   }
 
-  data.fromNow = moment(t).fromNow();
+  package.fromNow = moment(t).fromNow();
 
   // check if publisher is in maintainers list
-  data.publisherIsInMaintainersList = isPubInMaint(data);
+  package.publisherIsInMaintainersList = isPubInMaint(package);
 
-  setLicense(data);
+  setLicense(package);
 
-  data.showMaintainers = data.maintainers &&
-                         data.maintainers.length > 1 &&
-                         data.publisherIsInMaintainersList;
+  package.showMaintainers = package.maintainers &&
+                         package.maintainers.length > 1 &&
+                         package.publisherIsInMaintainersList;
 
-  data.versionsCount = data.versions && Object.keys(data.versions).length;
-  data.singleVersion = data.versionsCount === 1;
+  package.versionsCount = package.versions && Object.keys(package.versions).length;
+  package.singleVersion = package.versionsCount === 1;
 
-  gravatarPeople(data);
+  gravatarPeople(package);
 
-  if (data.dependents) {
-    data.dependents = processDependents(data.dependents, '/browse/depended/', data.name);
+  if (package.dependents) {
+    package.dependents = processDependents(package.dependents, '/browse/depended/', package.name);
   }
 
-  if (data.dependencies) {
-    data.dependencies = processDependencies(data.dependencies);
+  if (package.dependencies) {
+    package.dependencies = processDependencies(package.dependencies);
   }
 
   // homepage: convert array to string
-  if (data.homepage && Array.isArray(data.homepage)) {
-    data.homepage = data.homepage[0];
+  if (package.homepage && Array.isArray(package.homepage)) {
+    package.homepage = package.homepage[0];
   }
 
   // homepage: disallow non-URLs
-  if (data.homepage && !isUrl(data.homepage)) {
-    delete data.homepage;
+  if (package.homepage && !isUrl(package.homepage)) {
+    delete package.homepage;
   }
 
   // homepage: discard if github repo URL
-  if (data.homepage && url.parse(data.homepage).hostname.match(/^(www\.)?github\.com/i)) {
-    delete data.homepage;
+  if (package.homepage && url.parse(package.homepage).hostname.match(/^(www\.)?github\.com/i)) {
+    delete package.homepage;
   }
 
   // repository: sanitize into https URL if it's a github repo
-  if (data.repository && data.repository.url && ghurl(data.repository.url)) {
-    data.repository.url = ghurl(data.repository.url);
+  if (package.repository && package.repository.url && ghurl(package.repository.url)) {
+    package.repository.url = ghurl(package.repository.url);
   }
 
   // Create `npm install foo` command
   // Shorten to `npm i` for long package names
-  var installWord = (data.name.length > 15) ? "i" : "install"
-  var globalFlag = data.preferGlobal ? "-g" : ""
-  data.installCommand = fmt("npm %s %s %s", installWord, globalFlag, data.name)
+  var installWord = (package.name.length > 15) ? "i" : "install"
+  var globalFlag = package.preferGlobal ? "-g" : ""
+  package.installCommand = fmt("npm %s %s %s", installWord, globalFlag, package.name)
     .replace(/\s+/g, " ")
     .trim()
 
   // Infer GitHub API URL from bugs URL
-  if (data.bugs && data.bugs.url && gh(data.bugs.url)) {
-    data.ghapi = gh(data.bugs.url).api_url;
-    data.pull_requests = {
-      url: data.bugs.url.replace(/issues/, "pulls")
+  if (package.bugs && package.bugs.url && gh(package.bugs.url)) {
+    package.ghapi = gh(package.bugs.url).api_url;
+    package.pull_requests = {
+      url: package.bugs.url.replace(/issues/, "pulls")
     };
   }
 
   // Get star count
-  if (data.stars) {
-    data.starCount = Object.keys(data.stars).length;
+  if (package.stars) {
+    package.starCount = Object.keys(package.stars).length;
   }
 
-  if (typeof data.readme === "string") {
-    data.readme = marky(data.readme, {package: data}).html();
+  if (typeof package.readme === "string") {
+    package.readme = marky(package.readme, {package: package}).html();
   }
 
-  return data;
+  return package;
 };
 
 /* here's the potential situation: let's say I'm a hacker and I make a
@@ -96,10 +96,10 @@ hypothetically your friends would be like, hey! this evil-package from zeke
 looks awesome, let me use it! and then I get all their bank account numbers
 and get super duper rich and become a VC and create LinkedIn for Cats */
 
-function isPubInMaint (data) {
-  if (data.maintainers && data.publisher) {
-    for (var i = 0; i < data.maintainers.length; i++) {
-      if (data.maintainers[i].name === data.publisher.name) {
+function isPubInMaint (package) {
+  if (package.maintainers && package.publisher) {
+    for (var i = 0; i < package.maintainers.length; i++) {
+      if (package.maintainers[i].name === package.publisher.name) {
         return true;
       }
     }
@@ -108,37 +108,37 @@ function isPubInMaint (data) {
   return false;
 }
 
-function gravatarPeople (data) {
-  if (data.publisher) {
-    data.publisher.avatar = avatar(data.publisher.email);
+function gravatarPeople (package) {
+  if (package.publisher) {
+    package.publisher.avatar = avatar(package.publisher.email);
   }
 
-  if (Array.isArray(data.maintainers)) {
-    data.maintainers.forEach(function (maintainer) {
+  if (Array.isArray(package.maintainers)) {
+    package.maintainers.forEach(function (maintainer) {
       maintainer.avatar = avatar(maintainer.email);
     });
   }
 }
 
-function setLicense (data) {
-  var license = data.license;
-  data.license = {};
+function setLicense (package) {
+  var license = package.license;
+  package.license = {};
 
   if (Array.isArray(license)) { license = license[0]; }
 
   if (typeof license === 'object') {
-    if (license.type) { data.license.name = license.type; }
-    if (license.name) { data.license.name = license.name; }
-    if (license.url) { data.license.url = license.url; }
+    if (license.type) { package.license.name = license.type; }
+    if (license.name) { package.license.name = license.name; }
+    if (license.url) { package.license.url = license.url; }
   }
 
   if (typeof license === 'string') {
     var parsedLicense = url.parse(license);
     if (parsedLicense && parsedLicense.protocol && parsedLicense.protocol.match(/^https?:$/)) {
-      data.license.url = data.license.type = parsedLicense.href;
+      package.license.url = package.license.type = parsedLicense.href;
     } else {
-      data.license.url = getOssLicenseUrlFromName(license);
-      data.license.name = license;
+      package.license.url = getOssLicenseUrlFromName(license);
+      package.license.name = license;
     }
   }
 }

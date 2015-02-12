@@ -83,6 +83,7 @@ server.register(require('hapi-auth-cookie'), function (err) {
     server.models = {
       Customer: require('./models/customer'),
       User: require('./models/user'),
+      Package: require('./models/package')
     };
 
     server.start(function() {

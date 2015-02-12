@@ -102,7 +102,7 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();
-      expect(resp.result.collaborator).to.deep.equal(fixtures.collaborators.wrigley_the_writer);
+      expect(resp.result.collaborator.name).to.equal("wrigley_the_writer")
       done();
     });
   });
@@ -130,7 +130,7 @@ describe('DELETE /package/zing/collaborators/wrigley_the_writer', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();
-      expect(resp.result.collaborator).to.deep.equal(fixtures.collaborators.wrigley_the_writer);
+      expect(resp.result.collaborator.name).to.equal("wrigley_the_writer")
       done();
     });
   });

@@ -2,7 +2,7 @@ var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
-var presenter = require(__dirname + '/../presenters/collaborator');
+var decorate = require(__dirname + '/../presenters/collaborator');
 
 var Collaborator = module.exports = function(opts) {
   _.extend(this, {
@@ -34,6 +34,11 @@ Collaborator.prototype.list = function(package, callback) {
           err.statusCode = resp.statusCode;
           return reject(err);
         }
+
+        Object.keys(body).forEach(function(username){
+          body[username] = decorate(body[username])
+        })
+
         return resolve(body);
       });
   }).nodeify(callback);
@@ -60,7 +65,7 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
-      return resolve(body);
+      return resolve(decorate(body));
     });
   }).nodeify(callback);};
 
@@ -86,7 +91,7 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
-      return resolve(body);
+      return resolve(decorate(body));
     });
   }).nodeify(callback);};
 
@@ -103,7 +108,7 @@ Collaborator.prototype.del = function(package, collaborator, callback) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
-      return resolve(body);
+      return resolve(decorate(body));
     });
   }).nodeify(callback);
 };

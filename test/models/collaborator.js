@@ -45,8 +45,23 @@ describe("Collaborator", function(){
       Collaborator.list("foo", function (err, collaborators) {
         mock.done();
         expect(err).to.be.null();
-        expect(collaborators).to.exist();
-        expect(collaborators).to.deep.equal(fixtures.collaborators);
+        expect(collaborators.ralph_the_reader).to.be.an.object();
+        expect(collaborators.wrigley_the_writer).to.be.an.object();
+        done();
+      });
+
+    });
+
+    it("decorates each collaborator with an avatar", function (done) {
+      var mock = nock(Collaborator.host)
+        .get('/package/bajj/collaborators')
+        .reply(200, fixtures.collaborators);
+
+      Collaborator.list("bajj", function (err, collaborators) {
+        mock.done();
+        expect(err).to.be.null();
+        expect(collaborators.ralph_the_reader.avatar.small).to.be.a.string();
+        expect(collaborators.wrigley_the_writer.avatar.medium).to.be.a.string();
         done();
       });
 
@@ -80,7 +95,7 @@ describe("Collaborator", function(){
       Collaborator.add("skribble", ralph, function (err, collaborator) {
         mock.done();
         expect(err).to.be.null();
-        expect(collaborator).to.deep.equal(ralph);
+        expect(collaborator.name).to.equal(ralph.name);
         done();
       });
 
@@ -114,7 +129,7 @@ describe("Collaborator", function(){
       Collaborator.update("plunk", ralph, function (err, collaborator) {
         mock.done();
         expect(err).to.be.null();
-        expect(collaborator).to.deep.equal(ralph);
+        expect(collaborator.name).to.equal(ralph.name);
         done();
       });
 
@@ -149,7 +164,7 @@ describe("Collaborator", function(){
       Collaborator.del("grizzle", ralph, function (err, collaborator) {
         mock.done();
         expect(err).to.be.null();
-        expect(collaborator).to.deep.equal(ralph);
+        expect(collaborator.name).to.equal(ralph.name);
         done();
       });
 

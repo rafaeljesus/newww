@@ -17,7 +17,6 @@ User.prototype.login = function(loginInfo, callback) {
   var url = fmt("%s/user/%s/login", this.host, loginInfo.name);
 
   return new Promise(function (resolve, reject) {
-
     request.post({
       url: url,
       json: true,

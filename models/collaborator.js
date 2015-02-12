@@ -7,7 +7,6 @@ var decorate = require(__dirname + '/../presenters/collaborator');
 var Collaborator = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API,
-    presenter: true,
     bearer: false
   }, opts);
 

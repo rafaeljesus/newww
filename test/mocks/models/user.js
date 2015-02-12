@@ -3,7 +3,6 @@ var _ = require('lodash');
 var User = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API,
-    presenter: true,
     bearer: false
   }, opts);
 

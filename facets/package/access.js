@@ -5,30 +5,18 @@ var humans = require("npm-humans")
 
 module.exports = function(request, reply) {
 
-  var ctx = {}
+  var bearer = request.auth.credentials && request.auth.credentials.name;
+  var Collaborator = new request.server.models.Collaborator({bearer: bearer});
+  var ctx = {};
 
   http("http://registry.npmjs.org/" + request.params.package, function(err, res, body) {
     var package = _.pick(JSON.parse(body), ["name", "description", "dist-tags"])
-
-    package.collaborators = Object.keys(humans).map(function(username){
-      var human = _.clone(humans[username])
-      human.fullname = human.name
-      human.name = human.username
-      delete human.username
-      human.access = _.sample(["read-only", "read-write"])
-      human.read_only = (human.access === "read-only")
-      return human
-    })
-
-    package.private = require("alphabet").lower.indexOf(package.name.charAt(0)) < 13
-
-    package.collaborators.forEach(function(collaborator) {
-      collaborator.avatar = avatar(collaborator.email)
-    })
-
-    ctx.package = package
-
-    return reply.view('package/access', ctx);
+    Collaborator.list(package.name)
+      .then(function(collaborators) {
+        package.collaborators = collaborators
+        ctx.package = package
+        return reply.view('package/access', ctx);
+      })
   })
 
 }

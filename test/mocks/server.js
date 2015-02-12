@@ -37,7 +37,7 @@ module.exports = function (done) {
       },
       require('../../adapters/bonbon')
     ], function (err) {
-      server.route(require('../../routes'));
+      server.route(require('../../routes/index'));
 
       server.start(function () {
         return done(server);

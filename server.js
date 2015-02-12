@@ -1,4 +1,4 @@
-require("dotenv").load();
+require("./lib/environment")()
 
 var _       = require('lodash'),
     assert  = require('assert'),
@@ -81,6 +81,7 @@ server.register(require('hapi-auth-cookie'), function (err) {
     server.route(require('./routes'));
 
     server.models = {
+      Customer: require('./models/customer'),
       User: require('./models/user'),
       Package: require('./models/package')
     };

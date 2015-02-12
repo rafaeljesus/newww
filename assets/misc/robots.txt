@@ -28,3 +28,9 @@
 #
 User-agent: *
 Disallow: /browse/
+User-agent: Googlebot
+Allow: /browse/
+User-agent: Slurp
+Allow: /browse/
+User-Agent: msnbot
+Allow: /browse/

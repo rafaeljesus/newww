@@ -41,6 +41,12 @@ var unauthenticatedRoutes = [
       file: './static/misc/robots.txt'
     }
   },{
+    path: '/google17836d108133913c.html',
+    method: 'GET',
+    handler: function (request, reply) {
+      reply("google-site-verification: google17836d108133913c.html");
+    }
+  },{
     path: '/install.sh',
     method: 'GET',
     handler: {
@@ -66,6 +72,12 @@ var unauthenticatedRoutes = [
     path: "/",
     method: "GET",
     handler: require('./facets/company/show-homepage')
+  },{
+    path: "/private-npm",
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/private-modules").code(301);
+    }
   },{
     path: "/contact",
     method: "GET",
@@ -138,6 +150,14 @@ var unauthenticatedRoutes = [
     handler: function(request, reply) {
       return reply.redirect("/package/" + request.params.package).code(301);
     }
+  },{
+    path: "/packages/{package}/access",
+    method: "GET",
+    handler: require('./facets/package/access')
+  },{
+    path: "/package/{package}/access",
+    method: "GET",
+    handler: require('./facets/package/access')
   },{
     // Redirect to home, because who cares
     path: "/browse/all",

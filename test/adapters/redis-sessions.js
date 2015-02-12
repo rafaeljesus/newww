@@ -1,5 +1,3 @@
-require("dotenv").load()
-
 var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -48,11 +46,6 @@ describe('redis-requiring session stuff', function() {
   after('cleans up the db', function (done) {
     client.del([prefix+bob1, prefix+bob2, prefix+alice1], done)
   });
-
-  it('has a SESSION_SALT environment variable', function(done) {
-    expect(process.env.SESSION_SALT).to.exist();
-    done();
-  })
 
   it('creates a random hash for each user', function (done) {
     bob1 = redisSessions.generateRandomUserHash('bob');

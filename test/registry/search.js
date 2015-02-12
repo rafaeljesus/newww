@@ -9,12 +9,12 @@ var Code = require('code'),
     sinon = require('sinon'),
     elasticsearch = require('elasticsearch');
 
-var fakeSearch = require('../fixtures/fake-search.json'),
+var fakeSearch = require('../fixtures/search.json'),
     server;
 
 // prepare the server
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });

@@ -1,6 +1,7 @@
 var fmt = require('util').format,
     moment = require('moment'),
     url = require('url'),
+    isUrl = require('is-url'),
     ghurl = require('github-url-from-git'),
     gh = require('github-url-to-object'),
     avatar = require("../lib/avatar"),
@@ -52,8 +53,8 @@ module.exports = function presentPackage (data, request) {
     data.homepage = data.homepage[0];
   }
 
-  // homepage: disallow non-string
-  if (data.homepage && typeof data.homepage !== 'string') {
+  // homepage: disallow non-URLs
+  if (data.homepage && !isUrl(data.homepage)) {
     delete data.homepage;
   }
 
@@ -68,10 +69,12 @@ module.exports = function presentPackage (data, request) {
   }
 
   // Create `npm install foo` command
-  data.installCommand = fmt("npm install %s", data.name);
-  if (data.preferGlobal) {
-    data.installCommand += " -g";
-  }
+  // Shorten to `npm i` for long package names
+  var installWord = (data.name.length > 15) ? "i" : "install"
+  var globalFlag = data.preferGlobal ? "-g" : ""
+  data.installCommand = fmt("npm %s %s %s", installWord, data.name, globalFlag)
+    .replace(/\s+/, " ")
+    .trim()
 
   // Infer GitHub API URL from bugs URL
   if (data.bugs && data.bugs.url && gh(data.bugs.url)) {

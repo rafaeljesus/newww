@@ -16,17 +16,12 @@ var server,
     source,
     cache,
     cookieCrumb,
-    fakeuser = require('../fixtures/users').fakeuser;
-
-var fixtures = {
-  customers: {
-    happy: fs.readFileSync(__dirname + '/../fixtures/customers/happy.json', 'utf-8'),
-    license_expired: fs.readFileSync(__dirname + '/../fixtures/customers/license_expired.json', 'utf-8')
-  }
-}
+    fakeuser = require('../fixtures/users').fakeuser,
+    diana_delinquent = require('../fixtures/users').diana_delinquent,
+    norbert_newbie = require('../fixtures/users').norbert_newbie;
 
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
@@ -118,34 +113,30 @@ describe('GET /settings/billing', function () {
   });
 
   describe("paid user", function() {
-    var getCustomerMock
+    var oldLicenseAPI
 
-    beforeEach(function(done){
-      getCustomerMock = nock(process.env.LICENSE_API)
-        .get('/stripe/'+fakeuser.name)
-        .reply(200, fixtures.customers.happy);
+    before(function(done){
+      process.env.LICENSE_API = "http://fake-license-api.com"
       done()
     })
 
-    it("calls the license API", function(done){
-      options.credentials = fakeuser
-      server.inject(options, function (resp) {
-        getCustomerMock.done();
-        done();
-      });
+    after(function(done){
+      process.env.LICENSE_API = oldLicenseAPI
+      done()
     })
 
     it("adds billing data to view context", function(done){
       options.credentials = fakeuser
+
       server.inject(options, function (resp) {
-        getCustomerMock.done();
-        expect(resp.request.response.source.context).to.exist();
-        expect(resp.request.response.source.context.customer).to.exist();
-        expect(resp.request.response.source.context.customer.status).to.equal("active");
-        expect(resp.request.response.source.context.customer.license_expired).to.equal(false);
-        expect(resp.request.response.source.context.customer.next_billing_amount).to.equal(700);
-        expect(resp.request.response.source.context.customer.next_billing_date).to.be.a.date();
-        expect(resp.request.response.source.context.customer.card.brand).to.equal("Visa");
+        var context = resp.request.response.source.context
+        expect(context).to.exist();
+        var customer = context.customer
+        expect(customer).to.exist();
+        expect(customer.status).to.equal("active");
+        expect(customer.license_expired).to.equal(false);
+        expect(customer.next_billing_amount).to.equal(700);
+        expect(customer.card.brand).to.equal("Visa");
         done();
       });
     })
@@ -212,20 +203,22 @@ describe('GET /settings/billing', function () {
   })
 
   describe("paid user with expired license", function() {
-    var getCustomerMock
+    var oldLicenseAPI
 
-    beforeEach(function(done){
-      getCustomerMock = nock(process.env.LICENSE_API)
-        .get('/stripe/'+fakeuser.name)
-        .reply(200, fixtures.customers.license_expired);
+    before(function(done){
+      process.env.LICENSE_API = "http://fake-license-api.com"
+      done()
+    })
 
+    after(function(done){
+      process.env.LICENSE_API = oldLicenseAPI
       done()
     })
 
     it("has an expired license and past_due status", function(done){
-      options.credentials = fakeuser
+      options.credentials = diana_delinquent
+
       server.inject(options, function (resp) {
-        getCustomerMock.done();
         expect(resp.request.response.source.context.customer.status).to.equal("past_due");
         expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
         done();
@@ -233,10 +226,9 @@ describe('GET /settings/billing', function () {
     })
 
     it("renders information about the expired license", function(done) {
-      options.credentials = fakeuser
+      options.credentials = diana_delinquent
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
-        getCustomerMock.done();
         expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
         expect($(".error.license-expired").text()).to.include("license has expired");
         expect($(".error.license-expired").text()).to.include("status is past_due");
@@ -247,18 +239,20 @@ describe('GET /settings/billing', function () {
   })
 
   describe("unpaid user", function(){
-    var getCustomerMock
+    var oldLicenseAPI
 
-    beforeEach(function(done){
-      getCustomerMock = nock(process.env.LICENSE_API)
-        .get('/stripe/'+fakeuser.name)
-        .reply(404);
+    before(function(done){
+      process.env.LICENSE_API = "http://fake-license-api.com"
+      done()
+    })
 
+    after(function(done){
+      process.env.LICENSE_API = oldLicenseAPI
       done()
     })
 
     it("does not display billing info, because it does not exist", function(done) {
-      options.credentials = fakeuser
+      options.credentials = norbert_newbie
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
         expect($("body").length).to.equal(1);
@@ -271,7 +265,7 @@ describe('GET /settings/billing', function () {
     })
 
     it("displays a submit button with creation verbiage", function(done){
-      options.credentials = fakeuser
+      options.credentials = norbert_newbie
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result)
         expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
@@ -280,7 +274,7 @@ describe('GET /settings/billing', function () {
     })
 
     it("does not render a cancellation form", function(done) {
-      options.credentials = fakeuser
+      options.credentials = norbert_newbie
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result);
         var form = $("#cancel-subscription");
@@ -333,18 +327,8 @@ describe('POST /settings/billing', function () {
           headers: { cookie: 'crumb=' + cookieCrumb }
         }
 
-        var getCustomerMock = nock(process.env.LICENSE_API)
-          .get('/stripe/'+fakeuser.name)
-          .reply(200);
-
-        var updateCustomerMock = nock(process.env.LICENSE_API)
-          .post('/stripe/'+fakeuser.name)
-          .reply(200);
-
         server.inject(opts, function (resp) {
           expect(resp.statusCode).to.equal(302);
-          getCustomerMock.done();
-          updateCustomerMock.done();
           // expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
         });
@@ -375,22 +359,8 @@ describe('POST /settings/billing', function () {
           headers: { cookie: 'crumb=' + cookieCrumb }
         }
 
-        var getCustomerMock = nock(process.env.LICENSE_API)
-          .get('/stripe/'+fakeuser.name)
-          .reply(404);
-
-        var updateCustomerMock = nock(process.env.LICENSE_API)
-          .put('/stripe', {
-            name:fakeuser.name,
-            email:fakeuser.email,
-            card:"tok_1234567890"
-          })
-          .reply(200);
-
         server.inject(opts, function (resp) {
           expect(resp.statusCode).to.equal(302);
-          getCustomerMock.done();
-          updateCustomerMock.done();
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
         });
@@ -441,13 +411,8 @@ describe('POST /settings/billing/cancel', function () {
         headers: { cookie: 'crumb=' + cookieCrumb }
       }
 
-      var deleteCustomerMock = nock(process.env.LICENSE_API)
-        .delete('/stripe/'+fakeuser.name)
-        .reply(200);
-
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(302);
-        deleteCustomerMock.done();
         expect(resp.headers.location).to.match(/\/settings\/billing\?canceled=1$/);
         done();
       });

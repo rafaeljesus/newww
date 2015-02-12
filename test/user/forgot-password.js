@@ -26,7 +26,7 @@ var postName = function (name_email) {
 
 // prepare the server
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });

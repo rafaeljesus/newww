@@ -26,7 +26,7 @@ $(function () {
   })
 
   // Focus search input when / key is pressed (#513)
-  mousetrap.bind('/', function(e){
+  mousetrap.bind(['/', '-'], function(e){
     $('#site-search').focus();
     // don't add '/' character to input element
     e.preventDefault();

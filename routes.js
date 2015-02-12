@@ -158,10 +158,15 @@ var unauthenticatedRoutes = [
     method: "DELETE",
     handler: require('./handlers/collaborator').del
   },{
-    path: "/package/{package}/{version?}",
+    path: "/package/{package}",
     method: "GET",
     handler: require('./facets/registry/show-package')
   },{
+    path: "/package/{scope}/{package}",
+    method: "GET",
+    handler: require('./facets/registry/show-package')
+  },{
+    // redirect plural form to singular
     path: "/packages/{package}",
     method: "GET",
     handler: function(request, reply) {

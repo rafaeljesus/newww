@@ -10,10 +10,6 @@ function showPackage(request, reply) {
     request: request
   });
 
-  if (request.params.version) {
-    return reply.redirect('/package/' + request.params.package);
-  }
-
   var opts = { };
 
   request.timing.page = 'showPackage';

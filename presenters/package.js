@@ -7,20 +7,11 @@ var fmt = require('util').format,
     avatar = require("../lib/avatar"),
     marky = require('marky-markdown');
 
-module.exports = function presentPackage (data, request) {
-  if (!request) {
-    request = {
-      logger: {
-        error: console.error,
-        info: console.log
-      }
-    };
-  }
+module.exports = function presentPackage (data) {
 
   var t = data.last_published_at;
 
   if (data.versions && data.versions.indexOf(data.version) === -1) {
-    request.logger.error('invalid package data: %s', data._id);
     return new Error('invalid package: '+ data._id);
   }
 
@@ -90,7 +81,6 @@ module.exports = function presentPackage (data, request) {
   }
 
   if (typeof data.readme === "string") {
-    request.logger.info('sending ' + data.name + ' to marky-markdown');
     data.readme = marky(data.readme, {package: data}).html();
   }
 

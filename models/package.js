@@ -7,34 +7,16 @@ var decorate = require(__dirname + '/../presenters/package');
 var Package = module.exports = function (opts) {
   _.extend(this, {
     host: process.env.USER_API,
-    debug: false,
-    bearer: false,
-    request: false
+    bearer: false
   }, opts);
 
-  if (!this.request) {
-    this.request = {
-      logger: {
-        error: console.error,
-        info: console.info
-      }
-    };
-  }
-
   return this;
-};
-
-Package.prototype.log = function(msg) {
-  if (this.debug) {
-    this.request.logger.info(msg);
-  }
 };
 
 Package.prototype.get = function(name, options, callback) {
   var _this = this;
   var package;
   var url = fmt("%s/package/%s", this.host, name);
-  this.log(url);
 
   if (!callback) {
     callback = options;
@@ -42,7 +24,7 @@ Package.prototype.get = function(name, options, callback) {
   }
 
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true};
+    var opts = {url: url, json: true, headers: {bearer: _this.bearer}};
 
     if (_this.bearer) {
       opts.headers = {bearer: _this.bearer};
@@ -50,13 +32,11 @@ Package.prototype.get = function(name, options, callback) {
 
     request.get(opts, function(err, resp, body){
       if (err) {
-        _this.request.logger.err(err);
         return reject(err);
       }
       if (resp.statusCode > 399) {
         err = Error('error getting package ' + name);
         err.statusCode = resp.statusCode;
-        _this.request.logger.error(err);
         return reject(err);
       }
       if (resp.statusCode === 404) {
@@ -67,7 +47,7 @@ Package.prototype.get = function(name, options, callback) {
     });
   })
   .then(function(_package){
-    return decorate(_package, _this.request);
+    return decorate(_package);
   })
   .nodeify(callback);
 };

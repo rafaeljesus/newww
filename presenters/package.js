@@ -19,7 +19,7 @@ module.exports = function presentPackage (data, request) {
 
   var t = data.last_published_at;
 
-  if (data.versions.indexOf(data.version) === -1) {
+  if (data.versions && data.versions.indexOf(data.version) === -1) {
     request.logger.error('invalid package data: %s', data._id);
     return new Error('invalid package: '+ data._id);
   }
@@ -72,8 +72,8 @@ module.exports = function presentPackage (data, request) {
   // Shorten to `npm i` for long package names
   var installWord = (data.name.length > 15) ? "i" : "install"
   var globalFlag = data.preferGlobal ? "-g" : ""
-  data.installCommand = fmt("npm %s %s %s", installWord, data.name, globalFlag)
-    .replace(/\s+/, " ")
+  data.installCommand = fmt("npm %s %s %s", installWord, globalFlag, data.name)
+    .replace(/\s+/g, " ")
     .trim()
 
   // Infer GitHub API URL from bugs URL

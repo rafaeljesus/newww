@@ -26,10 +26,6 @@ Package.prototype.get = function(name, options, callback) {
   return new Promise(function(resolve, reject) {
     var opts = {url: url, json: true, headers: {bearer: _this.bearer}};
 
-    if (_this.bearer) {
-      opts.headers = {bearer: _this.bearer};
-    }
-
     request.get(opts, function(err, resp, body){
       if (err) {
         return reject(err);

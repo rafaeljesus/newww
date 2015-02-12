@@ -91,12 +91,9 @@ User.prototype.getPackages = function(name, callback) {
       qs: {
         per_page: 9999
       },
-      json: true
+      json: true,
+      headers: {bearer: _this.bearer}
     };
-
-    if (_this.bearer) {
-      opts.headers = {bearer: _this.bearer};
-    }
 
     request.get(opts, function(err, resp, body){
 
@@ -118,12 +115,9 @@ User.prototype.getStars = function(name, callback) {
   return new Promise(function(resolve, reject) {
     var opts = {
       url: url,
-      json: true
+      json: true,
+      headers: {bearer: _this.bearer}
     };
-
-    if (_this.bearer) {
-      opts.headers = {bearer: _this.bearer};
-    }
 
     request.get(opts, function(err, resp, body){
 

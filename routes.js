@@ -168,11 +168,11 @@ var unauthenticatedRoutes = [
       return reply.redirect("/package/" + request.params.package).code(301);
     }
   },{
-    path: "/packages/{package}/access",
+    path: "/package/{package}/access",
     method: "GET",
     handler: require('./facets/package/access')
   },{
-    path: "/package/{package}/access",
+    path: "/package/{scope}/{package}/access",
     method: "GET",
     handler: require('./facets/package/access')
   },{

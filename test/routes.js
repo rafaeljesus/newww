@@ -20,41 +20,36 @@ describe("routes", function () {
   })
 
   it("applies unauthenticated configuration to public routes", function(done){
-    var homepage = _.find(routes, function(route) {
-      return route.path === "/" && route.method === "GET"
-    })
+    var homepage = routes.at("GET /")
     expect(homepage).to.be.an.object()
     expect(homepage.config.auth.mode).to.equal("try")
     expect(homepage.config.plugins["hapi-auth-cookie"].redirectTo).to.equal(false)
     done();
   })
 
-  it("applies ajax configuration to ajax routes", function(done){
-    var star = _.find(routes, function(route) {
-      return route.path === "/star" && route.method === "POST"
-    })
+  it("applies special configuration to ajax routes", function(done){
+    var star = routes.at("POST /star")
     expect(star).to.be.an.object();
     expect(star.config.plugins.crumb.source).to.equal("payload");
     expect(star.config.plugins.crumb.restful).to.equal(true);
     done();
   })
 
-  describe("for packages", function() {
+  it("applies special configuration to enterprise routes", function(done){
+    var enterprise = routes.at("GET /enterprise")
+    expect(enterprise).to.be.an.object();
+    expect(enterprise.config.plugins.blankie).to.deep.equal(require('../lib/csp').enterprise);
+    done();
+  })
 
-    it("defines the same handler for /package/foo and /package/@acme/bar", function (done) {
-      var scopey = _.find(routes, function(route) {
-        return route.path === "/package/{scope}/{package}" && route.method === "GET"
-      })
-      var globey = _.find(routes, function(route) {
-        return route.path === "/package/{package}" && route.method === "GET"
-      })
-      expect(scopey).to.be.an.object()
-      expect(globey).to.be.an.object()
-      expect(scopey.handler).to.be.a.function()
-      expect(scopey.handler).to.deep.equal(globey.handler)
-      done();
-    })
-
+  it("defines the same handler for /package/foo and /package/@acme/bar", function (done) {
+    var scopey = routes.at("GET /package/{scope}/{package}")
+    var globey = routes.at("GET /package/{package}")
+    expect(scopey).to.be.an.object()
+    expect(globey).to.be.an.object()
+    expect(scopey.handler).to.be.a.function()
+    expect(scopey.handler).to.deep.equal(globey.handler)
+    done();
   })
 
 })

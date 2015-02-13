@@ -140,7 +140,6 @@ describe('seeing stars', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       var package = resp.request.response.source.context.package;
-      // console.log(package)
       expect(package.name).to.equal('request');
       expect(package.isStarred).to.be.true();
       expect(resp.result).to.include('<input id="star-input" type="checkbox" name="isStarred" value="true" checked>');

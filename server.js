@@ -78,11 +78,13 @@ server.register(require('hapi-auth-cookie'), function (err) {
     replify({ name: 'www-'+config.port }, server, { 'config': config,  });
     log.info('server repl socket at /tmp/rpl/www-'+config.port+'.sock');
 
-    server.route(require('./routes'));
+    server.route(require('./routes/index'));
 
     server.models = {
+      Collaborator: require('./models/collaborator'),
       Customer: require('./models/customer'),
       User: require('./models/user'),
+      Package: require('./models/package')
     };
 
     server.start(function() {

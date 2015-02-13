@@ -25,8 +25,10 @@ module.exports = function (done) {
     });
 
     server.models = {
+      Collaborator: require('../mocks/models/collaborator'),
       Customer: require('../mocks/models/customer'),
       User: require('../mocks/models/user'),
+      Package: require('../mocks/models/package')
     };
 
     server.register([{
@@ -35,7 +37,7 @@ module.exports = function (done) {
       },
       require('../../adapters/bonbon')
     ], function (err) {
-      server.route(require('../../routes'));
+      server.route(require('../../routes/index'));
 
       server.start(function () {
         return done(server);

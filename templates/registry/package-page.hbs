@@ -36,11 +36,11 @@
 
 	<ul class="box">
 
-    {{#if _npmUser}}
+    {{#if publisher}}
       <li class="last-publisher">
-        <a href="/~{{_npmUser.name}}">
-          <img src="{{_npmUser.avatar}}" alt="{{_npmUser.name}}" />
-          <span>{{_npmUser.name}}</span>
+        <a href="/~{{publisher.name}}">
+          <img src="{{publisher.avatar.medium}}" alt="{{publisher.name}}" />
+          <span>{{publisher.name}}</span>
         </a>
         {{#if fromNow}}
           published {{fromNow}}

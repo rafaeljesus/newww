@@ -3,8 +3,7 @@ var Boom = require('boom'),
     qs = require('querystring'),
     browseUtils = require('../browseUtils'),
     log = require('bole')('registry-service-browse'),
-    uuid = require('node-uuid'),
-    metrics = require('../../../adapters/metrics')();
+    uuid = require('node-uuid');
 
 module.exports = function (type, arg, skip, limit, noPackageData, next) {
   var anonCouch = CouchDB.anonCouch;
@@ -56,25 +55,11 @@ module.exports = function (type, arg, skip, limit, noPackageData, next) {
       var erObj = { type: type, arg: arg, data: data, skip: skip, limit: limit, er: er };
       log.error(uuid.v1() + ' ' + Boom.internal('Error fetching browse data'), erObj);
 
-      metrics.metric({
-        name:   'latency',
-        value:  Date.now() - start,
-        type:   'couchdb',
-        browse: 'browse ' + key
-      });
-
       return next(null, []);
     }
 
     start = Date.now();
     browseUtils.transform(type, arg, data, skip, limit, noPackageData, function (er, transformedData) {
-
-      metrics.metric({
-        name:   'latency',
-        value:  Date.now() - start,
-        type:   'transformation',
-        browse: 'browse ' + key
-      });
 
       return next(null, transformedData);
     });

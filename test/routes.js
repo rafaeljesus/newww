@@ -19,7 +19,7 @@ describe("routes", function () {
     done();
   })
 
-  it("applies unauthenticated configuration to public routes", function(done){
+  it("applies configuration to unauthenticated routes", function(done){
     var homepage = routes.at("GET /")
     expect(homepage).to.be.an.object()
     expect(homepage.config.auth.mode).to.equal("try")
@@ -27,7 +27,7 @@ describe("routes", function () {
     done();
   })
 
-  it("applies special configuration to ajax routes", function(done){
+  it("applies configuration to ajax routes", function(done){
     var star = routes.at("POST /star")
     expect(star).to.be.an.object();
     expect(star.config.plugins.crumb.source).to.equal("payload");
@@ -35,7 +35,7 @@ describe("routes", function () {
     done();
   })
 
-  it("applies special configuration to enterprise routes", function(done){
+  it("applies configuration to enterprise routes", function(done){
     var enterprise = routes.at("GET /enterprise")
     expect(enterprise).to.be.an.object();
     expect(enterprise.config.plugins.blankie).to.deep.equal(require('../lib/csp').enterprise);

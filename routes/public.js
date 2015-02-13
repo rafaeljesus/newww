@@ -1,6 +1,6 @@
 var config = require('../config');
 var fmt = require('util').format;
-var Hoek = require("hoek");
+var _ = require("lodash");
 
 var unathenticatedRouteConfig = {
   config: {
@@ -319,5 +319,5 @@ module.exports = [
   }
 
 ].map(function(route){
-  return Hoek.applyToDefaults(unathenticatedRouteConfig, route)
+  return _.merge({}, unathenticatedRouteConfig, route)
 })

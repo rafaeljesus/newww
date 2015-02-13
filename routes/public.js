@@ -153,11 +153,10 @@ module.exports = [
     method: "DELETE",
     handler: require('../handlers/collaborator').del
   },{
-    path: "/package/{package}",
-    method: "GET",
-    handler: require('../facets/registry/show-package')
-  },{
-    path: "/package/{scope}/{package}",
+    paths: [
+      "/package/{package}",
+      "/package/{scope}/{package}",
+    ],
     method: "GET",
     handler: require('../facets/registry/show-package')
   },{

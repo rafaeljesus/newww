@@ -41,20 +41,19 @@ describe("routes", function () {
 
   describe("for packages", function() {
 
-    it("defines the same handler for /package/foo and /package/@acme/bar"/*, function (done) {
+    it("defines the same handler for /package/foo and /package/@acme/bar", function (done) {
       var scopey = _.find(routes, function(route) {
-        return route.path === "/packages/{scope}/{package}" && route.method === "GET"
+        return route.path === "/package/{scope}/{package}" && route.method === "GET"
       })
-
       var globey = _.find(routes, function(route) {
-        return route.path === "/packages/{package}" && route.method === "GET"
+        return route.path === "/package/{package}" && route.method === "GET"
       })
       expect(scopey).to.be.an.object()
       expect(globey).to.be.an.object()
       expect(scopey.handler).to.be.a.function()
       expect(scopey.handler).to.deep.equal(globey.handler)
       done();
-    }*/)
+    })
 
   })
 

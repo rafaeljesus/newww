@@ -23,6 +23,7 @@ var ajaxy = {
     }
   }
 };
+
 var enterpriseConfig = {
   plugins: {
     blankie: require('../lib/csp').enterprise

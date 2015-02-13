@@ -293,11 +293,11 @@ module.exports = [
   },{
     path: "/_monitor/status",
     method: "GET",
-    handler: require('../facets/ops').status(require('../package.json').version)
+    handler: require('../handlers/ops').status(require('../package.json').version)
   },{
     path: "/-/csplog",
     method: "POST",
-    handler: require('../facets/ops').csplog,
+    handler: require('../handlers/ops').csplog,
     config: {
       plugins: {
         crumb: false

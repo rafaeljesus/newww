@@ -42,7 +42,17 @@ describe("routes", function () {
     done();
   })
 
-  it("defines the same handler for /package/foo and /package/@acme/bar", function (done) {
+  it("defines the same handler for /~ and /profile", function (done) {
+    var unix = routes.at("GET /~")
+    var bore = routes.at("GET /profile")
+    expect(unix).to.be.an.object()
+    expect(bore).to.be.an.object()
+    expect(unix.handler).to.be.a.function()
+    expect(unix.handler).to.deep.equal(bore.handler)
+    done();
+  })
+
+  it("defines the same handler for scoped and global package pages", function (done) {
     var scopey = routes.at("GET /package/{scope}/{package}")
     var globey = routes.at("GET /package/{package}")
     expect(scopey).to.be.an.object()

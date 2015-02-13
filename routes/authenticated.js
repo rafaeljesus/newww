@@ -7,11 +7,10 @@ module.exports = [
     method: "GET",
     handler: require('../facets/registry/show-star'),
   },{
-    path: "/~",
-    method: "GET",
-    handler: require('../facets/user/show-profile')
-  },{
-    path: "/profile",
+    paths: [
+      "/~",
+      "/profile",
+    ],
     method: "GET",
     handler: require('../facets/user/show-profile')
   },{

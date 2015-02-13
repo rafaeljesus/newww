@@ -6,18 +6,21 @@ var Code = require('code'),
     afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
-    nock = require("nock");
+    nock = require("nock"),
+    sinon = require("sinon");
 
 var fixtures = {
   users: require("../fixtures/users")
 };
 
-var User;
+var User, spy;
 
 beforeEach(function (done) {
   User = new (require("../../models/user"))({
     host: "https://user.com"
   });
+  spy = sinon.spy(function (a, b, c) {});
+  User.getMailchimp = function () {return {lists: {subscribe: spy}}};
   done();
 });
 
@@ -372,6 +375,168 @@ describe("User", function(){
         expect(err).to.be.null();
         expect(body).to.exist();
         starMock.done();
+        done();
+      });
+    });
+  });
+
+  describe("lookup users by email", function () {
+    it("returns an error for invalid email addresses", function (done) {
+      User.lookupEmail('barf', function (err, usernames) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(usernames).to.be.undefined();
+        done();
+      });
+    });
+
+    it("returns an array of email addresses", function (done) {
+      var lookupMock = nock(User.host)
+        .get('/user/ohai@boom.com')
+        .reply(200, ['user', 'user2']);
+
+      User.lookupEmail('ohai@boom.com', function (err, usernames) {
+        expect(err).to.not.exist();
+        expect(usernames).to.be.an.array();
+        expect(usernames[0]).to.equal('user');
+        expect(usernames[1]).to.equal('user2');
+        lookupMock.done();
+        done();
+      });
+    });
+
+    it("passes any errors on to the controller", function (done) {
+      var lookupMock = nock(User.host)
+        .get('/user/ohai@boom.com')
+        .reply(400, []);
+
+      User.lookupEmail('ohai@boom.com', function (err, usernames) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(usernames).to.not.exist();
+        lookupMock.done();
+        done();
+      });
+    });
+  });
+
+  describe("signup", function () {
+    var signupInfo = {
+      name: 'hello',
+      password: '12345',
+      email: 'hello@hi.com'
+    };
+
+    var userObj = {
+      name: signupInfo.name,
+      email: "hello@hi.com"
+    };
+
+    it("passes any errors along", function (done) {
+      var signupMock = nock(User.host)
+        .put('/user', signupInfo)
+        .reply(400);
+
+      User.signup(signupInfo, function (err, user) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(user).to.not.exist();
+        signupMock.done();
+        done();
+      });
+    });
+
+    it("returns a user object when successful", function (done) {
+      var signupMock = nock(User.host)
+        .put('/user', signupInfo)
+        .reply(200, userObj);
+
+      User.signup(signupInfo, function (err, user) {
+        expect(err).to.not.exist();
+        expect(user).to.exist();
+        expect(user.name).to.equal(signupInfo.name);
+        signupMock.done();
+        done();
+      });
+    });
+
+    describe('the mailing list checkbox', function () {
+      var params = { id: 'e17fe5d778', email: {email:'boom@boom.com'} };
+
+      it('adds the user to the mailing list when checked', function (done) {
+        spy.reset();
+        User.signup({
+          name: 'boom',
+          password: '12345',
+          verify: '12345',
+          email: 'boom@boom.com',
+          npmweekly: "on"
+        }, function (er, user) {
+          expect(spy.calledWith(params)).to.be.true();
+          done();
+        });
+      });
+
+      it('does not add the user to the mailing list when unchecked', function (done) {
+        spy.reset();
+        User.getMailchimp = function () {return {lists: {subscribe: spy}}};
+
+        User.signup({
+          name: 'boom',
+          password: '12345',
+          verify: '12345',
+          email: 'boom@boom.com'
+        }, function (er, user) {
+          expect(spy.called).to.be.false();
+          done();
+        });
+      });
+    });
+  });
+
+  describe("save", function () {
+    var profile = {
+      name: "npmjs",
+      resources: {
+        twitter: "npmjs",
+        github: ""
+      }
+    };
+
+    var userObj = {
+      name: "npmjs",
+      email: "support@npmjs.com",
+      resources: {
+        twitter: "npmjs",
+        github: ""
+      }
+    };
+
+    it("bubbles up any errors that might occur", function (done) {
+      var saveMock = nock(User.host)
+        .post('/user/npmjs', profile)
+        .reply(400);
+
+      User.save(profile, function (err, user) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(user).to.not.exist();
+        saveMock.done();
+        done();
+      });
+    });
+
+    it("hits the save url", function (done) {
+      var saveMock = nock(User.host)
+        .post('/user/npmjs', profile)
+        .reply(200, userObj);
+
+      User.save(profile, function (err, user) {
+        expect(err).to.not.exist();
+        expect(user).to.exist();
+        expect(user.name).to.equal('npmjs');
+        expect(user.email).to.equal('support@npmjs.com');
+        saveMock.done();
         done();
       });
     });

@@ -118,8 +118,8 @@ config.user = {
   mail: {
     mailTransportModule: "nodemailer-ses-transport",
     mailTransportSettings: {
-      accessKeyId: "xxx",
-      secretAccessKey: "yyy",
+      accessKeyId: process.env.MAIL_ACCESS_KEY_ID,
+      secretAccessKey: process.env.MAIL_SECRET_ACCESS_KEY,
       region: "us-west-2"
     },
     emailFrom: 'support@npmjs.com'

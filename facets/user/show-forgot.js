@@ -1,12 +1,8 @@
-var NAMESPACE = 'user-forgot';
 
 var userValidate = require('npm-user-validate'),
-    nodemailer = require('nodemailer'),
     crypto = require('crypto');
 
-var transport, mailer;
-
-var from, host, devMode;
+var from, host;
 
 var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
 
@@ -17,13 +13,6 @@ module.exports = function (options) {
 
     from = options.emailFrom;
     host = options.canonicalHost;
-
-    if (process.env.NODE_ENV === 'dev') {
-      devMode = true;
-    } else {
-      transport = require(options.mailTransportModule);
-      mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
-    }
 
     if (request.method === 'post') {
       return handle(request, reply);
@@ -153,11 +142,12 @@ function handle(request, reply) {
 
 function lookupUserByEmail (email, request, reply) {
   var opts = {
-    user: request.auth.credentials,
-    namespace: NAMESPACE
+    user: request.auth.credentials
    };
 
-  request.server.methods.user.lookupUserByEmail(email, function (er, usernames) {
+   var User = new request.server.models.User();
+
+   User.lookupEmail(email, function (er, usernames) {
     if (er) {
       opts.error = er.message;
 
@@ -191,7 +181,9 @@ function lookupUserByEmail (email, request, reply) {
 function lookupUserByUsername (name, request, reply) {
   var opts = { };
 
-  request.server.methods.user.getUser(name, function (er, user) {
+  var User = new request.server.models.User();
+
+  User.get(name, function (er, user) {
     if (er) {
       opts.error = er.message;
 
@@ -263,30 +255,25 @@ function sendEmail(name, email, request, reply) {
       text: require('./emailTemplates/forgotPassword')(name, u, from)
     };
 
-    if (devMode) {
+    var sendEmail = request.server.methods.email.send;
+
+    sendEmail(mail, function (er) {
+
+      if (er) {
+        request.logger.error('Unable to sent revert email to ' + mail.to);
+        request.logger.error(er);
+        return reply.view('errors/internal', opts).code(500);
+      }
+
+      if (process.env.NODE_ENV === 'dev') { opts.mail = JSON.stringify(mail); }
+
+      opts.sent = true;
+
       request.timing.page = 'sendForgotEmail';
-
       request.metrics.metric({ name: 'sendForgotEmail' });
-      return reply(mail);
-    } else {
-      mailer.sendMail(mail, function (er) {
 
-        if (er) {
-          request.logger.error('Unable to sent revert email to ' + mail.to);
-          request.logger.error(er);
-          reply.view('errors/internal', opts).code(500);
-          return;
-        }
-
-        opts.sent = true;
-
-        request.timing.page = 'sendForgotEmail';
-
-        request.metrics.metric({ name: 'sendForgotEmail' });
-        return reply.view('user/password-recovery-form', opts);
-      });
-    }
-
+      return reply.view('user/password-recovery-form', opts);
+    });
   });
 }
 

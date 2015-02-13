@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var userValidate = require('npm-user-validate');
 
 var User = module.exports = function(opts) {
   _.extend(this, {
@@ -25,6 +26,15 @@ var fixtures = {
     password: "12345",
     mustChangePass: true
   },
+  usernoemail: {
+    name: "forrestnoemail",
+    password: "12345"
+  },
+  userbademail: {
+    name: "forrestbademail",
+    email: "blerg",
+    password: "12345"
+  },
   packages: [
     {name: "foo", description: "It's a foo!"},
     {name: "bar", description: "It's a bar!"}
@@ -35,6 +45,10 @@ var fixtures = {
   ]
 };
 
+User.prototype.confirmEmail = function (user, callback) {
+  return callback(null, user);
+};
+
 User.prototype.get = function(name, options, callback) {
   var res = fixtures.user;
 
@@ -43,10 +57,23 @@ User.prototype.get = function(name, options, callback) {
     options = {};
   }
 
-  if (name === "mr-perdido") {
-    var err = Error("User not found");
-    err.statusCode = 404;
-    return callback(err);
+  switch (name) {
+    case "mr-perdido":
+    case "newuser":
+      var err = Error("user " + name + " not found");
+      err.statusCode = 404;
+      return callback(err);
+    case "forrestnoemail":
+      res = fixtures.usernoemail;
+      break;
+    case "forrestbademail":
+      res = fixtures.userbademail;
+      break;
+    case "forrest":
+      res = fixtures.user;
+      break;
+    default:
+      break;
   }
 
   if (options.stars) { res.stars = fixtures.stars; }
@@ -78,5 +105,38 @@ User.prototype.login = function (loginInfo, callback) {
     return callback(err);
   }
 
+  return callback(null, fixtures.user);
+};
+
+User.prototype.lookupEmail = function (email, callback) {
+  if (userValidate.email(email)) {
+    var err = new Error('email is invalid');
+    err.statusCode = 400;
+    return callback(err);
+  }
+
+  var names;
+
+  switch (email) {
+    case "onlyone@boom.com":
+      names = ["forrest"];
+      break;
+    case "forrest@example.com":
+      names = ["forrest", "forrest2"];
+      break;
+    case "doesnotexist@boom.com":
+    default:
+      names = [];
+      break;
+  }
+
+  return callback(null, names);
+};
+
+User.prototype.save = function (user, callback) {
+  return callback(null, fixtures.user);
+};
+
+User.prototype.signup = function (user, callback) {
   return callback(null, fixtures.user);
 };

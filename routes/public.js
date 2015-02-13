@@ -88,7 +88,7 @@ module.exports = [
   },{
     path: "/send-contact",
     method: "POST",
-    handler: require('../facets/company/show-send-contact')(config.user.mail)
+    handler: require('../facets/company/show-send-contact')
   },{
     path: "/support",
     method: "GET",
@@ -256,6 +256,10 @@ module.exports = [
     path: "/signup",
     method: "POST",
     handler: require('../facets/user/show-signup')
+  },{
+    path: "/confirm-email/{token?}",
+    method: "GET",
+    handler: require('../facets/user/show-confirm-email')
   },{
     path: "/login",
     method: "GET",

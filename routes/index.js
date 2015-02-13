@@ -3,7 +3,7 @@ var public = require("./public");
 var authenticated = require("./authenticated");
 var routes = [];
 
-public.forEach(function(route){
+public.concat(authenticated).forEach(function(route){
 
   // If route defines an array of paths,
   // register each as an individual route

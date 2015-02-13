@@ -24,7 +24,6 @@ Package.prototype.get = function (name, options, callback) {
       week: 2,
       month: 3,
     }
-    console.log("wtf")
     if (package.name === "request") {
       package.isStarred = true;
     }

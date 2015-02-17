@@ -1,5 +1,4 @@
-window.expansions = require("npm-expansions")
-var $ = require("jquery")
+var expansions = require("npm-expansions")
 var clickCount = -1
 
 var updateExpansion = function(event) {

@@ -1,7 +1,4 @@
 // This is the module for starring and unstarring modules in the browser.
-
-var $ = require("jquery");
-
 var star = module.exports = function() {
   $(star.init);
   return star;

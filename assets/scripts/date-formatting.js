@@ -1,4 +1,3 @@
-var $ = require("jquery");
 var strftime = require("prettydate").strftime;
 
 module.exports = function() {

@@ -1,4 +1,3 @@
-var $ = require("jquery")
 var chunk = require("chunk")
 var templates = {
   sidebar: require("../templates/hiring-sidebar.hbs"),
@@ -22,7 +21,7 @@ var fetchCompanies = function() {
       // Break companies into an array of arrays
       // So the columnar layout works better
       if (container.data().template === "full") {
-        companies = chunk(companies, 3)  
+        companies = chunk(companies, 3)
       }
 
       window.companies = companies

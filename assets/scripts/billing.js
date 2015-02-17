@@ -1,4 +1,3 @@
-var $ = require("jquery");
 var dataEl;
 var stripePublicKey;
 

@@ -1,4 +1,3 @@
-var $ = require("jquery");
 window.malarkey = require("malarkey");
 
 module.exports = function(){

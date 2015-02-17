@@ -66,9 +66,7 @@ module.exports = [
     method: 'GET',
     handler: {
       directory: {
-        path: '../static',
-        listing: true,
-        index: true
+        path: './static'
       }
     }
   },{

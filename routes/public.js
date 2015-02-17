@@ -1,6 +1,7 @@
 var config = require('../config');
 var fmt = require('util').format;
-var _ = require("lodash");
+var fs = require('fs');
+var _ = require('lodash');
 
 var unathenticatedRouteConfig = {
   config: {
@@ -30,38 +31,8 @@ var enterpriseConfig = {
   }
 };
 
-module.exports = [
+var publicRoutes = [
   {
-    path: '/favicon.ico',
-    method: 'GET',
-    handler: {
-      file: '../static/misc/favicon.ico'
-    }
-  },{
-    path: '/robots.txt',
-    method: 'GET',
-    handler: {
-      file: '../static/misc/robots.txt'
-    }
-  },{
-    path: '/google17836d108133913c.html',
-    method: 'GET',
-    handler: function (request, reply) {
-      reply("google-site-verification: google17836d108133913c.html");
-    }
-  },{
-    path: '/install.sh',
-    method: 'GET',
-    handler: {
-      file: '../static/misc/install.sh'
-    }
-  },{
-    path: '/opensearch.xml',
-    method: 'GET',
-    handler: {
-      file: '../static/misc/opensearch.xml'
-    }
-  },{
     path: '/static/{path*}',
     method: 'GET',
     handler: {
@@ -320,6 +291,21 @@ module.exports = [
     handler: require("../handlers/fallback")
   }
 
-].map(function(route){
+]
+
+// Allow files in /static/misc to be web-accessible from /
+fs.readdirSync("./static/misc").forEach(function(filename) {
+  publicRoutes.push({
+    path: '/' + filename,
+    method: 'GET',
+    handler: {
+      file: './static/misc/' + filename
+    }
+  })
+})
+
+publicRoutes = publicRoutes.map(function(route){
   return _.merge({}, unathenticatedRouteConfig, route)
 })
+
+module.exports = publicRoutes

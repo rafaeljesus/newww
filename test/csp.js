@@ -55,21 +55,4 @@ describe("csp (content security policy)", function () {
 
   })
 
-  describe("enterprise", function() {
-    it("is an object", function (done) {
-      expect(csp.enterprise).to.be.an.object();
-      done();
-    })
-
-    describe("scriptSrc", function(){
-      it("allows the same scripts as the default CSP, plus some others", function (done) {
-        csp.default.scriptSrc.forEach(function(src){
-          expect(csp.enterprise.scriptSrc).to.include(src);
-        });
-        expect(csp.enterprise.scriptSrc.length).to.be.above(csp.default.scriptSrc.length);
-        done();
-      })
-    })
-  })
-
 })

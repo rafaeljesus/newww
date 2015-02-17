@@ -25,12 +25,6 @@ var ajaxy = {
   }
 };
 
-var enterpriseConfig = {
-  plugins: {
-    blankie: require('../lib/csp').enterprise
-  }
-};
-
 var publicRoutes = [
   {
     path: '/static/{path*}',
@@ -82,28 +76,23 @@ var publicRoutes = [
   },{
     path: "/enterprise",
     method: "GET",
-    handler: require('../facets/enterprise/show-index'),
-    config: enterpriseConfig
+    handler: require('../facets/enterprise/show-index')
   },{
     path: "/enterprise-start-signup",
     method: "POST",
-    handler: require('../facets/enterprise/show-ula'),
-    config: enterpriseConfig
+    handler: require('../facets/enterprise/show-ula')
   },{
     path: "/enterprise-contact-me",
     method: "POST",
-    handler: require('../facets/enterprise/show-contact-me'),
-    config: enterpriseConfig
+    handler: require('../facets/enterprise/show-contact-me')
   },{
     path: "/enterprise-trial-signup",
     method: "POST",
-    handler: require('../facets/enterprise/show-trial-signup'),
-    config: enterpriseConfig
+    handler: require('../facets/enterprise/show-trial-signup')
   },{
     path: "/enterprise-verify",
     method: "GET",
-    handler: require('../facets/enterprise/show-verification'),
-    config: enterpriseConfig
+    handler: require('../facets/enterprise/show-verification')
   },{
     path: "/package/{package}/collaborators",
     method: "GET",

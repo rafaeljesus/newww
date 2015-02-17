@@ -35,13 +35,6 @@ describe("routes", function () {
     done();
   })
 
-  it("applies configuration to enterprise routes", function(done){
-    var enterprise = routes.at("GET /enterprise")
-    expect(enterprise).to.be.an.object();
-    expect(enterprise.config.plugins.blankie).to.deep.equal(require('../lib/csp').enterprise);
-    done();
-  })
-
   it("defines the same handler for /~ and /profile", function (done) {
     var unix = routes.at("GET /~")
     var bore = routes.at("GET /profile")

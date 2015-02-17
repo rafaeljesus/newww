@@ -1,6 +1,6 @@
-var Joi = require('joi'),
-    userValidate = require('npm-user-validate'),
-    crypto = require('crypto');
+var crypto = require('crypto'),
+    Joi = require('joi'),
+    userValidate = require('npm-user-validate');
 
 var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
 var ONE_WEEK = ONE_HOUR * 24 * 7;
@@ -32,7 +32,6 @@ module.exports = function signup (request, reply) {
     var data = request.payload;
 
     Joi.validate(data, schema, joiOptions, function (err, validatedUser) {
-
       if (err) {
         opts.errors = err.details;
       }
@@ -116,8 +115,6 @@ module.exports = function signup (request, reply) {
 
 
 function sendEmailConfirmation (request, user, cb) {
-  var sendEmail = request.server.methods.email.send;
-
   var token = crypto.randomBytes(30).toString('base64')
             .split('/').join('_')
             .split('+').join('-'),
@@ -139,16 +136,14 @@ function sendEmailConfirmation (request, user, cb) {
 
     request.logger.info('created new user ' + user.name);
 
-    var mail = require('./emailTemplates/confirmEmail')(user, token);
-
-    sendEmail(mail, function (er) {
-      if (er) {
-        return cb(er);
-      }
-
-      request.logger.info('emailed new user at ' + user.email);
-      return cb(null);
-    });
+    require('./emailTemplates/confirmEmail')(user, token)
+      .then(function() {
+        request.logger.info('emailed new user at ' + user.email);
+        return cb(null);
+      })
+      .catch(function(err) {
+        return cb(err);
+      });
   });
 }
 

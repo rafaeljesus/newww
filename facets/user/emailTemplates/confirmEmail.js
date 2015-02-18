@@ -6,19 +6,15 @@ var mailConfig = require('../../../config').user.mail,
     templateDir: path.dirname(require.resolve('npm-email-templates/package.json'))
   });
 
-module.exports = function (user, token) {
-  var fromEmail = mailConfig.emailFrom;
-  var confirmLink = mailConfig.canonicalHost + '/confirm-email/' + encodeURIComponent(token);
+module.exports = function (user) {
   var mailOpts = {
-    to: '"' + user.name + '" <' + user.email + '>',
+    email: user.email,
     name: user.name,
-    from: fromEmail,
-    subject : "Please confirm your npm account email address",
-    headers: { "X-SMTPAPI": { category: "password-reset" } },
-    confirmLink: confirmLink
+    from: mailConfig.emailFrom,
+    host: mailConfig.canonicalHost
   };
 
-  return mm.message('confirm-user-email')
+  mm.message('confirm-user-email')
     .then(function(msg) {
       return msg.sendMail(mailOpts)
     });

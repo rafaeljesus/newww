@@ -115,28 +115,9 @@ module.exports = function signup (request, reply) {
 
 
 function sendEmailConfirmation (request, user, cb) {
-  var token = crypto.randomBytes(30).toString('base64')
-            .split('/').join('_')
-            .split('+').join('-'),
-      hash = sha(token),
-      data = {
-        name: user.name + '',
-        email: user.email + '',
-        token: token + ''
-      },
-      key = 'email_confirm_' + hash;
-
-  request.server.app.cache.set(key, data, ONE_WEEK, function (err) {
-
-    if (err) {
-      request.logger.error('Unable to set ' + key + ' to the cache');
-      request.logger.error(err);
-      return cb(err);
-    }
-
     request.logger.info('created new user ' + user.name);
 
-    require('./emailTemplates/confirmEmail')(user, token)
+    require('./emailTemplates/confirmEmail')(user)
       .then(function() {
         request.logger.info('emailed new user at ' + user.email);
         return cb(null);
@@ -145,8 +126,4 @@ function sendEmailConfirmation (request, user, cb) {
         return cb(err);
       });
   });
-}
-
-function sha (token) {
-  return crypto.createHash('sha1').update(token).digest('hex');
 }

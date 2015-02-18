@@ -14,16 +14,16 @@ var redis = require('redis'),
     config.port = 6379;
     config.password = '';
 
-var server, cookieCrumb,
+var server,
     client, oldCache, redisProcess;
 
 // prepare the server
-before(function (done) {
-  require('../mocks/server')(function (obj) {
-    server = obj;
-    done();
-  });
-});
+// before(function (done) {
+//   require('../mocks/server')(function (obj) {
+//     server = obj;
+//     done();
+//   });
+// });
 
 before(function (done) {
   var redisConfig = '--port ' + config.port;
@@ -34,46 +34,45 @@ before(function (done) {
     console.log("Error " + err);
   });
 
-  oldCache = server.app.cache;
-  server.app.cache.get = function (key, cb) {
-    client.get(key, function (er, val) {
-      if (val) {
-        var obj = {item: JSON.parse(val)};
-        return cb(er, obj.item, obj);
-      }
+  require('../mocks/server')(function (obj) {
+    server = obj;
+    server.app.cache._cache.connection.client = client;
+    done();
+  });
 
-      return cb(er, null);
-    });
-  };
 
-  server.app.cache.set = function (key, val, ttl, cb) {
-    return client.set(key, JSON.stringify(val), cb);
-  };
+  // oldCache = server.app.cache;
+  // server.app.cache.get = function (key, cb) {
+  //   client.get(key, function (er, val) {
+  //     if (val) {
+  //       var obj = {item: JSON.parse(val)};
+  //       return cb(er, obj.item, obj);
+  //     }
 
-  server.app.cache.drop = function (key, cb) {
-    return client.del(key, cb);
-  };
+  //     return cb(er, null);
+  //   });
+  // };
 
-  done();
+  // server.app.cache.set = function (key, val, ttl, cb) {
+  //   return client.set(key, JSON.stringify(val), cb);
+  // };
+
+  // server.app.cache.drop = function (key, cb) {
+  //   return client.del(key, cb);
+  // };
+
+  // done();
 });
 
 after(function(done) {
   client.flushdb();
   server.stop(function () {
     server.app.cache = oldCache;
+    // delete server.app.cache._cache.connection.client;
     redisProcess.kill('SIGKILL');
     done();
   });
 });
-
-var postSignup = function (payload) {
-  return {
-    url: '/signup',
-    method: 'POST',
-    payload: payload,
-    headers: { cookie: 'crumb=' + cookieCrumb }
-  };
-};
 
 // TODO add a redis instance so that we can test all of these wonderful little things
 
@@ -111,7 +110,7 @@ describe('Confirming an email address', function () {
 
     var opts = {url: '/confirm-email/12345'};
 
-    server.app.cache.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, 20, function () {
+    client.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, 20, function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(500);
@@ -129,7 +128,7 @@ describe('Confirming an email address', function () {
 
     var opts = {url: '/confirm-email/12345'};
 
-    server.app.cache.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, 20, function () {
+    client.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, 20, function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
@@ -152,7 +151,7 @@ describe('Confirming an email address', function () {
 
     var opts = {url: '/confirm-email/12345'};
 
-    server.app.cache.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, 20, function () {
+    client.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, 20, function () {
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);

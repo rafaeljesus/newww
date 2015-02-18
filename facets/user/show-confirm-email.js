@@ -2,7 +2,7 @@ var crypto = require('crypto');
 
 module.exports = function confirmEmail (request, reply) {
   var opts = {},
-      cache = request.server.app.cache;
+      cache = request.server.app.cache._cache.connection.client;
 
   var User = new request.server.models.User({logger: request.logger});
 
@@ -15,7 +15,8 @@ module.exports = function confirmEmail (request, reply) {
       hash = sha(token),
       key = 'email_confirm_' + hash;
 
-  cache.get(key, function (err, item, cached) {
+  cache.get(key, function (err, cached) {
+    cached = JSON.parse(cached);
     if (err) {
       request.logger.error('Error getting token from redis: ', key);
       request.logger.error(err);
@@ -29,38 +30,44 @@ module.exports = function confirmEmail (request, reply) {
       return;
     }
 
-    var name = cached.item.name;
-
-    if (cached.item.token !== token) {
-      request.logger.error('token in cache does not match user token; cached=' + cached.item.token + '; token=' + token);
+    if (cached.token !== token) {
+      request.logger.error('token in cache does not match user token; cached=' + cached.token + '; token=' + token);
       reply.view('errors/internal', opts).code(500);
       return;
     }
 
+    var name = cached.name;
     request.logger.warn('Confirming email for user ' + name);
 
-    User.confirmEmail(cached.item, function (err) {
+    User.get(name)
+      .catch(function (err) {
+          request.logger.error('Failed to get user ' + name);
+          request.logger.error(err);
+          return reply.view('errors/internal', opts).code(500);
+      })
+      .then(function (user) {
 
-      if (err) {
-        request.logger.error('Failed to confirm email for ' + name);
-        request.logger.error(err);
-        return reply.view('errors/internal', opts).code(500);
-      }
+        User.confirmEmail(user)
+          .catch(function (err) {
+            request.logger.error('Failed to confirm email for ' + name);
+            request.logger.error(err);
+            return reply.view('errors/internal', opts).code(500);
+          })
+          .then(function () {
+            cache.del(key, function (err) {
 
-      cache.drop(key, function (err) {
+              if (err) {
+                request.logger.warn('Unable to drop key ' + key);
+                request.logger.warn(err);
+              }
 
-        if (err) {
-          request.logger.warn('Unable to drop key ' + key);
-          request.logger.warn(err);
-        }
+              request.timing.page = 'email-confirmed';
 
-        request.timing.page = 'email-confirmed';
-
-        request.metrics.metric({ name: 'email-confirmed' });
-        return reply.view('user/email-confirmed', opts);
-      });
+              request.metrics.metric({ name: 'email-confirmed' });
+              return reply.view('user/email-confirmed', opts);
+            });
+        });
     });
-
   });
 };
 

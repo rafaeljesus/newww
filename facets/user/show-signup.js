@@ -116,8 +116,9 @@ module.exports = function signup (request, reply) {
 
 function sendEmailConfirmation (request, user, cb) {
   request.logger.info('created new user ' + user.name);
+  var redis = request.server.app.cache._cache.connection.client;
 
-  require('./emailTemplates/confirmEmail')(user)
+  require('./emailTemplates/confirmEmail')(user, redis)
     .then(function() {
       request.logger.info('emailed new user at ' + user.email);
       return cb(null);

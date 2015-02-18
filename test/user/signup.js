@@ -17,11 +17,17 @@ mailConfig.mailTransportModule = 'nodemailer-mock-transport';
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;
+    server.app.cache._cache.connection.client = {
+      set: function () {},
+      get: function () {},
+      del: function () {}
+    };
     done();
   });
 });
 
 after(function (done) {
+  delete server.app.cache._cache.connection.client;
   server.stop(done);
 });
 

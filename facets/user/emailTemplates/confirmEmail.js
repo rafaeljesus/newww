@@ -14,8 +14,8 @@ module.exports = function (user) {
     host: mailConfig.canonicalHost
   };
 
-  mm.message('confirm-user-email')
+  return mm.message('confirm-user-email')
     .then(function(msg) {
-      return msg.sendMail(mailOpts)
+      return msg.sendMail(mailOpts);
     });
 };

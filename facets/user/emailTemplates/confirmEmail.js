@@ -18,7 +18,7 @@ module.exports = function (user, token) {
     confirmLink: confirmLink
   };
 
-  mm.message('confirm-user-email')
+  return mm.message('confirm-user-email')
     .then(function(msg) {
       return msg.sendMail(mailOpts)
     });

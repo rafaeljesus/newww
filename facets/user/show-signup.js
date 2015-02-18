@@ -53,7 +53,7 @@ module.exports = function signup (request, reply) {
 
           // give back the user input so the form can be
           // partially re-populated
-          opts.userInput = validatedUser
+          opts.userInput = validatedUser;
 
           return reply.view('user/signup-form', opts).code(400);
         }
@@ -115,15 +115,14 @@ module.exports = function signup (request, reply) {
 
 
 function sendEmailConfirmation (request, user, cb) {
-    request.logger.info('created new user ' + user.name);
+  request.logger.info('created new user ' + user.name);
 
-    require('./emailTemplates/confirmEmail')(user)
-      .then(function() {
-        request.logger.info('emailed new user at ' + user.email);
-        return cb(null);
-      })
-      .catch(function(err) {
-        return cb(err);
-      });
-  });
+  require('./emailTemplates/confirmEmail')(user)
+    .then(function() {
+      request.logger.info('emailed new user at ' + user.email);
+      return cb(null);
+    })
+    .catch(function(err) {
+      return cb(err);
+    });
 }

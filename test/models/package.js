@@ -6,13 +6,9 @@ var Code = require('code'),
     afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
-    nock = require("nock");
-
-var fixtures = {
-  orientdb: require("../fixtures/orientdb.json")
-};
-
-var Package;
+    nock = require("nock"),
+    fixtures = require("../fixtures"),
+    Package;
 
 beforeEach(function (done) {
   Package = new (require("../../models/package"))({
@@ -49,9 +45,9 @@ describe("Package", function(){
 
       var packageMock = nock(Package.host)
         .get('/package/orientdb')
-        .reply(200, fixtures.orientdb);
+        .reply(200, fixtures.packages.orientdb);
 
-      Package.get(fixtures.orientdb.name, function(err, package) {
+      Package.get("orientdb", function(err, package) {
         expect(err).to.be.null();
         expect(package).to.exist();
         packageMock.done();
@@ -62,9 +58,9 @@ describe("Package", function(){
     it("returns the response body in the callback", function(done) {
       var packageMock = nock(Package.host)
         .get('/package/orientdb')
-        .reply(200, fixtures.orientdb);
+        .reply(200, fixtures.packages.orientdb);
 
-      Package.get(fixtures.orientdb.name, function(err, package) {
+      Package.get("orientdb", function(err, package) {
         expect(err).to.be.null();
         expect(package.name).to.equal("orientdb");
         expect(package.versions).to.exist();
@@ -91,7 +87,7 @@ describe("Package", function(){
     it("does not require a bearer token", function(done) {
       var packageMock = nock(Package.host, {reqheaders: {}})
         .get('/package/dogbreath')
-        .reply(200, fixtures.orientdb);
+        .reply(200, fixtures.packages.orientdb);
 
       Package.get('dogbreath', function(err, package) {
         expect(err).to.be.null();
@@ -112,7 +108,7 @@ describe("Package", function(){
           reqheaders: {bearer: 'rockbot'}
         })
         .get('/package/orientdb')
-        .reply(200, fixtures.orientdb);
+        .reply(200, fixtures.packages.orientdb);
 
       Package.get('orientdb', function(err, package) {
         expect(err).to.not.exist();
@@ -123,6 +119,29 @@ describe("Package", function(){
       });
 
     });
+
+    it("fetches download counts if the option is set"/*, function(done) {
+      var packageMock = nock(Package.host)
+        .get('/package/request')
+        .reply(200, fixtures.request);
+
+      var downloadsMock = nock("https://api.npmjs.org")
+        .get('/downloads/point/last-day/request')
+        .reply(200, fixtures.downloads.request['last-day'])
+        .get('/downloads/point/last-week/request')
+        .reply(200, fixtures.downloads.request['last-week'])
+        .get('/downloads/point/last-month/request')
+        .reply(200, fixtures.downloads.request['last-month']);
+
+      Package.get("request", {downloads: true}, function(err, package) {
+        packageMock.done();
+        downloadsMock.done();
+        expect(err).to.be.null();
+        expect(package.name).to.equal("request");
+        expect(package.downloads).to.exist();
+        done();
+      });
+    }*/);
 
   });
 });

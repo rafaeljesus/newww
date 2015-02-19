@@ -5,6 +5,7 @@ module.exports = {
   browse: require("./fixtures/browse/index"),
   collaborators: require("./fixtures/collaborators/index"),
   customers: require("./fixtures/customers/index"),
+  downloads: require("./fixtures/downloads/index"),
   email_edit: require("./fixtures/email_edit"),
   enterprise: require("./fixtures/enterprise"),
   packages: require("./fixtures/packages/index"),

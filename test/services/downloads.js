@@ -7,7 +7,8 @@ var Code = require('code'),
   it = lab.test,
   expect = Code.expect,
   nock = require('nock'),
-  downloadsHost = 'https://not-the-real.npmjs.org';
+  downloadsHost = 'https://not-the-real.npmjs.org',
+  fixtures = require("../fixtures");
 
 var Hapi = require('hapi'),
   downloads = require('../../services/downloads'),
@@ -136,26 +137,11 @@ describe('Getting all download counts for a specific package', function() {
 
     var mock = nock(downloadsHost)
       .get('/downloads/point/last-day/request')
-      .reply(200, {
-        "downloads": 13,
-        "start": "2015-02-01",
-        "end": "2015-02-01",
-        "package": "request"
-      })
+      .reply(200, fixtures.downloads.request['last-day'])
       .get('/downloads/point/last-week/request')
-      .reply(200, {
-        "downloads": 200,
-        "start": "2015-01-26",
-        "end": "2015-02-01",
-        "package": "request"
-      })
+      .reply(200, fixtures.downloads.request['last-week'])
       .get('/downloads/point/last-month/request')
-      .reply(200, {
-        "downloads": 500,
-        "start": "2015-01-03",
-        "end": "2015-02-01",
-        "package": "request"
-      });
+      .reply(200, fixtures.downloads.request['last-month']);
 
     server.methods.downloads.getAllDownloadsForPackage('request', function(er, data) {
       mock.done();

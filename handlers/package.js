@@ -1,26 +1,34 @@
+var package = module.exports = {}
 var validatePackageName = require('validate-npm-package-name');
 
-var package = module.exports = {}
-
-package.show = function (request, reply) {
-  var getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
-
-  var loggedInUser = request.auth.credentials;
-  var Package = new request.server.models.Package({
-    bearer: loggedInUser && loggedInUser.name,
+var packageClientFromRequest = function(request) {
+  var bearer = request.auth.credentials && request.auth.credentials.name
+  return new request.server.models.Package({
+    bearer: bearer,
     request: request
   });
+}
 
-  var opts = { };
+package.show = function(request, reply) {
+  var getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
+  var loggedInUser = request.auth.credentials;
+  var Package = packageClientFromRequest(request);
+  var opts = {};
 
   request.timing.page = 'showPackage';
-  request.metrics.metric({ name: 'showPackage', package: request.params.package, value: 1 });
+  request.metrics.metric({
+    name: 'showPackage',
+    package: request.params.package,
+    value: 1
+  });
 
   opts.name = request.params.package;
 
-  Package.get(opts.name, function (er, pkg) {
+  Package.get(opts.name, function(er, pkg) {
 
-    opts.package = { name: opts.name };
+    opts.package = {
+      name: opts.name
+    };
     if (er) {
       request.logger.error(er, 'fetching package ' + opts.name);
       return reply.view('errors/internal', opts).code(500);

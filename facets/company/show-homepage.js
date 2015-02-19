@@ -77,7 +77,6 @@ module.exports = function (request, reply) {
 function load (request, cb) {
   var redis = request.server.app.cache._cache.connection.client,
     registry = request.server.methods.registry,
-    // recentAuthors = registry.getRecentAuthors,
     downloads = request.server.methods.downloads.getAllDownloads,
     cached = {};
 

@@ -116,7 +116,7 @@ var publicRoutes = [
       "/package/{scope}/{package}",
     ],
     method: "GET",
-    handler: require('../handlers/package')
+    handler: require('../handlers/package').show
   },{
     // redirect plural form to singular
     path: "/packages/{package}",

@@ -1,6 +1,8 @@
 var validatePackageName = require('validate-npm-package-name');
 
-function showPackage(request, reply) {
+var package = module.exports = {}
+
+package.show = function (request, reply) {
   var getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
 
   var loggedInUser = request.auth.credentials;
@@ -61,5 +63,3 @@ function showPackage(request, reply) {
     });
   });
 }
-
-module.exports = showPackage;

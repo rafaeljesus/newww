@@ -13,7 +13,9 @@ package.show = function(request, reply) {
   var getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
   var loggedInUser = request.auth.credentials;
   var Package = packageClientFromRequest(request);
-  var opts = {};
+  var opts = {
+    name: request.params.package,
+  };
 
   request.timing.page = 'showPackage';
   request.metrics.metric({
@@ -22,26 +24,23 @@ package.show = function(request, reply) {
     value: 1
   });
 
-  opts.name = request.params.package;
-
   Package.get(opts.name, function(er, pkg) {
 
     opts.package = {
       name: opts.name
     };
+
     if (er) {
       request.logger.error(er, 'fetching package ' + opts.name);
       return reply.view('errors/internal', opts).code(500);
     }
 
     if (!pkg) {
+      // suppress the encouraging 404 message if name is not valid
       if (!validatePackageName(opts.name).valid) {
-        delete opts.package; // to suppress the encouraging message
+        delete opts.package;
         request.logger.info('request for invalid package name: ' + opts.name);
-        reply.view('errors/not-found', opts).code(404);
-        return;
       }
-
       return reply.view('errors/not-found', opts).code(404);
     }
 

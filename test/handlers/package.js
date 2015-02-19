@@ -35,7 +35,7 @@ describe('Retreiving packages from the registry', function () {
     });
   });
 
-  it('treats unpublished packages specially'/*, function (done) {
+  it('treats unpublished packages specially', function (done) {
     var options = {
       url: '/package/unpublished'
     };
@@ -44,11 +44,9 @@ describe('Retreiving packages from the registry', function () {
       expect(resp.statusCode).to.equal(410);
       var source = resp.request.response.source;
       expect(source.template).to.equal('package/unpublished');
-      expect(source.context.package.unpubFromNow).to.exist();
       done();
     });
-  }*/
-  );
+  });
 
 });
 

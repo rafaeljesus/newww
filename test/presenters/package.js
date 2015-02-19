@@ -4,9 +4,11 @@ var Code = require('code'),
     describe = lab.experiment,
     it = lab.test,
     expect = Code.expect,
-    present = require(__dirname + "/../../presenters/package");
+    present = require(__dirname + "/../../presenters/package"),
+    fixtures = require("../fixtures");
 
 describe("publisher", function () {
+
   it("is in maintainers list if it is in the maintainers list", function (done) {
     var package = present({
       "versions": ["1.3.0"],
@@ -48,8 +50,38 @@ describe("publisher", function () {
   });
 });
 
-describe("avatars", function () {
-  it("are created for the publisher", function (done) {
+describe('installCommand', function(){
+
+  it('is created', function (done) {
+    var package = present({
+      name: "foo"
+    });
+    expect(package.installCommand).to.equal("npm install foo");
+    done();
+  });
+
+  it('respects preferGlobal', function (done) {
+    var package = present({
+      name: "wibble",
+      preferGlobal: true
+    });
+    expect(package.installCommand).to.equal("npm install -g wibble");
+    done();
+  });
+
+  it('uses shorthand for packages with long names', function (done) {
+    var package = present({
+      name: "supercalifragilisticexpialidocious",
+      preferGlobal: true
+    });
+    expect(package.installCommand).to.equal("npm i -g supercalifragilisticexpialidocious");
+    done();
+  });
+
+})
+
+describe("avatar", function () {
+  it("is created for the publisher", function (done) {
     var package = present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -72,37 +104,7 @@ describe("avatars", function () {
     done();
   });
 
-  describe('installCommand', function(){
-
-    it('is created', function (done) {
-      var package = present({
-        name: "foo"
-      });
-      expect(package.installCommand).to.equal("npm install foo");
-      done();
-    });
-
-    it('respects preferGlobal', function (done) {
-      var package = present({
-        name: "wibble",
-        preferGlobal: true
-      });
-      expect(package.installCommand).to.equal("npm install -g wibble");
-      done();
-    });
-
-    it('uses shorthand for packages with long names', function (done) {
-      var package = present({
-        name: "supercalifragilisticexpialidocious",
-        preferGlobal: true
-      });
-      expect(package.installCommand).to.equal("npm i -g supercalifragilisticexpialidocious");
-      done();
-    });
-
-  })
-
-  it("are created for the maintainers", function (done) {
+  it("is created for the maintainers", function (done) {
     var package = present({
       "versions": ["1.3.0"],
       "name": "hello",

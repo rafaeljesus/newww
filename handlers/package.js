@@ -1,5 +1,4 @@
-var moment = require('moment'),
-    validatePackageName = require('validate-npm-package-name');
+var validatePackageName = require('validate-npm-package-name');
 
 function showPackage(request, reply) {
   var getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
@@ -37,12 +36,8 @@ function showPackage(request, reply) {
     }
 
     if (pkg.time && pkg.time.unpublished) {
-
-      var t = pkg.time.unpublished.time;
-      pkg.unpubFromNow = moment(t).format('ddd MMM DD YYYY HH:mm:ss Z');
       opts.package = pkg;
       request.timing.page = 'showUnpublishedPackage';
-
       return reply.view('package/unpublished', opts).code(410);
     }
 

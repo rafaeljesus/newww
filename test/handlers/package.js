@@ -30,7 +30,7 @@ describe('Retreiving packages from the registry', function () {
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.context.package.name).to.equal('request');
-      expect(source.template).to.equal('registry/package-page');
+      expect(source.template).to.equal('package/show');
       done();
     });
   });
@@ -43,7 +43,7 @@ describe('Retreiving packages from the registry', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(410);
       var source = resp.request.response.source;
-      expect(source.template).to.equal('registry/unpublished-package-page');
+      expect(source.template).to.equal('package/unpublished');
       expect(source.context.package.unpubFromNow).to.exist();
       done();
     });

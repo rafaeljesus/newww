@@ -43,7 +43,7 @@ function showPackage(request, reply) {
       opts.package = pkg;
       request.timing.page = 'showUnpublishedPackage';
 
-      return reply.view('registry/unpublished-package-page', opts).code(410);
+      return reply.view('package/unpublished', opts).code(410);
     }
 
     getDownloadData(opts.name, function(err, downloads) {
@@ -62,7 +62,7 @@ function showPackage(request, reply) {
       pkg.isStarred = loggedInUser && pkg.stars && pkg.stars.indexOf(loggedInUser.name) !== -1 || false;
       opts.package = pkg;
       opts.title = pkg.name;
-      reply.view('registry/package-page', opts);
+      reply.view('package/show', opts);
     });
   });
 }

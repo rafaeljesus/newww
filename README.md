@@ -98,7 +98,7 @@ _Then, in `facets/registry/show-package.js`:_
 
     opts.package.downloads = downloads;
 
-    reply.view('registry/package-page', opts);
+    reply.view('package/show', opts);
   });
 
 ```

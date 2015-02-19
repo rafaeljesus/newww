@@ -88,7 +88,7 @@ _In `services/downloads/`:_
   service.method('downloads.getAllDownloadsForPackage', ...);
 ```
 
-_Then, in `facets/registry/show-package.js`:_
+_Then, in `handlers/package.js`:_
 
 ```js
   var getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;

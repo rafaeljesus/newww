@@ -116,7 +116,7 @@ var publicRoutes = [
       "/package/{scope}/{package}",
     ],
     method: "GET",
-    handler: require('../facets/registry/show-package')
+    handler: require('../handlers/package')
   },{
     // redirect plural form to singular
     path: "/packages/{package}",

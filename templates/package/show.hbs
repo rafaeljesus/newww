@@ -2,6 +2,10 @@
 
 <div class="content">
 
+  {{#if isCollaboratedOnByUser}}
+    {{> package-secondary-nav this}}
+  {{/if}}
+
   <form class="star">
     <input type="hidden" name="name" value="{{name}}">
     <input id="star-input" type="checkbox" name="isStarred" value="true" {{#if isStarred}}checked{{/if}}>

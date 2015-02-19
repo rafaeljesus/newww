@@ -1,3 +1,4 @@
+var pluck = require("lodash").pluck
 var package = module.exports = {}
 var validatePackageName = require('validate-npm-package-name');
 
@@ -63,7 +64,14 @@ package.show = function(request, reply) {
         }
       }
 
-      pkg.isStarred = loggedInUser && pkg.stars && pkg.stars.indexOf(loggedInUser.name) !== -1 || false;
+      if (loggedInUser) {
+        pkg.isStarred = pkg.stars
+          && pkg.stars.indexOf(loggedInUser.name) > -1
+
+        pkg.isCollaboratedOnByUser = pkg.maintainers
+          && pluck(pkg.maintainers, 'name').indexOf(loggedInUser.name) > -1
+      }
+
       opts.package = pkg;
       opts.title = pkg.name;
       reply.view('package/show', opts);

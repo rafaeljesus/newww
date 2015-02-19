@@ -1,4 +1,5 @@
 var fixtures = require("../fixtures"),
+    cheerio = require("cheerio"),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -144,4 +145,61 @@ describe('seeing stars', function () {
       done();
     });
   });
+});
+
+describe('package nav', function () {
+
+  it('is displayed if user is a collaborator', function (done) {
+    var options = {
+      url: '/package/request',
+      credentials: fixtures.users.mikeal
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      var package = resp.request.response.source.context.package;
+      expect(package.name).to.equal('request');
+      expect(package.isCollaboratedOnByUser).to.be.true();
+      var $ = cheerio.load(resp.result)
+      expect($(".secondary-nav")).to.have.length(1);
+      done();
+    });
+
+  });
+
+  it('is not displayed if user is logged in but not a collaborator', function (done) {
+    var options = {
+      url: '/package/request',
+      credentials: fixtures.users.fakeuser
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      var package = resp.request.response.source.context.package;
+      expect(package.name).to.equal('request');
+      expect(package.isCollaboratedOnByUser).to.equal(false);
+      var $ = cheerio.load(resp.result)
+      expect($(".secondary-nav")).to.have.length(0);
+      done();
+    });
+  });
+
+
+  it('is not displayed if user is not logged in', function (done) {
+    var options = {
+      url: '/package/request',
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      var package = resp.request.response.source.context.package;
+      expect(package.name).to.equal('request');
+      expect(package.isCollaboratedOnByUser).to.equal(false);
+      var $ = cheerio.load(resp.result)
+      expect($(".secondary-nav")).to.have.length(0);
+      done();
+    });
+  });
+
+
 });

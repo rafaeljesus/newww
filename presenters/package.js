@@ -81,7 +81,7 @@ module.exports = function (package) {
   }
 
   // Process README
-  if ( package.readme === "string") {
+  if (typeof package.readme === "string") {
     package.readme = marky(package.readme, {package: package}).html();
   }
 

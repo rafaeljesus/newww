@@ -1,10 +1,8 @@
 {{#with package}}
 
-<div class="content">
+{{> package-header this}}
 
-  {{#if isCollaboratedOnByUser}}
-    {{> package-secondary-nav this}}
-  {{/if}}
+<div class="content-column">
 
   <form class="star">
     <input type="hidden" name="name" value="{{name}}">
@@ -17,9 +15,7 @@
     {{#if readme}}
       {{{readme}}}
     {{else}}
-      <h1 class="package-name">{{name}}</h1>
-      <p class="package-description">{{description}}</p>
-      <p class="">
+      <p>
         Sadly, this package has no readme.
         {{#if repository.url}}
           <a href="{{repository.url}}">Go write one!</a>

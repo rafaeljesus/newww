@@ -126,15 +126,6 @@ h1, h2, h3
     &:hover
       color npmred
 
-
-.notice
-  margin-top 10px
-  margin-bottom 25px
-  padding 10px
-  background greigh7
-  border 1px solid greigh6
-  border-radius 3px
-
 p
   margin 0 0 15px 0
 
@@ -174,3 +165,24 @@ pre
     margin 0 0 15px 0
     padding 8px
     border-radius 2px
+
+&.package-name
+  padding-bottom 0
+
+&.package-name-redundant
+  display none
+
+&.package-description-redundant
+  display none
+
+&.package-description
+  @extend .featherweight-heading
+  text-align left
+
+.notice
+  margin-top 10px
+  margin-bottom 25px
+  padding 10px
+  background greigh7
+  border 1px solid greigh6
+  border-radius 3px

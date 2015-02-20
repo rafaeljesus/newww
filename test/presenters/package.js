@@ -50,6 +50,20 @@ describe("publisher", function () {
   });
 });
 
+describe('description', function(){
+
+  var package = present({
+    name: "haxxx",
+    description: "bad <script>/xss</script> [hax](http://hax.com)"
+  })
+
+  it("parses description as markdown and sanitizes it", function(done) {
+    expect(package.description).to.equal("bad  <a href=\"http://hax.com\">hax</a>")
+    done()
+  })
+
+})
+
 describe('installCommand', function(){
 
   it('is created', function (done) {

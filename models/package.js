@@ -80,3 +80,38 @@ Package.prototype.getMostDependedUpon = function(options, callback) {
   .nodeify(callback);
 
 }
+
+
+Package.prototype.getRecentlyUpdated = function(options, callback) {
+  var _this = this
+
+  if (!callback) {
+    callback = options;
+    options = {};
+  }
+
+  var url = URL.format({
+    protocol: "https",
+    host: URL.parse(this.host).hostname,
+    pathname: "/package/-/modified",
+    query: options,
+  })
+
+  return new Promise(function(resolve, reject) {
+    var opts = {url: url, json: true, headers: {bearer: _this.bearer}};
+
+    request.get(opts, function(err, resp, body){
+      if (err) return reject(err);
+
+      if (resp.statusCode > 399) {
+        err = Error('error getting recently updated packages');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+  })
+  .nodeify(callback);
+
+}

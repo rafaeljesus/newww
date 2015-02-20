@@ -116,12 +116,11 @@ config.user = {
     freenode: [ 'IRC Handle', '%s' ]
   },
   mail: {
-    mailTransportModule: "nodemailer-ses-transport",
-    mailTransportSettings: {
+    mailTransportModule: require("nodemailer-ses-transport")({
       accessKeyId: process.env.MAIL_ACCESS_KEY_ID,
       secretAccessKey: process.env.MAIL_SECRET_ACCESS_KEY,
       region: "us-west-2"
-    },
+    }),
     emailFrom: 'support@npmjs.com'
   }
 };

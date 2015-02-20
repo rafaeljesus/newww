@@ -2,6 +2,7 @@
 // require() me!
 
 module.exports = {
+  aggregates: require("./fixtures/aggregates/index"),
   browse: require("./fixtures/browse/index"),
   collaborators: require("./fixtures/collaborators/index"),
   customers: require("./fixtures/customers/index"),

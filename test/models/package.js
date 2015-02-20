@@ -144,4 +144,52 @@ describe("Package", function(){
     }*/);
 
   });
+
+  describe("getMostDependedUpon()", function() {
+
+    it("makes an external request and gets back a results object", function(done) {
+      var mock = nock(Package.host)
+        .get('/package/-/dependents')
+        .reply(200, fixtures.aggregates.most_depended_upon_packages);
+
+      Package.getMostDependedUpon(function(err, result) {
+        mock.done();
+        expect(err).to.be.null();
+        expect(result.results).to.be.an.array();
+        expect(result.offset).to.be.a.number();
+        expect(result.hasMore).to.be.a.boolean();
+        done();
+      });
+    });
+
+    it("returns an error in the callback if the request failed", function(done) {
+      var mock = nock(Package.host)
+        .get('/package/-/dependents')
+        .reply(404);
+
+      Package.getMostDependedUpon(function(err, result) {
+        mock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal("error getting most-dependended-upon packages");
+        expect(err.statusCode).to.equal(404);
+        expect(result).to.not.exist();
+        done();
+      });
+    });
+
+    it("turns options into query parameters", function(done) {
+      var mock = nock(Package.host)
+        .get('/package/-/dependents?count=1&offset=2')
+        .reply(200, fixtures.aggregates.most_depended_upon_packages);
+
+      Package.getMostDependedUpon({count: 1, offset: 2}, function(err, result) {
+        mock.done();
+        done();
+      });
+
+    })
+
+  });
+
+
 });

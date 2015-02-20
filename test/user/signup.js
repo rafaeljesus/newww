@@ -10,9 +10,6 @@ var Code = require('code'),
 var server, cookieCrumb,
     forms = require('../fixtures/signup');
 
-var mailConfig = require('../../config').user.mail;
-mailConfig.mailTransportModule = 'nodemailer-mock-transport';
-
 // prepare the server
 before(function (done) {
   require('../mocks/server')(function (obj) {

@@ -34,10 +34,9 @@ before(function (done) {
 });
 
 after(function(done) {
-  // client.flushdb();
+  client.flushdb();
   server.stop(function () {
     server.app.cache = oldCache;
-    // delete server.app.cache._cache.connection.client;
     redisProcess.kill('SIGKILL');
     done();
   });

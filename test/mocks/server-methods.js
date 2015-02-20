@@ -1,8 +1,8 @@
 var Boom = require('boom');
-var Hapi = require('hapi');
 var murmurhash = require('murmurhash');
 var crypto = require('crypto');
 var fixtures = require('../fixtures.js');
+var Promise = require('bluebird');
 
 module.exports = function (server) {
   var methods = {
@@ -52,8 +52,10 @@ module.exports = function (server) {
     },
 
     email: {
-      send: function (mail, next) {
-        return next(null, mail);
+      send: function (template, user, redis) {
+        return new Promise(function (resolve, reject) {
+          return resolve(null);
+        });
       }
     },
 

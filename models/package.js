@@ -30,13 +30,11 @@ Package.prototype.get = function(name, options, callback) {
       if (err) {
         return reject(err);
       }
+
       if (resp.statusCode > 399) {
         err = Error('error getting package ' + name);
         err.statusCode = resp.statusCode;
         return reject(err);
-      }
-      if (resp.statusCode === 404) {
-        return resolve(null);
       }
 
       return resolve(body);

@@ -63,7 +63,7 @@ Package.prototype.getMostDependedUpon = function(options, callback) {
   })
 
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true, headers: {bearer: _this.bearer}};
+    var opts = {url: url, json: true};
 
     request.get(opts, function(err, resp, body){
       if (err) return reject(err);
@@ -98,7 +98,7 @@ Package.prototype.getRecentlyUpdated = function(options, callback) {
   })
 
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true, headers: {bearer: _this.bearer}};
+    var opts = {url: url, json: true};
 
     request.get(opts, function(err, resp, body){
       if (err) return reject(err);

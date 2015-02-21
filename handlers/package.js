@@ -4,10 +4,7 @@ var validatePackageName = require('validate-npm-package-name');
 
 var packageClientFromRequest = function(request) {
   var bearer = request.auth.credentials && request.auth.credentials.name
-  return new request.server.models.Package({
-    bearer: bearer,
-    request: request
-  });
+  return new request.server.models.Package({bearer: bearer});
 }
 
 package.show = function(request, reply) {

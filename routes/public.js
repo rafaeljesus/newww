@@ -37,7 +37,7 @@ var publicRoutes = [
   },{
     path: "/",
     method: "GET",
-    handler: require('../facets/company/show-homepage')
+    handler: require('../handlers/homepage')
   },{
     path: "/private-npm",
     method: "GET",

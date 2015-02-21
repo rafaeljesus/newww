@@ -20,8 +20,7 @@ assert(config && _.isObject(config), 'we require a configuration object');
 assert(config.host && config.port, 'config must include `host` and `port`');
 assert(config.user && _.isObject(config.user), 'config must include a `user` stanza');
 assert(config.user.mail && _.isObject(config.user.mail), 'config.user must include a `mail` stanza');
-assert(config.user.mail.mailTransportModule && _.isString(config.user.mail.mailTransportModule), 'config must specify a `mailTransportModule`');
-assert(config.user.mail.mailTransportSettings && _.isObject(config.user.mail.mailTransportSettings), 'config must include `mailTransportSettings`');
+assert(config.user.mail.mailTransportModule && _.isObject(config.user.mail.mailTransportModule), 'config must specify a `mailTransportModule`');
 assert(config.user.mail.emailFrom && _.isString(config.user.mail.emailFrom), 'config must include a `emailFrom` settings');
 
 // set up the server

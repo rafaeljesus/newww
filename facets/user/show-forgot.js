@@ -36,13 +36,13 @@ module.exports = function (options) {
 
 function processToken(request, reply) {
   var opts = {},
-      cache = request.server.app.cache;
+      cache = request.server.app.cache._cache.connection.client;
 
   var token = request.params.token,
       hash = sha(token),
       pwKey = 'pwrecover_' + hash;
 
-  cache.get(pwKey, function (err, item, cached) {
+  cache.get(pwKey, function (err, cached) {
     if (err) {
       request.logger.error('Error getting token from redis', pwKey);
       request.logger.error(err);
@@ -56,11 +56,13 @@ function processToken(request, reply) {
       return;
     }
 
-    var name = cached.item.name,
-        verify = cached.item.token;
+    cached = JSON.parse(cached);
+
+    var name = cached.name,
+        verify = cached.token;
 
     if (verify !== token) {
-      request.logger.error('token in cache does not match user token; cached=' + cached.item.token + '; token=' + token);
+      request.logger.error('token in cache does not match user token; cached=' + cached.token + '; token=' + token);
       reply.view('errors/internal', opts).code(500);
       return;
     }
@@ -83,7 +85,7 @@ function processToken(request, reply) {
         return;
       }
 
-      cache.drop(pwKey, function (err) {
+      cache.del(pwKey, function (err) {
 
         if (err) {
           request.logger.warn('Unable to drop key ' + pwKey);
@@ -245,35 +247,28 @@ function sendEmail(name, email, request, reply) {
       return;
     }
 
-    var u = host + '/forgot/' + encodeURIComponent(token);
+    var sendEmail = request.server.methods.email.send;
+    var redis = request.server.app.cache._cache.connection.client;
 
     var mail = {
-      to: '"' + name + '" <' + email + '>',
-      from: from,
-      subject : "npm Password Reset",
-      headers: { "X-SMTPAPI": { category: "password-reset" } },
-      text: require('./emailTemplates/forgotPassword')(name, u, from)
+      name: name,
+      email: email
     };
 
-    var sendEmail = request.server.methods.email.send;
-
-    sendEmail(mail, function (er) {
-
-      if (er) {
+    sendEmail('forgot-password', mail, redis)
+      .catch(function (er) {
         request.logger.error('Unable to sent revert email to ' + mail.to);
         request.logger.error(er);
         return reply.view('errors/internal', opts).code(500);
-      }
+      })
+      .then(function () {
+        opts.sent = true;
 
-      if (process.env.NODE_ENV === 'dev') { opts.mail = JSON.stringify(mail); }
+        request.timing.page = 'sendForgotEmail';
+        request.metrics.metric({ name: 'sendForgotEmail' });
 
-      opts.sent = true;
-
-      request.timing.page = 'sendForgotEmail';
-      request.metrics.metric({ name: 'sendForgotEmail' });
-
-      return reply.view('user/password-recovery-form', opts);
-    });
+        return reply.view('user/password-recovery-form', opts);
+      });
   });
 }
 

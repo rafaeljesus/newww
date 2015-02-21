@@ -137,9 +137,7 @@ describe('Looking up a user', function () {
     it('sends an email when everything finally goes right', function (done) {
       var name = 'fakeuser';
       server.inject(postName(name), function (resp) {
-        var mail = JSON.parse(resp.request.response.source.context.mail);
-        expect(mail.to).to.include(name);
-        expect(mail.subject).to.equal('npm Password Reset');
+        expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
         expect(resp.statusCode).to.equal(200);
         done();
       });
@@ -181,9 +179,7 @@ describe('Looking up a user', function () {
       };
 
       server.inject(options, function (resp) {
-        var mail = JSON.parse(resp.request.response.source.context.mail);
-        expect(mail.to).to.include("forrest");
-        expect(mail.subject).to.equal('npm Password Reset');
+        expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
         expect(resp.statusCode).to.equal(200);
         done();
       });
@@ -191,10 +187,7 @@ describe('Looking up a user', function () {
 
     it('sends an email when everything finally goes right', function (done) {
       server.inject(postName("onlyone@boom.com"), function (resp) {
-        var mail = JSON.parse(resp.request.response.source.context.mail);
-        tokenUrl = mail.text.match(/\/forgot\/[\/\w \.-]*\/?/)[0];
-        expect(mail.to).to.include("forrest");
-        expect(mail.subject).to.equal('npm Password Reset');
+        expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
         expect(resp.statusCode).to.equal(200);
         done();
       });

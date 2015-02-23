@@ -2,16 +2,15 @@ var log = require('bole')('email-send'),
     mailConfig = require('../../../config').user.mail,
     MustacheMailer = require('mustache-mailer'),
     tokenFacilitator = require('token-facilitator'),
-    path = require('path');
+    path = require('path'),
+    _ = require('lodash');
 
-module.exports = function send (template, user, redis) {
+module.exports = function send (template, data, redis) {
 
-  var mailOpts = {
-    email: user.email,
-    name: user.name,
+  var mailOpts = _.extend({}, {
     from: mailConfig.emailFrom,
     host: mailConfig.canonicalHost
-  };
+  }, data);
 
   var mm = new MustacheMailer({
     transport: mailConfig.mailTransportModule,

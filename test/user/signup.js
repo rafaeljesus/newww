@@ -14,6 +14,7 @@ var server, cookieCrumb,
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;
+    server.app.cache._cache.connection.client = {};
     done();
   });
 });

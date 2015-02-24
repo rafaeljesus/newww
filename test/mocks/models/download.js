@@ -2,7 +2,7 @@ var _ = require('lodash');
 var Promise = require('bluebird');
 var fixtures = require('../../fixtures');
 var model = require("../../../models/download");
-var Download = module.exports = model
+var Download = _.cloneDeep(model)
 
 Download.prototype.getSome = function(packageName) {
 
@@ -15,3 +15,5 @@ Download.prototype.getSome = function(packageName) {
   });
 
 };
+
+module.exports = Download;

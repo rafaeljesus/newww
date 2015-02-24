@@ -40,7 +40,7 @@ describe('GET /', function () {
 
     server.inject(opts, function (resp) {
       var context = resp.request.response.source.context;
-      expect(context.explicit).to.be.an.object();
+      expect(context.explicit).to.be.an.array();
       expect(context.modified).to.be.an.object();
       expect(context.dependents).to.be.an.object();
       expect(context.downloads).to.be.an.object();

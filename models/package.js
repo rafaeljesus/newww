@@ -47,7 +47,7 @@ Package.prototype.get = function(name, options, callback) {
   .nodeify(callback);
 };
 
-Package.prototype.getMostDependedUpon = function(options, callback) {
+Package.prototype.list = function(options, callback) {
   var _this = this
 
   if (!callback) {
@@ -58,7 +58,7 @@ Package.prototype.getMostDependedUpon = function(options, callback) {
   var url = URL.format({
     protocol: "https",
     host: URL.parse(this.host).hostname,
-    pathname: "/package/-/dependents",
+    pathname: "/package",
     query: options,
   })
 
@@ -69,42 +69,7 @@ Package.prototype.getMostDependedUpon = function(options, callback) {
       if (err) return reject(err);
 
       if (resp.statusCode > 399) {
-        err = Error('error getting most-dependended-upon packages');
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      return resolve(body);
-    });
-  })
-  .nodeify(callback);
-
-}
-
-
-Package.prototype.getRecentlyUpdated = function(options, callback) {
-  var _this = this
-
-  if (!callback) {
-    callback = options;
-    options = {};
-  }
-
-  var url = URL.format({
-    protocol: "https",
-    host: URL.parse(this.host).hostname,
-    pathname: "/package/-/modified",
-    query: options,
-  })
-
-  return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true};
-
-    request.get(opts, function(err, resp, body){
-      if (err) return reject(err);
-
-      if (resp.statusCode > 399) {
-        err = Error('error getting recently updated packages');
+        err = Error('error getting package list');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

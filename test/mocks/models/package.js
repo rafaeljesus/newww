@@ -34,26 +34,23 @@ Package.prototype.get = function (name, options, callback) {
 };
 
 
-Package.prototype.list = function(options, callback) {
+Package.prototype.list = function(options) {
   var _this = this;
-
-  if (!callback) {
-    callback = options;
-    options = {};
-  }
 
   console.log("options", options)
 
   return new Promise(function(resolve, reject){
-    if (options.sort === "depended") {
-      return resolve(fixtures.aggregates.most_depended_upon_packages);
+
+    switch (options.sort) {
+      case "dependents":
+        return resolve(fixtures.aggregates.most_depended_upon_packages);
+        break;
+      case "modified":
+        return resolve(fixtures.aggregates.recently_updated_packages);
+        break;
+      default:
+        return reject(Error("Package.list() doesn't mock that yet"));
     }
 
-    if (options.sort === "modified") {
-      return resolve(fixtures.aggregates.recently_updated_packages);
-    }
-    
-    return reject(Error("Package.list() doesn't mock that yet"));
-  });
-
+    });
 }

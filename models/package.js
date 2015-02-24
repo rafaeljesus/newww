@@ -14,15 +14,10 @@ var Package = module.exports = function (opts) {
   return this;
 };
 
-Package.prototype.get = function(name, options, callback) {
+Package.prototype.get = function(name, options) {
   var _this = this;
   var package;
   var url = fmt("%s/package/%s", this.host, name);
-
-  if (!callback) {
-    callback = options;
-    options = {};
-  }
 
   return new Promise(function(resolve, reject) {
     var opts = {url: url, json: true, headers: {bearer: _this.bearer}};
@@ -43,18 +38,12 @@ Package.prototype.get = function(name, options, callback) {
   })
   .then(function(_package){
     return decorate(_package);
-  })
-  .nodeify(callback);
+  });
+  
 };
 
-Package.prototype.list = function(options, callback) {
+Package.prototype.list = function(options) {
   var _this = this
-
-  if (!callback) {
-    callback = options;
-    options = {};
-  }
-
   var url = URL.format({
     protocol: "https",
     host: URL.parse(this.host).hostname,
@@ -76,7 +65,6 @@ Package.prototype.list = function(options, callback) {
 
       return resolve(body);
     });
-  })
-  .nodeify(callback);
+  });
 
 }

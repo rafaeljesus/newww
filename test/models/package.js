@@ -41,60 +41,83 @@ describe("Package", function(){
 
   describe("get()", function() {
 
-    it("makes an external request for /{package}", function(done) {
-
-      var packageMock = nock(Package.host)
+    it("makes an external request for /package/{package}", function(done) {
+      var mock = nock(Package.host)
         .get('/package/orientdb')
         .reply(200, fixtures.packages.orientdb);
 
-      Package.get("orientdb", function(err, package) {
-        expect(err).to.be.null();
-        expect(package).to.exist();
-        packageMock.done();
-        done();
-      });
+      Package.get("orientdb")
+        .then(function(package) {
+          expect(package).to.exist();
+        })
+        .catch(function(err) {
+          expect(err).to.be.null();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
+
     });
 
-    it("returns the response body in the callback", function(done) {
-      var packageMock = nock(Package.host)
+    it("returns the response body", function(done) {
+      var mock = nock(Package.host)
         .get('/package/orientdb')
         .reply(200, fixtures.packages.orientdb);
 
-      Package.get("orientdb", function(err, package) {
-        expect(err).to.be.null();
-        expect(package.name).to.equal("orientdb");
-        expect(package.versions).to.exist();
-        packageMock.done();
-        done();
-      });
+      Package.get("orientdb")
+        .then(function(package) {
+          expect(package.name).to.equal("orientdb");
+          expect(package.versions).to.exist();
+        })
+        .catch(function(err) {
+          expect(err).to.be.null();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
+
     });
 
     it("returns an error in the callback if the request failed", function(done) {
-      var packageMock = nock(Package.host)
+      var mock = nock(Package.host)
         .get('/package/foo')
         .reply(404);
 
-      Package.get('foo', function(err, package) {
-        expect(err).to.exist();
-        expect(err.message).to.equal("error getting package foo");
-        expect(err.statusCode).to.equal(404);
-        expect(package).to.not.exist();
-        packageMock.done();
-        done();
-      });
+      Package.get('foo')
+        .then(function(package) {
+          expect(package).to.not.exist();
+        })
+        .catch(function(err){
+          expect(err).to.exist();
+          expect(err.message).to.equal("error getting package foo");
+          expect(err.statusCode).to.equal(404);
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
+
     });
 
     it("does not require a bearer token", function(done) {
-      var packageMock = nock(Package.host, {reqheaders: {}})
+      var mock = nock(Package.host, {reqheaders: {}})
         .get('/package/dogbreath')
         .reply(200, fixtures.packages.orientdb);
 
-      Package.get('dogbreath', function(err, package) {
-        expect(err).to.be.null();
-        expect(package).to.exist();
-        packageMock.done();
-        done();
-      });
+      Package.get('dogbreath')
+        .then(function(package){
+          expect(package).to.exist();
+        })
+        .catch(function(err){
+          expect(package).to.exist();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
+
     });
 
     it("includes the bearer token if user is logged in when loading the package page", function(done) {
@@ -104,24 +127,31 @@ describe("Package", function(){
         bearer: "rockbot"
       });
 
-      var packageMock = nock(Package.host, {
-          reqheaders: {bearer: 'rockbot'}
+      var mock = nock(Package.host, {
+          reqheaders: {
+            bearer: 'rockbot'
+          }
         })
         .get('/package/orientdb')
         .reply(200, fixtures.packages.orientdb);
 
-      Package.get('orientdb', function(err, package) {
-        expect(err).to.not.exist();
-        packageMock.done();
-        expect(package.name).to.equal('orientdb');
-        expect(package.version).to.equal('1.3.0');
-        done();
-      });
+      Package.get('orientdb')
+        .then(function(package) {
+          expect(package.name).to.equal('orientdb');
+          expect(package.version).to.equal('1.3.0');
+        })
+        .catch(function(err){
+          expect(err).to.not.exist();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
 
     });
 
     it("fetches download counts if the option is set"/*, function(done) {
-      var packageMock = nock(Package.host)
+      var mock = nock(Package.host)
         .get('/package/request')
         .reply(200, fixtures.request);
 
@@ -133,13 +163,18 @@ describe("Package", function(){
         .get('/downloads/point/last-month/request')
         .reply(200, fixtures.downloads.request['last-month']);
 
-      Package.get("request", {downloads: true}, function(err, package) {
-        packageMock.done();
-        downloadsMock.done();
-        expect(err).to.be.null();
-        expect(package.name).to.equal("request");
-        expect(package.downloads).to.exist();
-        done();
+      Package.get("request", {downloads: true})
+        .then(function(package) {
+          expect(package.name).to.equal("request");
+          expect(package.downloads).to.exist();
+        })
+        .catch(function(err){
+          expect(err).to.not.exist();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
       });
     }*/);
 
@@ -152,14 +187,20 @@ describe("Package", function(){
         .get('/package?sort=dependents')
         .reply(200, fixtures.aggregates.most_depended_upon_packages);
 
-      Package.list({sort: "dependents"}, function(err, result) {
-        mock.done();
-        expect(err).to.be.null();
-        expect(result.results).to.be.an.array();
-        expect(result.offset).to.be.a.number();
-        expect(result.hasMore).to.be.a.boolean();
-        done();
-      });
+      Package.list({sort: "dependents"})
+        .then(function(result) {
+          expect(result.results).to.be.an.array();
+          expect(result.offset).to.be.a.number();
+          expect(result.hasMore).to.be.a.boolean();
+        })
+        .catch(function(err){
+          expect(err).to.not.exist();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
+
     });
 
     it("returns an error in the callback if the request failed", function(done) {
@@ -167,14 +208,20 @@ describe("Package", function(){
         .get('/package')
         .reply(404);
 
-      Package.list(function(err, result) {
-        mock.done();
-        expect(err).to.exist();
-        expect(err.message).to.equal("error getting package list");
-        expect(err.statusCode).to.equal(404);
-        expect(result).to.not.exist();
-        done();
-      });
+      Package.list()
+        .then(function(result) {
+          expect(result).to.not.exist();
+        })
+        .catch(function(err){
+          expect(err).to.exist();
+          expect(err.message).to.equal("error getting package list");
+          expect(err.statusCode).to.equal(404);
+        })
+        .then(function(){
+          mock.done();
+          done();
+        })
+
     });
 
     it("turns options into query parameters", function(done) {
@@ -182,17 +229,19 @@ describe("Package", function(){
         .get('/package?sort=modified&count=1&offset=2')
         .reply(200, fixtures.aggregates.recently_updated_packages);
 
-      Package.list({
+      var options = {
         sort: "modified",
         count: 1,
         offset: 2
-      }, function(err, result) {
-        mock.done();
-        done();
-      });
+      }
+
+      Package.list(options)
+        .then(function(){
+          mock.done();
+          done();
+        });
     });
 
   });
-
 
 });

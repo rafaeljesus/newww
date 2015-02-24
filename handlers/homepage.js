@@ -8,12 +8,12 @@ module.exports = function (request, reply) {
   }
 
   Package.list({sort: "modified"})
-    .then(function(updated){
-      context.updated = updated
+    .then(function(modified){
+      context.modified = modified
       return Package.list({sort: "dependents"})
     })
-    .then(function(depended){
-      context.depended = depended
+    .then(function(dependents){
+      context.dependents = dependents
       return Download.getAll()
     })
     .catch(function(err){
@@ -25,7 +25,7 @@ module.exports = function (request, reply) {
     })
     .then(function(downloads){
       context.downloads = downloads
-      return reply.view('/homepage', context)
+      return reply.view('homepage', context)
     })
 
 }

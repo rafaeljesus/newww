@@ -44,7 +44,7 @@ describe("Download", function(){
 
     describe("when package is specified", function() {
 
-      it("gets daily counts for a specific package, if specified", function(done) {
+      it("gets daily counts", function(done) {
         var mock = nock(Download.host)
           .get('/point/last-day/request')
           .reply(200, fixtures.downloads.request['last-day']);
@@ -153,7 +153,7 @@ describe("Download", function(){
 
   describe("getWeekly()", function() {
 
-    it("gets weekly counts for a specific package, if specified", function(done) {
+    it("gets weekly counts for a specific package", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-week/request')
         .reply(200, fixtures.downloads.request['last-week']);
@@ -172,7 +172,7 @@ describe("Download", function(){
         });
     });
 
-    it("gets weekly counts for all packages if name is not specified", function(done) {
+    it("gets weekly counts for all packages", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-week')
         .reply(200, fixtures.downloads.all['last-week']);
@@ -195,7 +195,7 @@ describe("Download", function(){
 
   describe("getMonthly()", function() {
 
-    it("gets monthly counts for a specific package, if specified", function(done) {
+    it("gets monthly counts for a specific package", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-month/request')
         .reply(200, fixtures.downloads.request['last-month']);
@@ -215,7 +215,7 @@ describe("Download", function(){
 
     });
 
-    it("gets monthly counts for all packages if name is not specified", function(done) {
+    it("gets monthly counts for all packages", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-month')
         .reply(200, fixtures.downloads.all['last-month']);
@@ -275,7 +275,7 @@ describe("Download", function(){
           expect(result['last-day']).to.be.an.object();
           expect(result['last-week']).to.be.an.object();
           expect(result['last-month']).to.be.an.object();
-          expect(result['last-month'].downloads).to.equal(500);
+          expect(result['last-month'].downloads).to.equal(1028113165);
           mock.done();
           done();
         });

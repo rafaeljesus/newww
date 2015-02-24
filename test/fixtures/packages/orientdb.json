@@ -1,0 +1,70 @@
+{
+  "versions": [
+    "0.1.0",
+    "0.2.0",
+    "0.2.1",
+    "0.3.0",
+    "0.3.1",
+    "0.4.0",
+    "0.5.0",
+    "0.5.1",
+    "0.5.2",
+    "0.6.0",
+    "0.6.1",
+    "0.6.2",
+    "0.6.3",
+    "0.6.4",
+    "0.6.5",
+    "0.7.0",
+    "0.8.0",
+    "0.8.1",
+    "0.9.0",
+    "0.9.1",
+    "0.9.2",
+    "0.9.3",
+    "0.9.4",
+    "0.9.5",
+    "0.9.6",
+    "0.9.7",
+    "0.9.8",
+    "1.3.0"
+  ],
+  "name": "orientdb",
+  "description": "A node.js driver for OrientDB",
+  "readme": "Introduction\n========\n\nThis is a node.js driver for OrientDB. This has some roots in christk's node-mongodb-native and in yojimbo87's east OrientDB drivers.\n\nStatus\n========\n\nUnder construction OrientDB node.js driver.\n\nCurrently this driver implements the OrientDB binary protocol but the plan is to provide both the HTTP and the binary protocol.\n\nThe following commands are implemented so far:\n\n* CONNECT\n* DB_OPEN\n* DB_CREATE\n* DB_CLOSE\n* DB_EXIST\n* DB_RELOAD\n* DB_DELETE\n* DB_SIZE\n* DB_COUNTRECORDS\n",
+  "dependents": [
+    "connect-orientdb",
+    "graphdb-orient"
+  ],
+  "stars": [
+    "fgribreau"
+  ],
+  "bugs": null,
+  "global": false,
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/gabipetrovay/node-orientdb.git"
+  },
+  "dependencies": {
+    "lodash": "*"
+  },
+  "devDependencies": {
+    "async": "*",
+    "tap": "0.4"
+  },
+  "publisher": {
+    "name": "gabipetrovay",
+    "email": "gabipetrovay@gmail.com",
+    "url": null,
+    "is_npm_user": null
+  },
+  "maintainers": [
+    {
+      "name": "gabipetrovay",
+      "email": "gabipetrovay@gmail.com"
+    }
+  ],
+  "version": "1.3.0",
+  "license": "none",
+  "last_published_at": "2013-06-11T09:36:32.285Z"
+}

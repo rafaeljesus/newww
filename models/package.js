@@ -2,6 +2,7 @@ var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
+var URL = require('url');
 var decorate = require(__dirname + '/../presenters/package');
 
 var Package = module.exports = function (opts) {
@@ -30,13 +31,11 @@ Package.prototype.get = function(name, options, callback) {
       if (err) {
         return reject(err);
       }
+
       if (resp.statusCode > 399) {
         err = Error('error getting package ' + name);
         err.statusCode = resp.statusCode;
         return reject(err);
-      }
-      if (resp.statusCode === 404) {
-        return resolve(null);
       }
 
       return resolve(body);
@@ -47,3 +46,37 @@ Package.prototype.get = function(name, options, callback) {
   })
   .nodeify(callback);
 };
+
+Package.prototype.list = function(options, callback) {
+  var _this = this
+
+  if (!callback) {
+    callback = options;
+    options = {};
+  }
+
+  var url = URL.format({
+    protocol: "https",
+    host: URL.parse(this.host).hostname,
+    pathname: "/package",
+    query: options,
+  })
+
+  return new Promise(function(resolve, reject) {
+    var opts = {url: url, json: true};
+
+    request.get(opts, function(err, resp, body){
+      if (err) return reject(err);
+
+      if (resp.statusCode > 399) {
+        err = Error('error getting package list');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+  })
+  .nodeify(callback);
+
+}

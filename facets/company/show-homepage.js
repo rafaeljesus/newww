@@ -10,6 +10,10 @@ var async = require('async'),
     once = require('once');
 
 module.exports = function (request, reply) {
+
+
+
+
   var timer = { start: Date.now() };
 
   load(request, function (err, cached) {

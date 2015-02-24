@@ -37,7 +37,7 @@ var publicRoutes = [
   },{
     path: "/",
     method: "GET",
-    handler: require('../facets/company/show-homepage')
+    handler: require('../handlers/homepage')
   },{
     path: "/private-npm",
     method: "GET",
@@ -116,7 +116,7 @@ var publicRoutes = [
       "/package/{scope}/{package}",
     ],
     method: "GET",
-    handler: require('../facets/registry/show-package')
+    handler: require('../handlers/package').show
   },{
     // redirect plural form to singular
     path: "/packages/{package}",

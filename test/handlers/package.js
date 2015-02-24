@@ -1,4 +1,5 @@
 var fixtures = require("../fixtures"),
+    cheerio = require("cheerio"),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -30,12 +31,12 @@ describe('Retreiving packages from the registry', function () {
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.context.package.name).to.equal('request');
-      expect(source.template).to.equal('registry/package-page');
+      expect(source.template).to.equal('package/show');
       done();
     });
   });
 
-  it('treats unpublished packages specially'/*, function (done) {
+  it('treats unpublished packages specially', function (done) {
     var options = {
       url: '/package/unpublished'
     };
@@ -43,12 +44,10 @@ describe('Retreiving packages from the registry', function () {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(410);
       var source = resp.request.response.source;
-      expect(source.template).to.equal('registry/unpublished-package-page');
-      expect(source.context.package.unpubFromNow).to.exist();
+      expect(source.template).to.equal('package/unpublished');
       done();
     });
-  }*/
-  );
+  });
 
 });
 
@@ -146,4 +145,61 @@ describe('seeing stars', function () {
       done();
     });
   });
+});
+
+describe('package nav', function () {
+
+  it('is displayed if user is a collaborator', function (done) {
+    var options = {
+      url: '/package/request',
+      credentials: fixtures.users.mikeal
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      var package = resp.request.response.source.context.package;
+      expect(package.name).to.equal('request');
+      expect(package.isCollaboratedOnByUser).to.be.true();
+      var $ = cheerio.load(resp.result)
+      expect($(".secondary-nav")).to.have.length(1);
+      done();
+    });
+
+  });
+
+  it('is not displayed if user is logged in but not a collaborator', function (done) {
+    var options = {
+      url: '/package/request',
+      credentials: fixtures.users.fakeuser
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      var package = resp.request.response.source.context.package;
+      expect(package.name).to.equal('request');
+      expect(package.isCollaboratedOnByUser).to.equal(false);
+      var $ = cheerio.load(resp.result)
+      expect($(".secondary-nav")).to.have.length(0);
+      done();
+    });
+  });
+
+
+  it('is not displayed if user is not logged in', function (done) {
+    var options = {
+      url: '/package/request',
+    };
+
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(200);
+      var package = resp.request.response.source.context.package;
+      expect(package.name).to.equal('request');
+      expect(package.isCollaboratedOnByUser).to.equal(false);
+      var $ = cheerio.load(resp.result)
+      expect($(".secondary-nav")).to.have.length(0);
+      done();
+    });
+  });
+
+
 });

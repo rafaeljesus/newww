@@ -12,23 +12,23 @@
       </div>
     {{/if}}
 
-    {{#if downloads.day}}
+    {{#if downloads.last-day}}
       <div class="stat icon-cal-24hours">
-        <strong class="pretty-number">{{downloads.day}}</strong>
+        <strong class="pretty-number">{{downloads.last-day.downloads}}</strong>
         downloads in the last day
       </div>
     {{/if}}
 
-    {{#if downloads.week}}
+    {{#if downloads.last-week}}
       <div class="stat icon-cal-7days">
-        <strong class="pretty-number">{{downloads.week}}</strong>
+        <strong class="pretty-number">{{downloads.last-week.downloads}}</strong>
         downloads in the last week
       </div>
     {{/if}}
 
-    {{#if downloads.month}}
+    {{#if downloads.last-month}}
       <div class="stat icon-cal-30days">
-        <strong class="pretty-number">{{downloads.month}}</strong>
+        <strong class="pretty-number">{{downloads.last-month.downloads}}</strong>
         downloads in the last month
       </div>
     {{/if}}
@@ -49,7 +49,7 @@
   <a id="recent" href="/browse/updated">recently updated packages</a>
 </h2>
 <ul class="columnar">
-  {{#each updated}}
+  {{#each modified.results}}
     <li>{{> package-widget}}</li>
   {{/each}}
 </ul>
@@ -58,7 +58,7 @@
   <a id="depended" href="/browse/depended">most depended-upon packages</a>
 </h2>
 <ul class="columnar packages">
-  {{#each depended}}
+  {{#each dependents.results}}
     <li>{{> package-widget}}</li>
   {{/each}}
 </ul>

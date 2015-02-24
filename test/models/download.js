@@ -49,13 +49,19 @@ describe("Download", function(){
           .get('/point/last-day/request')
           .reply(200, fixtures.downloads.request['last-day']);
 
-        Download.getDaily("request", function(err, result) {
-          mock.done();
-          expect(err).to.be.null();
-          expect(result).to.exist();
-          expect(result.downloads).to.equal(13);
-          done();
-        });
+        Download.getDaily("request")
+          .then(function(result) {
+            expect(result).to.exist();
+            expect(result.downloads).to.equal(13);
+          })
+          .catch(function(err) {
+            expect(err).to.be.null();
+          })
+          .then(function() {
+            mock.done();
+            done();
+          });
+
       });
 
       it("generates an error message when the request fails", function(done){
@@ -63,13 +69,19 @@ describe("Download", function(){
           .get('/point/last-day/request')
           .reply(400);
 
-        Download.getDaily("request", function(err, result) {
-          mock.done();
-          expect(err).to.exist();
-          expect(err.message).to.equal("error getting downloads for period day for request");
-          expect(result).to.not.exist();
-          done();
-        });
+        Download.getDaily("request")
+          .then(function(result) {
+            expect(result).to.not.exist();
+          })
+          .catch(function(err){
+            expect(err).to.exist();
+            expect(err.message).to.equal("error getting downloads for period day for request");
+          })
+          .then(function(){
+            mock.done();
+            done();
+          });
+
       });
 
     })
@@ -81,13 +93,19 @@ describe("Download", function(){
           .get('/point/last-day')
           .reply(200, fixtures.downloads.all['last-day']);
 
-        Download.getDaily(function(err, result) {
-          mock.done();
-          expect(err).to.be.null();
-          expect(result).to.exist();
-          expect(result.downloads).to.equal(41695496);
-          done();
-        });
+        Download.getDaily()
+          .then(function(result) {
+            expect(result).to.exist();
+            expect(result.downloads).to.equal(41695496);
+          })
+          .catch(function(err) {
+            expect(err).to.be.null();
+          })
+          .then(function() {
+            mock.done();
+            done();
+          });
+
       });
 
       it("generates an error message when the request fails", function(done){
@@ -95,13 +113,19 @@ describe("Download", function(){
           .get('/point/last-day')
           .reply(400);
 
-        Download.getDaily(function(err, result) {
-          mock.done();
-          expect(err).to.exist();
-          expect(err.message).to.equal("error getting downloads for period day for all packages");
-          expect(result).to.not.exist();
-          done();
-        });
+        Download.getDaily()
+          .then(function(result) {
+            expect(result).to.not.exist();
+          })
+          .catch(function(err){
+            expect(err).to.exist();
+            expect(err.message).to.equal("error getting downloads for period day for all packages");
+          })
+          .then(function(){
+            mock.done();
+            done();
+          });
+
       });
 
       it("returns an error if request duration exceeds specified timeout", function(done){
@@ -110,13 +134,18 @@ describe("Download", function(){
           .delayConnection(51)
           .reply(200, fixtures.downloads.all['last-day']);
 
-        Download.getDaily(function(err, result) {
-          mock.done();
-          expect(err).to.exist();
-          expect(err.code).to.equal('ETIMEDOUT');
-          expect(result).to.not.exist();
-          done();
-        });
+        Download.getDaily()
+          .then(function(result) {
+            expect(result).to.not.exist();
+          })
+          .catch(function(err){
+            expect(err).to.exist();
+            expect(err.code).to.equal('ETIMEDOUT');
+          })
+          .then(function(){
+            mock.done();
+            done();
+          });
 
       });
     });
@@ -129,13 +158,18 @@ describe("Download", function(){
         .get('/point/last-week/request')
         .reply(200, fixtures.downloads.request['last-week']);
 
-      Download.getWeekly("request", function(err, result) {
-        mock.done();
-        expect(err).to.be.null();
-        expect(result).to.exist();
-        expect(result.downloads).to.equal(200);
-        done();
-      });
+      Download.getWeekly("request")
+        .then(function(result) {
+          expect(result).to.exist();
+          expect(result.downloads).to.equal(200);
+        })
+        .catch(function(err){
+          expect(err).to.be.null();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
     });
 
     it("gets weekly counts for all packages if name is not specified", function(done) {
@@ -143,13 +177,18 @@ describe("Download", function(){
         .get('/point/last-week')
         .reply(200, fixtures.downloads.all['last-week']);
 
-      Download.getWeekly(function(err, result) {
-        mock.done();
-        expect(err).to.be.null();
-        expect(result).to.exist();
-        expect(result.downloads).to.equal(249027204);
-        done();
-      });
+      Download.getWeekly()
+        .then(function(result) {
+          expect(result).to.exist();
+          expect(result.downloads).to.equal(249027204);
+        })
+        .catch(function(err){
+          expect(err).to.be.null();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
     });
 
   });
@@ -161,13 +200,19 @@ describe("Download", function(){
         .get('/point/last-month/request')
         .reply(200, fixtures.downloads.request['last-month']);
 
-      Download.getMonthly("request", function(err, result) {
-        mock.done();
-        expect(err).to.be.null();
-        expect(result).to.exist();
-        expect(result.downloads).to.equal(500);
-        done();
-      });
+      Download.getMonthly("request")
+        .then(function(result){
+          expect(result).to.exist();
+          expect(result.downloads).to.equal(500);
+        })
+        .catch(function(err){
+          expect(err).to.be.null();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
+
     });
 
     it("gets monthly counts for all packages if name is not specified", function(done) {
@@ -175,13 +220,66 @@ describe("Download", function(){
         .get('/point/last-month')
         .reply(200, fixtures.downloads.all['last-month']);
 
-      Download.getMonthly(function(err, result) {
-        mock.done();
-        expect(err).to.be.null();
-        expect(result).to.exist();
-        expect(result.downloads).to.equal(1028113165);
-        done();
-      });
+      Download.getMonthly()
+        .then(function(result) {
+          expect(result).to.exist();
+          expect(result.downloads).to.equal(1028113165);
+        })
+        .catch(function(err){
+          expect(err).to.be.null();
+        })
+        .then(function(){
+          mock.done();
+          done();
+        });
+    });
+
+  });
+
+  describe("getAll()", function() {
+
+    it("gets daily, weekly, and monthly downloads for a specific package", function(done){
+      var mock = nock(Download.host)
+        .get('/point/last-day/request')
+        .reply(200, fixtures.downloads.request['last-day'])
+        .get('/point/last-week/request')
+        .reply(200, fixtures.downloads.request['last-week'])
+        .get('/point/last-month/request')
+        .reply(200, fixtures.downloads.request['last-month']);
+
+      Download.getAll("request")
+        .then(function(result) {
+          expect(result).to.exist();
+          expect(result['last-day']).to.be.an.object();
+          expect(result['last-week']).to.be.an.object();
+          expect(result['last-month']).to.be.an.object();
+          expect(result['last-month'].downloads).to.equal(500);
+          mock.done();
+          done();
+        });
+
+    });
+
+    it("gets daily, weekly, and monthly downloads for all packages", function(done){
+      var mock = nock(Download.host)
+        .get('/point/last-day')
+        .reply(200, fixtures.downloads.all['last-day'])
+        .get('/point/last-week')
+        .reply(200, fixtures.downloads.all['last-week'])
+        .get('/point/last-month')
+        .reply(200, fixtures.downloads.all['last-month']);
+
+      Download.getAll()
+        .then(function(result) {
+          expect(result).to.exist();
+          expect(result['last-day']).to.be.an.object();
+          expect(result['last-week']).to.be.an.object();
+          expect(result['last-month']).to.be.an.object();
+          expect(result['last-month'].downloads).to.equal(1028113165);
+          mock.done();
+          done();
+        });
+
     });
 
   });

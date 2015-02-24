@@ -9,34 +9,46 @@ var Download = module.exports = function (opts) {
     host: process.env.DOWNLOADS_API,
     timeout: 2000,
   }, opts);
-
   return this;
 };
 
-
-Download.prototype.getDaily = function(packageName, callback) {
-  return this.getSome("day", packageName, callback);
+Download.prototype.getDaily = function(packageName) {
+  return this.getSome("day", packageName);
 };
 
-Download.prototype.getWeekly = function(packageName, callback) {
-  return this.getSome("week", packageName, callback);
+Download.prototype.getWeekly = function(packageName) {
+  return this.getSome("week", packageName);
 };
 
-Download.prototype.getMonthly = function(packageName, callback) {
-  return this.getSome("month", packageName, callback);
+Download.prototype.getMonthly = function(packageName) {
+  return this.getSome("month", packageName);
 };
 
+Download.prototype.getAll = function(packageName) {
+  var _this = this;
+  var result = {};
 
-Download.prototype.getSome = function(period, packageName, callback) {
+  return _this.getDaily(packageName)
+    .then(function(dailies){
+      result['last-day'] = dailies
+      return _this.getWeekly(packageName)
+    })
+    .then(function(weeklies){
+      result['last-week'] = weeklies
+      return _this.getMonthly(packageName)
+    })
+    .then(function(monthlies){
+      result['last-month'] = monthlies
+      return result
+    })
+
+}
+
+Download.prototype.getSome = function(period, packageName) {
   var _this = this;
   var results;
+
   var url = fmt("%s/point/last-%s", this.host, period);
-
-  if (!callback) {
-    callback = packageName;
-    packageName = null;
-  }
-
   if (packageName) {
     url += "/" + packageName;
   }
@@ -60,5 +72,4 @@ Download.prototype.getSome = function(period, packageName, callback) {
       return resolve(body);
     });
   })
-  .nodeify(callback);
 };

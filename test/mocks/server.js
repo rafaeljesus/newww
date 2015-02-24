@@ -27,6 +27,7 @@ module.exports = function (done) {
     server.models = {
       Collaborator: require('../mocks/models/collaborator'),
       Customer: require('../mocks/models/customer'),
+      Download: require('../mocks/models/download'),
       User: require('../mocks/models/user'),
       Package: require('../mocks/models/package')
     };

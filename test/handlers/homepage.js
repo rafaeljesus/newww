@@ -5,11 +5,9 @@ var Code = require('code'),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    server;
 
-var server;
-
-// prepare the server
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;
@@ -21,8 +19,9 @@ after(function (done) {
   server.stop(done);
 });
 
-describe('Getting to the home page', function () {
-  it('gets there, no problem'/*, function (done) {
+describe('homepage', function () {
+
+  it('gets there, no problem', function (done) {
     var opts = {
       url: '/'
     };
@@ -30,10 +29,10 @@ describe('Getting to the home page', function () {
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
-      expect(source.template).to.equal('company/index');
+      expect(source.template).to.equal('homepage');
       done();
     });
-  }*/);
+  });
 
   it('handles an API call timeout'/*, function (done) {
     var getDependedUponOriginal = server.methods.registry.getDependedUpon,
@@ -57,19 +56,4 @@ describe('Getting to the home page', function () {
       done();
     });
   }*/);
-});
-
-describe('redirects', function () {
-  it('redirects /private-npm to /private-modules', function (done) {
-    var opts = {
-      url: '/private-npm'
-    };
-
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(301);
-      expect(resp.headers.location).to.match(/\/private-modules$/);
-      done();
-    });
-  });
-
 });

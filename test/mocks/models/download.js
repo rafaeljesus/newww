@@ -1,24 +1,17 @@
 var _ = require('lodash');
+var Promise = require('bluebird');
 var fixtures = require('../../fixtures');
+var model = require("../../../models/download");
+var Download = module.exports = model
 
-var Download = module.exports = function(opts) {
-  _.extend(this, {
-    host: process.env.USER_API,
-    bearer: false,
-  }, opts);
+Download.prototype.getSome = function(packageName) {
 
-  return this;
-};
+  return new Promise(function(resolve, reject) {
+    if (packageName) {
+      return resolve(fixtures.downloads[packageName]);
+    } else {
+      return resolve(fixtures.downloads.all);
+    }
+  });
 
-Download.prototype.getAll = function (packageName, callback) {
-  if (!callback) {
-    callback = packageName;
-    packageName = null;
-  }
-
-  if (packageName) {
-    return callback(null, fixtures.downloads[packageName]);
-  } else {
-    return callback(null, fixtures.downloads.all);
-  }
 };

@@ -275,7 +275,7 @@ describe("Download", function(){
           expect(result['last-day']).to.be.an.object();
           expect(result['last-week']).to.be.an.object();
           expect(result['last-month']).to.be.an.object();
-          expect(result['last-month'].downloads).to.equal(1028113165);
+          expect(result['last-month'].downloads).to.equal(500);
           mock.done();
           done();
         });

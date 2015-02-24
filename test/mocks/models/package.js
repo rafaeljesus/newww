@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var Promise = require('bluebird');
 var fixtures = require('../../fixtures');
 
 var Package = module.exports = function(opts) {
@@ -31,3 +32,28 @@ Package.prototype.get = function (name, options, callback) {
 
   return callback(null, package);
 };
+
+
+Package.prototype.list = function(options, callback) {
+  var _this = this;
+
+  if (!callback) {
+    callback = options;
+    options = {};
+  }
+
+  console.log("options", options)
+
+  return new Promise(function(resolve, reject){
+    if (options.sort === "depended") {
+      return resolve(fixtures.aggregates.most_depended_upon_packages);
+    }
+
+    if (options.sort === "modified") {
+      return resolve(fixtures.aggregates.recently_updated_packages);
+    }
+    
+    return reject(Error("Package.list() doesn't mock that yet"));
+  });
+
+}

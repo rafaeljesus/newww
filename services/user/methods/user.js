@@ -12,8 +12,6 @@ module.exports = function (options, service) {
       var timer = { start: Date.now() };
       var loginCouch = new CouchLogin(options.registryCouch, NaN);
       loginCouch.login(loginDetails, function (er, cr, couchSession) {
-        // console.log("anoncouch logged in as " + loginDetails.name)
-        // console.log("token is " + loginCouch.token)
         if (er) {
           log.error(uuid.v1() + ' ' + Boom.internal('Unable to log in user ' + loginDetails.name), er);
 

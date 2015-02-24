@@ -37,8 +37,6 @@ Package.prototype.get = function (name, options, callback) {
 Package.prototype.list = function(options) {
   var _this = this;
 
-  console.log("options", options)
-
   return new Promise(function(resolve, reject){
 
     switch (options.sort) {

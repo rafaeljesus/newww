@@ -39,7 +39,6 @@ describe('GET /', function () {
     };
 
     server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(200);
       var context = resp.request.response.source.context;
       expect(context.explicit).to.be.an.object();
       expect(context.modified).to.be.an.object();

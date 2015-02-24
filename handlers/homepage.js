@@ -1,3 +1,5 @@
+
+
 module.exports = function (request, reply) {
   var Package = new request.server.models.Package()
   var context = {
@@ -11,6 +13,11 @@ module.exports = function (request, reply) {
   })
   .then(function(depended){
     context.depended = depended
+
+    // downloads!
+    var downloads = request.server.methods.downloads.getAllDownloads;
+    downloads()
+
     return reply.view('/homepage', context)
   })
 

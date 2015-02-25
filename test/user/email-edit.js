@@ -7,7 +7,8 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect;
 
-var redis = require('redis'),
+var _ = require('lodash'),
+    redis = require('redis'),
     spawn = require('child_process').spawn,
     config = require('../../config').server.cache,
     fixtures = require('../fixtures.js');
@@ -15,7 +16,7 @@ var redis = require('redis'),
     config.port = 6379;
     config.password = '';
 
-var server, revUrl, confUrl, cookieCrumb,
+var server, cookieCrumb,
     client, oldCache, redisProcess,
     fakeuser = fixtures.users.fakeusercouch,
     fakeusercli = fixtures.users.fakeusercli,
@@ -50,21 +51,7 @@ before(function (done) {
     console.log("Error " + err);
   });
 
-  oldCache = server.app.cache;
-  server.app.cache.get = function (key, cb) {
-    client.get(key, function (er, val) {
-      if (val) {
-        var obj = {item: JSON.parse(val)};
-        return cb(er, obj.item, obj);
-      }
-
-      return cb(er, null);
-    });
-  };
-
-  server.app.cache.set = function (key, val, ttl, cb) {
-    return client.set(key, JSON.stringify(val), cb);
-  };
+  server.app.cache._cache.connection.client = client;
 
   done();
 });
@@ -72,7 +59,6 @@ before(function (done) {
 after(function(done) {
   client.flushdb();
   server.stop(function () {
-    server.app.cache = oldCache;
     redisProcess.kill('SIGKILL');
     done();
   });
@@ -176,13 +162,7 @@ describe('Requesting an email change', function () {
   it('sends two emails if everything goes properly', function (done) {
     server.inject(postEmail(emailEdits.newEmail), function (resp) {
       var source = resp.request.response.source;
-      var confJSON = JSON.parse(source.context.confirm);
-      var revJSON = JSON.parse(source.context.revert);
-      confUrl = confJSON.text.match(/\/email-edit\/confirm\/[\/\w \.-]*\/?/)[0];
-      revUrl = revJSON.text.match(/\/email-edit\/revert\/[\/\w \.-]*\/?/)[0];
-      expect(resp.statusCode).to.equal(200);
-      expect(confJSON).to.contain({ subject: 'npm Email Confirmation' });
-      expect(revJSON).to.contain({ subject: 'npm Email Change Alert' });
+      expect(source.template).to.equal('user/email-edit');
       done();
     });
   });
@@ -228,31 +208,37 @@ describe('Confirming an email change', function () {
   });
 
   it('renders an error if the the wrong user is logged in', function (done) {
-    var opts = {
-      url: confUrl,
-      credentials: fakeusercli
-    };
+    setEmailHashesInRedis(function (err, tokens) {
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(500);
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('errors/internal');
-      done();
+      var opts = {
+        url: '/email-edit/confirm/' + tokens.confToken,
+        credentials: fakeusercli
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(500);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('errors/internal');
+        done();
+      });
     });
   });
 
   it('changes the user\'s email when everything works properly', function (done) {
-    var opts = {
-      url: confUrl,
-      credentials: fakeuser
-    };
+    setEmailHashesInRedis(function (err, tokens) {
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(200);
-      expect(fakeuser.email).to.equal(newEmail);
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('user/email-edit-confirmation');
-      done();
+      var opts = {
+        url: '/email-edit/confirm/' + tokens.confToken,
+        credentials: fakeuser
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(fakeuser.email).to.equal(newEmail);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('user/email-edit-confirmation');
+        done();
+      });
     });
   });
 });
@@ -297,34 +283,77 @@ describe('Reverting an email change', function () {
   });
 
   it('renders an error if the the wrong user is logged in', function (done) {
-    var opts = {
-      url: revUrl,
-      credentials: {
-       name: "noone",
-       email: "f@boom.me",
-      }
-    };
+    setEmailHashesInRedis(function (err, tokens) {
+      var opts = {
+        url: '/email-edit/revert/' + tokens.revToken,
+        credentials: {
+         name: "noone",
+         email: "f@boom.me",
+        }
+      };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(500);
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('errors/internal');
-      done();
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(500);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('errors/internal');
+        done();
+      });
     });
   });
 
   it('changes the user\'s email when everything works properly', function (done) {
-    var opts = {
-      url: revUrl,
-      credentials: fakeuser
-    };
+    setEmailHashesInRedis(function (err, tokens) {
+      var opts = {
+        url: '/email-edit/revert/' + tokens.revToken,
+        credentials: fakeuser
+      };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(200);
-      expect(fakeuser.email).to.equal(oldEmail);
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('user/email-edit-confirmation');
-      done();
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(fakeuser.email).to.equal(oldEmail);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('user/email-edit-confirmation');
+        done();
+      });
     });
   });
 });
+
+function setEmailHashesInRedis (cb) {
+  var tokens = {
+    confToken: '4a3ba35b2e29219ceaa6e59ff99b1d9cff85',
+    revToken: '74e5c84950b75d5393c43ad024f8cbf3b41c'
+  };
+
+  var confHash = sha(tokens.confToken),
+      revHash = sha(tokens.revToken),
+      confKey = 'email_change_conf_' + confHash,
+      revKey = 'email_change_rev_' + revHash;
+
+  var data = {
+    name: 'fakeusercouch',
+    changeEmailFrom: 'b@fakeuser.com',
+    changeEmailTo: 'new@fakeuser.com'
+  };
+
+  var confData = _.extend({}, data, {
+    token: tokens.confToken,
+    hash: confHash
+  });
+
+  var revData = _.extend({}, data, {
+    token: tokens.revToken,
+    confToken: tokens.confToken,
+    hash: revHash
+  });
+
+  client.set(revKey, JSON.stringify(revData), function (err) {
+    client.set(confKey, JSON.stringify(confData), function (err) {
+      return cb(err, tokens);
+    });
+  });
+}
+
+function sha (token) {
+  return require('crypto').createHash('sha1').update(token).digest('hex');
+}

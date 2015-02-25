@@ -1,9 +1,6 @@
 
 var userValidate = require('npm-user-validate'),
-    nodemailer = require('nodemailer'),
     crypto = require('crypto');
-
-var transport, mailer;
 
 var from, host, devMode;
 
@@ -14,15 +11,6 @@ module.exports = function (options) {
 
     from = options.emailFrom;
     host = options.canonicalHost;
-
-    // if there's no email configuration set up, then we can't do this.
-    // however, in dev mode, just show the would-be email right on the screen
-    if (process.env.NODE_ENV === 'dev') {
-      devMode = true;
-    } else {
-      transport = require(options.mailTransportModule);
-      mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
-    }
 
     if (request.method === 'get' || request.method === 'head') {
       if (request.params && request.params.token) {
@@ -85,117 +73,41 @@ module.exports = function (options) {
 function handle (request, reply, email2) {
   var opts = { };
 
-  var confTok = crypto.randomBytes(18).toString('hex'),
-      confHash = sha(confTok),
-      confKey = 'email_change_conf_' + confHash,
-      revTok = crypto.randomBytes(18).toString('hex'),
-      revHash = sha(revTok),
-      revKey = 'email_change_rev_' + revHash;
+  var name = request.auth.credentials.name;
 
-  var email1 = request.auth.credentials.email,
-      name = request.auth.credentials.name;
-
-  var conf = {
+  var data = {
     name: name,
-    email1: email1,
-    email2: email2,
-    token: confTok,
-    hash: confHash
+    changeEmailFrom: request.auth.credentials.email,
+    changeEmailTo: email2,
+    confToken: crypto.randomBytes(18).toString('hex'),
+    revToken: crypto.randomBytes(18).toString('hex')
   };
 
-  var rev = {
-    name: name,
-    email1: email1,
-    email2: email2,
-    token: revTok,
-    hash: revHash,
-    confHash: confHash
-  };
-
-  request.server.app.cache.set(revKey, rev, 0, function (err) {
-
-    if (err) {
-      request.logger.error('Could not set the revKey to the cache: ', revKey);
-      request.logger.error(err);
-      reply.view('errors/internal', opts).code(500);
-      return;
-    }
-
-    request.server.app.cache.set(confKey, conf, 0, function (er) {
-      if (er) {
-        request.logger.error('Could not set the confKey to the cache: ', confKey);
-        request.logger.error(err);
-        reply.view('errors/internal', opts).code(500);
-        return;
-      }
-
-      return sendEmails(conf, rev, request, reply);
-    });
-  });
-}
-
-function sendEmails (conf, rev, request, reply) {
-  var opts = { };
-
-  var name = conf.name,
-      urlStart = host + '/email-edit/',
-      confUrl = urlStart + 'confirm/' + encodeURIComponent(conf.token),
-      revUrl = urlStart + 'revert/' + encodeURIComponent(rev.token);
-
-  // we need to move the construction of these emails to somewhere else...
-  // maybe we can consider https://github.com/andris9/nodemailer-html-to-text ?
-  var confMail = {
-    to: '"' + name + '" <' + conf.email2 + '>',
-    from: from,
-    subject: 'npm Email Confirmation',
-    headers: { 'X-SMTPAPI': { category: 'email-change-confirm' } },
-    text: require('./emailTemplates/confirmEmailChange')(name, conf, confUrl, from)
-  };
-
-  var revMail = {
-    to: '"' + name + '" <' + rev.email1 + '>',
-    from: from,
-    subject: 'npm Email Change Alert',
-    headers: { 'X-SMTPAPI': { category: 'email-change-revert' } },
-    text: require('./emailTemplates/revertEmailChange')(rev, revUrl, from, host)
-  };
-
-  if (devMode) {
-    request.timing.page = 'email-edit-send-emails';
-    opts.confirm = JSON.stringify(confMail);
-    opts.revert = JSON.stringify(revMail);
-    opts.submitted = true;
-
-    request.metrics.metric({ name: 'email-edit-send-emails' });
-    return reply.view('user/email-edit', opts);
-  }
+  var sendEmail = request.server.methods.email.send;
 
   // don't send the confmail until we know the revert mail was sent!
-  mailer.sendMail(revMail, function (er) {
-
-    if (er) {
-      request.logger.error('Unable to send revert email to ' + revMail.to);
+  sendEmail('revert-email-change', data, request.redis)
+    .catch(function (er) {
+      request.logger.error('Unable to send revert email to ' + data.changeEmailFrom);
       request.logger.error(er);
       reply.view('errors/internal', opts).code(500);
       return;
-    }
-
-    mailer.sendMail(confMail, function (er) {
-
-      if (er) {
-        request.logger.error('Unable to send confirmation email to ' + confMail.to);
-        request.logger.error(er);
-        reply.view('errors/internal', opts).code(500);
-        return;
-      }
-
-      opts.submitted = true;
-      request.timing.page = 'email-edit-send-emails';
-
-      request.metrics.metric({ name: 'email-edit-send-emails' });
-      return reply.view('user/email-edit', opts);
+    })
+    .then(function () {
+      sendEmail('confirm-email-change', data, request.redis)
+        .catch(function (er) {
+          request.logger.error('Unable to send confirmation email to ' + data.changeEmailTo);
+          request.logger.error(er);
+          reply.view('errors/internal', opts).code(500);
+          return;
+        })
+        .then(function () {
+          opts.submitted = true;
+          request.timing.page = 'email-edit-send-emails';
+          request.metrics.metric({ name: 'email-edit-send-emails' });
+          return reply.view('user/email-edit', opts);
+        });
     });
-  });
 }
 
 function confirm (request, reply) {
@@ -210,7 +122,7 @@ function confirm (request, reply) {
       confHash = sha(token),
       confKey = 'email_change_conf_' + confHash;
 
-  cache.get(confKey, function (er, item, cached) {
+  request.redis.get(confKey, function (er, cached) {
 
     if (er) {
       request.logger.error('Unable to get token from Redis: ' + confKey);
@@ -225,7 +137,9 @@ function confirm (request, reply) {
       return;
     }
 
-    var name = cached.item.name;
+    cached = JSON.parse(cached);
+
+    var name = cached.name;
     if (name !== user.name) {
       request.logger.error(user.name + ' attempted to change email for ' + name);
       // TODO we should really bubble this one up to the user!
@@ -233,8 +147,8 @@ function confirm (request, reply) {
       return;
     }
 
-    var email2 = cached.item.email2,
-        hash = cached.item.hash;
+    var email2 = cached.changeEmailTo,
+        hash = cached.hash;
 
     if (hash !== confHash) {
       request.logger.error('these should be equal: hash=' + hash + '; confHash: ' + confHash);
@@ -299,7 +213,7 @@ function revert (request, reply) {
       revHash = sha(token),
       revKey = 'email_change_rev_' + revHash;
 
-  cache.get(revKey, function (er, item, cached) {
+  request.redis.get(revKey, function (er, cached) {
 
     if (er) {
       request.logger.error('Error getting revert token from redis: ', revKey);
@@ -314,7 +228,9 @@ function revert (request, reply) {
       return;
     }
 
-    var name = cached.item.name;
+    cached = JSON.parse(cached);
+
+    var name = cached.name;
     if (name !== user.name) {
       request.logger.error(user.name + ' attempted to revert email for ' + name);
       // TODO we should really bubble this one up to the user!
@@ -322,10 +238,10 @@ function revert (request, reply) {
       return;
     }
 
-    var email1 = cached.item.email1,
-        confHash = cached.item.confHash,
+    var email1 = cached.changeEmailFrom,
+        confHash = sha(cached.confToken),
         confKey = 'email_change_conf_' + confHash,
-        hash = cached.item.hash;
+        hash = cached.hash;
 
     if (hash !== revHash) {
       request.logger.error('these should be equal: hash=' + hash + '; revHash: ' + revHash);
@@ -333,13 +249,13 @@ function revert (request, reply) {
       return;
     }
 
-    cache.drop(confKey, function (err) {
+    request.redis.del(confKey, function (err) {
 
       if (err) {
         request.logger.warn('Unable to drop key ' + confKey);
       }
 
-      cache.drop(revKey, function (err) {
+      request.redis.del(revKey, function (err) {
 
         if (err) {
           request.logger.warn('Unable to drop key ' + revKey);

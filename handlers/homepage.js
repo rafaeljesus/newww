@@ -1,5 +1,3 @@
-var Promise = require('bluebird');
-
 module.exports = function (request, reply) {
   var Package = new request.server.models.Package()
   var Download = new request.server.models.Download()
@@ -17,14 +15,15 @@ module.exports = function (request, reply) {
       return Download.getAll()
     })
     .catch(function(err){
-      if (err.code === 'ETIMEDOUT') {
-        return null;
-      } else {
-        Promise.reject(err)
-      }
+      // tolerate timed-out downloads API calls
+      if (err.code === 'ETIMEDOUT') return null;
     })
     .then(function(downloads){
       context.downloads = downloads
+      return Package.count()
+    })
+    .then(function(count){
+      context.totalPackages = count
       return reply.view('homepage', context)
     })
 

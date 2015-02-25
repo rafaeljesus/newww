@@ -39,7 +39,7 @@ Package.prototype.get = function(name, options) {
   .then(function(_package){
     return decorate(_package);
   });
-  
+
 };
 
 Package.prototype.list = function(options) {
@@ -67,4 +67,20 @@ Package.prototype.list = function(options) {
     });
   });
 
+}
+
+Package.prototype.count = function() {
+  var url = fmt("%s/package/-/count", this.host);
+  return new Promise(function(resolve, reject) {
+    var opts = {url: url, json: true};
+    request.get(opts, function(err, resp, body){
+      if (err) return reject(err);
+      if (resp.statusCode > 399) {
+        err = Error('error getting package count');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  });
 }

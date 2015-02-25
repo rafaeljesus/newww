@@ -52,3 +52,9 @@ Package.prototype.list = function(options) {
 
     });
 }
+
+Package.prototype.count = function() {
+  return new Promise(function(resolve, reject) {
+    return resolve(12345)
+  });
+}

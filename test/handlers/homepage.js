@@ -1,4 +1,5 @@
-var Code = require('code'),
+var cheerio = require('cheerio'),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -44,6 +45,21 @@ describe('GET /', function () {
       expect(context.modified).to.be.an.object();
       expect(context.dependents).to.be.an.object();
       expect(context.downloads).to.be.an.object();
+      expect(context.totalPackages).to.be.a.number();
+      done();
+    });
+  });
+
+  it('renders a data-filled template', function (done) {
+    var opts = {
+      url: '/'
+    };
+
+    server.inject(opts, function (resp) {
+      var context = resp.request.response.source.context;
+      expect(context.totalPackages).to.be.a.number();
+      var $ = cheerio.load(resp.result)
+      expect($(".total-packages").text()).to.equal(String(context.totalPackages));
       done();
     });
   });

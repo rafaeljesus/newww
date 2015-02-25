@@ -244,4 +244,21 @@ describe("Package", function(){
 
   });
 
+  describe("count()", function(){
+
+    it("makes an external request and gets back a number", function(done) {
+      var mock = nock(Package.host)
+        .get('/package/-/count')
+        .reply(200, 12345);
+
+      Package.count()
+        .then(function(result) {
+          expect(result).to.equal(12345);
+          mock.done();
+          done();
+        })
+    });
+
+  })
+
 });

@@ -12,6 +12,7 @@ exports.register = function(server, options, next) {
   server.ext('onPreHandler', function(request, reply) {
 
     request.metrics = metrics;
+    request.redis = request.server.app.cache._cache.connection.client;
     request.logger = bole(request.id);
     request.timing = {
       start: Date.now(),

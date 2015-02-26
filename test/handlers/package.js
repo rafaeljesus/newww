@@ -28,6 +28,7 @@ describe("package handler", function(){
   });
 
   describe('normal package', function () {
+    var $;
     var resp;
     var options = {url: '/package/browserify'};
     var packageMock = nock("https://user-api-example.com")
@@ -35,15 +36,16 @@ describe("package handler", function(){
       .reply(200, fixtures.packages.browserify);
     var downloadsMock = nock("https://downloads-api-example.com")
       .get('/point/last-day/browserify')
-      .reply(200, fixtures.downloads.browserify['last-day'])
+      .reply(200, fixtures.downloads.browserify.day)
       .get('/point/last-week/browserify')
-      .reply(200, fixtures.downloads.browserify['last-week'])
+      .reply(200, fixtures.downloads.browserify.week)
       .get('/point/last-month/browserify')
-      .reply(200, fixtures.downloads.browserify['last-month']);
+      .reply(200, fixtures.downloads.browserify.month);
 
     before(function(done){
       server.inject(options, function (response) {
         resp = response
+        $ = cheerio.load(resp.result)
         packageMock.done()
         downloadsMock.done()
         done()
@@ -62,11 +64,22 @@ describe("package handler", function(){
     })
 
     it('adds download data to the view context', function (done) {
-      var package = resp.request.response.source.context.package;
-      expect(package.downloads).to.be.an.object();
-      expect(package.downloads).to.contain('last-day');
-      expect(package.downloads).to.contain('last-week');
-      expect(package.downloads).to.contain('last-month');
+      var downloads = resp.request.response.source.context.package.downloads;
+      expect(downloads).to.be.an.object();
+      expect(downloads).to.contain('day');
+      expect(downloads).to.contain('week');
+      expect(downloads).to.contain('month');
+      done();
+    });
+
+    it('renders download counts', function (done) {
+      var downloads = resp.request.response.source.context.package.downloads;
+      expect(downloads.day.downloads).to.be.above(0)
+      expect(downloads.week.downloads).to.be.above(0)
+      expect(downloads.month.downloads).to.be.above(0)
+      expect($(".daily-downloads").text()).to.equal(String(downloads.day.downloads))
+      expect($(".weekly-downloads").text()).to.equal(String(downloads.week.downloads))
+      expect($(".monthly-downloads").text()).to.equal(String(downloads.month.downloads))
       done();
     });
 
@@ -187,11 +200,11 @@ describe("package handler", function(){
 
       var downloadsMock = nock("https://downloads-api-example.com")
         .get('/point/last-day/browserify')
-        .reply(200, fixtures.downloads.browserify['last-day'])
+        .reply(200, fixtures.downloads.browserify.day)
         .get('/point/last-week/browserify')
-        .reply(200, fixtures.downloads.browserify['last-week'])
+        .reply(200, fixtures.downloads.browserify.week)
         .get('/point/last-month/browserify')
-        .reply(200, fixtures.downloads.browserify['last-month']);
+        .reply(200, fixtures.downloads.browserify.month);
 
       server.inject(options, function (resp) {
         packageMock.done()
@@ -218,11 +231,11 @@ describe("package handler", function(){
 
       downloadsMock = nock("https://downloads-api-example.com")
         .get('/point/last-day/request')
-        .reply(200, fixtures.downloads.request['last-day'])
+        .reply(200, fixtures.downloads.request.day)
         .get('/point/last-week/request')
-        .reply(200, fixtures.downloads.request['last-week'])
+        .reply(200, fixtures.downloads.request.week)
         .get('/point/last-month/request')
-        .reply(200, fixtures.downloads.request['last-month']);
+        .reply(200, fixtures.downloads.request.month);
       done()
     })
 

@@ -30,15 +30,15 @@ Download.prototype.getAll = function(packageName) {
 
   return _this.getDaily(packageName)
     .then(function(dailies){
-      result['last-day'] = dailies
+      result['day'] = dailies
       return _this.getWeekly(packageName)
     })
     .then(function(weeklies){
-      result['last-week'] = weeklies
+      result['week'] = weeklies
       return _this.getMonthly(packageName)
     })
     .then(function(monthlies){
-      result['last-month'] = monthlies
+      result['month'] = monthlies
       return result
     })
 

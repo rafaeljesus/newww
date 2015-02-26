@@ -34,11 +34,11 @@ describe('GET /', function () {
     .reply(200, 12345);
   var downloadsMock = nock("https://downloads-api-example.com")
     .get('/point/last-day')
-    .reply(200, fixtures.downloads.all['last-day'])
+    .reply(200, fixtures.downloads.all.day)
     .get('/point/last-week')
-    .reply(200, fixtures.downloads.all['last-week'])
+    .reply(200, fixtures.downloads.all.week)
     .get('/point/last-month')
-    .reply(200, fixtures.downloads.all['last-month']);
+    .reply(200, fixtures.downloads.all.month);
 
   before(function(done){
     server.inject(options, function (response) {

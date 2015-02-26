@@ -137,11 +137,11 @@ describe('Getting all download counts for a specific package', function() {
 
     var mock = nock(downloadsHost)
       .get('/downloads/point/last-day/request')
-      .reply(200, fixtures.downloads.request['last-day'])
+      .reply(200, fixtures.downloads.request.day)
       .get('/downloads/point/last-week/request')
-      .reply(200, fixtures.downloads.request['last-week'])
+      .reply(200, fixtures.downloads.request.week)
       .get('/downloads/point/last-month/request')
-      .reply(200, fixtures.downloads.request['last-month']);
+      .reply(200, fixtures.downloads.request.month);
 
     server.methods.downloads.getAllDownloadsForPackage('request', function(er, data) {
       mock.done();

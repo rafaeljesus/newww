@@ -95,9 +95,18 @@
   <ul class="box">
 
     {{#if downloads}}
-      <li><strong class="pretty-number">{{downloads.day}}</strong> {{pluralize downloads.day "downloads"}} in the last day</li>
-      <li><strong class="pretty-number">{{downloads.week}}</strong> {{pluralize downloads.week "downloads"}} in the last week</li>
-      <li><strong class="pretty-number">{{downloads.month}}</strong> {{pluralize downloads.month "downloads"}} in the last month</li>
+      <li>
+        <strong class="pretty-number daily-downloads">{{downloads.day.downloads}}</strong>
+        {{pluralize downloads.day.downloads "downloads"}} in the last day
+      </li>
+      <li>
+        <strong class="pretty-number weekly-downloads">{{downloads.week.downloads}}</strong>
+        {{pluralize downloads.week.downloads "downloads"}} in the last week
+      </li>
+      <li>
+        <strong class="pretty-number monthly-downloads">{{downloads.month.downloads}}</strong>
+        {{pluralize downloads.month.downloads "downloads"}} in the last month
+      </li>
     {{/if}}
 
     {{#if bugs.url}}

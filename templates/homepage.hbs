@@ -12,23 +12,23 @@
       </div>
     {{/if}}
 
-    {{#if downloads.last-day}}
+    {{#if downloads.day}}
       <div class="stat icon-cal-24hours">
-        <strong class="pretty-number">{{downloads.last-day.downloads}}</strong>
+        <strong class="pretty-number">{{downloads.day.downloads}}</strong>
         downloads in the last day
       </div>
     {{/if}}
 
-    {{#if downloads.last-week}}
+    {{#if downloads.week}}
       <div class="stat icon-cal-7days">
-        <strong class="pretty-number">{{downloads.last-week.downloads}}</strong>
+        <strong class="pretty-number">{{downloads.week.downloads}}</strong>
         downloads in the last week
       </div>
     {{/if}}
 
-    {{#if downloads.last-month}}
+    {{#if downloads.month}}
       <div class="stat icon-cal-30days">
-        <strong class="pretty-number">{{downloads.last-month.downloads}}</strong>
+        <strong class="pretty-number">{{downloads.month.downloads}}</strong>
         downloads in the last month
       </div>
     {{/if}}

@@ -47,7 +47,7 @@ describe("Download", function(){
       it("gets daily counts", function(done) {
         var mock = nock(Download.host)
           .get('/point/last-day/request')
-          .reply(200, fixtures.downloads.request['last-day']);
+          .reply(200, fixtures.downloads.request.day);
 
         Download.getDaily("request")
           .then(function(result) {
@@ -91,7 +91,7 @@ describe("Download", function(){
       it("gets daily counts for all packages", function(done) {
         var mock = nock(Download.host)
           .get('/point/last-day')
-          .reply(200, fixtures.downloads.all['last-day']);
+          .reply(200, fixtures.downloads.all.day);
 
         Download.getDaily()
           .then(function(result) {
@@ -132,7 +132,7 @@ describe("Download", function(){
         var mock = nock(Download.host)
           .get('/point/last-day')
           .delayConnection(51)
-          .reply(200, fixtures.downloads.all['last-day']);
+          .reply(200, fixtures.downloads.all.day);
 
         Download.getDaily()
           .then(function(result) {
@@ -156,7 +156,7 @@ describe("Download", function(){
     it("gets weekly counts for a specific package", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-week/request')
-        .reply(200, fixtures.downloads.request['last-week']);
+        .reply(200, fixtures.downloads.request.week);
 
       Download.getWeekly("request")
         .then(function(result) {
@@ -175,7 +175,7 @@ describe("Download", function(){
     it("gets weekly counts for all packages", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-week')
-        .reply(200, fixtures.downloads.all['last-week']);
+        .reply(200, fixtures.downloads.all.week);
 
       Download.getWeekly()
         .then(function(result) {
@@ -198,7 +198,7 @@ describe("Download", function(){
     it("gets monthly counts for a specific package", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-month/request')
-        .reply(200, fixtures.downloads.request['last-month']);
+        .reply(200, fixtures.downloads.request.month);
 
       Download.getMonthly("request")
         .then(function(result){
@@ -218,7 +218,7 @@ describe("Download", function(){
     it("gets monthly counts for all packages", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-month')
-        .reply(200, fixtures.downloads.all['last-month']);
+        .reply(200, fixtures.downloads.all.month);
 
       Download.getMonthly()
         .then(function(result) {
@@ -241,19 +241,19 @@ describe("Download", function(){
     it("gets daily, weekly, and monthly downloads for a specific package", function(done){
       var mock = nock(Download.host)
         .get('/point/last-day/request')
-        .reply(200, fixtures.downloads.request['last-day'])
+        .reply(200, fixtures.downloads.request.day)
         .get('/point/last-week/request')
-        .reply(200, fixtures.downloads.request['last-week'])
+        .reply(200, fixtures.downloads.request.week)
         .get('/point/last-month/request')
-        .reply(200, fixtures.downloads.request['last-month']);
+        .reply(200, fixtures.downloads.request.month);
 
       Download.getAll("request")
         .then(function(result) {
           expect(result).to.exist();
-          expect(result['last-day']).to.be.an.object();
-          expect(result['last-week']).to.be.an.object();
-          expect(result['last-month']).to.be.an.object();
-          expect(result['last-month'].downloads).to.equal(500);
+          expect(result.day).to.be.an.object();
+          expect(result.week).to.be.an.object();
+          expect(result.month).to.be.an.object();
+          expect(result.month.downloads).to.equal(500);
           mock.done();
           done();
         });
@@ -263,19 +263,19 @@ describe("Download", function(){
     it("gets daily, weekly, and monthly downloads for all packages", function(done){
       var mock = nock(Download.host)
         .get('/point/last-day')
-        .reply(200, fixtures.downloads.all['last-day'])
+        .reply(200, fixtures.downloads.all.day)
         .get('/point/last-week')
-        .reply(200, fixtures.downloads.all['last-week'])
+        .reply(200, fixtures.downloads.all.week)
         .get('/point/last-month')
-        .reply(200, fixtures.downloads.all['last-month']);
+        .reply(200, fixtures.downloads.all.month);
 
       Download.getAll()
         .then(function(result) {
           expect(result).to.exist();
-          expect(result['last-day']).to.be.an.object();
-          expect(result['last-week']).to.be.an.object();
-          expect(result['last-month']).to.be.an.object();
-          expect(result['last-month'].downloads).to.equal(1028113165);
+          expect(result.day).to.be.an.object();
+          expect(result.week).to.be.an.object();
+          expect(result.month).to.be.an.object();
+          expect(result.month.downloads).to.equal(1028113165);
           mock.done();
           done();
         });

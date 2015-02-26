@@ -42,6 +42,12 @@ var unauthenticatedRoutes = [
       file: './static/misc/robots.txt'
     }
   },{
+    path: '/google17836d108133913c.html',
+    method: 'GET',
+    handler: function (request, reply) {
+      reply("google-site-verification: google17836d108133913c.html");
+    }
+  },{
     path: '/install.sh',
     method: 'GET',
     handler: {
@@ -67,6 +73,12 @@ var unauthenticatedRoutes = [
     path: "/",
     method: "GET",
     handler: require('./facets/company/show-homepage')
+  },{
+    path: "/private-npm",
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/private-modules").code(301);
+    }
   },{
     path: "/contact",
     method: "GET",

@@ -1,4 +1,5 @@
 var strftime = require("prettydate").strftime;
+var relative = require('relative-date');
 
 module.exports = function() {
   $(function(){
@@ -9,8 +10,10 @@ module.exports = function() {
         return console.error("Invalid date", date)
       }
 
-      var fmt = $(this).data().dateFormat || "%Y-%m-%d"
-      $(this).text(strftime(date, fmt))
+      var format = $(this).data().dateFormat || "%Y-%m-%d"
+      var result = format === "relative" ? relative(date) : strftime(date, format)
+      $(this).text(result)
+
     })
   })
 }

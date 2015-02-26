@@ -1,4 +1,5 @@
-var Code = require('code'),
+var utils = require('../../lib/utils'),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -17,7 +18,7 @@ var _ = require('lodash'),
     config.password = '';
 
 var server, cookieCrumb,
-    client, oldCache, redisProcess,
+    client, redisProcess,
     fakeuser = fixtures.users.fakeusercouch,
     fakeusercli = fixtures.users.fakeusercli,
     newEmail = 'new@fakeuser.com',
@@ -325,8 +326,8 @@ function setEmailHashesInRedis (cb) {
     revToken: '74e5c84950b75d5393c43ad024f8cbf3b41c'
   };
 
-  var confHash = sha(tokens.confToken),
-      revHash = sha(tokens.revToken),
+  var confHash = utils.sha(tokens.confToken),
+      revHash = utils.sha(tokens.revToken),
       confKey = 'email_change_conf_' + confHash,
       revKey = 'email_change_rev_' + revHash;
 
@@ -352,8 +353,4 @@ function setEmailHashesInRedis (cb) {
       return cb(err, tokens);
     });
   });
-}
-
-function sha (token) {
-  return require('crypto').createHash('sha1').update(token).digest('hex');
 }

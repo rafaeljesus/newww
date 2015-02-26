@@ -1,8 +1,9 @@
 
 var userValidate = require('npm-user-validate'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    utils = require('../../lib/utils');
 
-var from, host, devMode;
+var from, host;
 
 module.exports = function (options) {
   return function (request, reply) {
@@ -50,8 +51,8 @@ module.exports = function (options) {
       var user = request.auth.credentials;
 
       var salt = user.salt,
-          pwHash = user.password_sha ? sha(data.password + salt) :
-                   pbkdf2(data.password, salt, parseInt(user.iterations, 10)),
+          pwHash = user.password_sha ? utils.sha(data.password + salt) :
+                   utils.pbkdf2(data.password, salt, parseInt(user.iterations, 10)),
           profHash = user.password_sha || user.derived_key;
 
       if (pwHash !== profHash) {
@@ -115,14 +116,13 @@ function confirm (request, reply) {
       setSession = request.server.methods.user.setSession(request);
 
   var opts = { },
-      user = request.auth.credentials,
-      cache = request.server.app.cache;
+      user = request.auth.credentials;
 
   var token = request.params.token.split('/')[1],
-      confHash = sha(token),
+      confHash = utils.sha(token),
       confKey = 'email_change_conf_' + confHash;
 
-  request.redis.get(confKey, function (er, cached) {
+  request.redis.get(confKey, function (er, value) {
 
     if (er) {
       request.logger.error('Unable to get token from Redis: ' + confKey);
@@ -131,13 +131,13 @@ function confirm (request, reply) {
       return;
     }
 
+    var cached = utils.safeJsonParse(value);
+
     if (!cached) {
       request.logger.error('Token not found or invalid: ' + confKey);
       reply.view('errors/not-found', opts).code(404);
       return;
     }
-
-    cached = JSON.parse(cached);
 
     var name = cached.name;
     if (name !== user.name) {
@@ -156,7 +156,7 @@ function confirm (request, reply) {
       return;
     }
 
-    cache.drop(confKey, function (err) {
+    request.redis.del(confKey, function (err) {
 
       if (err) {
         request.logger.warn('Unable to drop key ' + confKey);
@@ -206,14 +206,13 @@ function revert (request, reply) {
       setSession = request.server.methods.user.setSession(request);
 
   var opts = { },
-      user = request.auth.credentials,
-      cache = request.server.app.cache;
+      user = request.auth.credentials;
 
   var token = request.params.token.split('/')[1],
-      revHash = sha(token),
+      revHash = utils.sha(token),
       revKey = 'email_change_rev_' + revHash;
 
-  request.redis.get(revKey, function (er, cached) {
+  request.redis.get(revKey, function (er, value) {
 
     if (er) {
       request.logger.error('Error getting revert token from redis: ', revKey);
@@ -222,13 +221,13 @@ function revert (request, reply) {
       return;
     }
 
+    var cached = utils.safeJsonParse(value);
+
     if (!cached) {
       request.logger.error('Token not found or invalid: ' + revKey);
       reply.view('errors/not-found', opts).code(404);
       return;
     }
-
-    cached = JSON.parse(cached);
 
     var name = cached.name;
     if (name !== user.name) {
@@ -239,7 +238,7 @@ function revert (request, reply) {
     }
 
     var email1 = cached.changeEmailFrom,
-        confHash = sha(cached.confToken),
+        confHash = utils.sha(cached.confToken),
         confKey = 'email_change_conf_' + confHash,
         hash = cached.hash;
 
@@ -299,12 +298,4 @@ function revert (request, reply) {
       });
     });
   });
-}
-
-function sha (s) {
-  return crypto.createHash("sha1").update(s).digest("hex");
-}
-
-function pbkdf2 (pass, salt, iterations) {
-  return crypto.pbkdf2Sync(pass, salt, iterations, 20).toString('hex');
 }

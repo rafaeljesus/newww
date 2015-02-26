@@ -1,5 +1,6 @@
 
 var userValidate = require('npm-user-validate'),
+    utils = require('../../lib/utils'),
     crypto = require('crypto');
 
 var from, host;
@@ -37,10 +38,10 @@ function processToken(request, reply) {
       cache = request.server.app.cache._cache.connection.client;
 
   var token = request.params.token,
-      hash = sha(token),
+      hash = utils.sha(token),
       pwKey = 'pwrecover_' + hash;
 
-  cache.get(pwKey, function (err, cached) {
+  cache.get(pwKey, function (err, value) {
     if (err) {
       request.logger.error('Error getting token from redis', pwKey);
       request.logger.error(err);
@@ -48,13 +49,13 @@ function processToken(request, reply) {
       return;
     }
 
+    var cached = utils.safeJsonParse(value);
+
     if (!cached) {
       request.logger.error('Token not found or invalid: ', pwKey);
       reply.view('errors/internal', opts).code(500);
       return;
     }
-
-    cached = JSON.parse(cached);
 
     var name = cached.name,
         verify = cached.token;
@@ -240,8 +241,4 @@ function sendEmail(request, reply, data) {
 
       return reply.view('user/password-recovery-form', opts);
     });
-}
-
-function sha (token) {
-  return crypto.createHash('sha1').update(token).digest('hex');
 }

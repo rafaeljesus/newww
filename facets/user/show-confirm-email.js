@@ -1,8 +1,7 @@
-var crypto = require('crypto');
+var utils = require('../../lib/utils');
 
 module.exports = function confirmEmail (request, reply) {
-  var opts = {},
-      cache = request.server.app.cache._cache.connection.client;
+  var opts = {};
 
   var User = new request.server.models.User({logger: request.logger});
 
@@ -12,17 +11,19 @@ module.exports = function confirmEmail (request, reply) {
   }
 
   var token = request.params.token,
-      hash = sha(token),
+      hash = utils.sha(token),
       key = 'email_confirm_' + hash;
 
-  cache.get(key, function (err, cached) {
-    cached = JSON.parse(cached);
+  request.redis.get(key, function (err, value) {
+
     if (err) {
       request.logger.error('Error getting token from redis: ', key);
       request.logger.error(err);
       reply.view('errors/internal', opts).code(500);
       return;
     }
+
+    var cached = utils.safeJsonParse(value);
 
     if (!cached) {
       request.logger.error('Token not found or invalid: ', key);
@@ -54,7 +55,7 @@ module.exports = function confirmEmail (request, reply) {
           return reply.view('errors/internal', opts).code(500);
         }
 
-        cache.del(key, function (err) {
+        request.redis.del(key, function (err) {
 
           if (err) {
             request.logger.warn('Unable to drop key ' + key);
@@ -70,7 +71,3 @@ module.exports = function confirmEmail (request, reply) {
     });
   });
 };
-
-function sha (token) {
-  return crypto.createHash('sha1').update(token).digest('hex');
-}

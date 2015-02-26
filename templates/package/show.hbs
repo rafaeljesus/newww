@@ -42,8 +42,11 @@
           <img src="{{publisher.avatar.medium}}" alt="{{publisher.name}}" />
           <span>{{publisher.name}}</span>
         </a>
-        {{#if fromNow}}
-          published {{fromNow}}
+        {{#if lastPublishedAt}}
+          published
+          <span data-date="{{lastPublishedAt}}" data-date-format="relative">
+            {{lastPublishedAt}}
+          </span>
         {{/if}}
       </li>
     {{/if}}

@@ -22,7 +22,7 @@ describe("publisher", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
     expect(package.publisherIsInMaintainersList).to.exist();
     expect(package.publisherIsInMaintainersList).to.be.true();
@@ -42,7 +42,7 @@ describe("publisher", function () {
         "email": "innocentperson@email.com"
       }],
       "version": "0.1.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
     expect(package.publisherIsInMaintainersList).to.exist();
     expect(package.publisherIsInMaintainersList).to.be.false();
@@ -108,7 +108,7 @@ describe("avatar", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
     expect(package.publisher.avatar).to.exist();
     expect(package.publisher.avatar).to.be.an.object();
@@ -131,7 +131,7 @@ describe("avatar", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
     expect(package.maintainers[0].avatar).to.exist();
     expect(package.maintainers[0].avatar).to.be.an.object();
@@ -157,7 +157,7 @@ describe("OSS license", function () {
       }],
       "version": "1.3.0",
       "license": "MIT",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
     expect(package.license).to.be.an.object();
     expect(package.license.name).to.equal('MIT');
@@ -191,7 +191,7 @@ describe("different types of deps", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
 
     expect(package.dependents).to.be.an.array();
@@ -229,7 +229,7 @@ describe("different types of deps", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
 
     expect(package.dependencies).to.exist();
@@ -262,7 +262,7 @@ describe("different types of deps", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
 
     expect(package.devDependencies).to.exist();
@@ -284,7 +284,7 @@ describe("different types of deps", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
     expect(package.dependencies).to.not.exist();
     expect(package.devDependencies).to.not.exist();
@@ -311,7 +311,7 @@ describe("repo url", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
 
     expect(package.repository.url).to.not.include('git');
@@ -335,7 +335,7 @@ describe("repo url", function () {
         "email": "ohai@email.com"
       }],
       "version": "1.3.0",
-      "last_published_at": "2013-06-11T09:36:32.285Z"
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
 
     expect(package.repository.url).to.include('https');

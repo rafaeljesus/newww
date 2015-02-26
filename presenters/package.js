@@ -1,5 +1,4 @@
 var fmt = require('util').format,
-    moment = require('moment'),
     url = require('url'),
     isUrl = require('is-url'),
     ghurl = require('github-url-from-git'),
@@ -9,13 +8,9 @@ var fmt = require('util').format,
 
 module.exports = function (package) {
 
-  var t = package.last_published_at;
-
   if (package.versions && package.versions.indexOf(package.version) === -1) {
     return new Error('invalid package: '+ package._id);
   }
-
-  package.fromNow = moment(t).fromNow();
 
   // check if publisher is in maintainers list
   package.publisherIsInMaintainersList = isPubInMaint(package);

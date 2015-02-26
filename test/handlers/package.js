@@ -83,6 +83,16 @@ describe("package handler", function(){
       done();
     });
 
+    it('renders lastPublishedAt and sets data-date attribute', function (done) {
+      var package = resp.request.response.source.context.package;
+      expect(package.lastPublishedAt).to.exist();
+      var el = $(".last-publisher span[data-date]")
+      expect(el.text().trim()).to.equal(package.lastPublishedAt)
+      expect(el.data().date).to.equal(package.lastPublishedAt)
+      expect(el.data().dateFormat).to.equal("relative")
+      done();
+    });
+
     it("renders the package template", function(done){
       var source = resp.request.response.source;
       expect(source.template).to.equal('package/show');

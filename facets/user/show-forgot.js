@@ -4,8 +4,6 @@ var userValidate = require('npm-user-validate'),
 
 var from, host;
 
-var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
-
 module.exports = function (options) {
   return function (request, reply) {
 
@@ -218,58 +216,30 @@ function lookupUserByUsername (name, request, reply) {
     request.timing.page = 'getUser';
 
     request.metrics.metric({ name: 'getUser' });
-    return sendEmail(name, email, request, reply);
+    return sendEmail(request, reply, {name: name, email: email});
   });
 }
 
-function sendEmail(name, email, request, reply) {
+function sendEmail(request, reply, data) {
 
   var opts = {};
 
-  // the token needs to be url-safe
-  var token = crypto.randomBytes(30).toString('base64')
-              .split('/').join('_')
-              .split('+').join('-'),
-      hash = sha(token),
-      data = {
-        name: name + '',
-        email: email + '',
-        token: token + ''
-      },
-      key = 'pwrecover_' + hash;
+  var emailIt = request.server.methods.email.send;
 
-  request.server.app.cache.set(key, data, ONE_HOUR, function (err) {
+  emailIt('forgot-password', data, request.redis)
+    .catch(function (er) {
+      request.logger.error('Unable to sent revert email to ' + mail.to);
+      request.logger.error(er);
+      return reply.view('errors/internal', opts).code(500);
+    })
+    .then(function () {
+      opts.sent = true;
 
-    if (err) {
-      request.logger.error('Unable to set ' + key + ' to the cache');
-      request.logger.error(err);
-      reply.view('errors/internal', opts).code(500);
-      return;
-    }
+      request.timing.page = 'sendForgotEmail';
+      request.metrics.metric({ name: 'sendForgotEmail' });
 
-    var sendEmail = request.server.methods.email.send;
-    var redis = request.server.app.cache._cache.connection.client;
-
-    var mail = {
-      name: name,
-      email: email
-    };
-
-    sendEmail('forgot-password', mail, redis)
-      .catch(function (er) {
-        request.logger.error('Unable to sent revert email to ' + mail.to);
-        request.logger.error(er);
-        return reply.view('errors/internal', opts).code(500);
-      })
-      .then(function () {
-        opts.sent = true;
-
-        request.timing.page = 'sendForgotEmail';
-        request.metrics.metric({ name: 'sendForgotEmail' });
-
-        return reply.view('user/password-recovery-form', opts);
-      });
-  });
+      return reply.view('user/password-recovery-form', opts);
+    });
 }
 
 function sha (token) {

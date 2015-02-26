@@ -17,8 +17,8 @@ var Package = module.exports = function(opts) {
 Package.prototype.get = function(name, options) {
   var _this = this;
   var package;
-  var url = fmt("%s/package/%s", this.host, name);
-  
+  var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
+
   return new Promise(function(resolve, reject) {
     var opts = {
       url: url,

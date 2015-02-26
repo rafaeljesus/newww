@@ -150,6 +150,18 @@ describe("Package", function(){
 
     });
 
+    it("encodes the slash in scoped package names", function(done){
+      var mock = nock("https://package.com")
+        .get('/package/@zeke%2Ford')
+        .reply(200, fixtures.packages.browserify);
+
+      Package.get('@zeke/ord')
+        .then(function(package) {
+          mock.done()
+          done()
+        });
+    });
+
   });
 
   describe("list()", function() {

@@ -68,7 +68,6 @@ function sendVerificationEmail (request, reply, customer, trial) {
   var opts = {};
 
   var sendEmail = request.server.methods.email.send;
-  var redis = request.server.app.cache._cache.connection.client;
 
   var user = {
     name: customer.name,
@@ -76,7 +75,7 @@ function sendVerificationEmail (request, reply, customer, trial) {
     verification_key: trial.verification_key
   };
 
-  sendEmail('npme-trial-verification', user, redis)
+  sendEmail('npme-trial-verification', user, request.redis)
     .catch(function (er) {
       request.logger.error('Unable to send verification email to ', customer);
       request.logger.error(er);

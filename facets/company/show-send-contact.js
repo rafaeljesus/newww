@@ -11,9 +11,8 @@ module.exports = function showSendContact(request, reply) {
   };
 
   var sendEmail = request.server.methods.email.send;
-  var redis = request.server.app.cache._cache.connection.client;
 
-  sendEmail('contact-support', mail, redis)
+  sendEmail('contact-support', mail, request.redis)
     .catch(function (er) {
       request.logger.error('unable to send verification email');
       request.logger.error(er);

@@ -3,7 +3,6 @@ var Joi = require('joi'),
 
 module.exports = function signup (request, reply) {
   var User = new request.server.models.User({logger: request.logger});
-  var redis = request.server.app.cache._cache.connection.client;
 
   var setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request),
@@ -80,7 +79,7 @@ module.exports = function signup (request, reply) {
 
               request.logger.info('created new user ' + user.name);
 
-              sendEmail('confirm-user-email', user, redis)
+              sendEmail('confirm-user-email', user, request.redis)
                 .then(function() {
                   request.logger.info('emailed new user at ' + user.email);
                   request.timing.page = 'signup';

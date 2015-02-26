@@ -1,0 +1,41 @@
+<div class="container tablet-width">
+
+  <hgroup>
+    <h1>npm Enterprise</h1>
+    <h2>Licensing options</h2>
+  </hgroup>
+
+  <section>
+    <h2>Starter pack: $25/month for up to 5 seats</h2>
+
+    <p>If you need 5 seats or less, this will save you money. Good for pilot programs and small teams.
+    You can pay monthly or annually.</p>
+
+    <form>
+      <input type="hidden" data-key="{{stripeKey}}"/>
+      <ul>
+        <li><input type="radio" name="starter-pack-plan" value="1"> Monthly ($25/month)</li>
+        <li><input type="radio" name="starter-pack-plan" value="2"> Annual ($250/year)</li>
+      </ul>
+      <input type="submit" class="full-width" value="Buy Starter Pack" id="buy-starter-pack">
+      {{> form_security}}
+    </form>
+  </section>
+
+  <section>
+    <h2>Multi-seat license: $20/seat/month</h2>
+
+    <p>If you need more than 5 seats, use this plan. You can always increase or
+    decrease your number of seats later.</p>
+
+    <form>
+      <input type="hidden" data-key="{{stripeKey}}"/>
+      <p>Number of seats: <input type="text" name="seat-count" id="multi-seat-count" placeholder="10" required></p>
+      <input type="submit" class="full-width" value="Buy multi-seat license" id="buy-multi-seat">
+      {{> form_security}}
+    </form>
+  </section>
+
+  <script src="https://checkout.stripe.com/checkout.js"></script>
+
+</div>

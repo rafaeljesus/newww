@@ -150,6 +150,31 @@ var unauthenticatedRoutes = [
     handler: require('./facets/enterprise/show-verification'),
     config: enterpriseConfig
   },{
+    path: "/enterprise/license",
+    method: "GET",
+    handler: require('./facets/enterprise/show-license-options'),
+    config: {
+      plugins: {
+        blankie: {
+          scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com'],
+          frameSrc: 'https://checkout.stripe.com'
+        }
+      }
+    }
+  },{
+    path: "/enterprise/license",
+    method: "POST",
+    handler: require('./facets/enterprise/buy-license'),
+    config: {
+      plugins: {
+        // tolerate Ajax
+        crumb: {
+          source: 'payload',
+          restful: true
+        }
+      }
+    }
+  },{
     path: "/package/{package}/{version?}",
     method: "GET",
     handler: require('./facets/registry/show-package')

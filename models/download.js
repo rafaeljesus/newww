@@ -54,7 +54,7 @@ Download.prototype.getSome = function(period, packageName) {
   }
 
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true, timeout: _this.timeout};
+    var opts = {url: url, json: true, timeout: _this.timeout, headers: {bearer: _this.bearer}};
 
     request.get(opts, function(err, resp, body){
       if (err) {

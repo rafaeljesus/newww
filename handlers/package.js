@@ -15,6 +15,24 @@ package.show = function(request, reply) {
   request.logger.info('get package: ' + name);
 
   var promise = Package.get(name)
+    .catch(function(err){
+      if (err.statusCode === 404) {
+        if (validatePackageName(name).validForNewPackages) {
+          context.package = {name: name}
+          request.logger.error('package not found: ' + name);
+          reply.view('errors/not-found', context).code(404);
+          return promise.cancel();
+        }
+
+        request.logger.error('invalid package name: ' + name);
+        reply.view('errors/not-found', context).code(400);
+        return promise.cancel();
+      }
+
+      request.logger.error(err);
+      reply.view('errors/internal', context).code(500);
+      return promise.cancel();
+    })
     .then(function(p) {
       package = p
 
@@ -25,6 +43,10 @@ package.show = function(request, reply) {
       }
 
       return Download.getAll(package.name)
+    })
+    .catch(function(err){
+      // tolerate timed-out downloads API calls
+      if (err.code === 'ETIMEDOUT') return null;
     })
     .then(function(downloads) {
       package.downloads = downloads
@@ -39,21 +61,5 @@ package.show = function(request, reply) {
 
       context.package = package
       return reply.view('package/show', context);
-    })
-    .catch(function(err){
-
-      if (err.statusCode === 404) {
-        if (validatePackageName(name).validForNewPackages) {
-          context.package = {name: name}
-          request.logger.error('package not found: ' + name);
-          return reply.view('errors/not-found', context).code(404);
-        }
-
-        request.logger.error('invalid package name: ' + name);
-        return reply.view('errors/not-found', context).code(400);
-      }
-
-      request.logger.error(err);
-      return reply.view('errors/internal', context).code(500);
     })
 }

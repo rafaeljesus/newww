@@ -46,7 +46,7 @@ describe("routes", function () {
   })
 
   it("defines the same handler for scoped and global package pages", function (done) {
-    var scopey = routes.at("GET /package/{scope}/{package}")
+    var scopey = routes.at("GET /package/{scope}/{project}")
     var globey = routes.at("GET /package/{package}")
     expect(scopey).to.be.an.object()
     expect(globey).to.be.an.object()

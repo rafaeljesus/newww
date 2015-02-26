@@ -30,7 +30,6 @@ billing.updateBillingInfo = function(request, reply) {
   };
 
   Customer.update(billingInfo, function(err, customer) {
-    console.log(err, customer)
     if (err) {
       request.logger.error(err);
       return reply.view('errors/internal').code(500);

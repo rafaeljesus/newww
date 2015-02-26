@@ -1,0 +1,24 @@
+{{#with package}}
+
+{{> package-header this}}
+
+<div class="content-column">
+
+  <div id="readme" class="markdown">
+
+    <p>
+      This package was unpublished
+      <span data-date="{{time.unpublished.time}}" data-date-format="%B %e %Y">
+      by
+      <a href="/~{{time.unpublished.name}}">{{time.unpublished.name}}</a>.
+    </p>
+
+    {{#if time.unpublished.description}}
+      <p>Description: {{time.unpublished.description}}</p>
+    {{/if}}
+
+  </div>
+
+</div>
+
+{{/with}}

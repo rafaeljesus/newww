@@ -1,14 +1,14 @@
 <div class="package-widget {{#if logo}}package-widget-with-logo{{/if}}">
 
   {{#if logo}}
-    <a class="package-logo" href="/packages/{{name}}">
+    <a class="package-logo" href="/package/{{name}}">
       <img src="{{logo}}" alt="{{name}} logo">
     </a>
   {{/if}}
 
   <div class="package-details">
     <h3>
-      <a class="name" href="/packages/{{name}}">{{name}}</a>
+      <a class="name" href="/package/{{name}}">{{name}}</a>
     </h3>
 
     <p class="description">{{description}}</p>
@@ -16,20 +16,19 @@
     {{#if version}}
     <p class="author quiet">
 
-      {{#unless lastPublished}} {{#unless publishedBy}}
+      {{#unless lastPublishedAt}} {{#unless publisher}}
         version
       {{/unless}} {{/unless}}
 
-      <a class="version" href="/packages/{{name}}">{{version}}</a>
+      <a class="version" href="/package/{{name}}">{{version}}</a>
 
-      {{#if lastPublished}} {{#if publishedBy}}
-
+      {{#if lastPublishedAt}} {{#if publisher}}
         published
-        {{lastPublished}}
+        {{lastPublishedAt}}
         by
-        <a href="/~{{publishedBy.name}}">{{publishedBy.name}}</a>
-
+        <a href="/~{{publisher.name}}">{{publisher.name}}</a>
       {{/if}} {{/if}}
+
     </p>
     {{/if}}
 

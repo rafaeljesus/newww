@@ -2,27 +2,9 @@
 
 {{#with package}}
 
+{{> package-header this}}
+
 <div class="tablet-width container">
-{{!-- <div class="content"> --}}
-
-  <hgroup>
-    <h1>{{name}}</h1>
-    <h2>{{description}}</p>
-  </hgroup>
-
-  {{> package-secondary-nav this}}
-
-  <!--
-  <p class="notice">
-  {{#if private}}
-      The {{name}} package is <strong>private</strong>.
-      <a href="#">Make it public...</a>
-  {{else}}
-      The {{name}} package is <strong>public</strong>.
-      <a href="#">Make it private...</a>
-  {{/if}}
-  </p>
-  -->
 
   <div class="centered">
     <input type="checkbox" class="toggle" value="private" {{#if private}}checked="checked"{{/if}} id="package-access-toggle">

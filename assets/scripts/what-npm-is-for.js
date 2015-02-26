@@ -22,6 +22,7 @@ var what_npm_is_for = function() {
     // .type(initialText).pause(pause).delete(initialText.length)
     .pause(2400).delete(initialText.length)
     .type('browsers').pause(pause).delete(8)
+    .type('io.js').pause(pause).delete(5)
     .type('mobile').pause(pause).delete(6)
     .type('angular').pause(pause).delete(7)
     .type('bower').pause(pause).delete(5)
@@ -31,7 +32,6 @@ var what_npm_is_for = function() {
     .type('browserify').pause(pause).delete(10)
     .type('grunt').pause(pause).delete(5)
     .type('tessel').pause(pause).delete(6)
-    .type('io.js').pause(pause).delete(5)
     .type('javascript.').pause(1200)
     .call(function() {
       $(el).addClass("disabled")

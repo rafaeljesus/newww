@@ -14,6 +14,20 @@ exports.fakeuser = {
   deleted: null
 };
 
+exports.mikeal = {
+  name: 'mikeal',
+  email: 'mikeal@president-of-javascript.com',
+  email_verified: null,
+  verification_key: '12345',
+  resource: {
+    github: 'mikeal',
+    twitter: 'mikeal',
+  },
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
 exports.diana_delinquent = {
   name: 'diana_delinquent',
   email: 'diana@late.fee',

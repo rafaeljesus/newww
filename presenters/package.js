@@ -80,8 +80,14 @@ module.exports = function (package) {
     package.starCount = Object.keys(package.stars).length;
   }
 
+  // Process README
   if (typeof package.readme === "string") {
     package.readme = marky(package.readme, {package: package}).html();
+  }
+
+  // Parse description as markdown
+  if (typeof package.description === "string") {
+    package.description = marky.parsePackageDescription(package.description)
   }
 
   return package;

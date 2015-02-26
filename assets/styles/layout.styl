@@ -7,7 +7,7 @@ section
   float none
   clear both
   overflow visible
-  max-width fullColumnWidth
+  max-width maxColumnWidth
   margin 0 auto
   padding 0 20px
 
@@ -26,12 +26,12 @@ section
 .tablet-width
   max-width tablet-width
 
-.content
+.content-column
   float left
-  width fullColumnWidth - sidebarMaxWidth - 100px
+  width minColumnWidth - sidebarMaxWidth - 100px
   margin-bottom 90px
 
-  @media only screen and (max-width: fullColumnWidth)
+  @media only screen and (max-width: minColumnWidth)
     float none
     max-width 100%
     margin-bottom 40px
@@ -40,7 +40,7 @@ section
   float right
   margin-top 40px
   max-width sidebarMaxWidth
-  @media only screen and (max-width: fullColumnWidth)
+  @media only screen and (max-width: minColumnWidth)
     max-width 100%
     float none
     clear both
@@ -229,9 +229,6 @@ table
       color background-color
       background npmred
 
-#profile
-  padding-top 30px
-
 a.avatar
   max-width 100%
   display block
@@ -360,27 +357,6 @@ div.scroll-beyond-300
   border 1px solid greigh6
   margin 15px 0
 
-.inquire
-  margin-bottom 0.5em
-
-  input[type='radio']
-    width 0.1px
-
-    &:checked + label
-      background-color npmred
-      color white
-      border 1px solid npmred
-
-    &:hover + label
-      background-color greigh2
-      color white
-      border 1px solid greigh2
-
-  input[type='radio'] + label
-    margin 0 1px 0 -8px
-    background-color background-color
-    border 1px solid greigh3
-    color greigh3
 
 img.roomy-and-flexible
   max-width 100%

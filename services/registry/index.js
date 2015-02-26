@@ -56,11 +56,6 @@ exports.register = function Registry (server, options, next) {
       method: require('./methods/getUpdated'),
       options: { cache: setCache('updated') }
     },
-    {
-      name: 'registry.getRecentAuthors',
-      method: require('./methods/getRecentAuthors'),
-      options: { cache: setCache('authors') }
-    }
   ]);
 
 

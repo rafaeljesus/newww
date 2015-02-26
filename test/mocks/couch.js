@@ -69,9 +69,5 @@ module.exports = function (config) {
     .get('/registry/_design/app/_view/browseStarPackage?group_level=2&stale=update_after')
     .reply(200, fixtures.browse.starred)
 
-    // --- recent authors ---
-    .get('/registry/_design/app/_view/browseAuthorsRecent?group_level=2&startkey=XXX&stale=update_after').twice()
-    .reply(200, fixtures.browse.author)
-
   return couch;
 }

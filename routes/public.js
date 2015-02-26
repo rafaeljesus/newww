@@ -118,27 +118,22 @@ var publicRoutes = [
     method: "GET",
     handler: require('../handlers/package').show
   },{
-    // redirect plural form to singular
-    path: "/packages/{package}",
+    // redirect plural forms to singular
+    paths: [
+      "/packages/{package}",
+      "/packages/{scope}/{package}",
+    ],
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect("/package/" + request.params.package).code(301);
     }
   },{
-    path: "/package/{package}/access",
+    paths: [
+      "/package/{package}/access",
+      "/package/{scope}/{package}/access",
+    ],
     method: "GET",
     handler: require('../handlers/access')
-  },{
-    path: "/package/{scope}/{package}/access",
-    method: "GET",
-    handler: require('../handlers/access')
-  },{
-    // Redirect to home, because who cares
-    path: "/browse/all",
-    method: "GET",
-    handler: function(request, reply) {
-      return reply.redirect("/").code(301);
-    }
   },{
     // Redirect to /~user#packages
     path: "/browse/author/{user}",
@@ -147,18 +142,22 @@ var publicRoutes = [
       return reply.redirect(fmt("/~%s#packages", request.params.user)).code(301);
     }
   },{
-    // Users, ordered descending by how many packages they've starred
-    path: "/browse/userstar",
-    method: "GET",
-    handler: function(request, reply) {
-      return reply.redirect("/").code(301);
-    }
-  },{
     // Redirect to /~user#starred
     path: "/browse/userstar/{user}",
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect(fmt("/~%s#starred", request.params.user)).code(301);
+    }
+  },{
+    // Legacy stuff redirects to the homepage
+    paths: [
+      "/browse/all",
+      "/recent-authors/{since?}",
+      "/browse/userstar",
+    ],
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/").code(301);
     }
   },{
     // Catch-all for all other browse pages
@@ -177,10 +176,6 @@ var publicRoutes = [
     handler: function(request, reply) {
       return reply.redirect('/browse/keyword/' + request.params.kw).code(301);
     }
-  },{
-    path: "/recent-authors/{since?}",
-    method: "GET",
-    handler: require('../facets/registry/show-recent-authors')
   },{
     path: "/star",
     method: "POST",

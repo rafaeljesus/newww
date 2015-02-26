@@ -1,4 +1,4 @@
-var path = require('path');
+var utils = require('../lib/utils');
 
 module.exports = {
   ping: function (request, reply) {
@@ -17,17 +17,11 @@ module.exports = {
       };
 
       return reply(info).code(200);
-    }
+    };
   },
 
   csplog: function (request, reply) {
-    var data = request.payload;
-
-    try {
-      data = JSON.parse(data);
-    } catch (ex) {
-      data = {msg: data};
-    }
+    var data = utils.safeJsonParse(request.payload);
 
     request.logger.warn('content-security-policy validation', data);
     return reply('ok').code(200);

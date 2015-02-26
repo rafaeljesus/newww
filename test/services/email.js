@@ -3,15 +3,27 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
     before = lab.before,
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
     Hapi = require('hapi'),
     email = require('../../services/email'),
-    nodemailer = require('nodemailer'),
-    oldCreateTransport,
     server;
+
+var mailConfig = require('../../config').user.mail;
+var MockTransport = require('nodemailer-mock-transport');
+var mock = new MockTransport({boom: 'bam'});
+mailConfig.mailTransportModule = mock;
+
+var redis = require('redis'),
+    spawn = require('child_process').spawn,
+    client, redisProcess,
+    config = require('../../config').server.cache;
+
+    config.port = 6379;
+    config.password = '';
 
 beforeEach(function (done) {
   server = new Hapi.Server();
@@ -22,48 +34,72 @@ beforeEach(function (done) {
 });
 
 before(function (done) {
-  oldCreateTransport = nodemailer.createTransport;
+  var redisConfig = '--port ' + config.port;
+  redisProcess = spawn('redis-server', [redisConfig]);
+  client = redis.createClient(config.port, config.host);
+  client.auth(config.password, function () {});
+  client.on("error", function (err) {
+    console.log("Error " + err);
+  });
 
-  nodemailer.createTransport = function () {
-    return {
-      sendMail: function (mail, cb) {
-        if (mail === 'error') {
-          return cb(new Error('ooh bad'));
-        }
+  done();
+});
 
-        return cb(null);
-      }
-    };
-  };
-
+afterEach(function (done) {
+  mock.sentMail.pop();
   done();
 });
 
 after(function (done) {
-  nodemailer.createTransport = oldCreateTransport;
-  done();
+  client.flushdb();
+  server.stop(function () {
+    redisProcess.kill('SIGKILL');
+    done();
+  });
 });
 
 describe('send an email', function () {
 
+  it('throws if redis is not included', function (done) {
+    expect(function () {
+      server.methods.email.send('something', {});
+    }).to.throw('we require a redis instance');
+    done();
+  });
+
   it('has no errors if sendMail has no errors', function (done) {
+    var user = {
+      email: 'user@npmjs.com',
+      name: 'user'
+    };
 
-    var mail = {from: 'boom@npmjs.com', to: 'blah@npmjs.com'};
-
-    server.methods.email.send(mail, function (er) {
-      expect(er).to.be.null();
-      done();
-    });
+    server.methods.email.send('confirm-user-email', user, client)
+      .then(function () {
+        var msg = mock.sentMail[0];
+        expect(msg.data.to).to.equal('"user" <user@npmjs.com>');
+        done();
+      })
+      .catch(function (err) {
+        console.log(err)
+        expect(err).to.not.exist();
+        done();
+      });
   });
 
   it('has errors if sendMail has errors', function (done) {
 
     var mail = 'error';
 
-    server.methods.email.send(mail, function (er) {
-      expect(er).to.exist();
-      expect(er.message).to.equal('ooh bad');
-      done();
-    });
+    server.methods.email.send('something', mail, client)
+      .then(function () {
+        var msg = mock.sentMail[0];
+        expect(msg).to.not.exist();
+        done();
+      })
+      .catch(function (err) {
+        expect(err).to.exist();
+        expect(err.message).to.equal('I need to know who this email is being sent to :-(');
+        done();
+      });
   });
 });

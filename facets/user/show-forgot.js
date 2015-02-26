@@ -1,10 +1,9 @@
 
 var userValidate = require('npm-user-validate'),
+    utils = require('../../lib/utils'),
     crypto = require('crypto');
 
 var from, host;
-
-var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
 
 module.exports = function (options) {
   return function (request, reply) {
@@ -36,13 +35,13 @@ module.exports = function (options) {
 
 function processToken(request, reply) {
   var opts = {},
-      cache = request.server.app.cache;
+      cache = request.server.app.cache._cache.connection.client;
 
   var token = request.params.token,
-      hash = sha(token),
+      hash = utils.sha(token),
       pwKey = 'pwrecover_' + hash;
 
-  cache.get(pwKey, function (err, item, cached) {
+  cache.get(pwKey, function (err, value) {
     if (err) {
       request.logger.error('Error getting token from redis', pwKey);
       request.logger.error(err);
@@ -50,17 +49,19 @@ function processToken(request, reply) {
       return;
     }
 
+    var cached = utils.safeJsonParse(value);
+
     if (!cached) {
       request.logger.error('Token not found or invalid: ', pwKey);
       reply.view('errors/internal', opts).code(500);
       return;
     }
 
-    var name = cached.item.name,
-        verify = cached.item.token;
+    var name = cached.name,
+        verify = cached.token;
 
     if (verify !== token) {
-      request.logger.error('token in cache does not match user token; cached=' + cached.item.token + '; token=' + token);
+      request.logger.error('token in cache does not match user token; cached=' + cached.token + '; token=' + token);
       reply.view('errors/internal', opts).code(500);
       return;
     }
@@ -83,7 +84,7 @@ function processToken(request, reply) {
         return;
       }
 
-      cache.drop(pwKey, function (err) {
+      cache.del(pwKey, function (err) {
 
         if (err) {
           request.logger.warn('Unable to drop key ' + pwKey);
@@ -216,57 +217,23 @@ function lookupUserByUsername (name, request, reply) {
     request.timing.page = 'getUser';
 
     request.metrics.metric({ name: 'getUser' });
-    return sendEmail(name, email, request, reply);
+    return sendEmail(request, reply, {name: name, email: email});
   });
 }
 
-function sendEmail(name, email, request, reply) {
+function sendEmail(request, reply, data) {
 
   var opts = {};
 
-  // the token needs to be url-safe
-  var token = crypto.randomBytes(30).toString('base64')
-              .split('/').join('_')
-              .split('+').join('-'),
-      hash = sha(token),
-      data = {
-        name: name + '',
-        email: email + '',
-        token: token + ''
-      },
-      key = 'pwrecover_' + hash;
+  var emailIt = request.server.methods.email.send;
 
-  request.server.app.cache.set(key, data, ONE_HOUR, function (err) {
-
-    if (err) {
-      request.logger.error('Unable to set ' + key + ' to the cache');
-      request.logger.error(err);
-      reply.view('errors/internal', opts).code(500);
-      return;
-    }
-
-    var u = host + '/forgot/' + encodeURIComponent(token);
-
-    var mail = {
-      to: '"' + name + '" <' + email + '>',
-      from: from,
-      subject : "npm Password Reset",
-      headers: { "X-SMTPAPI": { category: "password-reset" } },
-      text: require('./emailTemplates/forgotPassword')(name, u, from)
-    };
-
-    var sendEmail = request.server.methods.email.send;
-
-    sendEmail(mail, function (er) {
-
-      if (er) {
-        request.logger.error('Unable to sent revert email to ' + mail.to);
-        request.logger.error(er);
-        return reply.view('errors/internal', opts).code(500);
-      }
-
-      if (process.env.NODE_ENV === 'dev') { opts.mail = JSON.stringify(mail); }
-
+  emailIt('forgot-password', data, request.redis)
+    .catch(function (er) {
+      request.logger.error('Unable to sent revert email to ' + mail.to);
+      request.logger.error(er);
+      return reply.view('errors/internal', opts).code(500);
+    })
+    .then(function () {
       opts.sent = true;
 
       request.timing.page = 'sendForgotEmail';
@@ -274,9 +241,4 @@ function sendEmail(name, email, request, reply) {
 
       return reply.view('user/password-recovery-form', opts);
     });
-  });
-}
-
-function sha (token) {
-  return crypto.createHash('sha1').update(token).digest('hex');
 }

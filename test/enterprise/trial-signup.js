@@ -24,6 +24,8 @@ after(function (done) {
 describe('Getting to the thank-you page', function () {
   it('creates a new trial when a customer does not have one yet', function (done) {
 
+    server.app.cache._cache.connection.client = {};
+
     server.inject({url: '/enterprise'}, function (resp) {
       var header = resp.headers['set-cookie'];
       expect(header.length).to.equal(1);
@@ -47,9 +49,7 @@ describe('Getting to the thank-you page', function () {
       server.inject(opts, function (resp) {
         var source = resp.request.response.source;
         expect(resp.statusCode).to.equal(200);
-        expect(source.context.mail).to.exist();
-        var mail = JSON.parse(source.context.mail);
-        expect(mail.to).to.include('exists@bam.com');
+        expect(source.template).to.equal('enterprise/thanks');
         done();
       });
     });

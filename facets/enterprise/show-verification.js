@@ -1,5 +1,4 @@
-var Hoek = require('hoek'),
-    nodemailer = require('nodemailer');
+var _ = require('lodash');
 
 var config = require('../../config');
 
@@ -50,68 +49,37 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
           return;
         }
 
-        var mailSettings = config.user.mail;
-
-        var from = mailSettings.emailFrom,
-            requirementsUrl = "https://docs.npmjs.com/enterprise/installation#requirements",
+        var requirementsUrl = "https://docs.npmjs.com/enterprise/installation#requirements",
             instructionsUrl = "https://docs.npmjs.com/enterprise/installation",
             license = licenses[0];
 
         var mail = {
-          to: '"' + customer.name + '" <' + customer.email + '>',
-          from: '" npm Enterprise " <' + from + '>',
-          subject : "npm Enterprise: trial license key and instructions",
-          text: "Hi " + customer.name + " -\r\n\r\n" +
-            "Thanks for trying out npm Enterprise!\r\n\r\n" +
-            "To get started, make sure you have a machine that meets the installation requirements:\r\n\r\n" +
-            requirementsUrl + "\r\n\r\n" +
-            "Then simply run\r\n\r\n" +
-            "npm install npme\r\n\r\n" +
-            "That's it! When prompted, provide the following information:\r\n\r\n" +
-            "billing email: " + customer.email + "\r\n" +
-            "license key: " + license.license_key + "\r\n\r\n" +
-            "For help with the other questions asked during the installation, read " +
-            "the installation instructions and other documentation:\r\n\r\n" +
-            instructionsUrl + "\r\n\r\n" +
-            "If you have any problems, please email " + from + "\r\n" +
-            "\r\n\r\nnpm loves you.\r\n"
+          name: customer.name,
+          email: customer.email,
+          license_key: license.license_key
         };
 
-        var enterpriseOpts = {
+        opts = {
           title: "Signup complete!",
           requirementsUrl: requirementsUrl,
-          instructionsUrl: instructionsUrl,
-          email: customer.email,
-          license_key: license.license_key,
-          supportEmail: from
+          instructionsUrl: instructionsUrl
         };
 
-        opts = Hoek.applyToDefaults(opts, enterpriseOpts);
+        opts = _.extend({}, opts, mail);
 
-        if (process.env.NODE_ENV === 'dev') {
+        var sendEmail = request.server.methods.email.send;
 
-          opts.mail = JSON.stringify(mail);
-          return reply.view('enterprise/complete', opts);
-
-        } else {
-
-          var transport = require(mailSettings.mailTransportModule);
-          var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
-
-          mailer.sendMail(mail, function (er) {
-
-            if (er) {
-              request.logger.error('Unable to send license to email', opts.email);
-              request.logger.error(er);
-              reply.view('errors/internal', opts).code(500);
-              return;
-            }
-
+        sendEmail('enterprise-verification', mail, request.redis)
+          .catch(function (er) {
+            request.logger.error('Unable to send license to email', opts.email);
+            request.logger.error(er);
+            reply.view('errors/internal', opts).code(500);
+            return;
+          })
+          .then(function () {
             return reply.view('enterprise/complete', opts);
           });
-        }
       });
     });
-
   });
 };

@@ -166,6 +166,22 @@
     </p>
   {{/if}}
 
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "{{name}}",
+      "description": "{{description}}",
+      "url": "{{../canonicalURL}}",
+      "keywords": "{{keywords}}",
+      "applicationCategory": "DeveloperApplication",
+      "offers": {
+         "@type": "Offer",
+         "price": "0.00"
+      }
+    }
+  </script>
+
   <div class="hiring-container" data-template="sidebar"></div>
 
 </div>

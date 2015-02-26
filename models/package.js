@@ -5,9 +5,9 @@ var fmt = require('util').format;
 var URL = require('url');
 var decorate = require(__dirname + '/../presenters/package');
 
-var Package = module.exports = function (opts) {
+var Package = module.exports = function(opts) {
   _.extend(this, {
-    host: process.env.USER_API,
+    host: process.env.USER_API || "https://user-api-example.com",
     bearer: false
   }, opts);
 
@@ -18,14 +18,16 @@ Package.prototype.get = function(name, options) {
   var _this = this;
   var package;
   var url = fmt("%s/package/%s", this.host, name);
-
+  
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true, headers: {bearer: _this.bearer}};
+    var opts = {
+      url: url,
+      json: true,
+      headers: {bearer: _this.bearer}
+    };
 
-    request.get(opts, function(err, resp, body){
-      if (err) {
-        return reject(err);
-      }
+    request.get(opts, function(err, resp, body) {
+      if (err) return reject(err);
 
       if (resp.statusCode > 399) {
         err = Error('error getting package ' + name);
@@ -36,7 +38,7 @@ Package.prototype.get = function(name, options) {
       return resolve(body);
     });
   })
-  .then(function(_package){
+  .then(function(_package) {
     return decorate(_package);
   });
 
@@ -52,9 +54,12 @@ Package.prototype.list = function(options) {
   })
 
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true};
+    var opts = {
+      url: url,
+      json: true
+    };
 
-    request.get(opts, function(err, resp, body){
+    request.get(opts, function(err, resp, body) {
       if (err) return reject(err);
 
       if (resp.statusCode > 399) {
@@ -72,8 +77,11 @@ Package.prototype.list = function(options) {
 Package.prototype.count = function() {
   var url = fmt("%s/package/-/count", this.host);
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true};
-    request.get(opts, function(err, resp, body){
+    var opts = {
+      url: url,
+      json: true
+    };
+    request.get(opts, function(err, resp, body) {
       if (err) return reject(err);
       if (resp.statusCode > 399) {
         err = Error('error getting package count');

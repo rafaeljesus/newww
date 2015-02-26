@@ -2,76 +2,58 @@ var pluck = require("lodash").pluck
 var package = module.exports = {}
 var validatePackageName = require('validate-npm-package-name');
 
-var packageClientFromRequest = function(request) {
-  var bearer = request.auth.credentials && request.auth.credentials.name
-  return new request.server.models.Package({bearer: bearer});
-}
-
 package.show = function(request, reply) {
-  var getDownloadData = request.server.methods.downloads.getAllDownloadsForPackage;
+  var package;
+  var context = {title: name};
   var loggedInUser = request.auth.credentials;
-  var Package = packageClientFromRequest(request);
-  var opts = {
-    name: request.params.package,
-  };
+  var bearer = loggedInUser && loggedInUser.name;
+  var Package = new request.server.models.Package({bearer: bearer});
+  var Download = new request.server.models.Download({bearer: bearer});
+  var name = request.params.package ||
+    request.params.scope + "/" + request.params.project;
 
-  request.timing.page = 'showPackage';
-  request.metrics.metric({
-    name: 'showPackage',
-    package: request.params.package,
-    value: 1
-  });
+  request.logger.info('get package: ' + name);
 
-  Package.get(opts.name, function(er, pkg) {
+  var promise = Package.get(name)
+    .then(function(p) {
+      package = p
 
-    opts.package = {
-      name: opts.name
-    };
-
-    if (er) {
-      request.logger.error(er, 'fetching package ' + opts.name);
-      return reply.view('errors/internal', opts).code(500);
-    }
-
-    if (!pkg) {
-      // suppress the encouraging 404 message if name is not valid
-      if (!validatePackageName(opts.name).valid) {
-        delete opts.package;
-        request.logger.info('request for invalid package name: ' + opts.name);
+      if (package.time && package.time.unpublished) {
+        request.logger.info('package is unpublished: ' + name);
+        reply.view('package/unpublished', context).code(404);
+        return promise.cancel();
       }
-      return reply.view('errors/not-found', opts).code(404);
-    }
 
-    if (pkg.time && pkg.time.unpublished) {
-      opts.package = pkg;
-      request.timing.page = 'showUnpublishedPackage';
-      return reply.view('package/unpublished', opts).code(410);
-    }
+      return Download.getAll(package.name)
+    })
+    .then(function(downloads) {
+      package.downloads = downloads
 
-    getDownloadData(opts.name, function(err, downloads) {
+      package.isStarred = !!(loggedInUser
+        && Array.isArray(package.stars)
+        && package.stars.indexOf(loggedInUser.name) > -1)
 
-      if (err) {
-        // this really shouldn't happen! but we defend against it if it does.
-        pkg.downloads = false;
-      } else {
-        if (Array.isArray(downloads)) {
-          pkg.downloads = downloads[0];
-        } else {
-          pkg.downloads = downloads;
+      package.isCollaboratedOnByUser = !!(loggedInUser
+        && package.maintainers
+        && pluck(package.maintainers, 'name').indexOf(loggedInUser.name) > -1)
+
+      context.package = package
+      return reply.view('package/show', context);
+    })
+    .catch(function(err){
+
+      if (err.statusCode === 404) {
+        if (validatePackageName(name).validForNewPackages) {
+          context.package = {name: name}
+          request.logger.error('package not found: ' + name);
+          return reply.view('errors/not-found', context).code(404);
         }
+
+        request.logger.error('invalid package name: ' + name);
+        return reply.view('errors/not-found', context).code(400);
       }
 
-      if (loggedInUser) {
-        pkg.isStarred = pkg.stars
-          && pkg.stars.indexOf(loggedInUser.name) > -1
-
-        pkg.isCollaboratedOnByUser = pkg.maintainers
-          && pluck(pkg.maintainers, 'name').indexOf(loggedInUser.name) > -1
-      }
-
-      opts.package = pkg;
-      opts.title = pkg.name;
-      reply.view('package/show', opts);
-    });
-  });
+      request.logger.error(err);
+      return reply.view('errors/internal', context).code(500);
+    })
 }

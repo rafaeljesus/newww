@@ -94,7 +94,7 @@
     "stylus": "^0.45.0",
     "tipsy-browserify": "^1.0.0",
     "truncate": "^1.0.4",
-    "validate-npm-package-name": "^1.2.0"
+    "validate-npm-package-name": "^2.0.1"
   },
   "devDependencies": {
     "bistre": "^1.0.0",

@@ -150,34 +150,6 @@ describe("Package", function(){
 
     });
 
-    it("fetches download counts if the option is set"/*, function(done) {
-      var mock = nock(Package.host)
-        .get('/package/request')
-        .reply(200, fixtures.request);
-
-      var downloadsMock = nock("https://api.npmjs.org")
-        .get('/downloads/point/last-day/request')
-        .reply(200, fixtures.downloads.request['last-day'])
-        .get('/downloads/point/last-week/request')
-        .reply(200, fixtures.downloads.request['last-week'])
-        .get('/downloads/point/last-month/request')
-        .reply(200, fixtures.downloads.request['last-month']);
-
-      Package.get("request", {downloads: true})
-        .then(function(package) {
-          expect(package.name).to.equal("request");
-          expect(package.downloads).to.exist();
-        })
-        .catch(function(err){
-          expect(err).to.not.exist();
-        })
-        .then(function(){
-          mock.done();
-          done();
-        });
-      });
-    }*/);
-
   });
 
   describe("list()", function() {

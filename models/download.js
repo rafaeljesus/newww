@@ -6,7 +6,7 @@ var URL = require('url');
 
 var Download = module.exports = function (opts) {
   _.extend(this, {
-    host: process.env.DOWNLOADS_API,
+    host: process.env.DOWNLOADS_API || "https://downloads-api-example.com",
     timeout: 2000,
   }, opts);
   return this;

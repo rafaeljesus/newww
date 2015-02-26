@@ -36,8 +36,8 @@
 
 </div>
 
-<h2 class="centered ruled">
-  <a id="explicit" href="#explicit">packages people 'npm install' a lot</a>
+<h2 id="explicit" class="centered ruled">
+  <a href="#explicit">packages people 'npm install' a lot</a>
 </h2>
 <ul class="columnar">
   {{#each explicit}}
@@ -45,8 +45,8 @@
   {{/each}}
 </ul>
 
-<h2 class="centered ruled">
-  <a id="recent" href="/browse/updated">recently updated packages</a>
+<h2 id="recent" class="centered ruled">
+  <a href="/browse/updated">recently updated packages</a>
 </h2>
 <ul class="columnar">
   {{#each modified.results}}
@@ -54,8 +54,8 @@
   {{/each}}
 </ul>
 
-<h2 class="centered ruled">
-  <a id="depended" href="/browse/depended">most depended-upon packages</a>
+<h2 id="depended" class="centered ruled">
+  <a href="/browse/depended">most depended-upon packages</a>
 </h2>
 <ul class="columnar packages">
   {{#each dependents.results}}
@@ -63,18 +63,24 @@
   {{/each}}
 </ul>
 
+<h2 id="getting-started" class="centered ruled">
+  <a href="#getting-started">getting started</a>
+</h2>
+
 <ul class="columnar">
+
   <li>
-    <h3><a href="http://nodejs.org/download/">Install npm</a></h3>
+    <h3><a href="http://nodejs.org/download/">installing npm</a></h3>
     <p>
-      The npm command-line tool is bundled with Node.js, so if you already
-      have Node.js installed then you have npm too. If not, go
-      <a href="http://nodejs.org/download/">download the Node.js installer</a>.
+      The npm command-line tool is bundled with node and io.js. If you have
+      either of those installed, then you already have npm too. If not, go
+      <a href="https://iojs.org/">download io.js</a> or
+      <a href="http://nodejs.org/download/">node</a>.
     </p>
   </li>
 
   <li>
-    <h3><a href="https://docs.npmjs.com">Learn the Ropes</a></h3>
+    <h3><a href="https://docs.npmjs.com">screencasts and docs</a></h3>
     <p>
       We've got a <a href="https://docs.npmjs.com/">new docs site</a> featuring videos and tutorials to help
       you make your javascript dreams come true. Head on over to
@@ -83,10 +89,11 @@
   </li>
 
   <li>
-    <h3><a href="/whoshiring">Get a Job</a></h3>
+    <h3><a href="/whoshiring">get a job</a></h3>
     <div class="hiring-container" data-template="vanilla"></div>
   </li>
 </ul>
+
 <script type="application/ld+json">
   { "@context" : "http://schema.org",
     "@type" : "Organization",

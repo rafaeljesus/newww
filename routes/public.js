@@ -113,7 +113,7 @@ var publicRoutes = [
   },{
     paths: [
       "/package/{package}",
-      "/package/{scope}/{package}",
+      "/package/{scope}/{project}",
     ],
     method: "GET",
     handler: require('../handlers/package').show

@@ -1,4 +1,6 @@
 var Code = require('code'),
+    nock = require('nock'),
+    fixtures = require("../fixtures"),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -37,13 +39,15 @@ describe('Accessing fallback URLs', function () {
   });
 
   it('redirects to package page for packages that exist', function (done) {
-    var opts = {
-      url: '/fake'
-    };
+    var opts = {url: '/browserify'};
+
+    var mock = nock("https://user-api-example.com")
+      .get("/package/browserify")
+      .reply(200, fixtures.packages.browserify)
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.include('/package/fake');
+      expect(resp.headers.location).to.include('/package/browserify');
       done();
     });
   });
@@ -53,7 +57,12 @@ describe('Accessing fallback URLs', function () {
       url: '/blajklasji'
     };
 
+    var mock = nock("https://user-api-example.com")
+      .get("/package/blajklasji")
+      .reply(404)
+
     server.inject(opts, function (resp) {
+      mock.done()
       expect(resp.statusCode).to.equal(404);
       var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
@@ -66,7 +75,12 @@ describe('Accessing fallback URLs', function () {
       url: '/some-package-hklsj'
     };
 
+    var mock = nock("https://user-api-example.com")
+      .get("/package/some-package-hklsj")
+      .reply(404)
+
     server.inject(opts, function (resp) {
+      mock.done()
       var source = resp.request.response.source;
       expect(source.context.package.name).to.equal("some-package-hklsj")
       done();

@@ -3,7 +3,7 @@ var relative = require('relative-date');
 
 module.exports = function() {
   $(formatDates)
-  setInterval(formatDates, 3000)
+  setInterval(formatDates, 10*1000)
 }
 
 var formatDates = function() {

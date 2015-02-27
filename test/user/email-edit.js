@@ -1,4 +1,5 @@
-var utils = require('../../lib/utils'),
+var generateCrumb = require("../handlers/crumb.js"),
+    utils = require('../../lib/utils'),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -85,18 +86,15 @@ describe('Accessing the email-edit page', function () {
     };
 
     server.inject(opts, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
+      generateCrumb(server, function (crumb){
+        cookieCrumb = crumb;
+        emailEdits = emailEdits(cookieCrumb);
 
-      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      emailEdits = emailEdits(cookieCrumb);
-
-      expect(resp.statusCode).to.equal(200);
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('user/email-edit');
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-      done();
+        expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('user/email-edit');
+        done();
+      });
     });
   });
 });

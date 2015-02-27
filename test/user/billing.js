@@ -1,4 +1,5 @@
-var Lab = require('lab'),
+var generateCrumb = require("../handlers/crumb.js"),
+    Lab = require('lab'),
     Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -13,9 +14,6 @@ var Lab = require('lab'),
     cheerio = require("cheerio");
 
 var server,
-    source,
-    cache,
-    cookieCrumb,
     fakeuser = require('../fixtures/users').fakeuser,
     diana_delinquent = require('../fixtures/users').diana_delinquent,
     norbert_newbie = require('../fixtures/users').norbert_newbie;
@@ -28,15 +26,15 @@ before(function (done) {
 });
 
 describe('GET /settings/billing', function () {
-  var options
+  var options;
 
   beforeEach(function(done){
     options = {
       method: "get",
       url: "/settings/billing"
-    }
-    done()
-  })
+    };
+    done();
+  });
 
   it('redirects to login page if not logged in', function (done) {
     server.inject(options, function (resp) {
@@ -51,10 +49,10 @@ describe('GET /settings/billing', function () {
       method: "get",
       url: "/settings/billing?canceled=1",
       credentials: fakeuser
-    }
+    };
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.canceled).to.be.true();
-      var $ = cheerio.load(resp.result)
+      var $ = cheerio.load(resp.result);
       expect($(".cancellation-notice").text()).to.include('cancelled your private npm');
       done();
     });
@@ -65,17 +63,17 @@ describe('GET /settings/billing', function () {
       method: "get",
       url: "/settings/billing?updated=1",
       credentials: fakeuser
-    }
+    };
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.updated).to.be.true();
-      var $ = cheerio.load(resp.result)
+      var $ = cheerio.load(resp.result);
       expect($(".update-notice").text()).to.include('successfully updated');
       done();
     });
   });
 
   it('does not render notices by default', function (done) {
-    options.credentials = fakeuser
+    options.credentials = fakeuser;
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.canceled).to.be.false();
       expect(resp.request.response.source.context.updated).to.be.false();
@@ -86,7 +84,7 @@ describe('GET /settings/billing', function () {
   });
 
   it('renders billing form if user is logged in', function (done) {
-    options.credentials = fakeuser
+    options.credentials = fakeuser;
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
@@ -97,41 +95,41 @@ describe('GET /settings/billing', function () {
   });
 
   it('injects stripe public key and stripe script into page', function (done) {
-    options.credentials = fakeuser
+    options.credentials = fakeuser;
 
-    var oldStripeKey = process.env.STRIPE_PUBLIC_KEY
-    process.env.STRIPE_PUBLIC_KEY = "I am a zebra"
+    var oldStripeKey = process.env.STRIPE_PUBLIC_KEY;
+    process.env.STRIPE_PUBLIC_KEY = "I am a zebra";
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('user/billing');
       expect(resp.result).to.include('https://js.stripe.com/v2/');
       expect(resp.result).to.include("I am a zebra");
-      process.env.STRIPE_PUBLIC_KEY = oldStripeKey
+      process.env.STRIPE_PUBLIC_KEY = oldStripeKey;
       done();
     });
   });
 
   describe("paid user", function() {
-    var oldLicenseAPI
+    var oldLicenseAPI;
 
     before(function(done){
-      process.env.LICENSE_API = "http://fake-license-api.com"
-      done()
-    })
+      process.env.LICENSE_API = "http://fake-license-api.com";
+      done();
+    });
 
     after(function(done){
-      process.env.LICENSE_API = oldLicenseAPI
-      done()
-    })
+      process.env.LICENSE_API = oldLicenseAPI;
+      done();
+    });
 
     it("adds billing data to view context", function(done){
-      options.credentials = fakeuser
+      options.credentials = fakeuser;
 
       server.inject(options, function (resp) {
-        var context = resp.request.response.source.context
+        var context = resp.request.response.source.context;
         expect(context).to.exist();
-        var customer = context.customer
+        var customer = context.customer;
         expect(customer).to.exist();
         expect(customer.status).to.equal("active");
         expect(customer.license_expired).to.equal(false);
@@ -139,12 +137,12 @@ describe('GET /settings/billing', function () {
         expect(customer.card.brand).to.equal("Visa");
         done();
       });
-    })
+    });
 
     it("renders redacted version of existing billing info", function(done) {
-      options.credentials = fakeuser
+      options.credentials = fakeuser;
       server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
+        var $ = cheerio.load(resp.result);
         expect($(".card-info").length).to.equal(1);
         expect($(".card-last4").text()).to.equal("4242");
         expect($(".card-brand").text()).to.equal("Visa");
@@ -155,18 +153,18 @@ describe('GET /settings/billing', function () {
     });
 
     it("displays a submit button with update verbiage", function(done){
-      options.credentials = fakeuser
+      options.credentials = fakeuser;
       server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
+        var $ = cheerio.load(resp.result);
         expect($("#payment-form input[type=submit]").attr("value")).to.equal("update billing info");
         done();
       });
-    })
+    });
 
     it("renders a hidden cancellation form", function(done) {
-      options.credentials = fakeuser
+      options.credentials = fakeuser;
       server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
+        var $ = cheerio.load(resp.result);
         var form = $("#cancel-subscription");
         expect(form.length).to.equal(1);
         expect(form.attr("method")).to.equal("post");
@@ -179,9 +177,9 @@ describe('GET /settings/billing', function () {
     });
 
     it("displays account expiration date in cancellation form", function(done) {
-      options.credentials = fakeuser
+      options.credentials = fakeuser;
       server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
+        var $ = cheerio.load(resp.result);
         var form = $("#cancel-subscription");
         expect(form.length).to.equal(1);
         expect(form.attr("method")).to.equal("post");
@@ -192,43 +190,43 @@ describe('GET /settings/billing', function () {
     });
 
     it("does NOT render expired license info", function(done) {
-      options.credentials = fakeuser
+      options.credentials = fakeuser;
       server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
+        var $ = cheerio.load(resp.result);
         expect($(".error.license-expired").length).to.equal(0);
         done();
       });
     });
 
-  })
+  });
 
   describe("paid user with expired license", function() {
-    var oldLicenseAPI
+    var oldLicenseAPI;
 
     before(function(done){
-      process.env.LICENSE_API = "http://fake-license-api.com"
-      done()
-    })
+      process.env.LICENSE_API = "http://fake-license-api.com";
+      done();
+    });
 
     after(function(done){
-      process.env.LICENSE_API = oldLicenseAPI
-      done()
-    })
+      process.env.LICENSE_API = oldLicenseAPI;
+      done();
+    });
 
     it("has an expired license and past_due status", function(done){
-      options.credentials = diana_delinquent
+      options.credentials = diana_delinquent;
 
       server.inject(options, function (resp) {
         expect(resp.request.response.source.context.customer.status).to.equal("past_due");
         expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
         done();
       });
-    })
+    });
 
     it("renders information about the expired license", function(done) {
-      options.credentials = diana_delinquent
+      options.credentials = diana_delinquent;
       server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
+        var $ = cheerio.load(resp.result);
         expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
         expect($(".error.license-expired").text()).to.include("license has expired");
         expect($(".error.license-expired").text()).to.include("status is past_due");
@@ -236,25 +234,25 @@ describe('GET /settings/billing', function () {
       });
     });
 
-  })
+  });
 
   describe("unpaid user", function(){
-    var oldLicenseAPI
+    var oldLicenseAPI;
 
     before(function(done){
-      process.env.LICENSE_API = "http://fake-license-api.com"
-      done()
-    })
+      process.env.LICENSE_API = "http://fake-license-api.com";
+      done();
+    });
 
     after(function(done){
-      process.env.LICENSE_API = oldLicenseAPI
-      done()
-    })
+      process.env.LICENSE_API = oldLicenseAPI;
+      done();
+    });
 
     it("does not display billing info, because it does not exist", function(done) {
-      options.credentials = norbert_newbie
+      options.credentials = norbert_newbie;
       server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
+        var $ = cheerio.load(resp.result);
         expect($("body").length).to.equal(1);
         expect($(".card-info").length).to.equal(0);
         expect($(".card-brand").length).to.equal(0);
@@ -262,19 +260,19 @@ describe('GET /settings/billing', function () {
         expect($(".card-exp-year").length).to.equal(0);
         done();
       });
-    })
+    });
 
     it("displays a submit button with creation verbiage", function(done){
-      options.credentials = norbert_newbie
+      options.credentials = norbert_newbie;
       server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
+        var $ = cheerio.load(resp.result);
         expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
         done();
       });
-    })
+    });
 
     it("does not render a cancellation form", function(done) {
-      options.credentials = norbert_newbie
+      options.credentials = norbert_newbie;
       server.inject(options, function (resp) {
         var $ = cheerio.load(resp.result);
         var form = $("#cancel-subscription");
@@ -283,20 +281,20 @@ describe('GET /settings/billing', function () {
       });
     });
 
-  })
+  });
 
 });
 
 describe('POST /settings/billing', function () {
-  var options
+  var options;
 
   before(function(done) {
     options = {
       method: 'post',
       url: '/settings/billing'
-    }
-    done()
-  })
+    };
+    done();
+  });
 
   it('redirects to login page if not logged in', function (done) {
     server.inject(options, function (resp) {
@@ -310,22 +308,17 @@ describe('POST /settings/billing', function () {
 
     it('sends updated billing info to the billing API', function (done) {
 
-      server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
-        var header = resp.headers['set-cookie'];
-        expect(header.length).to.equal(1);
-        var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-        expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+      generateCrumb(server, function (crumb){
         var opts = {
           url: '/settings/billing',
           method: 'POST',
           credentials: fakeuser,
           payload: {
             stripeToken: 'tok_1234567890',
-            crumb: cookieCrumb
+            crumb: crumb
           },
-          headers: { cookie: 'crumb=' + cookieCrumb }
-        }
+          headers: { cookie: 'crumb=' + crumb }
+        };
 
         server.inject(opts, function (resp) {
           expect(resp.statusCode).to.equal(302);
@@ -342,22 +335,17 @@ describe('POST /settings/billing', function () {
 
     it('sends new billing info to the billing API', function (done) {
 
-      server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
-        var header = resp.headers['set-cookie'];
-        expect(header.length).to.equal(1);
-        var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-        expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+      generateCrumb(server, function (crumb){
         var opts = {
           url: '/settings/billing',
           method: 'POST',
           credentials: fakeuser,
           payload: {
             stripeToken: 'tok_1234567890',
-            crumb: cookieCrumb
+            crumb: crumb
           },
-          headers: { cookie: 'crumb=' + cookieCrumb }
-        }
+          headers: { cookie: 'crumb=' + crumb }
+        };
 
         server.inject(opts, function (resp) {
           expect(resp.statusCode).to.equal(302);
@@ -375,15 +363,15 @@ describe('POST /settings/billing', function () {
 
 
 describe('POST /settings/billing/cancel', function () {
-  var options
+  var options;
 
   before(function(done) {
     options = {
       method: 'post',
       url: '/settings/billing/cancel'
-    }
-    done()
-  })
+    };
+    done();
+  });
 
   it('redirects to login page if not logged in', function (done) {
     server.inject(options, function (resp) {
@@ -395,21 +383,16 @@ describe('POST /settings/billing/cancel', function () {
 
   it('deletes the customer record', function (done) {
 
-    server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/settings/billing/cancel',
         credentials: fakeuser,
         payload: {
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
-      }
+        headers: { cookie: 'crumb=' + crumb }
+      };
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(302);

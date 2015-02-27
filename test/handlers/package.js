@@ -172,9 +172,7 @@ describe("package handler", function(){
 
     it('encourages anonymous users to try logging in', function (done) {
       expect($(".scoped-caveat").length).to.equal(1)
-      expect($(".scoped-caveat").text()).to.include(
-        "If you think a package with this name exists, try logging in."
-      )
+      expect($(".scoped-caveat").text()).to.include("try logging in")
       done()
     })
 
@@ -193,9 +191,7 @@ describe("package handler", function(){
         $ = cheerio.load(resp.result)
         packageMock.done()
         expect($(".scoped-caveat").length).to.equal(1)
-        expect($(".scoped-caveat").text()).to.include(
-          "If you think a package with this name exists, you may not have permission to see it."
-        )
+        expect($(".scoped-caveat").text()).to.include("you may not have permission")
         done()
       });
     });

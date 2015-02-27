@@ -67,14 +67,14 @@ module.exports = [
   },{
     path: "/settings/billing",
     method: "GET",
-    handler: require('../facets/user/billing').getBillingInfo
+    handler: require('../handlers/customer').getBillingInfo
   }, {
     path: "/settings/billing",
     method: "POST",
-    handler: require('../facets/user/billing').updateBillingInfo
+    handler: require('../handlers/customer').updateBillingInfo
   }, {
     path: "/settings/billing/cancel",
     method: "POST",
-    handler: require('../facets/user/billing').deleteBillingInfo
+    handler: require('../handlers/customer').deleteBillingInfo
   }
 ]

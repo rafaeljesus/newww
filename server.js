@@ -80,7 +80,6 @@ server.register(require('hapi-auth-cookie'), function (err) {
     server.route(require('./routes/index'));
 
     server.models = {
-      Customer: require('./models/customer'),
       User: require('./models/user'),
     };
 

@@ -1,5 +1,8 @@
 var Lab = require('lab'),
     Code = require('code'),
+    nock = require('nock'),
+    fs = require('fs'),
+    cheerio = require('cheerio'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
@@ -8,14 +11,11 @@ var Lab = require('lab'),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
-    fs = require("fs"),
-    nock = require("nock"),
-    cheerio = require("cheerio");
-
-var server,
+    server,
     source,
     cache,
     cookieCrumb,
+    fixtures = require('../fixtures'),
     fakeuser = require('../fixtures/users').fakeuser,
     diana_delinquent = require('../fixtures/users').diana_delinquent,
     norbert_newbie = require('../fixtures/users').norbert_newbie;
@@ -113,174 +113,147 @@ describe('GET /settings/billing', function () {
   });
 
   describe("paid user", function() {
-    var oldLicenseAPI
+    var mock
+    var resp
+    var $
 
-    before(function(done){
-      process.env.LICENSE_API = "http://fake-license-api.com"
-      done()
-    })
+    beforeEach(function(done){
+      options.credentials = fakeuser
 
-    after(function(done){
-      process.env.LICENSE_API = oldLicenseAPI
-      done()
+      mock = nock("https://license-api-example.com")
+        .get("/stripe/bob")
+        .reply(200, fixtures.customers.happy)
+
+      server.inject(options, function (response) {
+        resp = response
+        $ = cheerio.load(resp.result)
+        mock.done()
+        done()
+      })
+
     })
 
     it("adds billing data to view context", function(done){
-      options.credentials = fakeuser
-
-      server.inject(options, function (resp) {
-        var context = resp.request.response.source.context
-        expect(context).to.exist();
-        var customer = context.customer
-        expect(customer).to.exist();
-        expect(customer.status).to.equal("active");
-        expect(customer.license_expired).to.equal(false);
-        expect(customer.next_billing_amount).to.equal(700);
-        expect(customer.card.brand).to.equal("Visa");
-        done();
-      });
+      var customer = resp.request.response.source.context.customer
+      expect(customer).to.exist();
+      expect(customer).to.exist();
+      expect(customer.status).to.equal("active");
+      expect(customer.license_expired).to.equal(false);
+      expect(customer.next_billing_amount).to.equal(700);
+      expect(customer.card.brand).to.equal("Visa");
+      done();
     })
 
     it("renders redacted version of existing billing info", function(done) {
-      options.credentials = fakeuser
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
-        expect($(".card-info").length).to.equal(1);
-        expect($(".card-last4").text()).to.equal("4242");
-        expect($(".card-brand").text()).to.equal("Visa");
-        expect($(".card-exp-month").text()).to.equal("December");
-        expect($(".card-exp-year").text()).to.equal("2020");
-        done();
-      });
+      expect($(".card-info").length).to.equal(1);
+      expect($(".card-last4").text()).to.equal("4242");
+      expect($(".card-brand").text()).to.equal("Visa");
+      expect($(".card-exp-month").text()).to.equal("December");
+      expect($(".card-exp-year").text()).to.equal("2020");
+      done();
     });
 
     it("displays a submit button with update verbiage", function(done){
-      options.credentials = fakeuser
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
-        expect($("#payment-form input[type=submit]").attr("value")).to.equal("update billing info");
-        done();
-      });
+      expect($("#payment-form input[type=submit]").attr("value")).to.equal("update billing info");
+      done();
     })
 
     it("renders a hidden cancellation form", function(done) {
-      options.credentials = fakeuser
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
-        var form = $("#cancel-subscription");
-        expect(form.length).to.equal(1);
-        expect(form.attr("method")).to.equal("post");
-        expect(form.attr("action")).to.equal("/settings/billing/cancel");
-        expect(form.css('display')).to.equal("none");
-
-        expect($("#cancel-subscription-toggler").length).to.equal(1);
-        done();
-      });
+      var form = $("#cancel-subscription");
+      expect(form.length).to.equal(1);
+      expect(form.attr("method")).to.equal("post");
+      expect(form.attr("action")).to.equal("/settings/billing/cancel");
+      expect(form.css('display')).to.equal("none");
+      expect($("#cancel-subscription-toggler").length).to.equal(1);
+      done();
     });
 
     it("displays account expiration date in cancellation form", function(done) {
-      options.credentials = fakeuser
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
-        var form = $("#cancel-subscription");
-        expect(form.length).to.equal(1);
-        expect(form.attr("method")).to.equal("post");
-        expect(form.attr("action")).to.equal("/settings/billing/cancel");
-        expect(form.css('display')).to.equal("none");
-        done();
-      });
+      var form = $("#cancel-subscription");
+      expect(form.length).to.equal(1);
+      expect(form.attr("method")).to.equal("post");
+      expect(form.attr("action")).to.equal("/settings/billing/cancel");
+      expect(form.css('display')).to.equal("none");
+      done();
     });
 
     it("does NOT render expired license info", function(done) {
-      options.credentials = fakeuser
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
-        expect($(".error.license-expired").length).to.equal(0);
-        done();
-      });
+      expect($(".error.license-expired").length).to.equal(0);
+      done();
     });
 
   })
 
   describe("paid user with expired license", function() {
-    var oldLicenseAPI
+    var mock
+    var resp
+    var $
 
-    before(function(done){
-      process.env.LICENSE_API = "http://fake-license-api.com"
-      done()
-    })
+    beforeEach(function(done){
+      options.credentials = diana_delinquent
+      mock = nock("https://license-api-example.com")
+        .get("/stripe/diana_delinquent")
+        .reply(200, fixtures.customers.license_expired)
 
-    after(function(done){
-      process.env.LICENSE_API = oldLicenseAPI
-      done()
+      server.inject(options, function (response) {
+        resp = response
+        $ = cheerio.load(resp.result)
+        mock.done();
+        done();
+      });
     })
 
     it("has an expired license and past_due status", function(done){
-      options.credentials = diana_delinquent
-
-      server.inject(options, function (resp) {
-        expect(resp.request.response.source.context.customer.status).to.equal("past_due");
-        expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
-        done();
-      });
+      expect(resp.request.response.source.context.customer.status).to.equal("past_due");
+      expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
+      done();
     })
 
     it("renders information about the expired license", function(done) {
-      options.credentials = diana_delinquent
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
-        expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
-        expect($(".error.license-expired").text()).to.include("license has expired");
-        expect($(".error.license-expired").text()).to.include("status is past_due");
-        done();
-      });
+      expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
+      expect($(".error.license-expired").text()).to.include("license has expired");
+      expect($(".error.license-expired").text()).to.include("status is past_due");
+      done();
     });
 
   })
 
   describe("unpaid user", function(){
-    var oldLicenseAPI
+    var mock
+    var resp
+    var $
 
-    before(function(done){
-      process.env.LICENSE_API = "http://fake-license-api.com"
-      done()
-    })
+    beforeEach(function(done){
+      options.credentials = norbert_newbie
+      mock = nock("https://license-api-example.com")
+        .get("/stripe/norbert_newbie")
+        .reply(404)
 
-    after(function(done){
-      process.env.LICENSE_API = oldLicenseAPI
-      done()
+      server.inject(options, function (response) {
+        resp = response
+        $ = cheerio.load(resp.result)
+        done();
+      });
     })
 
     it("does not display billing info, because it does not exist", function(done) {
-      options.credentials = norbert_newbie
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
-        expect($("body").length).to.equal(1);
-        expect($(".card-info").length).to.equal(0);
-        expect($(".card-brand").length).to.equal(0);
-        expect($(".card-exp-month").length).to.equal(0);
-        expect($(".card-exp-year").length).to.equal(0);
-        done();
-      });
+      expect($("body").length).to.equal(1);
+      expect($(".card-info").length).to.equal(0);
+      expect($(".card-brand").length).to.equal(0);
+      expect($(".card-exp-month").length).to.equal(0);
+      expect($(".card-exp-year").length).to.equal(0);
+      done();
     })
 
     it("displays a submit button with creation verbiage", function(done){
-      options.credentials = norbert_newbie
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result)
-        expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
-        done();
-      });
+      expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
+      done();
     })
 
     it("does not render a cancellation form", function(done) {
-      options.credentials = norbert_newbie
-      server.inject(options, function (resp) {
-        var $ = cheerio.load(resp.result);
-        var form = $("#cancel-subscription");
-        expect(form.length).to.equal(0);
-        done();
-      });
+      var form = $("#cancel-subscription");
+      expect(form.length).to.equal(0);
+      done();
     });
 
   })
@@ -327,9 +300,16 @@ describe('POST /settings/billing', function () {
           headers: { cookie: 'crumb=' + cookieCrumb }
         }
 
+        var mock = nock("https://license-api-example.com")
+          .get("/stripe/bob")
+          .reply(200, fixtures.customers.happy)
+          .post("/stripe/bob")
+          .reply(200, fixtures.customers.happy)
+
         server.inject(opts, function (resp) {
+          mock.done()
           expect(resp.statusCode).to.equal(302);
-          // expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
+          expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
         });
       });
@@ -359,7 +339,14 @@ describe('POST /settings/billing', function () {
           headers: { cookie: 'crumb=' + cookieCrumb }
         }
 
+        var mock = nock("https://license-api-example.com")
+          .get("/stripe/bob")
+          .reply(404)
+          .put("/stripe")
+          .reply(200, fixtures.customers.happy)
+
         server.inject(opts, function (resp) {
+          mock.done()
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
@@ -411,7 +398,12 @@ describe('POST /settings/billing/cancel', function () {
         headers: { cookie: 'crumb=' + cookieCrumb }
       }
 
+      var mock = nock("https://license-api-example.com")
+        .delete("/stripe/bob")
+        .reply(200, fixtures.customers.happy)
+
       server.inject(opts, function (resp) {
+        mock.done()
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.match(/\/settings\/billing\?canceled=1$/);
         done();

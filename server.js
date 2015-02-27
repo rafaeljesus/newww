@@ -1,4 +1,4 @@
-corequire("./lib/environment")()
+require("./lib/environment")()
 
 var _       = require('lodash'),
     assert  = require('assert'),

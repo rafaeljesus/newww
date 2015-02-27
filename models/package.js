@@ -14,6 +14,11 @@ var Package = module.exports = function(opts) {
   return this;
 };
 
+Package.new = function(request) {
+  var bearer = request.auth.credentials && request.auth.credentials.name;
+  return new Package({bearer: bearer});
+}
+
 Package.prototype.get = function(name, options) {
   var _this = this;
   var package;

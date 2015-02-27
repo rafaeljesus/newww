@@ -6,9 +6,8 @@ package.show = function(request, reply) {
   var package;
   var context = {title: name};
   var loggedInUser = request.auth.credentials;
-  var bearer = loggedInUser && loggedInUser.name;
-  var Package = new request.server.models.Package({bearer: bearer});
-  var Download = new request.server.models.Download({bearer: bearer});
+  var Package = require("../models/package").new(request)
+  var Download = require("../models/download").new(request)
   var name = request.params.package ||
     request.params.scope + "/" + request.params.project;
 

@@ -17,9 +17,17 @@ package.show = function(request, reply) {
   var promise = Package.get(name)
     .catch(function(err){
       if (err.statusCode === 404) {
+
         if (validatePackageName(name).validForNewPackages) {
-          context.package = {name: name}
           request.logger.error('package not found: ' + name);
+
+          // 404 pages for scoped packages are different
+          if (name.charAt(0) === "@") {
+            context.scopedPackage = true
+          } else {
+            context.package = {name: name}
+          }
+
           reply.view('errors/not-found', context).code(404);
           return promise.cancel();
         }

@@ -27,7 +27,7 @@ describe("package handler", function(){
     server.stop(done);
   });
 
-  describe('normal package', function () {
+  describe('global packages', function () {
     var $;
     var resp;
     var options = {url: '/package/browserify'};
@@ -101,7 +101,7 @@ describe("package handler", function(){
 
   });
 
-  describe('nonexistent packages with valid names', function () {
+  describe('nonexistent global packages with valid names', function () {
     var resp
     var options = {url: '/package/nothingness'}
     var packageMock = nock("https://user-api-example.com")
@@ -133,6 +133,75 @@ describe("package handler", function(){
       done()
     })
   })
+
+  describe('nonexistent scoped packages', function () {
+    var $
+    var resp
+    var options = {url: '/package/@zeke/nope'}
+    var packageMock = nock("https://user-api-example.com")
+      .get('/package/@zeke%2Fnope')
+      .reply(404)
+
+    before(function(done){
+      server.inject(options, function (response) {
+        resp = response
+        $ = cheerio.load(resp.result)
+        packageMock.done()
+        done()
+      })
+    })
+
+    it('renders the not-found template', function (done) {
+      var source = resp.request.response.source;
+      expect(source.template).to.equal('errors/not-found')
+      done()
+    })
+
+    it('does NOT add package.name to view context', function (done) {
+      var source = resp.request.response.source
+      expect(source.context.package).to.not.exist()
+      expect(resp.result).to.not.include("will be yours")
+      done()
+    })
+
+    it('adds a scopedPackage boolean to the context', function (done) {
+      var context = resp.request.response.source.context
+      expect(context.scopedPackage).to.equal(true)
+      done()
+    })
+
+    it('encourages anonymous users to try logging in', function (done) {
+      expect($(".scoped-caveat").length).to.equal(1)
+      expect($(".scoped-caveat").text()).to.include(
+        "If you think a package with this name exists, try logging in."
+      )
+      done()
+    })
+
+    it('tells logged-in users they may not have access', function (done) {
+      var options = {
+        url: '/package/@zeke/nope',
+        credentials: fixtures.users.fakeuser
+      }
+
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/@zeke%2Fnope')
+        .reply(404)
+
+      server.inject(options, function(response) {
+        resp = response
+        $ = cheerio.load(resp.result)
+        packageMock.done()
+        expect($(".scoped-caveat").length).to.equal(1)
+        expect($(".scoped-caveat").text()).to.include(
+          "If you think a package with this name exists, you may not have permission to see it."
+        )
+        done()
+      });
+    });
+
+  });
+
 
   describe('nonexistent packages with invalid names', function () {
     var resp

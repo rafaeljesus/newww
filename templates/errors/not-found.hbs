@@ -5,11 +5,20 @@
       {{#if package}}
         {{package.name}} will be yours. Oh yes, {{package.name}} will be yours.
       {{else}}
-        {{canonicalURL}} does not exist. time to go outside.
+        {{#if scopedPackage}}
+          <span class="scoped-caveat">
+            {{#if user}}
+              If you think a package with this name exists, you may not have permission to see it.
+            {{else}}
+              If you think a package with this name exists, try logging in.
+            {{/if}}
+          </span>
+        {{else}}
+          {{canonicalURL}} does not exist. time to go outside.
+        {{/if}}
       {{/if}}
     </h2>
   </hgroup>
-
 </div>
 
 <div class="container narrow">

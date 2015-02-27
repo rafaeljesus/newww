@@ -1,4 +1,4 @@
-var utils = require('../../lib/utils'),
+var utils = require('../../../lib/utils'),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -11,8 +11,8 @@ var utils = require('../../lib/utils'),
 var _ = require('lodash'),
     redis = require('redis'),
     spawn = require('child_process').spawn,
-    config = require('../../config').server.cache,
-    fixtures = require('../fixtures.js');
+    config = require('../../../config').server.cache,
+    fixtures = require('../../fixtures.js');
 
     config.port = 6379;
     config.password = '';
@@ -23,7 +23,7 @@ var server, cookieCrumb,
     fakeusercli = fixtures.users.fakeusercli,
     newEmail = 'new@fakeuser.com',
     oldEmail = fakeuser.email,
-    emailEdits = require('../fixtures/email_edit');
+    emailEdits = require('../../fixtures/email_edit');
 
 var postEmail = function (emailOpts) {
   return {
@@ -37,7 +37,7 @@ var postEmail = function (emailOpts) {
 
 // prepare the server
 before(function (done) {
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
     done();
   });

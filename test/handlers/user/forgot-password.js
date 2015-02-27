@@ -8,8 +8,8 @@ var Code = require('code'),
     expect = Code.expect;
 
 var server, tokenUrl, cookieCrumb,
-    fakeuser = require('../fixtures/users').fakeusercouch,
-    fakeusercli = require('../fixtures/users').fakeusercli;
+    fakeuser = require('../../fixtures/users').fakeusercouch,
+    fakeusercli = require('../../fixtures/users').fakeusercli;
 
 var postName = function (name_email) {
   return {
@@ -25,7 +25,7 @@ var postName = function (name_email) {
 
 // prepare the server
 before(function (done) {
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
     server.app.cache._cache.connection.client = {};
     done();

@@ -8,14 +8,14 @@ var Code = require('code'),
     afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
-    redis = require("../../adapters/redis-sessions");
+    redis = require("../../../adapters/redis-sessions");
 
 var server, cookieCrumb,
-    fakeuser = require('../fixtures/users').fakeuser;
+    fakeuser = require('../../fixtures/users').fakeuser;
 
 // prepare the server
 before(function (done) {
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
     done();
   });

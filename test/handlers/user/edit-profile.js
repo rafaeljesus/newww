@@ -27,7 +27,7 @@ var fakeProfile = {
 
 // prepare the server
 before(function (done) {
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
     done();
   });

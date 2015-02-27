@@ -16,12 +16,12 @@ var server,
     source,
     cache,
     cookieCrumb,
-    fakeuser = require('../fixtures/users').fakeuser,
-    diana_delinquent = require('../fixtures/users').diana_delinquent,
-    norbert_newbie = require('../fixtures/users').norbert_newbie;
+    fakeuser = require('../../fixtures/users').fakeuser,
+    diana_delinquent = require('../../fixtures/users').diana_delinquent,
+    norbert_newbie = require('../../fixtures/users').norbert_newbie;
 
 before(function (done) {
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
     done();
   });

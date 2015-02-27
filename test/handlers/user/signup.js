@@ -8,11 +8,11 @@ var Code = require('code'),
     expect = Code.expect;
 
 var server, cookieCrumb,
-    forms = require('../fixtures/signup');
+    forms = require('../../fixtures/signup');
 
 // prepare the server
 before(function (done) {
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
     server.app.cache._cache.connection.client = {};
     done();

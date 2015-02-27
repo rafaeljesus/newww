@@ -6,12 +6,17 @@ var decorate = require(__dirname + '/../presenters/collaborator');
 
 var Collaborator = module.exports = function(opts) {
   _.extend(this, {
-    host: process.env.USER_API,
+    host: process.env.USER_API || "https://user-api-example.com",
     bearer: false
   }, opts);
 
   return this;
 };
+
+Collaborator.new = function(request) {
+  var bearer = request.auth.credentials && request.auth.credentials.name
+  return new Collaborator({bearer: bearer})
+}
 
 Collaborator.prototype.list = function(package, callback) {
   var _this = this;
@@ -95,9 +100,9 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
   }).nodeify(callback);};
 
 
-Collaborator.prototype.del = function(package, collaborator, callback) {
+Collaborator.prototype.del = function(package, collaboratorName, callback) {
   var _this = this;
-  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.name);
+  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaboratorName);
 
   return new Promise(function (resolve, reject) {
     request.del({url: url, json: true, headers: {bearer: _this.bearer}}, function(err, resp, body){

@@ -1,4 +1,4 @@
-require("./lib/environment")()
+corequire("./lib/environment")()
 
 var _       = require('lodash'),
     assert  = require('assert'),
@@ -80,7 +80,6 @@ server.register(require('hapi-auth-cookie'), function (err) {
     server.route(require('./routes/index'));
 
     server.models = {
-      Collaborator: require('./models/collaborator'),
       Customer: require('./models/customer'),
       User: require('./models/user'),
     };

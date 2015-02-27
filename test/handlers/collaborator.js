@@ -1,6 +1,7 @@
-var fixtures = require("../fixtures.js"),
+var fixtures = require("../fixtures"),
     generateCrumb = require("./crumb.js"),
     Lab = require('lab'),
+    nock = require('nock'),
     Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -13,6 +14,9 @@ var fixtures = require("../fixtures.js"),
     server,
     source,
     cache;
+
+var ralph = fixtures.collaborators.ralph_the_reader;
+var wrigley = fixtures.collaborators.wrigley_the_writer;
 
 before(function (done) {
   require('../mocks/server')(function (obj) {
@@ -34,18 +38,15 @@ describe('GET /package/foo/collaborators', function () {
   })
 
   it('calls back with a JSON object containing collaborators', function (done) {
-    server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(200);
-      expect(resp.result.collaborators).to.be.an.object();
-      expect(resp.result.collaborators).to.deep.equal(fixtures.collaborators);
-      done();
-    });
-  });
+    var mock = nock("https://user-api-example.com")
+      .get('/package/foo/collaborators')
+      .reply(200, fixtures.collaborators);
 
-  it('calls back with an error if bearer token is missing', function (done) {
-    delete options.credentials
     server.inject(options, function (resp) {
-      expect(resp.statusCode).to.be.above(399);
+      mock.done()
+      expect(resp.statusCode).to.equal(200);
+      expect(resp.result.collaborators.ralph_the_reader).to.be.an.object();
+      expect(resp.result.collaborators.wrigley_the_writer).to.be.an.object();
       done();
     });
   });
@@ -62,17 +63,22 @@ describe('PUT /package/foo/collaborators', function () {
       url: "/package/foo/collaborators",
       credentials: fixtures.users.fakeuser,
       payload: {
-        collaborator: fixtures.collaborators.wrigley_the_writer
+        collaborator: wrigley
       }
     }
     done()
   })
 
   it('calls back with a JSON object containing the new collaborator', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .put('/package/foo/collaborators', wrigley)
+      .reply(200, wrigley);
+
     server.inject(options, function (resp) {
+      mock.done()
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();
-      expect(resp.result.collaborator).to.deep.equal(fixtures.collaborators.wrigley_the_writer);
+      expect(resp.result.collaborator.name).to.equal("wrigley_the_writer");
       done();
     });
   });
@@ -90,7 +96,7 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
         credentials: fixtures.users.fakeuser,
         payload: {
           crumb: crumb,
-          collaborator: fixtures.collaborators.wrigley_the_writer
+          collaborator: wrigley
         },
         headers: {cookie: 'crumb='+crumb}
       }
@@ -99,7 +105,12 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
   })
 
   it('calls back with a JSON object containing the updated collaborator', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .post('/package/zing/collaborators/wrigley_the_writer', wrigley)
+      .reply(200, wrigley);
+
     server.inject(options, function (resp) {
+      mock.done()
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();
       expect(resp.result.collaborator.name).to.equal("wrigley_the_writer")
@@ -127,7 +138,12 @@ describe('DELETE /package/zing/collaborators/wrigley_the_writer', function () {
   })
 
   it('calls back with a JSON object containing the deleted collaborator', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .delete('/package/zing/collaborators/wrigley_the_writer')
+      .reply(200, wrigley);
+
     server.inject(options, function (resp) {
+      mock.done()
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();
       expect(resp.result.collaborator.name).to.equal("wrigley_the_writer")

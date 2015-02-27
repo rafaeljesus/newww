@@ -1,4 +1,5 @@
-var Code = require('code'),
+var generateCrumb = require("../handlers/crumb.js"),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -13,37 +14,31 @@ var server;
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;
+    server.app.cache._cache.connection.client = {};
     done();
   });
 });
 
 after(function (done) {
+  delete server.app.cache._cache.connection.client;
   server.stop(done);
 });
 
 describe('Getting to the thank-you page', function () {
   it('creates a new trial when a customer does not have one yet', function (done) {
 
-    server.app.cache._cache.connection.client = {};
-
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+    generateCrumb(server, function (crumb){
 
       var opts = {
         method: 'post',
         url: '/enterprise-trial-signup',
         payload: {
-          crumb: cookieCrumb,
+          crumb: crumb,
           customer_email: 'exists@bam.com',
           customer_id: '12345',
           agree: true
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
@@ -56,24 +51,18 @@ describe('Getting to the thank-you page', function () {
   });
 
   it('returns an error if the customer does not exist yet', function (done) {
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
 
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-trial-signup',
         payload: {
-          crumb: cookieCrumb,
+          crumb: crumb,
           customer_email: 'new@bam.com',
           customer_id: '12345',
           agree: true
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
@@ -86,24 +75,18 @@ describe('Getting to the thank-you page', function () {
   });
 
   it('returns an error if the given customer id does not match the stored customer id', function (done) {
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
 
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-trial-signup',
         payload: {
-          crumb: cookieCrumb,
+          crumb: crumb,
           customer_email: 'new@bam.com',
           customer_id: '67890',
           agree: true
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {

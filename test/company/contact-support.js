@@ -7,12 +7,15 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect;
 
+var generateCrumb = require("../handlers/crumb.js");
+
 var server;
 
 // prepare the server
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;
+    server.app.cache._cache.connection.client = {};
     done();
   });
 });
@@ -64,16 +67,8 @@ describe('sending a contact email', function () {
   });
 
   it('sends an email to support if it\'s a support inquiry', function (done) {
-    server.app.cache._cache.connection.client = {};
 
-    server.inject({url: '/contact'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function(crumb) {
       var opts = {
         url: '/send-contact',
         method: 'POST',
@@ -83,9 +78,9 @@ describe('sending a contact email', function () {
           subject: 'Hi!',
           inquire: 'support',
           message: 'This is a message.',
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
@@ -99,16 +94,7 @@ describe('sending a contact email', function () {
 
   it('sends an email to npm if it\'s a general inquiry', function (done) {
 
-    server.app.cache._cache.connection.client = {};
-
-    server.inject({url: '/contact'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function(crumb) {
       var opts = {
         url: '/send-contact',
         method: 'POST',
@@ -118,9 +104,9 @@ describe('sending a contact email', function () {
           subject: 'Hi!',
           inquire: 'general',
           message: 'This is a message.',
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
@@ -134,13 +120,7 @@ describe('sending a contact email', function () {
 
   it('rejects submission if `honey` is in the payload', function (done) {
 
-    server.inject({url: '/contact'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+    generateCrumb(server, function(crumb) {
 
       var opts = {
         url: '/send-contact',
@@ -152,9 +132,9 @@ describe('sending a contact email', function () {
           inquire: 'general',
           message: 'This is a message.',
           honey: 'I am a robot bear.',
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
@@ -165,8 +145,4 @@ describe('sending a contact email', function () {
       });
     });
   });
-
-
-
-
 });

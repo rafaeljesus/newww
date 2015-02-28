@@ -1,4 +1,5 @@
-var Code = require('code'),
+var generateCrumb = require("../handlers/crumb.js"),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -23,23 +24,17 @@ after(function (done) {
 
 describe('Getting to the contact me page', function () {
   it('posts the data and goes straight to the template', function (done) {
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
 
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-contact-me',
         payload: {
-          crumb: cookieCrumb,
+          crumb: crumb,
           contact_customer_email: 'boom@bam.com',
           contact_customer_id: '12345'
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
@@ -52,52 +47,40 @@ describe('Getting to the contact me page', function () {
   });
 
   it('rejects invalid email address', function (done) {
-      server.inject({url: '/enterprise'}, function (resp) {
-        var header = resp.headers['set-cookie'];
-        expect(header.length).to.equal(1);
 
-        var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-        expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
-        var opts = {
-          method: 'post',
-          url: '/enterprise-contact-me',
-          payload: {
-            crumb: cookieCrumb,
-            contact_customer_email: 'boomATbam.com-pletely-not-an-email-address',
-            contact_customer_id: '12345'
-          },
-          headers: { cookie: 'crumb=' + cookieCrumb }
-        };
-
-        server.inject(opts, function (resp) {
-          expect(resp.statusCode).to.equal(400);
-          var source = resp.request.response.source;
-          expect(source.template).to.equal('enterprise/index');
-          done();
-        });
-      });
-    });
-
-  it('shows an error if something goes wrong with hubspot', function (done) {
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-contact-me',
         payload: {
-          crumb: cookieCrumb,
+          crumb: crumb,
+          contact_customer_email: 'boomATbam.com-pletely-not-an-email-address',
+          contact_customer_id: '12345'
+        },
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(400);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('enterprise/index');
+        done();
+      });
+    });
+  });
+
+  it('shows an error if something goes wrong with hubspot', function (done) {
+
+    generateCrumb(server, function (crumb){
+      var opts = {
+        method: 'post',
+        url: '/enterprise-contact-me',
+        payload: {
+          crumb: crumb,
           contact_customer_email: 'error@bam.com',
           contact_customer_id: '12345'
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {

@@ -1,4 +1,5 @@
-var Lab = require('lab'),
+var generateCrumb = require("../handlers/crumb.js"),
+    Lab = require('lab'),
     Code = require('code'),
     nock = require('nock'),
     fs = require('fs'),
@@ -28,15 +29,15 @@ before(function (done) {
 });
 
 describe('GET /settings/billing', function () {
-  var options
+  var options;
 
   beforeEach(function(done){
     options = {
       method: "get",
       url: "/settings/billing"
-    }
-    done()
-  })
+    };
+    done();
+  });
 
   it('redirects to login page if not logged in', function (done) {
     server.inject(options, function (resp) {
@@ -51,10 +52,10 @@ describe('GET /settings/billing', function () {
       method: "get",
       url: "/settings/billing?canceled=1",
       credentials: fakeuser
-    }
+    };
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.canceled).to.be.true();
-      var $ = cheerio.load(resp.result)
+      var $ = cheerio.load(resp.result);
       expect($(".cancellation-notice").text()).to.include('cancelled your private npm');
       done();
     });
@@ -65,17 +66,17 @@ describe('GET /settings/billing', function () {
       method: "get",
       url: "/settings/billing?updated=1",
       credentials: fakeuser
-    }
+    };
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.updated).to.be.true();
-      var $ = cheerio.load(resp.result)
+      var $ = cheerio.load(resp.result);
       expect($(".update-notice").text()).to.include('successfully updated');
       done();
     });
   });
 
   it('does not render notices by default', function (done) {
-    options.credentials = fakeuser
+    options.credentials = fakeuser;
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.canceled).to.be.false();
       expect(resp.request.response.source.context.updated).to.be.false();
@@ -86,7 +87,7 @@ describe('GET /settings/billing', function () {
   });
 
   it('renders billing form if user is logged in', function (done) {
-    options.credentials = fakeuser
+    options.credentials = fakeuser;
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
@@ -97,17 +98,17 @@ describe('GET /settings/billing', function () {
   });
 
   it('injects stripe public key and stripe script into page', function (done) {
-    options.credentials = fakeuser
+    options.credentials = fakeuser;
 
-    var oldStripeKey = process.env.STRIPE_PUBLIC_KEY
-    process.env.STRIPE_PUBLIC_KEY = "I am a zebra"
+    var oldStripeKey = process.env.STRIPE_PUBLIC_KEY;
+    process.env.STRIPE_PUBLIC_KEY = "I am a zebra";
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('user/billing');
       expect(resp.result).to.include('https://js.stripe.com/v2/');
       expect(resp.result).to.include("I am a zebra");
-      process.env.STRIPE_PUBLIC_KEY = oldStripeKey
+      process.env.STRIPE_PUBLIC_KEY = oldStripeKey;
       done();
     });
   });
@@ -182,7 +183,7 @@ describe('GET /settings/billing', function () {
       done();
     });
 
-  })
+  });
 
   describe("paid user with expired license", function() {
     var mock
@@ -201,7 +202,7 @@ describe('GET /settings/billing', function () {
         mock.done();
         done();
       });
-    })
+    });
 
     it("has an expired license and past_due status", function(done){
       expect(resp.request.response.source.context.customer.status).to.equal("past_due");
@@ -216,7 +217,7 @@ describe('GET /settings/billing', function () {
       done();
     });
 
-  })
+  });
 
   describe("unpaid user", function(){
     var mock
@@ -256,20 +257,20 @@ describe('GET /settings/billing', function () {
       done();
     });
 
-  })
+  });
 
 });
 
 describe('POST /settings/billing', function () {
-  var options
+  var options;
 
   before(function(done) {
     options = {
       method: 'post',
       url: '/settings/billing'
-    }
-    done()
-  })
+    };
+    done();
+  });
 
   it('redirects to login page if not logged in', function (done) {
     server.inject(options, function (resp) {
@@ -283,22 +284,17 @@ describe('POST /settings/billing', function () {
 
     it('sends updated billing info to the billing API', function (done) {
 
-      server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
-        var header = resp.headers['set-cookie'];
-        expect(header.length).to.equal(1);
-        var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-        expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+      generateCrumb(server, function (crumb){
         var opts = {
           url: '/settings/billing',
           method: 'POST',
           credentials: fakeuser,
           payload: {
             stripeToken: 'tok_1234567890',
-            crumb: cookieCrumb
+            crumb: crumb
           },
-          headers: { cookie: 'crumb=' + cookieCrumb }
-        }
+          headers: { cookie: 'crumb=' + crumb }
+        };
 
         var mock = nock("https://license-api-example.com")
           .get("/stripe/bob")
@@ -322,22 +318,17 @@ describe('POST /settings/billing', function () {
 
     it('sends new billing info to the billing API', function (done) {
 
-      server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
-        var header = resp.headers['set-cookie'];
-        expect(header.length).to.equal(1);
-        var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-        expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+      generateCrumb(server, function (crumb){
         var opts = {
           url: '/settings/billing',
           method: 'POST',
           credentials: fakeuser,
           payload: {
             stripeToken: 'tok_1234567890',
-            crumb: cookieCrumb
+            crumb: crumb
           },
-          headers: { cookie: 'crumb=' + cookieCrumb }
-        }
+          headers: { cookie: 'crumb=' + crumb }
+        };
 
         var mock = nock("https://license-api-example.com")
           .get("/stripe/bob")
@@ -362,15 +353,15 @@ describe('POST /settings/billing', function () {
 
 
 describe('POST /settings/billing/cancel', function () {
-  var options
+  var options;
 
   before(function(done) {
     options = {
       method: 'post',
       url: '/settings/billing/cancel'
-    }
-    done()
-  })
+    };
+    done();
+  });
 
   it('redirects to login page if not logged in', function (done) {
     server.inject(options, function (resp) {
@@ -382,21 +373,16 @@ describe('POST /settings/billing/cancel', function () {
 
   it('deletes the customer record', function (done) {
 
-    server.inject({url: '/settings/billing', credentials: fakeuser}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/settings/billing/cancel',
         credentials: fakeuser,
         payload: {
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
-      }
+        headers: { cookie: 'crumb=' + crumb }
+      };
 
       var mock = nock("https://license-api-example.com")
         .delete("/stripe/bob")

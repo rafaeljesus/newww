@@ -18,7 +18,7 @@ var User = module.exports = function(opts) {
       info: console.log
     };
   }
-  
+
   return this;
 };
 

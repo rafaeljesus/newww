@@ -10,7 +10,7 @@ module.exports = function (request, reply) {
   var opts = {user: request.auth.credentials};
   var loggedInUser = request.auth.credentials;
   var bearer = loggedInUser && loggedInUser.name;
-  var Package = new request.server.models.Package({bearer: bearer});
+  var Package = require("../models/package").new(request)
 
   request.server.methods.corp.getPage(route, function(er, content) {
 

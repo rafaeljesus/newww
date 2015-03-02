@@ -9,7 +9,7 @@ var Code = require('code'),
 
 var redis = require('redis'),
     spawn = require('child_process').spawn,
-    config = require('../../config').server.cache;
+    config = require('../../../config').server.cache;
 
     config.port = 6379;
     config.password = '';
@@ -26,7 +26,7 @@ before(function (done) {
     console.log("Error " + err);
   });
 
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
     server.app.cache._cache.connection.client = client;
     done();

@@ -12,6 +12,11 @@ var Download = module.exports = function (opts) {
   return this;
 };
 
+Download.new = function(request) {
+  var bearer = request.auth.credentials && request.auth.credentials.name;
+  return new Download({bearer: bearer});
+};
+
 Download.prototype.getDaily = function(packageName) {
   return this.getSome("day", packageName);
 };

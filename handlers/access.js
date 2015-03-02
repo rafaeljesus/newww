@@ -3,9 +3,7 @@ var _ = require("lodash");
 var utils = require("../lib/utils");
 
 module.exports = function(request, reply) {
-
-  var bearer = request.auth.credentials && request.auth.credentials.name;
-  var Collaborator = new request.server.models.Collaborator({bearer: bearer});
+  var Collaborator = require("../models/collaborator").new(request)
   var ctx = {};
 
   http("http://registry.npmjs.org/" + request.params.package, function(err, res, body) {

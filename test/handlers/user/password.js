@@ -1,4 +1,4 @@
-var generateCrumb = require("../handlers/crumb.js"),
+var generateCrumb = require("../crumb"),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -7,15 +7,15 @@ var generateCrumb = require("../handlers/crumb.js"),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
-    redisSessions = require('../../adapters/redis-sessions');
+    redisSessions = require('../../../adapters/redis-sessions');
 
 var server,
-    fakeuser = require('../fixtures/users').fakeusercouch,
-    fakeChangePass = require('../fixtures/users').fakeuserChangePassword;
+    fakeuser = require('../../fixtures/users').fakeusercouch,
+    fakeChangePass = require('../../fixtures/users').fakeuserChangePassword;
 
 // prepare the server
 before(function (done) {
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
     done();
   });

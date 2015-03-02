@@ -9,7 +9,7 @@ var generateCrumb = require("../crumb"),
     expect = Code.expect,
     redisSessions = require('../../../adapters/redis-sessions');
 
-var server, cookieCrumb,
+var server,
     fakeuser = require('../../fixtures/users').fakeusercouch,
     fakeChangePass = require('../../fixtures/users').fakeuserChangePassword;
 

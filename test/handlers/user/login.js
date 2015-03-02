@@ -11,7 +11,7 @@ var generateCrumb = require("../crumb"),
     expect = Code.expect,
     redis = require("../../../adapters/redis-sessions");
 
-var server, cookieCrumb,
+var server,
     fakeuser = require('../../fixtures/users').fakeuser;
 
 // prepare the server

@@ -8,7 +8,7 @@ var generateCrumb = require("../crumb"),
     it = lab.test,
     expect = Code.expect;
 
-var server, tokenUrl, cookieCrumb,
+var server, tokenUrl,
     fakeuser = require('../../fixtures/users').fakeusercouch,
     fakeusercli = require('../../fixtures/users').fakeusercli;
 

@@ -161,7 +161,7 @@ describe("Collaborator", function(){
         .delete('/package/grizzle/collaborators/ralph_the_reader')
         .reply(200, ralph);
 
-      Collaborator.del("grizzle", ralph, function (err, collaborator) {
+      Collaborator.del("grizzle", "ralph_the_reader", function (err, collaborator) {
         mock.done();
         expect(err).to.be.null();
         expect(collaborator.name).to.equal(ralph.name);
@@ -175,7 +175,7 @@ describe("Collaborator", function(){
         .delete('/package/snarfblatt/collaborators/ralph_the_reader')
         .reply(404);
 
-      Collaborator.del("snarfblatt", ralph, function (err, collaborator) {
+      Collaborator.del("snarfblatt", "ralph_the_reader", function (err, collaborator) {
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);

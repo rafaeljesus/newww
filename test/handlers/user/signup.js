@@ -1,4 +1,5 @@
-var Code = require('code'),
+var generateCrumb = require("../crumb"),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -8,17 +9,19 @@ var Code = require('code'),
     expect = Code.expect;
 
 var server, cookieCrumb,
-    forms = require('../fixtures/signup');
+    forms = require('../../fixtures/signup');
 
 // prepare the server
 before(function (done) {
-  require('../mocks/server')(function (obj) {
+  require('../../mocks/server')(function (obj) {
     server = obj;
+    server.app.cache._cache.connection.client = {};
     done();
   });
 });
 
 after(function (done) {
+  delete server.app.cache._cache.connection.client;
   server.stop(done);
 });
 
@@ -40,17 +43,15 @@ describe('Signing up a new user', function () {
     };
 
     server.inject(options, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
+      generateCrumb(server, function (crumb){
+        cookieCrumb = crumb;
+        forms = forms(cookieCrumb);
 
-      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-      forms = forms(cookieCrumb);
-
-      expect(resp.statusCode).to.equal(200);
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('user/signup-form');
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-      done();
+        expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('user/signup-form');
+        done();
+      });
     });
   });
 

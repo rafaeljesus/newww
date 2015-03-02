@@ -3,12 +3,17 @@ var _ = require('lodash');
 
 var Customer = module.exports = function(opts) {
   _.extend(this, {
-    host: process.env.LICENSE_API
+    host: process.env.LICENSE_API || "https://license-api-example.com",
   }, opts);
+}
+
+Customer.new = function() {
+  return new Customer();
 }
 
 Customer.prototype.get = function(name, callback) {
   var url = this.host + '/stripe/' + name;
+
   request.get({url: url, json: true}, function(err, resp, body){
 
     if (err) return callback(err);

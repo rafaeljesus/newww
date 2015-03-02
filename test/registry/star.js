@@ -1,4 +1,5 @@
-var Code = require('code'),
+var generateCrumb = require("../handlers/crumb.js"),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -7,7 +8,7 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect;
 
-var server, cookieCrumb,
+var server,
     pkg = 'fake',
     user = { name: 'fakeuser' };
 
@@ -51,16 +52,6 @@ describe('Accessing the star page via GET', function () {
 });
 
 describe('Accessing the star functionality via AJAX (POST)', function () {
-  before(function (done) {
-    server.inject({url: '/package/' + pkg}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-      done();
-    });
-  })
-
   it('should reject stars when CSRF data is missing', function (done) {
     var opts = {
       url: '/star',
@@ -79,61 +70,69 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
   });
 
   it('should send a 403 if the user is not logged in', function (done) {
-    var opts = {
-      url: '/star',
-      method: 'POST',
-      payload: {
-        name: pkg,
-        isStarred: 'true',
-        crumb: cookieCrumb
-      },
-      headers: { cookie: 'crumb=' + cookieCrumb }
-    };
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/star',
+        method: 'POST',
+        payload: {
+          name: pkg,
+          isStarred: 'true',
+          crumb: crumb
+        },
+        headers: { cookie: 'crumb=' + crumb }
+      };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(403);
-      expect(resp.result).to.equal('user is not logged in');
-      done();
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(403);
+        expect(resp.result).to.equal('user is not logged in');
+        done();
+      });
     });
   });
 
   it('should star an unstarred package', function (done) {
-    var opts = {
-      url: '/star',
-      method: 'POST',
-      payload: {
-        name: pkg,
-        isStarred: 'true',
-        crumb: cookieCrumb
-      },
-      credentials: user,
-      headers: { cookie: 'crumb=' + cookieCrumb }
-    };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(200);
-      expect(resp.result).to.equal(user.name + ' starred ' + pkg);
-      done();
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/star',
+        method: 'POST',
+        payload: {
+          name: pkg,
+          isStarred: 'true',
+          crumb: crumb
+        },
+        credentials: user,
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.result).to.equal(user.name + ' starred ' + pkg);
+        done();
+      });
     });
   });
 
   it('should unstar an starred package', function (done) {
-    var opts = {
-      url: '/star',
-      method: 'POST',
-      payload: {
-        name: pkg,
-        isStarred: 'false',
-        crumb: cookieCrumb
-      },
-      credentials: user,
-      headers: { cookie: 'crumb=' + cookieCrumb }
-    };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(200);
-      expect(resp.result).to.equal(user.name + ' unstarred ' + pkg);
-      done();
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/star',
+        method: 'POST',
+        payload: {
+          name: pkg,
+          isStarred: 'false',
+          crumb: crumb
+        },
+        credentials: user,
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.result).to.equal(user.name + ' unstarred ' + pkg);
+        done();
+      });
     });
   });
 });

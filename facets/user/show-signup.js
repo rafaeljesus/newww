@@ -1,15 +1,12 @@
 var Joi = require('joi'),
-    userValidate = require('npm-user-validate'),
-    crypto = require('crypto');
-
-var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
-var ONE_WEEK = ONE_HOUR * 24 * 7;
+    userValidate = require('npm-user-validate');
 
 module.exports = function signup (request, reply) {
   var User = new request.server.models.User({logger: request.logger});
 
   var setSession = request.server.methods.user.setSession(request),
-      delSession = request.server.methods.user.delSession(request);
+      delSession = request.server.methods.user.delSession(request),
+      sendEmail = request.server.methods.email.send;
 
   var opts = {
     errors: []
@@ -32,7 +29,6 @@ module.exports = function signup (request, reply) {
     var data = request.payload;
 
     Joi.validate(data, schema, joiOptions, function (err, validatedUser) {
-
       if (err) {
         opts.errors = err.details;
       }
@@ -54,7 +50,7 @@ module.exports = function signup (request, reply) {
 
           // give back the user input so the form can be
           // partially re-populated
-          opts.userInput = validatedUser
+          opts.userInput = validatedUser;
 
           return reply.view('user/signup-form', opts).code(400);
         }
@@ -81,29 +77,37 @@ module.exports = function signup (request, reply) {
                 return reply.view('errors/internal', opts).code(500);
               }
 
-              sendEmailConfirmation(request, user, function (er) {
-                if (er) {
+              request.logger.info('created new user ' + user.name);
+
+              sendEmail('confirm-user-email', user, request.redis)
+                .then(function() {
+                  request.logger.info('emailed new user at ' + user.email);
+                  request.timing.page = 'signup';
+                  request.metrics.metric({name: 'signup'});
+
+                  return reply.redirect('/profile-edit');
+                })
+                .catch(function(er) {
                   var message = 'Unable to send email to ' + user.email;
 
                   request.logger.error(message);
                   request.logger.error(er);
 
+                  // if we can't send the email, that shouldn't stop the user from
+                  // completing the signup process - maybe we should just let
+                  // them know?
                   opts.errors.push({ message: message + '. Please try again later.' });
 
-                  return reply.view('user/signup-form', opts);
-                }
+                  request.timing.page = 'signup';
+                  request.metrics.metric({name: 'signup'});
 
-                request.timing.page = 'signup';
-                request.metrics.metric({name: 'signup'});
-
-                return reply.redirect('/profile-edit');
+                  return reply.redirect('/profile-edit');
+                });
               });
             });
           });
-
         });
       });
-    });
   }
 
   if (request.method === 'get' || request.method === 'head') {
@@ -113,45 +117,3 @@ module.exports = function signup (request, reply) {
     return reply.view('user/signup-form', opts);
   }
 };
-
-
-function sendEmailConfirmation (request, user, cb) {
-  var sendEmail = request.server.methods.email.send;
-
-  var token = crypto.randomBytes(30).toString('base64')
-            .split('/').join('_')
-            .split('+').join('-'),
-      hash = sha(token),
-      data = {
-        name: user.name + '',
-        email: user.email + '',
-        token: token + ''
-      },
-      key = 'email_confirm_' + hash;
-
-  request.server.app.cache.set(key, data, ONE_WEEK, function (err) {
-
-    if (err) {
-      request.logger.error('Unable to set ' + key + ' to the cache');
-      request.logger.error(err);
-      return cb(err);
-    }
-
-    request.logger.info('created new user ' + user.name);
-
-    var mail = require('./emailTemplates/confirmEmail')(user, token);
-
-    sendEmail(mail, function (er) {
-      if (er) {
-        return cb(er);
-      }
-
-      request.logger.info('emailed new user at ' + user.email);
-      return cb(null);
-    });
-  });
-}
-
-function sha (token) {
-  return crypto.createHash('sha1').update(token).digest('hex');
-}

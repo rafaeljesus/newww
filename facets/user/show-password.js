@@ -1,7 +1,5 @@
-var Hapi = require('hapi'),
-    crypto = require('crypto'),
-    userValidate = require('npm-user-validate'),
-    redisSessions = require("../../adapters/redis-sessions");
+var redisSessions = require("../../adapters/redis-sessions");
+var utils = require('../../lib/utils');
 
 module.exports = function (request, reply) {
   var opts = {
@@ -26,8 +24,8 @@ module.exports = function (request, reply) {
 
     var prof = opts.user,
         salt = prof.salt,
-        hashCurrent = prof.password_sha ? sha(data.current + salt) :
-                        pbkdf2(data.current, salt, parseInt(prof.iterations, 10)),
+        hashCurrent = prof.password_sha ? utils.sha(data.current + salt) :
+                        utils.pbkdf2(data.current, salt, parseInt(prof.iterations, 10)),
         hashProf = prof.password_sha || prof.derived_key;
 
     if (hashCurrent !== hashProf) {
@@ -85,7 +83,7 @@ module.exports = function (request, reply) {
             }
 
             request.timing.page = 'changePass';
-            request.metrics.metric({name: 'changePass'})
+            request.metrics.metric({name: 'changePass'});
 
             return reply.redirect('/profile');
           });
@@ -93,15 +91,4 @@ module.exports = function (request, reply) {
       });
     });
   }
-}
-
-
-// ======== functions =======
-
-function pbkdf2 (pass, salt, iterations) {
-  return crypto.pbkdf2Sync(pass, salt, iterations, 20).toString('hex')
-}
-
-function sha (s) {
-  return crypto.createHash("sha1").update(s).digest("hex")
-}
+};

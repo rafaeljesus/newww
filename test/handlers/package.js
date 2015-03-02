@@ -11,8 +11,7 @@ var fixtures = require("../fixtures"),
     afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
-    server,
-    cookieCrumb;
+    server;
 
 describe("package handler", function(){
 

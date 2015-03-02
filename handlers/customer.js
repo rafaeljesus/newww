@@ -1,8 +1,7 @@
 var billing = module.exports = {};
+var Customer = require("../models/customer").new()
 
 billing.getBillingInfo = function (request, reply) {
-  var Customer = new request.server.models.Customer();
-
   var opts = {
     namespace: 'billing',
     title: 'Billing',
@@ -21,8 +20,6 @@ billing.getBillingInfo = function (request, reply) {
 };
 
 billing.updateBillingInfo = function(request, reply) {
-  var Customer = new request.server.models.Customer();
-
   var billingInfo = {
     name: request.auth.credentials.name,
     email: request.auth.credentials.email,
@@ -40,8 +37,6 @@ billing.updateBillingInfo = function(request, reply) {
 };
 
 billing.deleteBillingInfo = function(request, reply) {
-  var Customer = new request.server.models.Customer();
-
   Customer.del(request.auth.credentials.name, function(err, customer) {
     if (err) {
       request.logger.error(err);

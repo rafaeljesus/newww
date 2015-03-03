@@ -24,7 +24,7 @@
 {{#if package.available}}
 <pre><code>mkdir {{#if package.scope}}-p {{/if}}{{package.name}}
 cd {{package.name}}
-npm init {{#if package.scope}}--scope={{package.scope}}{{/if}}
+npm init{{#if package.scope}} --scope={{package.scope}}{{/if}}
 # work your magic…
 npm publish
 </code></pre>

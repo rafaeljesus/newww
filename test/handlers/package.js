@@ -135,6 +135,13 @@ describe("package handler", function(){
       done()
     })
 
+    it("adds global package init instructions", function (done) {
+      expect($("pre code").text()).to.include("mkdir nothingness")
+      expect($("pre code").text()).to.include("npm init\n")
+      done()
+    });
+
+
   })
 
   describe('nonexistent scoped packages for anonymous users', function () {
@@ -229,7 +236,13 @@ describe("package handler", function(){
     })
 
     it("tells the user that package will be theirs", function (done) {
-      expect(resp.result).to.include("@bob/nope will be yours")
+      expect($("hgroup h2").text()).to.include("@bob/nope will be yours")
+      done()
+    });
+
+    it("adds scoped package init instructions", function (done) {
+      expect($("pre code").text()).to.include("mkdir -p @bob/nope")
+      expect($("pre code").text()).to.include("npm init --scope=@bob")
       done()
     });
 

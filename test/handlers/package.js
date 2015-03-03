@@ -321,9 +321,8 @@ describe("package handler", function(){
         .reply(200, fixtures.downloads.browserify.month);
 
       server.inject(options, function (resp) {
-        packageMock.done()
+        // packageMock.done()
         downloadsMock.done()
-        // console.log(resp)
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('browserify');

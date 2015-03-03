@@ -27,28 +27,18 @@ package.show = function(request, reply) {
           return promise.cancel();
         }
 
-        // Unscoped packages are fair game for all users,
-        // whether they're logged in or not
-        if (!package.scope) {
-          package.available = true
-        }
-
-        // This package may be visible to this person
-        // if they log in
-        if (package.scope && !loggedInUser) {
-          package.unavailableToAnonymousUser = true
-        }
-
-        // This package is definitely not available to this user,
-        // because they're logged in
-        if (package.scope && loggedInUser
-          && package.scope.replace("@", "") !== loggedInUser.name) {
-          package.unavailableToLoggedInUser = true
-        }
-
-        // Package scope is same as username. It will be theirs!
-        if (package.scope && loggedInUser
-          && package.scope.replace("@", "") === loggedInUser.name) {
+        if (package.scope) {
+          package.owner = package.scope.slice(1)
+          if (loggedInUser) {
+            if (package.owner === loggedInUser.name) {
+              package.available = true
+            } else {
+              package.unavailableToLoggedInUser = true
+            }
+          } else {
+            package.unavailableToAnonymousUser = true
+          }
+        } else {
           package.available = true
         }
 

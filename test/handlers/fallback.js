@@ -38,7 +38,7 @@ describe('Accessing fallback URLs', function () {
     });
   });
 
-  it('redirects to package page for packages that exist', function (done) {
+  it('redirects to package page if static page is not found', function (done) {
     var opts = {url: '/browserify'};
 
     var mock = nock("https://user-api-example.com")
@@ -52,38 +52,4 @@ describe('Accessing fallback URLs', function () {
     });
   });
 
-  it('renders 404 page for anything else', function (done) {
-    var opts = {
-      url: '/blajklasji'
-    };
-
-    var mock = nock("https://user-api-example.com")
-      .get("/package/blajklasji")
-      .reply(404)
-
-    server.inject(opts, function (resp) {
-      mock.done()
-      expect(resp.statusCode).to.equal(404);
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('errors/package-not-found');
-      done();
-    });
-  });
-
-  it('add package name to view context if path is a valid npm package name', function (done) {
-    var opts = {
-      url: '/some-package-hklsj'
-    };
-
-    var mock = nock("https://user-api-example.com")
-      .get("/package/some-package-hklsj")
-      .reply(404)
-
-    server.inject(opts, function (resp) {
-      mock.done()
-      var source = resp.request.response.source;
-      expect(source.context.package.name).to.equal("some-package-hklsj")
-      done();
-    });
-  });
 });

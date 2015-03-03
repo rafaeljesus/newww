@@ -4,16 +4,16 @@
     <h2>
       {{#if package.available}}
         {{package.name}} will be yours. Oh yes, {{package.name}} will be yours.
-      {{/if}}
+      {{else}}
+        {{#if package.unavailableToAnonymousUser}}
+          If you think a package with this name exists,
+          <a href="/login">try logging in</a>.
+        {{/if}}
 
-      {{#if package.unavailableToAnonymousUser}}
-        If you think a package with this name exists,
-        <a href="/login">try logging in</a>.
-      {{/if}}
-
-      {{#if package.unavailableToLoggedInUser}}
-        If you think a package with this name exists,
-        you may not have permission to see it.
+        {{#if package.unavailableToLoggedInUser}}
+          If you think a package with this name exists,
+          you may not have permission to see it.
+        {{/if}}
       {{/if}}
     </h2>
   </hgroup>
@@ -22,9 +22,9 @@
 <div class="container narrow">
 
 {{#if package.available}}
-<pre><code>mkdir {{package.name}}
+<pre><code>mkdir {{#if package.scope}}-p {{/if}}{{package.name}}
 cd {{package.name}}
-npm init
+npm init {{#if package.scope}}--scope={{package.scope}}{{/if}}
 # work your magic…
 npm publish
 </code></pre>

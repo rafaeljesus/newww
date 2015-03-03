@@ -101,7 +101,9 @@ describe("package handler", function(){
   });
 
   describe('nonexistent global packages with valid names', function () {
+    var $
     var resp
+    var context
     var options = {url: '/package/nothingness'}
     var packageMock = nock("https://user-api-example.com")
       .get('/package/nothingness')
@@ -110,6 +112,8 @@ describe("package handler", function(){
     before(function(done){
       server.inject(options, function (response) {
         resp = response
+        $ = cheerio.load(resp.result)
+        context = resp.request.response.source.context
         packageMock.done()
         done()
       })
@@ -120,20 +124,20 @@ describe("package handler", function(){
       done()
     })
 
-    it('renders the not-found template', function (done) {
-      expect(resp.request.response.source.template).to.equal('errors/not-found')
+    it('renders the package-not-found template', function (done) {
+      expect(resp.request.response.source.template).to.equal('errors/package-not-found')
       done()
     })
-
 
     it('includes a nice message about the nonexistent package', function (done) {
-      expect(resp.request.response.source.context.package).to.exist()
-      expect(resp.result).to.include("nothingness will be yours")
+      expect(context.package).to.exist()
+      expect($("hgroup h2").text()).to.include("nothingness will be yours")
       done()
     })
+
   })
 
-  describe('nonexistent scoped packages', function () {
+  describe('nonexistent scoped packages for anonymous users', function () {
     var $
     var resp
     var options = {url: '/package/@zeke/nope'}
@@ -150,56 +154,91 @@ describe("package handler", function(){
       })
     })
 
-    it('renders the not-found template', function (done) {
+    it('renders the package-not-found template', function (done) {
       var source = resp.request.response.source;
-      expect(source.template).to.equal('errors/not-found')
+      expect(source.template).to.equal('errors/package-not-found')
       done()
     })
 
-    it('does NOT add package.name to view context', function (done) {
-      var source = resp.request.response.source
-      expect(source.context.package).to.not.exist()
-      expect(resp.result).to.not.include("will be yours")
+    it('encourages user to try logging in for access', function (done) {
+      expect($("hgroup h2").length).to.equal(1)
+      expect($("hgroup h2").text()).to.include("try logging in")
       done()
     })
 
-    it('adds a scopedPackage boolean to the context', function (done) {
-      var context = resp.request.response.source.context
-      expect(context.scopedPackage).to.equal(true)
-      done()
-    })
+  });
 
-    it('encourages anonymous users to try logging in', function (done) {
-      expect($(".scoped-caveat").length).to.equal(1)
-      expect($(".scoped-caveat").text()).to.include("try logging in")
-      done()
-    })
+  describe('nonexistent scoped packages for logged-in users', function () {
+    var $
+    var resp
+    var options = {
+      url: '/package/@zeke/nope',
+      credentials: fixtures.users.fakeuser
+    }
+    var packageMock = nock("https://user-api-example.com")
+      .get('/package/@zeke%2Fnope')
+      .reply(404)
 
-    it('tells logged-in users they may not have access', function (done) {
-      var options = {
-        url: '/package/@zeke/nope',
-        credentials: fixtures.users.fakeuser
-      }
-
-      var packageMock = nock("https://user-api-example.com")
-        .get('/package/@zeke%2Fnope')
-        .reply(404)
-
-      server.inject(options, function(response) {
+    before(function(done){
+      server.inject(options, function (response) {
         resp = response
         $ = cheerio.load(resp.result)
         packageMock.done()
-        expect($(".scoped-caveat").length).to.equal(1)
-        expect($(".scoped-caveat").text()).to.include("you may not have permission")
         done()
-      });
+      })
+    })
+
+    it('renders the package/not-found template', function (done) {
+      var source = resp.request.response.source;
+      expect(source.template).to.equal('errors/package-not-found')
+      done()
+    })
+
+    it("tells user that package exist but they don't have access", function (done) {
+      expect($("hgroup h2").length).to.equal(1)
+      expect($("hgroup h2").text()).to.include("you may not have permission")
+      done()
     });
 
   });
 
-
-  describe('nonexistent packages with invalid names', function () {
+  describe('nonexistent scoped packages for user in same scope', function () {
+    var $
     var resp
+    var options = {
+      url: '/package/@bob/nope',
+      credentials: fixtures.users.fakeuser
+    }
+    var packageMock = nock("https://user-api-example.com")
+      .get('/package/@bob%2Fnope')
+      .reply(404)
+
+    before(function(done){
+      server.inject(options, function (response) {
+        resp = response
+        $ = cheerio.load(resp.result)
+        packageMock.done()
+        done()
+      })
+    })
+
+    it('renders the package-not-found template', function (done) {
+      var source = resp.request.response.source;
+      expect(source.template).to.equal('errors/package-not-found')
+      done()
+    })
+
+    it("tells the user that package will be theirs", function (done) {
+      expect(resp.result).to.include("@bob/nope will be yours")
+      done()
+    });
+
+  });
+
+  describe('nonexistent global packages with invalid names', function () {
+    var $
+    var resp
+    var context
     var options = {url: '/package/_.escape'}
     var packageMock = nock("https://user-api-example.com")
       .get('/package/_.escape')
@@ -208,6 +247,8 @@ describe("package handler", function(){
     before(function(done){
       server.inject(options, function (response) {
         resp = response
+        $ = cheerio.load(resp.result)
+        context = resp.request.response.source.context
         packageMock.done()
         done()
       })
@@ -218,16 +259,15 @@ describe("package handler", function(){
       done();
     });
 
-    it('does NOT add package.name to view context', function (done) {
-      var source = resp.request.response.source
-      expect(source.context.package).to.not.exist()
-      expect(resp.result).to.not.include("will be yours")
-      done()
-    })
+    it('sets package.available to false', function (done) {
+      expect(context.package.available).to.equal(false);
+      expect(context.package.scope).to.equal(null);
+      done();
+    });
 
-    it('renders the not-found template', function (done) {
+    it('renders the package-not-found template', function (done) {
       var source = resp.request.response.source;
-      expect(source.template).to.equal('errors/not-found')
+      expect(source.template).to.equal('errors/package-not-found')
       done()
     })
 

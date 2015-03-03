@@ -65,7 +65,7 @@ describe('Accessing fallback URLs', function () {
       mock.done()
       expect(resp.statusCode).to.equal(404);
       var source = resp.request.response.source;
-      expect(source.template).to.equal('errors/not-found');
+      expect(source.template).to.equal('errors/package-not-found');
       done();
     });
   });

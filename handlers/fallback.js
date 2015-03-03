@@ -32,7 +32,7 @@ module.exports = function (request, reply) {
         if (validatePackageName(route).validForNewPackages) {
           opts.package = {name: route};
         }
-        return reply.view('errors/not-found', opts).code(404);
+        return reply.view('errors/package-not-found', opts).code(404);
       });
 
   });

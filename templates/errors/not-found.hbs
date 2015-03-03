@@ -1,37 +1,12 @@
 <div class="container">
   <hgroup>
-    <h1>{{t "package.not_found.title"}}</h1>
+    <h1>not found</h1>
     <h2>
-      {{#if package}}
-        {{package.name}} will be yours. Oh yes, {{package.name}} will be yours.
-      {{else}}
-        {{#if scopedPackage}}
-          <span class="scoped-caveat">
-            {{#if user}}
-              If you think a package with this name exists, you may not have permission to see it.
-            {{else}}
-              If you think a package with this name exists,
-              <a href="/login">try logging in</a>.
-            {{/if}}
-          </span>
-        {{else}}
-          {{canonicalURL}} does not exist. time to go outside.
-        {{/if}}
-      {{/if}}
+      {{canonicalURL}} does not exist. time to go outside.
     </h2>
   </hgroup>
 </div>
 
 <div class="container narrow">
-
-{{#if package}}
-<pre><code>mkdir {{package.name}}
-cd {{package.name}}
-npm init
-# work your magic…
-npm publish
-</code></pre>
-{{/if}}
-
   <img class="roomy-and-flexible" src="/static/images/not-found.png">
 </div>

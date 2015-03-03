@@ -1,6 +1,7 @@
 var pluck = require("lodash").pluck
 var package = module.exports = {}
-var validatePackageName = require('validate-npm-package-name');
+var validate = require('validate-npm-package-name');
+var npa = require('npm-package-arg');
 
 package.show = function(request, reply) {
   var package;
@@ -15,24 +16,44 @@ package.show = function(request, reply) {
 
   var promise = Package.get(name)
     .catch(function(err){
+
       if (err.statusCode === 404) {
+        var package = npa(name)
+        package.available = false
 
-        if (validatePackageName(name).validForNewPackages) {
-          request.logger.error('package not found: ' + name);
-
-          // 404 pages for scoped packages are different
-          if (name.charAt(0) === "@") {
-            context.scopedPackage = true
-          } else {
-            context.package = {name: name}
-          }
-
-          reply.view('errors/not-found', context).code(404);
+        if (!validate(name).validForNewPackages) {
+          context.package = package
+          reply.view('errors/package-not-found', context).code(400);
           return promise.cancel();
         }
 
-        request.logger.error('invalid package name: ' + name);
-        reply.view('errors/not-found', context).code(400);
+        // Unscoped packages are fair game for all users,
+        // whether they're logged in or not
+        if (!package.scope) {
+          package.available = true
+        }
+
+        // This package may be visible to this person
+        // if they log in
+        if (package.scope && !loggedInUser) {
+          package.unavailableToAnonymousUser = true
+        }
+
+        // This package is definitely not available to this user,
+        // because they're logged in
+        if (package.scope && loggedInUser
+          && package.scope.replace("@", "") !== loggedInUser.name) {
+          package.unavailableToLoggedInUser = true
+        }
+
+        // Package scope is same as username. It will be theirs!
+        if (package.scope && loggedInUser
+          && package.scope.replace("@", "") === loggedInUser.name) {
+          package.available = true
+        }
+
+        context.package = package
+        reply.view('errors/package-not-found', context).code(404);
         return promise.cancel();
       }
 

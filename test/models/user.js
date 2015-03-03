@@ -51,11 +51,11 @@ describe("User", function(){
 
     it("makes an external request for /{user}/login", function (done) {
       var userMock = nock(User.host)
-        .post('/user/fakeuser/login')
-        .reply(200, fixtures.users.fakeuser);
+        .post('/user/bob/login')
+        .reply(200, fixtures.users.bob);
 
       var loginInfo = {
-        name: 'fakeuser',
+        name: 'bob',
         password: '12345'
       };
 
@@ -74,9 +74,9 @@ describe("User", function(){
     it("makes an external request for /{user}", function(done) {
       var userMock = nock(User.host)
         .get('/user/bob')
-        .reply(200, fixtures.users.fakeuser);
+        .reply(200, fixtures.users.bob);
 
-      User.get(fixtures.users.fakeuser.name, function(err, body) {
+      User.get(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
         expect(body).to.exist();
         userMock.done();
@@ -87,9 +87,9 @@ describe("User", function(){
     it("returns the response body in the callback", function(done) {
       var userMock = nock(User.host)
         .get('/user/bob')
-        .reply(200, fixtures.users.fakeuser);
+        .reply(200, fixtures.users.bob);
 
-      User.get(fixtures.users.fakeuser.name, function(err, body) {
+      User.get(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
         expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
@@ -218,7 +218,7 @@ describe("User", function(){
         .get('/user/bob/package?per_page=9999')
         .reply(200, []);
 
-      User.getPackages(fixtures.users.fakeuser.name, function(err, body) {
+      User.getPackages(fixtures.users.bob.name, function(err, body) {
         packageMock.done();
         expect(err).to.be.null();
         expect(body).to.exist();
@@ -234,7 +234,7 @@ describe("User", function(){
           {name: "bar", description: "It's a bar!"}
         ]);
 
-      User.getPackages(fixtures.users.fakeuser.name, function(err, body) {
+      User.getPackages(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
         expect(body).to.be.an.array();
         expect(body[0].name).to.equal("foo");

@@ -6,11 +6,11 @@ var generateCrumb = require("../crumb"),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    nock = require('nock'),
+    users = require('../../fixtures').users;
 
-var server, tokenUrl,
-    fakeuser = require('../../fixtures/users').fakeusercouch,
-    fakeusercli = require('../../fixtures/users').fakeusercli;
+var server;
 
 var postName = function (name_email, crumb) {
   return {
@@ -105,12 +105,18 @@ describe('Accessing the forgot password page', function () {
 describe('Looking up a user', function () {
   describe('by username', function () {
     it('renders an error if the username doesn\'t exist', function (done) {
+
       var name = 'mr-perdido';
+      var mock = nock("https://user-api-example.com")
+        .get("/user/" + name)
+        .reply(404);
+
       generateCrumb(server, function (crumb){
         server.inject(postName(name, crumb), function (resp) {
+          mock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
-          expect(source.context.error).to.equal('user ' + name + ' not found');
+          expect(source.context.error).to.equal('error getting user ' + name);
           expect(resp.statusCode).to.equal(404);
           done();
         });
@@ -118,9 +124,15 @@ describe('Looking up a user', function () {
     });
 
     it('renders an error if the user does not have an email address', function (done) {
-      var name = 'forrestnoemail';
+      var name = 'early_user';
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/" + name)
+        .reply(200, users.no_email);
+
       generateCrumb(server, function (crumb){
         server.inject(postName(name, crumb), function (resp) {
+          mock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
           expect(source.context.error).to.equal('Username does not have an email address; please contact support');
@@ -131,12 +143,18 @@ describe('Looking up a user', function () {
     });
 
     it('renders an error if the user\'s email address is invalid', function (done) {
-      var name = 'forrestbademail';
+      var name = 'lolbademail';
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/" + name)
+        .reply(200, users.bad_email);
+
       generateCrumb(server, function (crumb){
         server.inject(postName(name, crumb), function (resp) {
+          mock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
-          expect(source.context.error).to.equal('Username\'s email address is invalid; please contact support');
+          expect(source.context.error).to.equal("Username's email address is invalid; please contact support");
           expect(resp.statusCode).to.equal(400);
           done();
         });
@@ -144,9 +162,15 @@ describe('Looking up a user', function () {
     });
 
     it('sends an email when everything finally goes right', function (done) {
-      var name = 'fakeuser';
+      var name = 'bob';
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/" + name)
+        .reply(200, users.bob);
+
       generateCrumb(server, function (crumb){
         server.inject(postName(name, crumb), function (resp) {
+          mock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
           done();
@@ -157,8 +181,15 @@ describe('Looking up a user', function () {
 
   describe('by email', function () {
     it('renders an error if the email doesn\'t exist', function (done) {
+      var email = 'doesnotexist@boom.com';
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/" + email)
+        .reply(200, []);
+
       generateCrumb(server, function (crumb){
-        server.inject(postName('doesnotexist@boom.com', crumb), function (resp) {
+        server.inject(postName(email, crumb), function (resp) {
+          mock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
           expect(source.context.error).to.equal('No user found with email address doesnotexist@boom.com');
@@ -168,33 +199,46 @@ describe('Looking up a user', function () {
       });
     });
 
-    it('renders a list of emails if the email matches more than one username', function (done) {
+    it('renders a list of usernames if the email matches more than one username', function (done) {
+      var email = "bob@boom.me";
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/" + email)
+        .reply(200, ['bob', 'bobUpdated']);
+
       generateCrumb(server, function (crumb){
-        server.inject(postName("forrest@example.com", crumb), function (resp) {
+        server.inject(postName(email, crumb), function (resp) {
+          mock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
           expect(source.context.error).to.not.exist();
-          expect(source.context.users).to.include("forrest");
-          expect(source.context.users).to.include("forrest2");
+          expect(source.context.users).to.include("bob");
+          expect(source.context.users).to.include("bobUpdated");
           done();
         });
       });
     });
 
     it('sends an email when a username is chosen from the dropdown', function (done) {
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, users.bob);
+
       generateCrumb(server, function (crumb){
         var options = {
           url: '/forgot',
           method: 'POST',
           payload: {
-            selected_name: "forrest",
+            selected_name: "bob",
             crumb: crumb
           },
           headers: { cookie: 'crumb=' + crumb }
         };
 
         server.inject(options, function (resp) {
+          mock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
           done();
@@ -203,8 +247,18 @@ describe('Looking up a user', function () {
     });
 
     it('sends an email when everything finally goes right', function (done) {
+
+      var email = "bob@boom.me";
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/" + email)
+        .reply(200, ['bob'])
+        .get("/user/bob")
+        .reply(200, users.bob);
+
       generateCrumb(server, function (crumb){
-        server.inject(postName("onlyone@boom.com", crumb), function (resp) {
+        server.inject(postName(email, crumb), function (resp) {
+          mock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
           done();

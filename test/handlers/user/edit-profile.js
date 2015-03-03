@@ -6,25 +6,11 @@ var generateCrumb = require("../crumb"),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    nock = require('nock'),
+    users = require('../../fixtures').users;
 
 var server;
-
-var fakeuser = {
-  name: 'bob',
-  email: 'hello@email.com',
-  resource: {
-    twitter: 'hello',
-  }
-};
-
-var fakeProfile = {
-  fullname: 'Fake User',
-  github: 'fakeuser',
-  twitter: 'fakeuser',
-  homepage: '',
-  freenode: ''
-};
 
 // prepare the server
 before(function (done) {
@@ -54,7 +40,7 @@ describe('Getting to the profile-edit page', function () {
   it('takes authorized users to the profile-edit page', function (done) {
     var options = {
       url: '/profile-edit',
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(options, function (resp) {
@@ -71,7 +57,7 @@ describe('Modifying the profile', function () {
     var options = {
       url: '/profile-edit',
       method: 'POST',
-      payload: fakeProfile
+      payload: users.profileUpdate
     };
 
     server.inject(options, function (resp) {
@@ -85,8 +71,8 @@ describe('Modifying the profile', function () {
     var options = {
       url: '/profile-edit',
       method: 'POST',
-      payload: fakeProfile,
-      credentials: fakeuser
+      payload: users.profileUpdate,
+      credentials: users.bob
     };
 
     server.inject(options, function (resp) {
@@ -98,11 +84,15 @@ describe('Modifying the profile', function () {
   it('allows authorized profile modifications and redirects to profile page', function (done) {
 
     generateCrumb(server, function (crumb){
+      var mock = nock('https://user-api-example.com')
+        .post('/user/' + users.bob.name, users.bobUpdateBody)
+        .reply(200, users.bobUpdated);
+
       var options = {
         url: '/profile-edit',
         method: 'POST',
-        payload: fakeProfile,
-        credentials: fakeuser,
+        payload: users.profileUpdate,
+        credentials: users.bob,
         headers: { cookie: 'crumb=' + crumb }
       };
 
@@ -115,8 +105,8 @@ describe('Modifying the profile', function () {
         var cache = resp.request.server.app.cache._cache.connection.cache['|sessions'];
         // modifies the profile properly
         var cacheData = JSON.parse(cache['8bdb39fa'].item);
-        expect(cacheData.resource.github).to.equal(fakeProfile.github);
-        expect(cacheData.resource.twitter).to.equal(fakeProfile.twitter);
+        expect(cacheData.resource.github).to.equal(users.bobUpdated.resource.github);
+        expect(cacheData.resource.twitter).to.equal(users.bobUpdated.resource.twitter);
         done();
       });
     });
@@ -127,8 +117,8 @@ describe('Modifying the profile', function () {
       var options = {
         url: '/profile-edit',
         method: 'POST',
-        payload: fakeProfile,
-        credentials: fakeuser,
+        payload: users.profileUpdate,
+        credentials: users.bob,
         headers: { cookie: 'crumb=' + crumb }
       };
 

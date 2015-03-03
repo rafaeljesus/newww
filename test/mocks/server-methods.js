@@ -216,7 +216,7 @@ module.exports = function (server) {
       },
 
       changePass: function (auth, next) {
-        if (!fixtures.users[auth.name].salt) {
+        if (!fixtures.users[auth.name] || !fixtures.users[auth.name].salt) {
           return next(null);
         }
 

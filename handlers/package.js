@@ -1,6 +1,7 @@
 var pluck = require("lodash").pluck
 var package = module.exports = {}
-var validatePackageName = require('validate-npm-package-name');
+var validate = require('validate-npm-package-name');
+var npa = require('npm-package-arg');
 
 package.show = function(request, reply) {
   var package;
@@ -15,16 +16,34 @@ package.show = function(request, reply) {
 
   var promise = Package.get(name)
     .catch(function(err){
+
       if (err.statusCode === 404) {
-        if (validatePackageName(name).validForNewPackages) {
-          context.package = {name: name}
-          request.logger.error('package not found: ' + name);
-          reply.view('errors/not-found', context).code(404);
+        var package = npa(name)
+        package.available = false
+
+        if (!validate(name).validForNewPackages) {
+          context.package = package
+          reply.view('errors/package-not-found', context).code(400);
           return promise.cancel();
         }
 
-        request.logger.error('invalid package name: ' + name);
-        reply.view('errors/not-found', context).code(400);
+        if (package.scope) {
+          package.owner = package.scope.slice(1)
+          if (loggedInUser) {
+            if (package.owner === loggedInUser.name) {
+              package.available = true
+            } else {
+              package.unavailableToLoggedInUser = true
+            }
+          } else {
+            package.unavailableToAnonymousUser = true
+          }
+        } else {
+          package.available = true
+        }
+
+        context.package = package
+        reply.view('errors/package-not-found', context).code(404);
         return promise.cancel();
       }
 

@@ -1,0 +1,34 @@
+<div class="container">
+  <hgroup>
+    <h1>{{t "package.not_found.title"}}</h1>
+    <h2>
+      {{#if package.available}}
+        {{package.name}} will be yours. Oh yes, {{package.name}} will be yours.
+      {{else}}
+        {{#if package.unavailableToAnonymousUser}}
+          If you think a package with this name exists,
+          <a href="/login">try logging in</a>.
+        {{/if}}
+
+        {{#if package.unavailableToLoggedInUser}}
+          If you think a package with this name exists,
+          you may not have permission to see it.
+        {{/if}}
+      {{/if}}
+    </h2>
+  </hgroup>
+</div>
+
+<div class="container narrow">
+
+{{#if package.available}}
+<pre><code>mkdir {{#if package.scope}}-p {{/if}}{{package.name}}
+cd {{package.name}}
+npm init{{#if package.scope}} --scope={{package.scope}}{{/if}}
+# work your magic…
+npm publish
+</code></pre>
+{{/if}}
+
+  <img class="roomy-and-flexible" src="/static/images/not-found.png">
+</div>

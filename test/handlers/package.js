@@ -234,6 +234,7 @@ describe("package handler", function(){
     var downloadsMock
 
     beforeEach(function(done){
+      process.env.FEATURE_ACCESS = "yep"
       packageMock = nock("https://user-api-example.com")
         .get('/package/request')
         .reply(200, fixtures.packages.request);
@@ -245,6 +246,11 @@ describe("package handler", function(){
         .reply(200, fixtures.downloads.request.week)
         .get('/point/last-month/request')
         .reply(200, fixtures.downloads.request.month);
+      done()
+    })
+
+    afterEach(function(done){
+      delete process.env.FEATURE_ACCESS
       done()
     })
 

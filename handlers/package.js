@@ -50,13 +50,14 @@ package.show = function(request, reply) {
     .then(function(downloads) {
       package.downloads = downloads
 
-      package.isStarred = !!(loggedInUser
+      package.isStarred = Boolean(loggedInUser)
         && Array.isArray(package.stars)
-        && package.stars.indexOf(loggedInUser.name) > -1)
+        && package.stars.indexOf(loggedInUser.name) > -1
 
-      package.isCollaboratedOnByUser = !!(loggedInUser
+      package.isCollaboratedOnByUser = Boolean(process.env.FEATURE_ACCESS)
+        && Boolean(loggedInUser)
         && package.maintainers
-        && pluck(package.maintainers, 'name').indexOf(loggedInUser.name) > -1)
+        && pluck(package.maintainers, 'name').indexOf(loggedInUser.name) > -1
 
       context.package = package
       return reply.view('package/show', context);

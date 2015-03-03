@@ -8,7 +8,7 @@ var decorate = require(__dirname + '/../presenters/user');
 
 var User = module.exports = function(opts) {
   _.extend(this, {
-    host: process.env.USER_API,
+    host: process.env.USER_API || "https://user-api-example.com",
     bearer: false
   }, opts);
 
@@ -20,6 +20,11 @@ var User = module.exports = function(opts) {
   }
 
   return this;
+};
+
+User.new = function(request) {
+  var bearer = request.auth.credentials && request.auth.credentials.name;
+  return new User({bearer: bearer, logger: request.logger});
 };
 
 User.prototype.confirmEmail = function (user, callback) {

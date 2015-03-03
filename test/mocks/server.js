@@ -24,10 +24,6 @@ module.exports = function (done) {
       redirectTo: '/login'
     });
 
-    server.models = {
-      User: require('../mocks/models/user'),
-    };
-
     server.register([{
         register: require('crumb'),
         options: { cookieOptions: { isSecure: true } }

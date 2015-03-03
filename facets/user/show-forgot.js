@@ -1,5 +1,6 @@
 
-var userValidate = require('npm-user-validate'),
+var User = require('../../models/user'),
+    userValidate = require('npm-user-validate'),
     utils = require('../../lib/utils'),
     crypto = require('crypto');
 
@@ -75,7 +76,8 @@ function processToken(request, reply) {
 
     request.logger.warn('About to change password', { name: name });
 
-    request.server.methods.user.changePass(newAuth, function (err) {
+    User.new(request)
+      .changePass(newAuth, function (err) {
 
       if (err) {
         request.logger.error('Failed to set password for ' + newAuth.name);
@@ -146,9 +148,7 @@ function lookupUserByEmail (email, request, reply) {
     user: request.auth.credentials
    };
 
-   var User = new request.server.models.User();
-
-   User.lookupEmail(email, function (er, usernames) {
+   User.new(request).lookupEmail(email, function (er, usernames) {
     if (er) {
       opts.error = er.message;
 
@@ -182,9 +182,7 @@ function lookupUserByEmail (email, request, reply) {
 function lookupUserByUsername (name, request, reply) {
   var opts = { };
 
-  var User = new request.server.models.User();
-
-  User.get(name, function (er, user) {
+  User.new(request).get(name, function (er, user) {
     if (er) {
       opts.error = er.message;
 

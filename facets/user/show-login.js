@@ -1,14 +1,14 @@
 var Boom = require('boom'),
     url = require('url'),
     fmt = require("util").format,
-    redis = require("../../adapters/redis-sessions");
+    redis = require("../../adapters/redis-sessions"),
+    User = require('../../models/user');
+
 
 var lockoutInterval = 60; // seconds
 var maxAttemptsBeforeLockout = 5;
 
 module.exports = function login (request, reply) {
-  var User = new request.server.models.User({logger: request.logger});
-
   var setSession = request.server.methods.user.setSession(request);
 
   if (request.auth.isAuthenticated) {
@@ -41,7 +41,8 @@ module.exports = function login (request, reply) {
         }
 
         // User is not above the login attempt threshold, so try to log in...
-        User.login(request.payload, function (er, user) {
+        User.new(request)
+          .login(request.payload, function (er, user) {
 
           if (er || !user) {
 

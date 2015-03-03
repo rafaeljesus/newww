@@ -5,43 +5,43 @@ var Customer = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.LICENSE_API || "https://license-api-example.com",
   }, opts);
-}
+};
 
 Customer.new = function() {
   return new Customer();
-}
+};
 
 Customer.prototype.get = function(name, callback) {
   var url = this.host + '/stripe/' + name;
 
   request.get({url: url, json: true}, function(err, resp, body){
 
-    if (err) return callback(err);
+    if (err) { return callback(err); }
 
     if (resp.statusCode === 404) {
-      var err = Error('customer not found: ' + name);
+      err = Error('customer not found: ' + name);
       err.statusCode = resp.statusCode;
       return callback(err);
     }
 
     // Coerce integer into date
     if (body && body.next_billing_date){
-      body.next_billing_date = new Date(body.next_billing_date)
+      body.next_billing_date = new Date(body.next_billing_date);
     }
 
-    return callback(null, body)
+    return callback(null, body);
   });
-}
+};
 
 Customer.prototype.update = function(body, callback) {
-  var self = this
-  var url
-  var props = ['name', 'email', 'card']
+  var self = this;
+  var url;
+  var props = ['name', 'email', 'card'];
 
   for (var i in props) {
-    var prop = props[i]
+    var prop = props[i];
     if (!body[prop]) {
-      return callback(Error(prop + " is a required property"))
+      return callback(Error(prop + " is a required property"));
     }
   }
 
@@ -49,7 +49,7 @@ Customer.prototype.update = function(body, callback) {
 
     // Create new customer
     if (err && err.statusCode === 404) {
-      url = self.host + '/stripe'
+      url = self.host + '/stripe';
       return request.put({url: url, json: true, body: body}, function(err, resp, body){
         return err ? callback(err) : callback(null, body);
       });
@@ -64,12 +64,12 @@ Customer.prototype.update = function(body, callback) {
       return err ? callback(err) : callback(null, body);
     });
 
-  })
-}
+  });
+};
 
 Customer.prototype.del = function(name, callback) {
   var url = this.host + '/stripe/' + name;
   request.del({url: url, json: true}, function(err, resp, body){
     return err ? callback(err) : callback(null, body);
   });
-}
+};

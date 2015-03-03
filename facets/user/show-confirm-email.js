@@ -44,9 +44,9 @@ module.exports = function confirmEmail (request, reply) {
     UserModel.get(name, function (err, user) {
 
       if (err) {
-          request.logger.error('Failed to get user ' + name);
-          request.logger.error(err);
-          return reply.view('errors/internal', opts).code(500);
+        request.logger.error('Failed to get user ' + name);
+        request.logger.error(err);
+        return reply.view('errors/internal', opts).code(500);
       }
 
       UserModel.confirmEmail(user, function (err) {

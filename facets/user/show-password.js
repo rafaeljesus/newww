@@ -21,7 +21,6 @@ module.exports = function (request, reply) {
 
   if (request.method === 'post') {
     var data = request.payload;
-
     var prof = opts.user,
         salt = prof.salt,
         hashCurrent = prof.password_sha ? utils.sha(data.current + salt) :
@@ -48,7 +47,6 @@ module.exports = function (request, reply) {
 
     var newAuth = { name: prof.name, password: data.new };
     newAuth.mustChangePass = false;
-
     changePass(newAuth, function (er, data) {
       if (er) {
         request.logger.warn('Failed to change password; user=' + newAuth.name);

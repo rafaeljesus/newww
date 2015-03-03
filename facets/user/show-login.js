@@ -4,7 +4,6 @@ var Boom = require('boom'),
     redis = require("../../adapters/redis-sessions"),
     User = require('../../models/user');
 
-
 var lockoutInterval = 60; // seconds
 var maxAttemptsBeforeLockout = 5;
 

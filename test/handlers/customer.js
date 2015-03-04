@@ -219,12 +219,13 @@ describe('GET /settings/billing', function () {
     beforeEach(function(done){
       options.credentials = fixtures.users.norbert_newbie;
       mock = nock("https://license-api-example.com")
-        .get("/stripe/fixtures.users.norbert_newbie")
+        .get("/stripe/norbert_newbie")
         .reply(404);
 
       server.inject(options, function (response) {
         resp = response;
         $ = cheerio.load(resp.result);
+        mock.done();
         done();
       });
     });

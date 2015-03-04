@@ -178,9 +178,10 @@ describe("package handler", function(){
   describe('nonexistent scoped packages for logged-in users', function () {
     var $
     var resp
+    var context
     var options = {
       url: '/package/@zeke/nope',
-      credentials: fixtures.users.fakeuser
+      credentials: fixtures.users.bob
     }
     var packageMock = nock("https://user-api-example.com")
       .get('/package/@zeke%2Fnope')
@@ -190,6 +191,7 @@ describe("package handler", function(){
       server.inject(options, function (response) {
         resp = response
         $ = cheerio.load(resp.result)
+        context = resp.request.response.source.context
         packageMock.done()
         done()
       })
@@ -212,9 +214,10 @@ describe("package handler", function(){
   describe('nonexistent scoped packages for user in same scope', function () {
     var $
     var resp
+    var context
     var options = {
       url: '/package/@bob/nope',
-      credentials: fixtures.users.fakeuser
+      credentials: fixtures.users.bob
     }
     var packageMock = nock("https://user-api-example.com")
       .get('/package/@bob%2Fnope')
@@ -224,6 +227,7 @@ describe("package handler", function(){
       server.inject(options, function (response) {
         resp = response
         $ = cheerio.load(resp.result)
+        context = resp.request.response.source.context
         packageMock.done()
         done()
       })
@@ -413,7 +417,7 @@ describe("package handler", function(){
     it('is not displayed if user is logged in but not a collaborator', function (done) {
       var options = {
         url: '/package/request',
-        credentials: fixtures.users.fakeuser
+        credentials: fixtures.users.bob
       };
 
       server.inject(options, function (resp) {

@@ -57,7 +57,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.page).to.equal(pageNum);
         expect(source.context.nextPage).to.equal(pageNum + 1);
         expect(source.context.prevPage).to.equal(pageNum - 1);
@@ -74,7 +74,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.page).to.equal(1);
         expect(source.context.nextPage).to.equal(2);
         expect(source.context.prevPage).to.not.exist();
@@ -91,7 +91,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.page).to.equal(1);
         expect(source.context.nextPage).to.equal(2);
         expect(source.context.prevPage).to.not.exist();
@@ -121,7 +121,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.type).to.equal('updated');
         expect(source.context.arg).to.not.exist();
         done();
@@ -136,7 +136,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.type).to.equal('keyword');
         expect(source.context.arg).to.not.exist();
         done();
@@ -151,7 +151,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.type).to.equal('keyword');
         expect(source.context.arg).to.equal('"grunt"');
         done();
@@ -166,7 +166,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.type).to.equal('author');
         expect(source.context.arg).to.not.exist();
         done();
@@ -193,7 +193,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.type).to.equal('depended');
         expect(source.context.arg).to.not.exist();
         done();
@@ -208,7 +208,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.type).to.equal('depended');
         expect(source.context.arg).to.equal('request');
         done();
@@ -223,7 +223,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.type).to.equal('star');
         expect(source.context.arg).to.not.exist();
         done();
@@ -238,7 +238,7 @@ describe('getting to the browse page', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('registry/browse');
+        expect(source.template).to.equal('package/browse');
         expect(source.context.type).to.equal('star');
         expect(source.context.arg).to.equal('request');
         done();

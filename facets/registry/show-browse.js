@@ -88,6 +88,6 @@ module.exports = function (request, reply) {
 
     opts.paginate = opts.prevPage || opts.nextPage;
 
-    return reply.view('registry/browse', opts);
+    return reply.view('package/browse', opts);
   });
 };

@@ -92,7 +92,7 @@ describe("bonbon", function() {
   it('does not allow logged-in non-employees to request the view context', function (done) {
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: fixtures.users.fakeuser
+      credentials: fixtures.users.bob
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
@@ -108,7 +108,7 @@ describe("bonbon", function() {
   it('does not allow anonymous fixtures.users to request the view context', function (done) {
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: fixtures.users.fakeuser
+      credentials: fixtures.users.bob
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {

@@ -37,6 +37,7 @@ describe('redis-requiring session stuff', function() {
   before(function (done) {
     client = redis.createClient(config.port, config.host);
     client.auth(config.password, function () {});
+    client.flushdb();
     client.on("error", function (err) {
       console.log("Error " + err);
     });
@@ -44,7 +45,7 @@ describe('redis-requiring session stuff', function() {
   });
 
   after('cleans up the db', function (done) {
-    client.del([prefix+bob1, prefix+bob2, prefix+alice1], done)
+    client.flushdb(done);
   });
 
   it('creates a random hash for each user', function (done) {

@@ -88,7 +88,8 @@ config.license = {
     "form_npme_signup": "12345",
     "form_npme_agreed_ula": "12345",
     "form_npme_contact_me": "12345",
-    "form_private_npm": "12345"
+    "form_private_npm": "12345",
+    "form_private_npm_signup": "12345"
   },
   "api": "https://billing.website.com",
 };

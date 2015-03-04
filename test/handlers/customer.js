@@ -11,10 +11,7 @@ var generateCrumb = require("../handlers/crumb.js"),
     it = lab.test,
     expect = Code.expect,
     server,
-    fixtures = require('../fixtures'),
-    fakeuser = require('../fixtures/users').bob,
-    diana_delinquent = require('../fixtures/users').diana_delinquent,
-    norbert_newbie = require('../fixtures/users').norbert_newbie;
+    fixtures = require('../fixtures');
 
 before(function (done) {
   require('../mocks/server')(function (obj) {
@@ -46,7 +43,7 @@ describe('GET /settings/billing', function () {
     options = {
       method: "get",
       url: "/settings/billing?canceled=1",
-      credentials: fakeuser
+      credentials: fixtures.users.bob
     };
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.canceled).to.be.true();
@@ -60,7 +57,7 @@ describe('GET /settings/billing', function () {
     options = {
       method: "get",
       url: "/settings/billing?updated=1",
-      credentials: fakeuser
+      credentials: fixtures.users.bob
     };
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.updated).to.be.true();
@@ -71,7 +68,7 @@ describe('GET /settings/billing', function () {
   });
 
   it('does not render notices by default', function (done) {
-    options.credentials = fakeuser;
+    options.credentials = fixtures.users.bob;
     server.inject(options, function (resp) {
       expect(resp.request.response.source.context.canceled).to.be.false();
       expect(resp.request.response.source.context.updated).to.be.false();
@@ -82,7 +79,7 @@ describe('GET /settings/billing', function () {
   });
 
   it('renders billing form if user is logged in', function (done) {
-    options.credentials = fakeuser;
+    options.credentials = fixtures.users.bob;
 
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
@@ -93,7 +90,7 @@ describe('GET /settings/billing', function () {
   });
 
   it('injects stripe public key and stripe script into page', function (done) {
-    options.credentials = fakeuser;
+    options.credentials = fixtures.users.bob;
 
     var oldStripeKey = process.env.STRIPE_PUBLIC_KEY;
     process.env.STRIPE_PUBLIC_KEY = "I am a zebra";
@@ -114,7 +111,7 @@ describe('GET /settings/billing', function () {
     var $;
 
     beforeEach(function(done){
-      options.credentials = fakeuser;
+      options.credentials = fixtures.users.bob;
 
       mock = nock("https://license-api-example.com")
         .get("/stripe/bob")
@@ -186,7 +183,7 @@ describe('GET /settings/billing', function () {
     var $;
 
     beforeEach(function(done){
-      options.credentials = diana_delinquent;
+      options.credentials = fixtures.users.diana_delinquent;
       mock = nock("https://license-api-example.com")
         .get("/stripe/diana_delinquent")
         .reply(200, fixtures.customers.license_expired);
@@ -220,9 +217,9 @@ describe('GET /settings/billing', function () {
     var $;
 
     beforeEach(function(done){
-      options.credentials = norbert_newbie;
+      options.credentials = fixtures.users.norbert_newbie;
       mock = nock("https://license-api-example.com")
-        .get("/stripe/norbert_newbie")
+        .get("/stripe/fixtures.users.norbert_newbie")
         .reply(404);
 
       server.inject(options, function (response) {
@@ -283,7 +280,7 @@ describe('POST /settings/billing', function () {
         var opts = {
           url: '/settings/billing',
           method: 'POST',
-          credentials: fakeuser,
+          credentials: fixtures.users.bob,
           payload: {
             stripeToken: 'tok_1234567890',
             crumb: crumb
@@ -317,7 +314,7 @@ describe('POST /settings/billing', function () {
         var opts = {
           url: '/settings/billing',
           method: 'POST',
-          credentials: fakeuser,
+          credentials: fixtures.users.bob,
           payload: {
             stripeToken: 'tok_1234567890',
             crumb: crumb
@@ -372,7 +369,7 @@ describe('POST /settings/billing/cancel', function () {
       var opts = {
         method: 'post',
         url: '/settings/billing/cancel',
-        credentials: fakeuser,
+        credentials: fixtures.users.bob,
         payload: {
           crumb: crumb
         },

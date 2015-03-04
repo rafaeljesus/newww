@@ -32,7 +32,7 @@ describe('GET /package/foo/collaborators', function () {
     options = {
       method: "get",
       url: "/package/foo/collaborators",
-      credentials: fixtures.users.fakeuser
+      credentials: fixtures.users.bob
     }
     done()
   })
@@ -61,7 +61,7 @@ describe('PUT /package/foo/collaborators', function () {
     options = {
       method: "put",
       url: "/package/foo/collaborators",
-      credentials: fixtures.users.fakeuser,
+      credentials: fixtures.users.bob,
       payload: {
         collaborator: wrigley
       }
@@ -93,7 +93,7 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
       options = {
         method: "post",
         url: "/package/zing/collaborators/wrigley_the_writer",
-        credentials: fixtures.users.fakeuser,
+        credentials: fixtures.users.bob,
         payload: {
           crumb: crumb,
           collaborator: wrigley
@@ -129,7 +129,7 @@ describe('DELETE /package/zing/collaborators/wrigley_the_writer', function () {
       options = {
         method: "delete",
         url: "/package/zing/collaborators/wrigley_the_writer",
-        credentials: fixtures.users.fakeuser,
+        credentials: fixtures.users.bob,
         payload: {crumb: crumb},
         headers: {cookie: 'crumb='+crumb}
       }

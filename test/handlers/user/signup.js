@@ -6,7 +6,9 @@ var generateCrumb = require("../crumb"),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    nock = require('nock'),
+    users = require('../../fixtures').users;
 
 var server, cookieCrumb,
     forms = require('../../fixtures/signup');
@@ -69,7 +71,13 @@ describe('Signing up a new user', function () {
   });
 
   it('renders an error if the username already exists', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, users.bob);
+
     server.inject(postSignup(forms.alreadyExists), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -139,7 +147,21 @@ describe('Signing up a new user', function () {
   });
 
   it('passes validation with a valid form', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .get("/user/newuser")
+      .reply(404)
+      .put("/user", {
+        name: 'newuser',
+        password: '12345',
+        verify: '12345',
+        email: 'fakeusercli@boom.com',
+        sid: "39071865"
+      })
+      .reply(200, users.mikeal);
+
     server.inject(postSignup(forms.good), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
       done();
@@ -147,7 +169,21 @@ describe('Signing up a new user', function () {
   });
 
   it('passes validation with an umlaut in the password', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .get("/user/newuser")
+      .reply(404)
+      .put("/user", {
+        name: 'newuser',
+        password: 'one two threë',
+        verify: 'one two threë',
+        email: 'fakeusercli@boom.com',
+        sid: '39071865'
+      })
+      .reply(200, users.mikeal);
+
     server.inject(postSignup(forms.goodPassWithUmlaut), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
       done();

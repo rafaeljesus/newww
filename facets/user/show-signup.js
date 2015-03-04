@@ -1,9 +1,8 @@
-var Joi = require('joi'),
+var User = require('../../models/user'),
+    Joi = require('joi'),
     userValidate = require('npm-user-validate');
 
 module.exports = function signup (request, reply) {
-  var User = new request.server.models.User({logger: request.logger});
-
   var setSession = request.server.methods.user.setSession(request),
       delSession = request.server.methods.user.delSession(request),
       sendEmail = request.server.methods.email.send;
@@ -27,6 +26,7 @@ module.exports = function signup (request, reply) {
     };
 
     var data = request.payload;
+    var UserModel = User.new(request);
 
     Joi.validate(data, schema, joiOptions, function (err, validatedUser) {
       if (err) {
@@ -39,7 +39,7 @@ module.exports = function signup (request, reply) {
 
       userValidate.username(validatedUser.name) && opts.errors.push({ message: userValidate.username(validatedUser.name).message});
 
-      User.get(validatedUser.name, function (err, userExists) {
+      UserModel.get(validatedUser.name, function (err, userExists) {
         if (userExists) {
           opts.errors.push({message: new Error("username already exists").message});
         }
@@ -61,7 +61,7 @@ module.exports = function signup (request, reply) {
             request.logger.warn(er);
           }
 
-          User.signup(validatedUser, function (er, user) {
+          UserModel.signup(validatedUser, function (er, user) {
             if (er) {
               request.logger.warn('Failed to create account.');
               return reply.view('errors/internal', opts).code(403);

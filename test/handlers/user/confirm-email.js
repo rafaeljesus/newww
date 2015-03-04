@@ -5,7 +5,9 @@ var Code = require('code'),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    nock = require("nock"),
+    users = require('../../fixtures').users;
 
 var redis = require('redis'),
     spawn = require('child_process').spawn,
@@ -88,8 +90,14 @@ describe('Confirming an email address', function () {
   });
 
   it('drops the token after confirming the email', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, users.bob)
+      .post("/user/bob/verify", { verification_key: users.bob.verification_key })
+      .reply(200);
+
     var boom = JSON.stringify({
-          name: 'boom',
+          name: 'bob',
           email: 'boom@bang.com',
           token: '12345'
         });
@@ -99,6 +107,7 @@ describe('Confirming an email address', function () {
     client.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, function () {
 
       server.inject(opts, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/email-confirmed');
@@ -111,8 +120,15 @@ describe('Confirming an email address', function () {
   });
 
   it('goes to the email confirmation template on success', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, users.bob)
+      .post("/user/bob/verify", { verification_key: users.bob.verification_key })
+      .reply(200);
+
     var boom = JSON.stringify({
-          name: 'boom',
+          name: 'bob',
           email: 'boom@bang.com',
           token: '12345'
         });
@@ -122,6 +138,7 @@ describe('Confirming an email address', function () {
     client.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, function () {
 
       server.inject(opts, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/email-confirmed');

@@ -9,10 +9,11 @@ var generateCrumb = require("../crumb"),
     afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
+    nock = require("nock"),
     redis = require("../../../adapters/redis-sessions");
 
 var server,
-    fakeuser = require('../../fixtures/users').fakeuser;
+    users = require('../../fixtures').users;
 
 // prepare the server
 before(function (done) {
@@ -44,7 +45,7 @@ describe('Getting to the login page', function () {
   it('redirects already authenticated users to their profile', function (done) {
     var options = {
       url: '/login',
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(options, function (resp) {
@@ -112,40 +113,58 @@ describe('Getting to the login page', function () {
   });
 
   it('redirects user to their profile page if all goes well', function (done) {
+
+    var name = 'bob';
+    var pass = '12345';
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/" + name + "/login", {password: pass})
+      .reply(200, users.bob);
+
     generateCrumb(server, function (crumb){
       var options = {
         url: '/login',
         method: 'POST',
         payload: {
-          name: 'forrest',
-          password: '12345',
+          name: name,
+          password: pass,
           crumb: crumb,
         },
         headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(options, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(302);
-        expect(resp.headers.location).to.equal('/~forrest');
+        expect(resp.headers.location).to.equal('/~bob');
         done();
       });
     });
   });
 
   it('redirects user to password page if user needs to change their password', function (done) {
+
+    var name = 'bob';
+    var pass = '12345';
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/" + name + "/login", {password: pass})
+      .reply(200, users.bobUpdated);
+
     generateCrumb(server, function (crumb){
       var options = {
         url: '/login',
         method: 'POST',
         payload: {
-          name: 'forrestcli',
-          password: '12345',
+          name: name,
+          password: pass,
           crumb: crumb,
         },
         headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(options, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.include('password');
         done();
@@ -200,13 +219,21 @@ describe('Getting to the login page', function () {
 
     it('allows user to log in if failed attempt count exists but is within limits', function (done) {
       var attempts = 4;
+
+      var name = 'bob';
+      var pass = '12345';
+
+      var mock = nock("https://user-api-example.com")
+        .post("/user/" + name + "/login", {password: pass})
+        .reply(200, users.bob);
+
       generateCrumb(server, function (crumb){
         var options = {
           url: '/login',
           method: 'POST',
           payload: {
-            name: 'forrest',
-            password: '12345',
+            name: name,
+            password: pass,
             crumb: crumb,
           },
           headers: { cookie: 'crumb=' + crumb }
@@ -220,8 +247,9 @@ describe('Getting to the login page', function () {
         };
 
         server.inject(options, function (resp) {
+          mock.done();
           expect(resp.statusCode).to.equal(302);
-          expect(resp.headers.location).to.equal('/~forrest');
+          expect(resp.headers.location).to.equal('/~bob');
           done();
         });
       });

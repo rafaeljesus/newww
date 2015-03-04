@@ -8,15 +8,11 @@ var generateCrumb = require("../handlers/crumb.js"),
     describe = lab.experiment,
     before = lab.before,
     beforeEach = lab.beforeEach,
-    afterEach = lab.afterEach,
-    after = lab.after,
     it = lab.test,
     expect = Code.expect,
     server,
-    source,
-    cache,
     fixtures = require('../fixtures'),
-    fakeuser = require('../fixtures/users').fakeuser,
+    fakeuser = require('../fixtures/users').bob,
     diana_delinquent = require('../fixtures/users').diana_delinquent,
     norbert_newbie = require('../fixtures/users').norbert_newbie;
 
@@ -113,28 +109,28 @@ describe('GET /settings/billing', function () {
   });
 
   describe("paid user", function() {
-    var mock
-    var resp
-    var $
+    var mock;
+    var resp;
+    var $;
 
     beforeEach(function(done){
-      options.credentials = fakeuser
+      options.credentials = fakeuser;
 
       mock = nock("https://license-api-example.com")
         .get("/stripe/bob")
-        .reply(200, fixtures.customers.happy)
+        .reply(200, fixtures.customers.happy);
 
       server.inject(options, function (response) {
-        resp = response
-        $ = cheerio.load(resp.result)
-        mock.done()
-        done()
-      })
+        resp = response;
+        $ = cheerio.load(resp.result);
+        mock.done();
+        done();
+      });
 
-    })
+    });
 
     it("adds billing data to view context", function(done){
-      var customer = resp.request.response.source.context.customer
+      var customer = resp.request.response.source.context.customer;
       expect(customer).to.exist();
       expect(customer).to.exist();
       expect(customer.status).to.equal("active");
@@ -142,7 +138,7 @@ describe('GET /settings/billing', function () {
       expect(customer.next_billing_amount).to.equal(700);
       expect(customer.card.brand).to.equal("Visa");
       done();
-    })
+    });
 
     it("renders redacted version of existing billing info", function(done) {
       expect($(".card-info").length).to.equal(1);
@@ -156,7 +152,7 @@ describe('GET /settings/billing', function () {
     it("displays a submit button with update verbiage", function(done){
       expect($("#payment-form input[type=submit]").attr("value")).to.equal("update billing info");
       done();
-    })
+    });
 
     it("renders a hidden cancellation form", function(done) {
       var form = $("#cancel-subscription");
@@ -185,19 +181,19 @@ describe('GET /settings/billing', function () {
   });
 
   describe("paid user with expired license", function() {
-    var mock
-    var resp
-    var $
+    var mock;
+    var resp;
+    var $;
 
     beforeEach(function(done){
-      options.credentials = diana_delinquent
+      options.credentials = diana_delinquent;
       mock = nock("https://license-api-example.com")
         .get("/stripe/diana_delinquent")
-        .reply(200, fixtures.customers.license_expired)
+        .reply(200, fixtures.customers.license_expired);
 
       server.inject(options, function (response) {
-        resp = response
-        $ = cheerio.load(resp.result)
+        resp = response;
+        $ = cheerio.load(resp.result);
         mock.done();
         done();
       });
@@ -207,7 +203,7 @@ describe('GET /settings/billing', function () {
       expect(resp.request.response.source.context.customer.status).to.equal("past_due");
       expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
       done();
-    })
+    });
 
     it("renders information about the expired license", function(done) {
       expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
@@ -219,22 +215,22 @@ describe('GET /settings/billing', function () {
   });
 
   describe("unpaid user", function(){
-    var mock
-    var resp
-    var $
+    var mock;
+    var resp;
+    var $;
 
     beforeEach(function(done){
-      options.credentials = norbert_newbie
+      options.credentials = norbert_newbie;
       mock = nock("https://license-api-example.com")
         .get("/stripe/norbert_newbie")
-        .reply(404)
+        .reply(404);
 
       server.inject(options, function (response) {
-        resp = response
-        $ = cheerio.load(resp.result)
+        resp = response;
+        $ = cheerio.load(resp.result);
         done();
       });
-    })
+    });
 
     it("does not display billing info, because it does not exist", function(done) {
       expect($("body").length).to.equal(1);
@@ -243,12 +239,12 @@ describe('GET /settings/billing', function () {
       expect($(".card-exp-month").length).to.equal(0);
       expect($(".card-exp-year").length).to.equal(0);
       done();
-    })
+    });
 
     it("displays a submit button with creation verbiage", function(done){
       expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
       done();
-    })
+    });
 
     it("does not render a cancellation form", function(done) {
       var form = $("#cancel-subscription");
@@ -299,10 +295,10 @@ describe('POST /settings/billing', function () {
           .get("/stripe/bob")
           .reply(200, fixtures.customers.happy)
           .post("/stripe/bob")
-          .reply(200, fixtures.customers.happy)
+          .reply(200, fixtures.customers.happy);
 
         server.inject(opts, function (resp) {
-          mock.done()
+          mock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
@@ -333,10 +329,10 @@ describe('POST /settings/billing', function () {
           .get("/stripe/bob")
           .reply(404)
           .put("/stripe")
-          .reply(200, fixtures.customers.happy)
+          .reply(200, fixtures.customers.happy);
 
         server.inject(opts, function (resp) {
-          mock.done()
+          mock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
@@ -385,10 +381,10 @@ describe('POST /settings/billing/cancel', function () {
 
       var mock = nock("https://license-api-example.com")
         .delete("/stripe/bob")
-        .reply(200, fixtures.customers.happy)
+        .reply(200, fixtures.customers.happy);
 
       server.inject(opts, function (resp) {
-        mock.done()
+        mock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.match(/\/settings\/billing\?canceled=1$/);
         done();

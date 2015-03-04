@@ -79,10 +79,6 @@ server.register(require('hapi-auth-cookie'), function (err) {
 
     server.route(require('./routes/index'));
 
-    server.models = {
-      User: require('./models/user'),
-    };
-
     server.start(function() {
       metrics.metric({
         env: process.env.NODE_ENV,

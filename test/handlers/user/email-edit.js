@@ -21,7 +21,7 @@ var _ = require('lodash'),
 var server, cookieCrumb,
     client, redisProcess,
     fakeuser = fixtures.users.fakeusercouch,
-    fakeusercli = fixtures.users.fakeusercli,
+    fakeusercli = fixtures.users.mikeal,
     newEmail = 'new@fakeuser.com',
     oldEmail = fakeuser.email,
     emailEdits = require('../../fixtures/email_edit');

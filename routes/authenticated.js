@@ -16,15 +16,15 @@ module.exports = [
   },{
     path: "/profile-edit",
     method: "GET",
-    handler: require('../facets/user/show-profile-edit')(config.user.profileFields)
+    handler: require('../facets/user/show-profile-edit')
   },{
     path: "/profile-edit",
     method: "PUT",
-    handler: require('../facets/user/show-profile-edit')(config.user.profileFields)
+    handler: require('../facets/user/show-profile-edit')
   },{
     path: "/profile-edit",
     method: "POST",
-    handler: require('../facets/user/show-profile-edit')(config.user.profileFields)
+    handler: require('../facets/user/show-profile-edit')
   },{
     path: "/email-edit",
     method: "GET",

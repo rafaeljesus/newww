@@ -1,9 +1,8 @@
-var utils = require('../../lib/utils');
+var utils = require('../../lib/utils'),
+    User = require('../../models/user');
 
 module.exports = function confirmEmail (request, reply) {
   var opts = {};
-
-  var User = new request.server.models.User({logger: request.logger});
 
   if (!request.params || !request.params.token) {
     request.logger.warn('no token parameter');
@@ -40,15 +39,17 @@ module.exports = function confirmEmail (request, reply) {
     var name = cached.name;
     request.logger.warn('Confirming email for user ' + name);
 
-    User.get(name, function (err, user) {
+    var UserModel = User.new(request);
+
+    UserModel.get(name, function (err, user) {
 
       if (err) {
-          request.logger.error('Failed to get user ' + name);
-          request.logger.error(err);
-          return reply.view('errors/internal', opts).code(500);
+        request.logger.error('Failed to get user ' + name);
+        request.logger.error(err);
+        return reply.view('errors/internal', opts).code(500);
       }
 
-      User.confirmEmail(user, function (err) {
+      UserModel.confirmEmail(user, function (err) {
         if (err) {
           request.logger.error('Failed to confirm email for ' + name);
           request.logger.error(err);

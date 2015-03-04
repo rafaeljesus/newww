@@ -55,10 +55,10 @@ module.exports = function (cookieCrumb) {
       crumb: cookieCrumb
     },
     alreadyExists: {
-      name: 'fakeusercli',
+      name: 'bob',
       password: '12345',
       verify: '12345',
-      email: 'fakeusercli@boom.com',
+      email: 'bob@boom.me',
       crumb: cookieCrumb
     }
   };

@@ -1,31 +1,31 @@
-var fakeuser = require('./users').fakeuser,
+var bob = require('./users').fakeusercouch,
     newEmail = 'new@fakeuser.com';
 
 module.exports = function (cookieCrumb) {
   return {
     newEmail: {
-      _id: fakeuser._id,
-      name: fakeuser.name,
+      _id: bob._id,
+      name: bob.name,
       password: '12345',
       email: newEmail,
       crumb: cookieCrumb
     },
     missingEmail: {
-      _id: fakeuser._id,
-      name: fakeuser.name,
+      _id: bob._id,
+      name: bob.name,
       password: '12345',
       crumb: cookieCrumb
     },
     invalidEmail: {
-      _id: fakeuser._id,
-      name: fakeuser.name,
+      _id: bob._id,
+      name: bob.name,
       password: '12345',
       email: 'blarg@boom',
       crumb: cookieCrumb
     },
     invalidPassword: {
-      _id: fakeuser._id,
-      name: fakeuser.name,
+      _id: bob._id,
+      name: bob.name,
       password: 'password',
       email: newEmail,
       crumb: cookieCrumb

@@ -5,11 +5,13 @@ var Code = require('code'),
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    fixtures = require('../fixtures'),
+    nock = require('nock'),
+    cheerio = require('cheerio');
 
 var server;
-var fixtures = require('../fixtures.js');
-var username1 = 'fakeuser';
+var username1 = 'bob';
 
 beforeEach(function (done) {
   require('../mocks/server')(function (obj) {
@@ -19,6 +21,14 @@ beforeEach(function (done) {
 });
 
 describe("bonbon", function() {
+
+  var userMock = nock("https://user-api-example.com")
+    .get('/user/' + username1).times(5)
+    .reply(200, fixtures.users.bob)
+    .get('/user/' + username1 + '/package?per_page=9999').times(5)
+    .reply(200, fixtures.users.packages)
+    .get('/user/' + username1 + '/stars').times(5)
+    .reply(200, fixtures.users.stars);
 
   beforeEach(function (done) {
     process.env.NODE_ENV = 'production';
@@ -30,14 +40,16 @@ describe("bonbon", function() {
     done();
   });
 
-
   it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
+
     var options = {
       url: '/~' + username1 + '?json',
       credentials: fixtures.users.npmEmployee
     };
+
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result).to.be.an.object();
@@ -50,8 +62,10 @@ describe("bonbon", function() {
       url: '/~' + username1 + '?json',
       credentials: fixtures.users.npmEmployee
     };
+
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.profile).to.exist();
       expect(resp.result.profile.meta).to.exist();
@@ -66,6 +80,7 @@ describe("bonbon", function() {
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result.github).to.exist();
@@ -81,6 +96,7 @@ describe("bonbon", function() {
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/html/);
       var source = resp.request.response.source;
@@ -96,6 +112,7 @@ describe("bonbon", function() {
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/html/);
       var source = resp.request.response.source;
@@ -112,6 +129,7 @@ describe("bonbon", function() {
       credentials: null
     };
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result).to.be.an.object();

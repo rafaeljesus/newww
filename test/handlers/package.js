@@ -351,6 +351,7 @@ describe("package handler", function(){
     var downloadsMock
 
     beforeEach(function(done){
+      process.env.FEATURE_ACCESS = "yep"
       packageMock = nock("https://user-api-example.com")
         .get('/package/request')
         .reply(200, fixtures.packages.request);
@@ -362,6 +363,11 @@ describe("package handler", function(){
         .reply(200, fixtures.downloads.request.week)
         .get('/point/last-month/request')
         .reply(200, fixtures.downloads.request.month);
+      done()
+    })
+
+    afterEach(function(done){
+      delete process.env.FEATURE_ACCESS
       done()
     })
 
@@ -383,6 +389,25 @@ describe("package handler", function(){
         done();
       });
 
+    });
+
+    it('is not displayed if FEATURE_ACCESS is not set', function (done) {
+      var options = {
+        url: '/package/request',
+        credentials: fixtures.users.mikeal
+      };
+
+      delete process.env.FEATURE_ACCESS
+
+      server.inject(options, function (resp) {
+        packageMock.done()
+        downloadsMock.done()
+        expect(resp.statusCode).to.equal(200);
+        var package = resp.request.response.source.context.package;
+        expect(package.name).to.equal('request');
+        expect(package.isCollaboratedOnByUser).to.equal(false);
+        done();
+      });
     });
 
     it('is not displayed if user is logged in but not a collaborator', function (done) {

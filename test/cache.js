@@ -1,0 +1,121 @@
+var Code = require('code'),
+    Lab = require('lab'),
+    lab = exports.lab = Lab.script(),
+    describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
+    beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
+    it = lab.test,
+    expect = Code.expect,
+    crypto = require('crypto'),
+    sinon = require('sinon'),
+    nock = require('nock');
+
+var cache = require('../lib/cache');
+
+
+describe('lib/cache.js', function()
+{
+    it('requires that configure be called before use', function(done)
+    {
+        function shouldThrow() { return cache.get('foo'); }
+        expect(shouldThrow).to.throw(/configure/);
+        done();
+    });
+
+    it('configure() requires an options object', function(done)
+    {
+        function shouldThrow() { cache.configure(); }
+        expect(shouldThrow).to.throw(/options/);
+        done();
+    });
+
+    it('configure() requires a redis url option', function(done)
+    {
+        function shouldThrow() { cache.configure({}); }
+        expect(shouldThrow).to.throw(/redis/);
+        done();
+    });
+
+    it('configure() creates a redis client', function(done)
+    {
+        expect(cache.redis).to.not.exist();
+        cache.configure({ redis: 'redis://localhost:6379'});
+        expect(cache.redis).to.be.an.object();
+        done();
+    });
+
+    it('configure() respects the `ttl` option', function(done)
+    {
+        expect(cache.DEFAULT_TTL).to.equal(300);
+        cache.configure({ redis: 'redis://localhost:6379', ttl: 600 });
+        expect(cache.DEFAULT_TTL).to.equal(600);
+        done();
+    });
+
+    it('configure() respects the `prefix` option', function(done)
+    {
+        expect(cache.KEY_PREFIX).to.equal('cache:');
+        cache.configure({ redis: 'redis://localhost:6379', prefix: 'fred:' });
+        expect(cache.KEY_PREFIX).to.equal('fred:');
+        done();
+    });
+
+
+    it('_fingerprint() returns an md5 hash prefixed by the key prefix', function(done)
+    {
+        var testKey = { foo: 'bar' };
+        var expected = crypto.createHash('md5').update(JSON.stringify(testKey)).digest('hex');
+        var generated = cache._fingerprint(testKey);
+
+        expect(generated.indexOf(expected)).to.equal(5);
+        expect(generated.indexOf('fred:')).to.equal(0);
+        done();
+    });
+
+    it('_fingerprint() returns the same value for the same input', function(done)
+    {
+        var key1 = { foo: 'bar', baz: 'qux' };
+        var key2 = { baz: 'qux', foo: 'bar' };
+        var gen1 = cache._fingerprint(key1);
+        var gen2 = cache._fingerprint(key2);
+
+        expect(gen1).to.equal(gen2);
+        done();
+    });
+
+    it('get() requires an options argument', function(done)
+    {
+        function shouldThrow() { cache.get(); }
+        expect(shouldThrow).to.throw(/Request/);
+        done();
+    });
+
+    it('get() calls _fingerprint()', function(done)
+    {
+        sinon.spy(cache, '_fingerprint');
+        var opts = {url: 'https://google.com/'};
+
+        cache.get(opts, function(err, data)
+        {
+            expect(cache._fingerprint.calledOnce).to.be.true;
+            expect(cache._fingerprint.calledWith(opts)).to.be.true;
+            cache._fingerprint.restore();
+            done();
+        });
+    });
+
+    it('get() checks redis for the presence of the data first', function(done)
+    {
+        done();
+    });
+
+    it('get() makes a request using the options argument if redis has no value');
+    it('get() makes a request to the backing service if the redis value is garbage');
+    it('get() gracefully handles a missing or error-returning redis');
+    it('get() sets the value in redis after retrieval');
+    it('get() respects the default TTL');
+
+    it('get() responds with a promise if no callback is provided');
+});

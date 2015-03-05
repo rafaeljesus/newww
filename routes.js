@@ -152,7 +152,7 @@ var unauthenticatedRoutes = [
   },{
     path: "/enterprise/license",
     method: "GET",
-    handler: require('./facets/enterprise/show-license-options'),
+    handler: require('./facets/enterprise/license-options')(config.stripe),
     config: {
       plugins: {
         blankie: {
@@ -164,7 +164,7 @@ var unauthenticatedRoutes = [
   },{
     path: "/enterprise/license",
     method: "POST",
-    handler: require('./facets/enterprise/buy-license'),
+    handler: require('./facets/enterprise/buy-license')(config.stripe),
     config: {
       plugins: {
         // tolerate Ajax
@@ -174,6 +174,16 @@ var unauthenticatedRoutes = [
         }
       }
     }
+  },{
+    path: "/enterprise/license-paid",
+    method: "GET",
+    handler: require('./facets/enterprise/license-paid'),
+    config: enterpriseConfig
+  },{
+    path: "/enterprise/license-error",
+    method: "GET",
+    handler: require('./facets/enterprise/license-error'),
+    config: enterpriseConfig
   },{
     path: "/package/{package}/{version?}",
     method: "GET",

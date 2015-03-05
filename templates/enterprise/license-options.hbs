@@ -12,16 +12,19 @@
     You can pay monthly or annually.</p>
 
     <form>
-      <input type="hidden" data-key="{{stripeKey}}"/>
+      <input type="hidden" data-key="{{stripeKey}}">
+      <input type="hidden" id="billing-email" value="{{billingEmail}}">
+      <input type="hidden" id="customer-id" value="{{customerId}}">
       <ul>
-        <li><input type="radio" name="starter-pack-plan" value="1"> Monthly ($25/month)</li>
-        <li><input type="radio" name="starter-pack-plan" value="2"> Annual ($250/year)</li>
+        <li><input type="radio" name="starter-pack-plan" value="1" checked> Monthly ($25/month)</li>
+        <li><input type="radio" name="starter-pack-plan" value="2"> Annual ($300/year)</li>
       </ul>
       <input type="submit" class="full-width" value="Buy Starter Pack" id="buy-starter-pack">
       {{> form_security}}
     </form>
   </section>
 
+  <!--
   <section>
     <h2>Multi-seat license: $20/seat/month</h2>
 
@@ -29,12 +32,13 @@
     decrease your number of seats later.</p>
 
     <form>
-      <input type="hidden" data-key="{{stripeKey}}"/>
+      <input type="hidden" data-key="{{stripeKey}}">
       <p>Number of seats: <input type="text" name="seat-count" id="multi-seat-count" placeholder="10" required></p>
       <input type="submit" class="full-width" value="Buy multi-seat license" id="buy-multi-seat">
       {{> form_security}}
     </form>
   </section>
+  -->
 
   <script src="https://checkout.stripe.com/checkout.js"></script>
 

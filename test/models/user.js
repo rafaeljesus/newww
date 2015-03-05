@@ -70,11 +70,13 @@ describe("User", function(){
 
   describe("verifyPassword", function () {
     it("is essentially login with separated params", function (done) {
-      var userMock = nock(User.host)
-        .post('/user/fakeuser/login')
-        .reply(200, fixtures.users.fakeuser);
+      var bob = fixtures.users.bob;
 
-      User.verifyPassword('fakeuser', '12345', function (err, user) {
+      var userMock = nock(User.host)
+        .post('/user/'+ bob.name + '/login')
+        .reply(200, bob);
+
+      User.verifyPassword(bob.name, '12345', function (err, user) {
         expect(err).to.be.null();
         expect(user).to.exist();
         userMock.done();

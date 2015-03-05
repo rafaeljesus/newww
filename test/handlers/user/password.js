@@ -7,11 +7,11 @@ var generateCrumb = require("../crumb"),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
+    nock = require("nock"),
     redisSessions = require('../../../adapters/redis-sessions');
 
 var server,
-    fakeuser = require('../../fixtures/users').fakeusercouch,
-    fakeChangePass = require('../../fixtures/users').fakeuserChangePassword;
+    users = require('../../fixtures').users;
 
 // prepare the server
 before(function (done) {
@@ -41,7 +41,7 @@ describe('Getting to the password page', function () {
   it('takes authorized users to the password page', function (done) {
     var options = {
       url: '/password',
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(options, function (resp) {
@@ -81,7 +81,7 @@ describe('Changing the password', function () {
     var options = {
       url: '/password',
       method: 'post',
-      payload: fakeChangePass
+      payload: users.changePass
     };
 
     server.inject(options, function (resp) {
@@ -96,7 +96,7 @@ describe('Changing the password', function () {
       url: '/password',
       method: 'POST',
       payload: {},
-      credentials: fakeuser,
+      credentials: users.bob,
     };
 
     server.inject(options, function (resp) {
@@ -106,50 +106,69 @@ describe('Changing the password', function () {
   });
 
   it('renders an error if unable to drop sessions for the user', function (done) {
+
+    var name = "fakeusercli";
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/" + name + "/login", {password: '12345'})
+      .reply(200, users.bob)
+      .post("/user/" + name)
+      .reply(200, users.bob);
+
     generateCrumb(server, function (crumb){
       var options = {
         url: '/password',
         method: 'post',
-        payload: fakeChangePass,
-        credentials: fakeuser,
+        payload: users.changePass,
+        credentials: users.bob,
         headers: { cookie: 'crumb=' + crumb }
       };
 
       // force redis error
-      options.credentials.name = 'fakeusercli';
+      options.credentials.name = name;
 
       options.payload.crumb = crumb;
 
       server.inject(options, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(500);
         var source = resp.request.response.source;
         expect(source.template).to.include('errors/internal');
 
         // undo the damage from earlier
-        fakeuser.name = 'fakeusercouch';
+        users.bob.name = 'bob';
         done();
       });
     });
   });
 
   it('allows authorized password changes to go through', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/" + users.bob.name + "/login", {password: '12345'})
+      .reply(200, users.bob)
+      .post("/user/" + users.bob.name + "/login", {password: 'abcde'})
+      .reply(200, users.bob)
+      .post("/user/" + users.bob.name, {"name":"bob","password":"abcde","mustChangePass":false})
+      .reply(200, users.bob);
+
     generateCrumb(server, function (crumb){
       var options = {
         url: '/password',
         method: 'post',
-        payload: fakeChangePass,
-        credentials: fakeuser,
+        payload: users.changePass,
+        credentials: users.bob,
         headers: { cookie: 'crumb=' + crumb }
       };
 
       options.payload.crumb = crumb;
 
       server.inject(options, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.include('profile');
         done();
       });
-
     });
   });
 });

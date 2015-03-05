@@ -67,6 +67,12 @@ exports.bobUpdated = {
   deleted: null
 };
 
+exports.changePass = {
+  current: '12345',
+  new: 'abcde',
+  verify: 'abcde'
+};
+
 exports.mikeal = {
   name: 'mikeal',
   email: 'mikeal@president-of-javascript.com',
@@ -301,73 +307,4 @@ exports.packages = {
       "deleted": null
     }
   ]
-};
-
-// THESE WILL BE DELETED I PROMISE
-exports.fakeusercouch = {
-  "_id": "org.couchdb.user:fakeusercouch",
-  "_rev": "4-ee6a224abd5503882ac5150f9e8f5a7a",
-  "name": "fakeusercouch",
-  "type": "user",
-  "salt": "b6da1cbb4e1e0a3a4903afc92ed73c11293848485d057f34c8ab3c6093ba",
-  "date": "2014-04-16T18:16:44.025Z",
-  "email": "b@fakeuser.com",
-  "avatar": {
-    "small": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=50&d=retro",
-    "medium": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=100&d=retro",
-    "large": "https://secure.gravatar.com/avatar/81668436195664f28a376e0407dbfbd3?s=496&d=retro"
-   },
-  "fields": [{
-    "name": "fullname",
-    "value": "Boom",
-    "title": "Full Name",
-    "show": "Boom"
-  }, {
-    "name": "email",
-    "value": "b@fakeuser.com",
-    "title": "Email",
-    "show": "<a href=\"mailto:b@fakeuser.com\">b@fakeuser.com</a>"
-  }, {
-    "name": "github",
-    "value": "abcde",
-    "title": "GitHub",
-    "show": "<a rel=\"me\" href=\"https://github.com/abcde\">abcde</a>"
-  }, {
-    "name": "twitter",
-    "value": "fakeuser",
-    "title": "Twitter",
-    "show": ""
-  }, {
-    "name": "appdotnet",
-    "value": "",
-    "title": "App.net",
-    "show": ""
-  }, {
-    "name": "homepage",
-    "value": "",
-    "title": "Homepage",
-    "show": ""
-  }, {
-    "name": "freenode",
-    "value": "",
-    "title": "IRC Handle",
-    "show": ""
-  }],
-  "fullname": "Boom",
-  "github": "abcde",
-  "twitter": "",
-  "appdotnet": "",
-  "homepage": "",
-  "freenode": "",
-  "roles": [],
-  "mustChangePass": false,
-  "derived_key": "a7a5bcffa127d44e214fbb0c3148b89c23100c9a",
-  "password_scheme": "pbkdf2",
-  "iterations": 10
-};
-
-exports.fakeuserChangePassword = {
-  current: '12345',
-  new: 'abcde',
-  verify: 'abcde'
 };

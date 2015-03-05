@@ -90,7 +90,6 @@
     "repl-client": "~0.3.0",
     "replify": "~1.2.0",
     "request": "^2.51.0",
-    "sanitizer": "^0.1.1",
     "schemeless": "^1.0.0",
     "scooter": "^2.0.1",
     "similarity": "^1.0.1",

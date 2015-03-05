@@ -1,13 +1,11 @@
-{{#if paginate}}
+{{#if pages}}
   <div class="pagination">
-    {{#if prevPage}}
-      <a href="{{prevUrl}}" class="previous">Previous</a>
+    {{#if pages.prev}}
+      <a href="{{pages.prev}}" class="previous">Previous Page</a>
     {{/if}}
 
-    <a href="{{currUrl}}" class="active">{{page}}</a>
-
-    {{#if nextPage}}
-      <a href="{{nextUrl}}" class="next">Next</a>
+    {{#if pages.next}}
+      <a href="{{pages.next}}" class="next">Next Page</a>
     {{/if}}
   </div>
 {{/if}}

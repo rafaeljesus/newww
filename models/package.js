@@ -59,6 +59,8 @@ Package.prototype.list = function(options) {
     query: options,
   })
 
+  console.log("package.list()", url)
+
   return new Promise(function(resolve, reject) {
     var opts = {
       url: url,

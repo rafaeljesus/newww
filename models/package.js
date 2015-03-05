@@ -24,7 +24,6 @@ Package.prototype.get = function(name, options) {
   var package;
   var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
 
-
   return new Promise(function(resolve, reject) {
     var opts = {
       url: url,
@@ -58,8 +57,6 @@ Package.prototype.list = function(options) {
     pathname: "/package",
     query: options,
   })
-
-  console.log("package.list()", url)
 
   return new Promise(function(resolve, reject) {
     var opts = {

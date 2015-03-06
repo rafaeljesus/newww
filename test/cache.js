@@ -12,11 +12,17 @@ var Code = require('code'),
     sinon = require('sinon'),
     nock = require('nock');
 
-var cache = require('../lib/cache');
-
+var cache;
 
 describe('lib/cache.js', function()
 {
+
+    beforeEach(function(done)
+    {
+        cache = require('../lib/cache');
+        done();
+    });
+
     it('requires that configure be called before use', function(done)
     {
         function shouldThrow() { return cache.get('foo'); }
@@ -95,12 +101,14 @@ describe('lib/cache.js', function()
     it('get() calls _fingerprint()', function(done)
     {
         sinon.spy(cache, '_fingerprint');
-        var opts = {url: 'https://google.com/'};
+
+        nock("https://fingerprint.com").get("/").reply(200);
+        var opts = {method: "get", url: 'https://fingerprint.com/'};
 
         cache.get(opts, function(err, data)
         {
-            expect(cache._fingerprint.calledOnce).to.be.true;
-            expect(cache._fingerprint.calledWith(opts)).to.be.true;
+            expect(cache._fingerprint.calledOnce).to.be.true();
+            expect(cache._fingerprint.calledWith(opts)).to.be.true();
             cache._fingerprint.restore();
             done();
         });
@@ -108,14 +116,132 @@ describe('lib/cache.js', function()
 
     it('get() checks redis for the presence of the data first', function(done)
     {
-        done();
+        sinon.spy(cache.redis, 'get');
+        var opts = {url: 'https://google.com/'};
+        var fingerprint = cache._fingerprint(opts);
+
+        cache.get(opts, function(err, data)
+        {
+            expect(cache.redis.get.calledOnce).to.equal(true);
+            expect(cache.redis.get.calledWith(fingerprint)).to.equal(true);
+            cache.redis.get.restore();
+            done();
+        });
     });
 
-    it('get() makes a request using the options argument if redis has no value');
-    it('get() makes a request to the backing service if the redis value is garbage');
-    it('get() gracefully handles a missing or error-returning redis');
-    it('get() sets the value in redis after retrieval');
-    it('get() respects the default TTL');
+    it('get() makes a request using the options argument if redis has no value', function(done)
+    {
+
+      sinon.stub(cache.redis, 'get').yields(null);
+
+      var opts = {
+        method: "get",
+        url: 'https://google.com/searching'
+      };
+
+      var mock = nock("https://google.com")
+          .get("/searching")
+          .reply(200);
+
+      cache.get(opts, function(err, data)
+      {
+          expect(cache.redis.get.calledOnce).to.equal(true);
+          cache.redis.get.restore();
+          mock.done();
+          done();
+      });
+    });
+
+    it('get() makes a request to the backing service if the redis value is garbage', function (done)
+    {
+
+      sinon.stub(cache.redis, 'get').yields(null, null);
+
+      var opts = {
+          method: "get",
+          url: 'https://google.com/again'
+      };
+
+      var mock = nock("https://google.com")
+          .get("/again")
+          .reply(200);
+
+      cache.get(opts, function(err, data)
+      {
+          expect(cache.redis.get.calledOnce).to.equal(true);
+          cache.redis.get.restore();
+          mock.done();
+          done();
+      });
+    });
+
+    it('get() gracefully handles a missing or error-returning redis', function(done)
+    {
+
+      sinon.stub(cache.redis, 'get').yields(Error("hello redis error"));
+      sinon.spy(cache, 'logger');
+
+      var opts = {
+          url: 'https://logging.com/'
+      };
+
+      cache.get(opts, function(err, data)
+      {
+          expect(cache.logger.calledTwice).to.equal(true);
+          expect(cache.logger.calledWithMatch(/problem getting/)).to.equal(true);
+          cache.logger.restore();
+          done();
+      });
+    });
+
+    it('get() sets the value in redis after retrieval', function(done)
+    {
+
+      sinon.spy(cache.redis, 'set');
+
+      var opts = {
+          method: "get",
+          url: 'https://cache.com/hello'
+      };
+      var fingerprint = cache._fingerprint(opts);
+      var mock = nock("https://cache.com")
+          .get("/hello")
+          .reply(200);
+
+      cache.get(opts, function(err, data)
+      {
+          mock.done();
+          expect(cache.logger.calledOnce).to.equal(true);
+          expect(cache.redis.set.calledWithMatch(fingerprint)).to.equal(true);
+          cache.redis.set.restore();
+          done();
+      });
+    });
+
+    it('get() respects the default TTL', function(done)
+    {
+      expect(cache.DEFAULT_TTL).to.equal(600);
+
+      sinon.spy(cache.redis, 'set');
+
+      var opts = {
+          method: "get",
+          url: 'https://cache.com/hello-again'
+      };
+      var fingerprint = cache._fingerprint(opts);
+      var mock = nock("https://cache.com")
+          .get("/hello-again")
+          .reply(200);
+
+      cache.get(opts, function(err, data)
+      {
+          mock.done();
+          expect(cache.logger.calledOnce).to.equal(true);
+          expect(cache.redis.set.calledWithMatch(fingerprint, 600)).to.equal(true);
+          cache.redis.set.restore();
+          done();
+      });
+    });
 
     it('get() responds with a promise if no callback is provided');
 });

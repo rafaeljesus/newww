@@ -66,7 +66,23 @@ describe("User", function(){
         done();
       });
     });
+  });
 
+  describe("verifyPassword", function () {
+    it("is essentially login with separated params", function (done) {
+      var bob = fixtures.users.bob;
+
+      var userMock = nock(User.host)
+        .post('/user/'+ bob.name + '/login')
+        .reply(200, bob);
+
+      User.verifyPassword(bob.name, '12345', function (err, user) {
+        expect(err).to.be.null();
+        expect(user).to.exist();
+        userMock.done();
+        done();
+      });
+    });
   });
 
   describe("get()", function() {

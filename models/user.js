@@ -298,3 +298,12 @@ User.prototype.signup = function (user, callback) {
 User.prototype.getMailchimp = function getMailchimp () {
   return new mailchimp.Mailchimp(process.env.MAILCHIMP_KEY);
 };
+
+User.prototype.verifyPassword = function (name, password, callback) {
+  var loginInfo = {
+    name: name,
+    password: password
+  };
+
+  return this.login(loginInfo, callback);
+};

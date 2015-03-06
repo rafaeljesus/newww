@@ -7,30 +7,30 @@ var generateCrumb = require("../crumb"),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    nock = require("nock");
 
 var _ = require('lodash'),
     redis = require('redis'),
     spawn = require('child_process').spawn,
     config = require('../../../config').server.cache,
-    fixtures = require('../../fixtures.js');
+    fixtures = require('../../fixtures'),
+    users = fixtures.users,
+    emails = fixtures.email_edit;
 
     config.port = 6379;
     config.password = '';
 
 var server, cookieCrumb,
     client, redisProcess,
-    fakeuser = fixtures.users.fakeusercouch,
-    fakeusercli = fixtures.users.mikeal,
-    newEmail = 'new@fakeuser.com',
-    oldEmail = fakeuser.email,
-    emailEdits = require('../../fixtures/email_edit');
+    newEmail = 'new@boom.me',
+    oldEmail = users.bob.email;
 
 var postEmail = function (emailOpts) {
   return {
     url: '/email-edit',
     method: 'POST',
-    credentials: fakeuser,
+    credentials: users.bob,
     payload: emailOpts,
     headers: { cookie: 'crumb=' + cookieCrumb }
   };
@@ -82,13 +82,13 @@ describe('Accessing the email-edit page', function () {
   it('takes authorized users to the email-edit page', function (done) {
     var opts = {
       url: '/email-edit',
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
       generateCrumb(server, function (crumb){
         cookieCrumb = crumb;
-        emailEdits = emailEdits(cookieCrumb);
+        emails = emails(cookieCrumb);
 
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
@@ -104,7 +104,7 @@ describe('Requesting an email change', function () {
     var opts = {
       url: '/email-edit',
       method: 'POST',
-      payload: emailEdits.newEmail
+      payload: emails.newEmail
     };
 
     server.inject(opts, function (resp) {
@@ -119,7 +119,7 @@ describe('Requesting an email change', function () {
       url: '/email-edit',
       method: 'POST',
       payload: {},
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(options, function (resp) {
@@ -129,7 +129,7 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if an email address is not provided', function (done) {
-    server.inject(postEmail(emailEdits.missingEmail), function (resp) {
+    server.inject(postEmail(emails.missingEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
@@ -139,7 +139,7 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if an invalid email address is provided', function (done) {
-    server.inject(postEmail(emailEdits.invalidEmail), function (resp) {
+    server.inject(postEmail(emails.invalidEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
@@ -149,7 +149,13 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if the password is invalid', function (done) {
-    server.inject(postEmail(emailEdits.invalidPassword), function (resp) {
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/" + emails.invalidPassword.name + "/login", {password: emails.invalidPassword.password})
+      .reply(401);
+
+    server.inject(postEmail(emails.invalidPassword), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(403);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
@@ -159,7 +165,13 @@ describe('Requesting an email change', function () {
   });
 
   it('sends two emails if everything goes properly', function (done) {
-    server.inject(postEmail(emailEdits.newEmail), function (resp) {
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/" + emails.newEmail.name + "/login", {password: emails.newEmail.password})
+      .reply(200, users.bob);
+
+    server.inject(postEmail(emails.newEmail), function (resp) {
+      mock.done();
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
       done();
@@ -183,7 +195,7 @@ describe('Confirming an email change', function () {
   it('renders an error if a token is not included in the url', function (done) {
     var opts = {
       url: '/email-edit/confirm',
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
@@ -195,7 +207,7 @@ describe('Confirming an email change', function () {
   it('renders an error if the token doesn\'t exist', function (done) {
     var opts = {
       url: '/email-edit/confirm/something',
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
@@ -211,7 +223,7 @@ describe('Confirming an email change', function () {
 
       var opts = {
         url: '/email-edit/confirm/' + tokens.confToken,
-        credentials: fakeusercli
+        credentials: users.mikeal
       };
 
       server.inject(opts, function (resp) {
@@ -224,16 +236,23 @@ describe('Confirming an email change', function () {
   });
 
   it('changes the user\'s email when everything works properly', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/" + users.bob.name, {"name":"bob","email":"new@boom.me"})
+      .reply(200);
+
+
     setEmailHashesInRedis(function (err, tokens) {
 
       var opts = {
         url: '/email-edit/confirm/' + tokens.confToken,
-        credentials: fakeuser
+        credentials: users.bob
       };
 
       server.inject(opts, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(200);
-        expect(fakeuser.email).to.equal(newEmail);
+        expect(users.bob.email).to.equal(newEmail);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/email-edit-confirmation');
         done();
@@ -258,7 +277,7 @@ describe('Reverting an email change', function () {
   it('renders an error if a token is not included in the url', function (done) {
     var opts = {
       url: '/email-edit/revert',
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
@@ -270,7 +289,7 @@ describe('Reverting an email change', function () {
   it('renders an error if the token doesn\'t exist', function (done) {
     var opts = {
       url: '/email-edit/revert/something',
-      credentials: fakeuser
+      credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
@@ -301,15 +320,21 @@ describe('Reverting an email change', function () {
   });
 
   it('changes the user\'s email when everything works properly', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/" + users.bob.name, {"name":"bob","email":"bob@boom.me"})
+      .reply(200);
+
     setEmailHashesInRedis(function (err, tokens) {
       var opts = {
         url: '/email-edit/revert/' + tokens.revToken,
-        credentials: fakeuser
+        credentials: users.bob
       };
 
       server.inject(opts, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(200);
-        expect(fakeuser.email).to.equal(oldEmail);
+        expect(users.bob.email).to.equal(oldEmail);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/email-edit-confirmation');
         done();
@@ -330,9 +355,9 @@ function setEmailHashesInRedis (cb) {
       revKey = 'email_change_rev_' + revHash;
 
   var data = {
-    name: 'fakeusercouch',
-    changeEmailFrom: 'b@fakeuser.com',
-    changeEmailTo: 'new@fakeuser.com'
+    name: 'bob',
+    changeEmailFrom: oldEmail,
+    changeEmailTo: newEmail
   };
 
   var confData = _.extend({}, data, {

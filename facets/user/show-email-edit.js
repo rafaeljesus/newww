@@ -1,7 +1,9 @@
 
-var userValidate = require('npm-user-validate'),
+var _ = require('lodash'),
+    userValidate = require('npm-user-validate'),
     crypto = require('crypto'),
-    utils = require('../../lib/utils');
+    utils = require('../../lib/utils'),
+    UserModel = require('../../models/user');
 
 var from, host;
 
@@ -37,9 +39,9 @@ module.exports = function (options) {
 
     if (request.method === 'post' || request.method === 'put') {
       var data = request.payload,
-          email2 = data.email;
+          emailTo = data.email;
 
-      if (!email2 || userValidate.email(email2)) {
+      if (!emailTo || userValidate.email(emailTo)) {
         opts.error = {email: true};
 
         request.timing.page = 'email-edit-error';
@@ -50,28 +52,26 @@ module.exports = function (options) {
 
       var user = request.auth.credentials;
 
-      var salt = user.salt,
-          pwHash = user.password_sha ? utils.sha(data.password + salt) :
-                   utils.pbkdf2(data.password, salt, parseInt(user.iterations, 10)),
-          profHash = user.password_sha || user.derived_key;
+      UserModel.new(request)
+        .verifyPassword(user.name, data.password, function (err, isCorrect) {
+          if (!isCorrect) {
+            opts.error = {password: true};
 
-      if (pwHash !== profHash) {
-        opts.error = {password: true};
+            request.timing.page = 'email-edit-error';
 
-        request.timing.page = 'email-edit-error';
+            request.metrics.metric({ name: 'email-edit-error' });
+            return reply.view('user/email-edit', opts).code(403);
+          }
 
-        request.metrics.metric({ name: 'email-edit-error' });
-        return reply.view('user/email-edit', opts).code(403);
-      }
-
-      return handle(request, reply, email2);
+          return handle(request, reply, emailTo);
+        });
     }
   };
 };
 
 // ======== functions ======
 
-function handle (request, reply, email2) {
+function handle (request, reply, emailTo) {
   var opts = { };
 
   var name = request.auth.credentials.name;
@@ -79,7 +79,7 @@ function handle (request, reply, email2) {
   var data = {
     name: name,
     changeEmailFrom: request.auth.credentials.email,
-    changeEmailTo: email2,
+    changeEmailTo: emailTo,
     confToken: crypto.randomBytes(18).toString('hex'),
     revToken: crypto.randomBytes(18).toString('hex')
   };
@@ -87,6 +87,7 @@ function handle (request, reply, email2) {
   var sendEmail = request.server.methods.email.send;
 
   // don't send the confmail until we know the revert mail was sent!
+  data.email = data.changeEmailFrom;
   sendEmail('revert-email-change', data, request.redis)
     .catch(function (er) {
       request.logger.error('Unable to send revert email to ' + data.changeEmailFrom);
@@ -95,6 +96,7 @@ function handle (request, reply, email2) {
       return;
     })
     .then(function () {
+      data.email = data.changeEmailTo;
       sendEmail('confirm-email-change', data, request.redis)
         .catch(function (er) {
           request.logger.error('Unable to send confirmation email to ' + data.changeEmailTo);
@@ -112,8 +114,8 @@ function handle (request, reply, email2) {
 }
 
 function confirm (request, reply) {
-  var methods = request.server.methods,
-      setSession = request.server.methods.user.setSession(request);
+  var setSession = request.server.methods.user.setSession(request),
+      User = UserModel.new(request);
 
   var opts = { },
       user = request.auth.credentials;
@@ -147,7 +149,7 @@ function confirm (request, reply) {
       return;
     }
 
-    var email2 = cached.changeEmailTo,
+    var emailTo = cached.changeEmailTo,
         hash = cached.hash;
 
     if (hash !== confHash) {
@@ -162,16 +164,21 @@ function confirm (request, reply) {
         request.logger.warn('Unable to drop key ' + confKey);
       }
 
-      methods.user.changeEmail(user.name, email2, function (er) {
+      var toSave = {
+        name: user.name,
+        email: emailTo
+      };
+
+      User.save(toSave, function (er) {
 
         if (er) {
-          request.logger.error('Unable to change email for ' + user.name + ' to ' + email2);
+          request.logger.error('Unable to change email for ' + user.name + ' to ' + emailTo);
           request.logger.error(er);
           reply.view('errors/internal', opts).code(500);
           return;
         }
 
-        user.email = email2;
+        user.email = emailTo;
         opts.confirmed = true;
 
         setSession(user, function (err) {
@@ -183,18 +190,12 @@ function confirm (request, reply) {
             return;
           }
 
-          methods.user.getUser.cache.drop(user.name, function (er) {
-            if (er) {
-              request.logger.warn('Unable to drop profile cache for ' + user.name);
-            }
+          request.timing.page = 'confirmEmailChange';
+          request.metrics.metric({ name: 'confirmEmailChange' });
 
-            request.timing.page = 'confirmEmailChange';
-            request.metrics.metric({ name: 'confirmEmailChange' });
+          opts.title = "Edit Profile";
 
-            opts.title = "Edit Profile";
-
-            return reply.view('user/email-edit-confirmation', opts);
-          });
+          return reply.view('user/email-edit-confirmation', opts);
         });
       });
     });
@@ -202,8 +203,8 @@ function confirm (request, reply) {
 }
 
 function revert (request, reply) {
-  var methods = request.server.methods,
-      setSession = request.server.methods.user.setSession(request);
+  var setSession = request.server.methods.user.setSession(request),
+      User = UserModel.new(request);
 
   var opts = { },
       user = request.auth.credentials;
@@ -237,7 +238,7 @@ function revert (request, reply) {
       return;
     }
 
-    var email1 = cached.changeEmailFrom,
+    var emailFrom = cached.changeEmailFrom,
         confHash = utils.sha(cached.confToken),
         confKey = 'email_change_conf_' + confHash,
         hash = cached.hash;
@@ -260,16 +261,21 @@ function revert (request, reply) {
           request.logger.warn('Unable to drop key ' + revKey);
         }
 
-        methods.user.changeEmail(user.name, email1, function (er) {
+        var toSave = {
+          name: user.name,
+          email: emailFrom
+        };
+
+        User.save(toSave, function (er) {
 
           if (er) {
-            request.logger.error('Unable to revert email for ' + user.name + ' to ' + email1);
+            request.logger.error('Unable to revert email for ' + user.name + ' to ' + emailFrom);
             request.logger.error(er);
             reply.view('errors/internal', opts).code(500);
             return;
           }
 
-          user.email = email1;
+          user.email = emailFrom;
 
           setSession(user, function (err) {
 
@@ -280,19 +286,12 @@ function revert (request, reply) {
               return;
             }
 
-            methods.user.getUser.cache.drop(user.name, function (er) {
-              if (er) {
-                request.logger.warn('Unable to drop profile cache for ' + user.name);
-              }
+            request.timing.page = 'revertEmailChange';
+            request.metrics.metric({ name: 'revertEmailChange' });
 
-              request.timing.page = 'revertEmailChange';
+            opts.title = "Edit Profile";
 
-              request.metrics.metric({ name: 'revertEmailChange' });
-
-              opts.title = "Edit Profile";
-
-              return reply.view('user/email-edit-confirmation', opts);
-            });
+            return reply.view('user/email-edit-confirmation', opts);
           });
         });
       });

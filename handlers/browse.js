@@ -1,5 +1,6 @@
 var Package = require('../models/package')
 var merge = require('lodash').merge
+var omit = require('lodash').omit
 var chunk = require('chunk')
 var fmt = require('util').format
 var URL = require('url')
@@ -115,9 +116,8 @@ browse.recentlyCreatedPackages = function(request, reply) {
 
 var paginate = function paginate(request, options, result, context) {
   if (result.hasMore || options.offset > 0) {
-    var url = request.url
-    delete url.search // because URL.format() ignores query if search is set
     context.pages = {}
+    var url = omit(request.url, 'search')
     if (options.offset > 0) {
       url.query.offset = Math.max(options.offset-options.count, 0)
       context.pages.prev = URL.format(url)

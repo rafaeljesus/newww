@@ -151,6 +151,11 @@ var unauthenticatedRoutes = [
     config: enterpriseConfig
   },{
     path: "/enterprise/license",
+    method: ["GET","POST"],
+    handler: require('./facets/enterprise/find-license'),
+    config: enterpriseConfig
+  },{
+    path: "/enterprise/license-options",
     method: "GET",
     handler: require('./facets/enterprise/license-options')(config.stripe),
     config: {
@@ -162,7 +167,7 @@ var unauthenticatedRoutes = [
       }
     }
   },{
-    path: "/enterprise/license",
+    path: "/enterprise/buy-license",
     method: "POST",
     handler: require('./facets/enterprise/buy-license')(config.stripe),
     config: {

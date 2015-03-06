@@ -6,8 +6,7 @@ module.exports = function(options) {
   return function buyLicense(request, reply)
   {
 
-    var verifyTrial = request.server.methods.npme.verifyTrial,
-      getCustomer = request.server.methods.npme.getCustomer,
+    var getCustomer = request.server.methods.npme.getCustomer,
       getLicense = request.server.methods.npme.getLicense;
 
     // get email & license key from parameters

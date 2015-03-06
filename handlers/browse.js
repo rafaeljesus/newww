@@ -117,6 +117,7 @@ browse.recentlyCreatedPackages = function(request, reply) {
 var paginate = function paginate(request, options, result, context) {
   if (result.hasMore || options.offset > 0) {
     context.pages = {}
+    // `url.query` is only used if `url.search` is absent. :[
     var url = omit(request.url, 'search')
     if (options.offset > 0) {
       url.query.offset = Math.max(options.offset-options.count, 0)

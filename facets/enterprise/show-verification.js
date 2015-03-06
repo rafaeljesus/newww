@@ -57,6 +57,8 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
             instructionsUrl = "https://docs.npmjs.com/enterprise/installation",
             license = licenses[0];
 
+        console.log("license: ",license)
+
         var mail = {
           to: '"' + customer.name + '" <' + customer.email + '>',
           from: '" npm Enterprise " <' + from + '>',

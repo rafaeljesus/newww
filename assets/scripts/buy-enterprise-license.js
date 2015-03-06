@@ -25,7 +25,7 @@ module.exports = function () {
         token.crumb = $('input[name="crumb"]').val()
 
         $.ajax({
-          url: '/enterprise/license',
+          url: '/enterprise/buy-license',
           beforeSend: function(xhr) {
             xhr.setRequestHeader('X-CSRF-Token', $('input[name="crumb"]').val())
           },

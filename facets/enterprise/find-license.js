@@ -81,7 +81,7 @@ module.exports = function(request,reply) {
             // no key:
             // create customer
             createCustomer(
-              { email: data.email },
+              { email: data.email, firstname: '', lastname: '' },
               function(err,newCustomer) {
 
                 if(err) {

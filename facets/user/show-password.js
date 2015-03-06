@@ -1,5 +1,5 @@
 var redisSessions = require("../../adapters/redis-sessions");
-var UserModel = require('../../models/User');
+var UserModel = require('../../models/user');
 
 module.exports = function (request, reply) {
   var setSession = request.server.methods.user.setSession(request);

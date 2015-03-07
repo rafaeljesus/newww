@@ -12,16 +12,10 @@ var Code = require('code'),
     sinon = require('sinon'),
     nock = require('nock');
 
-var cache;
+var cache = require('../lib/cache');
 
 describe('lib/cache.js', function()
 {
-
-    beforeEach(function(done)
-    {
-        cache = require('../lib/cache');
-        done();
-    });
 
     it('requires that configure be called before use', function(done)
     {
@@ -179,7 +173,7 @@ describe('lib/cache.js', function()
     {
 
       sinon.stub(cache.redis, 'get').yields(Error("hello redis error"));
-      sinon.spy(cache, 'logger');
+      sinon.spy(cache.logger, 'error');
 
       var opts = {
           url: 'https://logging.com/'
@@ -187,9 +181,9 @@ describe('lib/cache.js', function()
 
       cache.get(opts, function(err, data)
       {
-          expect(cache.logger.calledTwice).to.equal(true);
-          expect(cache.logger.calledWithMatch(/problem getting/)).to.equal(true);
-          cache.logger.restore();
+          expect(cache.logger.error.calledTwice).to.equal(true);
+          expect(cache.logger.error.calledWithMatch(/problem getting/)).to.equal(true);
+          cache.logger.error.restore();
           done();
       });
     });
@@ -197,7 +191,7 @@ describe('lib/cache.js', function()
     it('get() sets the value in redis after retrieval', function(done)
     {
 
-      sinon.spy(cache.redis, 'set');
+      sinon.spy(cache.redis, 'setex');
 
       var opts = {
           method: "get",
@@ -211,18 +205,16 @@ describe('lib/cache.js', function()
       cache.get(opts, function(err, data)
       {
           mock.done();
-          expect(cache.logger.calledOnce).to.equal(true);
-          expect(cache.redis.set.calledWithMatch(fingerprint)).to.equal(true);
-          cache.redis.set.restore();
+          expect(cache.redis.setex.calledWith(fingerprint)).to.equal(true);
+          cache.redis.setex.restore();
           done();
       });
     });
 
     it('get() respects the default TTL', function(done)
     {
-      expect(cache.DEFAULT_TTL).to.equal(600);
 
-      sinon.spy(cache.redis, 'set');
+      sinon.spy(cache.redis, 'setex');
 
       var opts = {
           method: "get",
@@ -236,9 +228,9 @@ describe('lib/cache.js', function()
       cache.get(opts, function(err, data)
       {
           mock.done();
-          expect(cache.logger.calledOnce).to.equal(true);
-          expect(cache.redis.set.calledWithMatch(fingerprint, 600)).to.equal(true);
-          cache.redis.set.restore();
+          expect(cache.DEFAULT_TTL).to.equal(600);
+          expect(cache.redis.setex.calledWithMatch(fingerprint, 600)).to.equal(true);
+          cache.redis.setex.restore();
           done();
       });
     });

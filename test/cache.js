@@ -85,6 +85,17 @@ describe('lib/cache.js', function()
         done();
     });
 
+    it('_fingerprint() removes `ttl` key from the source object', function(done)
+    {
+        var key1 = {foo: 'bar', baz: 'qux'};
+        var key2 = {foo: 'bar', baz: 'qux', ttl: 234};
+        var gen1 = cache._fingerprint(key1);
+        var gen2 = cache._fingerprint(key2);
+
+        expect(gen1).to.equal(gen2);
+        done();
+    });
+
     it('get() requires an options argument', function(done)
     {
         function shouldThrow() { cache.get(); }

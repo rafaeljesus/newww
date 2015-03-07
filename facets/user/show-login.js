@@ -2,6 +2,7 @@ var Boom = require('boom'),
     url = require('url'),
     fmt = require("util").format,
     redis = require("../../adapters/redis-sessions"),
+    avatar = require("../../lib/avatar"),
     User = require('../../models/user');
 
 var lockoutInterval = 60; // seconds
@@ -74,6 +75,8 @@ module.exports = function login (request, reply) {
 
           // log.info("Login received, user available, setting session")
           // log.info("User is",user)
+
+          user.avatar = avatar(user.email);
 
           setSession(user, function (err) {
             if (err) {

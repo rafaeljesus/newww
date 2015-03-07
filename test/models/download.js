@@ -64,24 +64,17 @@ describe("Download", function(){
 
       });
 
-      it("generates an error message when the request fails", function(done){
+      it("swallows errors and returns null when the request fails", function(done){
         var mock = nock(Download.host)
           .get('/point/last-day/request')
           .reply(400);
 
         Download.getDaily("request")
           .then(function(result) {
-            expect(result).to.not.exist();
-          })
-          .catch(function(err){
-            expect(err).to.exist();
-            expect(err.message).to.equal("error getting downloads for period day for request");
-          })
-          .then(function(){
+            expect(result).to.be.null();
             mock.done();
             done();
           });
-
       });
 
     })
@@ -108,41 +101,22 @@ describe("Download", function(){
 
       });
 
-      it("generates an error message when the request fails", function(done){
+      it("returns null if request duration exceeds specified timeout", function(done){
+
+        Download = new (require("../../models/download"))({
+          host: "https://fake-download.com",
+          timeout: 50,
+        });
+        done();
+
         var mock = nock(Download.host)
           .get('/point/last-day')
-          .reply(400);
-
-        Download.getDaily()
-          .then(function(result) {
-            expect(result).to.not.exist();
-          })
-          .catch(function(err){
-            expect(err).to.exist();
-            expect(err.message).to.equal("error getting downloads for period day for all packages");
-          })
-          .then(function(){
-            mock.done();
-            done();
-          });
-
-      });
-
-      it("returns an error if request duration exceeds specified timeout", function(done){
-        var mock = nock(Download.host)
-          .get('/point/last-day')
-          .delayConnection(51)
+          .delayConnection(100)
           .reply(200, fixtures.downloads.all.day);
 
         Download.getDaily()
           .then(function(result) {
-            expect(result).to.not.exist();
-          })
-          .catch(function(err){
-            expect(err).to.exist();
-            expect(err.code).to.equal('ETIMEDOUT');
-          })
-          .then(function(){
+            expect(result).to.be.null();
             mock.done();
             done();
           });

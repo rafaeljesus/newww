@@ -59,19 +59,19 @@ Download.prototype.getSome = function(period, packageName) {
   }
 
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true, timeout: _this.timeout, headers: {bearer: _this.bearer}};
+    var opts = {
+      method: "GET",
+      url: url,
+      json: true,
+      timeout: _this.timeout,
+      headers: {
+        bearer: _this.bearer
+      }
+    };
 
     request.get(opts, function(err, resp, body){
-      if (err) {
-        return reject(err);
-      }
-
-      if (resp.statusCode > 399) {
-        var msg = 'error getting downloads for period ' + period;
-        msg += ' for ' + (packageName || "all packages");
-        err = Error(msg);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+      if (err || resp.statusCode > 399) {
+        return resolve(null);
       }
 
       return resolve(body);

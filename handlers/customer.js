@@ -1,5 +1,6 @@
 var billing = module.exports = {};
-var Customer = require("../models/customer").new()
+var Customer = require("../models/customer").new();
+var config = require("../config").license.hubspot;
 
 billing.getBillingInfo = function (request, reply) {
   var opts = {
@@ -20,6 +21,8 @@ billing.getBillingInfo = function (request, reply) {
 };
 
 billing.updateBillingInfo = function(request, reply) {
+  var sendToHubspot = request.server.methods.npme.sendData;
+
   var billingInfo = {
     name: request.auth.credentials.name,
     email: request.auth.credentials.email,
@@ -31,7 +34,15 @@ billing.updateBillingInfo = function(request, reply) {
       request.logger.error(err);
       return reply.view('errors/internal').code(500);
     }
-    return reply.redirect('/settings/billing?updated=1');
+
+    sendToHubspot(config.form_private_npm_signup, {email: billingInfo.email}, function (er) {
+      if (er) {
+        request.logger.error('unable to send billing email to HubSpot');
+        request.logger.error(er);
+      }
+
+      return reply.redirect('/settings/billing?updated=1');
+    });
   });
 
 };

@@ -62,7 +62,6 @@ describe('lib/cache.js', function()
         done();
     });
 
-
     it('_fingerprint() returns an md5 hash prefixed by the key prefix', function(done)
     {
         var testKey = { foo: 'bar' };
@@ -95,6 +94,18 @@ describe('lib/cache.js', function()
         expect(gen1).to.equal(gen2);
         done();
     });
+
+    it('_fingerprint() downcases the http `method` value', function(done)
+    {
+        var key1 = {method: 'get', url: '/fun'};
+        var key2 = {method: 'GET', url: '/fun'};
+        var gen1 = cache._fingerprint(key1);
+        var gen2 = cache._fingerprint(key2);
+
+        expect(gen1).to.equal(gen2);
+        done();
+    });
+
 
     it('get() requires an options argument', function(done)
     {

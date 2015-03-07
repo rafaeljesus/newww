@@ -36,20 +36,17 @@ Download.prototype.getAll = function(packageName) {
   var _this = this;
   var result = {};
 
-  return _this.getDaily(packageName)
-    .then(function(dailies){
-      result['day'] = dailies
-      return _this.getWeekly(packageName)
-    })
-    .then(function(weeklies){
-      result['week'] = weeklies
-      return _this.getMonthly(packageName)
-    })
-    .then(function(monthlies){
-      result['month'] = monthlies
-      return result
-    })
-
+  return Promise.all([
+    _this.getDaily(packageName),
+    _this.getWeekly(packageName),
+    _this.getMonthly(packageName),
+  ]).then(function(result) {
+    return {
+      day: result[0],
+      week: result[1],
+      month: result[2]
+    }
+  })
 }
 
 Download.prototype.getSome = function(period, packageName) {

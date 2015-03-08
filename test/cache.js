@@ -149,6 +149,7 @@ describe('lib/cache.js', function()
     {
 
       sinon.stub(cache.redis, 'get').yields(null);
+      sinon.spy(cache.logger, 'info');
 
       var opts = {
         method: "get",
@@ -162,7 +163,9 @@ describe('lib/cache.js', function()
       cache.get(opts, function(err, data)
       {
           expect(cache.redis.get.calledOnce).to.equal(true);
+          expect(cache.logger.info.calledWithMatch(/get: /i)).to.equal(true);
           cache.redis.get.restore();
+          cache.logger.info.restore();
           mock.done();
           done();
       });

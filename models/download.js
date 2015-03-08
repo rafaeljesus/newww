@@ -2,6 +2,7 @@ var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
+var cache = require('../lib/cache');
 var URL = require('url');
 
 var Download = module.exports = function (opts) {
@@ -69,12 +70,8 @@ Download.prototype.getSome = function(period, packageName) {
       }
     };
 
-    request.get(opts, function(err, resp, body){
-      if (err || resp.statusCode > 399) {
-        return resolve(null);
-      }
-
-      return resolve(body);
+    cache.get(opts, function(err, body){
+      return resolve(body || null);
     });
   })
 };

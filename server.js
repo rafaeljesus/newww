@@ -35,6 +35,13 @@ couchDB.init(config.couch);
 // configure metrics as a side effect
 var metrics = require('./adapters/metrics')(config.metrics);
 
+// configure http request cache
+require("./lib/cache").configure({
+    redis: process.env.REDIS_URL,
+    ttl: 500,
+    prefix: "cache:"
+})
+
 server.register(require('hapi-auth-cookie'), function (err) {
   if (err) { throw err; }
 

@@ -107,7 +107,6 @@ describe("Download", function(){
           host: "https://fake-download.com",
           timeout: 50,
         });
-        done();
 
         var mock = nock(Download.host)
           .get('/point/last-day')

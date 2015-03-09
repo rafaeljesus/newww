@@ -226,6 +226,24 @@ describe("Package", function(){
         });
     });
 
+    describe("filtering", function(){
+      it("allows results to be filtered by various properties", function(done) {
+        var mock = nock(Package.host)
+          .get('/package?author=zeke')
+          .reply(200);
+
+        var options = {
+          author: "zeke"
+        }
+
+        Package.list(options)
+        .then(function(){
+          mock.done();
+          done();
+        });
+      });
+    });
+
   });
 
   describe("count()", function(){

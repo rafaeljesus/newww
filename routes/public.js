@@ -135,47 +135,52 @@ var publicRoutes = [
     method: "GET",
     handler: require('../handlers/access')
   },{
-    // Redirect to /~user#packages
     path: "/browse/author/{user}",
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect(fmt("/~%s#packages", request.params.user)).code(301);
     }
   },{
-    // Redirect to /~user#starred
     path: "/browse/userstar/{user}",
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect(fmt("/~%s#starred", request.params.user)).code(301);
     }
   },{
-    // Legacy stuff redirects to the homepage
     paths: [
       "/browse/all",
       "/recent-authors/{since?}",
       "/browse/userstar",
+      "/browse/keyword",
     ],
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect("/").code(301);
     }
   },{
-    // Catch-all for all other browse pages
-    // - top keywords
-    // - packages that have a certain keywords
-    // - recently updated packages
-    // - prolific authors
-    // - most depended-upon packages
-    // - all the packages that depend on the given package
-    path: "/browse/{p*}",
+    path: "/browse/keyword/{keyword}",
     method: "GET",
-    handler: require('../facets/registry/show-browse')
+    handler: require('../handlers/browse').packagesByKeyword
   },{
-    path: "/keyword/{kw}",
+    path: "/browse/depended",
     method: "GET",
-    handler: function(request, reply) {
-      return reply.redirect('/browse/keyword/' + request.params.kw).code(301);
-    }
+    handler: require('../handlers/browse').mostDependedUponPackages
+  },{
+    path: "/browse/depended/{package}",
+    method: "GET",
+    handler: require('../handlers/browse').packageDependents
+  },{
+    path: "/browse/star",
+    method: "GET",
+    handler: require('../handlers/browse').mostStarredPackages
+  },{
+    path: "/browse/updated",
+    method: "GET",
+    handler: require('../handlers/browse').recentlyUpdatedPackages
+  },{
+    path: "/browse/created",
+    method: "GET",
+    handler: require('../handlers/browse').recentlyCreatedPackages
   },{
     path: "/star",
     method: "POST",
@@ -184,7 +189,7 @@ var publicRoutes = [
   },{
     path: "/search/{q?}",
     method: "GET",
-    handler: require('../facets/registry/show-search')(config.search)
+    handler: require('../facets/registry/show-search')
   },{
     path: "/~{name}",
     method: "GET",

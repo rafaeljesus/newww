@@ -126,12 +126,6 @@ config.user = {
   }
 };
 
-// options for search (registry facet)
-config.search = {
-  url:'http://127.0.0.1:9200/npm',
-  perPage: 24
-};
-
 if (fs.existsSync('./config.admin.js')) {
   Hoek.merge(config, require('./config.admin'), false);
 }

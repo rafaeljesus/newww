@@ -1,0 +1,13 @@
+<h2 class="centered ruled">
+  most starred packages
+</h2>
+
+{{#each items}}
+  <ul class="columnar">
+    {{#each this}}
+      <li>{{> package-widget}}</li>
+    {{/each}}
+  </ul>
+{{/each}}
+
+{{> pagination}}

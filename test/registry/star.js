@@ -6,7 +6,8 @@ var generateCrumb = require("../handlers/crumb.js"),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    nock = require('nock');
 
 var server,
     pkg = 'fake',
@@ -14,6 +15,8 @@ var server,
 
 // prepare the server
 before(function (done) {
+  process.env.USER_API = "https://user-api-example.com";
+
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -92,6 +95,10 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
 
   it('should star an unstarred package', function (done) {
 
+    var mock = nock("https://user-api-example.com")
+      .post("/package/" + pkg + "/star")
+      .reply(200);
+
     generateCrumb(server, function (crumb){
       var opts = {
         url: '/star',
@@ -106,6 +113,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       };
 
       server.inject(opts, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' starred ' + pkg);
         done();
@@ -114,6 +122,10 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
   });
 
   it('should unstar an starred package', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .post("/package/" + pkg + "/unstar")
+      .reply(200);
 
     generateCrumb(server, function (crumb){
       var opts = {
@@ -129,6 +141,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       };
 
       server.inject(opts, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' unstarred ' + pkg);
         done();

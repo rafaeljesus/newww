@@ -120,14 +120,17 @@ module.exports = function (options) {
         nextPage: response.hits.total >= (perPage * page) ? page + 1 : null
       });
 
-      opts.prevUrl = opts.prevPage && "/search?q=" + opts.q + "&page=" + opts.prevPage;
-      opts.nextUrl = opts.nextPage && "/search?q=" + opts.q + "&page=" + opts.nextPage;
-      opts.currUrl = "/search?q=" + opts.q + "?page=" + opts.page;
+      if (opts.prevPage || opts.nextPage) {
+        opts.pages = {}
+        if (opts.prevPage) {
+          opts.pages.prev = "/search?q=" + opts.q + "&page=" + opts.prevPage;
+        }
+        if (opts.nextPage) {
+          opts.pages.next = "/search?q=" + opts.q + "&page=" + opts.nextPage;
+        }
+      }
 
-      opts.paginate = opts.prevPage || opts.nextPage;
-
-      reply.view('registry/search', opts);
-
+      return reply.view('registry/search', opts);
     });
   }
 }

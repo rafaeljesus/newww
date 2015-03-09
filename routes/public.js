@@ -189,7 +189,7 @@ var publicRoutes = [
   },{
     path: "/search/{q?}",
     method: "GET",
-    handler: require('../facets/registry/show-search')(config.search)
+    handler: require('../facets/registry/show-search')
   },{
     path: "/~{name}",
     method: "GET",

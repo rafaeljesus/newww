@@ -70,8 +70,15 @@ Download.prototype.getSome = function(period, packageName) {
       }
     };
 
-    cache.get(opts, function(err, body){
-      return resolve(body || null);
-    });
+    if (_this.cache) {
+      _this.cache.get(opts, function(err, body){
+        return resolve(body || null);
+      });
+    } else {
+      request(opts, function(err, resp, body){
+        return resolve(body || null);
+      })
+    }
+
   })
 };

@@ -7,6 +7,29 @@ var Code = require('code'),
     present = require(__dirname + "/../../presenters/package"),
     fixtures = require("../fixtures");
 
+
+describe("scope", function () {
+
+  it("sets `scoped` to true for scoped packages", function (done) {
+    var package = present({
+      "name": "@acme/project",
+      "version": "1.0.0"
+    });
+    expect(package.scoped).to.be.true();
+    done();
+  });
+
+  it("sets `scoped` to false for global packages", function (done) {
+    var package = present({
+      "name": "project",
+      "version": "1.0.0"
+    });
+    expect(package.scoped).to.be.false();
+    done();
+  });
+
+});
+
 describe("publisher", function () {
 
   it("is in maintainers list if it is in the maintainers list", function (done) {

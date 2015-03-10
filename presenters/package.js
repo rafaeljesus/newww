@@ -8,6 +8,8 @@ var fmt = require('util').format,
 
 module.exports = function (package) {
 
+  package.scoped = package.name.charAt(0) === "@"
+
   if (package.versions && package.versions.indexOf(package.version) === -1) {
     return new Error('invalid package: '+ package._id);
   }

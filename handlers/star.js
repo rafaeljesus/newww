@@ -1,4 +1,4 @@
-var PackageModel = require('../../models/package');
+var PackageModel = require('../models/package');
 
 module.exports = function (request, reply) {
   var Package = PackageModel.new(request);

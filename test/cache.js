@@ -309,11 +309,27 @@ describe('lib/cache.js', function()
             });
         });
 
+        it('responds with an error when the remote service responds with 404', function(done)
+        {
+            var opts = { url: 'http://example.com/not-found' };
+            var mock = nock('http://example.com')
+                .get('/not-found')
+                .reply(404);
+
+            cache.get(opts, function(err, data)
+            {
+                mock.done();
+                expect(err).to.exist();
+                expect(err.message).to.equal('unexpected status code 404');
+                done();
+            });
+        });
+
         it('respects a passed-in TTL', function(done)
         {
-            var opts = { url: 'https://example.com/boom', method: 'get', ttl: 5000 };
-            var mock = nock('https://example.com')
-                .get('/boom')
+            var opts = { url: 'http://example.com/ttl', method: 'get', ttl: 5000 };
+            var mock = nock('http://example.com')
+                .get('/ttl')
                 .reply(200, 'blistering barnacles');
             var key = cache._fingerprint(opts);
 
@@ -340,6 +356,7 @@ describe('lib/cache.js', function()
                 count++;
                 if (count === 2)
                 {
+                    cache.logger.error = saved;
                     done();
                 }
             };

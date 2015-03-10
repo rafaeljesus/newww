@@ -121,7 +121,7 @@ var publicRoutes = [
     // redirect plural forms to singular
     paths: [
       "/packages/{package}",
-      "/packages/{scope}/{package}",
+      "/packages/{scope}/{project}",
     ],
     method: "GET",
     handler: function(request, reply) {
@@ -130,7 +130,7 @@ var publicRoutes = [
   },{
     paths: [
       "/package/{package}/access",
-      "/package/{scope}/{package}/access",
+      "/package/{scope}/{project}/access",
     ],
     method: "GET",
     handler: require('../handlers/access')

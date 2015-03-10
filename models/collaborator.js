@@ -20,7 +20,8 @@ Collaborator.new = function(request) {
 
 Collaborator.prototype.list = function(package, callback) {
   var _this = this;
-  var url = fmt("%s/package/%s/collaborators", this.host, package);
+  var url = fmt("%s/package/%s/collaborators", this.host, package.replace("/", "%2F"));
+
   return new Promise(function(resolve, reject) {
     request.get({
         url: url,

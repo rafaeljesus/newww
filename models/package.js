@@ -17,11 +17,10 @@ var Package = module.exports = function(opts) {
 Package.new = function(request) {
   var bearer = request.auth.credentials && request.auth.credentials.name;
   return new Package({bearer: bearer});
-}
+};
 
-Package.prototype.get = function(name, options) {
+Package.prototype.get = function(name) {
   var _this = this;
-  var package;
   var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
 
   return new Promise(function(resolve, reject) {
@@ -32,7 +31,7 @@ Package.prototype.get = function(name, options) {
     };
 
     request.get(opts, function(err, resp, body) {
-      if (err) return reject(err);
+      if (err) { return reject(err); }
 
       if (resp.statusCode > 399) {
         err = Error('error getting package ' + name);
@@ -50,13 +49,12 @@ Package.prototype.get = function(name, options) {
 };
 
 Package.prototype.list = function(options) {
-  var _this = this
   var url = URL.format({
     protocol: "https",
     host: URL.parse(this.host).hostname,
     pathname: "/package",
     query: options,
-  })
+  });
 
   return new Promise(function(resolve, reject) {
     var opts = {
@@ -65,7 +63,7 @@ Package.prototype.list = function(options) {
     };
 
     request.get(opts, function(err, resp, body) {
-      if (err) return reject(err);
+      if (err) { return reject(err); }
 
       if (resp.statusCode > 399) {
         err = Error('error getting package list');
@@ -77,7 +75,7 @@ Package.prototype.list = function(options) {
     });
   });
 
-}
+};
 
 Package.prototype.count = function() {
   var url = fmt("%s/package/-/count", this.host);
@@ -87,7 +85,7 @@ Package.prototype.count = function() {
       json: true
     };
     request.get(opts, function(err, resp, body) {
-      if (err) return reject(err);
+      if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error('error getting package count');
         err.statusCode = resp.statusCode;
@@ -96,4 +94,56 @@ Package.prototype.count = function() {
       return resolve(body);
     });
   });
-}
+};
+
+Package.prototype.star = function (package) {
+  var _this = this;
+  var url = fmt("%s/package/%s/star", _this.host, package);
+
+  return new Promise(function (resolve, reject) {
+    var opts = {
+      url: url,
+      json: true,
+      body: {
+        bearer: _this.bearer
+      }
+    };
+
+    request.post(opts, function (err, resp, body) {
+      if (err) { return reject(err); }
+
+      if (resp.statusCode > 399) {
+        err = Error('error starring package ' + package);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(package + ' starred by ' + _this.bearer);
+    });
+  });
+};
+
+Package.prototype.unstar = function (package) {
+  var _this = this;
+  var url = fmt("%s/package/%s/unstar", _this.host, package);
+
+  return new Promise(function (resolve, reject) {
+    var opts = {
+      url: url,
+      json: true,
+      body: {
+        bearer: _this.bearer
+      }
+    };
+
+    request.post(opts, function (err, resp, body) {
+      if (err) { return reject(err); }
+
+      if (resp.statusCode > 399) {
+        err = Error('error unstarring package ' + package);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(package + ' unstarred by ' + _this.bearer);
+    });
+  });
+};

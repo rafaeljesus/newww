@@ -5,7 +5,7 @@ module.exports = [
     // shortcut for viewing your own stars
     path: "/star",
     method: "GET",
-    handler: require('../facets/registry/show-star'),
+    handler: require('../handlers/star'),
   },{
     paths: [
       "/~",

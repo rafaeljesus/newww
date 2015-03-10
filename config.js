@@ -15,8 +15,7 @@ config.server = {
   cache: {
     engine: require('catbox-redis'),
     host: '127.0.0.1',
-    port: '16379',
-    // password: 'i-am-using-redis-in-development-mode-for-npm-www'
+    port: '6379'
   },
   connections: {
     router: {

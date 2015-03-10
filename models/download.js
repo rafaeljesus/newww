@@ -2,6 +2,7 @@ var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
+var cache = require('../lib/cache');
 var URL = require('url');
 
 var Download = module.exports = function (opts) {
@@ -14,7 +15,10 @@ var Download = module.exports = function (opts) {
 
 Download.new = function(request) {
   var bearer = request.auth.credentials && request.auth.credentials.name;
-  return new Download({bearer: bearer});
+  return new Download({
+    bearer: bearer,
+    cache: require("../lib/cache")
+  });
 };
 
 Download.prototype.getDaily = function(packageName) {
@@ -33,20 +37,17 @@ Download.prototype.getAll = function(packageName) {
   var _this = this;
   var result = {};
 
-  return _this.getDaily(packageName)
-    .then(function(dailies){
-      result['day'] = dailies
-      return _this.getWeekly(packageName)
-    })
-    .then(function(weeklies){
-      result['week'] = weeklies
-      return _this.getMonthly(packageName)
-    })
-    .then(function(monthlies){
-      result['month'] = monthlies
-      return result
-    })
-
+  return Promise.all([
+    _this.getDaily(packageName),
+    _this.getWeekly(packageName),
+    _this.getMonthly(packageName),
+  ]).then(function(result) {
+    return {
+      day: result[0],
+      week: result[1],
+      month: result[2]
+    }
+  })
 }
 
 Download.prototype.getSome = function(period, packageName) {
@@ -59,22 +60,25 @@ Download.prototype.getSome = function(period, packageName) {
   }
 
   return new Promise(function(resolve, reject) {
-    var opts = {url: url, json: true, timeout: _this.timeout, headers: {bearer: _this.bearer}};
-
-    request.get(opts, function(err, resp, body){
-      if (err) {
-        return reject(err);
+    var opts = {
+      method: "GET",
+      url: url,
+      json: true,
+      timeout: _this.timeout,
+      headers: {
+        bearer: _this.bearer
       }
+    };
 
-      if (resp.statusCode > 399) {
-        var msg = 'error getting downloads for period ' + period;
-        msg += ' for ' + (packageName || "all packages");
-        err = Error(msg);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
+    if (_this.cache) {
+      _this.cache.get(opts, function(err, body){
+        return resolve(body || null);
+      });
+    } else {
+      request(opts, function(err, resp, body){
+        return resolve(body || null);
+      })
+    }
 
-      return resolve(body);
-    });
   })
 };

@@ -184,7 +184,7 @@ var publicRoutes = [
   },{
     path: "/star",
     method: "POST",
-    handler: require('../facets/registry/show-star'),
+    handler: require('../handlers/star'),
     config: ajaxy
   },{
     path: "/search/{q?}",

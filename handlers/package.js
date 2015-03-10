@@ -61,10 +61,6 @@ package.show = function(request, reply) {
 
       return Download.getAll(package.name)
     })
-    .catch(function(err){
-      // tolerate timed-out downloads API calls
-      if (err.code === 'ETIMEDOUT') return null;
-    })
     .then(function(downloads) {
       package.downloads = downloads
 

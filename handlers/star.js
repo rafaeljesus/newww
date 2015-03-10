@@ -1,8 +1,7 @@
+var PackageModel = require('../models/package');
 
 module.exports = function (request, reply) {
-  var getPackage = request.server.methods.registry.getPackage,
-      star = request.server.methods.registry.star,
-      unstar = request.server.methods.registry.unstar;
+  var Package = PackageModel.new(request);
 
   var opts = {
     user: request.auth.credentials
@@ -24,54 +23,33 @@ module.exports = function (request, reply) {
       starIt = !!body.isStarred.match(/true/i);
 
   if (starIt) {
-    star(pkg, username, function (err) {
-
-      if (err) {
+    Package.star(pkg)
+      .catch(function (err) {
         request.logger.error(username + ' was unable to star ' + pkg);
         request.logger.error(err);
         reply('not ok').code(500);
         return;
-      }
-
-      getPackage.cache.drop(pkg, function (er) {
-
-        if (er) {
-          request.logger.error('unable to drop cache for ' + pkg);
-          request.logger.error(er);
-          reply('not ok').code(500);
-          return;
-        }
-
+      })
+      .then(function () {
         request.timing.page = 'star';
         request.metrics.metric({ name: 'star', package: pkg });
         return reply(username + ' starred ' + pkg).code(200);
       });
-    });
 
   } else {
 
-    unstar(pkg, username, function (err) {
-
-      if (err) {
+    Package.unstar(pkg)
+      .catch(function (err) {
         request.logger.error(username + ' was unable to unstar ' + pkg);
         request.logger.error(err);
         reply('not ok').code(500);
         return;
-      }
-
-      getPackage.cache.drop(pkg, function (er) {
-        if (er) {
-          request.logger.error('unable to drop cache for ' + pkg);
-          request.logger.error(er);
-          reply('not ok').code(500);
-          return;
-        }
-
+      })
+      .then(function () {
         request.timing.page = 'unstar';
         request.metrics.metric({ name: 'unstar', package: pkg });
 
         return reply(username + ' unstarred ' + pkg).code(200);
       });
-    });
   }
 };

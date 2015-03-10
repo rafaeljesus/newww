@@ -14,10 +14,6 @@ module.exports = function (request, reply) {
       context.dependents = dependents
       return Download.getAll()
     })
-    .catch(function(err){
-      // tolerate timed-out downloads API calls
-      if (err.code === 'ETIMEDOUT') return null;
-    })
     .then(function(downloads){
       context.downloads = downloads
       return Package.count()

@@ -31,6 +31,7 @@ module.exports = function (options) {
       verification_allowed: Joi.string(),
       amount: Joi.number(),
       subType: Joi.number(),
+      quantity: Joi.number(),
       customerId: Joi.number()
     })
 
@@ -91,7 +92,7 @@ module.exports = function (options) {
           case SUB_TYPE_MULTI_SEAT:
             stripePlan = "enterprise-multi-seat"
             stripeDescription = "npm Enterprise multi-seat license"
-            licenseSeats // TODO: need number of seats
+            licenseSeats = token.quantity
             stripeQuantity = licenseSeats
             break
           default:

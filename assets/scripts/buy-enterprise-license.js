@@ -3,16 +3,12 @@ var $ = require("jquery")
 module.exports = function () {
 
   if (typeof StripeCheckout === 'undefined') {
-    console.log("No stripe")
     return
   }
 
   $(function () {
 
-    console.log("ready to enterprise license")
-
-    var amount
-    var subType
+    var amount, subType, quantity
 
     var handler = StripeCheckout.configure({
       key: $('input[type=hidden]').data('key'),
@@ -21,6 +17,7 @@ module.exports = function () {
       token: function(token, args) {
         token.amount = amount
         token.subType = subType
+        token.quantity = quantity
         token.customerId = $('#customer-id').val()
         token.crumb = $('input[name="crumb"]').val()
 
@@ -43,17 +40,21 @@ module.exports = function () {
     })
 
     $('#buy-starter-pack').click(function (e) {
-      subType = $("input[name='starter-pack-plan']:checked").val()
+      subType = parseInt($("input[name='starter-pack-plan']:checked").val())
       var description
       switch(subType) {
         case 1:
           description = "Starter Pack, billed monthly"
           amount = 2500
+          quantity = 1
           break
         case 2:
           description = "One-year license for Starter Pack"
           amount = 25000
+          quantity = 1
           break
+        default:
+          return false
       }
 
       handler.open({
@@ -64,26 +65,19 @@ module.exports = function () {
       e.preventDefault()
     })
 
-    /*
     $('#buy-multi-seat').click(function (e) {
       subType = 3
       var seatString = $('#multi-seat-count').val()
-      if (!seatString) {
-        alert("You must enter a number of seats")
-        e.preventDefault()
-        return false
-      }
-      var seats = parseInt(seatString)
-      amount = 2000 * seats;
+      quantity = parseInt(seatString)
+      amount = 2000 * quantity;
 
       handler.open({
         name: 'npm, Inc.',
-        description: "Buy " + seats + " seat license, billed monthly",
+        description: "Buy " + quantity + " seat license, billed monthly",
         amount: amount
       });
       e.preventDefault()
     });
-    */
 
 
   })

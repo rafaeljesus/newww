@@ -25,6 +25,15 @@ var unathenticatedRouteConfig = {
   }
 };
 
+var stripeSafeConfig = {
+  plugins: {
+    blankie: {
+      scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com', 'https://js.hs-analytics.net/analytics/'],
+      frameSrc: 'https://checkout.stripe.com'
+    }
+  }
+}
+
 
 // CAUTION: THESE ROUTES DO NOT REQUIRE AUTHENTICATION.
 // DO NOT PUT SENSITIVE ROUTES IN THIS ARRAY.
@@ -103,14 +112,7 @@ var unauthenticatedRoutes = [
     path: "/joinwhoshiring",
     method: "GET",
     handler: require('./facets/company/show-whoshiring-payments')(config.stripe),
-    config: {
-      plugins: {
-        blankie: {
-          scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com'],
-          frameSrc: 'https://checkout.stripe.com'
-        }
-      }
-    }
+    config: stripeSafeConfig
   },{
     path: "/joinwhoshiring",
     method: "POST",
@@ -153,19 +155,12 @@ var unauthenticatedRoutes = [
     path: "/enterprise/license",
     method: ["GET","POST"],
     handler: require('./facets/enterprise/find-license'),
-    config: enterpriseConfig
+    config: stripeSafeConfig
   },{
     path: "/enterprise/license-options",
     method: "GET",
     handler: require('./facets/enterprise/license-options')(config.stripe),
-    config: {
-      plugins: {
-        blankie: {
-          scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com'],
-          frameSrc: 'https://checkout.stripe.com'
-        }
-      }
-    }
+    config: stripeSafeConfig
   },{
     path: "/enterprise/buy-license",
     method: "POST",

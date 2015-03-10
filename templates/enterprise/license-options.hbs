@@ -24,21 +24,30 @@
     </form>
   </section>
 
-  <!--
   <section>
     <h2>Multi-seat license: $20/seat/month</h2>
 
     <p>If you need more than 5 seats, use this plan. You can always increase or
-    decrease your number of seats later.</p>
+    decrease your number of seats later. If you need more than 100 seats, please
+    email <a href="mailto:sales@npmjs.com">sales@npmjs.com</a></p>
 
     <form>
       <input type="hidden" data-key="{{stripeKey}}">
-      <p>Number of seats: <input type="text" name="seat-count" id="multi-seat-count" placeholder="10" required></p>
+      <p>Number of seats:
+        <select name="multi-seat-count" id="multi-seat-count">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="60">60</option>
+          <option value="80">80</option>
+          <option value="100">100</option>
+        </select>
+      </p>
       <input type="submit" class="full-width" value="Buy multi-seat license" id="buy-multi-seat">
       {{> form_security}}
     </form>
   </section>
-  -->
 
   <script src="https://checkout.stripe.com/checkout.js"></script>
 

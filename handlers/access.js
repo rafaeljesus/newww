@@ -6,7 +6,7 @@ module.exports = function(request, reply) {
   var context = {}
   var package
 
-  Package.get(request.params.package)
+  Package.get(request.packageName)
   .then(function(pkg){
     package = _.pick(pkg, ["name", "description", "dist-tags"]);
     Collaborator.list(package.name)

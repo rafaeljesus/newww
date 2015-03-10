@@ -5,12 +5,11 @@ var npa = require('npm-package-arg');
 
 package.show = function(request, reply) {
   var package;
+  var name = request.packageName;
   var context = {title: name};
   var loggedInUser = request.auth.credentials;
   var Package = require("../models/package").new(request)
   var Download = require("../models/download").new(request)
-  var name = request.params.package ||
-    request.params.scope + "/" + request.params.project;
 
   request.logger.info('get package: ' + name);
 

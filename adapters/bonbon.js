@@ -11,6 +11,12 @@ exports.register = function(server, options, next) {
 
   server.ext('onPreHandler', function(request, reply) {
 
+    // Generate `request.packageName` for global and scoped package requests
+    if (request.params.package || request.params.scope) {
+      request.packageName = request.params.package ||
+        request.params.scope + "/" + request.params.project;
+    }
+
     request.metrics = metrics;
     request.redis = request.server.app.cache._cache.connection.client;
     request.logger = bole(request.id);

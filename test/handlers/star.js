@@ -13,10 +13,7 @@ var server,
     pkg = 'fake',
     user = { name: 'fakeuser' };
 
-// prepare the server
 before(function (done) {
-  process.env.USER_API = "https://user-api-example.com";
-
   require('../mocks/server')(function (obj) {
     server = obj;
     done();

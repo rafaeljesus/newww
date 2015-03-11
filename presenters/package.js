@@ -11,7 +11,7 @@ module.exports = function (package) {
   package.scoped = package.name.charAt(0) === "@"
 
   if (package.versions && package.versions.indexOf(package.version) === -1) {
-    return new Error('invalid package: '+ package._id);
+    return Error('invalid package: '+ package.name);
   }
 
   // check if publisher is in maintainers list

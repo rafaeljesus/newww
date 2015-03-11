@@ -1,4 +1,4 @@
-var pick = require("lodash").pick;
+var omit = require("lodash").omit;
 
 module.exports = function(request, reply) {
   var package
@@ -6,16 +6,10 @@ module.exports = function(request, reply) {
   var user = request.auth.credentials
   var Collaborator = require("../models/collaborator").new(request)
   var Package = require("../models/package").new(request)
-  var desiredPackageFields = [
-    "name",
-    "description",
-    "scoped",
-    "private"
-  ];
 
   Package.get(request.packageName)
   .then(function(pkg){
-    package = pick(pkg, desiredPackageFields);
+    package = omit(pkg, ['readme', 'versions']);
     return Collaborator.list(package.name)
   })
   .then(function(collaborators) {

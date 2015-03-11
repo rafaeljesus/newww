@@ -71,7 +71,7 @@ describe("package access", function(){
       })
 
       it("does not render new collaborator form", function(done){
-        expect($("form#add-collaborator").length).to.equal(0)
+        expect($("#add-collaborator").length).to.equal(0)
         done()
       })
 
@@ -112,7 +112,7 @@ describe("package access", function(){
       })
 
       it("does not render new collaborator form", function(done){
-        expect($("form#add-collaborator").length).to.equal(0)
+        expect($("#add-collaborator").length).to.equal(0)
         done()
       })
 
@@ -152,8 +152,12 @@ describe("package access", function(){
       })
 
       it("renders new collaborator form", function(done){
-        expect($("form#add-collaborator").length).to.equal(1)
-        expect($("form#add-collaborator input[type='hidden'][name='package']").val()).to.equal("browserify")
+        expect($("#add-collaborator").length).to.equal(1)
+        expect($("#add-collaborator input[name='collaborator'][required='required']").length)
+          .to.equal(1)
+        expect($("#add-collaborator input[name='package'][type='hidden']").val())
+          .to.equal("browserify")
+
         done()
       })
 
@@ -209,7 +213,7 @@ describe("package access", function(){
       })
 
       it("does not render new collaborator form", function(done){
-        expect($("form#add-collaborator").length).to.equal(0)
+        expect($("#add-collaborator").length).to.equal(0)
         done()
       })
 
@@ -251,7 +255,7 @@ describe("package access", function(){
       })
 
       it("does not render new collaborator form", function(done){
-        expect($("form#add-collaborator").length).to.equal(0)
+        expect($("#add-collaborator").length).to.equal(0)
         done()
       })
 
@@ -291,7 +295,7 @@ describe("package access", function(){
       })
 
       it("does not render new collaborator form", function(done){
-        expect($("form#add-collaborator").length).to.equal(0)
+        expect($("#add-collaborator").length).to.equal(0)
         done()
       })
 
@@ -331,8 +335,8 @@ describe("package access", function(){
       })
 
       it("renders new collaborator form", function(done){
-        expect($("form#add-collaborator").length).to.equal(1)
-        expect($("form#add-collaborator input[type='hidden'][name='package']").val())
+        expect($("#add-collaborator").length).to.equal(1)
+        expect($("#add-collaborator input[type='hidden'][name='package']").val())
           .to.equal("@wrigley_the_writer%2Fscoped_public")
         done()
       })

@@ -8,6 +8,20 @@ var Code = require('code'),
     fixtures = require("../fixtures");
 
 
+describe("name", function () {
+
+  it("creates `encodedName` for making user-acl requests", function (done) {
+    var package = present({
+      "name": "@acme/project",
+      "version": "1.0.0"
+    });
+    expect(package.encodedName).to.equal("@acme%2Fproject");
+    done();
+  });
+
+});
+
+
 describe("scope", function () {
 
   it("sets `scoped` to true for scoped packages", function (done) {

@@ -50,7 +50,7 @@ module.exports = function () {
           break
         case 2:
           description = "One-year license for Starter Pack"
-          amount = 25000
+          amount = 30000
           quantity = 1
           break
         default:

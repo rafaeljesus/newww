@@ -2,10 +2,7 @@ var Hapi = require('hapi'),
     config = require('../../config');
 
 module.exports = function (done) {
-  process.env.NODE_ENV = 'dev';
-
   var metrics = require('../../adapters/metrics')(config.metrics);
-
   var server = new Hapi.Server();
   server.connection();
   server.views(config.views);

@@ -36,7 +36,7 @@ describe("bonbon", function() {
   });
 
   afterEach(function (done) {
-    process.env.NODE_ENV = 'dev';
+    delete process.env.NODE_ENV;
     done();
   });
 
@@ -133,6 +133,7 @@ describe("bonbon", function() {
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result).to.be.an.object();
+      delete process.env.NODE_ENV
       done();
     });
   });

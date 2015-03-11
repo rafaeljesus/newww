@@ -1,5 +1,5 @@
 var request = require('request'),
-    log = require('bole')('npme-create-trial')
+    log = require('bole')('npme-create-trial'),
     config = require('../../../config');
 
 module.exports = function (customer, callback) {

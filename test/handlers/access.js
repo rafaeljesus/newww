@@ -153,6 +153,7 @@ describe("package access", function(){
 
       it("renders new collaborator form", function(done){
         expect($("form#add-collaborator").length).to.equal(1)
+        expect($("form#add-collaborator input[type='hidden'][name='package']").val()).to.equal("browserify")
         done()
       })
 
@@ -331,6 +332,8 @@ describe("package access", function(){
 
       it("renders new collaborator form", function(done){
         expect($("form#add-collaborator").length).to.equal(1)
+        expect($("form#add-collaborator input[type='hidden'][name='package']").val())
+          .to.equal("@wrigley_the_writer%2Fscoped_public")
         done()
       })
 

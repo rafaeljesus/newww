@@ -1,33 +1,31 @@
 var request = require('request'),
-    log = require('bole')('npme-create-customer');
+    log = require('bole')('npme-create-customer'),
+    config = require('../../../config')
 
-module.exports = function createCustomer (options) {
+module.exports = function(data, callback) {
 
-  return function (data, callback) {
+  var customerEndpoint = config.license.api + '/customer';
 
-    var customerEndpoint = options.api + '/customer';
+  request.put({
+    url: customerEndpoint,
+    json: {
+      email: data.email,
+      name: data.firstname + ' ' + data.lastname,
+      phone: data.phone
+    }
+  }, function(er, resp, newCustomer) {
 
-    request.put({
-      url: customerEndpoint,
-      json: {
-        email: data.email,
-        name: data.firstname + ' ' + data.lastname,
-        phone: data.phone
-      }
-    }, function(er, resp, newCustomer) {
+    if (resp.statusCode === 200) {
+      return callback(null, newCustomer);
+    }
 
-      if (resp.statusCode === 200) {
-        return callback(null, newCustomer);
-      }
+    log.warn('customer creation for user ' + data.email + ' failed with statusCode ' + resp.statusCode);
+    log.warn(newCustomer);
 
-      log.warn('customer creation for user ' + data.email + ' failed with statusCode ' + resp.statusCode);
-      log.warn(newCustomer);
+    er = er || new Error('unable to create customer ' + data.email);
 
-      er = er || new Error('unable to create customer ' + data.email);
+    log.error(er);
 
-      log.error(er);
-
-      return callback(er);
-    });
-  };
+    return callback(er);
+  });
 };

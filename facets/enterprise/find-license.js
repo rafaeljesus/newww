@@ -86,7 +86,8 @@ module.exports = function(request,reply) {
               function(err,newCustomer) {
 
                 if(err) {
-                  request.logger.info("API error creating customer " + data.email,err)
+                  request.logger.error("API error creating customer " + data.email)
+                  request.logger.error(err)
                   return reply.view('enterprise/invalid-license', {msg:"This seems to be due to an internal error."});
                 }
 
@@ -107,7 +108,8 @@ module.exports = function(request,reply) {
 
           // generic failure
           if(err) {
-            request.logger.info("API error creating trial for customer " + customer.id + '; email=' + customer.email,err)
+            request.logger.error("API error creating trial for customer " + customer.id + '; email=' + customer.email)
+            request.logger.error(err)
             return reply.view('enterprise/invalid-license', {msg:"This seems to be due to an internal error."});
           }
 
@@ -130,7 +132,8 @@ module.exports = function(request,reply) {
           mailer.sendMail(mail, function (er) {
 
             if (er) {
-              request.logger.info("Error emailing verification link to customer " + customer.id + '; email=' + customer.email,err)
+              request.logger.error("Error emailing verification link to customer " + customer.id + '; email=' + customer.email)
+              request.logger.error(er)
               return reply.view('enterprise/invalid-license', {msg:"This seems to be due to an internal error."});
             }
 

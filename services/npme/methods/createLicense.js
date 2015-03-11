@@ -31,7 +31,8 @@ module.exports = function(billingEmail, seats, stripeId, begins, ends, callback)
       }, function (er, resp, body) {
 
         if (er) {
-          log.error("License creation failed:",er)
+          log.error("License creation failed:")
+          log.error(er)
           callback(er)
         }
 

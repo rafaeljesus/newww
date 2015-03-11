@@ -62,7 +62,8 @@ module.exports = function(request, reply) {
     } else {
       // fail on error
       if(err) {
-        request.logger.info("Neither license nor trial provided for email " + data.email,err)
+        request.logger.error("Neither license nor trial provided for email " + data.email)
+        request.logger.error(err)
         return reply.view('enterprise/invalid-license', {msg:"You need a license key or a trial ID."});
       }
     }

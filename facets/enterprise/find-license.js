@@ -48,7 +48,8 @@ module.exports = function(request,reply) {
 
                 // fail on error
                 if (err) {
-                  request.logger.info("API error fetching license " + data.license + " for email " + data.email, err)
+                  request.logger.error("API error fetching license " + data.license + " for email " + data.email)
+                  request.logger.error(err)
                   return reply.view('enterprise/invalid-license', {msg: "This looks like an error on our part."});
                 }
 

@@ -39,27 +39,6 @@ exports.register = function(server, options, next) {
 
   server.ext('onPreResponse', function(request, reply) {
 
-    // Allow npm employees to view JSON context for any page
-    // by adding a `?json` query parameter to the URL
-    if ('json' in request.query) {
-      var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "auth.credentials.name"));
-      if (process.env.NODE_ENV === "dev" || isNpmEmployee) {
-        var ctx = Hoek.reach(request, 'response.source.context');
-
-        if (ctx) {
-          var context = Hoek.applyToDefaults({}, ctx);
-
-          // If the `json` param is something other than an empty string,
-          // treat it as a (deep) key in the context object.
-          if (request.query.json.length > 1) {
-            context = Hoek.reach(context, request.query.json);
-          }
-
-          return reply(context);
-        }
-      }
-    }
-
     options.correlationID = request.id;
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
@@ -82,6 +61,27 @@ exports.register = function(server, options, next) {
           request.response.source = Hoek.applyToDefaults(options, request.response.source);
         }
         break;
+    }
+
+    // Allow npm employees to view JSON context for any page
+    // by adding a `?json` query parameter to the URL
+    if ('json' in request.query) {
+      var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "auth.credentials.name"));
+      if (process.env.NODE_ENV === "dev" || isNpmEmployee) {
+        var ctx = Hoek.reach(request, 'response.source.context');
+
+        if (ctx) {
+          var context = Hoek.applyToDefaults({}, ctx);
+
+          // If the `json` param is something other than an empty string,
+          // treat it as a (deep) key in the context object.
+          if (request.query.json.length > 1) {
+            context = Hoek.reach(context, request.query.json);
+          }
+
+          return reply(context);
+        }
+      }
     }
 
     return reply.continue();

@@ -36,32 +36,29 @@ module.exports = {
     return function (user, next) {
       var start = Date.now();
 
-      request.server.methods.user.logoutUser(user.token, function () {
+      if (!user.sid) {
+        request.auth.session.clear();
+        return next(null);
+      }
 
-        if (!user.sid) {
-          request.auth.session.clear();
-          return next(null);
+      request.server.app.cache.drop(user.sid, function (err) {
+        if (err) {
+          request.logger.error(Boom.internal('there was an error clearing the cache'));
+          request.logger.error(err);
+          metrics.metric({name: 'delSessionError'});
+          return next(err);
         }
 
-        request.server.app.cache.drop(user.sid, function (err) {
-          if (err) {
-            request.logger.error(Boom.internal('there was an error clearing the cache'));
-            request.logger.error(err);
-            metrics.metric({name: 'delSessionError'});
-            return next(err);
-          }
-
-          metrics.metric({
-            name: 'latency',
-            value: Date.now() - start,
-            type: 'redis',
-            action: 'delSession'
-          });
-
-          request.auth.session.clear();
-
-          return next(null);
+        metrics.metric({
+          name: 'latency',
+          value: Date.now() - start,
+          type: 'redis',
+          action: 'delSession'
         });
+
+        request.auth.session.clear();
+
+        return next(null);
       });
     };
   }

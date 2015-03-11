@@ -14,6 +14,28 @@ exports.bob = {
   deleted: null
 };
 
+exports.ralph_the_reader = {
+  name: 'ralph_the_reader',
+  email: 'ralph@reader.com',
+  email_verified: null,
+  verification_key: '12345',
+  resource: {},
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
+exports.wrigley_the_writer = {
+  name: 'wrigley_the_writer',
+  email: 'wrigley@writer.com',
+  email_verified: null,
+  verification_key: '12345',
+  resource: {},
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
 exports.profileUpdate = {
   fullname: 'Big Bob',
   github: 'bob',

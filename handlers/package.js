@@ -9,7 +9,9 @@ package.show = function(request, reply) {
   var context = {title: name};
   var loggedInUser = request.auth.credentials;
   var Package = require("../models/package").new(request)
-  var Download = require("../models/download").new(request)
+  var Download = require("../models/download").new({
+    request: request, cache: require("../lib/cache")
+  })
 
   request.logger.info('get package: ' + name);
 

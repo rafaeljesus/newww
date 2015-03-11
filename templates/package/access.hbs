@@ -1,17 +1,27 @@
-
-
-{{#with package}}
-
-{{> package-header this}}
+{{> package-header package}}
 
 <div class="tablet-width container">
 
-  <div class="centered">
-    <input type="checkbox" class="toggle" value="private" {{#if private}}checked="checked"{{/if}} id="package-access-toggle">
-    <label for="package-access-toggle"><span></span></label>
-  </div>
+  {{#unless user}}
+    <p class="notice please-log-in">
+      To manage this package, please <a href="/login">log in</a>.
+    </p>
+  {{/unless}}
 
-  <table class="ruled humans">
+  {{#if package.scoped}}
+    <div class="centered">
+      <input
+        type="checkbox"
+        class="toggle"
+        id="package-access-toggle"
+        value="private"
+        {{#unless user.hasWriteAccessToPackage}}disabled="disabled"{{/unless}}
+        {{#if package.private}}checked="checked"{{/if}} >
+      <label for="package-access-toggle"><span></span></label>
+    </div>
+  {{/if}}
+
+  <table class="ruled humans" id="collaborators">
     <thead>
       <tr>
         <th>&nbsp;</th>
@@ -22,8 +32,8 @@
     </thead>
     <tbody>
 
-      {{#each collaborators}}
-        <tr>
+      {{#each package.collaborators}}
+        <tr class="collaborator">
           <td class="avatar">
             <a href="/~{{name}}">
               <img src="{{avatar.small}}" alt="{{name}}" />
@@ -34,33 +44,47 @@
           </td>
           <td class="access">
             <label class="glamorous">
-              <input type="radio" name="access-{{name}}" value="read-only" {{#unless write}}checked="checked"{{/unless}}>
+              <input
+                type="radio"
+                name="access-{{name}}"
+                value="read-only"
+                {{#unless write}}checked="checked"{{/unless}}
+                {{#if ../disablePermissionTogglers}} disabled="disabled" {{/if}}>
               <span>read-only</span>
             </label>
 
             <label class="glamorous">
-              <input type="radio" name="access-{{name}}" value="read-write" {{#if write}}checked="checked"{{/if}}>
+              <input
+                type="radio"
+                name="access-{{name}}"
+                value="read-write"
+                {{#if write}}checked="checked"{{/if}}
+                {{#if ../disablePermissionTogglers}} disabled="disabled" {{/if}}>
               <span>read-write</span>
             </label>
           </td>
           <td>
-            <a href="#" class="delete-icon delete-collaborator">✖</a>
+            {{#if ../user.hasWriteAccessToPackage}}
+              <a href="#" class="delete-icon delete-collaborator">✖</a>
+            {{/if}}
           </td>
         </tr>
       {{/each}}
 
-      <tr>
-        <td>
-          &nbsp;
-        </td>
-        <td colspan="1">
-          <input type="text" name="collaborator" value="" placeholder="Add a collaborator...">
-        </td>
-      </tr>
+      {{#if user.hasWriteAccessToPackage}}
+        <tr>
+          <td>
+            &nbsp;
+          </td>
+          <td colspan="1">
+            <form id="add-collaborator">
+              <input type="text" name="collaborator" value="" placeholder="Add a collaborator...">
+            </form>
+          </td>
+        </tr>
+      {{/if}}
 
     </tbody>
   </table>
 
 </div>
-
-{{/with}}

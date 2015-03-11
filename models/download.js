@@ -13,12 +13,15 @@ var Download = module.exports = function (opts) {
   return this;
 };
 
-Download.new = function(request) {
-  var bearer = request.auth.credentials && request.auth.credentials.name;
-  return new Download({
-    bearer: bearer,
-    cache: require("../lib/cache")
-  });
+Download.new = function(opts) {
+  if (!opts) { opts = {}; }
+
+  if (opts.request) {
+    opts.bearer = opts.request.auth.credentials && opts.request.auth.credentials.name
+    delete opts.request
+  }
+
+  return new Download(opts)
 };
 
 Download.prototype.getDaily = function(packageName) {

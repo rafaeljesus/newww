@@ -1,4 +1,5 @@
 var fixtures = require("../fixtures"),
+    merge = require("lodash").merge,
     nock = require("nock"),
     cheerio = require("cheerio"),
     Code = require('code'),
@@ -28,84 +29,289 @@ describe("package access", function(){
 
   describe('global package', function() {
 
+    var $
+    var resp
+    var context
+    var options = {url: '/package/browserify/access'};
+    var mock = nock("https://user-api-example.com")
+      .get('/package/browserify')
+      .times(10)
+      .reply(200, fixtures.packages.browserify)
+      .get('/package/browserify/collaborators')
+      .times(10)
+      .reply(200, fixtures.collaborators)
+
     describe('anonymous user', function () {
-      it("renders a please-log-in prompt")
-      it("does not render a public/private toggle")
-      it("renders disabled read-only/read-write collaborator toggles")
-      it("does not render new collaborator form")
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("renders a please-log-in prompt", function(done) {
+        expect($("p.notice.please-log-in").length).to.equal(1)
+        done()
+      })
+
+      it("does not render a public/private toggle", function(done){
+        expect($("#package-access-toggle").length).to.equal(0)
+        done()
+      })
+
+      it("renders disabled read-only/read-write collaborator toggles", function(done){
+        expect($("#collaborators > tbody > tr").length).to.equal(2)
+        expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
+        expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
+        done()
+      })
+
+      it("does not render new collaborator form", function(done){
+        expect($("form#add-collaborator").length).to.equal(0)
+        done()
+      })
+
+      it("does not render collaborator removal links", function(done){
+        expect($("a.delete-collaborator").length).to.equal(0)
+        done()
+      })
     })
 
     describe('logged-in non-collaborator', function () {
+      var options = {
+        url: '/package/browserify/access',
+        credentials: fixtures.users.bob
+      }
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
       it("renders an ask-for-access prompt") // aspirational
-      it("does not render a public/private toggle")
-      it("renders disabled read-only/read-write collaborator toggles")
-      it("does not render new collaborator form")
+
+      it("does not render a public/private toggle", function(done){
+        expect($("#package-access-toggle").length).to.equal(0)
+        done()
+      })
+
+      it("renders disabled read-only/read-write collaborator toggles", function(done){
+        expect($("#collaborators > tbody > tr").length).to.equal(2)
+        expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
+        expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
+        done()
+      })
+
+      it("does not render new collaborator form", function(done){
+        expect($("form#add-collaborator").length).to.equal(0)
+        done()
+      })
+
+      it("does not render collaborator removal links", function(done){
+        expect($("a.delete-collaborator").length).to.equal(0)
+        done()
+      })
     })
 
     describe('logged-in collaborator', function () {
-      it("does not render a public/private toggle")
-      it("renders disabled read-only/read-write collaborator toggles")
-      it("renders enabled new collaborator form")
-      it("renders enabled collaborator removal links")
+
+      var options = {
+        url: '/package/browserify/access',
+        credentials: fixtures.users.wrigley_the_writer
+      }
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("does not render a public/private toggle", function(done){
+        expect($("#package-access-toggle").length).to.equal(0)
+        done()
+      })
+
+      it("renders disabled read-only/read-write collaborator toggles", function(done){
+
+        expect($("tr.collaborator").length).to.equal(2)
+        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
+        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
+        done()
+      })
+
+      it("renders new collaborator form", function(done){
+        expect($("form#add-collaborator").length).to.equal(1)
+        done()
+      })
+
+      it("renders collaborator removal links", function(done){
+        expect($("a.delete-collaborator").length).to.equal(2)
+        done()
+      })
     })
 
   })
 
-  describe('scoped public package', function() {
-
-    describe('anonymous user', function () {
-      it("renders a please-log-in prompt")
-      it("renders a disabled public/private toggle")
-      it("renders disabled read-only/read-write collaborator toggles")
-      it("does not render new collaborator form")
-    })
-
-    describe('logged-in non-collaborator', function () {
-      it("renders an ask-for-access prompt") // aspirational
-      it("renders a disabled public/private toggle")
-      it("renders disabled read-only/read-write collaborator toggles")
-      it("does not render new collaborator form")
-    })
-
-    describe('logged-in collaborator with read access', function () {
-      it("renders a disabled public/private toggle")
-      it("renders disabled read-only/read-write collaborator toggles")
-      it("emphasizes logged-in user in collaborator list")
-      it("does not render new collaborator form")
-      it("does not render collaborator removal links")
-    })
-
-    describe('logged-in collaborator with write access', function () {
-      it("renders enabled public/private toggle")
-      it("renders enabled read-only/read-write collaborator toggles")
-      it("emphasizes logged-in user in collaborator list")
-      it("renders enabled new collaborator form")
-      it("renders enabled collaborator removal links")
-    })
-
-  })
-
-  describe('scoped private package', function() {
-
-    describe('anonymous user', function () {
-      it("returns a 404")
-      it("renders the generic not-found page")
-      it("renders a please-log-in prompt")
-    })
-
-    describe('logged-in non-collaborator', function () {
-      it("returns a 404")
-      it("renders the generic not-found page")
-    })
-
-    describe('logged-in collaborator with read access', function () {
-      it("returns a 200")
-    })
-
-    describe('logged-in collaborator with write access', function () {
-      it("returns a 200")
-    })
-
-  })
+  // describe('scoped public package', function() {
+  //
+  //   describe('anonymous user', function () {
+  //
+  //     it("renders a please-log-in prompt", function(done) {
+  //       expect($("p.notice.please-log-in").length).to.equal(1)
+  //       done()
+  //     })
+  //
+  //     it("renders a disabled public/private toggle", function(done){
+  //       expect($("#package-access-toggle:disabled").length).to.equal(1)
+  //       done()
+  //     })
+  //
+  //     it("renders disabled read-only/read-write collaborator toggles", function(done){
+  //       expect($("#collaborators > tbody > tr").length).to.equal(2)
+  //       expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
+  //       expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
+  //       done()
+  //     })
+  //
+  //     it("does not render new collaborator form", function(done){
+  //       expect($("form#add-collaborator").length).to.equal(0)
+  //       done()
+  //     })
+  //
+  //     it("does not render collaborator removal links", function(done){
+  //       expect($("a.delete-collaborator").length).to.equal(0)
+  //       done()
+  //     })
+  //   })
+  //
+  //   describe('logged-in non-collaborator', function () {
+  //     it("renders an ask-for-access prompt") // aspirational
+  //
+  //     it("renders a disabled public/private toggle", function(done){
+  //       expect($("#package-access-toggle:disabled").length).to.equal(1)
+  //       done()
+  //     })
+  //
+  //     it("renders disabled read-only/read-write collaborator toggles", function(done){
+  //       expect($("#collaborators > tbody > tr").length).to.equal(2)
+  //       expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
+  //       expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
+  //       done()
+  //     })
+  //
+  //     it("does not render new collaborator form", function(done){
+  //       expect($("form#add-collaborator").length).to.equal(0)
+  //       done()
+  //     })
+  //
+  //     it("does not render collaborator removal links", function(done){
+  //       expect($("a.delete-collaborator").length).to.equal(0)
+  //       done()
+  //     })
+  //   })
+  //
+  //   describe('logged-in collaborator with read access', function () {
+  //     it("renders a disabled public/private toggle", function(done){
+  //       expect($("#package-access-toggle:disabled").length).to.equal(1)
+  //       done()
+  //     })
+  //
+  //     it("renders disabled read-only/read-write collaborator toggles", function(done){
+  //       expect($("#collaborators > tbody > tr").length).to.equal(2)
+  //       expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
+  //       expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
+  //       done()
+  //     })
+  //
+  //     it("does not render new collaborator form", function(done){
+  //       expect($("form#add-collaborator").length).to.equal(0)
+  //       done()
+  //     })
+  //
+  //     it("does not render collaborator removal links", function(done){
+  //       expect($("a.delete-collaborator").length).to.equal(0)
+  //       done()
+  //     })
+  //   })
+  //
+  //   describe('logged-in collaborator with write access', function () {
+  //     it("renders a disabled public/private toggle", function(done){
+  //       expect($("#package-access-toggle:enabled").length).to.equal(1)
+  //       done()
+  //     })
+  //
+  //     it("renders enabled read-only/read-write collaborator toggles", function(done){
+  //       expect($("#collaborators > tbody > tr").length).to.equal(2)
+  //       expect($("#collaborators input[type='radio']:enabled").length).to.equal(4)
+  //       expect($("#collaborators input[type='radio']:disabled").length).to.equal(0)
+  //       done()
+  //     })
+  //
+  //     it("renders new collaborator form", function(done){
+  //       expect($("form#add-collaborator").length).to.equal(1)
+  //       done()
+  //     })
+  //
+  //     it("renders collaborator removal links", function(done){
+  //       expect($("a.delete-collaborator").length).to.equal(2)
+  //       done()
+  //     })
+  //   })
+  // })
+  //
+  // describe('scoped private package', function() {
+  //
+  //   describe('anonymous user', function () {
+  //     it("returns a 404", function(done){
+  //       expect(resp.statusCode).to.equal(404)
+  //       done()
+  //     })
+  //
+  //     it("renders the generic not-found template", function(done){
+  //       expect(source.template).to.equal('errors/not-found')
+  //       done()
+  //     })
+  //   })
+  //
+  //   describe('logged-in non-collaborator', function () {
+  //     it("returns a 404", function(done){
+  //       expect(resp.statusCode).to.equal(404)
+  //       done()
+  //     })
+  //
+  //     it("renders the generic not-found template", function(done){
+  //       expect(source.template).to.equal('errors/not-found')
+  //       done()
+  //     })
+  //   })
+  //
+  //   describe('logged-in collaborator with read access', function () {
+  //     it("returns a 200", function(done){
+  //       expect(resp.statusCode).to.equal(200)
+  //       done()
+  //     })
+  //   })
+  //
+  //   describe('logged-in collaborator with write access', function () {
+  //     it("returns a 200", function(done){
+  //       expect(resp.statusCode).to.equal(200)
+  //       done()
+  //     })
+  //   })
+  //
+  // })
 
 })

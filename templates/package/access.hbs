@@ -4,7 +4,7 @@
 
   {{#unless user}}
     <p class="notice please-log-in">
-      To manage this package, please <a href="/login">log in</a>.
+      To configure access to this package, please <a href="/login">log in</a>.
     </p>
   {{/unless}}
 
@@ -43,7 +43,7 @@
             <a href="/~{{name}}">{{name}}</a>
           </td>
           <td class="access">
-            <label class="glamorous">
+            <label class="wrapping-hidden-radio">
               <input
                 type="radio"
                 name="access-{{name}}"
@@ -53,7 +53,7 @@
               <span>read-only</span>
             </label>
 
-            <label class="glamorous">
+            <label class="wrapping-hidden-radio">
               <input
                 type="radio"
                 name="access-{{name}}"

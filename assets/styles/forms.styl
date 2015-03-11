@@ -227,16 +227,19 @@ input.toggle:checked
     span
       left (toggleWidth - toggleHeight - togglePadding)
 
-label.glamorous
+label.wrapping-hidden-radio
   cursor pointer
   display inline-block
 
   input[type=radio]
     display none
 
-  input[type=radio]:checked + span, span:hover
-    background greigh4
-    color white
+    &:checked + span, &:enabled span:hover
+      background greigh4
+      color white
+
+    &:disabled + span
+      cursor not-allowed
 
   span
     transition all 0.2s

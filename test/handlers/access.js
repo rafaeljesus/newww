@@ -145,7 +145,6 @@ describe("package access", function(){
       })
 
       it("renders disabled read-only/read-write collaborator toggles", function(done){
-
         expect($("tr.collaborator").length).to.equal(2)
         expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
         expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
@@ -165,153 +164,296 @@ describe("package access", function(){
 
   })
 
-  // describe('scoped public package', function() {
-  //
-  //   describe('anonymous user', function () {
-  //
-  //     it("renders a please-log-in prompt", function(done) {
-  //       expect($("p.notice.please-log-in").length).to.equal(1)
-  //       done()
-  //     })
-  //
-  //     it("renders a disabled public/private toggle", function(done){
-  //       expect($("#package-access-toggle:disabled").length).to.equal(1)
-  //       done()
-  //     })
-  //
-  //     it("renders disabled read-only/read-write collaborator toggles", function(done){
-  //       expect($("#collaborators > tbody > tr").length).to.equal(2)
-  //       expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
-  //       expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
-  //       done()
-  //     })
-  //
-  //     it("does not render new collaborator form", function(done){
-  //       expect($("form#add-collaborator").length).to.equal(0)
-  //       done()
-  //     })
-  //
-  //     it("does not render collaborator removal links", function(done){
-  //       expect($("a.delete-collaborator").length).to.equal(0)
-  //       done()
-  //     })
-  //   })
-  //
-  //   describe('logged-in non-collaborator', function () {
-  //     it("renders an ask-for-access prompt") // aspirational
-  //
-  //     it("renders a disabled public/private toggle", function(done){
-  //       expect($("#package-access-toggle:disabled").length).to.equal(1)
-  //       done()
-  //     })
-  //
-  //     it("renders disabled read-only/read-write collaborator toggles", function(done){
-  //       expect($("#collaborators > tbody > tr").length).to.equal(2)
-  //       expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
-  //       expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
-  //       done()
-  //     })
-  //
-  //     it("does not render new collaborator form", function(done){
-  //       expect($("form#add-collaborator").length).to.equal(0)
-  //       done()
-  //     })
-  //
-  //     it("does not render collaborator removal links", function(done){
-  //       expect($("a.delete-collaborator").length).to.equal(0)
-  //       done()
-  //     })
-  //   })
-  //
-  //   describe('logged-in collaborator with read access', function () {
-  //     it("renders a disabled public/private toggle", function(done){
-  //       expect($("#package-access-toggle:disabled").length).to.equal(1)
-  //       done()
-  //     })
-  //
-  //     it("renders disabled read-only/read-write collaborator toggles", function(done){
-  //       expect($("#collaborators > tbody > tr").length).to.equal(2)
-  //       expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
-  //       expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
-  //       done()
-  //     })
-  //
-  //     it("does not render new collaborator form", function(done){
-  //       expect($("form#add-collaborator").length).to.equal(0)
-  //       done()
-  //     })
-  //
-  //     it("does not render collaborator removal links", function(done){
-  //       expect($("a.delete-collaborator").length).to.equal(0)
-  //       done()
-  //     })
-  //   })
-  //
-  //   describe('logged-in collaborator with write access', function () {
-  //     it("renders a disabled public/private toggle", function(done){
-  //       expect($("#package-access-toggle:enabled").length).to.equal(1)
-  //       done()
-  //     })
-  //
-  //     it("renders enabled read-only/read-write collaborator toggles", function(done){
-  //       expect($("#collaborators > tbody > tr").length).to.equal(2)
-  //       expect($("#collaborators input[type='radio']:enabled").length).to.equal(4)
-  //       expect($("#collaborators input[type='radio']:disabled").length).to.equal(0)
-  //       done()
-  //     })
-  //
-  //     it("renders new collaborator form", function(done){
-  //       expect($("form#add-collaborator").length).to.equal(1)
-  //       done()
-  //     })
-  //
-  //     it("renders collaborator removal links", function(done){
-  //       expect($("a.delete-collaborator").length).to.equal(2)
-  //       done()
-  //     })
-  //   })
-  // })
-  //
-  // describe('scoped private package', function() {
-  //
-  //   describe('anonymous user', function () {
-  //     it("returns a 404", function(done){
-  //       expect(resp.statusCode).to.equal(404)
-  //       done()
-  //     })
-  //
-  //     it("renders the generic not-found template", function(done){
-  //       expect(source.template).to.equal('errors/not-found')
-  //       done()
-  //     })
-  //   })
-  //
-  //   describe('logged-in non-collaborator', function () {
-  //     it("returns a 404", function(done){
-  //       expect(resp.statusCode).to.equal(404)
-  //       done()
-  //     })
-  //
-  //     it("renders the generic not-found template", function(done){
-  //       expect(source.template).to.equal('errors/not-found')
-  //       done()
-  //     })
-  //   })
-  //
-  //   describe('logged-in collaborator with read access', function () {
-  //     it("returns a 200", function(done){
-  //       expect(resp.statusCode).to.equal(200)
-  //       done()
-  //     })
-  //   })
-  //
-  //   describe('logged-in collaborator with write access', function () {
-  //     it("returns a 200", function(done){
-  //       expect(resp.statusCode).to.equal(200)
-  //       done()
-  //     })
-  //   })
-  //
-  // })
+  describe('scoped public package', function() {
+
+    var $
+    var resp
+    var context
+    var options = {url: '/package/@wrigley_the_writer/scoped_public/access'};
+    var mock = nock("https://user-api-example.com")
+      .get('/package/@wrigley_the_writer%2Fscoped_public')
+      .times(10)
+      .reply(200, fixtures.packages.wrigley_scoped_public)
+      .get('/package/@wrigley_the_writer%2Fscoped_public/collaborators')
+      .times(10)
+      .reply(200, fixtures.collaborators)
+
+    describe('anonymous user', function () {
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("renders a please-log-in prompt", function(done) {
+        expect($("p.notice.please-log-in").length).to.equal(1)
+        done()
+      })
+
+      it("renders a disabled public/private toggle", function(done){
+        expect($("#package-access-toggle:disabled").length).to.equal(1)
+        done()
+      })
+
+      it("renders disabled read-only/read-write collaborator toggles", function(done){
+        expect($("tr.collaborator").length).to.equal(2)
+        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
+        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
+        done()
+      })
+
+      it("does not render new collaborator form", function(done){
+        expect($("form#add-collaborator").length).to.equal(0)
+        done()
+      })
+
+      it("does not render collaborator removal links", function(done){
+        expect($("a.delete-collaborator").length).to.equal(0)
+        done()
+      })
+    })
+
+    describe('logged-in non-collaborator', function () {
+
+      var options = {
+        url: '/package/@wrigley_the_writer/scoped_public/access',
+        credentials: fixtures.users.bob,
+      };
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("renders an ask-for-access prompt") // aspirational
+
+      it("renders a disabled public/private toggle", function(done){
+        expect($("#package-access-toggle:disabled").length).to.equal(1)
+        done()
+      })
+
+      it("renders disabled read-only/read-write collaborator toggles", function(done){
+        expect($("tr.collaborator").length).to.equal(2)
+        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
+        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
+        done()
+      })
+
+      it("does not render new collaborator form", function(done){
+        expect($("form#add-collaborator").length).to.equal(0)
+        done()
+      })
+
+      it("does not render collaborator removal links", function(done){
+        expect($("a.delete-collaborator").length).to.equal(0)
+        done()
+      })
+    })
+
+    describe('logged-in collaborator with read access', function () {
+
+      var options = {
+        url: '/package/@wrigley_the_writer/scoped_public/access',
+        credentials: fixtures.users.ralph_the_reader,
+      };
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("renders a disabled public/private toggle", function(done){
+        expect($("#package-access-toggle:disabled").length).to.equal(1)
+        done()
+      })
+
+      it("renders disabled read-only/read-write collaborator toggles", function(done){
+        expect($("tr.collaborator").length).to.equal(2)
+        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
+        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
+        done()
+      })
+
+      it("does not render new collaborator form", function(done){
+        expect($("form#add-collaborator").length).to.equal(0)
+        done()
+      })
+
+      it("does not render collaborator removal links", function(done){
+        expect($("a.delete-collaborator").length).to.equal(0)
+        done()
+      })
+    })
+
+    describe('logged-in collaborator with write access', function () {
+
+      var options = {
+        url: '/package/@wrigley_the_writer/scoped_public/access',
+        credentials: fixtures.users.wrigley_the_writer,
+      };
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("renders a disabled public/private toggle", function(done){
+        expect($("#package-access-toggle:enabled").length).to.equal(1)
+        done()
+      })
+
+      it("renders enabled read-only/read-write collaborator toggles", function(done){
+        expect($("tr.collaborator").length).to.equal(2)
+        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(4)
+        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(0)
+        done()
+      })
+
+      it("renders new collaborator form", function(done){
+        expect($("form#add-collaborator").length).to.equal(1)
+        done()
+      })
+
+      it("renders collaborator removal links", function(done){
+        expect($("a.delete-collaborator").length).to.equal(2)
+        done()
+      })
+    })
+  })
+
+  describe('scoped private package', function() {
+
+    var $
+    var resp
+    var context
+    var options = {
+      url: '/package/@wrigley_the_writer/scoped_private/access'
+    };
+    var mock = nock("https://user-api-example.com")
+      .get('/package/@wrigley_the_writer%2Fscoped_private')
+      .times(10)
+      .reply(200, fixtures.packages.wrigley_scoped_private)
+      .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
+      .times(10)
+      .reply(200, fixtures.collaborators)
+
+    describe('anonymous user', function () {
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("returns a 404", function(done){
+        expect(resp.statusCode).to.equal(404)
+        done()
+      })
+
+      it("renders the generic not-found template", function(done){
+        expect(resp.request.response.source.template).to.equal('errors/not-found')
+        done()
+      })
+    })
+
+    describe('logged-in non-collaborator', function () {
+
+      var options = {
+        url: '/package/@wrigley_the_writer/scoped_private/access',
+        credentials: fixtures.users.bob,
+      };
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("returns a 404", function(done){
+        expect(resp.statusCode).to.equal(404)
+        done()
+      })
+
+      it("renders the generic not-found template", function(done){
+        expect(resp.request.response.source.template).to.equal('errors/not-found')
+        done()
+      })
+    })
+
+    describe('logged-in collaborator with read access', function () {
+
+      var options = {
+        url: '/package/@wrigley_the_writer/scoped_private/access',
+        credentials: fixtures.users.ralph_the_reader,
+      };
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("returns a 200", function(done){
+        expect(resp.statusCode).to.equal(200)
+        done()
+      })
+    })
+
+    describe('logged-in collaborator with write access', function () {
+
+      var options = {
+        url: '/package/@wrigley_the_writer/scoped_private/access',
+        credentials: fixtures.users.wrigley_the_writer,
+      };
+
+      before(function(done) {
+        server.inject(options, function(response) {
+          resp = response
+          context = resp.request.response.source.context
+          $ = cheerio.load(resp.result)
+          mock.done()
+          done()
+        })
+      })
+
+      it("returns a 200", function(done){
+        expect(resp.statusCode).to.equal(200)
+        done()
+      })
+    })
+
+  })
 
 })

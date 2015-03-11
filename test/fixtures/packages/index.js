@@ -7,4 +7,6 @@ module.exports = {
   request: require("./request.json"),
   supercalifragilisticexpialidocious: require("./supercalifragilisticexpialidocious.json"),
   unpublished: require("./unpublished.json"),
+  wrigley_scoped_public: require("./wrigley_scoped_public.json"),
+  wrigley_scoped_private: require("./wrigley_scoped_private.json"),
 }

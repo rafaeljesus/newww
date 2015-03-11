@@ -49,7 +49,7 @@
                 name="access-{{name}}"
                 value="read-only"
                 {{#unless write}}checked="checked"{{/unless}}
-                {{#if ../disablePermissionTogglers}} disabled="disabled" {{/if}}>
+                {{#unless ../enablePermissionTogglers}} disabled="disabled" {{/unless}}>
               <span>read-only</span>
             </label>
 
@@ -59,7 +59,7 @@
                 name="access-{{name}}"
                 value="read-write"
                 {{#if write}}checked="checked"{{/if}}
-                {{#if ../disablePermissionTogglers}} disabled="disabled" {{/if}}>
+                {{#unless ../enablePermissionTogglers}} disabled="disabled" {{/unless}}>
               <span>read-write</span>
             </label>
           </td>

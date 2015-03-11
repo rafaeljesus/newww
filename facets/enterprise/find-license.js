@@ -19,12 +19,11 @@ module.exports = function(request,reply) {
     license: Joi.string().guid().allow('')
   })
 
-  console.log("payload",request.payload)
-
   Joi.validate(request.payload, schema, function (err, data) {
 
     if(err) {
-      request.logger.info("Email/license validation failed on license find-license page; ",err)
+      request.logger.error("Email/license validation failed on license find-license page")
+      request.logger.error(err)
       return reply.view('enterprise/invalid-license', {msg:"The email or license key you entered appear to be invalid."});
     }
 
@@ -35,7 +34,8 @@ module.exports = function(request,reply) {
 
         // fail on error
         if(err) {
-          request.logger.info("API error fetching customer " + data.email,err)
+          request.logger.error("API error fetching customer " + data.email)
+          request.logger.error(err)
           return reply.view('enterprise/invalid-license', {msg:"This looks like an error on our part."});
         }
 

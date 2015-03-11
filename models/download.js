@@ -13,14 +13,14 @@ var Download = module.exports = function (opts) {
   return this;
 };
 
-Download.new = function(opts) {
-  if (!opts) { opts = {}; }
-
-  if (opts.request) {
-    opts.bearer = opts.request.auth.credentials && opts.request.auth.credentials.name
-    delete opts.request
+Download.new = function(request) {
+  var opts = {}
+  if (request && request.auth && request.auth.credentials) {
+    opts.bearer = request.auth.credentials.name
   }
-
+  if (String(process.env.NODE_ENV).match(/(production|staging|dev)/)) {
+    opts.cache = require("../lib/cache")
+  }
   return new Download(opts)
 };
 

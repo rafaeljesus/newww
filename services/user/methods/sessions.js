@@ -46,7 +46,6 @@ module.exports = {
           request.logger.error(Boom.internal('there was an error clearing the cache'));
           request.logger.error(err);
           metrics.metric({name: 'delSessionError'});
-          return next(err);
         }
 
         metrics.metric({

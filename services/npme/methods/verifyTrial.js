@@ -1,5 +1,6 @@
 var request = require('request'),
-    log = require('bole')('npme-verify-trial');
+    log = require('bole')('npme-verify-trial'),
+    config = require('../../../config')
 
 module.exports = function(verificationKey, callback) {
 

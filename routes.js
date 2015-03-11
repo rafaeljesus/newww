@@ -159,12 +159,12 @@ var unauthenticatedRoutes = [
   },{
     path: "/enterprise/license-options",
     method: "GET",
-    handler: require('./facets/enterprise/license-options')(config.stripe),
+    handler: require('./facets/enterprise/license-options'),
     config: stripeSafeConfig
   },{
     path: "/enterprise/buy-license",
     method: "POST",
-    handler: require('./facets/enterprise/buy-license')(config.stripe),
+    handler: require('./facets/enterprise/buy-license'),
     config: {
       plugins: {
         // tolerate Ajax

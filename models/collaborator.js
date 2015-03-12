@@ -41,7 +41,7 @@ Collaborator.prototype.list = function(package, callback) {
         }
 
         Object.keys(body).forEach(function(username){
-          body[username] = decorate(body[username])
+          body[username] = decorate(body[username], package)
         })
 
         return resolve(body);
@@ -70,7 +70,7 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
-      return resolve(decorate(body));
+      return resolve(decorate(body), package);
     });
   }).nodeify(callback);};
 
@@ -96,7 +96,7 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
-      return resolve(decorate(body));
+      return resolve(decorate(body), package);
     });
   }).nodeify(callback);};
 
@@ -113,7 +113,7 @@ Collaborator.prototype.del = function(package, collaboratorName, callback) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
-      return resolve(decorate(body));
+      return resolve(decorate(body), package);
     });
   }).nodeify(callback);
 };

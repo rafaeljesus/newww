@@ -23,8 +23,7 @@ collaborator.add = function(request, reply) {
       return reply(err)
     }
     return reply({
-      collaborator: collaborator[request.payload.collaborator.name]
-      // collaborator: decorate(collaborator[request.payload.collaborator.name])
+      collaborator: decorate(collaborator[request.payload.collaborator.name], request.packageName)
     });
   });
 };
@@ -50,7 +49,7 @@ collaborator.del = function(request, reply) {
       return reply(err)
     }
     return reply({
-      collaborator: collaborator
-    });
+      username: request.params.username
+    })
   });
 };

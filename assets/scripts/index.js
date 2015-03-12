@@ -1,7 +1,6 @@
 window.$ = require("jquery")
-window.github = require("./github")()
-window.star = require("./star")()
 
+require("./crumb")()
 require("./hiring")
 require("./npm-expansions")
 require("./email-obfuscate")()
@@ -18,3 +17,6 @@ require("./keyboard-shortcuts")()
 require("./add-active-class-to-links")()
 require("./autoselect-inputs")()
 require("./package-access")()
+
+window.github = require("./github")()
+window.star = require("./star")()

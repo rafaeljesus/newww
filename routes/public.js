@@ -94,20 +94,32 @@ var publicRoutes = [
     method: "GET",
     handler: require('../facets/enterprise/show-verification')
   },{
-    path: "/package/{package}/collaborators",
+    paths: [
+      "/package/{package}/collaborators",
+      "/package/{scope}/{project}/collaborators",
+    ],
     method: "GET",
     handler: require('../handlers/collaborator').list
   },{
-    path: "/package/{package}/collaborators",
+    paths: [
+      "/package/{package}/collaborators",
+      "/package/{scope}/{project}/collaborators",
+    ],
     method: "PUT",
     handler: require('../handlers/collaborator').add
   },{
-    path: "/package/{package}/collaborators/{username}",
+    paths: [
+      "/package/{package}/collaborators/{username}",
+      "/package/{scope}/{project}/collaborators/{username}",
+    ],
     method: "POST",
     handler: require('../handlers/collaborator').update,
     config: ajaxy
   },{
-    path: "/package/{package}/collaborators/{username}",
+    paths: [
+      "/package/{package}/collaborators/{username}",
+      "/package/{scope}/{project}/collaborators/{username}",
+    ],
     method: "DELETE",
     handler: require('../handlers/collaborator').del
   },{

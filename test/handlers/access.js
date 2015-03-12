@@ -151,14 +151,31 @@ describe("package access", function(){
         done()
       })
 
-      it("renders new collaborator form", function(done){
-        expect($("#add-collaborator").length).to.equal(1)
-        expect($("#add-collaborator input[name='collaborator'][required='required']").length)
-          .to.equal(1)
-        expect($("#add-collaborator input[name='package'][type='hidden']").val())
-          .to.equal("browserify")
+      describe("new collaborator form", function() {
 
-        done()
+        it("is rendered", function(done){
+          expect($("#add-collaborator").length).to.equal(1)
+          done()
+        })
+
+        it("adds package name as a hidden input", function(done){
+          expect($("#add-collaborator input[name='package'][type='hidden']").val())
+            .to.equal("browserify")
+          done()
+        })
+
+        it("makes collaborator name a required input", function(done){
+          expect($("#add-collaborator input[name='collaborator'][required='required']").length)
+            .to.equal(1)
+          done()
+        })
+
+        it("defaults to `write` permissions when adding new collaborators", function(done){
+          expect($("#add-collaborator input[name='permissions'][type='hidden']").val())
+            .to.equal("write")
+          done()
+        })
+
       })
 
       it("renders collaborator removal links", function(done){
@@ -334,11 +351,32 @@ describe("package access", function(){
         done()
       })
 
-      it("renders new collaborator form", function(done){
-        expect($("#add-collaborator").length).to.equal(1)
-        expect($("#add-collaborator input[type='hidden'][name='package']").val())
-          .to.equal("@wrigley_the_writer%2Fscoped_public")
-        done()
+
+      describe("new collaborator form", function() {
+
+        it("is rendered", function(done){
+          expect($("#add-collaborator").length).to.equal(1)
+          done()
+        })
+
+        it("adds encoded package name as a hidden input", function(done){
+          expect($("#add-collaborator input[name='package'][type='hidden']").val())
+            .to.equal("@wrigley_the_writer%2Fscoped_public")
+          done()
+        })
+
+        it("makes collaborator name a required input", function(done){
+          expect($("#add-collaborator input[name='collaborator'][required='required']").length)
+            .to.equal(1)
+          done()
+        })
+
+        it("defaults to `read` permissions when adding new collaborators", function(done){
+          expect($("#add-collaborator input[name='permissions'][type='hidden']").val())
+            .to.equal("read")
+          done()
+        })
+
       })
 
       it("renders collaborator removal links", function(done){

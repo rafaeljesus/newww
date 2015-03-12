@@ -15,13 +15,18 @@
         class="toggle"
         id="package-access-toggle"
         value="private"
-        {{#unless user.hasWriteAccessToPackage}}disabled="disabled"{{/unless}}
+        {{#unless userHasWriteAccessToPackage}}disabled="disabled"{{/unless}}
         {{#if package.private}}checked="checked"{{/if}} >
       <label for="package-access-toggle"><span></span></label>
     </div>
   {{/if}}
 
-  <table class="ruled humans" id="collaborators">
+  <table
+    class="ruled humans"
+    id="collaborators"
+    data-enable-permission-togglers="{{enablePermissionTogglers}}"
+    data-enable-deletion="{{userHasWriteAccessToPackage}}"
+  >
     <thead>
       <tr>
         <th>&nbsp;</th>
@@ -33,52 +38,17 @@
     <tbody>
 
       {{#each package.collaborators}}
-        <tr class="collaborator">
-          <td class="avatar">
-            <a href="/~{{name}}">
-              <img src="{{avatar.small}}" alt="{{name}}" />
-            </a>
-          </td>
-          <td class="name">
-            <a href="/~{{name}}">{{name}}</a>
-          </td>
-          <td class="access">
-            <label class="wrapping-hidden-radio">
-              <input
-                type="radio"
-                name="access-{{name}}"
-                value="read-only"
-                {{#unless write}}checked="checked"{{/unless}}
-                {{#unless ../enablePermissionTogglers}} disabled="disabled" {{/unless}}>
-              <span>read-only</span>
-            </label>
-
-            <label class="wrapping-hidden-radio">
-              <input
-                type="radio"
-                name="access-{{name}}"
-                value="read-write"
-                {{#if write}}checked="checked"{{/if}}
-                {{#unless ../enablePermissionTogglers}} disabled="disabled" {{/unless}}>
-              <span>read-write</span>
-            </label>
-          </td>
-          <td>
-            {{#if ../user.hasWriteAccessToPackage}}
-              <a href="#" class="delete-icon delete-collaborator">✖</a>
-            {{/if}}
-          </td>
-        </tr>
+        {{> collaborator}}
       {{/each}}
 
-      {{#if user.hasWriteAccessToPackage}}
+      {{#if userHasWriteAccessToPackage}}
         <tr>
           <td>
             &nbsp;
           </td>
           <td colspan="1">
             <form id="add-collaborator" method="PUT" action="/package/{{package.name}}/collaborators">
-              <input type="hidden" name="permissions" value="{{#if package.scoped}}read{{else}}write{{/if}}">
+              <input type="hidden" name="permissions" value="{{#if package.private}}read{{else}}write{{/if}}">
               <input type="text" name="name" required="required" value="" placeholder="Add a collaborator...">
             </form>
           </td>

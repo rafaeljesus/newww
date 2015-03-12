@@ -65,8 +65,7 @@ describe("package access", function(){
 
       it("renders disabled read-only/read-write collaborator toggles", function(done){
         expect($("#collaborators > tbody > tr").length).to.equal(2)
-        expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
-        expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
+        expect($("#collaborators").data('enablePermissionTogglers')).to.equal(false)
         done()
       })
 
@@ -76,9 +75,10 @@ describe("package access", function(){
       })
 
       it("does not render collaborator removal links", function(done){
-        expect($("a.delete-collaborator").length).to.equal(0)
+        expect($("#collaborators").data('enableDeletion')).to.equal(false)
         done()
       })
+
     })
 
     describe('logged-in non-collaborator', function () {
@@ -106,8 +106,7 @@ describe("package access", function(){
 
       it("renders disabled read-only/read-write collaborator toggles", function(done){
         expect($("#collaborators > tbody > tr").length).to.equal(2)
-        expect($("#collaborators input[type='radio']:enabled").length).to.equal(0)
-        expect($("#collaborators input[type='radio']:disabled").length).to.equal(4)
+        expect($("#collaborators").data('enablePermissionTogglers')).to.equal(false)
         done()
       })
 
@@ -117,7 +116,7 @@ describe("package access", function(){
       })
 
       it("does not render collaborator removal links", function(done){
-        expect($("a.delete-collaborator").length).to.equal(0)
+        expect($("#collaborators").data('enableDeletion')).to.equal(false)
         done()
       })
     })
@@ -146,8 +145,7 @@ describe("package access", function(){
 
       it("renders disabled read-only/read-write collaborator toggles", function(done){
         expect($("tr.collaborator").length).to.equal(2)
-        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
-        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
+        expect($("#collaborators").data('enablePermissionTogglers')).to.equal(false)
         done()
       })
 
@@ -179,7 +177,7 @@ describe("package access", function(){
       })
 
       it("renders collaborator removal links", function(done){
-        expect($("a.delete-collaborator").length).to.equal(2)
+        expect($("#collaborators").data('enableDeletion')).to.equal(true)
         done()
       })
     })
@@ -224,8 +222,7 @@ describe("package access", function(){
 
       it("renders disabled read-only/read-write collaborator toggles", function(done){
         expect($("tr.collaborator").length).to.equal(2)
-        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
-        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
+        expect($("#collaborators").data('enablePermissionTogglers')).to.equal(false)
         done()
       })
 
@@ -235,7 +232,7 @@ describe("package access", function(){
       })
 
       it("does not render collaborator removal links", function(done){
-        expect($("a.delete-collaborator").length).to.equal(0)
+        expect($("#collaborators").data('enableDeletion')).to.equal(false)
         done()
       })
     })
@@ -266,8 +263,7 @@ describe("package access", function(){
 
       it("renders disabled read-only/read-write collaborator toggles", function(done){
         expect($("tr.collaborator").length).to.equal(2)
-        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
-        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
+        expect($("#collaborators").data('enablePermissionTogglers')).to.equal(false)
         done()
       })
 
@@ -277,7 +273,7 @@ describe("package access", function(){
       })
 
       it("does not render collaborator removal links", function(done){
-        expect($("a.delete-collaborator").length).to.equal(0)
+        expect($("#collaborators").data('enableDeletion')).to.equal(false)
         done()
       })
     })
@@ -306,8 +302,6 @@ describe("package access", function(){
 
       it("renders disabled read-only/read-write collaborator toggles", function(done){
         expect($("tr.collaborator").length).to.equal(2)
-        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(0)
-        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(4)
         done()
       })
 
@@ -317,7 +311,7 @@ describe("package access", function(){
       })
 
       it("does not render collaborator removal links", function(done){
-        expect($("a.delete-collaborator").length).to.equal(0)
+        expect($("#collaborators").data('enableDeletion')).to.equal(false)
         done()
       })
     })
@@ -346,11 +340,9 @@ describe("package access", function(){
 
       it("renders enabled read-only/read-write collaborator toggles", function(done){
         expect($("tr.collaborator").length).to.equal(2)
-        expect($("tr.collaborator input[type='radio']:enabled").length).to.equal(4)
-        expect($("tr.collaborator input[type='radio']:disabled").length).to.equal(0)
+        expect($("#collaborators").data('enablePermissionTogglers')).to.equal(true)
         done()
       })
-
 
       describe("new collaborator form", function() {
 
@@ -371,16 +363,16 @@ describe("package access", function(){
           done()
         })
 
-        it("defaults to `read` permissions when adding new collaborators", function(done){
+        it("defaults to `write` permissions when adding new collaborators", function(done){
           expect($("#add-collaborator input[name='permissions'][type='hidden']").val())
-            .to.equal("read")
+            .to.equal("write")
           done()
         })
 
       })
 
       it("renders collaborator removal links", function(done){
-        expect($("a.delete-collaborator").length).to.equal(2)
+        expect($("#collaborators").data('enableDeletion')).to.equal(true)
         done()
       })
     })
@@ -497,6 +489,13 @@ describe("package access", function(){
         expect(resp.statusCode).to.equal(200)
         done()
       })
+
+      it("defaults to `read` permissions when adding new collaborators", function(done){
+        expect($("#add-collaborator input[name='permissions'][type='hidden']").val())
+          .to.equal("read")
+        done()
+      })
+
     })
 
   })

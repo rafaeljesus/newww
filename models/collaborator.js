@@ -35,7 +35,7 @@ Collaborator.prototype.list = function(package, callback) {
           return reject(err);
         }
         if (resp.statusCode > 399) {
-          err = Error('error getting collaborators for package: ' + package);
+          err = Error(fmt("error getting collaborators for package '%s': %s)", package, resp.body));
           err.statusCode = resp.statusCode;
           return reject(err);
         }
@@ -51,7 +51,7 @@ Collaborator.prototype.list = function(package, callback) {
 
 Collaborator.prototype.add = function(package, collaborator, callback) {
   var _this = this;
-  var url = fmt("%s/package/%s/collaborators", this.host, package);
+  var url = fmt("%s/package/%s/collaborators", this.host, package.replace("/", "%2F"));
 
   return new Promise(function(resolve, reject) {
     request.put({
@@ -66,7 +66,7 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = Error('error adding collaborator to package: ' + package);
+        err = Error(fmt("error adding collaborator to package '%s': %s)", package, resp.body));
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -77,7 +77,7 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
 
 Collaborator.prototype.update = function(package, collaborator, callback) {
   var _this = this;
-  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaborator.name);
+  var url = fmt("%s/package/%s/collaborators/%s", this.host, package.replace("/", "%2F"), collaborator.name);
 
   return new Promise(function(resolve, reject) {
     request.post({
@@ -92,7 +92,7 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = Error('error updating collaborator access to package: ' + package);
+        err = Error(fmt("error updating collaborator access to package '%s': %s)", package, resp.body));
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -103,13 +103,13 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
 
 Collaborator.prototype.del = function(package, collaboratorName, callback) {
   var _this = this;
-  var url = fmt("%s/package/%s/collaborators/%s", this.host, package, collaboratorName);
+  var url = fmt("%s/package/%s/collaborators/%s", this.host, package.replace("/", "%2F"), collaboratorName);
 
   return new Promise(function (resolve, reject) {
     request.del({url: url, json: true, headers: {bearer: _this.bearer}}, function(err, resp, body){
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {
-        err = Error('error removing collaborator from package: ' + package);
+        err = Error(fmt("error removing collaborator from package '%s': %s)", package, resp.body));
         err.statusCode = resp.statusCode;
         return reject(err);
       }

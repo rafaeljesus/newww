@@ -1,34 +1,50 @@
-var crumb
+var templates = {
+  collaborator: require("../../templates/partials/collaborator.hbs"),
+}
 
 module.exports = function() {
   $(function(){
-    crumb = require("./crumb")()
-    if (!crumb) return;
+    enableAdminControls()
     $('#add-collaborator').submit(addCollaborator)
   })
 }
 
 var addCollaborator = function(e) {
-  console.log("hi")
-  var package = $(e.target).find("[name=package]").val()
-  var collaborator = $(e.target).find("[name=collaborator]").val()
+  e.preventDefault()
+
+  var collaborator = {}
+  $(this).serializeArray().forEach(function(input){
+    collaborator[input.name] = input.value;
+  })
+
   var opts = {
-    type: "PUT",
-    url: "/package/" + package + "/collaborators",
-    data: {
-      collaborator: {
-        name: collaborator,
-        permissions: "read"
-      }
-    },
-    headers: {'x-csrf-token': crumb},
+    method: $(this).attr("method"),
+    url: $(this).attr("action"),
+    data: {collaborator: collaborator},
+    headers: {'x-csrf-token': window.crumb},
+    json: true
   }
 
-  console.log(opts)
+  $.ajax(opts)
+    .done(function(data){
+      // console.log(data, templates.collaborator(data.collaborator))
+      $("tr.collaborator:last").after(templates.collaborator(data.collaborator))
+      enableAdminControls()
+      resetNewCollaboratorForm()
+    })
+    .error(function(){
+      console.error(arguments)
+    })
+}
 
-  // $.ajax(opts)
-  //   .done(onCollaboratorAdded)
-  //   .error(onCollaboratorAddError)
+var enableAdminControls = function() {
+  $("[data-enable-permission-togglers='true'] input")
+    .attr('disabled', false)
 
-  return false
+  $("[data-enable-deletion='true'] form.remove-collaborator")
+    .css({display: "block"})
+}
+
+var resetNewCollaboratorForm = function() {
+  $("#add-collaborator input[name='name']").val("")
 }

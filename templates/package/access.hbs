@@ -77,10 +77,9 @@
             &nbsp;
           </td>
           <td colspan="1">
-            <form id="add-collaborator">
-              <input type="hidden" name="package" value="{{package.encodedName}}">
+            <form id="add-collaborator" method="PUT" action="/package/{{package.name}}/collaborators">
               <input type="hidden" name="permissions" value="{{#if package.scoped}}read{{else}}write{{/if}}">
-              <input type="text" name="collaborator" required="required" value="" placeholder="Add a collaborator...">
+              <input type="text" name="name" required="required" value="" placeholder="Add a collaborator...">
             </form>
           </td>
         </tr>

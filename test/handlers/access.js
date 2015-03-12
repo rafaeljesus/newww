@@ -158,14 +158,14 @@ describe("package access", function(){
           done()
         })
 
-        it("adds package name as a hidden input", function(done){
-          expect($("#add-collaborator input[name='package'][type='hidden']").val())
-            .to.equal("browserify")
+        it("adds collaborator creation URL as form action", function(done){
+          expect($("#add-collaborator").attr("action"))
+            .to.equal("/package/browserify/collaborators")
           done()
         })
 
         it("makes collaborator name a required input", function(done){
-          expect($("#add-collaborator input[name='collaborator'][required='required']").length)
+          expect($("#add-collaborator input[name='name'][required='required']").length)
             .to.equal(1)
           done()
         })
@@ -359,14 +359,14 @@ describe("package access", function(){
           done()
         })
 
-        it("adds encoded package name as a hidden input", function(done){
-          expect($("#add-collaborator input[name='package'][type='hidden']").val())
-            .to.equal("@wrigley_the_writer%2Fscoped_public")
+        it("adds collaborator creation URL as form action", function(done){
+          expect($("#add-collaborator").attr("action"))
+            .to.equal("/package/@wrigley_the_writer/scoped_public/collaborators")
           done()
         })
 
         it("makes collaborator name a required input", function(done){
-          expect($("#add-collaborator input[name='collaborator'][required='required']").length)
+          expect($("#add-collaborator input[name='name'][required='required']").length)
             .to.equal(1)
           done()
         })

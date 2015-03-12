@@ -76,7 +76,7 @@ describe("Collaborator", function(){
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);
-        expect(err.message).to.equal("error getting collaborators for package: ghost");
+        expect(err.message).to.include("error getting collaborators");
         expect(collaborators).to.not.exist();
         done();
       });
@@ -110,7 +110,7 @@ describe("Collaborator", function(){
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);
-        expect(err.message).to.equal("error adding collaborator to package: squawk");
+        expect(err.message).to.include("error adding collaborator to package");
         expect(collaborator).to.not.exist();
         done();
       });
@@ -144,7 +144,7 @@ describe("Collaborator", function(){
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);
-        expect(err.message).to.equal("error updating collaborator access to package: moomoo");
+        expect(err.message).to.include("error updating collaborator");
         expect(collaborator).to.not.exist();
         done();
       });
@@ -179,7 +179,7 @@ describe("Collaborator", function(){
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);
-        expect(err.message).to.equal("error removing collaborator from package: snarfblatt");
+        expect(err.message).to.include("error removing collaborator");
         expect(collaborator).to.not.exist();
         done();
       });

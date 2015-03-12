@@ -1,6 +1,6 @@
 var request = require('request'),
-    log = require('bole')('npme-get-license'),
-    config = require('../../../config')
+    log = require('bole')('npme-get-licenses'),
+    config = require('../../../config');
 
 module.exports = function (productId, customerId, callback) {
 
@@ -23,4 +23,4 @@ module.exports = function (productId, customerId, callback) {
     log.error('unexpected status code from hubspot; status=' + resp.statusCode + '; customer=' + customerId);
     callback(new Error('unexpected status code: ' + resp.statusCode));
   });
-}
+};

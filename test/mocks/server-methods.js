@@ -71,16 +71,20 @@ module.exports = function (server) {
       },
 
       getCustomer: function (email, next) {
-        var key = email.split('@')[0];
+        var key = typeof(email) === 'String' ? email.split('@')[0] : email;
 
         switch (key) {
           case 'exists':
             // user already exists
             return next(null, fixtures.enterprise.existingUser);
           case 'new':
+          case 123:
             // user doesn't exist yet
             return next(null, null);
           case 'noLicense':
+            // for license testing
+            return next(null, fixtures.enterprise.noLicenseUser);
+          case 'badLicense':
             // for license testing
             return next(null, fixtures.enterprise.noLicenseUser);
           case 'tooManyLicenses':
@@ -92,6 +96,21 @@ module.exports = function (server) {
           default:
             // something went wrong with hubspot
             return next(new Error('something went wrong'));
+        }
+      },
+
+      getLicense: function (productId, customerId, licenseId, next) {
+        var key = customerId.split('@')[0];
+
+        switch (key) {
+          case 'badLicense':
+            return next(null, null);
+          case 'new':
+            next(null, fixtures.enterprise.goodLicense[0]);
+          case 'exists':
+            return next(null, fixtures.enterprise.goodLicense[0]);
+          default:
+            return next(new Error('license machine brokened'));
         }
       },
 

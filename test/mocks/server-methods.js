@@ -71,14 +71,15 @@ module.exports = function (server) {
       },
 
       getCustomer: function (email, next) {
-        var key = typeof(email) === 'String' ? email.split('@')[0] : email;
+        var key = typeof(email) === 'string' ? email.split('@')[0] : email;
 
         switch (key) {
           case 'exists':
+          case 123:
             // user already exists
             return next(null, fixtures.enterprise.existingUser);
           case 'new':
-          case 123:
+          case 345:
             // user doesn't exist yet
             return next(null, null);
           case 'noLicense':
@@ -106,7 +107,7 @@ module.exports = function (server) {
           case 'badLicense':
             return next(null, null);
           case 'new':
-            next(null, fixtures.enterprise.goodLicense[0]);
+            return next(null, fixtures.enterprise.newLicense[0]);
           case 'exists':
             return next(null, fixtures.enterprise.goodLicense[0]);
           default:
@@ -140,6 +141,7 @@ module.exports = function (server) {
       verifyTrial: function (verificationKey, next) {
         switch (verificationKey) {
           case '12345':
+          case '12ab34cd-a123-4b56-789c-1de2f3ab45cd':
             return next(null, fixtures.enterprise.newTrial);
           case '23456':
             return next(null, fixtures.enterprise.noCustomerTrial);

@@ -1,6 +1,6 @@
 var request = require('request'),
     log = require('bole')('npme-verify-trial'),
-    config = require('../../../config')
+    config = require('../../../config');
 
 module.exports = function(verificationKey, callback) {
 
@@ -42,4 +42,4 @@ module.exports = function(verificationKey, callback) {
       return callback(new Error('problem starting trial for ' + trial.id));
     });
   });
-}
+};

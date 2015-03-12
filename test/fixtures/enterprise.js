@@ -68,6 +68,20 @@ exports.goodLicense = [
   }
 ];
 
+exports.newLicense = [
+  {
+    id: 609,
+    customer_id: 345,
+    plan_id: null,
+    license_key: '0feed16c-0f28-4911-90f4-dfe49f7bfb41',
+    seats: 50,
+    begins: '2015-03-11T21:53:40.150Z',
+    ends: '2015-04-10T21:53:40.150Z',
+    created: '2015-03-11T22:00:41.088Z',
+    updated: '2015-03-11T22:00:41.088Z'
+  }
+];
+
 exports.tooManyLicenses = [
   {
     id: 609,

@@ -1,5 +1,6 @@
 var collaborator = module.exports = {};
 var Collaborator = require("../models/collaborator")
+var decorate = require("../presenters/collaborator")
 
 collaborator.list = function(request, reply) {
   Collaborator.new(request)
@@ -22,7 +23,8 @@ collaborator.add = function(request, reply) {
       return reply(err)
     }
     return reply({
-      collaborator: collaborator
+      collaborator: collaborator[request.payload.collaborator.name]
+      // collaborator: decorate(collaborator[request.payload.collaborator.name])
     });
   });
 };

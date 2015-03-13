@@ -23,7 +23,7 @@ after(function (done) {
   server.stop(done);
 });
 
-describe('Getting to the enterprise license purchase page', function () {
+describe('Getting to the enterprise license page', function () {
   it('gets there, no problem', function (done) {
     var opts = {
       url: '/enterprise/license'
@@ -39,7 +39,7 @@ describe('Getting to the enterprise license purchase page', function () {
   });
 });
 
-describe('Posting to the enterprise license purchase page', function () {
+describe('Posting to the enterprise license page', function () {
   it('errors out if the email sent is invalid', function (done) {
     generateCrumb(server, function (crumb) {
       var opts = {
@@ -216,5 +216,6 @@ describe('Posting to the enterprise license purchase page', function () {
         expect(source.template).to.equal('enterprise/check-email');
         done();
       });
-    });  });
+    });
+  });
 });

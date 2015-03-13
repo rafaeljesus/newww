@@ -66,6 +66,10 @@ module.exports = function (server) {
         return next(null, fixtures.enterprise.newUser);
       },
 
+      createLicense: function (licenseDetails, callback) {
+        return callback(null, fixtures.enterprise.goodLicense[0]);
+      },
+
       createTrial: function (customer, next) {
         return next(null, customer);
       },
@@ -136,6 +140,10 @@ module.exports = function (server) {
         }
 
         return next(null);
+      },
+
+      updateCustomer: function (customerId, data, callback) {
+        return callback(null);
       },
 
       verifyTrial: function (verificationKey, next) {

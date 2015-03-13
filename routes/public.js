@@ -106,7 +106,8 @@ var publicRoutes = [
       "/package/{scope}/{project}/collaborators",
     ],
     method: "PUT",
-    handler: require('../handlers/collaborator').add
+    handler: require('../handlers/collaborator').add,
+    config: ajaxy
   },{
     paths: [
       "/package/{package}/collaborators/{username}",
@@ -121,7 +122,8 @@ var publicRoutes = [
       "/package/{scope}/{project}/collaborators/{username}",
     ],
     method: "DELETE",
-    handler: require('../handlers/collaborator').del
+    handler: require('../handlers/collaborator').del,
+    config: ajaxy
   },{
     paths: [
       "/package/{package}",

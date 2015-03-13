@@ -2,11 +2,13 @@ exports.existingUser = {
   id: 12345,
   name: 'Boom Bam',
   email: 'exists@bam.com',
+  email_verified: true,
   phone: '123-456-7890',
   company: 'npm, Inc.',
   numemployees: '1-25',
-  comments: 'teehee'
-};
+  created: '2014-11-22T00:54:53.864Z',
+  updated: '2015-03-13T00:09:47.632Z',
+  deleted: null};
 
 exports.newUser = {
   id: 23456,

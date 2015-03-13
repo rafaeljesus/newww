@@ -1,6 +1,6 @@
 var request = require('request'),
     log = require('bole')('npme-create-customer'),
-    config = require('../../../config')
+    config = require('../../../config');
 
 module.exports = function (customerId, data, callback) {
 
@@ -24,4 +24,4 @@ module.exports = function (customerId, data, callback) {
 
     return callback(er);
   });
-}
+};

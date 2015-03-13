@@ -61,6 +61,7 @@
     "mailchimp-api": "^2.0.7",
     "malarkey": "^1.1.0",
     "marky-markdown": "^5.0.2",
+    "moment": "^2.9.0",
     "month": "^1.0.0",
     "mousetrap": "0.0.1",
     "murmurhash": "0.0.2",

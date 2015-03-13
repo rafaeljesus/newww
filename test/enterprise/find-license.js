@@ -149,7 +149,7 @@ describe('Posting to the enterprise license page', function () {
         expect(source.template).to.equal('enterprise/license-options');
         expect(source.context.stripeKey).to.exist();
         expect(source.context.billingEmail).to.exist();
-        expect(source.context.customerId).to.equal("12345");
+        expect(source.context.customerId).to.equal(12345);
         done();
       });
     });

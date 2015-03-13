@@ -11,25 +11,33 @@
   </td>
 
   <td class="access">
-    <label class="wrapping-hidden-radio">
-      <input
-        type="radio"
-        name="access-{{name}}"
-        value="read-only"
-        {{#unless write}}checked="checked"{{/unless}}
-        disabled="disabled">
-      <span>read-only</span>
-    </label>
+    <form
+      class="update-collaborator"
+      action="/package/{{packageName}}/collaborators/{{name}}"
+      method="POST">
 
-    <label class="wrapping-hidden-radio">
-      <input
-        type="radio"
-        name="access-{{name}}"
-        value="read-write"
-        {{#if write}}checked="checked"{{/if}}
-        disabled="disabled">
-      <span>read-write</span>
-    </label>
+      <input type="hidden" name="name" value="{{name}}">
+
+      <label class="wrapping-hidden-radio">
+        <input
+          type="radio"
+          name="permissions"
+          value="read-only"
+          {{#unless write}}checked="checked"{{/unless}}
+          disabled="disabled">
+        <span>read-only</span>
+      </label>
+
+      <label class="wrapping-hidden-radio">
+        <input
+          type="radio"
+          name="permissions"
+          value="read-write"
+          {{#if write}}checked="checked"{{/if}}
+          disabled="disabled">
+        <span>read-write</span>
+      </label>
+    </form>
   </td>
 
   <td>
@@ -39,7 +47,7 @@
       method="DELETE"
       action="/package/{{packageName}}/collaborators/{{name}}"
       style="display:none;">
-      <a href="#" class="delete-icon">✖</a>
+      <input type="submit" value="✖">
     </form>
   </td>
 

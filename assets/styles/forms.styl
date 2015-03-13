@@ -77,6 +77,24 @@ input[type=submit], .button
   &:hover
     background greigh2
 
+form[class^="remove-"]
+  input[type=submit]
+    margin 0
+    padding 0
+    border none
+    outline none
+    -webkit-appearance none
+    display block
+    width 30px
+    height 100%
+    line-height 100%
+    border none
+    background transparent
+    transition all 0.2s
+    color greigh5
+    &:hover
+      color npmred
+
 input[type=file]
   margin 0 0 50px
 
@@ -217,8 +235,7 @@ input.toggle
       background white
       content " "
 
-input.toggle:checked
-  + label
+  &:checked + label
     background npmred
     &:before
       left 0
@@ -226,6 +243,9 @@ input.toggle:checked
       left toggleWidth
     span
       left (toggleWidth - toggleHeight - togglePadding)
+
+  + label
+    margin 25px 0
 
 label.wrapping-hidden-radio
   cursor pointer
@@ -247,14 +267,6 @@ label.wrapping-hidden-radio
     font-weight normal
     border-radius 3px
     padding 1px 8px 3px 8px
-
-
-a.delete-icon
-  color greigh5
-  text-decoration nones
-  &:hover
-    color npmred
-
 
 .email-label:hover, .email-field:hover
   text-decoration none

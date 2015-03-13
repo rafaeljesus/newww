@@ -1,9 +1,16 @@
 var template = require("../../templates/partials/collaborator.hbs");
 
 module.exports = function() {
-  $(function(){
-    updateInputsAndHandlers()
-  })
+  $(updateInputsAndHandlers)
+}
+
+var updateInputsAndHandlers = function() {
+  $('#add-collaborator').submit(addCollaborator)
+  $('.update-collaborator input').change(updateCollaborator)
+  $('.remove-collaborator').submit(removeCollaborator)
+  $("[data-enable-permission-togglers='true'] input").attr('disabled', false)
+  $("[data-enable-deletion='true'] form.remove-collaborator").css({display: "block"})
+  $("#add-collaborator input[name='name']").val("")
 }
 
 var addCollaborator = function(e) {
@@ -41,15 +48,6 @@ var removeCollaborator = function(e) {
     })
     .done(successHandler)
     .fail(errorHandler)
-}
-
-var updateInputsAndHandlers = function() {
-  $('#add-collaborator').submit(addCollaborator)
-  $('.update-collaborator input').change(updateCollaborator)
-  $('.remove-collaborator').submit(removeCollaborator)
-  $("[data-enable-permission-togglers='true'] input").attr('disabled', false)
-  $("[data-enable-deletion='true'] form.remove-collaborator").css({display: "block"})
-  $("#add-collaborator input[name='name']").val("")
 }
 
 var formToRequestOptions = function($el) {

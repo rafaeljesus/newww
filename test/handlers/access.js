@@ -27,6 +27,30 @@ describe("package access", function(){
     server.stop(done);
   });
 
+  describe('FEATURE_ACCESS disabled', function() {
+    var resp
+
+    before(function(done){
+      delete process.env.FEATURE_ACCESS
+      done()
+    })
+
+    it("returns a 404 for global packages", function(done){
+      server.inject({url: "/package/browserify/access"}, function(resp) {
+        expect(resp.statusCode).to.equal(404)
+        done()
+      })
+    })
+
+    it("returns a 404 for scoped packages", function(done){
+      server.inject({url: "/package/@wrigley_the_writer/scoped_public/access'"}, function(resp) {
+        expect(resp.statusCode).to.equal(404)
+        done()
+      })
+    })
+
+  })
+
   describe('global package', function() {
 
     var $
@@ -44,6 +68,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -88,6 +113,7 @@ describe("package access", function(){
       }
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -129,6 +155,7 @@ describe("package access", function(){
       }
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -201,6 +228,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -245,6 +273,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -286,6 +315,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -324,6 +354,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -397,6 +428,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -425,6 +457,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -453,6 +486,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -476,6 +510,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context

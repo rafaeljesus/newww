@@ -146,15 +146,11 @@
   <p class="list-of-links">
     {{#if dependencies}}
       {{#each dependencies}}
-        {{#unless @last}}
-          <a href="/package/{{this}}">{{this}}</a>,
+        {{#if @last}}
+          <a href="/package/{{this}}">{{this}}</a>
         {{else}}
-          {{#unless noHref}}
-            <a href="/package/{{this}}">{{this}}</a>
-          {{else}}
-            <a>{{text}}</a>
-          {{/unless}}
-        {{/unless}}
+          <a href="/package/{{this}}">{{this}}</a>,
+        {{/if}}
       {{/each}}
     {{else}}
       None
@@ -166,13 +162,9 @@
     <p class="list-of-links">
       {{#each dependents}}
         {{#if @last}}
-          <a href="{{url}}">{{name}}</a>.
+          <a href="/package/{{name}}">{{name}}</a>
         {{else}}
-          {{#if url}}
-            <a href="{{url}}">{{name}}</a>,
-          {{else}}
-            {{name}},
-          {{/if}}
+          <a href="/package/{{name}}">{{name}}</a>,
         {{/if}}
       {{/each}}
     </p>

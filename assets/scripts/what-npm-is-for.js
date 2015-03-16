@@ -25,6 +25,7 @@ var what_npm_is_for = function() {
     .type('io.js').pause(pause).delete(5)
     .type('mobile').pause(pause).delete(6)
     .type('angular').pause(pause).delete(7)
+    .type('react').pause(pause).delete(5)
     .type('bower').pause(pause).delete(5)
     .type('jquery').pause(pause).delete(6)
     .type('nodebots').pause(pause).delete(8)

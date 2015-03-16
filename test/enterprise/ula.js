@@ -46,7 +46,7 @@ describe('Getting to the ULA page', function () {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
-        expect(source.context.customer_id).to.equal('23456');
+        expect(source.context.customer_id).to.equal(23456);
         expect(source.context.customer_email).to.equal('new@bam.com');
         done();
       });
@@ -148,7 +148,7 @@ describe('Getting to the ULA page', function () {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
-        expect(source.context.customer_id).to.equal('12345');
+        expect(source.context.customer_id).to.equal(12345);
         expect(source.context.customer_email).to.equal('exists@bam.com');
         done();
       });

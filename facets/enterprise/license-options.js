@@ -94,7 +94,7 @@ module.exports = function(request, reply) {
       opts = {
         billingEmail: customer.email,   // must supply both customer ID and email
         customerId: customer.id,        // as two factors to identify customer on next page
-        stripeKey: config.stripe.publickey
+        stripeKey: process.env.STRIPE_PUBLIC_KEY
       };
 
       return reply.view('enterprise/license-options', opts);

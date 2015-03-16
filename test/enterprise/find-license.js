@@ -17,6 +17,8 @@ before(function (done) {
     server.app.cache._cache.connection.client = {};
     done();
   });
+
+  process.env.STRIPE_PUBLIC_KEY = '12345';
 });
 
 after(function (done) {

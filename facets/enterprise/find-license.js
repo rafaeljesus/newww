@@ -58,10 +58,11 @@ module.exports = function(request,reply) {
             if (license) {
               // yes valid! display the license options page
               opts = {
-                stripeKey: config.stripe.publickey,
+                stripeKey: process.env.STRIPE_PUBLIC_KEY,
                 billingEmail: data.email,
                 customerId: customer.id
               };
+
               return reply.view('enterprise/license-options', opts);
 
             } else {

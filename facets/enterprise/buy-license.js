@@ -1,9 +1,7 @@
-var nodemailer = require('nodemailer');
-var config = require('../../config');
 var Joi = require('joi');
 var moment = require('moment');
 
-var stripe = require('stripe')(config.stripe.secretkey);
+var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 var SUB_TYPE_MONTHLY = 1, SUB_TYPE_ANNUAL = 2, SUB_TYPE_MULTI_SEAT = 3;
 
 module.exports = function (request, reply) {

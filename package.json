@@ -65,6 +65,7 @@
     "mousetrap": "0.0.1",
     "murmurhash": "0.0.2",
     "mustache-mailer": "^2.1.2",
+    "nets": "^3.1.0",
     "nib": "^1.0.2",
     "node-uuid": "^1.4.1",
     "nodemailer": "^1.0.0",

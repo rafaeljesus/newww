@@ -47,8 +47,6 @@ describe("package handler", function(){
       server.inject(options, function (response) {
         resp = response
         $ = cheerio.load(resp.result)
-        // packageMock.done()
-        // downloadsMock.done()
         done()
       })
     })

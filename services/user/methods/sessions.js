@@ -2,7 +2,6 @@ var Boom = require('boom'),
     metrics = require('../../../adapters/metrics')(),
     redisSessions = require('../../../adapters/redis-sessions');
 
-
 module.exports = {
   set: function set (request) {
     return function (user, next) {

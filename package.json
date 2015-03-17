@@ -37,7 +37,6 @@
     "catbox-redis": "^1.0.4",
     "cheerio": "^0.17.0",
     "chunk": "0.0.2",
-    "couch-login": "^1.0.1",
     "crumb": "^4.0.0",
     "deck": "0.0.4",
     "elasticsearch": "^2.2.0",

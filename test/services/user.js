@@ -9,26 +9,16 @@ var Code = require('code'),
 
 var Hapi = require('hapi'),
     config = require('../../config'),
-    couchDB = require('../../adapters/couchDB'),
-    couchConfig = config.couch,
-    couch = require('../../services/user'),
+    userService = require('../../services/user'),
     metrics = require('../../adapters/metrics')(config.metrics);
 
-var couchdb = require('../mocks/couch')(couchConfig),
-    server;
+var server;
 
 before(function (done) {
-  // configure couch
-  couchDB.init(couchConfig);
 
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '6110' });
-  server.register([
-    {
-      register: couch,
-      options: couchConfig
-    }
-  ], function () {
+  server.register(userService, function () {
     server.start(done);
   });
 });

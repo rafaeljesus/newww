@@ -69,7 +69,9 @@ config.csp = {
     'https://npmjs.us9.list-manage.com',
     'https://js.hsforms.net/',
     'https://forms.hubspot.com/',
-    'https://js.hs-analytics.net'
+    'https://js.hs-analytics.net',
+    'https://cnstrc.com/',
+    'https://ac.constructor.io/',
   ],
   styleSrc: [
     'self',

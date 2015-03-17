@@ -17,6 +17,7 @@ var fixtures = require("../fixtures"),
 describe("package access", function(){
 
   before(function (done) {
+    nock.disableNetConnect()
     require('../mocks/server')(function (obj) {
       server = obj;
       done();
@@ -24,6 +25,7 @@ describe("package access", function(){
   });
 
   after(function (done) {
+    nock.enableNetConnect()
     server.stop(done);
   });
 
@@ -59,10 +61,10 @@ describe("package access", function(){
     var options = {url: '/package/browserify/access'};
     var mock = nock("https://user-api-example.com")
       .get('/package/browserify')
-      .times(10)
+      .times(3)
       .reply(200, fixtures.packages.browserify)
       .get('/package/browserify/collaborators')
-      .times(10)
+      .times(3)
       .reply(200, fixtures.collaborators)
 
     describe('anonymous user', function () {
@@ -73,7 +75,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -118,7 +119,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -160,7 +160,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -233,7 +232,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -278,7 +276,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -320,7 +317,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -359,7 +355,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -433,7 +428,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -462,7 +456,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -491,7 +484,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -515,7 +507,6 @@ describe("package access", function(){
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })

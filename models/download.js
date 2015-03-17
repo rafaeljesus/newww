@@ -16,7 +16,7 @@ Download.new = function(request) {
   if (request && request.auth && request.auth.credentials) {
     opts.bearer = request.auth.credentials.name
   }
-  if (String(process.env.NODE_ENV).match(/(production|staging|dev)/)) {
+  if (process.env.USE_CACHE) {
     opts.cache = require("../lib/cache")
   }
   return new Download(opts)

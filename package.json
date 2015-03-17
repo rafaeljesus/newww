@@ -47,7 +47,7 @@
     "green-mesa-hashchange": "^0.1.4",
     "handlebars": "^2.0.0-alpha.2",
     "handlebars-helper-pluralize": "^1.0.2",
-    "hapi": "8.2.0",
+    "hapi": "^8.4.0",
     "hapi-auth-cookie": "^2.0.0",
     "hapi-common-log": "^1.1.0",
     "hbsfy": "^2.2.0",

@@ -110,7 +110,7 @@ module.exports = function signup (request, reply) {
       });
   }
 
-  if (request.method === 'get' || request.method === 'head') {
+  if (request.method === 'get') {
 
     request.timing.page = 'signup-form';
     request.metrics.metric({ name: 'signup-form' });

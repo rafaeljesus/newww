@@ -51,7 +51,7 @@ module.exports = function (request, reply) {
     });
   }
 
-  if (request.method === 'head' || request.method === 'get' || opts.error) {
+  if (request.method === 'get' || opts.error) {
     request.timing.page = 'profile-edit';
     opts.title = 'Edit Profile';
     return reply.view('user/profile-edit', opts);

@@ -31,10 +31,6 @@ module.exports = [
     handler: require('../facets/user/show-email-edit')(config.user.mail)
   },{
     path: "/email-edit",
-    method: "HEAD",
-    handler: require('../facets/user/show-email-edit')(config.user.mail)
-  },{
-    path: "/email-edit",
     method: "PUT",
     handler: require('../facets/user/show-email-edit')(config.user.mail)
   },{
@@ -49,16 +45,8 @@ module.exports = [
     method: "GET",
     handler: require('../facets/user/show-email-edit')(config.user.mail)
   },{
-    path: "/email-edit/{token*2}",
-    method: "HEAD",
-    handler: require('../facets/user/show-email-edit')(config.user.mail)
-  },{
     path: "/password",
     method: "GET",
-    handler: require('../facets/user/show-password')
-  },{
-    path: "/password",
-    method: "HEAD",
     handler: require('../facets/user/show-password')
   },{
     path: "/password",

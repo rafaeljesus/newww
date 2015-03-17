@@ -73,6 +73,5 @@ var formToObject = function($el) {
  }
 
  var successHandler = function(data) {
-   console.log(data)
    updateInputsAndHandlers()
  }

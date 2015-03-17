@@ -250,10 +250,6 @@ var publicRoutes = [
     handler: require('../facets/user/show-signup')
   },{
     path: "/signup",
-    method: "HEAD",
-    handler: require('../facets/user/show-signup')
-  },{
-    path: "/signup",
     method: "POST",
     handler: require('../facets/user/show-signup')
   },{
@@ -275,10 +271,6 @@ var publicRoutes = [
   },{
     path: "/forgot/{token?}",
     method: "GET",
-    handler: require('../facets/user/show-forgot')(config.user.mail)
-  },{
-    path: "/forgot/{token?}",
-    method: "HEAD",
     handler: require('../facets/user/show-forgot')(config.user.mail)
   },{
     path: "/forgot/{token?}",

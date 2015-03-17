@@ -18,7 +18,7 @@ module.exports = function (options) {
       return handle(request, reply);
     }
 
-    if (request.method === 'get' || request.method === 'head') {
+    if (request.method === 'get') {
 
       if (request.params && request.params.token) {
         return processToken(request, reply);

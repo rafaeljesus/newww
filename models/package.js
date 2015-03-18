@@ -16,7 +16,8 @@ var Package = module.exports = function(opts) {
 
 Package.new = function(request) {
   var bearer = request.auth.credentials && request.auth.credentials.name;
-  return new Package({bearer: bearer});
+  var logger = request.logger;
+  return new Package({bearer: bearer, logger: logger});
 };
 
 Package.prototype.get = function(name) {
@@ -133,13 +134,14 @@ Package.prototype.star = function (package) {
     var opts = {
       url: url,
       json: true,
-      body: {
-        bearer: _this.bearer
-      }
+      headers: {bearer: _this.bearer}
     };
 
-    request.post(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
+    request.put(opts, function (err, resp, body) {
+      if (err) {
+        _this.logger.error(err);
+        return reject(err);
+      }
 
       if (resp.statusCode > 399) {
         err = Error('error starring package ' + package);
@@ -153,18 +155,16 @@ Package.prototype.star = function (package) {
 
 Package.prototype.unstar = function (package) {
   var _this = this;
-  var url = fmt("%s/package/%s/unstar", _this.host, package);
+  var url = fmt("%s/package/%s/star", _this.host, package);
 
   return new Promise(function (resolve, reject) {
     var opts = {
       url: url,
       json: true,
-      body: {
-        bearer: _this.bearer
-      }
+      headers: {bearer: _this.bearer}
     };
 
-    request.post(opts, function (err, resp, body) {
+    request.del(opts, function (err, resp, body) {
       if (err) { return reject(err); }
 
       if (resp.statusCode > 399) {

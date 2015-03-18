@@ -1,0 +1,54 @@
+<tr class="collaborator" id="collaborator-{{name}}">
+
+  <td class="avatar">
+    <a href="/~{{name}}">
+      <img src="{{avatar.small}}" alt="{{name}}" />
+    </a>
+  </td>
+
+  <td class="name">
+    <a href="/~{{name}}">{{name}}</a>
+  </td>
+
+  <td class="access">
+    <form
+      class="update-collaborator"
+      action="/package/{{packageName}}/collaborators/{{name}}"
+      method="POST">
+
+      <input type="hidden" name="name" value="{{name}}">
+
+      <label class="wrapping-hidden-radio">
+        <input
+          type="radio"
+          name="permissions"
+          value="read-only"
+          {{#unless write}}checked="checked"{{/unless}}
+          disabled="disabled">
+        <span>read-only</span>
+      </label>
+
+      <label class="wrapping-hidden-radio">
+        <input
+          type="radio"
+          name="permissions"
+          value="read-write"
+          {{#if write}}checked="checked"{{/if}}
+          disabled="disabled">
+        <span>read-write</span>
+      </label>
+    </form>
+  </td>
+
+  <td>
+    <form
+      id="remove-collaborator-{{name}}"
+      class="remove-collaborator"
+      method="DELETE"
+      action="/package/{{packageName}}/collaborators/{{name}}"
+      style="display:none;">
+      <input type="submit" value="✖">
+    </form>
+  </td>
+
+</tr>

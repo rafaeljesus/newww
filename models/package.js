@@ -48,6 +48,35 @@ Package.prototype.get = function(name) {
 
 };
 
+Package.prototype.update = function(name, body) {
+  var _this = this;
+  var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
+
+  return new Promise(function(resolve, reject) {
+    var opts = {
+      method: "POST",
+      url: url,
+      json: true,
+      headers: {bearer: _this.bearer},
+      body: body
+    };
+
+    request(opts, function(err, resp, body) {
+      if (err) { return reject(err); }
+      if (resp.statusCode > 399) {
+        err = Error('error updating package ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+  })
+  .then(function(_package) {
+    return decorate(_package);
+  });
+
+};
+
 Package.prototype.list = function(options) {
   var url = URL.format({
     protocol: "https",

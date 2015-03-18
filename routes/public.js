@@ -136,22 +136,36 @@ var publicRoutes = [
     handler: require('../facets/enterprise/license-error'),
     config: enterpriseConfig
   },{
-    path: "/package/{package}/collaborators",
+    paths: [
+      "/package/{package}/collaborators",
+      "/package/{scope}/{project}/collaborators",
+    ],
     method: "GET",
     handler: require('../handlers/collaborator').list
   },{
-    path: "/package/{package}/collaborators",
+    paths: [
+      "/package/{package}/collaborators",
+      "/package/{scope}/{project}/collaborators",
+    ],
     method: "PUT",
-    handler: require('../handlers/collaborator').add
+    handler: require('../handlers/collaborator').add,
+    config: ajaxy
   },{
-    path: "/package/{package}/collaborators/{username}",
+    paths: [
+      "/package/{package}/collaborators/{username}",
+      "/package/{scope}/{project}/collaborators/{username}",
+    ],
     method: "POST",
     handler: require('../handlers/collaborator').update,
     config: ajaxy
   },{
-    path: "/package/{package}/collaborators/{username}",
+    paths: [
+      "/package/{package}/collaborators/{username}",
+      "/package/{scope}/{project}/collaborators/{username}",
+    ],
     method: "DELETE",
-    handler: require('../handlers/collaborator').del
+    handler: require('../handlers/collaborator').del,
+    config: ajaxy
   },{
     paths: [
       "/package/{package}",
@@ -163,7 +177,7 @@ var publicRoutes = [
     // redirect plural forms to singular
     paths: [
       "/packages/{package}",
-      "/packages/{scope}/{package}",
+      "/packages/{scope}/{project}",
     ],
     method: "GET",
     handler: function(request, reply) {
@@ -172,7 +186,7 @@ var publicRoutes = [
   },{
     paths: [
       "/package/{package}/access",
-      "/package/{scope}/{package}/access",
+      "/package/{scope}/{project}/access",
     ],
     method: "GET",
     handler: require('../handlers/access')

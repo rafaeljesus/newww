@@ -1,17 +1,34 @@
-
-
-{{#with package}}
-
-{{> package-header this}}
+{{> package-header package}}
 
 <div class="tablet-width container">
 
-  <div class="centered">
-    <input type="checkbox" class="toggle" value="private" {{#if private}}checked="checked"{{/if}} id="package-access-toggle">
-    <label for="package-access-toggle"><span></span></label>
-  </div>
+  {{#unless user}}
+    <p class="notice please-log-in">
+      To configure access to this package, please <a href="/login">log in</a>.
+    </p>
+  {{/unless}}
 
-  <table class="ruled humans">
+  {{#if package.scoped}}
+    <div class="centered">
+      <input
+        type="checkbox"
+        class="toggle"
+        id="package-access-toggle"
+        value="private"
+        {{#unless userHasWriteAccessToPackage}}disabled="disabled"{{/unless}}
+        {{#if package.private}}checked="checked"{{/if}} >
+      <label for="package-access-toggle"><span></span></label>
+    </div>
+  {{/if}}
+
+  <p class="error" style="display:none"></p>
+
+  <table
+    class="ruled humans"
+    id="collaborators"
+    data-enable-permission-togglers="{{enablePermissionTogglers}}"
+    data-enable-deletion="{{userHasWriteAccessToPackage}}"
+  >
     <thead>
       <tr>
         <th>&nbsp;</th>
@@ -22,45 +39,25 @@
     </thead>
     <tbody>
 
-      {{#each collaborators}}
-        <tr>
-          <td class="avatar">
-            <a href="/~{{name}}">
-              <img src="{{avatar.small}}" alt="{{name}}" />
-            </a>
-          </td>
-          <td class="name">
-            <a href="/~{{name}}">{{name}}</a>
-          </td>
-          <td class="access">
-            <label class="glamorous">
-              <input type="radio" name="access-{{name}}" value="read-only" {{#unless write}}checked="checked"{{/unless}}>
-              <span>read-only</span>
-            </label>
-
-            <label class="glamorous">
-              <input type="radio" name="access-{{name}}" value="read-write" {{#if write}}checked="checked"{{/if}}>
-              <span>read-write</span>
-            </label>
-          </td>
-          <td>
-            <a href="#" class="delete-icon delete-collaborator">✖</a>
-          </td>
-        </tr>
+      {{#each package.collaborators}}
+        {{> collaborator}}
       {{/each}}
 
-      <tr>
-        <td>
-          &nbsp;
-        </td>
-        <td colspan="1">
-          <input type="text" name="collaborator" value="" placeholder="Add a collaborator...">
-        </td>
-      </tr>
+      {{#if userHasWriteAccessToPackage}}
+        <tr>
+          <td>
+            &nbsp;
+          </td>
+          <td colspan="1">
+            <form id="add-collaborator" method="PUT" action="/package/{{package.name}}/collaborators">
+              <input type="hidden" name="permissions" value="{{#if package.private}}read{{else}}write{{/if}}">
+              <input type="text" name="name" required="required" value="" placeholder="Add a collaborator...">
+            </form>
+          </td>
+        </tr>
+      {{/if}}
 
     </tbody>
   </table>
 
 </div>
-
-{{/with}}

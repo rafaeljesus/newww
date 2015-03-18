@@ -12,11 +12,14 @@ var Download = module.exports = function (opts) {
 };
 
 Download.new = function(request) {
-  var bearer = request.auth.credentials && request.auth.credentials.name;
-  return new Download({
-    bearer: bearer,
-    cache: require("../lib/cache")
-  });
+  var opts = {}
+  if (request && request.auth && request.auth.credentials) {
+    opts.bearer = request.auth.credentials.name
+  }
+  if (process.env.USE_CACHE) {
+    opts.cache = require("../lib/cache")
+  }
+  return new Download(opts)
 };
 
 Download.prototype.getDaily = function(packageName) {

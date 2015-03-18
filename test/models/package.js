@@ -164,6 +164,23 @@ describe("Package", function(){
 
   });
 
+  describe("update()", function() {
+
+    it("makes an external request and gets back a results object", function(done) {
+      var mock = nock(Package.host)
+        .post('/package/@wrigley_the_writer%2Fscoped_private', {private: true})
+        .reply(200, fixtures.packages.wrigley_scoped_private);
+
+      Package.update("@wrigley_the_writer/scoped_private", {private: true})
+        .then(function(result) {
+          mock.done();
+          expect(result).to.be.an.object()
+          expect(result.private).to.be.true()
+          done();
+        });
+    });
+  });
+
   describe("list()", function() {
 
     it("makes an external request and gets back a results object", function(done) {

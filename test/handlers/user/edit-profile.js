@@ -124,7 +124,6 @@ describe('Modifying the profile', function () {
 
       options.payload.crumb = crumb;
 
-      options.payload._id = 'org.couchdb.user:badguy';
       options.payload.name = 'badguy';
       options.payload.email = 'badguy@bad.com';
 
@@ -136,7 +135,6 @@ describe('Modifying the profile', function () {
         var names = source.context.error.details.map(function(detail){
           return detail.path;
         });
-        expect(names).to.include('_id');
         expect(names).to.include('name');
         expect(names).to.include('email');
         expect(source.template).to.equal('user/profile-edit');

@@ -58,11 +58,6 @@ config.views = {
   layout: 'default'
 };
 
-config.couch = {
-  "couchAuth": "admin:admin",
-  "registryCouch": "http://localhost:15984/"
-};
-
 config.session = {
   password: 'i dunno, something secure probably? Definitely!',
   cookie: 's',

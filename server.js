@@ -28,10 +28,6 @@ var server = new Hapi.Server(config.server);
 server.connection(config.connection);
 server.views(config.views);
 
-// configure couch
-var couchDB = require('./adapters/couchDB');
-couchDB.init(config.couch);
-
 // configure metrics as a side effect
 var metrics = require('./adapters/metrics')(config.metrics);
 

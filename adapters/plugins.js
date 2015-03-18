@@ -11,11 +11,7 @@ module.exports = [
     register: require('blankie'),
     options: require('../lib/csp').default
   },
-  {
-    register: require('../services/user'),
-    options: config.couch
-  },
-  require('../services/registry'),
+  require('../services/user'),
   require('../services/corporate'),
   require('../services/email'),
   {

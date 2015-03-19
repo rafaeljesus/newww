@@ -56,6 +56,11 @@ module.exports = function (server) {
       send: function (template, user, redis) {
         assert(typeof redis === 'object', 'whoops need redis');
         return new Promise(function (resolve, reject) {
+
+          if (user.email === 'lolbad@email') {
+            return reject(new Error('no bueno yo'));
+          }
+
           return resolve(null);
         });
       }

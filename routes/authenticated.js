@@ -26,6 +26,10 @@ module.exports = [
     method: "POST",
     handler: require('../facets/user/show-profile-edit')
   },{
+    path: "/resend-email-confirmation",
+    method: "GET",
+    handler: require('../facets/user/show-resend-email-confirmation')
+  },{
     path: "/email-edit",
     method: "GET",
     handler: require('../facets/user/show-email-edit')(config.user.mail)

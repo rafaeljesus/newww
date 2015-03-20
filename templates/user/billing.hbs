@@ -6,6 +6,8 @@
     <h1>your billing info</h1>
   </hgroup>
 
+  {{> email-verify-nag}}
+
   {{#if canceled}}
     <p class="notice cancellation-notice">
       You have successfully cancelled your private npm subscription. Your free account

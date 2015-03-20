@@ -1,0 +1,10 @@
+{{#if user}}
+  {{#unless user.email_verified}}
+    <p class="notice">
+      Howdy, {{user.name}}. You'll need to
+      <a href="/resend-email-confirmation">confirm your email address</a>
+      before you can use
+      <a href="/private-modules">private and scoped modules</a>.
+    </p>
+  {{/unless}}
+{{/if}}

@@ -3,19 +3,10 @@
 <div class="container narrow">
 
   <hgroup>
-    <h1>Edit your Profile</h1>
+    <h1>edit your profile</h1>
   </hgroup>
 
-  <p class="notice whoa">
-    Need to reconfirm your email?
-    <a href="/resend-email-confirmation">Click here</a>.
-  </p>
-
-  <p class="notice">
-    Private npm is here at last. To start creating your own private packages,
-    <a href="/private-npm">read more</a> or
-    <a href="/settings/billing">sign up</a>.
-  </p>
+  {{> email-verify-nag}}
 
   {{> errors}}
 

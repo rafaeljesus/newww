@@ -95,21 +95,6 @@ config.npme = {
 };
 
 config.user = {
-  profileFields: {
-    fullname: [ 'Full Name', '%s' ],
-    email: [ 'Email', '<a href="mailto:%s">%s</a>', function (u) {
-      return u.protocol === 'mailto:'
-    } ],
-    github: [ 'GitHub', '<a rel="me" href="https://github.com/%s">%s</a>',
-      hostmatch(/^github.com$/) ],
-    twitter: [ 'Twitter', '<a rel="me" href="https://twitter.com/%s">@%s</a>',
-      hostmatch(/^twitter.com$/) ],
-    appdotnet: [ 'App.net', '<a rel="me" href="https://alpha.app.net/%s">%s</a>',
-      hostmatch(/app.net$/) ],
-    homepage: [ 'Homepage', '<a rel="me" href="%s">%s</a>',
-      hostmatch(/[^\.]+\.[^\.]+$/) ],
-    freenode: [ 'IRC Handle', '%s' ]
-  },
   mail: {
     mailTransportModule: require("nodemailer-ses-transport")({
       accessKeyId: process.env.MAIL_ACCESS_KEY_ID,
@@ -143,7 +128,3 @@ config.stamp = 'pid=' + process.pid + ' ' +
                 os.hostname() + ' ' + process.env.SMF_ZONENAME;
 
 config.user.mail.canonicalHost = config.canonicalHost;
-
-function hostmatch (m) { return function (u) {
-  return u.host && u.host.match(m)
-} }

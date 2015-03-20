@@ -1,8 +1,7 @@
 var merge = require("lodash").merge,
     URL = require("url"),
     isURL = require("is-url"),
-    avatar = require("../lib/avatar"),
-    atty = new RegExp("^@");
+    avatar = require("../lib/avatar");
 
 module.exports = function(user) {
   user = merge({}, user);
@@ -52,10 +51,7 @@ var sanitizers = {
     var twittery = new RegExp("^twitter.com/", "i");
     if (input.match(twittery)) { return input.replace(twittery, ""); }
 
-    // Starts with @
-    if (input.match(atty)) { return input.replace(atty, ""); }
-
-    return input;
+    return input.replace("@", "");
   },
 
   github: function(input) {
@@ -66,10 +62,7 @@ var sanitizers = {
     var githubby = new RegExp("^github.com/", "i");
     if (input.match(githubby)) { return input.replace(githubby, ""); }
 
-    // Starts with @
-    if (input.match(atty)) { return input.replace(atty, ""); }
-
-    return input;
+    return input.replace("@", "");
   }
 
 }

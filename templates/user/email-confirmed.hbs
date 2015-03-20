@@ -2,8 +2,19 @@
 
 <div class="container narrow">
 
-  <h2>Email Address Confirmed!</h2>
+  <hgroup>
+    <h1>hi again</h1>
+    <h2>thanks for verifying your email address</h2>
+  </hgroup>
 
-  <p>Thank you for confirming your email address. You are all set!</p>
+  {{#if emailJustConfirmed}}
+    <p class="notice">
+      Now that you've cleared that up, you should
+      <a href="/profile-edit">update your profile</a>,
+      sign up for <a href="/settings/billing">private modules</a>,
+      or learn how to
+      <a href="https://docs.npmjs.com/">get started with npm</a>.
+    </p>
+  {{/if}}
 
 </div>

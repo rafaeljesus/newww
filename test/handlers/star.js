@@ -93,7 +93,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
   it('should star an unstarred package', function (done) {
 
     var mock = nock("https://user-api-example.com")
-      .post("/package/" + pkg + "/star")
+      .put("/package/" + pkg + "/star")
       .reply(200);
 
     generateCrumb(server, function (crumb){
@@ -121,7 +121,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
   it('should unstar an starred package', function (done) {
 
     var mock = nock("https://user-api-example.com")
-      .post("/package/" + pkg + "/unstar")
+      .delete("/package/" + pkg + "/star")
       .reply(200);
 
     generateCrumb(server, function (crumb){

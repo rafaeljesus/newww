@@ -77,7 +77,7 @@ function processToken(request, reply) {
     request.logger.warn('About to change password', { name: name });
 
     User.new(request)
-      .changePass(newAuth, function (err) {
+      .save(newAuth, function (err) {
 
       if (err) {
         request.logger.error('Failed to set password for ' + newAuth.name);
@@ -148,7 +148,7 @@ function lookupUserByEmail (email, request, reply) {
     user: request.auth.credentials
    };
 
-   User.new(request).lookupEmail(email, function (er, usernames) {
+   User.new(request).lookupEmail(email, function (er, users) {
     if (er) {
       opts.error = er.message;
 
@@ -158,8 +158,8 @@ function lookupUserByEmail (email, request, reply) {
       return reply.view('user/password-recovery-form', opts).code(404);
     }
 
-    if (usernames.length > 1) {
-      opts.users = usernames;
+    if (users.length > 1) {
+      opts.users = users;
 
       request.timing.page = 'password-recovery-multiuser';
 
@@ -167,7 +167,7 @@ function lookupUserByEmail (email, request, reply) {
       return reply.view('user/password-recovery-form', opts);
     }
 
-    if (!usernames || !usernames.length) {
+    if (!users || !users.length) {
       opts.error = "No user found with email address " + email;
       return reply.view('user/password-recovery-form', opts).code(400);
     }
@@ -175,7 +175,7 @@ function lookupUserByEmail (email, request, reply) {
     request.timing.page = 'emailLookup';
 
     request.metrics.metric({ name: 'emailLookup' });
-    return lookupUserByUsername(usernames[0].trim(), request, reply);
+    return lookupUserByUsername(users[0].trim(), request, reply);
   });
 }
 

@@ -46,12 +46,12 @@ describe("avatar", function(){
   });
 });
 
-describe("meta", function () {
+describe("resource", function () {
 
-  it("is an object with key-value pairs", function(done){
-    var user = present(fixtures.users.full_meta);
-    expect(user.meta).to.exist();
-    expect(user.meta).to.be.an.object();
+  it("is an object", function(done){
+    var user = present({name: "zeke", resource: {github: "zeke"}});
+    expect(user.resource).to.exist();
+    expect(user.resource).to.be.an.object();
     done();
   });
 
@@ -65,11 +65,11 @@ describe("meta", function () {
         ICQ: ''
       }
     });
-    expect(Object.keys(user.meta)).to.have.length(4);
-    expect(user.meta.github).to.exist();
-    expect(user.meta.twitter).to.exist();
-    expect(user.meta.freenode).to.be.undefined();
-    expect(user.meta.ICQ).to.not.exist();
+    expect(Object.keys(user.resource)).to.have.length(2);
+    expect(user.resource.github).to.exist();
+    expect(user.resource.twitter).to.exist();
+    expect(user.resource.freenode).to.be.undefined();
+    expect(user.resource.ICQ).to.be.undefined();
     done();
   });
 
@@ -82,7 +82,7 @@ describe("meta", function () {
           homepage: "https://lisa.org"
         }
       });
-      expect(user.meta.homepage).to.equal("https://lisa.org");
+      expect(user.resource.homepage).to.equal("https://lisa.org");
       done();
     });
 
@@ -93,7 +93,7 @@ describe("meta", function () {
           homepage: "margaret.com"
         }
       });
-      expect(user.meta.homepage).to.equal("http://margaret.com");
+      expect(user.resource.homepage).to.equal("http://margaret.com");
       done();
     });
 
@@ -105,7 +105,7 @@ describe("meta", function () {
           homepage: "kate"
         }
       });
-      expect(user.meta.homepage).to.not.exist();
+      expect(user.resource.homepage).to.not.exist();
       done();
     });
   });
@@ -119,7 +119,7 @@ describe("meta", function () {
           github: "@eleanor"
         }
       });
-      expect(user.meta.github).to.equal("eleanor");
+      expect(user.resource.github).to.equal("eleanor");
       done();
     });
 
@@ -130,7 +130,7 @@ describe("meta", function () {
           github: "https://github.com/suzan"
         }
       });
-      expect(user.meta.github).to.equal("suzan");
+      expect(user.resource.github).to.equal("suzan");
       done();
     });
 
@@ -141,7 +141,7 @@ describe("meta", function () {
           github: "github.com/jimbo"
         }
       });
-      expect(user.meta.github).to.equal("jimbo");
+      expect(user.resource.github).to.equal("jimbo");
       done();
     });
 
@@ -153,8 +153,8 @@ describe("meta", function () {
           github: ""
         }
       });
-      expect(user.meta.twitter).to.equal("suzan");
-      expect(user.meta.github).to.be.empty();
+      expect(user.resource.twitter).to.equal("suzan");
+      expect(user.resource.github).to.be.empty();
       done();
     });
   });
@@ -167,7 +167,7 @@ describe("meta", function () {
           twitter: "@eleanor"
         }
       });
-      expect(user.meta.twitter).to.equal("eleanor");
+      expect(user.resource.twitter).to.equal("eleanor");
       done();
     });
 
@@ -178,7 +178,7 @@ describe("meta", function () {
           twitter: "https://twitter.com/suzan"
         }
       });
-      expect(user.meta.twitter).to.equal("suzan");
+      expect(user.resource.twitter).to.equal("suzan");
       done();
     });
 
@@ -189,7 +189,7 @@ describe("meta", function () {
           twitter: "twitter.com/suzan"
         }
       });
-      expect(user.meta.twitter).to.equal("suzan");
+      expect(user.resource.twitter).to.equal("suzan");
       done();
     });
   });
@@ -203,7 +203,7 @@ describe("meta", function () {
           freenode: "eleanor1"
         }
       });
-      expect(user.meta.freenode).to.equal("eleanor1");
+      expect(user.resource.freenode).to.equal("eleanor1");
       done();
     });
   });

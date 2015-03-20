@@ -47,7 +47,20 @@
     </a>
   {{/if}}
 
-  <h2>{{fullname}}</h2>
+  {{#if isSelf}}
+    <p class="notice">
+      This is your profile page, {{name}}! You can
+      <a href=/profile-edit>update your social info</a>,
+      <a href=/password >change your password</a>, or
+      <a href="http://gravatar.com/emails/">update your avatar</a>.
+    </p>
+
+    {{> email-verify-nag}}
+  {{/if}}
+
+  {{#if resource.fullname}}
+    <h2>{{resource.fullname}}</h2>
+  {{/if}}
 
   <ul class="meta">
 
@@ -83,12 +96,6 @@
       <li class="freenode">
         <a href="irc://chat.freenode.net/npm">{{meta.freenode}}</a> on freenode
       </li>
-    {{/if}}
-
-    {{#if isSelf}}
-        <li><a href=/profile-edit class="unadorned">Edit your Profile</a></li>
-        <li><a href=/password class="unadorned">Change your Password</a></li>
-        <li><a href="http://gravatar.com/emails/" class="unadorned">Change your Picture</a></li>
     {{/if}}
 
   </ul>

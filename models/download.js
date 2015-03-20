@@ -64,10 +64,9 @@ Download.prototype.getSome = function(period, packageName) {
       url: url,
       json: true,
       timeout: _this.timeout,
-      headers: {
-        bearer: _this.bearer
-      }
     };
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     if (_this.cache) {
       _this.cache.get(opts, function(err, body){

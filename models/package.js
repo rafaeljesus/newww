@@ -15,9 +15,13 @@ var Package = module.exports = function(opts) {
 };
 
 Package.new = function(request) {
-  var bearer = request.auth.credentials && request.auth.credentials.name;
-  var logger = request.logger;
-  return new Package({bearer: bearer, logger: logger});
+  var opts = {
+    logger: request.logger
+  }
+  if (request.auth.credentials) {
+    opts.bearer = request.auth.credentials.name;
+  }
+  return new Package(opts);
 };
 
 Package.prototype.get = function(name) {
@@ -28,8 +32,9 @@ Package.prototype.get = function(name) {
     var opts = {
       url: url,
       json: true,
-      headers: {bearer: _this.bearer}
     };
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request.get(opts, function(err, resp, body) {
       if (err) { return reject(err); }
@@ -58,9 +63,10 @@ Package.prototype.update = function(name, body) {
       method: "POST",
       url: url,
       json: true,
-      headers: {bearer: _this.bearer},
       body: body
     };
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request(opts, function(err, resp, body) {
       if (err) { return reject(err); }
@@ -134,8 +140,9 @@ Package.prototype.star = function (package) {
     var opts = {
       url: url,
       json: true,
-      headers: {bearer: _this.bearer}
     };
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request.put(opts, function (err, resp, body) {
       if (err) {
@@ -161,8 +168,9 @@ Package.prototype.unstar = function (package) {
     var opts = {
       url: url,
       json: true,
-      headers: {bearer: _this.bearer}
     };
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request.del(opts, function (err, resp, body) {
       if (err) { return reject(err); }

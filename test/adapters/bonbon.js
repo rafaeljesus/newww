@@ -67,7 +67,7 @@ describe("bonbon", function() {
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.profile).to.exist();
-      expect(resp.result.profile.meta).to.exist();
+      expect(resp.result.profile.name).to.exist();
       done();
     });
   });
@@ -75,7 +75,7 @@ describe("bonbon", function() {
   it('returns a subset of the context if `json` has a value', function (done) {
 
     var options = {
-      url: '/~' + username1 + '?json=profile.meta',
+      url: '/~' + username1 + '?json=profile.resource',
       credentials: fixtures.users.npmEmployee
     };
     expect(process.env.NODE_ENV).to.equal("production");

@@ -85,7 +85,7 @@ module.exports = function signup (request, reply) {
                   request.timing.page = 'signup';
                   request.metrics.metric({name: 'signup'});
 
-                  return reply.redirect('/profile-edit');
+                  return reply.redirect('/profile-edit?new-user=yep');
                 })
                 .catch(function(er) {
                   var message = 'Unable to send email to ' + user.email;
@@ -101,7 +101,7 @@ module.exports = function signup (request, reply) {
                   request.timing.page = 'signup';
                   request.metrics.metric({name: 'signup'});
 
-                  return reply.redirect('/profile-edit');
+                  return reply.redirect('/profile-edit?new-user=yep');
                 });
               });
             });

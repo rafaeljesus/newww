@@ -116,7 +116,7 @@ config.user = {
       secretAccessKey: process.env.MAIL_SECRET_ACCESS_KEY,
       region: "us-west-2"
     }),
-    emailFrom: 'support@npmjs.com'
+    emailFrom: 'npm <support@npmjs.com>'
   }
 };
 

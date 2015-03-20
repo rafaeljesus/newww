@@ -8,13 +8,13 @@
 
   {{#if showWelcomeMessage}}
     <p class="notice">
-      Thanks for signing up, {{user.name}}!
-      Go check your <a href="mailto:{{user.email}}">{{user.email}}</a> inbox. You should see something from us :)
+      Welcome to npm, {{user.name}}!
+      If you check your <a href="mailto:{{user.email}}">{{user.email}}</a> inbox, you should see something from us :)
     </p>
   {{else}}
     {{#if showEmailSentNotice}}
       <p class="notice">
-        Go check your <a href="mailto:{{user.email}}">{{user.email}}</a> inbox. You should see something from us :)
+        If you check your <a href="mailto:{{user.email}}">{{user.email}}</a> inbox, you should see something from us :)
       </p>
     {{else}}
       {{> email-verify-nag}}

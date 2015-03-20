@@ -26,7 +26,6 @@ module.exports = function (request, reply) {
       }
 
       merge(loggedInUser.resource, userChanges);
-
       loggedInUser = presenter(loggedInUser);
 
       User.new(request).save(loggedInUser, function (err, data) {
@@ -54,6 +53,8 @@ module.exports = function (request, reply) {
   if (request.method === 'get' || opts.error) {
     request.timing.page = 'profile-edit';
     opts.title = 'Edit Profile';
+    opts.showEmailSentNotice = request.query['verification-email-sent'] === "yep"
+    opts.showWelcomeMessage = request.query['new-user'] === "yep"
     return reply.view('user/profile-edit', opts);
   }
 };

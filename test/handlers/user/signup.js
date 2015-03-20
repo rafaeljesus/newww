@@ -1,4 +1,5 @@
 var generateCrumb = require("../crumb"),
+    nock = require('nock'),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -7,13 +8,11 @@ var generateCrumb = require("../crumb"),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
-    nock = require('nock'),
-    users = require('../../fixtures').users;
+    fixtures = require('../../fixtures'),
+    forms = require('../../fixtures/signup'),
+    server,
+    cookieCrumb;
 
-var server, cookieCrumb,
-    forms = require('../../fixtures/signup');
-
-// prepare the server
 before(function (done) {
   require('../../mocks/server')(function (obj) {
     server = obj;
@@ -74,7 +73,7 @@ describe('Signing up a new user', function () {
 
     var mock = nock("https://user-api-example.com")
       .get("/user/bob")
-      .reply(200, users.bob);
+      .reply(200, fixtures.users.bob);
 
     server.inject(postSignup(forms.alreadyExists), function (resp) {
       mock.done();
@@ -158,7 +157,7 @@ describe('Signing up a new user', function () {
         email: 'fakeusercli@boom.com',
         sid: "39071865"
       })
-      .reply(200, users.mikeal);
+      .reply(200, fixtures.users.mikeal);
 
     server.inject(postSignup(forms.good), function (resp) {
       mock.done();
@@ -180,7 +179,7 @@ describe('Signing up a new user', function () {
         email: 'fakeusercli@boom.com',
         sid: '39071865'
       })
-      .reply(200, users.mikeal);
+      .reply(200, fixtures.users.mikeal);
 
     server.inject(postSignup(forms.goodPassWithUmlaut), function (resp) {
       mock.done();

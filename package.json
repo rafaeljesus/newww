@@ -69,7 +69,7 @@
     "node-uuid": "^1.4.1",
     "nodemailer": "^1.0.0",
     "nodemailer-ses-transport": "^1.1.0",
-    "npm-email-templates": "^1.3.1",
+    "npm-email-templates": "^1.4.0",
     "npm-expansions": "^1.14.0",
     "npm-explicit-installs": "git://github.com/npm/npm-explicit-installs",
     "npm-humans": "^2.0.1",

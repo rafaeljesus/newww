@@ -14,28 +14,23 @@
     {{#with user}}
 
       <label for="fullname">full name</label>
-      <input type="text" id="fullname" name="fullname" value="{{fullname}}">
+      <input type="text" id="fullname" name="fullname" value="{{resource.fullname}}">
       <p class="help-text example">Wombat Watson</p>
 
-      <a href="/email-edit" class="email-label">email address</a>
-      <a href="/email-edit" class="email-field">
-        <input type="text" id="email" name="email" value="{{email}}" disabled='disabled'>
-      </a>
-
       <label for="homepage">homepage</label>
-      <input type="text" id="homepage" name="homepage" value="{{homepage}}" autocorrect="off" autocapitalize="off">
+      <input type="text" id="homepage" name="homepage" value="{{resource.homepage}}" autocorrect="off" autocapitalize="off">
       <p class="help-text example">wombats-rule.com</p>
 
       <label for="github">github</label>
-      <input type="text" id="github" name="github" value="{{github}}" autocorrect="off" autocapitalize="off">
+      <input type="text" id="github" name="github" value="{{resource.github}}" autocorrect="off" autocapitalize="off">
       <p class="help-text example">wombat</p>
 
       <label for="twitter">twitter</label>
-      <input type="text" id="twitter" name="twitter" value="{{twitter}}" autocorrect="off" autocapitalize="off">
+      <input type="text" id="twitter" name="twitter" value="{{resource.twitter}}" autocorrect="off" autocapitalize="off">
       <p class="help-text example">wombat</p>
 
       <label for="freenode">freenode</label>
-      <input type="text" id="freenode" name="freenode" value="{{freenode}}" autocorrect="off" autocapitalize="off">
+      <input type="text" id="freenode" name="freenode" value="{{resource.freenode}}" autocorrect="off" autocapitalize="off">
       <p class="help-text example">wombat</p>
 
     {{/with}}
@@ -48,6 +43,11 @@
   <p class="change-avatar">
     <a href="https://en.gravatar.com/emails/"><img src="{{user.avatar.small}}"></a>
     Change your avatar at <a href="https://en.gravatar.com/emails/">gravatar.com</a>
+  </p>
+
+  <p>
+    Need to change your email address?
+    <a href="/email-edit">Right this way.</a>
   </p>
 
 </div>

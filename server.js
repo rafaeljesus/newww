@@ -13,11 +13,15 @@ bole.output({
   stream: process.stdout
 });
 
+var redisConfig = require("redis-url")
+  .parse(process.env.REDIS_URL)
+
 var server = new Hapi.Server({
   cache: {
     engine: require('catbox-redis'),
-    host: URL.parse(process.env.REDIS_URL).hostname,
-    port: URL.parse(process.env.REDIS_URL).port,
+    host: redisConfig.hostname,
+    port: redisConfig.port,
+    password: redisConfig.password,
   },
   connections: {
     router: {

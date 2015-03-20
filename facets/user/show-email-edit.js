@@ -13,7 +13,7 @@ module.exports = function (options) {
     var opts = { };
 
     from = options.emailFrom;
-    host = options.canonicalHost;
+    host = process.env.CANONICAL_HOST;
 
     if (request.method === 'get') {
       if (request.params && request.params.token) {

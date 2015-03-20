@@ -38,15 +38,16 @@ exports.register = function(server, options, next) {
   });
 
   server.ext('onPreResponse', function(request, reply) {
+    request.response.source.context.stamp = request.server.stamp
 
     options.correlationID = request.id;
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
-      if (options.canonicalHost) {
+      if (process.env.CANONICAL_HOST) {
         if (request.url.query.page || request.url.query.q) {
-          options.canonicalURL = url.resolve(options.canonicalHost, request.url.path);
+          options.canonicalURL = url.resolve(process.env.CANONICAL_HOST, request.url.path);
         } else {
-          options.canonicalURL = url.resolve(options.canonicalHost, request.url.pathname);
+          options.canonicalURL = url.resolve(process.env.CANONICAL_HOST, request.url.pathname);
         }
       }
     }

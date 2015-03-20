@@ -19,14 +19,8 @@ module.exports = [
     options: config
   },
   {
-    register: require('../services/downloads'),
-    options: config.downloads
-  },
-  {
     register: require('./bonbon'),
     options: {
-      stamp: config.stamp,
-      canonicalHost: config.canonicalHost,
       lang: "en_US"
     }
   }

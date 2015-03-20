@@ -7,6 +7,6 @@ module.exports = {
   wrigley_the_writer: {
     name: "wrigley_the_writer",
     email: "wrigley@writer.com",
-    permissions: "read"
+    permissions: "write"
   }
 }

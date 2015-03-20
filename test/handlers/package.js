@@ -30,9 +30,11 @@ describe("package handler", function(){
     var $;
     var resp;
     var options = {url: '/package/browserify'};
+
     var packageMock = nock("https://user-api-example.com")
       .get('/package/browserify')
       .reply(200, fixtures.packages.browserify);
+
     var downloadsMock = nock("https://downloads-api-example.com")
       .get('/point/last-day/browserify')
       .reply(200, fixtures.downloads.browserify.day)
@@ -45,8 +47,6 @@ describe("package handler", function(){
       server.inject(options, function (response) {
         resp = response
         $ = cheerio.load(resp.result)
-        packageMock.done()
-        downloadsMock.done()
         done()
       })
     })

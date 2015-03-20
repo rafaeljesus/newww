@@ -1,9 +1,10 @@
 var collaborator = module.exports = {};
 var Collaborator = require("../models/collaborator")
+var decorate = require("../presenters/collaborator")
 
 collaborator.list = function(request, reply) {
   Collaborator.new(request)
-  .list(request.params.package, function(err, collaborators) {
+  .list(request.packageName, function(err, collaborators) {
     if (err) {
       request.logger.error(err);
       return reply(err)
@@ -16,20 +17,20 @@ collaborator.list = function(request, reply) {
 
 collaborator.add = function(request, reply) {
   Collaborator.new(request)
-  .add(request.params.package, request.payload.collaborator, function(err, collaborator) {
+  .add(request.packageName, request.payload.collaborator, function(err, collaborator) {
     if (err) {
       request.logger.error(err);
       return reply(err)
     }
     return reply({
-      collaborator: collaborator
+      collaborator: decorate(collaborator[request.payload.collaborator.name], request.packageName)
     });
   });
 };
 
 collaborator.update = function(request, reply) {
   Collaborator.new(request)
-  .update(request.params.package, request.payload.collaborator, function(err, collaborator) {
+  .update(request.packageName, request.payload.collaborator, function(err, collaborator) {
     if (err) {
       request.logger.error(err);
       return reply(err)
@@ -42,13 +43,13 @@ collaborator.update = function(request, reply) {
 
 collaborator.del = function(request, reply) {
   Collaborator.new(request)
-  .del(request.params.package, request.params.username, function(err, collaborator) {
+  .del(request.packageName, request.params.username, function(err, collaborator) {
     if (err) {
       request.logger.error(err);
       return reply(err)
     }
     return reply({
-      collaborator: collaborator
-    });
+      username: request.params.username
+    })
   });
 };

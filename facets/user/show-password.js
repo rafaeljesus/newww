@@ -8,7 +8,7 @@ module.exports = function (request, reply) {
   var opts = { };
   var loggedInUser = request.auth.credentials;
 
-  if (request.method === 'get' || request.method === 'head') {
+  if (request.method === 'get') {
     request.timing.page = 'password';
 
     return reply.view('user/password', opts);

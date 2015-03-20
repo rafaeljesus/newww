@@ -1,6 +1,8 @@
 module.exports = function (request, reply) {
   var Package = require("../models/package").new(request)
-  var Download = require("../models/download").new(request)
+  var Download = require("../models/download").new({
+    request: request, cache: require("../lib/cache")
+  })
   var context = {
     explicit: require("npm-explicit-installs")
   }

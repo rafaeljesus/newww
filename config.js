@@ -15,7 +15,7 @@ config.server = {
   cache: {
     engine: require('catbox-redis'),
     host: '127.0.0.1',
-    port: '6379'
+    port: '6379',
   },
   connections: {
     router: {
@@ -56,11 +56,6 @@ config.views = {
   layoutPath: './templates/layouts',
   partialsPath: './templates/partials',
   layout: 'default'
-};
-
-config.couch = {
-  "couchAuth": "admin:admin",
-  "registryCouch": "http://localhost:15984/"
 };
 
 config.session = {

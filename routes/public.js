@@ -16,6 +16,23 @@ var unathenticatedRouteConfig = {
   }
 };
 
+var stripeSafeConfig = {
+  plugins: {
+    blankie: {
+      scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com', 'https://js.hs-analytics.net/analytics/'],
+      frameSrc: 'https://checkout.stripe.com'
+    }
+  }
+};
+
+var enterpriseConfig = {
+  plugins: {
+    blankie: {
+      scriptSrc: config.enterpriseCspScriptSrc
+    }
+  }
+};
+
 var ajaxy = {
   plugins: {
     crumb: {
@@ -94,22 +111,61 @@ var publicRoutes = [
     method: "GET",
     handler: require('../facets/enterprise/show-verification')
   },{
-    path: "/package/{package}/collaborators",
+    path: "/enterprise/license",
+    method: ["GET","POST"],
+    handler: require('../facets/enterprise/find-license'),
+    config: stripeSafeConfig
+  },{
+    path: "/enterprise/license-options",
+    method: "GET",
+    handler: require('../facets/enterprise/license-options'),
+    config: stripeSafeConfig
+  },{
+    path: "/enterprise/buy-license",
+    method: "POST",
+    handler: require('../facets/enterprise/buy-license'),
+    config: ajaxy
+  },{
+    path: "/enterprise/license-paid",
+    method: "GET",
+    handler: require('../facets/enterprise/license-paid'),
+    config: enterpriseConfig
+  },{
+    path: "/enterprise/license-error",
+    method: "GET",
+    handler: require('../facets/enterprise/license-error'),
+    config: enterpriseConfig
+  },{
+    paths: [
+      "/package/{package}/collaborators",
+      "/package/{scope}/{project}/collaborators",
+    ],
     method: "GET",
     handler: require('../handlers/collaborator').list
   },{
-    path: "/package/{package}/collaborators",
+    paths: [
+      "/package/{package}/collaborators",
+      "/package/{scope}/{project}/collaborators",
+    ],
     method: "PUT",
-    handler: require('../handlers/collaborator').add
+    handler: require('../handlers/collaborator').add,
+    config: ajaxy
   },{
-    path: "/package/{package}/collaborators/{username}",
+    paths: [
+      "/package/{package}/collaborators/{username}",
+      "/package/{scope}/{project}/collaborators/{username}",
+    ],
     method: "POST",
     handler: require('../handlers/collaborator').update,
     config: ajaxy
   },{
-    path: "/package/{package}/collaborators/{username}",
+    paths: [
+      "/package/{package}/collaborators/{username}",
+      "/package/{scope}/{project}/collaborators/{username}",
+    ],
     method: "DELETE",
-    handler: require('../handlers/collaborator').del
+    handler: require('../handlers/collaborator').del,
+    config: ajaxy
   },{
     paths: [
       "/package/{package}",
@@ -121,7 +177,7 @@ var publicRoutes = [
     // redirect plural forms to singular
     paths: [
       "/packages/{package}",
-      "/packages/{scope}/{package}",
+      "/packages/{scope}/{project}",
     ],
     method: "GET",
     handler: function(request, reply) {
@@ -130,7 +186,7 @@ var publicRoutes = [
   },{
     paths: [
       "/package/{package}/access",
-      "/package/{scope}/{package}/access",
+      "/package/{scope}/{project}/access",
     ],
     method: "GET",
     handler: require('../handlers/access')
@@ -208,10 +264,6 @@ var publicRoutes = [
     handler: require('../facets/user/show-signup')
   },{
     path: "/signup",
-    method: "HEAD",
-    handler: require('../facets/user/show-signup')
-  },{
-    path: "/signup",
     method: "POST",
     handler: require('../facets/user/show-signup')
   },{
@@ -233,10 +285,6 @@ var publicRoutes = [
   },{
     path: "/forgot/{token?}",
     method: "GET",
-    handler: require('../facets/user/show-forgot')(config.user.mail)
-  },{
-    path: "/forgot/{token?}",
-    method: "HEAD",
     handler: require('../facets/user/show-forgot')(config.user.mail)
   },{
     path: "/forgot/{token?}",
@@ -272,7 +320,7 @@ var publicRoutes = [
           .replace(/^\/doc/, "")
           .replace(/\.html$/, "")
           .replace(/\/npm-/, "/")
-      })).code(301)
+      })).code(301);
     }
   },{
     method: '*',
@@ -280,7 +328,7 @@ var publicRoutes = [
     handler: require("../handlers/fallback")
   }
 
-]
+];
 
 // Allow files in /static/misc to be web-accessible from /
 fs.readdirSync("./static/misc").forEach(function(filename) {
@@ -290,11 +338,11 @@ fs.readdirSync("./static/misc").forEach(function(filename) {
     handler: {
       file: './static/misc/' + filename
     }
-  })
-})
+  });
+});
 
 publicRoutes = publicRoutes.map(function(route){
-  return _.merge({}, unathenticatedRouteConfig, route)
-})
+  return _.merge({}, unathenticatedRouteConfig, route);
+});
 
-module.exports = publicRoutes
+module.exports = publicRoutes;

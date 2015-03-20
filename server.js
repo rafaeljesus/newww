@@ -36,8 +36,8 @@ var server = new Hapi.Server({
 });
 
 var connection = {
-  host: process.env.HOST,
-  port: process.env.PORT
+  host: process.env.HOST || "localhost",
+  port: process.env.PORT || "15443"
 }
 
 if (process.env.NODE_ENV === 'dev') {

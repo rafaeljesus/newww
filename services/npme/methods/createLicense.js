@@ -19,7 +19,7 @@ module.exports = function(licenseDetails, callback) {
     request.put({
       url: licenseEndpoint,
       json: {
-        product_id: config.npme.product_id,
+        product_id: process.env.NPME_PRODUCT_ID,
         customer_id: customer.id,
         stripe_subscription_id: licenseDetails.stripeId,
         seats: licenseDetails.seats,

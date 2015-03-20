@@ -16,7 +16,7 @@ var Hapi = require('hapi'),
 var fixtures = require('../fixtures').enterprise;
 
 config.license.api = 'https://billing.website.com';
-config.npme.product_id = 'some-product-id';
+process.env.NPME_PRODUCT_ID = 'some-product-id';
 
 var dataIn = {
   billingEmail: 'exists@boom.com',

@@ -4,12 +4,12 @@ var Code = require('code'),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config');
+    trial_length = 30,
+    trial_seats = 50;
 
 var server;
 
@@ -29,9 +29,9 @@ before(function (done) {
 
 describe('creating a trial in hubspot', function () {
   it('creates a new trial if one does not exist', function (done) {
-    var productId = config.npme.product_id,
-        trialLength = config.npme.trial_length,
-        trialSeats = config.npme.trial_seats;
+    var productId = process.env.NPME_PRODUCT_ID,
+        trialLength = trial_length,
+        trialSeats = trial_seats;
 
     var customer = {
       id: '23456',
@@ -58,9 +58,9 @@ describe('creating a trial in hubspot', function () {
   });
 
   it('returns an existing trial if it already exists', function (done) {
-    var productId = config.npme.product_id,
-        trialLength = config.npme.trial_length,
-        trialSeats = config.npme.trial_seats;
+    var productId = process.env.NPME_PRODUCT_ID,
+        trialLength = trial_length,
+        trialSeats = trial_seats;
 
     var customer = {
       id: '23456',
@@ -80,9 +80,9 @@ describe('creating a trial in hubspot', function () {
   });
 
   it('returns an error if hubspot errors out from looking up trial info', function (done) {
-    var productId = config.npme.product_id,
-        trialLength = config.npme.trial_length,
-        trialSeats = config.npme.trial_seats;
+    var productId = process.env.NPME_PRODUCT_ID,
+        trialLength = trial_length,
+        trialSeats = trial_seats;
 
     var customer = {
       id: '23456',
@@ -102,9 +102,9 @@ describe('creating a trial in hubspot', function () {
   });
 
   it('returns an error if hubspot errors out from creating a trial', function (done) {
-    var productId = config.npme.product_id,
-        trialLength = config.npme.trial_length,
-        trialSeats = config.npme.trial_seats;
+    var productId = process.env.NPME_PRODUCT_ID,
+        trialLength = trial_length,
+        trialSeats = trial_seats;
 
     var customer = {
       id: '23456',

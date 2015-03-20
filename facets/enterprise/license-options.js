@@ -29,7 +29,7 @@ module.exports = function(request, reply) {
 
     if (data.license) {
       // get license details from /license/[productkey]/[email]/[licensekey]
-      getLicense(config.npme.product_id, data.email, data.license, function(err,license) {
+      getLicense(process.env.NPME_PRODUCT_ID, data.email, data.license, function(err,license) {
         // fail on error
         if (err) {
           request.logger.error("API error fetching license " + data.license + " for email " + data.email);

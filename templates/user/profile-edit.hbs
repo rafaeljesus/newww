@@ -6,7 +6,13 @@
     <h1>edit your profile</h1>
   </hgroup>
 
-  {{> email-verify-nag}}
+  {{#if showEmailSentNotice}}
+    <p class="notice">
+      Go check your <a href="mailto:{{user.email}}">{{user.email}}</a> inbox. You should see something from us :)
+    </p>
+  {{else}}
+    {{> email-verify-nag}}
+  {{/if}}
 
   {{> errors}}
 

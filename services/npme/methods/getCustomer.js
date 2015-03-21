@@ -4,7 +4,7 @@ var request = require('request'),
 
 module.exports = function(email, callback) {
 
-  var customerEndpoint = config.license.api + '/customer';
+  var customerEndpoint = process.env.LICENSE_API + '/customer';
 
   request.get({
     url: customerEndpoint + '/' + email,

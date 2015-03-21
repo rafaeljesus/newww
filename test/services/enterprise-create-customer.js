@@ -4,16 +4,11 @@ var Code = require('code'),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config');
-
-config.license.api = 'https://billing.website.com';
-
-var server;
+    server;
 
 before(function (done) {
   server = new Hapi.Server();
@@ -21,8 +16,7 @@ before(function (done) {
 
   server.register([
     {
-      register: npme,
-      options: config
+      register: npme
     }
   ], function () {
     server.start(done);
@@ -82,4 +76,3 @@ describe('creating a customer in hubspot', function () {
   });
 
 });
-

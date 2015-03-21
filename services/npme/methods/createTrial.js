@@ -6,7 +6,7 @@ var request = require('request'),
 
 module.exports = function (customer, callback) {
 
-  var trialEndpoint = config.license.api + '/trial',
+  var trialEndpoint = process.env.LICENSE_API + '/trial',
       productId = process.env.NPME_PRODUCT_ID;
 
   // check if they already have a trial; 1 per customer
@@ -35,7 +35,7 @@ module.exports = function (customer, callback) {
 
 function createNewTrial (customer, callback) {
 
-  var trialEndpoint = config.license.api + '/trial',
+  var trialEndpoint = process.env.LICENSE_API + '/trial',
       productId = process.env.NPME_PRODUCT_ID,
       trialLength = trial_length,
       trialSeats = trial_seats;

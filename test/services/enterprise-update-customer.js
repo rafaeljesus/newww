@@ -9,12 +9,9 @@ var Code = require('code'),
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config'),
     existingUser = require('../fixtures/enterprise').existingUser;
 
 var server;
-
-config.license.api = 'https://billing.website.com';
 
 before(function (done) {
   server = new Hapi.Server();
@@ -30,7 +27,7 @@ describe('updating a customer via hubspot', function () {
 
     var customerId = 12345;
 
-    var mock = nock(config.license.api)
+    var mock = nock('https://billing.website.com')
         .post('/customer/' + customerId, existingUser)
         .reply(200, existingUser);
 
@@ -47,7 +44,7 @@ describe('updating a customer via hubspot', function () {
 
     var customerId = 12345;
 
-    var mock = nock(config.license.api)
+    var mock = nock('https://billing.website.com')
         .post('/customer/' + customerId, existingUser)
         .reply(400);
 

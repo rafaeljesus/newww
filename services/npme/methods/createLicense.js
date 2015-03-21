@@ -14,7 +14,7 @@ module.exports = function(licenseDetails, callback) {
       return;
     }
 
-    var licenseEndpoint = config.license.api + '/license';
+    var licenseEndpoint = process.env.LICENSE_API + '/license';
 
     request.put({
       url: licenseEndpoint,

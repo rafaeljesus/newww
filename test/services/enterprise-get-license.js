@@ -4,16 +4,11 @@ var Code = require('code'),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config');
-
-var server;
-
-config.license.api = 'https://billing.website.com';
+    server;
 
 before(function (done) {
   server = new Hapi.Server();
@@ -47,7 +42,7 @@ describe('getting a specific license from hubspot', function () {
         customerId = '12345',
         licenseId = license.details.license_key;
 
-    var mock = nock(config.license.api)
+    var mock = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId + '/' + licenseId)
         .reply(200, license);
 
@@ -66,7 +61,7 @@ describe('getting a specific license from hubspot', function () {
         customerId = '12345',
         licenseId = 'd89355a5-859b-43f4-8d8d-12b661403314';
 
-    var mock = nock(config.license.api)
+    var mock = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId + '/' + licenseId)
         .reply(404);
 
@@ -84,7 +79,7 @@ describe('getting a specific license from hubspot', function () {
         customerId = '12345',
         licenseId = license.details.license_key;
 
-    var mock = nock(config.license.api)
+    var mock = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId + '/' + licenseId)
         .reply(400);
 

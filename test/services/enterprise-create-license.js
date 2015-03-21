@@ -4,18 +4,14 @@ var Code = require('code'),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     moment = require('moment'),
     npme = require('../../services/npme'),
     nock = require('nock'),
     _ = require('lodash'),
-    config = require('../../config');
+    fixtures = require('../fixtures').enterprise;
 
-var fixtures = require('../fixtures').enterprise;
-
-config.license.api = 'https://billing.website.com';
 process.env.NPME_PRODUCT_ID = 'some-product-id';
 
 var dataIn = {

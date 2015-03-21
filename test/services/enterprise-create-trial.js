@@ -19,8 +19,7 @@ before(function (done) {
 
   server.register([
     {
-      register: npme,
-      options: config
+      register: npme
     }
   ], function () {
     server.start(done);
@@ -38,7 +37,7 @@ describe('creating a trial in hubspot', function () {
       email: 'new@bam.com'
     };
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/trial/' + productId + '/' + customer.email)
         .reply(404)
         .put('/trial', {
@@ -67,7 +66,7 @@ describe('creating a trial in hubspot', function () {
       email: 'existing@bam.com'
     };
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/trial/' + productId + '/' + customer.email)
         .reply(200, {id: 'abcde'})
 
@@ -89,7 +88,7 @@ describe('creating a trial in hubspot', function () {
       email: 'error@bam.com'
     };
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/trial/' + productId + '/' + customer.email)
         .reply(400)
 
@@ -111,7 +110,7 @@ describe('creating a trial in hubspot', function () {
       email: 'error@bam.com'
     };
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/trial/' + productId + '/' + customer.email)
         .reply(404)
         .put('/trial', {

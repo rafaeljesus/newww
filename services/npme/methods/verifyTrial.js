@@ -4,7 +4,7 @@ var request = require('request'),
 
 module.exports = function(verificationKey, callback) {
 
-  var trialEndpoint = config.license.api + '/trial';
+  var trialEndpoint = process.env.LICENSE_API + '/trial';
 
   // check if a trial with this verification key exists already
   request.get({

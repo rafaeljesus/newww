@@ -4,14 +4,11 @@ var Code = require('code'),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config');
-
-var server;
+    server;
 
 before(function (done) {
   server = new Hapi.Server();
@@ -28,7 +25,7 @@ describe('getting licenses from hubspot', function () {
     var productId = '12-34-56',
         customerId = '12345';
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId)
         .reply(200, {licenses: ['1234-5678-90']})
 
@@ -46,7 +43,7 @@ describe('getting licenses from hubspot', function () {
     var productId = '12-34-56',
         customerId = '12345';
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId)
         .reply(404)
 
@@ -63,7 +60,7 @@ describe('getting licenses from hubspot', function () {
     var productId = '12-34-56',
         customerId = '12345';
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId)
         .reply(400)
 

@@ -4,7 +4,7 @@ var request = require('request'),
 
 module.exports = function (productId, customerEmailOrId, licenseId, callback) {
 
-  var licenseEndpoint = config.license.api + '/license';
+  var licenseEndpoint = process.env.LICENSE_API + '/license';
 
   request.get({
     url: licenseEndpoint + '/' + productId + '/' + customerEmailOrId + '/' + licenseId,

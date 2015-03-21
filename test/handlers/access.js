@@ -17,6 +17,7 @@ var fixtures = require("../fixtures"),
 describe("package access", function(){
 
   before(function (done) {
+    nock.disableNetConnect()
     require('../mocks/server')(function (obj) {
       server = obj;
       done();
@@ -24,8 +25,33 @@ describe("package access", function(){
   });
 
   after(function (done) {
+    nock.enableNetConnect()
     server.stop(done);
   });
+
+  describe('FEATURE_ACCESS disabled', function() {
+    var resp
+
+    before(function(done){
+      delete process.env.FEATURE_ACCESS
+      done()
+    })
+
+    it("returns a 404 for global packages", function(done){
+      server.inject({url: "/package/browserify/access"}, function(resp) {
+        expect(resp.statusCode).to.equal(404)
+        done()
+      })
+    })
+
+    it("returns a 404 for scoped packages", function(done){
+      server.inject({url: "/package/@wrigley_the_writer/scoped_public/access'"}, function(resp) {
+        expect(resp.statusCode).to.equal(404)
+        done()
+      })
+    })
+
+  })
 
   describe('global package', function() {
 
@@ -35,20 +61,20 @@ describe("package access", function(){
     var options = {url: '/package/browserify/access'};
     var mock = nock("https://user-api-example.com")
       .get('/package/browserify')
-      .times(10)
+      .times(3)
       .reply(200, fixtures.packages.browserify)
       .get('/package/browserify/collaborators')
-      .times(10)
+      .times(3)
       .reply(200, fixtures.collaborators)
 
     describe('anonymous user', function () {
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -88,11 +114,11 @@ describe("package access", function(){
       }
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -129,11 +155,11 @@ describe("package access", function(){
       }
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -201,11 +227,11 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -245,11 +271,11 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -286,11 +312,11 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -324,11 +350,11 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -397,11 +423,11 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -425,11 +451,11 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -453,11 +479,11 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })
@@ -476,11 +502,11 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS = "yep"
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
           $ = cheerio.load(resp.result)
-          mock.done()
           done()
         })
       })

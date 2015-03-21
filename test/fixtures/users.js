@@ -62,12 +62,6 @@ exports.bobUpdateBody = {
     small: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=50&default=https%3A%2F%2Fwww.npmjs.com%2Fstatic%2Fimages%2Fwombat-avatar-small.png',
     medium: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=100&default=https%3A%2F%2Fwww.npmjs.com%2Fstatic%2Fimages%2Fwombat-avatar-small.png',
     large: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=496&default=https%3A%2F%2Fwww.npmjs.com%2Fstatic%2Fimages%2Fwombat-avatar-large.png'
-  },
-  meta: {
-    homepage: 'http://boom.me',
-    github: 'bob',
-    twitter: 'bobby',
-    freenode: 'bobob'
   }
 };
 

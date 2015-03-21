@@ -1,6 +1,11 @@
 var omit = require("lodash").omit;
 
 module.exports = function(request, reply) {
+
+  if (!process.env.FEATURE_ACCESS) {
+    return reply.view('errors/not-found').code(404);
+  }
+
   var package
   var user = request.auth.credentials;
   var Collaborator = require("../models/collaborator").new(request)

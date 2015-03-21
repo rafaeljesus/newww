@@ -10,12 +10,10 @@ var generateCrumb = require("../crumb"),
     it = lab.test,
     expect = Code.expect,
     nock = require("nock"),
-    redis = require("../../../adapters/redis-sessions");
-
-var server,
+    redis = require("../../../adapters/redis-sessions"),
+    server,
     users = require('../../fixtures').users;
 
-// prepare the server
 before(function (done) {
   require('../../mocks/server')(function (obj) {
     server = obj;

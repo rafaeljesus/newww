@@ -26,12 +26,12 @@ module.exports = [
     method: "POST",
     handler: require('../facets/user/show-profile-edit')
   },{
-    path: "/email-edit",
+    path: "/resend-email-confirmation",
     method: "GET",
-    handler: require('../facets/user/show-email-edit')(config.user.mail)
+    handler: require('../facets/user/show-resend-email-confirmation')
   },{
     path: "/email-edit",
-    method: "HEAD",
+    method: "GET",
     handler: require('../facets/user/show-email-edit')(config.user.mail)
   },{
     path: "/email-edit",
@@ -49,16 +49,8 @@ module.exports = [
     method: "GET",
     handler: require('../facets/user/show-email-edit')(config.user.mail)
   },{
-    path: "/email-edit/{token*2}",
-    method: "HEAD",
-    handler: require('../facets/user/show-email-edit')(config.user.mail)
-  },{
     path: "/password",
     method: "GET",
-    handler: require('../facets/user/show-password')
-  },{
-    path: "/password",
-    method: "HEAD",
     handler: require('../facets/user/show-password')
   },{
     path: "/password",

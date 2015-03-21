@@ -17,6 +17,7 @@ require("./keyboard-shortcuts")()
 require("./add-active-class-to-links")()
 require("./autoselect-inputs")()
 require("./package-access")()
+require("./buy-enterprise-license")()
 
 window.github = require("./github")()
 window.star = require("./star")()

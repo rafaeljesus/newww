@@ -2,8 +2,6 @@ var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
-var cache = require('../lib/cache');
-var URL = require('url');
 
 var Download = module.exports = function (opts) {
   _.extend(this, {
@@ -18,7 +16,7 @@ Download.new = function(request) {
   if (request && request.auth && request.auth.credentials) {
     opts.bearer = request.auth.credentials.name
   }
-  if (String(process.env.NODE_ENV).match(/(production|staging|dev)/)) {
+  if (process.env.USE_CACHE) {
     opts.cache = require("../lib/cache")
   }
   return new Download(opts)
@@ -38,7 +36,6 @@ Download.prototype.getMonthly = function(packageName) {
 
 Download.prototype.getAll = function(packageName) {
   var _this = this;
-  var result = {};
 
   return Promise.all([
     _this.getDaily(packageName),
@@ -49,13 +46,12 @@ Download.prototype.getAll = function(packageName) {
       day: result[0],
       week: result[1],
       month: result[2]
-    }
-  })
-}
+    };
+  });
+};
 
 Download.prototype.getSome = function(period, packageName) {
   var _this = this;
-  var results;
 
   var url = fmt("%s/point/last-%s", this.host, period);
   if (packageName) {
@@ -68,10 +64,9 @@ Download.prototype.getSome = function(period, packageName) {
       url: url,
       json: true,
       timeout: _this.timeout,
-      headers: {
-        bearer: _this.bearer
-      }
     };
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     if (_this.cache) {
       _this.cache.get(opts, function(err, body){
@@ -80,8 +75,8 @@ Download.prototype.getSome = function(period, packageName) {
     } else {
       request(opts, function(err, resp, body){
         return resolve(body || null);
-      })
+      });
     }
 
-  })
+  });
 };

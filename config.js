@@ -58,11 +58,6 @@ config.views = {
   layout: 'default'
 };
 
-config.couch = {
-  "couchAuth": "admin:admin",
-  "registryCouch": "http://localhost:15984/"
-};
-
 config.session = {
   password: 'i dunno, something secure probably? Definitely!',
   cookie: 's',
@@ -121,7 +116,7 @@ config.user = {
       secretAccessKey: process.env.MAIL_SECRET_ACCESS_KEY,
       region: "us-west-2"
     }),
-    emailFrom: 'support@npmjs.com'
+    emailFrom: 'npm <support@npmjs.com>'
   }
 };
 

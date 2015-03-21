@@ -15,7 +15,7 @@ module.exports = function (options) {
     from = options.emailFrom;
     host = options.canonicalHost;
 
-    if (request.method === 'get' || request.method === 'head') {
+    if (request.method === 'get') {
       if (request.params && request.params.token) {
         switch (request.params.token.split('/')[0]) {
           case 'revert':

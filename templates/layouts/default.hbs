@@ -30,8 +30,8 @@
   <![endif]-->
 
 </head>
-<body>
-
+<body itemscope itemtype="http://schema.org/WebSite">
+  <meta itemprop="url" content="https://www.npmjs.com/">
   <nav>
     <div class="container">
       <a href="#" id="npm-expansions">node package manager</a>
@@ -65,8 +65,9 @@
         {{/if}}
       </div>
 
-      <form id="npm-search" action="/search" method="get">
-        <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find packages" tabindex="1" autocorrect="off" autocapitalize="off" />
+      <form id="npm-search" action="/search" method="get" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
+        <meta itemprop="target" content="https://www.npmjs.com/search?q={q}">
+        <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
         <input type="submit" id="site-search-submit" />
       </form>
 

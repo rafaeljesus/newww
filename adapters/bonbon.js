@@ -5,6 +5,14 @@ var bole      = require('bole'),
     toCommonLogFormat = require('hapi-common-log'),
     url       = require('url');
 
+
+// onRequest
+// onPreAuth
+// onPostAuth
+// onPreHandler
+// onPostHandler
+// onPreResponse
+
 exports.register = function(server, options, next) {
 
   var metrics = require('./metrics')();
@@ -15,6 +23,11 @@ exports.register = function(server, options, next) {
     if (request.params.package || request.params.scope) {
       request.packageName = request.params.package ||
         request.params.scope + "/" + request.params.project;
+    }
+
+    // Generate bearer shorthand
+    if (request.auth && request.auth.credentials) {
+      request.bearer = request.auth.credentials.name
     }
 
     request.metrics = metrics;

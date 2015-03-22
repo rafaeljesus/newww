@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "lab --verbose --colors --ignore '$$bole,__grim__' --assert code --timeout 5000",
+    "hypertest": "mocha --harmony test/models/collaborator.js",
     "coverage": "npm test -- --reporter html > test/coverage.html && open test/coverage.html",
     "prepublish": "gulp build",
     "dev": "gulp dev",
@@ -119,6 +120,7 @@
     "imagemin-pngcrush": "^1.0.0",
     "lab": "^5.1.1",
     "lodash": "^2.4.1",
+    "mocha": "^2.2.1",
     "nock": "^1.2.0",
     "nodemailer-mock-transport": "^1.1.0",
     "once": "^1.3.0",

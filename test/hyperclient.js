@@ -24,7 +24,7 @@ describe("hyperclient", function () {
 
       var mock = nock("https://google.com")
         .get("/")
-        .reply(200)
+        .reply(200, "hey")
 
       var opts = {
         method: "GET",

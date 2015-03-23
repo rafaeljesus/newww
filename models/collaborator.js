@@ -27,8 +27,9 @@ Collaborator.prototype.list = function(package, callback) {
       method: "GET",
       url: url,
       json: true,
-      headers: {bearer: _this.bearer}
     }
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request(opts,
       function(err, resp, body) {
@@ -57,9 +58,10 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
       method: "PUT",
       url: url,
       json: true,
-      headers: {bearer: _this.bearer},
       body: collaborator
     }
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request(opts, function(err, resp, body) {
       if (err) { return reject(err); }
@@ -81,9 +83,10 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
     method: "POST",
     url: url,
     json: true,
-    headers: {bearer: _this.bearer},
     body: collaborator,
   }
+
+  if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
   return new Promise(function(resolve, reject) {
     request(opts, function(err, resp, body) {
@@ -107,8 +110,9 @@ Collaborator.prototype.del = function(package, collaboratorName, callback) {
       method: "DELETE",
       url: url,
       json: true,
-      headers: {bearer: _this.bearer}
     }
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request(opts, function(err, resp, body){
       if (err) { return reject(err); }

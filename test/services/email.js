@@ -22,6 +22,8 @@ beforeEach(function (done) {
   server = new Hapi.Server();
   server.connection({ host: 'localhost' });
   server.register(email, function () {
+    var mailConfig = require('../../services/email/methods/send').mailConfig;
+    mailConfig.mailTransportModule = mock;
     server.start(done);
   });
 });

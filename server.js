@@ -1,4 +1,3 @@
-var
 require("./lib/environment")()
 
 var _       = require('lodash'),

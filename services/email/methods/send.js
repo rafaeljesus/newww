@@ -4,6 +4,15 @@ var log = require('bole')('email-send'),
     path = require('path'),
     _ = require('lodash');
 
+var mailConfig =  {
+  mailTransportModule: require("nodemailer-ses-transport")({
+    accessKeyId: process.env.MAIL_ACCESS_KEY_ID,
+    secretAccessKey: process.env.MAIL_SECRET_ACCESS_KEY,
+    region: "us-west-2"
+  }),
+  emailFrom: 'npm <support@npmjs.com>'
+}
+
 module.exports = function send (template, data, redis) {
 
   var mailOpts = _.extend({}, {

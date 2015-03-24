@@ -67,12 +67,7 @@ server.views({
 server.stamp = require("./lib/stamp")()
 
 // configure metrics as a side effect
-var metrics = require('./adapters/metrics')({
-  collector: {
-    uri: 'udp://localhost:3333'
-  },
-  prefix: 'npm-www-dev'
-});
+var metrics = require('./adapters/metrics')();
 
 // configure http request cache
 require("./lib/cache").configure({

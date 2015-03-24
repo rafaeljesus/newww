@@ -24,7 +24,7 @@ module.exports = function contactMe (request, reply) {
 
   var data = { email: request.payload.contact_customer_email };
 
-  postToHubspot(config.hubspot.form_npme_contact_me, data, function(er) {
+  postToHubspot(process.env.HUBSPOT_FORM_NPME_SIGNUP, data, function(er) {
 
       if (er) {
         request.logger.error('Could not contact hubspot to register user');

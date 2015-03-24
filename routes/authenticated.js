@@ -32,22 +32,22 @@ module.exports = [
   },{
     path: "/email-edit",
     method: "GET",
-    handler: require('../facets/user/show-email-edit')(config.user.mail)
+    handler: require('../facets/user/show-email-edit')
   },{
     path: "/email-edit",
     method: "PUT",
-    handler: require('../facets/user/show-email-edit')(config.user.mail)
+    handler: require('../facets/user/show-email-edit')
   },{
     path: "/email-edit",
     method: "POST",
-    handler: require('../facets/user/show-email-edit')(config.user.mail)
+    handler: require('../facets/user/show-email-edit')
   },{
     // confirm or revert
     // /email-edit/confirm/1234567
     // /email-edit/revert/1234567
     path: "/email-edit/{token*2}",
     method: "GET",
-    handler: require('../facets/user/show-email-edit')(config.user.mail)
+    handler: require('../facets/user/show-email-edit')
   },{
     path: "/password",
     method: "GET",

@@ -10,7 +10,7 @@ var generateCrumb = require("../handlers/crumb.js"),
 
 var server;
 
-// prepare the server
+
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;

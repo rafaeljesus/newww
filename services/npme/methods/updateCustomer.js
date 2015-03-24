@@ -11,6 +11,8 @@ module.exports = function (customerId, data, callback) {
     json: data
   }, function(er, resp, customer) {
 
+    if (er) throw er;
+
     if (resp.statusCode === 200) {
       return callback(null, customer);
     }

@@ -9,7 +9,7 @@ var Code = require('code'),
 
 var server;
 
-// prepare the server
+
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;

@@ -4,14 +4,12 @@ var
     os      = require('os'),
     emitter;
 
-module.exports = function constructEmitter(options)
+var metrics = module.exports = function constructEmitter()
 {
     if (emitter) return emitter;
 
-    assert(options, 'you must pass an options object to constructEmitter()');
-
     emitter = new Emitter({
-        uri: options.collector.uri,
+        uri: 'udp://localhost:3333',
         node: os.hostname()
     });
     return emitter;

@@ -3,6 +3,7 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
     expect = Code.expect,
     Hapi = require('hapi'),
@@ -11,6 +12,7 @@ var Code = require('code'),
     server;
 
 before(function (done) {
+  process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9119' });
 
@@ -22,6 +24,12 @@ before(function (done) {
     server.start(done);
   });
 });
+
+after(function (done) {
+  delete process.env.LICENSE_API;
+  done()
+});
+
 
 describe('creating a customer in hubspot', function () {
   it('returns a customer when hubspot creates it', function (done) {

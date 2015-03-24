@@ -24,7 +24,7 @@ var postName = function (name_email, crumb) {
   };
 };
 
-// prepare the server
+
 before(function (done) {
   require('../../mocks/server')(function (obj) {
     server = obj;

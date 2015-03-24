@@ -3,6 +3,7 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
     expect = Code.expect,
     Hapi = require('hapi'),
@@ -34,12 +35,18 @@ delete licenseData.billingEmail;
 var server;
 
 before(function (done) {
+  process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9131' });
 
   server.register(npme, function () {
     server.start(done);
   });
+});
+
+after(function (done) {
+  delete process.env.LICENSE_API;
+  done()
 });
 
 describe('creating a license in hubspot', function () {

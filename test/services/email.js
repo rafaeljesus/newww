@@ -10,20 +10,13 @@ var Code = require('code'),
     expect = Code.expect,
     Hapi = require('hapi'),
     email = require('../../services/email'),
-    server;
-
-var mailConfig = require('../../config').user.mail;
-var MockTransport = require('nodemailer-mock-transport');
-var mock = new MockTransport({boom: 'bam'});
-mailConfig.mailTransportModule = mock;
-
-var redis = require('redis'),
+    server,
+    MockTransport = require('nodemailer-mock-transport'),
+    mock = new MockTransport({boom: 'bam'}),
+    redis = require('redis'),
     spawn = require('child_process').spawn,
-    client, redisProcess,
-    config = require('../../config').server.cache;
-
-    config.port = 6379;
-    config.password = '';
+    client,
+    redisProcess;
 
 beforeEach(function (done) {
   server = new Hapi.Server();
@@ -34,10 +27,8 @@ beforeEach(function (done) {
 });
 
 before(function (done) {
-  var redisConfig = '--port ' + config.port;
-  redisProcess = spawn('redis-server', [redisConfig]);
-  client = redis.createClient(config.port, config.host);
-  client.auth(config.password, function () {});
+  redisProcess = spawn('redis-server');
+  client = require("redis-url").connect();
   client.on("error", function (err) {
     console.log("Error " + err);
   });

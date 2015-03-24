@@ -11,7 +11,7 @@ var Code = require('code'),
     corporate = require('../../services/corporate'),
     nock = require('nock'),
     config = require('../../config'),
-    metrics = require('../../adapters/metrics')(config.metrics),
+    metrics = require('../../adapters/metrics')(),
     server;
 
 before(function (done) {

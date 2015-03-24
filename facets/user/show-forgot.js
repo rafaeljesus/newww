@@ -6,29 +6,25 @@ var User = require('../../models/user'),
 
 var from, host;
 
-module.exports = function (options) {
-  return function (request, reply) {
+module.exports = function (request, reply) {
+  var opts = { };
+  from = "support@npmjs.com"
+  host = process.env.CANONICAL_HOST;
 
-    var opts = { };
+  if (request.method === 'post') {
+    return handle(request, reply);
+  }
 
-    from = options.emailFrom;
-    host = options.canonicalHost;
+  if (request.method === 'get') {
 
-    if (request.method === 'post') {
-      return handle(request, reply);
+    if (request.params && request.params.token) {
+      return processToken(request, reply);
     }
 
-    if (request.method === 'get') {
+    request.timing.page = 'password-recovery-form';
 
-      if (request.params && request.params.token) {
-        return processToken(request, reply);
-      }
-
-      request.timing.page = 'password-recovery-form';
-
-      request.metrics.metric({name: 'password-recovery-form'});
-      return reply.view('user/password-recovery-form', opts);
-    }
+    request.metrics.metric({name: 'password-recovery-form'});
+    return reply.view('user/password-recovery-form', opts);
   };
 };
 

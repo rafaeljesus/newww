@@ -7,23 +7,16 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect,
     nock = require("nock"),
-    users = require('../../fixtures').users;
-
-var redis = require('redis'),
-    spawn = require('child_process').spawn,
-    config = require('../../../config').server.cache;
-
-    config.port = 6379;
-    config.password = '';
+    users = require('../../fixtures').users,
+    redis = require('redis'),
+    spawn = require('child_process').spawn;
 
 var server,
     client, oldCache, redisProcess;
 
 before(function (done) {
-  var redisConfig = '--port ' + config.port;
-  redisProcess = spawn('redis-server', [redisConfig]);
-  client = redis.createClient(config.port, config.host);
-  client.auth(config.password, function () {});
+  redisProcess = spawn('redis-server');
+  client = require("redis-url").connect();
   client.on("error", function (err) {
     console.log("Error " + err);
   });

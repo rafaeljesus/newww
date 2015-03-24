@@ -35,7 +35,7 @@ billing.updateBillingInfo = function(request, reply) {
       return reply.view('errors/internal').code(500);
     }
 
-    sendToHubspot(config.form_private_npm_signup, {email: billingInfo.email}, function (er) {
+    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, {email: billingInfo.email}, function (er) {
       if (er) {
         request.logger.error('unable to send billing email to HubSpot');
         request.logger.error(er);

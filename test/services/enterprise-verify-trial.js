@@ -3,6 +3,7 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
     expect = Code.expect;
 
@@ -14,6 +15,7 @@ var Hapi = require('hapi'),
 var server;
 
 before(function (done) {
+  process.env.LICENSE_API = 'https://billing.website.com'
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9116' });
 
@@ -26,6 +28,11 @@ before(function (done) {
     server.start(done);
   });
 });
+
+after(function(done){
+  delete process.env.LICENSE_API;
+  done();
+})
 
 describe('verifying a trial in hubspot', function () {
   it('returns a trial when a customer submits a valid verification key', function (done) {

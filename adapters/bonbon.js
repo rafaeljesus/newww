@@ -38,7 +38,12 @@ exports.register = function(server, options, next) {
   });
 
   server.ext('onPreResponse', function(request, reply) {
-    request.response.source.context.stamp = request.server.stamp
+
+    if (request.response
+      && request.response.source
+      && request.response.source.context) {
+      request.response.source.context.stamp = request.server.stamp
+    }
 
     options.correlationID = request.id;
 

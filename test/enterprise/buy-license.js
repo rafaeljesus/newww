@@ -8,11 +8,9 @@ var generateCrumb = require("../handlers/crumb.js"),
     it = lab.test,
     expect = Code.expect,
     nock = require('nock'),
-    _ = require('lodash');
+    _ = require('lodash'),
+    server;
 
-var server;
-
-// prepare the server
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;

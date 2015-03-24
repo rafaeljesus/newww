@@ -360,7 +360,6 @@ describe('lib/cache.js', function()
                     done();
                 }
             };
-            sinon.spy(cache.logger, 'error');
 
             var opts = { url: 'https://example.com/setex-fails' };
             var mock = nock('https://example.com')
@@ -372,6 +371,57 @@ describe('lib/cache.js', function()
                 expect(err).to.not.exist();
                 expect(data).to.equal('blistering barnacles');
             });
+        });
+    });
+
+    describe('drop()', function()
+    {
+        it('removes a previously-set value from the cache', function(done)
+        {
+            var opts = {
+                method: 'get',
+                url: 'https://cache.com/hello-again'
+            };
+            var key = cache._fingerprint(opts);
+
+            cache.redis.get(key, function(err, value)
+            {
+                expect(err).to.not.exist();
+                expect(value).to.be.a.string();
+                cache.drop(opts, function(err)
+                {
+                    expect(err).to.not.exist();
+                    cache.redis.get(key, function(err, value2)
+                    {
+                        expect(err).to.not.exist();
+                        expect(value2).to.not.exist();
+                        done();
+                    });
+                });
+            });
+        });
+
+        it('does not complain on error', function(done)
+        {
+            sinon.stub(cache.redis, 'del').yields(Error('del error'));
+            var saved = cache.logger.error;
+
+            var count = 0;
+            cache.logger.error = function()
+            {
+                count++;
+            };
+
+            var opts = { url: 'https://example.com/drop-fails' };
+            cache.drop(opts, function(err)
+            {
+                expect(err).to.not.exist();
+                expect(count).to.equal(2);
+                sinon.restore(cache.redis.del);
+                cache.logger.error = saved;
+                done();
+            });
+
         });
     });
 

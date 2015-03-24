@@ -1,10 +1,11 @@
-var request = require('request');
-var Promise = require('bluebird');
 var _ = require('lodash');
-var fmt = require('util').format;
-var userValidate = require('npm-user-validate');
-var mailchimp = require('mailchimp-api');
+var cache = require('../lib/cache');
 var decorate = require(__dirname + '/../presenters/user');
+var fmt = require('util').format;
+var mailchimp = require('mailchimp-api');
+var Promise = require('bluebird');
+var request = require('request');
+var userValidate = require('npm-user-validate');
 
 var User = module.exports = function(opts) {
   _.extend(this, {
@@ -83,10 +84,16 @@ User.prototype.login = function(loginInfo, callback) {
   }).nodeify(callback);
 };
 
+User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
+  return {
+    url: fmt("%s/user/%s", this.host, name),
+    json: true,
+  };
+};
+
 User.prototype.get = function(name, options, callback) {
   var _this = this;
   var user;
-  var url = fmt("%s/user/%s", this.host, name);
 
   if (!callback) {
     callback = options;
@@ -94,13 +101,8 @@ User.prototype.get = function(name, options, callback) {
   }
 
   return new Promise(function(resolve, reject) {
-    request.get({url: url, json: true}, function(err, resp, body){
+    cache.get(_this.generateUserACLOptions(name), function(err, body){
       if (err) { return reject(err); }
-      if (resp.statusCode > 399) {
-        err = Error('error getting user ' + name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
       return resolve(body);
     });
   })

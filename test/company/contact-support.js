@@ -62,7 +62,8 @@ describe('sending a contact email', function () {
     });
   });
 
-  it('sends an email to support if it\'s a support inquiry', function (done) {
+  it("sends an email to support if it's a support inquiry", function (done) {
+
     server.inject({url: '/contact'}, function (resp) {
       var header = resp.headers['set-cookie'];
       expect(header.length).to.equal(1);
@@ -90,6 +91,40 @@ describe('sending a contact email', function () {
         var source = resp.request.response.source;
         expect(source).to.be.an.object();
         expect(source.to).to.include('support@npmjs.com')
+        done();
+      });
+    });
+  });
+
+  it("sends an email to security if it's a security inquiry", function (done) {
+
+    server.inject({url: '/contact'}, function (resp) {
+      var header = resp.headers['set-cookie'];
+      expect(header.length).to.equal(1);
+
+      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
+
+      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
+
+      var opts = {
+        url: '/send-contact',
+        method: 'POST',
+        payload: {
+          name: 'Boom',
+          email: 'boom@bam.com',
+          subject: 'Hi!',
+          inquire: 'security',
+          message: 'This is a message.',
+          crumb: cookieCrumb
+        },
+        headers: { cookie: 'crumb=' + cookieCrumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        var source = resp.request.response.source;
+        expect(source).to.be.an.object();
+        expect(source.to).to.include('security@npmjs.com')
         done();
       });
     });

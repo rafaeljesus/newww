@@ -4,8 +4,21 @@ module.exports = function showSendContact(request, reply) {
 
   var data = request.payload;
 
+  var recipient;
+  switch (data.inquire) {
+    case "support":
+      recipient = "support <support@npmjs.com>";
+      break;
+    case "security":
+      recipient = "security <security@npmjs.com>";
+      break;
+    default:
+      recipient = "npm <npm@npmjs.com>";
+      break;
+  }
+
   var mail = {
-    to: data.inquire === "support" ? "support <support@npmjs.com>" : "npm <npm@npmjs.com>",
+    to: recipient,
     subject: data.subject + " - FROM: " + '"' + data.name + '" <' + data.email + '>',
     text: data.message
   };

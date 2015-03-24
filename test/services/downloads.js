@@ -12,8 +12,7 @@ var Code = require('code'),
 
 var Hapi = require('hapi'),
   downloads = require('../../services/downloads'),
-  config = require('../../config'),
-  metrics = require('../../adapters/metrics')(config.metrics);
+  metrics = require('../../adapters/metrics')();
 
 var server;
 

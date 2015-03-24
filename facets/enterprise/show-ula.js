@@ -1,8 +1,6 @@
 var Hoek = require('hoek'),
     Joi = require('joi');
 
-var config = require('../../config').license;
-
 module.exports = function createHubspotLead (request, reply) {
   var postToHubspot = request.server.methods.npme.sendData;
 

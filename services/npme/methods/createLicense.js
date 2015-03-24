@@ -1,6 +1,5 @@
 var request = require('request'),
     log = require('bole')('npme-get-license'),
-    config = require('../../../config'),
     getCustomer = require('./getCustomer');
 
 module.exports = function(licenseDetails, callback) {

@@ -1,6 +1,5 @@
 var billing = module.exports = {};
 var Customer = require("../models/customer").new();
-var config = require("../config").license.hubspot;
 
 billing.getBillingInfo = function (request, reply) {
   var opts = {

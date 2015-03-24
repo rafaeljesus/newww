@@ -4,8 +4,6 @@ var Hoek = require('hoek'),
     Hapi = require('hapi'),
     Joi = require('joi');
 
-var config = require('../../config').license;
-
 // if they decide not to agree to the ULA
 // hit the hubspot contact-me form instead, and thank them
 module.exports = function contactMe (request, reply) {

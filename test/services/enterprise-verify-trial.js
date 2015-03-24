@@ -9,8 +9,7 @@ var Code = require('code'),
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
-    nock = require('nock'),
-    config = require('../../config');
+    nock = require('nock');
 
 var server;
 
@@ -20,10 +19,7 @@ before(function (done) {
   server.connection({ host: 'localhost', port: '9116' });
 
   server.register([
-    {
-      register: npme,
-      options: config
-    }
+    {register: npme}
   ], function () {
     server.start(done);
   });

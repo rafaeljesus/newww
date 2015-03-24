@@ -8,9 +8,8 @@ var Code = require('code'),
     sinon = require('sinon');
 
 var Hapi = require('hapi'),
-    config = require('../../config'),
     userService = require('../../services/user'),
-    metrics = require('../../adapters/metrics')(config.metrics);
+    metrics = require('../../adapters/metrics')();
 
 var server;
 

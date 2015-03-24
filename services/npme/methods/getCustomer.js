@@ -1,6 +1,5 @@
 var request = require('request'),
-    log = require('bole')('npme-get-customer'),
-    config = require('../../../config')
+    log = require('bole')('npme-get-customer');
 
 module.exports = function(email, callback) {
 

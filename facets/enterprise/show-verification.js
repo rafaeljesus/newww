@@ -1,7 +1,5 @@
 var _ = require('lodash');
 
-var config = require('../../config');
-
 module.exports = function verifyEnterpriseTrial (request, reply) {
   var verifyTrial = request.server.methods.npme.verifyTrial,
       getCustomer = request.server.methods.npme.getCustomer,

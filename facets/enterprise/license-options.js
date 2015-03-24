@@ -1,5 +1,4 @@
 var Joi = require('joi');
-var config = require('../../config');
 
 module.exports = function(request, reply) {
 

@@ -1,6 +1,5 @@
 var request = require('request'),
     log = require('bole')('npme-create-trial'),
-    config = require('../../../config'),
     trial_length = 30,
     trial_seats = 50;
 

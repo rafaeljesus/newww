@@ -1,5 +1,3 @@
-var config = require('../config');
-
 module.exports = [
   {
     // shortcut for viewing your own stars

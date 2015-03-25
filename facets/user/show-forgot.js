@@ -1,15 +1,11 @@
-
 var User = require('../../models/user'),
     userValidate = require('npm-user-validate'),
     utils = require('../../lib/utils'),
-    crypto = require('crypto');
-
-var from, host;
+    crypto = require('crypto'),
+    from = "support@npmjs.com";
 
 module.exports = function (request, reply) {
   var opts = { };
-  from = "support@npmjs.com"
-  host = process.env.CANONICAL_HOST;
 
   if (request.method === 'post') {
     return handle(request, reply);
@@ -27,8 +23,6 @@ module.exports = function (request, reply) {
     return reply.view('user/password-recovery-form', opts);
   };
 };
-
-// ======= functions =======
 
 function processToken(request, reply) {
   var opts = {},

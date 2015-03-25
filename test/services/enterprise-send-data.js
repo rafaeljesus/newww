@@ -16,9 +16,7 @@ before(function (done) {
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9112' });
 
-  server.register([
-    {register: npme}
-  ], function () {
+  server.register(npme, function () {
     server.start(done);
   });
 });

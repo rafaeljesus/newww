@@ -10,7 +10,7 @@ module.exports = function resendConfirmation (request, reply) {
       request.timing.page = 'resend-confirm-email';
       request.metrics.metric({name: 'resend-confirm-email'});
 
-      return reply.redirect('/profile-edit?verification-email-sent=yep');
+      return reply.redirect('/profile-edit?verification-email-sent=true');
     })
     .catch(function(er) {
       var message = 'Unable to resend email confirmation to ' + user.email;

@@ -11,6 +11,7 @@ module.exports = function(request, reply) {
   var Collaborator = require("../models/collaborator").new(request)
   var Package = require("../models/package").new(request)
   var context = {
+    title: request.packageName + ": access",
     userHasReadAccessToPackage: false,
     userHasWriteAccessToPackage: false,
   }

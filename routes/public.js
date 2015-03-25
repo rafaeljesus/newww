@@ -1,4 +1,3 @@
-var config = require('../config');
 var fmt = require('util').format;
 var fs = require('fs');
 var _ = require('lodash');
@@ -21,14 +20,6 @@ var stripeSafeConfig = {
     blankie: {
       scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com', 'https://js.hs-analytics.net/analytics/'],
       frameSrc: 'https://checkout.stripe.com'
-    }
-  }
-};
-
-var enterpriseConfig = {
-  plugins: {
-    blankie: {
-      scriptSrc: config.enterpriseCspScriptSrc
     }
   }
 };
@@ -128,13 +119,11 @@ var publicRoutes = [
   },{
     path: "/enterprise/license-paid",
     method: "GET",
-    handler: require('../facets/enterprise/license-paid'),
-    config: enterpriseConfig
+    handler: require('../facets/enterprise/license-paid')
   },{
     path: "/enterprise/license-error",
     method: "GET",
-    handler: require('../facets/enterprise/license-error'),
-    config: enterpriseConfig
+    handler: require('../facets/enterprise/license-error')
   },{
     paths: [
       "/package/{package}/collaborators",
@@ -285,11 +274,11 @@ var publicRoutes = [
   },{
     path: "/forgot/{token?}",
     method: "GET",
-    handler: require('../facets/user/show-forgot')(config.user.mail)
+    handler: require('../facets/user/show-forgot')
   },{
     path: "/forgot/{token?}",
     method: "POST",
-    handler: require('../facets/user/show-forgot')(config.user.mail)
+    handler: require('../facets/user/show-forgot')
   },{
     path: "/_monitor/ping",
     method: "GET",

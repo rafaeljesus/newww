@@ -3,20 +3,17 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     moment = require('moment'),
     npme = require('../../services/npme'),
     nock = require('nock'),
     _ = require('lodash'),
-    config = require('../../config');
+    fixtures = require('../fixtures').enterprise;
 
-var fixtures = require('../fixtures').enterprise;
-
-config.license.api = 'https://billing.website.com';
-config.npme.product_id = 'some-product-id';
+process.env.NPME_PRODUCT_ID = 'some-product-id';
 
 var dataIn = {
   billingEmail: 'exists@boom.com',
@@ -38,12 +35,18 @@ delete licenseData.billingEmail;
 var server;
 
 before(function (done) {
+  process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9131' });
 
   server.register(npme, function () {
     server.start(done);
   });
+});
+
+after(function (done) {
+  delete process.env.LICENSE_API;
+  done()
 });
 
 describe('creating a license in hubspot', function () {

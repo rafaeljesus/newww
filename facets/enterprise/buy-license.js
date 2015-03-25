@@ -37,7 +37,7 @@ module.exports = function (request, reply) {
     }
 
     // load the customer by email and make sure the ID matches the one passed in
-    getCustomer(token.email,function(err, customer) {
+    getCustomer(token.email, function(err, customer) {
 
       if (err) {
         request.logger.error('error finding customer; email=' + token.email);

@@ -1,72 +1,64 @@
-
 var _ = require('lodash'),
     userValidate = require('npm-user-validate'),
     crypto = require('crypto'),
     utils = require('../../lib/utils'),
-    UserModel = require('../../models/user');
+    UserModel = require('../../models/user'),
+    from = "support@npmjs.com";
 
-var from, host;
+module.exports = function (request, reply) {
+  var opts = { };
 
-module.exports = function (options) {
-  return function (request, reply) {
+  if (request.method === 'get') {
+    if (request.params && request.params.token) {
+      switch (request.params.token.split('/')[0]) {
+        case 'revert':
+          return revert(request, reply);
+        case 'confirm':
+          return confirm(request, reply);
+        default:
+          request.logger.warn('Page not found: ', request.url.path);
+          reply.view('errors/not-found', opts).code(404);
+          return;
+      }
+    } else {
+      request.timing.page = 'email-edit';
 
-    var opts = { };
+      opts.title = 'Edit Profile';
 
-    from = options.emailFrom;
-    host = options.canonicalHost;
+      request.metrics.metric({ name: 'email-edit' });
+      return reply.view('user/email-edit', opts);
+    }
+  }
 
-    if (request.method === 'get') {
-      if (request.params && request.params.token) {
-        switch (request.params.token.split('/')[0]) {
-          case 'revert':
-            return revert(request, reply);
-          case 'confirm':
-            return confirm(request, reply);
-          default:
-            request.logger.warn('Page not found: ', request.url.path);
-            reply.view('errors/not-found', opts).code(404);
-            return;
+  if (request.method === 'post' || request.method === 'put') {
+    var data = request.payload,
+        emailTo = data.email;
+
+    if (!emailTo || userValidate.email(emailTo)) {
+      opts.error = {email: true};
+
+      request.timing.page = 'email-edit-error';
+
+      request.metrics.metric({ name: 'email-edit-error' });
+      return reply.view('user/email-edit', opts).code(400);
+    }
+
+    var user = request.auth.credentials;
+
+    UserModel.new(request)
+      .verifyPassword(user.name, data.password, function (err, isCorrect) {
+        if (!isCorrect) {
+          opts.error = {password: true};
+
+          request.timing.page = 'email-edit-error';
+
+          request.metrics.metric({ name: 'email-edit-error' });
+          return reply.view('user/email-edit', opts).code(403);
         }
-      } else {
-        request.timing.page = 'email-edit';
 
-        opts.title = 'Edit Profile';
-
-        request.metrics.metric({ name: 'email-edit' });
-        return reply.view('user/email-edit', opts);
-      }
-    }
-
-    if (request.method === 'post' || request.method === 'put') {
-      var data = request.payload,
-          emailTo = data.email;
-
-      if (!emailTo || userValidate.email(emailTo)) {
-        opts.error = {email: true};
-
-        request.timing.page = 'email-edit-error';
-
-        request.metrics.metric({ name: 'email-edit-error' });
-        return reply.view('user/email-edit', opts).code(400);
-      }
-
-      var user = request.auth.credentials;
-
-      UserModel.new(request)
-        .verifyPassword(user.name, data.password, function (err, isCorrect) {
-          if (!isCorrect) {
-            opts.error = {password: true};
-
-            request.timing.page = 'email-edit-error';
-
-            request.metrics.metric({ name: 'email-edit-error' });
-            return reply.view('user/email-edit', opts).code(403);
-          }
-
-          return handle(request, reply, emailTo);
-        });
-    }
-  };
+        return handle(request, reply, emailTo);
+      });
+  }
 };
 
 // ======== functions ======

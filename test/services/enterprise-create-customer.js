@@ -3,31 +3,29 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config');
-
-config.license.api = 'https://billing.website.com';
-
-var server;
+    server;
 
 before(function (done) {
+  process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9119' });
 
-  server.register([
-    {
-      register: npme,
-      options: config
-    }
-  ], function () {
+  server.register(npme, function () {
     server.start(done);
   });
 });
+
+after(function (done) {
+  delete process.env.LICENSE_API;
+  done()
+});
+
 
 describe('creating a customer in hubspot', function () {
   it('returns a customer when hubspot creates it', function (done) {
@@ -82,4 +80,3 @@ describe('creating a customer in hubspot', function () {
   });
 
 });
-

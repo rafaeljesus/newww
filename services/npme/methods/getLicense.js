@@ -1,10 +1,9 @@
 var request = require('request'),
-    log = require('bole')('npme-get-license'),
-    config = require('../../../config');
+    log = require('bole')('npme-get-license');
 
 module.exports = function (productId, customerEmailOrId, licenseId, callback) {
 
-  var licenseEndpoint = config.license.api + '/license';
+  var licenseEndpoint = process.env.LICENSE_API + '/license';
 
   request.get({
     url: licenseEndpoint + '/' + productId + '/' + customerEmailOrId + '/' + licenseId,

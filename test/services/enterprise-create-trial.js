@@ -3,42 +3,44 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config');
+    trial_length = 30,
+    trial_seats = 50;
 
 var server;
 
 before(function (done) {
+  process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9113' });
 
-  server.register([
-    {
-      register: npme,
-      options: config
-    }
-  ], function () {
+  server.register(npme, function () {
     server.start(done);
   });
 });
 
+after(function (done) {
+  delete process.env.LICENSE_API;
+  done()
+});
+
 describe('creating a trial in hubspot', function () {
   it('creates a new trial if one does not exist', function (done) {
-    var productId = config.npme.product_id,
-        trialLength = config.npme.trial_length,
-        trialSeats = config.npme.trial_seats;
+    var productId = process.env.NPME_PRODUCT_ID,
+        trialLength = trial_length,
+        trialSeats = trial_seats;
 
     var customer = {
       id: '23456',
       email: 'new@bam.com'
     };
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/trial/' + productId + '/' + customer.email)
         .reply(404)
         .put('/trial', {
@@ -58,16 +60,16 @@ describe('creating a trial in hubspot', function () {
   });
 
   it('returns an existing trial if it already exists', function (done) {
-    var productId = config.npme.product_id,
-        trialLength = config.npme.trial_length,
-        trialSeats = config.npme.trial_seats;
+    var productId = process.env.NPME_PRODUCT_ID,
+        trialLength = trial_length,
+        trialSeats = trial_seats;
 
     var customer = {
       id: '23456',
       email: 'existing@bam.com'
     };
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/trial/' + productId + '/' + customer.email)
         .reply(200, {id: 'abcde'})
 
@@ -80,16 +82,16 @@ describe('creating a trial in hubspot', function () {
   });
 
   it('returns an error if hubspot errors out from looking up trial info', function (done) {
-    var productId = config.npme.product_id,
-        trialLength = config.npme.trial_length,
-        trialSeats = config.npme.trial_seats;
+    var productId = process.env.NPME_PRODUCT_ID,
+        trialLength = trial_length,
+        trialSeats = trial_seats;
 
     var customer = {
       id: '23456',
       email: 'error@bam.com'
     };
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/trial/' + productId + '/' + customer.email)
         .reply(400)
 
@@ -102,16 +104,16 @@ describe('creating a trial in hubspot', function () {
   });
 
   it('returns an error if hubspot errors out from creating a trial', function (done) {
-    var productId = config.npme.product_id,
-        trialLength = config.npme.trial_length,
-        trialSeats = config.npme.trial_seats;
+    var productId = process.env.NPME_PRODUCT_ID,
+        trialLength = trial_length,
+        trialSeats = trial_seats;
 
     var customer = {
       id: '23456',
       email: 'error@bam.com'
     };
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/trial/' + productId + '/' + customer.email)
         .reply(404)
         .put('/trial', {

@@ -1,38 +1,28 @@
-
 var User = require('../../models/user'),
     userValidate = require('npm-user-validate'),
     utils = require('../../lib/utils'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    from = "support@npmjs.com";
 
-var from, host;
+module.exports = function (request, reply) {
+  var opts = { };
 
-module.exports = function (options) {
-  return function (request, reply) {
+  if (request.method === 'post') {
+    return handle(request, reply);
+  }
 
-    var opts = { };
+  if (request.method === 'get') {
 
-    from = options.emailFrom;
-    host = options.canonicalHost;
-
-    if (request.method === 'post') {
-      return handle(request, reply);
+    if (request.params && request.params.token) {
+      return processToken(request, reply);
     }
 
-    if (request.method === 'get') {
+    request.timing.page = 'password-recovery-form';
 
-      if (request.params && request.params.token) {
-        return processToken(request, reply);
-      }
-
-      request.timing.page = 'password-recovery-form';
-
-      request.metrics.metric({name: 'password-recovery-form'});
-      return reply.view('user/password-recovery-form', opts);
-    }
+    request.metrics.metric({name: 'password-recovery-form'});
+    return reply.view('user/password-recovery-form', opts);
   };
 };
-
-// ======= functions =======
 
 function processToken(request, reply) {
   var opts = {},

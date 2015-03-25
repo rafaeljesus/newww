@@ -1,19 +1,18 @@
 var log = require('bole')('email-send'),
-    mailConfig = require('../../../config').user.mail,
     MustacheMailer = require('mustache-mailer'),
     tokenFacilitator = require('token-facilitator'),
     path = require('path'),
     _ = require('lodash');
 
-module.exports = function send (template, data, redis) {
+var send = module.exports = function send (template, data, redis) {
 
   var mailOpts = _.extend({}, {
-    from: mailConfig.emailFrom,
-    host: mailConfig.canonicalHost
+    from: "npm <support@npmjs.com>",
+    host: process.env.CANONICAL_HOST
   }, data);
 
   var mm = new MustacheMailer({
-    transport: mailConfig.mailTransportModule,
+    transport: send.mailConfig.mailTransportModule,
     templateDir: path.dirname(require.resolve('npm-email-templates/package.json')),
     tokenFacilitator: new tokenFacilitator({redis: redis})
   });
@@ -28,3 +27,12 @@ module.exports = function send (template, data, redis) {
       throw err;
     });
 };
+
+send.mailConfig = {
+  mailTransportModule: require("nodemailer-ses-transport")({
+    accessKeyId: process.env.MAIL_ACCESS_KEY_ID,
+    secretAccessKey: process.env.MAIL_SECRET_ACCESS_KEY,
+    region: "us-west-2"
+  }),
+  emailFrom: 'npm <support@npmjs.com>'
+}

@@ -1,8 +1,6 @@
 var Hoek = require('hoek'),
     Joi = require('joi');
 
-var config = require('../../config').license;
-
 module.exports = function createHubspotLead (request, reply) {
   var postToHubspot = request.server.methods.npme.sendData;
 
@@ -38,7 +36,7 @@ module.exports = function createHubspotLead (request, reply) {
 
   data = Hoek.applyToDefaults(data, validatedData.value);
 
-  postToHubspot(config.hubspot.form_npme_signup, data, function (er) {
+  postToHubspot(process.env.HUBSPOT_FORM_NPME_SIGNUP, data, function (er) {
     if (er) {
       request.logger.error('Could not send signup data to hubspot');
       request.logger.error(er);

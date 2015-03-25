@@ -8,18 +8,13 @@ var generateCrumb = require("../crumb"),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
-    nock = require("nock");
-
-var _ = require('lodash'),
+    nock = require("nock"),
+    _ = require('lodash'),
     redis = require('redis'),
     spawn = require('child_process').spawn,
-    config = require('../../../config').server.cache,
     fixtures = require('../../fixtures'),
     users = fixtures.users,
     emails = fixtures.email_edit;
-
-    config.port = 6379;
-    config.password = '';
 
 var server, cookieCrumb,
     client, redisProcess,
@@ -36,7 +31,7 @@ var postEmail = function (emailOpts) {
   };
 };
 
-// prepare the server
+
 before(function (done) {
   require('../../mocks/server')(function (obj) {
     server = obj;
@@ -45,10 +40,8 @@ before(function (done) {
 });
 
 before(function (done) {
-  var redisConfig = '--port ' + config.port;
-  redisProcess = spawn('redis-server', [redisConfig]);
-  client = redis.createClient(config.port, config.host);
-  client.auth(config.password, function () {});
+  redisProcess = spawn('redis-server');
+  client = require("redis-url").connect()
   client.on("error", function (err) {
     console.log("Error " + err);
   });

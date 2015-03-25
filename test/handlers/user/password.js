@@ -13,7 +13,7 @@ var generateCrumb = require("../crumb"),
 var server,
     users = require('../../fixtures').users;
 
-// prepare the server
+
 before(function (done) {
   require('../../mocks/server')(function (obj) {
     server = obj;

@@ -1,9 +1,5 @@
-var redis = require("redis"),
-    crypto = require('crypto'),
-    config = require("../config").server.cache,
-    client = redis.createClient(config.port, config.host);
-
-client.auth(config.password, function(){});
+var crypto = require('crypto');
+var client = require('redis-url').connect(process.env.REDIS_URL)
 
 client.on("error", function (err) {
   console.log("Error " + err);

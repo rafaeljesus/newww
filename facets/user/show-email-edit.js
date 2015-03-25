@@ -3,15 +3,10 @@ var _ = require('lodash'),
     crypto = require('crypto'),
     utils = require('../../lib/utils'),
     UserModel = require('../../models/user'),
-    from,
-    host;
+    from = "support@npmjs.com";
 
 module.exports = function (request, reply) {
-
   var opts = { };
-
-  from = "support@npmjs.com";
-  host = process.env.CANONICAL_HOST;
 
   if (request.method === 'get') {
     if (request.params && request.params.token) {

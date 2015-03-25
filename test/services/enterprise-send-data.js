@@ -21,6 +21,11 @@ before(function (done) {
   });
 });
 
+after(function (done) {
+  delete process.env.HUBSPOT_PORTAL_ID;
+  done();
+});
+
 describe('posting a form to hubspot', function () {
   it('is successful when hubspot returns a 204', function (done) {
 

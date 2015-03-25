@@ -1,10 +1,11 @@
 require("./lib/environment")()
 
-var _       = require('lodash'),
-    URL     = require("url"),
-    Hapi    = require('hapi'),
-    replify = require('replify'),
-    bole = require('bole');
+var _         = require('lodash'),
+    URL       = require("url"),
+    Hapi      = require('hapi'),
+    replify   = require('replify'),
+    bole      = require('bole'),
+    TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
 
 var log = bole('server');
 bole.output({
@@ -79,7 +80,7 @@ server.register(require('hapi-auth-cookie'), function (err) {
   if (err) { throw err; }
 
   var cache = server.cache({
-    expiresIn: 14 * 24 * 60 * 60 * 1000, // 2 wks
+    expiresIn: TWO_WEEKS,
     segment: '|sessions'
   });
 

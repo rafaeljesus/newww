@@ -1,6 +1,3 @@
-var config = require('../config');
-
-// all those plugins
 module.exports = [
   {
     register: require('crumb'),

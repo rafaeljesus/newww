@@ -17,16 +17,17 @@
   {{/unless}}
 
   {{#if package.scoped}}
-    <div class="centered">
+    <form class="centered" method="POST" action="/package/{{package.name}}">
       <input
         type="checkbox"
         class="toggle"
-        id="package-access-toggle"
-        value="private"
+        name="private"
+        id="package-access-toggle" 
+        value="true"
         {{#unless userHasWriteAccessToPackage}}disabled="disabled"{{/unless}}
         {{#if package.private}}checked="checked"{{/if}} >
       <label for="package-access-toggle"><span></span></label>
-    </div>
+    </form>
   {{/if}}
 
   <p class="error" style="display:none"></p>

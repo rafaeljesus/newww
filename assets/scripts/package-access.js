@@ -8,6 +8,7 @@ var updateInputsAndHandlers = function() {
   $('#add-collaborator').submit(addCollaborator)
   $('.update-collaborator input').change(updateCollaborator)
   $('.remove-collaborator').submit(removeCollaborator)
+  $('#package-access-toggle').change(togglePackageAccess)
   $("[data-enable-permission-togglers='true'] input").attr('disabled', false)
   $("[data-enable-deletion='true'] form.remove-collaborator").css({display: "block"})
   $("#add-collaborator input[name='name']").val("")
@@ -49,6 +50,21 @@ var removeCollaborator = function(e) {
     .done(successHandler)
     .fail(errorHandler)
 }
+
+var togglePackageAccess = function(e) {
+  e.preventDefault()
+  var $form = $(this).parents("form")
+  var opts = formToRequestOptions($form)
+  opts.data = {
+    package: {private: $(this).prop("checked")},
+    crumb: window.crumb
+  }
+  console.log(opts)
+  $.ajax(opts)
+    .done(successHandler)
+    .fail(errorHandler)
+}
+
 
 var formToRequestOptions = function($el) {
   return {

@@ -14,6 +14,16 @@ exports.bob = {
   deleted: null
 };
 
+exports.bcoe = {
+  "name": "bcoe",
+  "email": "ben@npmjs.com",
+  "email_verified": null,
+  "verification_key": "d90f1481-387d-4f20-9e38-7073acd84510",
+  "created": "2014-11-21T19:50:33.098Z",
+  "updated": "2015-03-20T22:33:07.493Z",
+  "deleted": null
+}
+
 exports.ralph_the_reader = {
   name: 'ralph_the_reader',
   email: 'ralph@reader.com',

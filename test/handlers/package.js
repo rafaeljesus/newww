@@ -322,7 +322,7 @@ describe("package handler", function(){
     it('is active if the user is logged in and has starred the package', function (done) {
       var options = {
         url: '/package/browserify',
-        credentials: fixtures.users.bob
+        credentials: fixtures.users.bcoe
       };
 
       var packageMock = nock("https://user-api-example.com")

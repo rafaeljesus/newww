@@ -22,7 +22,7 @@
         <input
           type="radio"
           name="permissions"
-          value="read-only"
+          value="read"
           {{#unless write}}checked="checked"{{/unless}}
           disabled="disabled">
         <span>read-only</span>
@@ -32,7 +32,7 @@
         <input
           type="radio"
           name="permissions"
-          value="read-write"
+          value="write"
           {{#if write}}checked="checked"{{/if}}
           disabled="disabled">
         <span>read-write</span>

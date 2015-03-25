@@ -21,7 +21,6 @@ describe("name", function () {
 
 });
 
-
 describe("scope", function () {
 
   it("sets `scoped` to true for scoped packages", function (done) {
@@ -46,27 +45,13 @@ describe("scope", function () {
 
 describe("publisher", function () {
 
-  it("is in maintainers list if it is in the maintainers list", function (done) {
-    var package = present({
-      "versions": ["1.3.0"],
-      "name": "hello",
-      "publisher": {
-        "name": "ohai",
-        "email": "ohai@email.com"
-      },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
-      "version": "1.3.0",
-      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    });
-    expect(package.publisherIsInMaintainersList).to.exist();
-    expect(package.publisherIsInMaintainersList).to.be.true();
+  it("is in collaborators list if they are a collaborator", function (done) {
+    var package = present(fixtures.packages.browserify);
+    expect(package.lastPublisherIsACollaborator).to.be.true();
     done();
   });
 
-  it("is not in the maintainers list if it is not in the maintainers list", function (done) {
+  it("is not in the collaborators list if they are not a collaborator", function (done) {
     var package = present({
       "versions": ["0.1.0"],
       "name": "badpkg",
@@ -74,15 +59,16 @@ describe("publisher", function () {
         "name": "badactor",
         "email": "badactor@email.com"
       },
-      "maintainers": [{
-        "name": "innocentperson",
-        "email": "innocentperson@email.com"
-      }],
+      "collaborators": {
+        "innocentperson": {
+          "name": "innocentperson",
+          "email": "innocentperson@email.com"
+        }
+      },
       "version": "0.1.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
-    expect(package.publisherIsInMaintainersList).to.exist();
-    expect(package.publisherIsInMaintainersList).to.be.false();
+    expect(package.lastPublisherIsACollaborator).to.be.false();
     done();
   });
 });
@@ -140,10 +126,12 @@ describe("avatar", function () {
         "name": "ohai",
         "email": "ohai@email.com"
       },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
+      "collaborators": {
+        "ohai": {
+          "name": "ohai",
+          "email": "ohai@email.com"
+        }
+      },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
@@ -155,26 +143,13 @@ describe("avatar", function () {
     done();
   });
 
-  it("is created for the maintainers", function (done) {
-    var package = present({
-      "versions": ["1.3.0"],
-      "name": "hello",
-      "publisher": {
-        "name": "ohai",
-        "email": "ohai@email.com"
-      },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
-      "version": "1.3.0",
-      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    });
-    expect(package.maintainers[0].avatar).to.exist();
-    expect(package.maintainers[0].avatar).to.be.an.object();
-    expect(package.maintainers[0].avatar.small).to.exist();
-    expect(package.maintainers[0].avatar.medium).to.exist();
-    expect(package.maintainers[0].avatar.large).to.exist();
+  it("is created for collaborators", function (done) {
+    var package = present(fixtures.packages.browserify);
+    var avatar = package.collaborators.maxogden.avatar;
+    expect(avatar).to.be.an.object();
+    expect(avatar.small).to.exist();
+    expect(avatar.medium).to.exist();
+    expect(avatar.large).to.exist();
     done();
   });
 });
@@ -184,14 +159,6 @@ describe("OSS license", function () {
     var package = present({
       "versions": ["1.3.0"],
       "name": "hello",
-      "publisher": {
-        "name": "ohai",
-        "email": "ohai@email.com"
-      },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
       "version": "1.3.0",
       "license": "MIT",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
@@ -223,10 +190,6 @@ describe("different types of deps", function () {
         "async": "*",
         "tap": "0.4"
       },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
@@ -261,10 +224,6 @@ describe("different types of deps", function () {
         "async": "*",
         "tap": "0.4"
       },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
@@ -294,10 +253,6 @@ describe("different types of deps", function () {
         "async": "*",
         "tap": "0.4"
       },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
@@ -316,10 +271,6 @@ describe("different types of deps", function () {
         "name": "ohai",
         "email": "ohai@email.com"
       },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
@@ -343,19 +294,15 @@ describe("repo url", function () {
         "name": "ohai",
         "email": "ohai@email.com"
       },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
 
-    expect(package.repository.url).to.not.include('git');
+    expect(package.repository.url).to.equal('http://website.com/ohai');
     done();
   });
 
-  it("doesn't change if it's not a GH url", function (done) {
+  it("cleans up github URLs", function (done) {
     var package = present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -367,17 +314,32 @@ describe("repo url", function () {
         "name": "ohai",
         "email": "ohai@email.com"
       },
-      "maintainers": [{
-        "name": "ohai",
-        "email": "ohai@email.com"
-      }],
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     });
 
-    expect(package.repository.url).to.include('https');
-    expect(package.repository.url).to.include('github');
-    expect(package.repository.url).to.not.include('.git');
+    expect(package.repository.url).to.equal('https://github.com/someone/ohai');
     done();
   });
+
+  it("converts git:// URLS to https so they can be linked to", function (done) {
+    var package = present({
+      "versions": ["1.3.0"],
+      "name": "hello",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/someone/ohai.git"
+      },
+      "publisher": {
+        "name": "ohai",
+        "email": "ohai@email.com"
+      },
+      "version": "1.3.0",
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
+    });
+
+    expect(package.repository.url).to.equal('https://github.com/someone/ohai');
+    done();
+  });
+
 });

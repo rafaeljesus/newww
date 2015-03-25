@@ -72,8 +72,8 @@ package.show = function(request, reply) {
 
       package.isCollaboratedOnByUser = Boolean(process.env.FEATURE_ACCESS)
         && Boolean(loggedInUser)
-        && package.maintainers
-        && pluck(package.maintainers, 'name').indexOf(loggedInUser.name) > -1
+        && (typeof package.collaborators === "object")
+        && (loggedInUser.name in package.collaborators)
 
       context.package = package
       return reply.view('package/show', context);

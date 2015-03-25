@@ -62,6 +62,12 @@ describe("package handler", function(){
       done()
     })
 
+    it("renders the package template", function(done){
+      var source = resp.request.response.source;
+      expect(source.template).to.equal('package/show');
+      done();
+    });
+
     it('adds download data to the view context', function (done) {
       var downloads = resp.request.response.source.context.package.downloads;
       expect(downloads).to.be.an.object();
@@ -92,9 +98,11 @@ describe("package handler", function(){
       done();
     });
 
-    it("renders the package template", function(done){
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('package/show');
+    it('renders a list of collaborators', function (done) {
+      var package = resp.request.response.source.context.package;
+      expect(Object.keys(package.collaborators).length).to.equal(5)
+      expect($("ul.collaborators > li").length).to.equal(5)
+      expect($("ul.collaborators > li > a[href='/~substack']").length).to.equal(1)
       done();
     });
 

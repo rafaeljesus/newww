@@ -1,12 +1,14 @@
 var fmt = require('util').format,
     url = require('url'),
     isUrl = require('is-url'),
-    ghurl = require('github-url-from-git'),
     gh = require('github-url-to-object'),
-    avatar = require("../lib/avatar"),
-    marky = require('marky-markdown');
+    marky = require('marky-markdown'),
+    presentUser = require("./user"),
+    presentCollaborator = require("./collaborator");
 
 module.exports = function (package) {
+
+  delete package.maintainers
 
   package.scoped = package.name.charAt(0) === "@"
   package.encodedName = package.name.replace("/", "%2F")
@@ -15,19 +17,39 @@ module.exports = function (package) {
     return Error('invalid package: '+ package.name);
   }
 
-  // check if publisher is in maintainers list
-  package.publisherIsInMaintainersList = isPubInMaint(package);
-
   setLicense(package);
-
-  package.showMaintainers = package.maintainers &&
-                         package.maintainers.length > 1 &&
-                         package.publisherIsInMaintainersList;
 
   package.versionsCount = package.versions && Object.keys(package.versions).length;
   package.singleVersion = package.versionsCount === 1;
 
-  gravatarPeople(package);
+  if (package.publisher) {
+    package.publisher = presentUser(package.publisher);
+  }
+
+  /* here's the potential situation: let's say I'm a hacker and I make a
+  package that does Something Evil™ then I add you as a collaborators `npm
+  adduser zeke evil-package` and then I publish the package and then I remove
+  myself from the package so it looks like YOU are the one who made the
+  package well, that's nasty so we blocked that from showing because
+  hypothetically your friends would be like, hey! this evil-package from zeke
+  looks awesome, let me use it! and then I get all their bank account numbers
+  and get super duper rich and become a VC and create LinkedIn for Cats */
+
+  package.lastPublisherIsACollaborator = Boolean(package.publisher)
+    && Boolean(package.publisher.name)
+    && Boolean(typeof package.collaborators === "object")
+    && Boolean(package.collaborators[package.publisher.name])
+
+  package.showCollaborators = package.collaborators
+    && Object.keys(package.collaborators).length
+    && package.lastPublisherIsACollaborator;
+
+  if (package.collaborators) {
+    Object.keys(package.collaborators).forEach(function(name){
+      var collaborator = package.collaborators[name];
+      collaborator = presentCollaborator(collaborator);
+    })
+  }
 
   if (package.dependents) {
     package.dependents = processDependents(package.dependents, '/browse/depended/', package.name);
@@ -53,8 +75,8 @@ module.exports = function (package) {
   }
 
   // repository: sanitize into https URL if it's a github repo
-  if (package.repository && package.repository.url && ghurl(package.repository.url)) {
-    package.repository.url = ghurl(package.repository.url);
+  if (package.repository && package.repository.url && gh(package.repository.url)) {
+    package.repository.url = gh(package.repository.url).https_url;
   }
 
   // Create `npm install foo` command
@@ -90,39 +112,6 @@ module.exports = function (package) {
 
   return package;
 };
-
-/* here's the potential situation: let's say I'm a hacker and I make a
-package that does Something Evil™ then I add you as a maintainer `npm
-adduser zeke evil-package` and then I publish the package and then I remove
-myself from the package so it looks like YOU are the one who made the
-package well, that's nasty so we blocked that from showing because
-hypothetically your friends would be like, hey! this evil-package from zeke
-looks awesome, let me use it! and then I get all their bank account numbers
-and get super duper rich and become a VC and create LinkedIn for Cats */
-
-function isPubInMaint (package) {
-  if (package.maintainers && package.publisher) {
-    for (var i = 0; i < package.maintainers.length; i++) {
-      if (package.maintainers[i].name === package.publisher.name) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
-function gravatarPeople (package) {
-  if (package.publisher) {
-    package.publisher.avatar = avatar(package.publisher.email);
-  }
-
-  if (Array.isArray(package.maintainers)) {
-    package.maintainers.forEach(function (maintainer) {
-      maintainer.avatar = avatar(maintainer.email);
-    });
-  }
-}
 
 function setLicense (package) {
   var license = package.license;

@@ -81,10 +81,10 @@
 
   </ul>
 
-  {{#if showMaintainers}}
-    <h3>Maintainers</h3>
-    <ul class="humans">
-      {{#each maintainers}}
+  {{#if showCollaborators}}
+    <h3>Collaborators</h3>
+    <ul class="humans collaborators">
+      {{#each collaborators}}
         <li>
           <a href="/~{{name}}" rel="tipsy" title="{{name}}">
             {{#if avatar.medium}}<img src="{{avatar.medium}}" alt="{{name}}">{{/if}}

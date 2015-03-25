@@ -89,5 +89,9 @@ module.exports = [
     ],
     method: "DELETE",
     handler: require('../handlers/collaborator').del
+  },{
+    path: "/package/{scope}/{project}",
+    method: "POST",
+    handler: require('../handlers/package').update
   }
 ]

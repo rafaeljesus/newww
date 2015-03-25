@@ -63,8 +63,14 @@ Package.prototype.update = function(name, body) {
       method: "POST",
       url: url,
       json: true,
-      body: body
+      body: _.pick(body, 'private') // remove all other props
     };
+
+    // hapi is converting the private boolean to a string
+    // so... yeah.
+    if (opts.body && 'private' in opts.body) {
+      opts.body.private = String(opts.body.private) === "true"
+    }
 
     if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
@@ -79,7 +85,7 @@ Package.prototype.update = function(name, body) {
     });
   })
   .then(function(_package) {
-    return decorate(_package);
+    return _package ? decorate(_package) : {package: name, updated: true};
   });
 
 };

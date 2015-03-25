@@ -1,4 +1,5 @@
 var fixtures = require("../fixtures"),
+    generateCrumb = require("../handlers/crumb.js"),
     nock = require("nock"),
     cheerio = require("cheerio"),
     Code = require('code'),
@@ -460,6 +461,43 @@ describe("package handler", function(){
       });
     });
 
+  });
+
+
+  describe('POST /package/@wrigley_the_writer/scoped_public', function () {
+    var options
+
+    beforeEach(function(done){
+      generateCrumb(server, function(crumb) {
+        options = {
+          method: "post",
+          url: "/package/@wrigley_the_writer/scoped_public",
+          credentials: fixtures.users.mikeal,
+          payload: {
+            crumb: crumb,
+            package: {
+              private: true
+            }
+          },
+          headers: {cookie: 'crumb='+crumb}
+        }
+        done()
+      })
+    })
+
+    it('calls back with a JSON object containing the updated package', function (done) {
+      var mock = nock("https://user-api-example.com")
+        .post('/package/@wrigley_the_writer%2Fscoped_public', {private: true})
+        .reply(200);
+
+      server.inject(options, function (resp) {
+        mock.done()
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
 
   });
+
+
 })

@@ -23,7 +23,7 @@ collaborator.add = function(request, reply) {
       return reply(err)
     }
     return reply({
-      collaborator: decorate(collaborator[request.payload.collaborator.name], request.packageName)
+      collaborator: decorate(collaborator, request.packageName)
     });
   });
 };
@@ -36,20 +36,18 @@ collaborator.update = function(request, reply) {
       return reply(err)
     }
     return reply({
-      collaborator: collaborator
+      collaborator: decorate(collaborator, request.packageName)
     });
   });
 };
 
 collaborator.del = function(request, reply) {
   Collaborator.new(request)
-  .del(request.packageName, request.params.username, function(err, collaborator) {
+  .del(request.packageName, request.params.username, function(err, result) {
     if (err) {
       request.logger.error(err);
       return reply(err)
     }
-    return reply({
-      username: request.params.username
-    })
+    return reply(result)
   });
 };

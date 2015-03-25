@@ -121,7 +121,7 @@ Collaborator.prototype.del = function(package, collaboratorName, callback) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
-      return resolve(decorate(body), package);
+      return resolve({package: package, deleted: true});
     });
   }).nodeify(callback);
 };

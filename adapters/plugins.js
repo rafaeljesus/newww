@@ -14,7 +14,7 @@ module.exports = [
   require('../services/user'),
   require('../services/corporate'),
   require('../services/email'),
-  require('../services/npme')
+  require('../services/npme'),
   {
     register: require('./bonbon'),
     options: {

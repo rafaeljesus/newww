@@ -16,6 +16,8 @@ module.exports = function (done) {
     layout: 'default'
   });
 
+  server.stamp = require("../../lib/stamp")()
+  server.gitHead = require("../../lib/git-head")()
   server.methods = require('./server-methods')(server);
 
   server.register(require('hapi-auth-cookie'), function (err) {

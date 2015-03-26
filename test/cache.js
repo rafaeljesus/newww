@@ -14,6 +14,11 @@ var Code = require('code'),
 
 var cache = require('../lib/cache');
 
+before(function (done)
+{
+    cache.disconnect(done);
+});
+
 describe('lib/cache.js', function()
 {
     describe('configure()', function()
@@ -309,7 +314,23 @@ describe('lib/cache.js', function()
             });
         });
 
-        it('responds with an error when the remote service responds with 404', function(done)
+        it('responds with an error when the remote service responds with 400', function(done)
+        {
+            var opts = { url: 'http://example.com/bad-request' };
+            var mock = nock('http://example.com')
+                .get('/bad-request')
+                .reply(400);
+
+            cache.get(opts, function(err, data)
+            {
+                mock.done();
+                expect(err).to.exist();
+                expect(err.message).to.equal('unexpected status code 400');
+                done();
+            });
+        });
+
+        it('responds with a "not found" error when the remote service responds with 404', function(done)
         {
             var opts = { url: 'http://example.com/not-found' };
             var mock = nock('http://example.com')
@@ -320,7 +341,7 @@ describe('lib/cache.js', function()
             {
                 mock.done();
                 expect(err).to.exist();
-                expect(err.message).to.equal('unexpected status code 404');
+                expect(err.message).to.equal('404 - not found');
                 done();
             });
         });
@@ -425,8 +446,27 @@ describe('lib/cache.js', function()
         });
     });
 
+    describe('disconnect()', function ()
+    {
+        it('disconnects the cache', function (done)
+        {
+            cache.configure({ redis: 'redis://localhost:6379' });
+            cache.redis.keys('*', function (err, keys)
+            {
+                expect(err).to.not.exist();
+                expect(keys).to.exist();
+                cache.disconnect(function ()
+                {
+                    expect(cache.redis).to.be.null();
+                    done();
+                });
+            });
+        });
+    });
+
     after(function(done)
     {
+        cache.configure({ redis: 'redis://localhost:6379' });
         cache.redis.keys('fred:*', function(err, list)
         {
             expect(err).to.not.exist();

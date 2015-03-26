@@ -7,6 +7,7 @@ var Promise = require('bluebird');
 var request = require('request');
 var userValidate = require('npm-user-validate');
 
+
 var User = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API || "https://user-api-example.com",
@@ -91,6 +92,10 @@ User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
   };
 };
 
+User.prototype.drop = function drop (name, callback) {
+  return cache.drop(this.generateUserACLOptions(name), callback);
+};
+
 User.prototype.get = function(name, options, callback) {
   var _this = this;
   var user;
@@ -101,10 +106,27 @@ User.prototype.get = function(name, options, callback) {
   }
 
   return new Promise(function(resolve, reject) {
-    cache.get(_this.generateUserACLOptions(name), function(err, body){
-      if (err) { return reject(err); }
-      return resolve(body);
-    });
+
+    if (process.env.USE_CACHE) {
+      cache.get(_this.generateUserACLOptions(name), function(err, body){
+        if (err) { return reject(err); }
+        return resolve(body);
+      });
+    } else {
+      request(_this.generateUserACLOptions(name), function(err, resp, body){
+        if (err) { return reject(err); }
+
+        if (resp.statusCode === 404) {
+          return callback(new Error('404 - not found'));
+        }
+
+        if (resp.statusCode !== 200) {
+          return callback(new Error('unexpected status code ' + resp.statusCode));
+        }
+
+        return resolve(body);
+      });
+    }
   })
   .then(function(_user){
     user = decorate(_user);

@@ -15,7 +15,7 @@ module.exports = function(request, reply) {
 
       if (err) {
         request.logger.error(err);
-        if (err.statusCode === 404) {
+        if (err.message === '404 - not found') {
           return reply.view('errors/user-not-found', opts).code(404);
         } else {
           return reply.view('errors/internal', opts).code(500);

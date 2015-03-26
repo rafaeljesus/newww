@@ -4,10 +4,13 @@ var Code = require('code'),
     describe = lab.experiment,
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
+    before = lab.before,
+    after = lab.after,
     it = lab.test,
     expect = Code.expect,
     nock = require("nock"),
-    sinon = require("sinon");
+    sinon = require("sinon"),
+    cache = require("../../lib/cache");
 
 var fixtures = {
   users: require("../fixtures/users")
@@ -27,6 +30,21 @@ beforeEach(function (done) {
 afterEach(function (done) {
   User = null;
   done();
+});
+
+before(function (done) {
+  process.env.USE_CACHE = 'true';
+  cache.configure({
+    redis: "redis://localhost:6379",
+    ttl: 1,
+    prefix: "cache:"
+  });
+  done();
+});
+
+after(function (done) {
+  delete process.env.USE_CACHE;
+  cache.disconnect(done);
 });
 
 describe("User", function(){
@@ -85,6 +103,16 @@ describe("User", function(){
     });
   });
 
+  describe("generate options for user ACL", function (done) {
+    it("formats the options object for request/cache", function (done) {
+      var obj = User.generateUserACLOptions('foobar');
+      expect(obj).to.be.an.object();
+      expect(obj.url).to.equal('https://user.com/user/foobar');
+      expect(obj.json).to.be.true();
+      done();
+    });
+  });
+
   describe("get()", function() {
 
     it("makes an external request for /{user}", function(done) {
@@ -101,15 +129,12 @@ describe("User", function(){
     });
 
     it("returns the response body in the callback", function(done) {
-      var userMock = nock(User.host)
-        .get('/user/bob')
-        .reply(200, fixtures.users.bob);
+      // no userMock here because yay caching
 
       User.get(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
         expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
-        userMock.done();
         done();
       });
     });
@@ -121,8 +146,7 @@ describe("User", function(){
 
       User.get('foo', function(err, body) {
         expect(err).to.exist();
-        expect(err.message).to.equal("error getting user foo");
-        expect(err.statusCode).to.equal(404);
+        expect(err.message).to.equal("404 - not found");
         expect(body).to.not.exist();
         userMock.done();
         done();
@@ -186,12 +210,7 @@ describe("User", function(){
         bearer: "rockbot"
       });
 
-      var userMock = nock(User.host)
-        .get('/user/eager-beaver')
-        .reply(200, {
-          name: "eager-beaver",
-          email: "eager-beaver@example.com"
-        });
+      // no userMock here because yay caching
 
       var starMock = nock(User.host, {
           reqheaders: {bearer: 'rockbot'}
@@ -213,7 +232,6 @@ describe("User", function(){
 
       User.get('eager-beaver', {stars: true, packages: true}, function(err, user) {
         expect(err).to.not.exist();
-        userMock.done();
         packageMock.done();
         starMock.done();
         expect(user.name).to.equal('eager-beaver');

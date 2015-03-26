@@ -16,7 +16,17 @@ module.exports = function(request, reply) {
     userHasWriteAccessToPackage: false,
   }
 
-  Package.get(request.packageName)
+  var promise = Package.get(request.packageName)
+  .catch(function(err){
+    request.logger.error("unable to get package " + request.packageName)
+    request.logger.error(err)
+    if (err.statusCode === 404) {
+      return reply.view('errors/not-found').code(404);
+    } else {
+      reply.view('errors/internal', context).code(500);
+    }
+    return promise.cancel();
+  })
   .then(function(pkg){
     package = omit(pkg, ['readme', 'versions']);
     return Collaborator.list(package.name)

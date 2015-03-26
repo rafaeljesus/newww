@@ -5,7 +5,7 @@
 </h1>
 <p class="package-description">{{{description}}}</p>
 
-{{> package-header this}}
+{{!-- {{> package-header this}} --}}
 
 <div class="content-column">
 
@@ -87,7 +87,10 @@
   </ul>
 
   {{#if showCollaborators}}
-    <h3>Collaborators</h3>
+    <h3>
+      <a href="/package/{{name}}/access">Collaborators</a>
+    </h3>
+
     <ul class="humans collaborators">
       {{#each collaborators}}
         <li>
@@ -96,6 +99,12 @@
           </a>
         </li>
       {{/each}}
+
+      {{#if isCollaboratedOnByUser}}
+        <li>
+          <a class="add" rel="tipsy-not" title="add a collaborator" href="/package/{{name}}/access">+</a>
+        </li>
+      {{/if}}
     </ul>
   {{/if}}
 

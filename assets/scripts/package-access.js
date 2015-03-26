@@ -43,9 +43,11 @@ var updateCollaborator = function(e) {
 var removeCollaborator = function(e) {
   e.preventDefault()
   var opts = formToRequestOptions($(this))
+  var username = opts.url.match(/\/(\w+)$/)[1]
+  $("#collaborator-"+username).remove()
   $.ajax(opts)
     .done(function(data){
-      $("#collaborator-"+data.username).slideUp()
+      $("#collaborator-"+data.username).remove() // just in case
     })
     .done(successHandler)
     .fail(errorHandler)

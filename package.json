@@ -93,6 +93,7 @@
     "schemeless": "^1.0.0",
     "scooter": "^2.0.1",
     "similarity": "^1.0.1",
+    "steeltoe": "^1.0.1",
     "stripe": "^2.7.3",
     "stylus": "^0.45.0",
     "tipsy-browserify": "^1.0.0",

@@ -41,7 +41,7 @@
     "deck": "0.0.4",
     "elasticsearch": "^2.2.0",
     "github-url-to-object": "^1.4.0",
-    "gravatar": "^1.0.6",
+    "gravatar": "^1.1.0",
     "green-mesa-hashchange": "^0.1.4",
     "handlebars": "^2.0.0-alpha.2",
     "handlebars-helper-pluralize": "^1.0.2",

@@ -61,9 +61,14 @@ package.show = function(request, reply) {
         return promise.cancel();
       }
 
+      return Package.list({dependency: name, limit: 50})
+    })
+    .then(function(dependents) {
+      package.dependents = dependents
       return Download.getAll(package.name)
     })
     .then(function(downloads) {
+
       package.downloads = downloads
 
       package.isStarred = Boolean(loggedInUser)

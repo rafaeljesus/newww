@@ -189,13 +189,13 @@ describe("package access", function(){
         })
 
         it("makes collaborator name a required input", function(done){
-          expect($("#add-collaborator input[name='name'][required='required']").length)
+          expect($("#add-collaborator input[name='collaborator.name'][required='required']").length)
             .to.equal(1)
           done()
         })
 
         it("defaults to `write` permissions when adding new collaborators", function(done){
-          expect($("#add-collaborator input[name='permissions'][type='hidden']").val())
+          expect($("#add-collaborator input[name='collaborator.permissions'][type='hidden']").val())
             .to.equal("write")
           done()
         })
@@ -364,11 +364,12 @@ describe("package access", function(){
         done()
       })
 
-      it("renders enabled read-only/read-write collaborator toggles", function(done){
+      it("renders disabled read-only/read-write collaborator toggles", function(done){
         expect($("tr.collaborator").length).to.equal(2)
-        expect($("#collaborators").data('enablePermissionTogglers')).to.equal(true)
+        expect($("#collaborators").data('enablePermissionTogglers')).to.equal(false)
         done()
       })
+
 
       describe("new collaborator form", function() {
 
@@ -384,13 +385,13 @@ describe("package access", function(){
         })
 
         it("makes collaborator name a required input", function(done){
-          expect($("#add-collaborator input[name='name'][required='required']").length)
+          expect($("#add-collaborator input[name='collaborator.name'][required='required']").length)
             .to.equal(1)
           done()
         })
 
         it("defaults to `write` permissions when adding new collaborators", function(done){
-          expect($("#add-collaborator input[name='permissions'][type='hidden']").val())
+          expect($("#add-collaborator input[name='collaborator.permissions'][type='hidden']").val())
             .to.equal("write")
           done()
         })
@@ -517,7 +518,7 @@ describe("package access", function(){
       })
 
       it("defaults to `read` permissions when adding new collaborators", function(done){
-        expect($("#add-collaborator input[name='permissions'][type='hidden']").val())
+        expect($("#add-collaborator input[name='collaborator.permissions'][type='hidden']").val())
           .to.equal("read")
         done()
       })

@@ -96,6 +96,11 @@ describe("package handler", function(){
       done();
     });
 
+    it('renders dependents', function (done) {
+      expect($("p.dependents a").length).to.equal(51)
+      done();
+    });
+
     it('renders lastPublishedAt and sets data-date attribute', function (done) {
       var package = resp.request.response.source.context.package;
       expect(package.lastPublishedAt).to.exist();

@@ -3,6 +3,11 @@ var Customer = require("../models/customer").new();
 var config = require("../config").license.hubspot;
 
 billing.getBillingInfo = function (request, reply) {
+
+  if (!process.env.FEATURE_ACCESS) {
+    return reply.view('errors/not-found').code(404);
+  }
+
   var opts = {
     namespace: 'billing',
     title: 'Billing',
@@ -21,6 +26,11 @@ billing.getBillingInfo = function (request, reply) {
 };
 
 billing.updateBillingInfo = function(request, reply) {
+
+  if (!process.env.FEATURE_ACCESS) {
+    return reply.view('errors/not-found').code(404);
+  }
+
   var sendToHubspot = request.server.methods.npme.sendData;
 
   var billingInfo = {
@@ -48,6 +58,11 @@ billing.updateBillingInfo = function(request, reply) {
 };
 
 billing.deleteBillingInfo = function(request, reply) {
+
+  if (!process.env.FEATURE_ACCESS) {
+    return reply.view('errors/not-found').code(404);
+  }
+
   Customer.del(request.auth.credentials.name, function(err, customer) {
     if (err) {
       request.logger.error(err);

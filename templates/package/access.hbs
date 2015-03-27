@@ -21,8 +21,8 @@
       <input
         type="checkbox"
         class="toggle"
-        name="private"
-        id="package-access-toggle" 
+        name="package.private"
+        id="package-access-toggle"
         value="true"
         {{#unless userHasWriteAccessToPackage}}disabled="disabled"{{/unless}}
         {{#if package.private}}checked="checked"{{/if}} >
@@ -36,8 +36,8 @@
     class="ruled humans"
     id="collaborators"
     data-enable-permission-togglers="{{enablePermissionTogglers}}"
-    data-enable-deletion="{{userHasWriteAccessToPackage}}"
-  >
+    data-enable-deletion="{{userHasWriteAccessToPackage}}">
+
     <thead>
       <tr>
         <th>&nbsp;</th>
@@ -59,8 +59,8 @@
           </td>
           <td colspan="1">
             <form id="add-collaborator" method="PUT" action="/package/{{package.name}}/collaborators">
-              <input type="hidden" name="permissions" value="{{#if package.private}}read{{else}}write{{/if}}">
-              <input type="text" name="name" required="required" value="" placeholder="Add a collaborator...">
+              <input type="hidden" name="collaborator.permissions" value="{{#if package.private}}read{{else}}write{{/if}}">
+              <input type="text" name="collaborator.name" required="required" value="" tabindex="2" placeholder="Add a collaborator...">
             </form>
           </td>
         </tr>

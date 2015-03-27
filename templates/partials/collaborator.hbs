@@ -16,12 +16,12 @@
       action="/package/{{packageName}}/collaborators/{{name}}"
       method="POST">
 
-      <input type="hidden" name="name" value="{{name}}">
+      <input type="hidden" name="collaborator.name" value="{{name}}">
 
       <label class="wrapping-hidden-radio">
         <input
           type="radio"
-          name="permissions"
+          name="collaborator.permissions"
           value="read"
           {{#unless write}}checked="checked"{{/unless}}
           disabled="disabled">
@@ -31,7 +31,7 @@
       <label class="wrapping-hidden-radio">
         <input
           type="radio"
-          name="permissions"
+          name="collaborator.permissions"
           value="write"
           {{#if write}}checked="checked"{{/if}}
           disabled="disabled">

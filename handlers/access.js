@@ -43,7 +43,7 @@ module.exports = function(request, reply) {
       return reply.view('errors/not-found').code(404);
     }
 
-    context.enablePermissionTogglers = package.scoped
+    context.enablePermissionTogglers = package.private
       && context.userHasWriteAccessToPackage
 
     context.package = package

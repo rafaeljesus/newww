@@ -359,7 +359,7 @@ describe("package handler", function(){
     });
   });
 
-  describe('package nav', function () {
+  describe('add collaborator link', function () {
     var packageMock
     var downloadsMock
 
@@ -398,7 +398,7 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.be.true();
         var $ = cheerio.load(resp.result)
-        expect($(".secondary-nav")).to.have.length(1);
+        expect($("ul.collaborators a.add")).to.have.length(1);
         done();
       });
 
@@ -419,6 +419,8 @@ describe("package handler", function(){
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.equal(false);
+        var $ = cheerio.load(resp.result)
+        expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });
     });
@@ -437,7 +439,7 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.equal(false);
         var $ = cheerio.load(resp.result)
-        expect($(".secondary-nav")).to.have.length(0);
+        expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });
     });
@@ -456,7 +458,7 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.equal(false);
         var $ = cheerio.load(resp.result)
-        expect($(".secondary-nav")).to.have.length(0);
+        expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });
     });

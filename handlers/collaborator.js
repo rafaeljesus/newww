@@ -1,6 +1,7 @@
-var collaborator = module.exports = {};
 var Collaborator = require("../models/collaborator")
 var decorate = require("../presenters/collaborator")
+
+var collaborator = module.exports = {};
 
 collaborator.list = function(request, reply) {
   Collaborator.new(request)
@@ -18,10 +19,20 @@ collaborator.list = function(request, reply) {
 collaborator.add = function(request, reply) {
   Collaborator.new(request)
   .add(request.packageName, request.payload.collaborator, function(err, collaborator) {
+
+    // 
     if (err) {
       request.logger.error(err);
-      return reply(err)
+      if (err.statusCode === 404) {
+        return reply({
+          statusCode: 404,
+          message: "user not found: "+request.payload.collaborator.name
+        }).code(404)
+      } else {
+        return reply(err)
+      }
     }
+
     return reply({
       collaborator: decorate(collaborator, request.packageName)
     });

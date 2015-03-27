@@ -63,6 +63,14 @@ exports.register = function(server, options, next) {
         break;
     }
 
+    // Add feature flags to view context
+    if (process.env.FEATURE_ACCESS) {
+      var context = Hoek.reach(request, 'response.source.context');
+      if (context) {
+        context.features = {access: true}
+      }
+    }
+
     // Allow npm employees to view JSON context for any page
     // by adding a `?json` query parameter to the URL
     if ('json' in request.query) {

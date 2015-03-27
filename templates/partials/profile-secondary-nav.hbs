@@ -3,6 +3,8 @@
     <a href="/profile-edit">profile</a>
     <a href="/email-edit">email</a>
     <a href="/password">password</a>
-    <a href="/settings/billing">billing</a>
+    {{#if features.access}}
+      <a href="/settings/billing">billing</a>
+    {{/if}}
   </div>
 </div>

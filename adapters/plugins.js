@@ -1,6 +1,3 @@
-var config = require('../config');
-
-// all those plugins
 module.exports = [
   {
     register: require('crumb'),
@@ -14,19 +11,10 @@ module.exports = [
   require('../services/user'),
   require('../services/corporate'),
   require('../services/email'),
-  {
-    register: require('../services/npme'),
-    options: config
-  },
-  {
-    register: require('../services/downloads'),
-    options: config.downloads
-  },
+  require('../services/npme'),
   {
     register: require('./bonbon'),
     options: {
-      stamp: config.stamp,
-      canonicalHost: config.canonicalHost,
       lang: "en_US"
     }
   }

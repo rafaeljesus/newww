@@ -3,20 +3,19 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
     expect = Code.expect;
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config'),
     existingUser = require('../fixtures/enterprise').existingUser;
 
 var server;
 
-config.license.api = 'https://billing.website.com';
-
 before(function (done) {
+  process.env.LICENSE_API = 'https://billing.website.com'
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9133' });
 
@@ -25,12 +24,17 @@ before(function (done) {
   });
 });
 
+after(function (done) {
+  delete process.env.LICENSE_API;
+  done();
+});
+
 describe('updating a customer via hubspot', function () {
   it('returns the customer if it is successful', function (done) {
 
     var customerId = 12345;
 
-    var mock = nock(config.license.api)
+    var mock = nock('https://billing.website.com')
         .post('/customer/' + customerId, existingUser)
         .reply(200, existingUser);
 
@@ -47,7 +51,7 @@ describe('updating a customer via hubspot', function () {
 
     var customerId = 12345;
 
-    var mock = nock(config.license.api)
+    var mock = nock('https://billing.website.com')
         .post('/customer/' + customerId, existingUser)
         .reply(400);
 

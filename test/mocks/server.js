@@ -1,11 +1,21 @@
-var Hapi = require('hapi'),
-    config = require('../../config');
+var path = require('path');
+var Hapi = require('hapi');
 
 module.exports = function (done) {
-  var metrics = require('../../adapters/metrics')(config.metrics);
+  var metrics = require('../../adapters/metrics')();
   var server = new Hapi.Server();
   server.connection();
-  server.views(config.views);
+
+  server.views({
+    engines: {hbs: require('handlebars')},
+    relativeTo: path.resolve(__dirname, "..", ".."),
+    path: './templates',
+    helpersPath: './templates/helpers',
+    layoutPath: './templates/layouts',
+    partialsPath: './templates/partials',
+    layout: 'default'
+  });
+
   server.methods = require('./server-methods')(server);
 
   server.register(require('hapi-auth-cookie'), function (err) {

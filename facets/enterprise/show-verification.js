@@ -1,7 +1,5 @@
 var _ = require('lodash');
 
-var config = require('../../config');
-
 module.exports = function verifyEnterpriseTrial (request, reply) {
   var verifyTrial = request.server.methods.npme.verifyTrial,
       getCustomer = request.server.methods.npme.getCustomer,
@@ -33,7 +31,7 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
         return;
       }
 
-      getLicenses(config.npme.product_id, trial.customer_id, function (err, licenses) {
+      getLicenses(process.env.NPME_PRODUCT_ID, trial.customer_id, function (err, licenses) {
 
         if (err) {
           request.logger.error('Unable to get licenses from hubspot for customer ' + trial.customer_id);

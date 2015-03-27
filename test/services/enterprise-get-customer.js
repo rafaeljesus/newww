@@ -3,30 +3,30 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
     expect = Code.expect;
 
 var Hapi = require('hapi'),
     npme = require('../../services/npme'),
-    nock = require('nock'),
-    config = require('../../config');
+    nock = require('nock');
 
 var server;
 
 before(function (done) {
+  process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9111' });
 
-  server.register([
-    {
-      register: npme,
-      options: config
-    }
-  ], function () {
+  server.register(npme, function () {
     server.start(done);
   });
 });
 
+after(function (done) {
+  delete process.env.LICENSE_API;
+  done()
+});
 
 describe('getting a customer from hubspot', function () {
   it('returns a customer when hubspot returns a customer', function (done) {

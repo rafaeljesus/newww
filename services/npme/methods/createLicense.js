@@ -1,6 +1,5 @@
 var request = require('request'),
     log = require('bole')('npme-get-license'),
-    config = require('../../../config'),
     getCustomer = require('./getCustomer');
 
 module.exports = function(licenseDetails, callback) {
@@ -14,12 +13,12 @@ module.exports = function(licenseDetails, callback) {
       return;
     }
 
-    var licenseEndpoint = config.license.api + '/license';
+    var licenseEndpoint = process.env.LICENSE_API + '/license';
 
     request.put({
       url: licenseEndpoint,
       json: {
-        product_id: config.npme.product_id,
+        product_id: process.env.NPME_PRODUCT_ID,
         customer_id: customer.id,
         stripe_subscription_id: licenseDetails.stripeId,
         seats: licenseDetails.seats,

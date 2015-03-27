@@ -5,21 +5,14 @@ var Code = require('code'),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var redis = require('redis'),
+    expect = Code.expect,
+    redis = require('redis'),
     spawn = require('child_process').spawn,
-    config = require('../../config').server.cache;
-
-    config.port = 6379;
-    config.password = '';
-
-var redisSessions = require('../../adapters/redis-sessions'),
+    redisSessions = require('../../adapters/redis-sessions'),
     redisProcess;
 
 before(function (done) {
-  var redisConfig = '--port ' + config.port;
-  redisProcess = spawn('redis-server', [redisConfig]);
+  redisProcess = spawn('redis-server');
   done();
 });
 
@@ -35,8 +28,7 @@ describe('redis-requiring session stuff', function() {
   var prefix = "hapi-cache:%7Csessions:";
 
   before(function (done) {
-    client = redis.createClient(config.port, config.host);
-    client.auth(config.password, function () {});
+    client = require("redis-url").connect();
     client.flushdb();
     client.on("error", function (err) {
       console.log("Error " + err);

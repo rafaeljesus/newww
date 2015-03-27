@@ -1,5 +1,4 @@
 var Joi = require('joi');
-var config = require('../../config');
 
 module.exports = function(request,reply) {
 
@@ -46,7 +45,7 @@ module.exports = function(request,reply) {
         //   yes customer! did they also give us a license key?
         if (data.license) {
           //     yes key! is it valid?
-          getLicense (config.npme.product_id, data.email, data.license, function(err,license) {
+          getLicense (process.env.NPME_PRODUCT_ID, data.email, data.license, function(err,license) {
             // fail on error
             if (err) {
               request.logger.error("API error fetching license " + data.license + " for email " + data.email);

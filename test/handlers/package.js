@@ -364,7 +364,7 @@ describe("package handler", function(){
     var downloadsMock
 
     beforeEach(function(done){
-      process.env.FEATURE_ACCESS = "yep"
+      process.env.FEATURE_ACCESS = 'true'
       packageMock = nock("https://user-api-example.com")
         .get('/package/request')
         .reply(200, fixtures.packages.request);

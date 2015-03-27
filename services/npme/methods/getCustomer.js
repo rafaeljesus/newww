@@ -1,10 +1,9 @@
 var request = require('request'),
-    log = require('bole')('npme-get-customer'),
-    config = require('../../../config')
+    log = require('bole')('npme-get-customer');
 
 module.exports = function(email, callback) {
 
-  var customerEndpoint = config.license.api + '/customer';
+  var customerEndpoint = process.env.LICENSE_API + '/customer';
 
   request.get({
     url: customerEndpoint + '/' + email,

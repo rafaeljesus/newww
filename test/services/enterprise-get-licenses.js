@@ -3,17 +3,16 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config');
-
-var server;
+    server;
 
 before(function (done) {
+  process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9115' });
 
@@ -22,13 +21,18 @@ before(function (done) {
   });
 });
 
+after(function (done) {
+  delete process.env.LICENSE_API;
+  done()
+});
+
 describe('getting licenses from hubspot', function () {
   it('returns the licenses if they are found', function (done) {
 
     var productId = '12-34-56',
         customerId = '12345';
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId)
         .reply(200, {licenses: ['1234-5678-90']})
 
@@ -46,7 +50,7 @@ describe('getting licenses from hubspot', function () {
     var productId = '12-34-56',
         customerId = '12345';
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId)
         .reply(404)
 
@@ -63,7 +67,7 @@ describe('getting licenses from hubspot', function () {
     var productId = '12-34-56',
         customerId = '12345';
 
-    var hubspot = nock(config.license.api)
+    var hubspot = nock('https://billing.website.com')
         .get('/license/' + productId + '/' + customerId)
         .reply(400)
 

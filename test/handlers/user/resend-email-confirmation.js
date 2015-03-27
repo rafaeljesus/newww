@@ -47,7 +47,7 @@ describe('Request to resend confirmation email', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.equal('/profile-edit?verification-email-sent=yep');
+      expect(resp.headers.location).to.equal('/profile-edit?verification-email-sent=true');
       done();
     });
   });

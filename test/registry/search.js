@@ -12,7 +12,7 @@ var Code = require('code'),
 var fakeSearch = require('../fixtures/search.json'),
     server;
 
-// prepare the server
+
 before(function (done) {
   require('../mocks/server')(function (obj) {
     server = obj;

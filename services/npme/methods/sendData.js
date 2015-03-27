@@ -1,10 +1,9 @@
 var request = require('request'),
-    log = require('bole')('npme-send-data'),
-    config = require('../../../config')
+    log = require('bole')('npme-send-data');
 
 module.exports = function (formGuid, data, callback) {
-  var hubspot = config.license.hubspot.forms
-      .replace(":portal_id", config.license.hubspot.portal_id)
+  var hubspot = "https://forms.hubspot.com/uploads/form/v2/:portal_id/:form_guid"
+      .replace(":portal_id", process.env.HUBSPOT_PORTAL_ID)
       .replace(":form_guid", formGuid);
 
   request.post(hubspot, function (er, resp) {

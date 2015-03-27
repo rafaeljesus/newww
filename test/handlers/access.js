@@ -70,7 +70,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -114,7 +114,7 @@ describe("package access", function(){
       }
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -155,7 +155,7 @@ describe("package access", function(){
       }
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -227,7 +227,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -271,7 +271,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -312,7 +312,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -350,7 +350,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -423,7 +423,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -451,7 +451,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -479,7 +479,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context
@@ -502,7 +502,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = "yep"
+        process.env.FEATURE_ACCESS = 'true'
         server.inject(options, function(response) {
           resp = response
           context = resp.request.response.source.context

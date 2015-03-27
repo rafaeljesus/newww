@@ -7,6 +7,7 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect,
     nock = require("nock"),
+    cheerio = require("cheerio"),
     users = require('../../fixtures').users;
 
 var server;
@@ -22,38 +23,123 @@ after(function (done) {
   server.stop(done);
 });
 
-describe('Retreiving profiles from the registry', function () {
+describe('GET /~bob for a user other than bob', function () {
+  var $
+  var resp
+  var context
+  var name = 'bob';
+  var mock = nock("https://user-api-example.com")
+    .get('/user/bob')
+    .reply(200, users.bob)
+    .get('/user/bob/package?per_page=9999')
+    .reply(200, users.packages)
+    .get('/user/bob/stars')
+    .reply(200, users.stars);
 
-  it('gets a website-registered user from the registry', function (done) {
-
-    var name = 'bob';
-    var mock = nock("https://user-api-example.com")
-      .get('/user/' + name)
-      .reply(200, users.bob)
-      .get('/user/' + name + '/package?per_page=9999')
-      .reply(200, users.packages)
-      .get('/user/' + name + '/stars')
-      .reply(200, users.stars);
-
-    server.inject('/~bob', function (resp) {
+  before(function(done) {
+    server.inject('/~bob', function (response) {
+      resp = response;
+      $ = cheerio.load(resp.result)
+      context = resp.request.response.source.context;
       mock.done();
-      expect(resp.statusCode).to.equal(200);
-      var context = resp.request.response.source.context;
-      expect(context.profile.name).to.equal("bob");
-      expect(context.profile.stars).to.be.an.array();
-      expect(context.profile.packages).to.be.an.object();
       done();
     });
   });
 
-  it("renders a 404 page if user doesn't exist", function (done) {
+  it("renders a list of bob's packages", function(done){
+    expect($("ul.collaborated-packages > li").length).to.equal(18);
+    expect($("ul.collaborated-packages > li > a[href='/package/googalytics']").length).to.equal(1);
+    done()
+  })
 
-    var name = 'mr-perdido';
-    var mock = nock("https://user-api-example.com")
-      .get("/user/" + name)
-      .reply(404);
+  it("truncates package names longer than 50 characters", function(done){
+    expect($("a[href='/package/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz']").text())
+      .to.equal("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx...");
+    done()
+  })
 
-    server.inject('/~mr-perdido', function (resp) {
+  it("renders a list of packages starred by bob", function(done){
+    expect($("ul.starred-packages > li").length).to.equal(4);
+    expect($("ul.starred-packages > li > a[href='/package/jade']").length).to.equal(1);
+    done()
+  })
+
+  it("renders a link to bob's github profile", function(done){
+    expect($("a[href='https://github.com/bob']").length).to.equal(1);
+    done()
+  })
+
+  it("renders a link to bob's twitter profile", function(done){
+    expect($("a[href='https://twitter.com/twob']").length).to.equal(1);
+    done()
+  })
+
+  it("renders bob's full name", function(done){
+    expect($("h2.fullname").text()).to.equal("Bob Henderson");
+    done()
+  })
+
+  it("renders bob's obfuscated email address", function(done){
+    expect($("li.email a[data-email]").length).to.equal(1);
+    done()
+  })
+
+});
+
+describe('GET /~bob for logged-in bob', function () {
+  var $
+  var resp
+  var context
+  var name = 'bob';
+  var mock = nock("https://user-api-example.com")
+    .get('/user/bob')
+    .reply(200, users.bob)
+    .get('/user/bob/package?per_page=9999')
+    .reply(200, users.packages)
+    .get('/user/bob/stars')
+    .reply(200, users.stars);
+
+  before(function(done) {
+    server.inject({url:'/~bob', credentials: users.bob}, function (response) {
+      resp = response;
+      $ = cheerio.load(resp.result)
+      context = resp.request.response.source.context;
+      mock.done();
+      done();
+    });
+  });
+
+  it("renders a blurb about how bob can edit his profile", function(done){
+    expect($("p.notice.profile-edit").length).to.equal(1);
+    done()
+  })
+
+  it("renders a link to profile edit page", function(done){
+    expect($("p.profile-edit a[href='/profile-edit']").length).to.equal(1);
+    done()
+  })
+
+  it("renders a link to change password page", function(done){
+    expect($("p.profile-edit a[href='/password']").length).to.equal(1);
+    done()
+  })
+
+  it("renders a link to change gravatar", function(done){
+    expect($("p.profile-edit a[href='http://gravatar.com/emails/']").length).to.equal(1);
+    done()
+  })
+
+});
+
+
+describe("GET /~nonexistent-user", function() {
+
+  var mock = nock("https://user-api-example.com")
+    .get("/user/nonexistent-user")
+    .reply(404);
+
+  it("renders a 404 page", function (done) {
+    server.inject('/~nonexistent-user', function (resp) {
       mock.done();
       var source = resp.request.response.source;
       expect(resp.statusCode).to.equal(404);
@@ -62,4 +148,4 @@ describe('Retreiving profiles from the registry', function () {
     });
   });
 
-});
+})

@@ -4,8 +4,9 @@ exports.bob = {
   email_verified: null,
   verification_key: '12345',
   resource: {
+    fullname: "Bob Henderson",
     github: 'bob',
-    twitter: '',
+    twitter: 'twob',
     homepage: 'http://boom.me',
     freenode: 'bobob'
   },
@@ -228,7 +229,7 @@ exports.packages = {
     },
     {
       "scope_id": 6744,
-      "name": "mustache-mailer",
+      "name": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
       "private": false,
       "created": "2015-02-14T02:54:23.616Z",
       "updated": "2015-02-14T02:54:23.616Z",

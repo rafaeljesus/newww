@@ -27,16 +27,17 @@ describe('GET /~bob for a user other than bob', function () {
   var $
   var resp
   var context
-  var name = 'bob';
-  var mock = nock("https://user-api-example.com")
-    .get('/user/bob')
-    .reply(200, users.bob)
-    .get('/user/bob/package?per_page=9999')
-    .reply(200, users.packages)
-    .get('/user/bob/stars')
-    .reply(200, users.stars);
 
   before(function(done) {
+
+    var mock = nock("https://user-api-example.com")
+      .get('/user/bob')
+      .reply(200, users.bob)
+      .get('/user/bob/package?per_page=9999')
+      .reply(200, users.packages)
+      .get('/user/bob/stars')
+      .reply(200, users.stars);
+
     server.inject('/~bob', function (response) {
       resp = response;
       $ = cheerio.load(resp.result)
@@ -91,15 +92,16 @@ describe('GET /~bob for logged-in bob', function () {
   var resp
   var context
   var name = 'bob';
-  var mock = nock("https://user-api-example.com")
-    .get('/user/bob')
-    .reply(200, users.bob)
-    .get('/user/bob/package?per_page=9999')
-    .reply(200, users.packages)
-    .get('/user/bob/stars')
-    .reply(200, users.stars);
 
   before(function(done) {
+    var mock = nock("https://user-api-example.com")
+      .get('/user/bob')
+      .reply(200, users.bob)
+      .get('/user/bob/package?per_page=9999')
+      .reply(200, users.packages)
+      .get('/user/bob/stars')
+      .reply(200, users.stars);
+
     server.inject({url:'/~bob', credentials: users.bob}, function (response) {
       resp = response;
       $ = cheerio.load(resp.result)

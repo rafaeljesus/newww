@@ -56,17 +56,24 @@ module.exports = function confirmEmail (request, reply) {
           return reply.view('errors/internal', opts).code(500);
         }
 
-        request.redis.del(key, function (err) {
-
+        User.drop(user.name, function (err) {
           if (err) {
-            request.logger.warn('Unable to drop key ' + key);
+            request.logger.warn('Unable to drop user cache for ' + user.name);
             request.logger.warn(err);
           }
 
-          request.timing.page = 'email-confirmed';
+          request.redis.del(key, function (err) {
 
-          request.metrics.metric({ name: 'email-confirmed' });
-          return reply.view('user/email-confirmed', opts);
+            if (err) {
+              request.logger.warn('Unable to drop key ' + key);
+              request.logger.warn(err);
+            }
+
+            request.timing.page = 'email-confirmed';
+
+            request.metrics.metric({ name: 'email-confirmed' });
+            return reply.view('user/email-confirmed', opts);
+          });
         });
       });
     });

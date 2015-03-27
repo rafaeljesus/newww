@@ -93,7 +93,12 @@ User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
 };
 
 User.prototype.drop = function drop (name, callback) {
-  return cache.drop(this.generateUserACLOptions(name), callback);
+
+  if (process.env.USE_CACHE === 'true') {
+    return cache.drop(this.generateUserACLOptions(name), callback);
+  }
+
+  return callback(null);
 };
 
 User.prototype.get = function(name, options, callback) {

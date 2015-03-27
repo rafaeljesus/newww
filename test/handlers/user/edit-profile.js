@@ -86,8 +86,14 @@ describe('Modifying the profile', function () {
 
     generateCrumb(server, function (crumb){
       var mock = nock('https://user-api-example.com')
-        .post('/user/bob', users.bobUpdateBody)
-        .reply(200, users.bobUpdated);
+        .post('/user/' + users.bob.name, users.bobUpdateBody)
+        .reply(200, users.bobUpdated)
+        .get('/user/' + users.bob.name)
+        .reply(200, users.bobUpdated)
+        .get('/user/' + users.bob.name + '/package?per_page=9999')
+        .reply(200, users.packages)
+        .get('/user/' + users.bob.name + '/stars')
+        .reply(200, users.stars);
 
       var options = {
         url: '/profile-edit',
@@ -100,15 +106,25 @@ describe('Modifying the profile', function () {
       options.payload.crumb = crumb;
 
       server.inject(options, function (resp) {
-        mock.done()
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.include('profile');
-        var cache = resp.request.server.app.cache._cache.connection.cache['|sessions'];
-        // modifies the profile properly
-        var cacheData = JSON.parse(cache['8bdb39fa'].item);
-        expect(cacheData.resource.github).to.equal(users.bobUpdated.resource.github);
-        expect(cacheData.resource.twitter).to.equal(users.bobUpdated.resource.twitter);
-        done();
+
+        // now let's make sure it's calling to the user-acl for the
+        // updated version
+        options = {
+          url: resp.headers.location,
+          credentials: users.bob,
+        };
+
+        server.inject(options, function (resp) {
+          mock.done();
+          expect(resp.statusCode).to.equal(200);
+          var context = resp.request.response.source.context;
+          expect(context.profile.name).to.equal("bob");
+          expect(context.profile.resource.github).to.equal(users.profileUpdate.github);
+          expect(context.profile.resource.twitter).to.equal(users.profileUpdate.twitter);
+          done();
+        });
       });
     });
   });

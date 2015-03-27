@@ -1,4 +1,4 @@
-var User = require('../../models/user'),
+var UserModel = require('../../models/user'),
     presenter = require('../../presenters/user'),
     Joi = require('joi'),
     merge = require('lodash').merge;
@@ -28,16 +28,18 @@ module.exports = function (request, reply) {
       merge(loggedInUser.resource, userChanges);
       loggedInUser = presenter(loggedInUser);
 
-      User.new(request).save(loggedInUser, function (err, data) {
+      var User = UserModel.new(request);
+
+      User.save(loggedInUser, function (err, data) {
         if (err) {
           request.logger.warn('unable to save profile; user=' + loggedInUser.name);
           request.logger.warn(err);
           return reply.view('errors/internal', opts).code(500);
         }
 
-        setSession(loggedInUser, function (err) {
+        User.drop(loggedInUser.name, function (err) {
           if (err) {
-            request.logger.warn('unable to set session; user=' + opts.user.name);
+            request.logger.warn('unable to drop cache for user ' + loggedInUser.name);
             request.logger.warn(err);
           }
 

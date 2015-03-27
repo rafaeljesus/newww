@@ -45,36 +45,43 @@ module.exports = function (request, reply) {
           return reply.view('errors/internal', opts).code(500);
         }
 
-        // Log out all of this user's existing sessions across all devices
-        redisSessions.dropKeysWithPrefix(newAuth.name, function(err){
+        User.drop(loggedInUser.name, function (err) {
           if (err) {
-            // TODO do we want this error to bubble up to the user?
-            request.logger.warn('Unable to drop all sessions; user=' + newAuth.name);
-            request.logger.warn(er);
-            return reply.view('errors/internal', opts).code(500);
+            request.logger.warn('unable to drop cache for user ' + name);
+            request.logger.warn(err);
           }
 
-          request.logger.info("cleared all sessions; user=" + newAuth.name);
-
-          User.login(newAuth, function (er, user) {
-            if (er) {
-              request.logger.warn('Unable to log user in; user=' + newAuth.name);
+          // Log out all of this user's existing sessions across all devices
+          redisSessions.dropKeysWithPrefix(newAuth.name, function(err){
+            if (err) {
+              // TODO do we want this error to bubble up to the user?
+              request.logger.warn('Unable to drop all sessions; user=' + newAuth.name);
               request.logger.warn(er);
               return reply.view('errors/internal', opts).code(500);
             }
 
-            setSession(user, function (err) {
-              if (err) {
-                // TODO consider the visibility of this error
-                request.logger.warn('Unable to set session; user=' + user.name);
+            request.logger.info("cleared all sessions; user=" + newAuth.name);
+
+            User.login(newAuth, function (er, user) {
+              if (er) {
+                request.logger.warn('Unable to log user in; user=' + newAuth.name);
                 request.logger.warn(er);
                 return reply.view('errors/internal', opts).code(500);
               }
 
-              request.timing.page = 'changePass';
-              request.metrics.metric({name: 'changePass'});
+              setSession(user, function (err) {
+                if (err) {
+                  // TODO consider the visibility of this error
+                  request.logger.warn('Unable to set session; user=' + user.name);
+                  request.logger.warn(er);
+                  return reply.view('errors/internal', opts).code(500);
+                }
 
-              return reply.redirect('/profile');
+                request.timing.page = 'changePass';
+                request.metrics.metric({name: 'changePass'});
+
+                return reply.redirect('/profile');
+              });
             });
           });
         });

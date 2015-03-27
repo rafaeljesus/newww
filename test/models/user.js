@@ -36,7 +36,7 @@ before(function (done) {
   process.env.USE_CACHE = 'true';
   cache.configure({
     redis: "redis://localhost:6379",
-    ttl: 1,
+    ttl: 5,
     prefix: "cache:"
   });
   done();
@@ -115,7 +115,7 @@ describe("User", function(){
 
   describe("get()", function() {
 
-    it("makes an external request for /{user}", function(done) {
+    it("makes an external request for /{user} and returns the response body in the callback", function(done) {
       var userMock = nock(User.host)
         .get('/user/bob')
         .reply(200, fixtures.users.bob);
@@ -123,19 +123,39 @@ describe("User", function(){
       User.get(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
         expect(body).to.exist();
+        expect(body.name).to.equal("bob");
+        expect(body.email).to.exist();
         userMock.done();
         done();
       });
     });
 
-    it("returns the response body in the callback", function(done) {
-      // no userMock here because yay caching
+    it("doesn't make another external request due to caching", function(done) {
+      // no need for nock because no request will be made
 
       User.get(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
+        expect(body).to.exist();
         expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
         done();
+      });
+    });
+
+    it("makes the external request again if the cache is dropped", function (done) {
+      var userMock = nock(User.host)
+        .get('/user/bob')
+        .reply(200, fixtures.users.bob);
+
+      User.drop(fixtures.users.bob.name, function (err) {
+        expect(err).to.not.exist();
+
+        User.get(fixtures.users.bob.name, function(err, body) {
+          expect(err).to.be.null();
+          expect(body.name).to.equal("bob");
+          userMock.done();
+          done();
+        });
       });
     });
 

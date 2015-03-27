@@ -76,23 +76,30 @@ function processToken(request, reply) {
         return;
       }
 
-      cache.del(pwKey, function (err) {
-
+      // make sure we're getting the latest user object next time we need it
+      User.drop(name, function (err) {
         if (err) {
-          request.logger.warn('Unable to drop key ' + pwKey);
+          request.logger.warn('unable to drop cache for user ' + name);
           request.logger.warn(err);
         }
 
-        opts.password = newPass;
-        opts.user = null;
+        cache.del(pwKey, function (err) {
 
-        request.timing.page = 'password-changed';
+          if (err) {
+            request.logger.warn('Unable to drop key ' + pwKey);
+            request.logger.warn(err);
+          }
 
-        request.metrics.metric({ name: 'password-changed' });
-        return reply.view('user/password-changed', opts);
+          opts.password = newPass;
+          opts.user = null;
+
+          request.timing.page = 'password-changed';
+
+          request.metrics.metric({ name: 'password-changed' });
+          return reply.view('user/password-changed', opts);
+        });
       });
     });
-
   });
 }
 

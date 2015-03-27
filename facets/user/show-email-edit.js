@@ -173,13 +173,12 @@ function confirm (request, reply) {
         user.email = emailTo;
         opts.confirmed = true;
 
-        setSession(user, function (err) {
+        // drop the user in the cache to reflect the updated email address
+        User.drop(user.name, function (err) {
 
           if (err) {
-            request.logger.error('Unable to set the session for user ' + user.name);
-            request.logger.error(err);
-            reply.view('errors/internal', opts).code(500);
-            return;
+            request.logger.warn('Unable to drop cache for user ' + user.name);
+            request.logger.warn(err);
           }
 
           request.timing.page = 'confirmEmailChange';
@@ -269,13 +268,12 @@ function revert (request, reply) {
 
           user.email = emailFrom;
 
-          setSession(user, function (err) {
+          // drop the user in the cache to reflect the updated email address
+          User.drop(user.name, function (err) {
 
             if (err) {
-              request.logger.error('Unable to set the session for user ' + user.name);
-              request.logger.error(err);
-              reply.view('errors/internal', opts).code(500);
-              return;
+              request.logger.warn('Unable to drop cache for user ' + user.name);
+              request.logger.warn(err);
             }
 
             request.timing.page = 'revertEmailChange';

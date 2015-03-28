@@ -10,7 +10,7 @@ module.exports = function trialSignup (request, reply) {
   // we can trust the email is fine because we've verified it in the show-ula handler
   var data = { email: request.payload.customer_email };
 
-  postToHubspot(process.env.FORM_NPME_AGREED_ULA, data, function (er) {
+  postToHubspot(process.env.HUBSPOT_FORM_NPME_AGREED_ULA, data, function (er) {
 
     if (er) {
       request.logger.error('Could not hit ULA notification form on Hubspot');

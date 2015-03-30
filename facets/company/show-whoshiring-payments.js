@@ -55,7 +55,7 @@ module.exports = function (request, reply) {
         return reply('internal stripe error').code(500);
       }
 
-      metrics.metric({
+      request.metrics.metric({
         name:  'latency',
         value: Date.now() - stripeStart,
         type:  'stripe'

@@ -20,7 +20,6 @@ collaborator.add = function(request, reply) {
   Collaborator.new(request)
   .add(request.packageName, request.payload.collaborator, function(err, collaborator) {
 
-    // 
     if (err) {
       request.logger.error(err);
       if (err.statusCode === 404) {

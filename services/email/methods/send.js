@@ -7,7 +7,7 @@ var log = require('bole')('email-send'),
 var send = module.exports = function send (template, data, redis) {
 
   var mailOpts = _.extend({}, {
-    from: "npm <support@npmjs.com>",
+    from: "support@npmjs.com",
     host: process.env.CANONICAL_HOST
   }, data);
 
@@ -34,5 +34,5 @@ send.mailConfig = {
     secretAccessKey: process.env.MAIL_SECRET_ACCESS_KEY,
     region: "us-west-2"
   }),
-  emailFrom: 'npm <support@npmjs.com>'
+  emailFrom: 'support@npmjs.com'
 }

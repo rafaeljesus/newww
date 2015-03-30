@@ -1,19 +1,19 @@
 
 module.exports = function resendConfirmation (request, reply) {
   var sendEmail = request.server.methods.email.send,
-      user = request.auth.credentials,
+      loggedInUser = request.auth.credentials,
       opts = { };
 
-  sendEmail('confirm-user-email', user, request.redis)
+  sendEmail('confirm-user-email', loggedInUser, request.redis)
     .then(function() {
-      request.logger.info('resent email confirmation to ' + user.email);
+      request.logger.info('resent email confirmation to ' + loggedInUser.email);
       request.timing.page = 'resend-confirm-email';
       request.metrics.metric({name: 'resend-confirm-email'});
 
       return reply.redirect('/profile-edit?verification-email-sent=true');
     })
     .catch(function(er) {
-      var message = 'Unable to resend email confirmation to ' + user.email;
+      var message = 'Unable to resend email confirmation to ' + loggedInUser.email;
 
       request.logger.error(message);
       request.logger.error(er);

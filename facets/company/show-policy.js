@@ -1,7 +1,7 @@
 
 module.exports = function (request, reply) {
-  
-  var opts = { user: request.auth.credentials };
+
+  var opts = { };
   var policy = request.params.policy || 'README';
 
   request.server.methods.corp.getPolicy(policy, function (err, content) {
@@ -19,4 +19,4 @@ module.exports = function (request, reply) {
 
     return reply.view('company/corporate', opts);
   });
-}
+};

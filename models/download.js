@@ -12,14 +12,14 @@ var Download = module.exports = function (opts) {
 };
 
 Download.new = function(request) {
-  var opts = {}
+  var opts = {};
   if (request && request.auth && request.auth.credentials) {
-    opts.bearer = request.auth.credentials.name
+    opts.bearer = request.auth.credentials.name;
   }
   if (process.env.USE_CACHE) {
-    opts.cache = require("../lib/cache")
+    opts.cache = require("../lib/cache");
   }
-  return new Download(opts)
+  return new Download(opts);
 };
 
 Download.prototype.getDaily = function(packageName) {

@@ -7,9 +7,12 @@ module.exports = {
     return function (user, next) {
       var timer = { start: Date.now() };
 
-      user.sid = redisSessions.generateRandomUserHash(user.name);
+      var data = {
+        name: user.name,
+        sid: redisSessions.generateRandomUserHash(user.name)
+      };
 
-      request.server.app.cache.set(user.sid, user, 0, function (err) {
+      request.server.app.cache.set(data.sid, data, 0, function (err) {
         if (err) {
           request.logger.error(Boom.internal('there was an error setting the cache'));
 

@@ -91,7 +91,6 @@ function processToken(request, reply) {
           }
 
           opts.password = newPass;
-          opts.user = null;
 
           request.timing.page = 'password-changed';
 
@@ -141,9 +140,7 @@ function handle(request, reply) {
 }
 
 function lookupUserByEmail (email, request, reply) {
-  var opts = {
-    user: request.auth.credentials
-   };
+  var opts = { };
 
    User.new(request).lookupEmail(email, function (er, users) {
     if (er) {

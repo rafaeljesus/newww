@@ -31,7 +31,18 @@ var postEmail = function (emailOpts) {
   };
 };
 
+nock("https://user-api-example.com")
+  .get('/user/' + users.bob.name).times(11)
+  .reply(200, fixtures.users.bob)
+  .get('/user/' + users.mikeal.name)
+  .reply(200, fixtures.users.mikeal)
+  .get('/user/noone')
+  .reply(200, {
+    name: "noone",
+    email: "f@boom.me",
+  });
 
+// prepare the server
 before(function (done) {
   require('../../mocks/server')(function (obj) {
     server = obj;
@@ -41,7 +52,7 @@ before(function (done) {
 
 before(function (done) {
   redisProcess = spawn('redis-server');
-  client = require("redis-url").connect()
+  client = require("redis-url").connect();
   client.on("error", function (err) {
     console.log("Error " + err);
   });
@@ -245,8 +256,8 @@ describe('Confirming an email change', function () {
       server.inject(opts, function (resp) {
         mock.done();
         expect(resp.statusCode).to.equal(200);
-        expect(users.bob.email).to.equal(newEmail);
         var source = resp.request.response.source;
+        expect(source.context.user.email).to.equal(newEmail);
         expect(source.template).to.equal('user/email-edit-confirmation');
         done();
       });

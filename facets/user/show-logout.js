@@ -1,12 +1,12 @@
 module.exports = function logout (request, reply) {
   var delSession = request.server.methods.user.delSession(request),
-      user = request.auth.credentials;
+      loggedInUser = request.auth.credentials;
 
-  if (!user) { return redirectToHome(); }
+  if (!loggedInUser) { return redirectToHome(); }
 
-  delSession(user, function (er) {
+  delSession(loggedInUser, function (er) {
     if (er) {
-      request.logger.warn('unable to delete session for user=' + user.name);
+      request.logger.warn('unable to delete session for user=' + loggedInUser.name);
       request.logger.warn(er);
       return reply.view('errors/internal', {}).code(500);
     }

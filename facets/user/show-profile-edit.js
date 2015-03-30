@@ -4,8 +4,8 @@ var UserModel = require('../../models/user'),
     merge = require('lodash').merge;
 
 module.exports = function (request, reply) {
-  var setSession = request.server.methods.user.setSession(request);
   var loggedInUser = request.auth.credentials;
+  var User = UserModel.new(request);
 
   var opts = { };
 
@@ -25,29 +25,36 @@ module.exports = function (request, reply) {
         return reply.view('user/profile-edit', opts).code(400);
       }
 
-      merge(loggedInUser.resource, userChanges);
-      loggedInUser = presenter(loggedInUser);
+      User.get(loggedInUser.name, function (err, user) {
 
-      var User = UserModel.new(request);
-
-      User.save(loggedInUser, function (err, data) {
         if (err) {
-          request.logger.warn('unable to save profile; user=' + loggedInUser.name);
-          request.logger.warn(err);
-          return reply.view('errors/internal', opts).code(500);
+          request.logger.error('unable to get user ' + loggedInUser.name);
+          request.logger.error(err);
+          return reply.view('errors/user-not-found', opts).code(404);
         }
 
-        User.drop(loggedInUser.name, function (err) {
+        merge(user.resource, userChanges);
+        user = presenter(user);
+
+        User.save(user, function (err, data) {
           if (err) {
-            request.logger.warn('unable to drop cache for user ' + loggedInUser.name);
+            console.log(err);
+            request.logger.warn('unable to save profile; user=' + user.name);
             request.logger.warn(err);
+            return reply.view('errors/internal', opts).code(500);
           }
 
-          request.timing.page = 'saveProfile';
-          request.metrics.metric({ name: 'saveProfile' });
-          return reply.redirect('/profile');
-        });
+          User.drop(user.name, function (err) {
+            if (err) {
+              request.logger.warn('unable to drop cache for user ' + user.name);
+              request.logger.warn(err);
+            }
 
+            request.timing.page = 'saveProfile';
+            request.metrics.metric({ name: 'saveProfile' });
+            return reply.redirect('/profile');
+          });
+        });
       });
     });
   }
@@ -55,8 +62,8 @@ module.exports = function (request, reply) {
   if (request.method === 'get' || opts.error) {
     request.timing.page = 'profile-edit';
     opts.title = 'Edit Profile';
-    opts.showEmailSentNotice = request.query['verification-email-sent'] === 'true'
-    opts.showWelcomeMessage = request.query['new-user'] === 'true'
+    opts.showEmailSentNotice = request.query['verification-email-sent'] === 'true';
+    opts.showWelcomeMessage = request.query['new-user'] === 'true';
     return reply.view('user/profile-edit', opts);
   }
 };

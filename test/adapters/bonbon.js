@@ -32,7 +32,7 @@ describe("bonbon", function() {
   });
 
   nock("https://user-api-example.com")
-    .get('/user/' + username1).times(5)
+    .get('/user/' + username1).times(7)
     .reply(200, fixtures.users.bob)
     .get('/user/' + username1 + '/package?format=detailed&per_page=9999').times(5)
     .reply(200, fixtures.users.packages)
@@ -132,7 +132,7 @@ describe("bonbon", function() {
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result).to.be.an.object();
-      delete process.env.NODE_ENV
+      delete process.env.NODE_ENV;
       done();
     });
   });

@@ -7,7 +7,6 @@ var Promise = require('bluebird');
 var request = require('request');
 var userValidate = require('npm-user-validate');
 
-
 var User = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API || "https://user-api-example.com",

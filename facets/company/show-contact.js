@@ -9,10 +9,9 @@ module.exports = function (request, reply) {
   });
 
   var opts = {
-    user: request.auth.credentials,
     humans: humans
   };
 
   return reply.view('company/contact', opts);
 
-}
+};

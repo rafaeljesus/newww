@@ -73,8 +73,8 @@ module.exports = function login (request, reply) {
             return;
           }
 
-          // log.info("Login received, user available, setting session")
-          // log.info("User is",user)
+          request.logger.info("Login received, user available, setting session")
+          request.logger.info("User is",user)
 
           user.avatar = avatar(user.email);
 

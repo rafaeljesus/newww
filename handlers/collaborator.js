@@ -18,7 +18,7 @@ collaborator.list = function(request, reply) {
 
 collaborator.add = function(request, reply) {
   Collaborator.new(request)
-  .add(request.packageName, request.payload.collaborator, function(err, c) {
+  .add(request.packageName, request.payload.collaborator, function(err, collab) {
 
     if (err) {
       request.logger.error(err);
@@ -33,7 +33,7 @@ collaborator.add = function(request, reply) {
     }
 
     return reply({
-      collaborator: decorate(c, request.packageName)
+      collaborator: decorate(collab, request.packageName)
     });
   });
 };

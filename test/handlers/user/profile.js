@@ -33,9 +33,9 @@ describe('GET /~bob for a user other than bob', function () {
     var mock = nock("https://user-api-example.com")
       .get('/user/bob')
       .reply(200, users.bob)
-      .get('/user/bob/package?per_page=9999')
+      .get('/user/bob/package?format=detailed&per_page=9999')
       .reply(200, users.packages)
-      .get('/user/bob/stars')
+      .get('/user/bob/stars?format=detailed')
       .reply(200, users.stars);
 
     server.inject('/~bob', function (response) {
@@ -48,7 +48,7 @@ describe('GET /~bob for a user other than bob', function () {
   });
 
   it("renders a list of bob's packages", function(done){
-    expect($("ul.collaborated-packages > li").length).to.equal(18);
+    expect($("ul.collaborated-packages > li").length).to.equal(20);
     expect($("ul.collaborated-packages > li > a[href='/package/googalytics']").length).to.equal(1);
     done()
   })
@@ -97,9 +97,9 @@ describe('GET /~bob for logged-in bob', function () {
     var mock = nock("https://user-api-example.com")
       .get('/user/bob')
       .reply(200, users.bob)
-      .get('/user/bob/package?per_page=9999')
+      .get('/user/bob/package?format=detailed&per_page=9999')
       .reply(200, users.packages)
-      .get('/user/bob/stars')
+      .get('/user/bob/stars?format=detailed')
       .reply(200, users.stars);
 
     server.inject({url:'/~bob', credentials: users.bob}, function (response) {

@@ -2,7 +2,7 @@ var omit = require("lodash").omit;
 
 module.exports = function(request, reply) {
 
-  if (!process.env.FEATURE_ACCESS) {
+  if (process.env.FEATURE_ACCESS !== "true") {
     return reply.view('errors/not-found').code(404);
   }
 

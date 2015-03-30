@@ -70,7 +70,7 @@ exports.register = function(server, options, next) {
     }
 
     // Add feature flags to view context
-    if (process.env.FEATURE_ACCESS) {
+    if (process.env.FEATURE_ACCESS == "true") {
       var context = Hoek.reach(request, 'response.source.context');
       if (context) {
         context.features = {access: true}

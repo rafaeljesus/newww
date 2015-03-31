@@ -116,7 +116,7 @@ describe('Looking up a user', function () {
           mock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
-          expect(source.context.error).to.equal('404 - not found');
+          expect(source.context.error).to.equal('unexpected status code 404');
           expect(resp.statusCode).to.equal(404);
           done();
         });

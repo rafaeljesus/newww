@@ -166,7 +166,7 @@ describe("User", function(){
 
       User.get('foo', function(err, body) {
         expect(err).to.exist();
-        expect(err.message).to.equal("404 - not found");
+        expect(err.message).to.equal("unexpected status code 404");
         expect(body).to.not.exist();
         userMock.done();
         done();

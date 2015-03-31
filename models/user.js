@@ -128,6 +128,7 @@ User.prototype.getPackages = function(name, callback) {
     var opts = {
       url: url,
       qs: {
+        format: 'detailed',
         per_page: 9999
       },
       json: true,
@@ -149,7 +150,7 @@ User.prototype.getPackages = function(name, callback) {
 
 User.prototype.getStars = function(name, callback) {
   var _this = this;
-  var url = fmt("%s/user/%s/stars", this.host, name);
+  var url = fmt("%s/user/%s/stars?format=detailed", this.host, name);
 
   return new Promise(function(resolve, reject) {
     var opts = {

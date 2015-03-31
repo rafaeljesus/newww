@@ -10,7 +10,7 @@
         {{pluralize packages.count "Packages" true}} by {{name}}
       </a>
     </h2>
-    <ul class="bullet-free">
+    <ul class="bullet-free collaborated-packages">
       {{#each packages.items}}
         <li>
           <a href="/package/{{name}}">{{truncate name 50}}</a> {{description}}
@@ -25,7 +25,7 @@
         {{pluralize stars.length "Packages" true}} starred by {{name}}
       </a>
     </h2>
-    <ul class="bullet-free">
+    <ul class="bullet-free starred-packages">
       {{#each stars}}
         <li>
           <a href="/package/{{this}}">{{truncate this 50}}</a> {{description}}
@@ -48,10 +48,10 @@
   {{/if}}
 
   {{#if isSelf}}
-    <p class="notice">
+    <p class="notice profile-edit">
       This is your profile page, {{name}}! You can
-      <a href=/profile-edit>update your social info</a>,
-      <a href=/password >change your password</a>, or
+      <a href="/profile-edit">update your social info</a>,
+      <a href="/password">change your password</a>, or
       <a href="http://gravatar.com/emails/">update your avatar</a>.
     </p>
 
@@ -59,7 +59,7 @@
   {{/if}}
 
   {{#if resource.fullname}}
-    <h2>{{resource.fullname}}</h2>
+    <h2 class="fullname">{{resource.fullname}}</h2>
   {{/if}}
 
   <ul class="meta">
@@ -70,33 +70,37 @@
       </li>
     {{/if}}
 
-    {{#if meta.homepage}}
-      <li class="homepage">
-        <a href="{{meta.homepage}}">{{schemeless meta.homepage}}</a>
-      </li>
-    {{/if}}
+    {{#with resource}}
 
-    {{#if meta.github}}
-      <li class="github">
-        <a href="https://github.com/{{meta.github}}">@{{meta.github}}</a> on GitHub
-      </li>
-    {{/if}}
+      {{#if homepage}}
+        <li class="homepage">
+          <a href="{{homepage}}">{{schemeless homepage}}</a>
+        </li>
+      {{/if}}
 
-    {{#if meta.twitter}}
-      <li class="twitter">
-        <a href="https://twitter.com/{{meta.twitter}}">@{{meta.twitter}}</a> on Twitter
-      </li>
-    {{/if}}
+      {{#if github}}
+        <li class="github">
+          <a href="https://github.com/{{github}}">@{{github}}</a> on GitHub
+        </li>
+      {{/if}}
+
+      {{#if twitter}}
+        <li class="twitter">
+          <a href="https://twitter.com/{{twitter}}">@{{twitter}}</a> on Twitter
+        </li>
+      {{/if}}
+
+      {{#if freenode}}
+        <li class="freenode">
+          <a href="irc://chat.freenode.net/npm">{{freenode}}</a> on freenode
+        </li>
+      {{/if}}
+
+    {{/with}}
 
     <li class="npm">
       <a href="/~{{name}}">@{{name}}</a> on npm
     </li>
-
-    {{#if meta.freenode}}
-      <li class="freenode">
-        <a href="irc://chat.freenode.net/npm">{{meta.freenode}}</a> on freenode
-      </li>
-    {{/if}}
 
   </ul>
 

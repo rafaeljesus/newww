@@ -152,14 +152,14 @@ describe("User", function(){
         });
 
       var starMock = nock(User.host)
-        .get('/user/eager-beaver/stars')
+        .get('/user/eager-beaver/stars?format=detailed')
         .reply(200, [
           'minimist',
           'hapi'
         ]);
 
       var packageMock = nock(User.host)
-        .get('/user/eager-beaver/package?per_page=9999')
+        .get('/user/eager-beaver/package?format=detailed&per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -196,7 +196,7 @@ describe("User", function(){
       var starMock = nock(User.host, {
           reqheaders: {bearer: 'rockbot'}
         })
-        .get('/user/eager-beaver/stars')
+        .get('/user/eager-beaver/stars?format=detailed')
         .reply(200, [
           'minimist',
           'hapi'
@@ -205,7 +205,7 @@ describe("User", function(){
       var packageMock = nock(User.host, {
           reqheaders: {bearer: 'rockbot'}
         })
-        .get('/user/eager-beaver/package?per_page=9999')
+        .get('/user/eager-beaver/package?format=detailed&per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -231,7 +231,7 @@ describe("User", function(){
 
     it("makes an external request for /{user}/package", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/bob/package?per_page=9999')
+        .get('/user/bob/package?format=detailed&per_page=9999')
         .reply(200, []);
 
       User.getPackages(fixtures.users.bob.name, function(err, body) {
@@ -244,7 +244,7 @@ describe("User", function(){
 
     it("returns the response body in the callback", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/bob/package?per_page=9999')
+        .get('/user/bob/package?format=detailed&per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -262,7 +262,7 @@ describe("User", function(){
 
     it("returns an error in the callback if the request failed", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/foo/package?per_page=9999')
+        .get('/user/foo/package?format=detailed&per_page=9999')
         .reply(404);
 
       User.getPackages('foo', function(err, body) {
@@ -285,7 +285,7 @@ describe("User", function(){
       var packageMock = nock(User.host, {
           reqheaders: {bearer: 'sally'}
         })
-        .get('/user/sally/package?per_page=9999')
+        .get('/user/sally/package?format=detailed&per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -301,7 +301,7 @@ describe("User", function(){
 
     it("does not include bearer token in request header if user is not logged in", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/sally/package?per_page=9999')
+        .get('/user/sally/package?format=detailed&per_page=9999')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -318,9 +318,9 @@ describe("User", function(){
 
   describe("getStars()", function() {
 
-    it("makes an external request for /{user}/stars", function(done) {
+    it("makes an external request for /{user}/stars?format=detailed", function(done) {
       var starMock = nock(User.host)
-        .get('/user/bcoe/stars')
+        .get('/user/bcoe/stars?format=detailed')
         .reply(200, ['lodash', 'nock', 'yargs']);
 
       User.getStars('bcoe', function(err, body) {
@@ -333,7 +333,7 @@ describe("User", function(){
 
     it("returns the response body in the callback", function(done) {
       var starMock = nock(User.host)
-        .get('/user/ceej/stars')
+        .get('/user/ceej/stars?format=detailed')
         .reply(200, ['blade', 'minimist']);
 
       User.getStars('ceej', function(err, body) {
@@ -348,7 +348,7 @@ describe("User", function(){
 
     it("returns an error in the callback if the request failed", function(done) {
       var starMock = nock(User.host)
-        .get('/user/zeke/stars')
+        .get('/user/zeke/stars?format=detailed')
         .reply(404);
 
       User.getStars('zeke', function(err, body) {
@@ -371,7 +371,7 @@ describe("User", function(){
       var starMock = nock(User.host, {
           reqheaders: {bearer: 'rod11'}
         })
-        .get('/user/rod11/stars')
+        .get('/user/rod11/stars?format=detailed')
         .reply(200, 'something');
 
       User.getStars('rod11', function(err, body) {
@@ -384,7 +384,7 @@ describe("User", function(){
 
     it("does not include bearer token in request header if user is not logged in", function(done) {
       var starMock = nock(User.host)
-        .get('/user/rod11/stars')
+        .get('/user/rod11/stars?format=detailed')
         .reply(200, 'something');
 
       User.getStars('rod11', function(err, body) {

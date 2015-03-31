@@ -1,0 +1,916 @@
+{
+  "count": 20,
+  "items": [{
+    "versions": ["0.0.4"],
+    "name": "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
+    "description": "",
+    "readme": "ERROR: No README data found!",
+    "stars": [],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": null,
+      "url": "git://github.com/bcoe/secure-smtpd.git"
+    },
+    "dependencies": {},
+    "keywords": [],
+    "devDependencies": {},
+    "publisher": {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca"
+    }],
+    "version": "0.0.4",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2014-12-17T01:08:23.454Z"
+  }, {
+    "versions": ["0.0.1", "0.0.2", "0.0.3", "0.0.4", "0.0.5", "0.0.6", "0.0.7", "0.1.0", "0.1.1", "0.1.10", "0.1.11", "0.1.12", "0.1.13", "0.1.14", "0.1.15", "0.1.16", "0.1.17", "0.1.18", "0.1.19", "0.1.2", "0.1.20", "0.1.3", "0.1.4", "0.1.5", "0.1.6", "0.1.7", "0.1.8", "0.1.9", "1.0.0", "1.0.1"],
+    "name": "couch-login",
+    "description": "A module for doing logged-in requests to a couchdb server",
+    "readme": "# couch-login\n\nThis module lets you log into couchdb to get a session token, then make\nrequests using that session.  It is basically just a thin wrapper around\n[@mikeal's request module](https://github.com/mikeal/request).\n\nThis is handy if you want a user to take actions in a couchdb database\non behalf of a user, without having to store their couchdb username and\npassword anywhere.  (You do need to store the AuthSession token\nsomewhere, though.)\n\n## Usage\n\n```javascript\nvar CouchLogin = require('couch-login')\n\n// Nothing about this module is http-server specific of course.\n// You could also use it to do authenticated requests against\n// a couchdb using sessions and storing the token somewhere else.\n\nhttp.createServer(function (req, res) {\n  var couch = new CouchLogin('http://my-couch.iriscouch.com:5984/')\n\n  // .. look up the token in the user's session or whatever ..\n  // Look at couch.decorate(req, res) for more on doing that\n  // automatically, below.\n\n  if (sessionToken) {\n    // this user already logged in.\n    couch.token = sessionToken\n\n    // now we can do things on their behalf, like:\n    // 1. View their session info.\n    // like doing request.get({ uri: couch + '/_session', ... })\n    // but with the cookie and whatnot\n\n    couch.get('/_session', function (er, resp, data) {\n      // er = some kind of communication error.\n      // resp = response object from the couchdb request.\n      // data = parsed JSON response body.\n      if (er || resp.statusCode !== 200) {\n        res.statusCode = resp.statusCode || 403\n        return res.end('Invalid login or something')\n      }\n\n      // now we have the session info, we know who this user is.\n      // hitting couchdb for this on every request is kinda costly,\n      // so maybe you should store the username wherever you're storing\n      // the sessionToken.  RedSess is a good util for this, if you're\n      // into redis.  And if you're not into redis, you're crazy,\n      // because it is awesome.\n\n      // now let's get the user record.\n      // note that this will 404 for anyone other than the user,\n      // unless they're a server admin.\n      couch.get('/_users/org.couchdb.user:' + data.userCtx.name, etc)\n\n      // PUTs and DELETEs will also use their session, of course, so\n      // your validate_doc_update's will see their info in userCtx\n    })\n\n  } else {\n    // don't have a sessionToken.\n    // get a username and password from the post body or something.\n    // maybe redirect to a /login page or something to ask for that.\n    var login = { name: name, password: password }\n    couch.login(login, function (er, resp, data) {\n      // again, er is an error, resp is the response obj, data is the json\n      if (er || resp.statusCode !== 200) {\n        res.statusCode = resp.statusCode || 403\n        return res.end('Invalid login or something')\n      }\n\n      // the data is something like\n      // {\"ok\":true,\"name\":\"testuser\",\"roles\":[]}\n      // and couch.token is the token you'll need to save somewhere.\n\n      // at this point, you can start making authenticated requests to\n      // couchdb, or save data in their session, or do whatever it is\n      // that you need to do.\n\n      res.statusCode = 200\n      res.write(\"Who's got two thumbs and just logged you into couch?\\n\")\n      setTimeout(function () {\n        res.end(\"THIS GUY!\")\n      }, 500)\n    })\n  }\n})\n```\n\n## Class: CouchLogin\n### new CouchLogin(couchdbUrl, token)\n\nCreate a new CouchLogin object bound to the couchdb url.\n\nIn addition to these, the `get`, `post`, `put`, and `del` methods all\nproxy to the associated method on [request](https://github.com/mikeal/request).\n\nHowever, as you'll note in the example above, only the pathname portion\nof the url is required.  Urls will be appended to the couchdb url passed\ninto the constructor.\n\nIf you have to talk to more than one couchdb, then you'll need more than\none CouchLogin object, for somewhat obvious reasons.\n\nAll callbacks get called with the following arguments, which are exactly\nidentical to the arguments passed to a `request` callback.\n\n* `er` {Error | null} Set if a communication error happens.\n* `resp` {HTTP Response} The response from the request to couchdb\n* `data` {Object} The parsed JSON data from couch\n\nIf the token is the string \"anonymous\", then it will not attempt to log\nin before making requests.  If the token is not \"anonymous\", then it\nmust be an object with the appropriate fields.\n\n### couch.token\n\n* {Object}\n\nAn object representing the couchdb session token.  (Basically just a\ncookie and a timeout.)\n\nIf the token has already timed out, then setting it will have no effect.\n\n### couch.tokenSet\n\nIf set, this method is called whenever the token is saved.\n\nFor example, you could assign a function to this method to save the\ntoken into a redis session, a cookie, or in some other database.\n\nTakes a callback which MUST be called when the token is saved.\n\n### couch.tokenGet\n\nIf set, this method is called to look up the token on demand.\n\nThe inverse of couch.tokenSet.  Takes a callback which is called with\nthe `cb(er || null, token)`.\n\n### couch.tokenDel\n\nIf set, this method is called to delete the token when it should be\ndiscarded.\n\nRelated to tokenGet and tokenSet.  Takes a callback which MUST be\ncalled when the token is deleted.\n\n### couch.ca\n\n* {String | Array | null}\n\nA certificate authority string (PEM encoded), or an array of CA strings.  Only\nrelevant for HTTPS couches, of course.\n\nLeave as `null` to use the default ca settings built into node.\n\n### couch.cert\n\n* {String | null}\n\nA client certificate (PEM encoded) used to support secure access to servers that require client certificate.  Only\nrelevant for HTTPS couches, of course.\n\nLeave as `null` when not supporting client certificates.\n\n### couch.key\n\n* {String | null}\n\nA private key string (PEM encoded) used to validate a client certificate.  Only\nrelevant for HTTPS couches, of course.\n\nLeave as `null` when not supporting client certificates.\n\n### couch.strictSSL\n\n* {Boolean | null}\n\nWhether or not to be strict about SSL connections.  If left as null,\nthen use the default setting in node, which is true in node versions\n0.9.x and above, and false prior to 0.8.x.\n\nOnly relevant for HTTPS couches, of course.\n\n### couch.anonymous()\n\nReturn a new CouchLogin object that points at the same couchdb server,\nbut doesn't try to log in before making requests.\n\nThis is handy for situations where the user is not logged in at the\nmoment, but a request needs to be made anyway, and does not require\nauthorization.\n\n### couch.login(auth, callback)\n\n* `auth` {Object} The login details\n  * `name` {String}\n  * `password` {String}\n* `callback` {Function}\n\nWhen the callback is called, the `couch.token` will already have been\nset (assuming it worked!), so subsequent requests will be done as that\nuser.\n\n### couch.get(path, callback)\n\nGET the supplied path from the couchdb using the credentials on the\ntoken.\n\nFails if the token is invalid or expired.\n\n### couch.del(path, callback)\n\nDELETE the supplied path from the couchdb using the credentials on the\ntoken.\n\nFails if the token is invalid or expired.\n\n### couch.post(path, data, callback)\n\nPOST the data to the supplied path in the couchdb, using the credentials\non the token.\n\nFails if the token is invalid or expired.\n\n### couch.put(path, data, callback)\n\nPUT the data to the supplied path in the couchdb, using the credentials\non the token.\n\nFails if the token is invalid or expired.\n\n### couch.changePass(newAuth, callback)\n\nMust already be logged in.  Updates the `_users` document with new salt\nand hash, and re-logs in with the new credentials.  Callback is called\nwith the same arguments as login, or the first step of the process that\nfailed.\n\n### couch.signup(userData, callback)\n\nCreate a new user account.  The userData must contain at least a `name`\nand `password` field.  Any additional data will be copied to the user\nrecord.  The `_id`, `name`, `roles`, `type`, `password_sha`, `salt`, and\n`date` fields are generated.\n\nAlso signs in as the newly created user, on successful account creation.\n\n### couch.deleteAccount(name, callback)\n\nDeletes a user account.  If not logged in as the user, or a server\nadmin, then the request will fail.\n\nNote that this immediately invalidates any session tokens for the\ndeleted user account.  If you are deleting the user's record, then you\nought to follow this with `couch.logout(callback)` so that it won't try\nto re-use the invalid session.\n\n### couch.logout(callback)\n\nDelete the session out of couchdb.  This makes the token permanently\ninvalid, and deletes it.\n\n### couch.decorate(req, res)\n\nSet up `req.couch` and `res.couch` as references to this couch login\ninstance.\n\nAdditionall, if `req.session` or `res.session` is set, then it'll call\n`session.get('couch_token', cb)` as the tokenGet method,\n`session.set('couch_token', token, cb)` as the tokenSet method, and\n`session.del('couch_token', cb)` as the tokenDel method.\n\nThis works really nice with\n[RedSess](https://github.com/isaacs/redsess).\n",
+    "stars": ["ejeklint", "fgribreau", "parroit"],
+    "dependentCount": "53",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/isaacs/couch-login.git"
+    },
+    "dependencies": {
+      "request": "2 >=2.25.0"
+    },
+    "keywords": [],
+    "devDependencies": {
+      "tap": "~0.2.4"
+    },
+    "publisher": {
+      "name": "isaacs",
+      "email": "i@izs.me",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "isaacs",
+      "email": "i@izs.me"
+    }],
+    "version": "1.0.1",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2014-06-20T23:05:50.128Z"
+  }, {
+    "versions": ["0.0.1"],
+    "name": "googalytics",
+    "description": "Google Analytics API for Node projects",
+    "readme": "# Googalytics\n\nSimple node module to send custom server-side events to Google Analytics\n\nHeavily influenced by the Gabba project from the guys at the Hybrid Group (http://github.com/hybridgroup/gabba)\n\n## Examples\n\n### Initialize\n\n```javascript\nvar GA = require(\"googalytics\");\nGA.initialize('UA-12345678-1', 'someplace.com', function () {\n  GA.trackPage('page title', 'pageName', function (err, resp) {\n    if (!err, resp.statusCode === 200) {\n      console.log('it worked!');\n    }\n  });\n});\n```\n\n### What do those variables mean?!\n\nThe answers, as per usual, can be learned from the Google: https://developers.google.com/analytics/resources/articles/gaTrackingTroubleshooting#gifParameters",
+    "stars": [],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/rockbot/googalytics.git"
+    },
+    "dependencies": {
+      "request": "2.9.203"
+    },
+    "keywords": [],
+    "devDependencies": {
+      "underscore": "1.3.3",
+      "mocha": "1.3.0",
+      "should": "1.0.0"
+    },
+    "publisher": {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }],
+    "version": "0.0.1",
+    "license": {
+      "name": "none",
+      "url": null
+    },
+    "lastPublishedAt": "2012-08-30T01:24:55.224Z"
+  }, {
+    "versions": ["1.0.0", "1.0.1", "1.1.0"],
+    "name": "hapi-common-log",
+    "description": "Parses the hapi request object to create a common log format log line",
+    "readme": "\n# hapi-common-log\n\nParses the hapi request object to create a common log format log line\n\n## Usage\n\n```js\n\nvar toCommonLogFormat = require('hapi-common-log');\n\nserver.ext('onPostHandler', function (request, next) {\n  console.log(toCommonLogFormat(request));\n  next();\n});\n\n// output: 127.0.0.1 - 1419961634390-24985-29768 [30/Dec/2014:09:47:14 -0800] \"GET /static/images/npm-logo.svg HTTP/1.1\" 200 -\n\n```\n\n## Options\n\nSometimes you want a specific header for incoming client IP (i.e. if you've got a proxy). To customize:\n\n```js\n\ntoCommonLogFormat(request, { ipHeader: 'x-forwarded-to' });\n\n```\n\n## The Common Log Format\n\nFrom the [Wikipedia page on Common Log Format](https://en.wikipedia.org/wiki/Common_Log_Format):\n\n```\n127.0.0.1 user-identifier frank [10/Oct/2000: 13:55:36 -0700] \"GET /apache_pb.gif HTTP/1.0\" 200 2326\n```\n\n_A \"-\" in a field indicates missing data.[citation needed]_\n\n* 127.0.0.1 is the IP address of the client (remote host) which made the request to the server.\n* user-identifier is the RFC 1413 identity of the client.\n* frank is the userid of the person requesting the document.\n* [10/Oct/2000:13:55:36 -0700] is the date, time, and time zone when the server finished processing the request, by default in strftime format %d/%b/%Y:%H:%M:%S %z.\n* \"GET /apache_pb.gif HTTP/1.0\" is the request line from the client. The method GET, /apache_pb.gif the resource requested, and HTTP/1.0 the HTTP protocol.\n* 200 is the HTTP status code returned to the client. 2xx is a successful response, 3xx a redirection, 4xx a client error, and 5xx a server error.\n* 2326 is the size of the object returned to the client, measured in bytes.\n\n## License\n\nISC\n",
+    "stars": [],
+    "dependentCount": "1",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git@github.com:rockbot/hapi-common-log.git"
+    },
+    "dependencies": {
+      "moment-tokens": "^1.0.0"
+    },
+    "keywords": ["common log format", "format", "log", "common", "hapijs", "hapi"],
+    "devDependencies": {
+      "lab": "^4.0.0",
+      "hapi": "^6.4.0"
+    },
+    "publisher": {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }],
+    "version": "1.1.0",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2014-12-30T23:55:42.244Z"
+  }, {
+    "versions": ["1.0.1", "1.0.2", "1.1.0"],
+    "name": "items",
+    "description": "Bare minimum async methods",
+    "readme": "#items\n\nBare minimum async methods adapted specifically for the very limited **hapi** core use cases. Use\n[async](https://github.com/caolan/async) for all your application needs.\n\n[![Build Status](https://secure.travis-ci.org/hapijs/items.png)](http://travis-ci.org/hapijs/items)\n\nLead Maintainer - [Raquel Vélez](https://github.com/rockbot)\n",
+    "stars": [],
+    "dependentCount": "89",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/hapijs/items"
+    },
+    "dependencies": {},
+    "keywords": ["parallel", "serial", "async"],
+    "devDependencies": {
+      "lab": "4.x.x"
+    },
+    "publisher": {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "hueniverse",
+      "email": null
+    }],
+    "version": "1.1.0",
+    "license": {
+      "name": "BSD",
+      "url": null
+    },
+    "lastPublishedAt": "2014-10-16T15:50:42.927Z"
+  }, {
+    "versions": ["1.0.0", "1.0.1"],
+    "name": "madlibify",
+    "description": "simple module for creating a madlibs-like game :-)",
+    "readme": "# Madlibify\nCreate your own [madlibs](https://en.wikipedia.org/wiki/Mad_Libs) word game!\n\n## To use\n```js\nvar mads = require('madlibify');\n\nvar text = \"The quick {{color1}} {{noun1}} jumps over the lazy {{noun2}}\";\n\n// Parse out the fill-in-the-blanks\nvar blanks = mads.parse(text); \nconsole.log(blanks); // [\"color1\", \"noun1\", \"noun2\"]\n\n// Fill in the blanks!\nvar serious = {\n  color1: 'brown',\n  noun1: 'fox',\n  noun2: 'dog'\n};\nvar madlibs = mads.compile(text, serious);\nconsole.log(madlibs); // The quick brown fox jumps over the lazy dog\n\n// Be silly!\nvar silly = {\n  color1: 'blue',\n  noun1: 'truck',\n  noun2: 'tree'\n};\nvar madlibs = mads.compile(text, silly);\nconsole.log(madlibs); // The quick blue truck jumps over the lazy tree\n",
+    "stars": [],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "dependencies": {
+      "lodash": "^3.5.0",
+      "handlebars": "^3.0.0"
+    },
+    "keywords": [],
+    "devDependencies": {
+      "tap": "^0.7.1"
+    },
+    "publisher": {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }],
+    "version": "1.0.1",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-03-20T04:30:31.905Z"
+  }, {
+    "versions": ["1.0.0", "1.0.1", "1.0.2", "1.0.3", "1.0.4", "1.1.0", "1.1.1", "1.1.2", "1.2.0", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.3.0", "2.0.0", "2.0.1", "2.1.0", "2.1.1", "2.1.2", "2.2.0", "2.2.1", "2.2.2", "2.2.3", "2.2.4", "3.0.0", "3.0.1", "4.0.0", "4.1.0", "4.1.1", "4.1.2", "4.1.3", "4.2.0", "4.3.0", "5.0.0", "5.0.1", "5.0.2", "5.1.0"],
+    "name": "marky-markdown",
+    "description": "The thing npm uses to clean up READMEs and other markdown files",
+    "readme": "# marky-markdown\n\nThe thing [npmjs.com](https://www.npmjs.com) uses to clean up READMEs and other markdown files.\n\n## What it does\n\n- Parses markdown with [markdown-it](https://github.com/markdown-it/markdown-it), a fast and [commonmark-compliant](http://commonmark.org/) parser.\n- Removes broken and malicious user input with [sanitize-html](https://www.npmjs.com/package/sanitize-html)\n- Applies syntax highlighting to [GitHub-flavored code blocks](https://help.github.com/articles/github-flavored-markdown/#fenced-code-blocks) using the [highlights](https://www.npmjs.com/package/highlights) library from [Atom](https://atom.io/).\n- Uses [cheerio](https://www.npmjs.com/package/cheerio) to perform various feats of DOM manipulation.\n- Converts headings (h1, h2, etc) into anchored hyperlinks.\n- Converts relative GitHub links to their absolute equivalents.\n- Converts relative GitHub images sources to their GitHub raw equivalents.\n- Converts insecure Gravatar URLs to HTTPS.\n- Wraps embedded YouTube videos so they can be styled.\n- Parses and sanitizes `package.description` as markdown.\n- Applies CSS classes to redundant content that closely matches npm package name and description.\n- Applies CSS classes to badge images, so we can do something interesting with them one day.\n\n## Installation\n\n```sh\nnpm install marky-markdown --save\n```\n\n## Programmatic Usage\n\nmarky-markdown exports a single function. For basic use, that function\ntakes a single argument: a string to convert.\n\n```js\nvar marky = require(\"marky-markdown\")\nmarky(\"# hello, I'm markdown\").html()\n```\n\n### Options\n\nThe exported function takes an optional options object\nas its second argument:\n\n```js\nmarky(\"some trusted string\", {sanitize: false}).html()\n```\n\nThe default options are as follows:\n\n```js\n{\n  sanitize: true,             // remove script tags and stuff\n  highlightSyntax: true,      // run highlights on fenced code blocks\n  prefixHeadingIds: true,     // prevent DOM id collisions\n  serveImagesWithCDN: false,  // use npm's CDN to proxy images over HTTPS\n  debug: false,               // console.log() all the things\n  package: null,              // npm package metadata\n}\n```\n\n### cheerio \"middleware\"\n\nmarky-markdown always returns the generated HTML document as a [cheerio](https://www.npmjs.com/package/cheerio) DOM object that can be queried using a familiar jQuery syntax:\n\n```js\nvar $ = marky(\"![cat](cat.png)\")\n$(\"img\").length\n// => 1\n$(\"img\").attr(\"src\")\n// => \"cat.png\"\n```\n\n### npm packages\n\nPass in an npm `package` object to do stuff like rewriting relative URLs\nto their absolute equivalent on GitHub, normalizing package metadata\nwith redundant readme content, etc\n\n```js\nvar package = {\n  name: \"foo\"\n  name: \"foo is a thing\"\n  repository: {\n    type: \"git\",\n    url: \"https://github.com/kung/foo\"\n  }\n}\n\nmarky(\n  \"# hello, I am the foo readme\",\n  {package: package}\n).html()\n```\n\n## Command-line Usage\n\nYou can use marky-markdown to parse markdown files in the shell.\nThe easiest way to do this is to install globally:\n\n```\nnpm i -g marky-markdown\nmarky-markdown some.md > some.html\n```\n\n## Tests\n\n```sh\nnpm install\nnpm test\n```\n\n## Dependencies\n\n- [cheerio](https://github.com/cheeriojs/cheerio): Tiny, fast, and elegant implementation of core jQuery designed specifically for the server\n- [escape-html](https://github.com/component/escape-html): Escape HTML entities\n- [github-url-to-object](https://github.com/zeke/github-url-to-object): Extract user, repo, and other interesting properties from GitHub URLs\n- [highlights](https://github.com/atom/highlights): Syntax highlighter\n- [highlights-tokens](https://github.com/zeke/highlights-tokens): A list of the language tokens used by the Atom.app [highlights](https://www.npmjs.com/package/highlights) syntax highlighter\n- [html-frontmatter](https://github.com/zeke/html-frontmatter): Extract key-value metadata from HTML comments\n- [js-beautify](https://github.com/beautify-web/js-beautify): jsbeautifier.org for node\n- [lodash](https://github.com/lodash/lodash): A utility library delivering consistency, customization, performance, &amp; extras.\n- [markdown-it](https://github.com/markdown-it/markdown-it): Markdown-it - modern pluggable markdown parser.\n- [sanitize-html](https://github.com/punkave/sanitize-html): Clean up user-submitted HTML, preserving whitelisted elements and whitelisted attributes on a per-element basis\n- [similarity](https://github.com/zeke/similarity): How similar are these two strings?\n- [string](https://github.com/jprichardson/string.js): string contains methods that aren&#39;t included in the vanilla JavaScript string such as escaping html, decoding html entities, stripping tags, etc.\n\n## License\n\nISC\n",
+    "stars": ["amio", "cilindrox", "dentuzhik", "guumaster", "knownasilya", "mattecapu", "thibaultcha", "xmarcos"],
+    "dependentCount": "12",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/npm/marky-markdown"
+    },
+    "dependencies": {
+      "slugg": "^0.1.2",
+      "similarity": "^1.0.1",
+      "sanitize-html": "^1.6.1",
+      "markdown-it": "^3.0.4",
+      "lodash": "^2.4.1",
+      "language-stylus": "^0.5.2",
+      "language-ini": "^1.7.0",
+      "language-haxe": "^0.2.1",
+      "language-glsl": "^1.0.0",
+      "language-erlang": "^2.0.0",
+      "language-dart": "^0.1.1",
+      "html-frontmatter": "^1.3.2",
+      "highlights-tokens": "^1.0.1",
+      "highlights": "^1.2.0",
+      "github-url-to-object": "^1.4.2",
+      "cheerio": "^0.18.0",
+      "atom-language-nginx": "^0.4.0"
+    },
+    "keywords": ["npm", "github", "frontmatter", "html", "syntax highlighting", "documentation", "md", "markdown", "readme"],
+    "devDependencies": {
+      "wzrd": "^1.1.1",
+      "payform": "1.0.1",
+      "mocha": "^2.0.1",
+      "mkhere": "~1.0.9",
+      "memoize": "~0.1.1",
+      "johnny-five": "^0.8.37",
+      "grunt-angular-templates": "^0.5.7",
+      "glob": "^4.3.5",
+      "express": "^4.10.7",
+      "cordova": "^4.2.0",
+      "cicada": "~1.1.1",
+      "catjs": "^0.4.56",
+      "benchmark": "^1.0.0",
+      "async": "^0.9.0"
+    },
+    "publisher": {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca"
+    }, {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com"
+    }],
+    "version": "5.1.0",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-03-23T23:13:18.892Z"
+  }, {
+    "versions": ["1.1.0", "2.0.0", "2.1.0", "2.1.1", "2.1.2"],
+    "name": "mustache-mailer",
+    "description": "send emails using nodemailer, and mustache templates.",
+    "readme": "# Mustache-Mailer\n\n[![Build Status](https://travis-ci.org/npm/mustache-mailer.png)](https://travis-ci.org/npm/mustache-mailer)\n[![Coverage Status](https://coveralls.io/repos/npm/mustache-mailer/badge.svg?branch=)](https://coveralls.io/r/npm/mustache-mailer?branch=)\n\nA mustache-template-backed mailer. Built with [handlebars](https://www.npmjs.com/package/handlebars#readme),\nand [nodemailer](https://www.npmjs.com/package/nodemailer), inspired by ActionMailer.\n\n# Usage\n\n1. create a templates directory with the following naming convention:\n  * `foo.text.hbs`, for text email templates.\n  * `foo.meta.hbs`, meta information in JSON format, e.g., `subject`.\n  * `foo.html.hbs`, for html email templates.\n\n2. instantiate `MustacheMailer` with:\n  * `transport`: the transport module you wish to use, e.g., SES.\n  * `templateDir`: the path to the template directory.\n\n```js\nvar mm = new MustacheMailer({\n  transport: require('nodemailer-ses-transport')({\n      accessKeyId: 'AWSACCESSKEY',\n      secretAccessKey: 'AWS/Secret/key'\n  }),\n  templateDir: './mail-templates'\n});\n```\n\n3. use the `MessageMailer` instance to grab a template:\n  * if it sees an `html` template and a `text` template, both will be sent.\n  * any variable passed to `sendMail` are sent to `nodemailer`, and\n    to the mustache templates.\n\n```js\nvar msg = mm.message('confirmation', function(err, msg) {\n  msg.sendMail({\n    to: 'bencoe@gmail.com',\n    name: 'Ben',\n    id: 'adfasdfadsfasdf'\n  });\n}\n```\n\n# `tokenFacilitator` Plugin\n\nIt often arises that you'd like to toss a token inside an email, e.g.,\nclick this confirmation link to change your password.\n\nFor generating these tokens, MustacheMailer allows you to install a\n`tokenFacilitator` plugin:\n\n## When instantiating MustacheMailer:\n\n```js\nvar mm = new MustacheMailer({\n  transport: mock,\n  templateDir: path.resolve(__dirname, './fixtures'),\n  // a fake token facilitator.\n  tokenFacilitator: {\n    generate: function(data, cb) {\n      setTimeout(function() {\n        data.email.should.eql('zeke@example.com');\n        data.name.should.eql('Zeke');\n        return cb(null, parseInt(Math.random() * 256));\n      }, 20);\n    }\n  }\n});\n```\n\n# In the template\n\n```mustache\nhttp://example.com/{{{tokenHelper name=name email=email}}}\n```\n\n* the arguments will be stored as `key`, `value` pairs in data.\n",
+    "stars": [],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://www.github.com/npm/mustache-mailer"
+    },
+    "dependencies": {
+      "yargs": "^3.0.4",
+      "nodemailer": "^1.3.0",
+      "lodash": "^3.2.0",
+      "handlebars-async": "0.0.3",
+      "handlebars": "^3.0.0",
+      "bluebird": "^2.9.9"
+    },
+    "keywords": ["mail", "mustache", "nodemailer", "template"],
+    "devDependencies": {
+      "nodemailer-mock-transport": "^1.0.0",
+      "mocoverage": "^1.0.0",
+      "mocha-lcov-reporter": "0.0.1",
+      "mocha": "^2.1.0",
+      "coveralls": "^2.11.2",
+      "chai": "^2.0.0",
+      "blanket": "^1.1.6"
+    },
+    "publisher": {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca"
+    }],
+    "version": "2.1.2",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-02-18T22:44:04.416Z"
+  }, {
+    "versions": ["0.1.0", "0.2.0", "0.2.1", "0.2.2", "1.0.0", "2.0.0", "2.1.0"],
+    "name": "newww",
+    "description": "The npmjs.com website",
+    "readme": "# newww\n\n[![Build Status](https://travis-ci.org/npm/newww.png)](https://travis-ci.org/npm/newww)\n\nWe're using [Hapi](https://github.com/spumko/hapi) as our framework for the npm website. We wrote all about why we chose Hapi in [a blog\npost](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability).\n\nIf you'd like to contribute to this project,\n[please do](https://github.com/npm/newww/blob/master/CONTRIBUTING.md)!\n\n## Application Structure\n\nLet's take a tour of the app.\n\n### Assets\n\nThe [assets](assets) directory contains all the frontend stuff: JavaScript, stylesheets, images, fonts, robots.txt, favicon.ico, etc. The [gulp process](gulpfile.js) watches this directory for file changes, and outputs everything to the [static](static) directory, which is [ignored by git](.gitignore) to prevent automated version control noise.\n\n- Browserify [assets/scripts/index.js](assets/scripts/index.js)\n- Concatenate non-browserify JavaScripts in [assets/scripts/vendor](assets/scripts/vendor)\n\n### Styles\n\nWe're using Stylus, a CSS preprocessor with clean syntax and all the bells and whistles one would expect from a CSS preprocessor like variables, mixins, color manipulation functions, autoprefixing, etc. It's less of a hassle than Sass because it doesn't have C or Ruby dependencies.\n\n[assets/styles/index.styl](assets/styles/index.styl) is the master stylesheet, which is converted by the  [gulp process](gulpfile.js) to [static/styles/index.css](static/styles/index.css).\n\nFor more information, see the [style guide](assets/styles/README.md).\n\n### Templates\n\nWe're using [Handlebars](http://handlebarsjs.com/) as our templating engine. Server-rendered templates live in [templates](templates). Frontend templates live in [assets/templates](assets/templates). They are browserified into the bundled JS file using the `hbsfy` transform.\n\n### Locales\n\nA rudimentary localization effort is under way. The [locales](locales) directory contains javascript files that export translations of various strings used throughout the app.\n\n### Content Security Policy (CSP)\n\nWe use the [blankie](https://github.com/nlf/blankie) Hapi plugin to enforce a strict content security policy that disallows execution of unsafe Javascript. It's defined in [config.js](config.js).\n\n### Routes\n\nEvery route in the application is defined in [routes.js](routes.js).\n\n### Facets\n\nA **facet** is a way of separating different business-logic bits of the app. They're essentially just folders for holding handlers (aka controllers) for various routes.\n\nThere are currently five facets:\n\n* The **company** facet focuses on all the npm, Inc. bits:\n\t* / (Home)\n\t* Business partnerships (i.e. the Who's Hiring? page)\n\t* Static documents (i.e. jobs, about, contact, policies)\n\n* The **enterprise** facet takes care of our npm Enterprise signup process.\n\n* The **user** facet focuses on all the things that users who visit the site might care about:\n\t* Login/logout\n\t* Editing profiles\n\t* Editing email\n\t* Viewing profiles\n\t* Setting/Resetting passwords\n\t* Signing up\n\n* The **registry** facet focuses on the bits that specifically pertain to the registry/using npm:\n\t* Package pages\n\t* Documentation\n\t* Browsing (i.e. keywords)\n\t* Search\n\t* Download counts\n  * Starring packages\n\n* The **ops** facet focuses on the things that we care about from an operational standpoint, but don't really fall into any of the other buckets:\n\t* Healthchecks\n\t* Content Security Policy logging\n\n### Services\n\nA service is a Hapi plugin that can be used by any handler. They're a lot like models, but they are completely encapsulated so that they can (eventually) be spun out into entirely independent services. This may change eventually, though, because the separated tests make it hard to keep track of all the moving pieces.\n\nAn example:\n\n_In `services/downloads/`:_\n\n```js\n  service.method('downloads.getAllDownloadsForPackage', ...);\n```\n\n_Then, in `facets/registry/show-package.js`:_\n\n```js\n  var getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;\n\n  // Show download count for the last day, week, and month\n  getAllDownloadsForPackage(pkg.name, function (err, downloads) {\n\n    opts.package.downloads = downloads;\n\n    reply.view('registry/package-page', opts);\n  });\n\n```\n\n## Tests\n\nWe're using [Lab](https://github.com/spumko/lab) as our testing utility and\n[Code](https://www.npmjs.com/package/code) for assertions.\n\n```sh\nnpm install\nnpm test\n```\n\nIf you have npm 2.0.0 or greater installed ([which you should](https://docs.npmjs.com/getting-started/installing-node)),\nyou can pass [additional arguments](https://docs.npmjs.com/cli/run-script) to scripts. This handy feature\nallows for more granular control of the tests you want to run:\n\n```sh\n# a directory\nnpm test -- test/handlers\n\n# a file\nnpm test -- test/models/user.js\n```\n\n## Code\n\nWe're using semi-colons and comma-last. No rhyme or reason; just cuz.\n\n## Running the server locally\n\nFirst, clone this repo. Then copy some configuration files, and modify them to suit your needs:\n\n```sh\ncp numbat-config.example.js numbat-config.js\ncp .env.example .env\ntouch config.admin.js\n```\n\nIf you have a reasonably new machine, we strongly recommend using Virtualbox\nand Vagrant to run a pre-configured VM containing [couchdb](http://couchdb.apache.org/),\n[redis](http://redis.io/), and [elasticsearch](http://www.elasticsearch.org/),\nall ready to go. If your machine struggles to run a VM, or you are suspicious\nof VMs, you will need to install them yourself.\n\n### 1. Recommended setup: pre-built VM\n\nFirst [install the latest version of VirtualBox](https://www.virtualbox.org/wiki/Downloads), which is\nfree for personal use. There is [an issue](https://github.com/npm/newww/issues/265) with some earlier versions of VirtualBox, so you may need to update it.\n\nThen [install Vagrant](https://www.vagrantup.com/downloads.html), also free.\n\nNow go into the root of the repo and run\n\n`vagrant up`\n\nthis will download the VM image (~700MB, so go grab a cup of coffee) and start\nthe VM. After this first run, the VM image will already be available on your\nmachine, so vagrant up will only take a few seconds.\n\nNow get access to the machine, super simple:\n\n`vagrant ssh`\n\nYou are now inside the VM! The code in the repo is linked to `/vagrant`, the\ndirectory you find yourself in when you login. Changes made outside the VM\nwill be immediately reflected inside of it and vice versa.\n\n### 2. npm install\n\nNote that you should be *inside* the VM and at /vagrant when you do this:\n\n`npm install`\n\n### 3. Start your databases\n\nAgain, from inside the VM at /vagrant, run\n\n`npm run dev-db`\n\nYou should see couch, redis and elasticsearch all being started. This can\ntake a little while the first time you start up (the couch instance will replicate a few popular packages from the main registry), so wait until you see \"STARTING DEV SITE NOW\".\n\n### 4. Start the web server\n\nIn a separate terminal outside of vagrant but inside the `newww` directory, run `npm run dev`. (You can also\nrun `npm run dev` from inside vagrant, but you'll need to change your host to\n'0.0.0.0' in `config.js`. We recommend running it outside of vagrant, but\nit's totally up to you.)\n\nFor ease of development, we've got a Gulpfile that uses\n[gulp](http://gulpjs.com/). It watches appropriate directories and restarts stuff for you when other stuff changes. Now, you don't have to use gulp if you don't want to; just change the `start` line in the root `package.json` to `start: \"node server.js\"`.\n\nAt this point you should be able to go to `https://localhost:15443`.\n\nThat's it! You are good to go. You can edit the code from outside the VM and the changes will be reflected in the VM. When you're done, remember to exit the vm and run `vagrant suspend` which will save the VM. `vagrant up` will bring it back much faster after the\nfirst run.\n\n### Under the hood\n\nAll the `npm run` commands are simply running the script `dev/go.js` with\ndifferent arguments. They dump redis and couchdb logs to stdio, and\nautomatically run the server logs (which are just JSON) into bunyan, which\nparses and prints them neatly.\n\nThe couchdb clones 1/256th of the published packages, and comes with a\nhard-coded set of user accounts for testing. It has a user named 'admin' with\nthe password 'admin', which you can use to log in and do stuff using futon,\nby going here:\n\n[http://localhost:15984/_utils/](http://localhost:15984/_utils/)\n\nIt is also running a copy of Elasticsearch, which you can hit locally if you\nwant to test queries or perform admin:\n\n[http://localhost:9200/](http://localhost:9200/)\n\nYou should also have access to both the\n[head](http://mobz.github.io/elasticsearch-head/) and\n[kopf](https://github.com/lmenezes/elasticsearch-kopf) Elasticsearch\nplugins, accessible at http://localhost:9200/_plugin/head/ and\nhttp://localhost:9200/_plugin/kopf/, respectively.\n",
+    "stars": [],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/npm/newww"
+    },
+    "dependencies": {
+      "validate-npm-package-name": "^1.2.0",
+      "truncate": "^1.0.4",
+      "tipsy-browserify": "^1.0.0",
+      "stylus": "^0.45.0",
+      "stripe": "^2.7.3",
+      "similarity": "^1.0.1",
+      "scooter": "^2.0.1",
+      "schemeless": "^1.0.0",
+      "sanitizer": "^0.1.1",
+      "request": "^2.51.0",
+      "replify": "~1.2.0",
+      "repl-client": "~0.3.0",
+      "redis": "^0.12.1",
+      "pkgs": "^1.1.0",
+      "parse-link-header": "^0.2.0",
+      "number-grouper": "0.0.1",
+      "numbat-emitter": "~1.1.0",
+      "numbat-collector": "~1.0.1",
+      "npm2es": "git://github.com/npm/npm2es",
+      "npm-user-validate": "^0.1.0",
+      "npm-typeahead": "^0.2.0",
+      "npm-humans": "^2.0.1",
+      "npm-expansions": "^1.14.0",
+      "nodemailer-ses-transport": "^1.1.0",
+      "nodemailer": "^1.0.0",
+      "node-uuid": "^1.4.1",
+      "nib": "^1.0.2",
+      "murmurhash": "0.0.2",
+      "mousetrap": "0.0.1",
+      "moment": "^2.6.0",
+      "marked": "^0.3.2",
+      "malarkey": "^1.1.0",
+      "mailchimp-api": "^2.0.7",
+      "leven": "^1.0.1",
+      "jquery": "^2.1.1",
+      "joi": "^5.1.0",
+      "is-url": "^1.1.0",
+      "hoek": "^2.11.0",
+      "hiredis": "^0.1.17",
+      "highlight.js": "^8.4.0",
+      "hbsfy": "^2.2.0",
+      "hapi-common-log": "^1.1.0",
+      "hapi-auth-cookie": "^2.0.0",
+      "hapi": "^8.1.0",
+      "handlebars-helper-pluralize": "^1.0.2",
+      "handlebars": "^2.0.0-alpha.2",
+      "gravatar": "^1.0.6",
+      "github-url-to-object": "^1.4.0",
+      "github-url-from-git": "^1.1.1",
+      "elasticsearch": "^2.2.0",
+      "deck": "0.0.4",
+      "crumb": "^4.0.0",
+      "couch-login": "^1.0.1",
+      "chunk": "0.0.2",
+      "cheerio": "^0.17.0",
+      "catbox-redis": "^1.0.4",
+      "catbox": "^4.2.0",
+      "cargo": "^0.8.0",
+      "boom": "^2.6.1",
+      "bole": "~1.0.0",
+      "blankie": "^1.0.0",
+      "async-cache": "^0.1.5",
+      "async": "^0.9.0",
+      "accept-language-parser": "^1.0.2"
+    },
+    "keywords": [],
+    "devDependencies": {
+      "vinyl-source-stream": "^0.1.1",
+      "touch": "0.0.3",
+      "sinon": "^1.10.3",
+      "replicate": "^0.2.0",
+      "once": "^1.3.0",
+      "nock": "^0.42.3",
+      "lodash": "^2.4.1",
+      "lab": "^5.1.1",
+      "imagemin-pngcrush": "^1.0.0",
+      "gulp-uglify": "^0.3.0",
+      "gulp-stylus": "^1.0.0",
+      "gulp-streamify": "0.0.5",
+      "gulp-rename": "^1.2.0",
+      "gulp-nodemon": "^1.0.2",
+      "gulp-concat": "^2.2.0",
+      "gulp": "^3.6.2",
+      "grunt": "^0.4.5",
+      "dotenv": "^0.4.0",
+      "code": "^1.2.1",
+      "browserify": "^5.8.0",
+      "bistre": "^1.0.0"
+    },
+    "publisher": {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "jonathanong",
+      "email": "jonathanrichardong@gmail.com"
+    }, {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com"
+    }, {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }],
+    "version": "2.1.0",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-01-23T01:12:45.398Z"
+  }, {
+    "versions": ["1.0.0", "1.1.0", "1.1.1"],
+    "name": "newww-metrics",
+    "description": "a numbat metrics wrapper for newww",
+    "readme": "newww-metrics\n=============\n\na [numbat metrics](https://www.npmjs.org/package/numbat-emitter) wrapper for newww\n\n## Metrics we currently care about:\n\n* When we hit certain pages\n* How long it takes for a page to load\n* How long it takes for data to come from CouchDB\n\n## Installation\n\n```shell\nnpm install newww-metrics\n```\n\n## Usage\n\n```javascript\n// In the server index\n\nvar  MetricsClient = require('newww-metrics');\nvar metrics = new MetricsClient(config.metrics);\n\n```\n\n```javascript\n// On a given route\n\nvar metrics = require('newww-metrics')();\n\nvar timer = { start: Date.now() };\n\n// ... stuff happens\n\ntimer.end = Date.now();\nmetrics.addPageLatencyMetric(timer, 'showPackage');\n\naddMetric({ name: 'showPackage', package: request.params.package });\n\n```\n",
+    "stars": [],
+    "dependentCount": "1",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git@github.com:npm/newww-metrics.git"
+    },
+    "dependencies": {
+      "numbat-emitter": "^1.0.0"
+    },
+    "keywords": ["metrics", "newww"],
+    "devDependencies": {},
+    "publisher": {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }],
+    "version": "1.0.0",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2014-09-26T00:29:11.195Z"
+  }, {
+    "versions": ["0.0.2", "0.0.3", "0.0.4", "0.0.5", "0.0.6"],
+    "name": "nodealytics",
+    "description": "Google Analytics API for Node projects",
+    "readme": "# Nodealytics\n\n(Formerly Googalytics)\n\nSimple node module to send custom server-side events to Google Analytics\n\nHeavily influenced by the Gabba project from the guys at the Hybrid Group (http://github.com/hybridgroup/gabba)\n\n## Usage\n\n`npm install nodealytics`\n\n```javascript\n// initialize\nvar NA = require(\"nodealytics\");\nNA.initialize('UA-12345678-1', 'someplace.com', function () {\n  //MORE GOOGLE ANALYTICS CODE HERE\n});\n```\n\n## Examples\n\n### Track Page\n\n```javascript\nNA.trackPage('Page Title', '/page/path', function (err, resp) {\n  if (!err && resp.statusCode === 200) {\n    console.log('Page has been tracked with Google Analytics');\n  }\n});\n```\n\n### Track Page with Referal\n\n```javascript\nNA.trackPage('Page Title', '/page/path', {utmr:\"http://www.google.com\"}, function (err, resp) {\n  if (!err && resp.statusCode === 200) {\n    console.log('Page has been tracked with Google Analytics');\n  }\n});\n```\n\n### Track Event\n\n```javascript\nNA.trackEvent('test event', 'boom', function (err, resp) {\n  if (!err && resp.statusCode === 200) {\n    console.log('Event has been tracked with Google Analytics');\n  }\n});\n```\n\n### Set Proxy\n\n```javascript\nNA.setProxy('http://your.proxy.com', 'title', function (err, resp) {\n  NA.trackEvent(...);\n});\n```\n\n### What do those variables mean?!\n\nThe answers, as per usual, can be learned from the Google: https://developers.google.com/analytics/resources/articles/gaTrackingTroubleshooting#gifParameters\n",
+    "stars": ["antoniobrandao"],
+    "dependentCount": "27",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/skookum/nodealytics.git"
+    },
+    "dependencies": {
+      "request": "2.9.203"
+    },
+    "keywords": [],
+    "devDependencies": {
+      "mocha": "1.3.0",
+      "should": "1.0.0"
+    },
+    "publisher": {
+      "name": "iamdustan",
+      "email": "dustan.kasten@gmail.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "iamdustan",
+      "email": "dustan.kasten@gmail.com"
+    }, {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }],
+    "version": "0.0.6",
+    "license": {
+      "name": "MIT",
+      "url": null
+    },
+    "lastPublishedAt": "2014-05-28T12:22:46.282Z"
+  }, {
+    "versions": ["1.0.0", "1.1.0", "1.1.1", "1.2.0", "1.3.0", "1.3.1", "1.4.0"],
+    "name": "npm-email-templates",
+    "description": "shared templates for transactional npm emails.",
+    "readme": "# npm-email-templates\n\nshared templates for transactional npm emails.\n",
+    "stars": [],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/npm/email-templates.git"
+    },
+    "dependencies": {},
+    "keywords": ["handlebars", "templates", "mail", "email"],
+    "devDependencies": {},
+    "publisher": {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "zeke",
+      "email": "zeke@sikelianos.com"
+    }, {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca"
+    }],
+    "version": "1.4.0",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-03-11T18:04:44.328Z"
+  }, {
+    "versions": ["1.0.0", "1.1.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0", "2.0.0", "2.0.1", "2.0.2"],
+    "name": "npm-expansions",
+    "description": "What does n-p-m stand for?",
+    "readme": "# npm-expansions\n[![Build Status](http://img.shields.io/travis/npm/npm-expansions.svg?style=flat-square)](https://travis-ci.org/npm/npm-expansions) [![NPM version](http://img.shields.io/npm/v/npm-expansions.svg?style=flat-square)](https://www.npmjs.org/package/npm-expansions) [![NPM license](http://img.shields.io/npm/l/npm-expansions.svg?style=flat-square)](https://www.npmjs.org/package/npm-expansions)\n\nWhat does n-p-m stand for?\n\n## What This Is\n\nThis is the source code for the three-word thingies that randomly appear in the header of the [npmjs.com](https://npmjs.com) website. Examples include:\n\n- Naughty Push Message\n- Nectar of the Programming Masses\n- Needless Pachouli Manufacture\n- Neil Patrick's Mansion\n- Never Program Mad\n- Never Push to Master\n- Neverending Plethora of Modules\n- Newton's Programmatic Measurements\n- Newts Parading Majestically\n- Nice Poodle, Mister\n- Nickel Plated Moose\n- Nineties Party Mix\n- Null Pointer Missing\n- Nymphets Playing Mahjong\n\n## How to Contribute\n\nAdd your own expansion to [index.txt](index.txt), then send us a pull request! If you think of multiple possibilities, it's best to submit them as separate PRs, as we may like some but not others.\n\nSome other suggestions:\n\n- be meaningful. Three random words is not good enough.\n- be funny. This is very subjective, we realize, so try not to take it personally if we don't get it.\n- be novel. If your expansion starts with \"No\", \"New\", \"Never\" or \"Node\" the other two words better be pretty great.\n- avoid hyphenation, especially \"non-\". Yes, there are some in there already. Sorry.\n- use actual words. You can't just make up random new words. Unless they're really good.\n- Avoid names of people and products (other than npm ;-))\n- avoid anything that even slightly hints of violating npm's [code of conduct](https://www.npmjs.com/policies/conduct/). These are literally the first words that appear on the website, and our audience is very broad, so it's best to avoid things that can be misconstrued.\n",
+    "stars": ["mhaidarh", "nfd", "wenbing", "zeke"],
+    "dependentCount": "2",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/npm/npm-expansions"
+    },
+    "dependencies": {},
+    "keywords": ["npm", "naming-is-hard", "names", "acronym", "abbreviations"],
+    "devDependencies": {
+      "tap": "^0.4.13"
+    },
+    "publisher": {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "iarna",
+      "email": "me@re-becca.org"
+    }, {
+      "name": "ceejbot",
+      "email": "ceejceej@gmail.com"
+    }, {
+      "name": "othiym23",
+      "email": "ogd@aoaioxxysz.net"
+    }, {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca"
+    }, {
+      "name": "seldo",
+      "email": "npmjs@seldo.com"
+    }, {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "isaacs",
+      "email": "i@izs.me"
+    }, {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com"
+    }],
+    "version": "2.0.2",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-03-28T07:40:07.514Z"
+  }, {
+    "versions": ["1.0.0", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.6"],
+    "name": "npm-humans",
+    "description": "The humans behind npm, Inc",
+    "readme": "# npm-humans\n\nThe humans behind npm, Inc\n",
+    "stars": ["rockbot"],
+    "dependentCount": "2",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/npm/humans"
+    },
+    "dependencies": {},
+    "keywords": ["humans", "npm"],
+    "devDependencies": {},
+    "publisher": {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca"
+    }, {
+      "name": "mmalecki",
+      "email": "maciej.malecki@notimplemented.org"
+    }, {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com"
+    }],
+    "version": "2.0.6",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-03-20T23:56:26.925Z"
+  }, {
+    "versions": ["2.1.4", "2.2.0", "2.3.0", "2.3.1", "2.3.2", "2.3.3", "2.3.4", "2.3.5", "2.3.6", "2.3.7", "2.4.0", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.5.0", "2.5.1", "2.5.2", "2.5.3", "2.5.4", "2.5.5", "2.6.2", "2.6.3", "2.6.4", "2.6.5", "2.6.6", "2.6.7"],
+    "name": "npm-registry-couchapp",
+    "description": "The CouchApp implementation of an npm registry",
+    "readme": "# npm-registry-couchapp\n\n[![Build Status](https://img.shields.io/travis/npm/npm-registry-couchapp/master.svg)](https://travis-ci.org/npm/npm-registry-couchapp)\n\nThe design doc for The npm Registry CouchApp\n\n# Installing\n\nYou need CouchDB version 1.4.0 or higher.  1.5.0 or higher is best.\n\nOnce you have CouchDB installed, create a new database:\n\n    curl -X PUT http://localhost:5984/registry\n\nYou'll need the following entries added in your `local.ini`\n\n```ini\n[couch_httpd_auth]\npublic_fields = appdotnet, avatar, avatarMedium, avatarLarge, date, email, fields, freenode, fullname, github, homepage, name, roles, twitter, type, _id, _rev\nusers_db_public = true\n\n[httpd]\nsecure_rewrites = false\n\n[couchdb]\ndelayed_commits = false\n```\n\nClone the repository if you haven't already, and cd into it:\n\n    git clone git://github.com/npm/npm-registry-couchapp\n    cd npm-registry-couchapp\n\nNow install the stuff:\n\n    npm install\n\nSync the ddoc to `_design/scratch`\n\n    npm start \\\n      --npm-registry-couchapp:couch=http://admin:password@localhost:5984/registry\n\nNext, make sure that views are loaded:\n\n    npm run load \\\n      --npm-registry-couchapp:couch=http://admin:password@localhost:5984/registry\n\nAnd finally, copy the ddoc from `_design/scratch` to `_design/app`\n\n    npm run copy \\\n      --npm-registry-couchapp:couch=http://admin:password@localhost:5984/registry\n\nOf course, you can avoid the command-line flag by setting it in your\n~/.npmrc file:\n\n    _npm-registry-couchapp:couch=http://admin:password@localhost:5984/registry\n\nThe `_` prevents any other packages from seeing the setting (with a\npassword) in their environment when npm runs scripts for those other\npackages.\n\n# Replicating the Registry\n\nTo replicate the registry **without attachments**, you can point your\nCouchDB replicator at <https://skimdb.npmjs.com/registry>.  Note that\nattachments for public packages will still be loaded from the public\nlocation, but anything you publish into your private registry will\nstay private.\n\nTo replicate the registry **with attachments**, consider using\n[npm-fullfat-registry](https://npmjs.org/npm-fullfat-registry).\nThe fullfatdb CouchDB instance is\n[deprecated](http://blog.npmjs.org/post/83774616862/deprecating-fullfatdb).\n\n# Using the registry with the npm client\n\nWith the setup so far, you can point the npm client at the registry by\nputting this in your ~/.npmrc file:\n\n    registry = http://localhost:5984/registry/_design/app/_rewrite\n\nYou can also set the npm registry config property like:\n\n    npm config set \\\n      registry=http://localhost:5984/registry/_design/app/_rewrite\n\nOr you can simple override the registry config on each call:\n\n    npm \\\n      --registry=http://localhost:5984/registry/_design/app/_rewrite \\\n      install <package>\n\n# Optional: top-of-host urls\n\nTo be snazzier, add a vhost config:\n\n    [vhosts]\n    registry.mydomain.com:5984 = /registry/_design/app/_rewrite\n\nWhere `registry.mydomain.com` is the hostname where you're running the\nthing, and `5984` is the port that CouchDB is running on. If you're\nrunning on port 80, then omit the port altogether.\n\nThen for example you can reference the repository like so:\n\n    npm config set registry http://registry.mydomain.com:5984\n",
+    "stars": [],
+    "dependentCount": "5",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/npm/npm-registry-couchapp"
+    },
+    "dependencies": {
+      "semver": "4",
+      "json": "^9.0.2",
+      "couchapp": "~0.11.0"
+    },
+    "keywords": ["couch", "couchdb", "ddoc", "doc", "design", "couchapp", "registry", "npm"],
+    "devDependencies": {
+      "which": "^1.0.5",
+      "tap": "*",
+      "rimraf": "~2.2.6",
+      "parse-json-response": "^1.0.1",
+      "json": "^9.0.1",
+      "request": "^2.42.0"
+    },
+    "publisher": {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "iarna",
+      "email": "me@re-becca.org"
+    }, {
+      "name": "othiym23",
+      "email": "ogd@aoaioxxysz.net"
+    }, {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca"
+    }, {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "isaacs",
+      "email": "i@izs.me"
+    }],
+    "version": "2.6.7",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-03-16T21:12:20.237Z"
+  }, {
+    "versions": ["1.0.0", "1.0.1", "1.1.0", "1.2.0"],
+    "name": "pkgs",
+    "description": "Fetch npm registry metadata for a list of npm package names",
+    "readme": "# pkgs\n\nFetch npm registry metadata for a list of npm package names\n\n## Installation\n\nDownload node at [nodejs.org](http://nodejs.org) and install it, if you haven't already.\n\n```sh\nnpm install pkgs --save\n```\n\n## Usage\n\n```js\nvar pkgs = require(\"pkgs\")\n\n// Pass in an array of package names\npkgs([\"ghwd\", \"domready\", \"lodash.pluck\"], function(err, packages){\n  console.log(err, packages)\n})\n\n// Pick some desired properties\nvar names = [\"ghwd\", \"domready\", \"lodash.pluck\"]\nvar options = {\n  pick: [\"name\", \"description\", \"repository\"]\n}\npkgs(names, options, function(err, packages){\n  console.log(err, packages)\n})\n\n// Alternatively, omit some undesireable properties\nvar names = [\"ghwd\", \"domready\", \"lodash.pluck\"]\nvar options = {\n  omit: [\"versions\", \"readme\"]\n}\npkgs(names, options, function(err, packages){\n  console.log(err, packages)\n})\n```\n\n## Tests\n\n```sh\nnpm install\nnpm test\n```\n\n\n## Dependencies\n\n- [async](https://github.com/caolan/async): Higher-order functions and common patterns for asynchronous code\n- [lodash](https://github.com/lodash/lodash): A utility library delivering consistency, customization, performance, &amp; extras.\n- [npm-stats](https://github.com/hughsk/npm-stats): Convenience module for getting back data from an NPM registry\n\n\n## Dev Dependencies\n\n- [mocha](https://github.com/mochajs/mocha): simple, flexible, fun test framework\n\n\n## License\n\nISC\n\n_Generated by [package-json-to-readme](https://github.com/zeke/package-json-to-readme)_\n",
+    "stars": ["zeke"],
+    "dependentCount": "5",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/zeke/pkgs"
+    },
+    "dependencies": {
+      "npm-stats": "^1.0.0",
+      "lodash": "^2.4.1",
+      "async": "^0.9.0"
+    },
+    "keywords": ["npm", "http", "metadata", "package", "registry"],
+    "devDependencies": {
+      "mocha": "^2.0.1"
+    },
+    "publisher": {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com"
+    }],
+    "version": "1.2.0",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2014-11-04T06:15:11.176Z"
+  }, {
+    "versions": ["0.0.1", "0.0.2", "0.0.3", "0.0.4", "0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9", "0.1.0", "0.1.1", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.0", "0.4.1", "1.0.0", "1.1.0"],
+    "name": "redsess",
+    "description": "Yet another redis session thing for node",
+    "readme": "# redsess\n\nYet another redis session thing for node.\n\nThis is built on top of [jed/cookies](https://github.com/jed/cookies).\nYou can optionally pass in a KeyGrip instance, or an array of keys to\nuse to sign cookies.\n\n## Breaking Changes in 1.0.0\n\nSessions are now stored as stringified JSON objects using `set` and `get`.\nThis means that *all sessions that were created using previous versions of\nredsess will need to be cleared out/nuked/obliterated*. Before upgrading\nto 1.0.0, let your users know that their sessions will be removed!\n\n## Example\n\n```javascript\nvar RedSess = require('redsess')\n, http = require('http')\n, Cookies = require('cookies')\n, Keygrip = require('keygrip')\n, keys = new Keygrip(['some secret keys here'])\n\n// Create a client with the options that you'd pass to node_redis\nRedSess.createClient(redisOptions)\n\nhttp.createServer(function (req, res) {\n  var session = new RedSess(req, res, {\n    keys: keys, // if keys are provided, they'll be used\n    cookieName: 's',\n    expire: expirationInSeconds, // default = 2 weeks\n    client: redisClient, // defaults to RedSess.client\n    keys: [ \"this is a string key\" ], // will be made into a keygrip obj\n    keys: new KeyGrip(keys), // this way also works\n  })\n\n  // you can decorate like this if you chose\n  req.session = session\n  res.session = session\n\n  // .. and then some time later ..\n  req.session.get('auth', function (er, auth) {\n    if (!auth) {\n      // redirect to login page\n    } else {\n      // do authorized login things\n    }\n  })\n\n  // .. on the login page, if there's a post ..\n  validateLogin(postedData, function (er, isValid) {\n    if (isValid)\n      req.session.set('auth', postedData)\n  })\n\n  // .. on the logout page ..\n  req.session.del('auth', function (er) {\n    // user is now logged out\n  })\n}).listen(1337)\n```\n\n## Constructor Options\n\n* `expire` {Number} Time in seconds that sessions last Default=2 weeks\n* `cookieName` {String} Cookie name to use for session id's. Default = 's'\n* `keys` A [Keygrip](https://github.com/jed/keygrip) instance to use\n  to sign the session token cookie.  (If an array is passed in, then\n  RedSess will make a KeyGrip obj out of it.)\n* `client` If you have another redis client you'd like to use, then\n  you can do so.\n* `cookies` If you already have a Cookies object, you may pass that\n  in.  If not specified, then it'll make a new one for you.\n* `cookieOptions` an object that extends the options object that is passed to\n  `cookies.set` and `cookies.get`\n\n## Methods\n\nCallbacks are all the standard `cb(er, result)` style.\n\nDeep objects are supported, but cycles in data objects will cause\nterrible explosively bad awful undefined behavior, so DON'T DO THAT.\n\n* RedSess.createClient(opts)\n\nCalls `redis.createClient` with the supplied options.  See\n[node_redis](https://github.com/mranney/node_redis) for more details.\n(opts.host and opts.port are passed to redis.createClient as positional\narguments, not on the configuration object.)\n\nIf there's an `opts.auth` member, then it will use that string as a\npassword to redis.\n\n* session.set(k, v, cb)\n\nSets a key on the session.\n\n* session.set(object, cb)\n\nSets a hash of keys and values on the session.\n\n* session.get(k, cb)\n\nFetches the key from the session.\n\n* session.get(cb)\n\nFetches all keys from the session.  If there is no data in the\nsession, then it'll return `null`.\n\n* session.del(k, cb)\n\nDeletes a key from the session.\n\n* session.del(cb)\n\nDeletes the entire session.\n",
+    "stars": ["dubban"],
+    "dependentCount": "11",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/isaacs/redsess.git"
+    },
+    "dependencies": {
+      "keygrip": "~0.2.2",
+      "redis-atomic-json": "~0.0.2",
+      "cookies": "~0.3.2",
+      "redis": "~0.8.1"
+    },
+    "keywords": [],
+    "devDependencies": {
+      "request": "~2.9.150",
+      "tap": "~0.2.4"
+    },
+    "publisher": {
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "bcoe",
+      "email": "bcoe@uoguelph.ca"
+    }, {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }, {
+      "name": "isaacs",
+      "email": "i@izs.me"
+    }],
+    "version": "1.1.0",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2014-04-19T00:56:43.947Z"
+  }, {
+    "versions": ["1.0.0", "1.0.1", "2.0.0", "2.1.0", "2.1.1"],
+    "name": "token-facilitator",
+    "description": "generates tokens and stores them with relevant data in redis",
+    "readme": "# Token Facilitator\n\nLet's generate tokens and store them in redis!\n\nIt's pretty simple - we generate a random key associated with some data. That data gets stored as a string in redis.\n\n```js\nvar data = {\n  a: 'one',\n  b: 'two'\n};\n\nvar facilitator = new Facilitator({redis: client});\nfacilitator.generate(data, function (err, key) {\n  client.get(key, function (err, data) {\n    expect(data).to.be.a.string();\n    data = JSON.parse(data);\n    expect(data.a).to.equal('one');\n    expect(data.b).to.equal('two');\n    done();\n  });\n});\n```\n\nYou can also set some options! Right now, our options include `timeout` and `prefix`:\n\n```js\nvar opts = {\n  timeout: 10, //seconds\n  prefix: 'something:' // don't forget that separator!\n};\n\nfacilitator.generate(data, opts, function (err, key) {\n  // now the key has a prefix of `something:` and will live for 10 seconds :-)\n}\n\n```\n\n# License\n\nISC\n\n",
+    "stars": [],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/npm/token-generator"
+    },
+    "dependencies": {
+      "lodash": "^3.2.0"
+    },
+    "keywords": ["redis", "token"],
+    "devDependencies": {
+      "code": "^1.3.0",
+      "redis": "^0.12.1",
+      "lab": "^5.2.1"
+    },
+    "publisher": {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }],
+    "version": "2.1.1",
+    "license": {
+      "name": "ISC",
+      "url": "http://opensource.org/licenses/ISC"
+    },
+    "lastPublishedAt": "2015-02-25T22:41:18.555Z"
+  }, {
+    "versions": ["0.0.1", "0.0.2", "0.1.0", "0.2.0", "0.3.0"],
+    "name": "vektor",
+    "description": "A linear algebra module, including vectors, matrices, transformations, etc",
+    "readme": "vektor\n---\nA robotics-focused linear algebra module\n\n### About\nThis code was officially presented at JSConf US 2013. There are slides from the talk here: [AI.js: Robots with Brains](https://t.co/6A5cu2JF58)\n\n### Install\n`npm install vektor`\n\n### Running Tests\n`npm test`\n\n### Vectors\n\n#### initializing a vector\n```` js\nvar v = require('vektor').vector;\n\nvar a = new v(1, 0, 0);\n// or\nvar b = new v({x: 1, y: 2, z: 3});\n````\n\nNote: Vectors can be initialized with 2 or 3 arguments only.\n\n#### add two vectors\n```` js\nvar c = a.add(b); // [2, 2, 3]\n````\n\n#### dot product\n```` js\nvar c = a.dot(b); // 1\n````\n\n#### cross product\n```` js\nvar c = a.cross(b); // [0, -3, 2]\n````\n\n#### distance between two vectors\n```` js\nvar c = a.distanceFrom(b); // 3.6\n````\n\n#### length\n```` js\nvar c = b.length(); // 3.74\n````\n\n#### scale\n```` js\nvar c = b.scale(2); // [2, 4, 6]\n````\n\n-----\n\n### Matrices\n\n#### initializing a matrix\nNote: matrices can be of any size\n\n```` js\nvar m = require('vektor').matrix;\n\nvar A = new m(2); // a 2x2 empty matrix\nvar B = new m(2, 3); // a 2x3 empty matrix\nvar I_3 = new m(3, 3, true); // a 3x3 identity matrix\n````\n\n#### setting values\n```` js\n/* our matrices:\n\n    A = [ [1, 2],\n          [3, 4] ];\n\n    B = [ [5, 6],\n          [7, 8] ];\n*/\n\nA.set(0,0,1);\nA.set(0,1,2);\nA.set(1,0,3);\nA.set(1,1,4);\n\nB.set(0,0,5);\nB.set(0,1,6);\nB.set(1,0,7);\nB.set(1,1,8);\n````\n\n#### getting values\n```` js\nvar c = A.get(1,1); // 4\n````\n\n#### scaling a matrix\n```` js\nvar C = A.scale(-1); // A = [ [-1, -2], [-3, -4] ]\n````\n\n#### adding two matrices\n```` js\nvar C = A.add(B); // C = [ [6, 8], [10, 12] ]\n````\n\n#### multiplying two matrices\n```` js\nvar C = A.dot(B); // C = [ [19, 22], [43, 50] ]\n````\n\n#### getting the transpose\n```` js\nvar C = A.transpose(); // C = [ [1, 3], [2, 4] ]\n````\n\n#### calculating the determinant\n```` js\nvar c = A.det(); // c = -2\n````\n\n#### calculating the trace\nNote: only works with square matrices... for now.\n```` js\nvar c = A.trace(); // c = 5\n````\n\n### Homogenous Matrices (aka Transforms)\n* Translations\n\n### Rotations\n\n#### initializing a rotation matrix\n````js\nvar r = require('vektor').rotate;\n\n// if the second argument is true, the first argument is in degrees\nvar a = new r.RotX(90, true); // matrix for a 90 degree rotation about the x axis\nvar b = new r.RotY(180, true); // matrix for a 180 degree rotation about the y axis\n// if the second argument is false or not set, the first argument is in radians\nvar c = new r.RotZ(2 * Math.PI); // matrix for a 2 Pi radians (360 degrees) rotation about the z axis\nassert.deepEqual(new r.RotX(0, true), new r.RotX(360, true));\nassert.deepEqual(new r.RotX(0), new r.RotX(2 * Math.PI));\n````\n\n#### rotate a vector around axes\n````js\nvar v = require('vektor').vector;\nvar vector = new v([1,0,0]); // original vector\n\n// Rotate (1, 0, 0) by 90 degrees on the Z axis and then by 45 degrees on the X axis\n\nvar rotationMatrix = new r.RotZ(Math.PI/2); // z-axis rotation matrix for Pi/2 radians (90 degrees)\nvector = rotationMatrix.dot(vector); // multiply rotation matrix by vector to rotate the vector\nrotationMatrix = new r.RotX(45, true); // y-axis rotation matrix for 45 degrees (Pi/4 radians)\nvector = rotationMatrix.dot(vector);\nvar coordinates = vector.v // [ -0.707106781187, -0.500000000001, 0.500000000001 ]\n````\n\n### Examples\n* Manipulator\n\n### Coming Soon\n* Tutorials :-)\n\n### Contributions\n_Please, please, please help make this module more robust!_\n\n* Send in pull requests (make sure the tests pass)\n* Discuss additional features in the Issues section\n* Add your name and Github handle here:\n    * Rick Waldron - [rwaldron](https://github.com/rwaldron)\n    * Forbes Lindsay - [ForbesLindesay](https://github.com/ForbesLindesay)\n    * Alexander Beletsky - [alexanderbeletsky](https://github.com/alexanderbeletsky)\n    * Bill Mills - [BillMills](https://github.com/BillMills)\n",
+    "stars": ["bytespider", "dtex", "rockbot"],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "git@github.com:rockbot/vektor.git"
+    },
+    "dependencies": {
+      "benchmark": "^1.0.0"
+    },
+    "keywords": ["transformations", "linear algebra", "matrices", "matrix", "vector"],
+    "devDependencies": {
+      "mocha": "1.15.1",
+      "should": "2.1.1",
+      "underscore": "1.3.3"
+    },
+    "publisher": {
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "rockbot",
+      "email": "hiya@raquelvelez.com"
+    }],
+    "version": "0.3.0",
+    "license": {
+      "name": "MIT",
+      "url": null
+    },
+    "lastPublishedAt": "2014-12-24T22:32:14.611Z"
+  }, {
+    "versions": ["1.0.0", "1.0.1"],
+    "name": "@zeke/ord",
+    "description": "A website/webservice for displaying wikipedia word translations",
+    "readme": "# Ord\n\n[ord.zeke.sikelianos.com](http://ord.zeke.sikelianos.com)\n\n## About\n\n[Ord](http://ord.zeke.sikelianos.com) is a free service for translating words using data from Wikipedia.\nOrd is also the Danish, Swedish, and Norwegian word for\n[word](http://ord.zeke.sikelianos.com/?query=word).\nOrd is hosted on\n[Heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs),\nopen-sourced on\n[GitHub](https://github.com/zeke/translator),\nand maintained by\n[Zeke](https://twitter.com/zeke).\n\n## JSON API\n\nAdd `format=json` to any query to get a JSON response:\n\n[ord.zeke.sikelianos.com/?query=monkey&format=json](http://ord.zeke.sikelianos.com/?query=monkey&format=json)\n\n## License\n\nMIT",
+    "stars": [],
+    "dependentCount": "0",
+    "bugs": null,
+    "global": false,
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/zeke/translator.git"
+    },
+    "dependencies": {
+      "wikipedias": "~0.1.2",
+      "wikipedia-translator": "~1.1.0",
+      "merge": "~1.1.2",
+      "marked": "~0.3.1",
+      "logfmt": "git+https://github.com/zeke/node-logfmt",
+      "jade": "~1.1.5",
+      "harp": "^0.14.0",
+      "express": "^4",
+      "cors": "~2.1.1"
+    },
+    "keywords": ["translation", "wikipedia", "scraping", "language", "words"],
+    "devDependencies": {
+      "supertest": "~0.9.0",
+      "should": "~3.1.2",
+      "nodemon": "^1.2.1",
+      "mocha": "~1.17.1"
+    },
+    "publisher": {
+      "name": "zeke",
+      "email": "zeke@sikelianos.com",
+      "url": null
+    },
+    "maintainers": [{
+      "name": "zeke",
+      "email": "zeke@sikelianos.com"
+    }],
+    "version": "1.0.1",
+    "license": {
+      "name": "MIT",
+      "url": null
+    },
+    "lastPublishedAt": "2015-02-26T01:19:25.038Z"
+  }]
+}

@@ -8,10 +8,11 @@ var generateCrumb = require("../crumb"),
     it = lab.test,
     expect = Code.expect,
     nock = require('nock'),
-    users = require('../../fixtures').users;
+    _ = require('lodash'),
+    server;
 
-var server;
-
+// leave original fixtures intact for the sake of other tests
+var users = _.cloneDeep(require('../../fixtures').users);
 
 before(function (done) {
   require('../../mocks/server')(function (obj) {

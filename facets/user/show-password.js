@@ -6,7 +6,7 @@ module.exports = function (request, reply) {
   var User = UserModel.new(request);
 
   var opts = { };
-  var loggedInUser = request.auth.credentials;
+  var loggedInUser = request.loggedInUser;
 
   if (request.method === 'get') {
     request.timing.page = 'password';
@@ -18,6 +18,7 @@ module.exports = function (request, reply) {
     var data = request.payload;
 
     User.verifyPassword(loggedInUser.name, data.current, function (err, isCorrect) {
+
       if (!isCorrect) {
         opts.error = {current: true};
 
@@ -56,7 +57,7 @@ module.exports = function (request, reply) {
             if (err) {
               // TODO do we want this error to bubble up to the user?
               request.logger.warn('Unable to drop all sessions; user=' + newAuth.name);
-              request.logger.warn(er);
+              request.logger.warn(err);
               return reply.view('errors/internal', opts).code(500);
             }
 
@@ -73,7 +74,7 @@ module.exports = function (request, reply) {
                 if (err) {
                   // TODO consider the visibility of this error
                   request.logger.warn('Unable to set session; user=' + user.name);
-                  request.logger.warn(er);
+                  request.logger.warn(err);
                   return reply.view('errors/internal', opts).code(500);
                 }
 

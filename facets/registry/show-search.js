@@ -122,7 +122,7 @@ module.exports = function (options) {
 
       opts.prevUrl = opts.prevPage && "/search?q=" + opts.q + "&page=" + opts.prevPage;
       opts.nextUrl = opts.nextPage && "/search?q=" + opts.q + "&page=" + opts.nextPage;
-      opts.currUrl = "/search?q=" + opts.q + "?page=" + opts.page;
+      opts.currUrl = "/search?q=" + opts.q + "&page=" + opts.page;
 
       opts.paginate = opts.prevPage || opts.nextPage;
 

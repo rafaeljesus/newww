@@ -26,6 +26,7 @@ module.exports = function (request, reply) {
     email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
     verification_allowed: Joi.string(),
     amount: Joi.number(),
+    client_ip: Joi.string()
   });
 
   Joi.validate(request.payload, schema, function (err, token) {
@@ -54,7 +55,7 @@ module.exports = function (request, reply) {
         return reply('internal stripe error').code(500);
       }
 
-      metrics.metric({
+      request.metrics.metric({
         name:  'latency',
         value: Date.now() - stripeStart,
         type:  'stripe'

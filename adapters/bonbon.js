@@ -30,6 +30,7 @@ exports.register = function(server, options, next) {
       .then(function(loggedInUser) {
         request.loggedInUser = loggedInUser;
       }).catch(function(err) {
+        console.log('bonbon error: ', err)
         request.logger.warn(err);
       }).finally(completePreHandler);
     } else {

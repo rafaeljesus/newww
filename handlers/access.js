@@ -7,7 +7,7 @@ module.exports = function(request, reply) {
   }
 
   var package;
-  var loggedInUser = request.auth.credentials;
+  var loggedInUser = request.loggedInUser;
   var Collaborator = require("../models/collaborator").new(request);
   var Package = require("../models/package").new(request);
   var context = {

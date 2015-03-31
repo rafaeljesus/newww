@@ -7,13 +7,26 @@ var generateCrumb = require("../handlers/crumb.js"),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
-    nock = require('nock');
+    nock = require('nock'),
+    fixtures = require('../fixtures');
 
-var server,
+var server, packageMock, userMock,
     pkg = 'fake',
-    user = { name: 'fakeuser' };
+    user = fixtures.users.bob;
 
 before(function (done) {
+  nock.cleanAll();
+
+  packageMock = nock("https://user-api-example.com")
+    .put("/package/" + pkg + "/star")
+    .reply(200)
+    .delete("/package/" + pkg + "/star")
+    .reply(200);
+
+  userMock = nock("https://user-api-example.com")
+    .get("/user/bob").times(3)
+    .reply(200, user);
+
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -21,6 +34,8 @@ before(function (done) {
 });
 
 after(function (done) {
+  packageMock.done();
+  userMock.done();
   server.stop(done);
 });
 
@@ -92,10 +107,6 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
 
   it('should star an unstarred package', function (done) {
 
-    var mock = nock("https://user-api-example.com")
-      .put("/package/" + pkg + "/star")
-      .reply(200);
-
     generateCrumb(server, function (crumb){
       var opts = {
         url: '/star',
@@ -110,7 +121,6 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       };
 
       server.inject(opts, function (resp) {
-        mock.done();
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' starred ' + pkg);
         done();
@@ -119,10 +129,6 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
   });
 
   it('should unstar an starred package', function (done) {
-
-    var mock = nock("https://user-api-example.com")
-      .delete("/package/" + pkg + "/star")
-      .reply(200);
 
     generateCrumb(server, function (crumb){
       var opts = {
@@ -138,7 +144,6 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       };
 
       server.inject(opts, function (resp) {
-        mock.done();
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' unstarred ' + pkg);
         done();

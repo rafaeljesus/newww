@@ -13,9 +13,9 @@ var Download = module.exports = function (opts) {
 
 Download.new = function(request) {
   var opts = {};
-  if (request && request.auth && request.auth.credentials) {
-    opts.bearer = request.auth.credentials.name;
-  }
+
+  opts.bearer = request.loggedInuser && request.loggedInuser.name;
+
   if (process.env.USE_CACHE) {
     opts.cache = require("../lib/cache");
   }

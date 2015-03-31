@@ -64,11 +64,11 @@ module.exports = function (request, reply) {
 function handle (request, reply, emailTo) {
   var opts = { };
 
-  var name = request.auth.credentials.name;
+  var name = request.loggedInUser.name;
 
   var data = {
     name: name,
-    changeEmailFrom: request.auth.credentials.email,
+    changeEmailFrom: request.loggedInUser.email,
     changeEmailTo: emailTo,
     confToken: crypto.randomBytes(18).toString('hex'),
     revToken: crypto.randomBytes(18).toString('hex')

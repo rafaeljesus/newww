@@ -15,7 +15,7 @@ billing.getBillingInfo = function (request, reply) {
     stripePublicKey: process.env.STRIPE_PUBLIC_KEY
   };
 
-  Customer.get(request.auth.credentials.name, function(err, customer) {
+  Customer.get(request.loggedInUser.name, function(err, customer) {
 
     if (customer) {
       opts.customer = customer;
@@ -33,8 +33,8 @@ billing.updateBillingInfo = function(request, reply) {
   var sendToHubspot = request.server.methods.npme.sendData;
 
   var billingInfo = {
-    name: request.auth.credentials.name,
-    email: request.auth.credentials.email,
+    name: request.loggedInUser.name,
+    email: request.loggedInUser.email,
     card: request.payload.stripeToken
   };
 
@@ -62,8 +62,9 @@ billing.deleteBillingInfo = function(request, reply) {
     return reply.view('errors/not-found').code(404);
   }
 
-  Customer.del(request.auth.credentials.name, function(err, customer) {
+  Customer.del(request.loggedInUser.name, function(err, customer) {
     if (err) {
+      request.logger.error("unable to delete billing info for " + customer);
       request.logger.error(err);
       return reply.view('errors/internal').code(500);
     }

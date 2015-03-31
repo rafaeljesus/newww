@@ -7,35 +7,42 @@ var fixtures = require("../fixtures"),
     describe = lab.experiment,
     before = lab.before,
     beforeEach = lab.beforeEach,
-    afterEach = lab.afterEach,
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
     server,
-    source,
-    cache;
+    userMock;
 
 var ralph = fixtures.collaborators.ralph_the_reader;
 var wrigley = fixtures.collaborators.wrigley_the_writer;
 
 before(function (done) {
+  userMock = nock("https://user-api-example.com")
+    .get('/user/bob').twice()
+    .reply(200, fixtures.users.bob);
+
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
 });
 
+after(function (done) {
+  userMock.done();
+  server.stop(done);
+});
+
 describe('GET /package/foo/collaborators', function () {
-  var options
+  var options;
 
   beforeEach(function(done){
     options = {
       method: "get",
       url: "/package/foo/collaborators",
       credentials: fixtures.users.bob
-    }
-    done()
-  })
+    };
+    done();
+  });
 
   it('calls back with a JSON object containing collaborators', function (done) {
     var mock = nock("https://user-api-example.com")
@@ -43,7 +50,7 @@ describe('GET /package/foo/collaborators', function () {
       .reply(200, fixtures.collaborators);
 
     server.inject(options, function (resp) {
-      mock.done()
+      mock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborators.ralph_the_reader).to.be.an.object();
       expect(resp.result.collaborators.wrigley_the_writer).to.be.an.object();
@@ -55,7 +62,7 @@ describe('GET /package/foo/collaborators', function () {
 
 
 describe('PUT /package/foo/collaborators', function () {
-  var options
+  var options;
 
   beforeEach(function(done){
     options = {
@@ -65,9 +72,9 @@ describe('PUT /package/foo/collaborators', function () {
       payload: {
         collaborator: wrigley
       }
-    }
-    done()
-  })
+    };
+    done();
+  });
 
   it('calls back with a JSON object containing the new collaborator'/*, function (done) {
     var mock = nock("https://user-api-example.com")
@@ -86,7 +93,7 @@ describe('PUT /package/foo/collaborators', function () {
 });
 
 describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
-  var options
+  var options;
 
   beforeEach(function(done){
     generateCrumb(server, function(crumb) {
@@ -99,10 +106,10 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
           collaborator: wrigley
         },
         headers: {cookie: 'crumb='+crumb}
-      }
-      done()
-    })
-  })
+      };
+      done();
+    });
+  });
 
   it('calls back with a JSON object containing the updated collaborator', function (done) {
     var mock = nock("https://user-api-example.com")
@@ -110,10 +117,10 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
       .reply(200, wrigley);
 
     server.inject(options, function (resp) {
-      mock.done()
+      mock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();
-      expect(resp.result.collaborator.name).to.equal("wrigley_the_writer")
+      expect(resp.result.collaborator.name).to.equal("wrigley_the_writer");
       done();
     });
   });
@@ -122,7 +129,7 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
 
 
 describe('DELETE /package/zing/collaborators/wrigley_the_writer', function () {
-  var options
+  var options;
 
   beforeEach(function(done){
     generateCrumb(server, function(crumb) {
@@ -132,10 +139,10 @@ describe('DELETE /package/zing/collaborators/wrigley_the_writer', function () {
         credentials: fixtures.users.bob,
         payload: {crumb: crumb},
         headers: {cookie: 'crumb='+crumb}
-      }
-      done()
-    })
-  })
+      };
+      done();
+    });
+  });
 
   it('calls back with a JSON object containing the deleted collaborator'/*, function (done) {
     var mock = nock("https://user-api-example.com")

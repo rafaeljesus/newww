@@ -34,6 +34,8 @@ describe("bonbon", function() {
   nock("https://user-api-example.com")
     .get('/user/' + username1).times(7)
     .reply(200, fixtures.users.bob)
+    .get('/user/seldo').times(3)
+    .reply(200, fixtures.users.npmEmployee)
     .get('/user/' + username1 + '/package?format=detailed&per_page=9999').times(5)
     .reply(200, fixtures.users.packages)
     .get('/user/' + username1 + '/stars?format=detailed').times(5)

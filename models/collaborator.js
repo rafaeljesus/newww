@@ -14,7 +14,7 @@ var Collaborator = module.exports = function(opts) {
 };
 
 Collaborator.new = function(request) {
-  var bearer = request.auth.credentials && request.auth.credentials.name;
+  var bearer = request.loggedInUser && request.loggedInUser.name;
   return new Collaborator({bearer: bearer});
 };
 

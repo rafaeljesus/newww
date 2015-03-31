@@ -2,9 +2,7 @@ var PackageModel = require('../models/package');
 
 module.exports = function (request, reply) {
   var Package = PackageModel.new(request);
-  var loggedInUser = request.auth.credentials;
-
-  var opts = { };
+  var loggedInUser = request.loggedInUser;
 
   if (request.method === 'get') {
     return reply.redirect('browse/userstar/' + loggedInUser.name);

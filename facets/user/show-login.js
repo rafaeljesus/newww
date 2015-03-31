@@ -13,7 +13,7 @@ module.exports = function login (request, reply) {
 
   if (request.auth.isAuthenticated) {
     request.timing.page = 'login-redirect-to-home';
-    return reply().redirect('/~'+ request.auth.credentials.name);
+    return reply().redirect('/~'+ request.loggedInUser.name);
   }
 
   var opts = { };

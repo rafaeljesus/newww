@@ -18,9 +18,8 @@ Package.new = function(request) {
   var opts = {
     logger: request.logger
   };
-  if (request.auth.credentials) {
-    opts.bearer = request.auth.credentials.name;
-  }
+
+  opts.bearer = request.loggedInUser && request.loggedInUser.name;
   return new Package(opts);
 };
 

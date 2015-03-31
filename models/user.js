@@ -24,7 +24,7 @@ var User = module.exports = function(opts) {
 };
 
 User.new = function(request) {
-  var bearer = request.auth.credentials && request.auth.credentials.name;
+  var bearer = request.loggedInUser && request.loggedInUser.name;
   return new User({bearer: bearer, logger: request.logger});
 };
 

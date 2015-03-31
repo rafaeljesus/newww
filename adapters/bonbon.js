@@ -26,22 +26,17 @@ exports.register = function(server, options, next) {
     };
 
     if (request.auth && request.auth.credentials) {
-      UserModel.new(request).get(request.auth.credentials.name, function (err, loggedInUser) {
-
-        if (err) {
-          console.log(err)
-          request.logger.warn(err);
-        }
-
+      UserModel.new(request).get(request.auth.credentials.name)
+      .then(function(loggedInUser) {
         request.loggedInUser = loggedInUser;
-        completePreHandler();
-      });
+      }).catch(function(err) {
+        request.logger.warn(err);
+      }).finally(completePreHandler);
     } else {
       completePreHandler();
     }
 
     function completePreHandler () {
-
       if (request.method !== "post") {
         return reply.continue();
       }
@@ -51,7 +46,6 @@ exports.register = function(server, options, next) {
       }
 
       delete request.payload.honey;
-
       return reply.continue();
     }
 
@@ -81,7 +75,6 @@ exports.register = function(server, options, next) {
       case "view":
         request.response.source.context = Hoek.applyToDefaults(options, request.response.source.context);
         request.response.source.context.user = request.loggedInUser;
-        // console.log('THE USER: ', request.response.source.context.user)
         break;
       case "plain":
         if (typeof(request.response.source) === "object") {

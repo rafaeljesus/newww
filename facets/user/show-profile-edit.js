@@ -4,7 +4,7 @@ var UserModel = require('../../models/user'),
     merge = require('lodash').merge;
 
 module.exports = function (request, reply) {
-  var loggedInUser = request.auth.credentials;
+  var loggedInUser = request.loggedInUser;
   var User = UserModel.new(request);
 
   var opts = { };
@@ -38,7 +38,6 @@ module.exports = function (request, reply) {
 
         User.save(user, function (err, data) {
           if (err) {
-            console.log(err);
             request.logger.warn('unable to save profile; user=' + user.name);
             request.logger.warn(err);
             return reply.view('errors/internal', opts).code(500);
@@ -59,7 +58,7 @@ module.exports = function (request, reply) {
     });
   }
 
-  if (request.method === 'get' || opts.error) {
+  if (request.method === 'get') {
     request.timing.page = 'profile-edit';
     opts.title = 'Edit Profile';
     opts.showEmailSentNotice = request.query['verification-email-sent'] === 'true';

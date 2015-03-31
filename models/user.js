@@ -119,15 +119,7 @@ User.prototype.get = function(name, options, callback) {
     } else {
       request(_this.generateUserACLOptions(name), function(err, resp, body){
         if (err) { return reject(err); }
-
-        if (resp.statusCode === 404) {
-          return callback(new Error('404 - not found'));
-        }
-
-        if (resp.statusCode !== 200) {
-          return callback(new Error('unexpected status code ' + resp.statusCode));
-        }
-
+        if (resp.statusCode !== 200) { return reject(new Error('unexpected status code ' + resp.statusCode)); }
         return resolve(body);
       });
     }

@@ -6,10 +6,13 @@ var generateCrumb = require("../crumb"),
     before = lab.before,
     after = lab.after,
     it = lab.test,
+    beforeEach = lab.beforeEach,
     expect = Code.expect,
     nock = require('nock'),
     _ = require('lodash'),
-    server;
+    users = require('../../fixtures').users;
+
+var server, userMock;
 
 // leave original fixtures intact for the sake of other tests
 var users = _.cloneDeep(require('../../fixtures').users);
@@ -23,6 +26,22 @@ before(function (done) {
 
 after(function (done) {
   server.stop(done);
+});
+
+beforeEach(function(done) {
+  nock.cleanAll();
+  userMock = nock('https://user-api-example.com')
+    .get('/user/' + users.bob.name).times(3)
+    .reply(200, users.bob)
+    .post('/user/' + users.bob.name, users.bobUpdateBody)
+    .reply(200, users.bobUpdated)
+    .get('/user/' + users.bob.name)
+    .reply(200, users.bobUpdated)
+    .get('/user/' + users.bob.name + '/package?per_page=9999')
+    .reply(200, users.packages)
+    .get('/user/' + users.bob.name + '/stars')
+    .reply(200, users.stars);
+    done();
 });
 
 describe('Getting to the profile-edit page', function () {
@@ -85,17 +104,6 @@ describe('Modifying the profile', function () {
   it('allows authorized profile modifications and redirects to profile page', function (done) {
 
     generateCrumb(server, function (crumb){
-      var mock = nock('https://user-api-example.com')
-        .get('/user/' + users.bob.name).twice()
-        .reply(200, users.bob)
-        .post('/user/' + users.bob.name, users.bobUpdateBody)
-        .reply(200, users.bobUpdated)
-        .get('/user/' + users.bob.name)
-        .reply(200, users.bobUpdated)
-        .get('/user/' + users.bob.name + '/package?per_page=9999')
-        .reply(200, users.packages)
-        .get('/user/' + users.bob.name + '/stars')
-        .reply(200, users.stars);
 
       var options = {
         url: '/profile-edit',
@@ -119,7 +127,6 @@ describe('Modifying the profile', function () {
         };
 
         server.inject(options, function (resp) {
-          mock.done();
           expect(resp.statusCode).to.equal(200);
           var context = resp.request.response.source.context;
           expect(context.profile.name).to.equal("bob");
@@ -159,6 +166,6 @@ describe('Modifying the profile', function () {
         expect(source.template).to.equal('user/profile-edit');
         done();
       });
-    });
+    })
   });
 });

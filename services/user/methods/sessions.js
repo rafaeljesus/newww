@@ -28,7 +28,7 @@ module.exports = {
           action: 'setSession'
         });
 
-        request.auth.session.set({user: user.name, sid: user.sid});
+        request.auth.session.set(data);
         return next(null);
       });
     };

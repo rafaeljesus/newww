@@ -1,7 +1,7 @@
 
 module.exports = function resendConfirmation (request, reply) {
   var sendEmail = request.server.methods.email.send,
-      loggedInUser = request.auth.credentials,
+      loggedInUser = request.loggedInUser,
       opts = { };
 
   sendEmail('confirm-user-email', loggedInUser, request.redis)

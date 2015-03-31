@@ -9,9 +9,15 @@ var Code = require('code'),
     nock = require("nock"),
     users = require('../../fixtures').users;
 
-var server;
+var server, userMock;
 
 before(function (done) {
+  userMock = nock("https://user-api-example.com")
+    .get("/user/bob")
+    .reply(200, users.bob)
+    .get("/user/lolbademail")
+    .reply(200, users.bad_email);
+
   require('../../mocks/server')(function (obj) {
     server = obj;
     server.app.cache._cache.connection.client = {};
@@ -20,6 +26,7 @@ before(function (done) {
 });
 
 after(function(done) {
+  userMock.done();
   server.stop(function () {
     done();
   });

@@ -1,7 +1,7 @@
 var User = require('../../models/user');
 
 module.exports = function(request, reply) {
-  var loggedInUser = request.auth.credentials;
+  var loggedInUser = request.loggedInUser;
 
   // Could be arriving from /~ or /~username
   var name = request.params.name || loggedInUser.name;

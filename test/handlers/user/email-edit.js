@@ -31,19 +31,21 @@ var postEmail = function (emailOpts) {
   };
 };
 
-nock("https://user-api-example.com")
-  .get('/user/' + users.bob.name).times(11)
-  .reply(200, fixtures.users.bob)
-  .get('/user/' + users.mikeal.name)
-  .reply(200, fixtures.users.mikeal)
-  .get('/user/noone')
-  .reply(200, {
-    name: "noone",
-    email: "f@boom.me",
-  });
-
 // prepare the server
 before(function (done) {
+  nock.cleanAll();
+
+  nock("https://user-api-example.com")
+    .get('/user/' + users.bob.name).times(11)
+    .reply(200, fixtures.users.bob)
+    .get('/user/' + users.mikeal.name)
+    .reply(200, fixtures.users.mikeal)
+    .get('/user/noone')
+    .reply(200, {
+      name: "noone",
+      email: "f@boom.me",
+    });
+
   require('../../mocks/server')(function (obj) {
     server = obj;
     done();

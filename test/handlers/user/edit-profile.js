@@ -37,9 +37,9 @@ beforeEach(function(done) {
     .reply(200, users.bobUpdated)
     .get('/user/' + users.bob.name)
     .reply(200, users.bobUpdated)
-    .get('/user/' + users.bob.name + '/package?per_page=9999')
+    .get('/user/' + users.bob.name + '/package?format=detailed&per_page=9999')
     .reply(200, users.packages)
-    .get('/user/' + users.bob.name + '/stars')
+    .get('/user/' + users.bob.name + '/stars?format=detailed')
     .reply(200, users.stars);
     done();
 });

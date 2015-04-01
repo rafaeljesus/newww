@@ -32,22 +32,27 @@ describe("package handler", function(){
     var resp;
     var options = {url: '/package/browserify'};
 
-    var packageMock = nock("https://user-api-example.com")
-      .get('/package/browserify')
-      .reply(200, fixtures.packages.browserify);
-
-    var downloadsMock = nock("https://downloads-api-example.com")
-      .get('/point/last-day/browserify')
-      .reply(200, fixtures.downloads.browserify.day)
-      .get('/point/last-week/browserify')
-      .reply(200, fixtures.downloads.browserify.week)
-      .get('/point/last-month/browserify')
-      .reply(200, fixtures.downloads.browserify.month);
-
     before(function(done){
+
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/browserify')
+        .reply(200, fixtures.packages.browserify)
+        .get('/package?dependency=browserify&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/browserify')
+        .reply(200, fixtures.downloads.browserify.day)
+        .get('/point/last-week/browserify')
+        .reply(200, fixtures.downloads.browserify.week)
+        .get('/point/last-month/browserify')
+        .reply(200, fixtures.downloads.browserify.month);
+
+
       server.inject(options, function (response) {
         resp = response
         $ = cheerio.load(resp.result)
+        // packageMock.done()
         done()
       })
     })
@@ -78,6 +83,15 @@ describe("package handler", function(){
       done();
     });
 
+    it('adds dependents to the view context', function (done) {
+      var dependents = resp.request.response.source.context.package.dependents;
+      expect(dependents).to.be.an.object();
+      expect(dependents).to.contain('results');
+      expect(dependents).to.contain('offset');
+      expect(dependents).to.contain('hasMore');
+      done();
+    });
+
     it('renders download counts', function (done) {
       var downloads = resp.request.response.source.context.package.downloads;
       expect(downloads.day.downloads).to.be.above(0)
@@ -86,6 +100,11 @@ describe("package handler", function(){
       expect($(".daily-downloads").text()).to.equal(String(downloads.day.downloads))
       expect($(".weekly-downloads").text()).to.equal(String(downloads.week.downloads))
       expect($(".monthly-downloads").text()).to.equal(String(downloads.month.downloads))
+      done();
+    });
+
+    it('renders dependents', function (done) {
+      expect($("p.dependents a").length).to.equal(51)
       done();
     });
 
@@ -304,7 +323,7 @@ describe("package handler", function(){
     var options = {url: '/package/hitler'}
     var packageMock = nock("https://user-api-example.com")
       .get('/package/hitler')
-      .reply(200, fixtures.packages.hitler)
+      .reply(200, fixtures.packages.hitler);
 
     before(function(done){
       server.inject(options, function (response) {
@@ -336,7 +355,9 @@ describe("package handler", function(){
 
       var packageMock = nock("https://user-api-example.com")
         .get('/package/browserify')
-        .reply(200, fixtures.packages.browserify);
+        .reply(200, fixtures.packages.browserify)
+        .get('/package?dependency=browserify&limit=50')
+        .reply(200, fixtures.dependents);
 
       var downloadsMock = nock("https://downloads-api-example.com")
         .get('/point/last-day/browserify')
@@ -367,7 +388,9 @@ describe("package handler", function(){
       process.env.FEATURE_ACCESS = 'true'
       packageMock = nock("https://user-api-example.com")
         .get('/package/request')
-        .reply(200, fixtures.packages.request);
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50')
+        .reply(200, fixtures.dependents);
 
       downloadsMock = nock("https://downloads-api-example.com")
         .get('/point/last-day/request')

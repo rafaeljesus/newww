@@ -178,16 +178,20 @@
     {{/if}}
   </p>
 
-  {{#if dependents}}
+  {{#if dependents.results}}
     <h3><a href="/browse/depended/{{name}}">Dependents</a></h3>
-    <p class="list-of-links">
-      {{#each dependents}}
+    <p class="list-of-links dependents">
+      {{#each dependents.results}}
         {{#if @last}}
-          <a href="/browse/depended/{{../../name}}">{{name}}</a>
+          <a href="/package/{{name}}">{{name}}</a>
         {{else}}
           <a href="/package/{{name}}">{{name}}</a>,
         {{/if}}
       {{/each}}
+
+      {{#if dependents.hasMore}}
+        <a href="/browse/depended/{{../../name}}">and more...</a>
+      {{/if}}
     </p>
   {{/if}}
 

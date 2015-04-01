@@ -133,30 +133,6 @@ var publicRoutes = [
     handler: require('../handlers/collaborator').list
   },{
     paths: [
-      "/package/{package}/collaborators",
-      "/package/{scope}/{project}/collaborators",
-    ],
-    method: "PUT",
-    handler: require('../handlers/collaborator').add,
-    config: ajaxy
-  },{
-    paths: [
-      "/package/{package}/collaborators/{username}",
-      "/package/{scope}/{project}/collaborators/{username}",
-    ],
-    method: "POST",
-    handler: require('../handlers/collaborator').update,
-    config: ajaxy
-  },{
-    paths: [
-      "/package/{package}/collaborators/{username}",
-      "/package/{scope}/{project}/collaborators/{username}",
-    ],
-    method: "DELETE",
-    handler: require('../handlers/collaborator').del,
-    config: ajaxy
-  },{
-    paths: [
       "/package/{package}",
       "/package/{scope}/{project}",
     ],

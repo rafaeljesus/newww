@@ -1,24 +1,33 @@
+{{#with package}}
+  <h1 class="package-name centered">
+    <a href="/package/{{name}}">{{name}}</a>
+  </h1>
+  <p class="package-description centered">{{{description}}}</p>
+{{/with}}
+
 {{> package-header package}}
 
 <div class="tablet-width container">
 
   {{#unless user}}
     <p class="notice please-log-in">
-      To configure access to this package, please <a href="/login">log in</a>.
+      Are you an admin of this package? 
+      Please <a href="/login?done={{canonicalURL}}">log in</a> to manage access.
     </p>
   {{/unless}}
 
   {{#if package.scoped}}
-    <div class="centered">
+    <form class="centered" method="POST" action="/package/{{package.name}}">
       <input
         type="checkbox"
         class="toggle"
+        name="package.private"
         id="package-access-toggle"
-        value="private"
+        value="true"
         {{#unless userHasWriteAccessToPackage}}disabled="disabled"{{/unless}}
         {{#if package.private}}checked="checked"{{/if}} >
       <label for="package-access-toggle"><span></span></label>
-    </div>
+    </form>
   {{/if}}
 
   <p class="error" style="display:none"></p>
@@ -27,8 +36,8 @@
     class="ruled humans"
     id="collaborators"
     data-enable-permission-togglers="{{enablePermissionTogglers}}"
-    data-enable-deletion="{{userHasWriteAccessToPackage}}"
-  >
+    data-enable-deletion="{{userHasWriteAccessToPackage}}">
+
     <thead>
       <tr>
         <th>&nbsp;</th>
@@ -50,8 +59,8 @@
           </td>
           <td colspan="1">
             <form id="add-collaborator" method="PUT" action="/package/{{package.name}}/collaborators">
-              <input type="hidden" name="permissions" value="{{#if package.private}}read{{else}}write{{/if}}">
-              <input type="text" name="name" required="required" value="" placeholder="Add a collaborator...">
+              <input type="hidden" name="collaborator.permissions" value="{{#if package.private}}read{{else}}write{{/if}}">
+              <input type="text" name="collaborator.name" required="required" value="" tabindex="2" placeholder="Add a collaborator...">
             </form>
           </td>
         </tr>

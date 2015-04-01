@@ -1,4 +1,5 @@
 var fixtures = require("../fixtures"),
+    generateCrumb = require("../handlers/crumb.js"),
     nock = require("nock"),
     cheerio = require("cheerio"),
     Code = require('code'),
@@ -62,6 +63,12 @@ describe("package handler", function(){
       done()
     })
 
+    it("renders the package template", function(done){
+      var source = resp.request.response.source;
+      expect(source.template).to.equal('package/show');
+      done();
+    });
+
     it('adds download data to the view context', function (done) {
       var downloads = resp.request.response.source.context.package.downloads;
       expect(downloads).to.be.an.object();
@@ -92,9 +99,11 @@ describe("package handler", function(){
       done();
     });
 
-    it("renders the package template", function(done){
-      var source = resp.request.response.source;
-      expect(source.template).to.equal('package/show');
+    it('renders a list of collaborators', function (done) {
+      var package = resp.request.response.source.context.package;
+      expect(Object.keys(package.collaborators).length).to.equal(5)
+      expect($("ul.collaborators > li").length).to.equal(5)
+      expect($("ul.collaborators > li > a[href='/~substack']").length).to.equal(1)
       done();
     });
 
@@ -322,7 +331,7 @@ describe("package handler", function(){
     it('is active if the user is logged in and has starred the package', function (done) {
       var options = {
         url: '/package/browserify',
-        credentials: fixtures.users.bob
+        credentials: fixtures.users.bcoe
       };
 
       var packageMock = nock("https://user-api-example.com")
@@ -350,7 +359,7 @@ describe("package handler", function(){
     });
   });
 
-  describe('package nav', function () {
+  describe('add collaborator link', function () {
     var packageMock
     var downloadsMock
 
@@ -389,7 +398,7 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.be.true();
         var $ = cheerio.load(resp.result)
-        expect($(".secondary-nav")).to.have.length(1);
+        expect($("ul.collaborators a.add")).to.have.length(1);
         done();
       });
 
@@ -410,6 +419,8 @@ describe("package handler", function(){
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.equal(false);
+        var $ = cheerio.load(resp.result)
+        expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });
     });
@@ -428,7 +439,7 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.equal(false);
         var $ = cheerio.load(resp.result)
-        expect($(".secondary-nav")).to.have.length(0);
+        expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });
     });
@@ -447,11 +458,48 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.equal(false);
         var $ = cheerio.load(resp.result)
-        expect($(".secondary-nav")).to.have.length(0);
+        expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });
     });
 
+  });
+
+
+  describe('POST /package/@wrigley_the_writer/scoped_public', function () {
+    var options
+
+    beforeEach(function(done){
+      generateCrumb(server, function(crumb) {
+        options = {
+          method: "post",
+          url: "/package/@wrigley_the_writer/scoped_public",
+          credentials: fixtures.users.mikeal,
+          payload: {
+            crumb: crumb,
+            package: {
+              private: true
+            }
+          },
+          headers: {cookie: 'crumb='+crumb}
+        }
+        done()
+      })
+    })
+
+    it('calls back with a JSON object containing the updated package', function (done) {
+      var mock = nock("https://user-api-example.com")
+        .post('/package/@wrigley_the_writer%2Fscoped_public', {private: true})
+        .reply(200);
+
+      server.inject(options, function (resp) {
+        mock.done()
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
 
   });
+
+
 })

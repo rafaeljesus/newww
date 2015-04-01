@@ -19,10 +19,11 @@
     "email": "bob@example.com",
     "url": null
   },
-  "maintainers": [{
+  "collaborators": {"bob":{
     "name": "bob",
-    "email": "bob@example.com"
-  }],
+    "email": "bob@example.com",
+    "access": "write"
+  }},
   "version": "0.0.1",
   "license": {
     "name": "ISC",

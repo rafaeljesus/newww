@@ -1,6 +1,9 @@
 {{#with package}}
 
-{{> package-header this}}
+<h1 class="package-name">
+  <a href="/package/{{name}}">{{name}}</a>
+</h1>
+<p class="package-description">{{{description}}}</p>
 
 <div class="content-column">
 
@@ -81,16 +84,29 @@
 
   </ul>
 
-  {{#if showMaintainers}}
-    <h3>Maintainers</h3>
-    <ul class="humans">
-      {{#each maintainers}}
+  {{#if showCollaborators}}
+    <h3>
+      {{#if isCollaboratedOnByUser}}
+        <a href="/package/{{name}}/access">Collaborators</a>
+      {{else}}
+        Collaborators
+      {{/if}}
+    </h3>
+
+    <ul class="humans collaborators">
+      {{#each collaborators}}
         <li>
           <a href="/~{{name}}" rel="tipsy" title="{{name}}">
             {{#if avatar.medium}}<img src="{{avatar.medium}}" alt="{{name}}">{{/if}}
           </a>
         </li>
       {{/each}}
+
+      {{#if isCollaboratedOnByUser}}
+        <li>
+          <a class="add" title="add a collaborator" href="/package/{{name}}/access">+</a>
+        </li>
+      {{/if}}
     </ul>
   {{/if}}
 

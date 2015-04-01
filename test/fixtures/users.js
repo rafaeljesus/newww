@@ -15,6 +15,16 @@ exports.bob = {
   deleted: null
 };
 
+exports.bcoe = {
+  "name": "bcoe",
+  "email": "ben@npmjs.com",
+  "email_verified": null,
+  "verification_key": "d90f1481-387d-4f20-9e38-7073acd84510",
+  "created": "2014-11-21T19:50:33.098Z",
+  "updated": "2015-03-20T22:33:07.493Z",
+  "deleted": null
+}
+
 exports.ralph_the_reader = {
   name: 'ralph_the_reader',
   email: 'ralph@reader.com',
@@ -60,9 +70,9 @@ exports.bobUpdateBody = {
   deleted: null,
   emailObfuscated: '%62%6f%62%40%62%6f%6f%6d%2e%6d%65',
   avatar: {
-    small: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=50&default=https%3A%2F%2Fwww.npmjs.com%2Fstatic%2Fimages%2Fwombat-avatar-small.png',
-    medium: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=100&default=https%3A%2F%2Fwww.npmjs.com%2Fstatic%2Fimages%2Fwombat-avatar-small.png',
-    large: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=496&default=https%3A%2F%2Fwww.npmjs.com%2Fstatic%2Fimages%2Fwombat-avatar-large.png'
+    small: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=50&default=retro',
+    medium: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=100&default=retro',
+    large: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=496&default=retro'
   }
 };
 

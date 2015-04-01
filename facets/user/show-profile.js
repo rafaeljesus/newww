@@ -7,7 +7,7 @@ module.exports = function(request, reply) {
   var name = request.params.name || loggedInUser.name;
 
   var opts = {
-    title: name
+    title: "@" + name
   };
 
   User.new(request)

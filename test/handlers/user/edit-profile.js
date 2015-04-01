@@ -86,7 +86,7 @@ describe('Modifying the profile', function () {
 
     generateCrumb(server, function (crumb){
       var mock = nock('https://user-api-example.com')
-        .post('/user/' + users.bob.name, users.bobUpdateBody)
+        .post('/user/bob', users.bobUpdateBody)
         .reply(200, users.bobUpdated);
 
       var options = {

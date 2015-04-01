@@ -66,5 +66,30 @@ module.exports = [
     path: "/settings/billing/cancel",
     method: "POST",
     handler: require('../handlers/customer').deleteBillingInfo
+  },{
+    paths: [
+      "/package/{package}/collaborators",
+      "/package/{scope}/{project}/collaborators",
+    ],
+    method: "PUT",
+    handler: require('../handlers/collaborator').add
+  },{
+    paths: [
+      "/package/{package}/collaborators/{username}",
+      "/package/{scope}/{project}/collaborators/{username}",
+    ],
+    method: "POST",
+    handler: require('../handlers/collaborator').update
+  },{
+    paths: [
+      "/package/{package}/collaborators/{username}",
+      "/package/{scope}/{project}/collaborators/{username}",
+    ],
+    method: "DELETE",
+    handler: require('../handlers/collaborator').del
+  },{
+    path: "/package/{scope}/{project}",
+    method: "POST",
+    handler: require('../handlers/package').update
   }
 ]

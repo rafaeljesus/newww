@@ -1,77 +1,101 @@
 var template = require("../../templates/partials/collaborator.hbs");
+var formToRequestObject = require("./form-to-request-object")
 
 module.exports = function() {
   $(updateInputsAndHandlers)
 }
 
 var updateInputsAndHandlers = function() {
-  $('#add-collaborator').submit(addCollaborator)
-  $('.update-collaborator input').change(updateCollaborator)
-  $('.remove-collaborator').submit(removeCollaborator)
-  $("[data-enable-permission-togglers='true'] input").attr('disabled', false)
-  $("[data-enable-deletion='true'] form.remove-collaborator").css({display: "block"})
-  $("#add-collaborator input[name='name']").val("")
+  $('#add-collaborator')
+    .unbind("submit", addCollaborator)
+    .bind("submit", addCollaborator)
+
+  $('.update-collaborator input')
+    .unbind("change", updateCollaborator)
+    .bind("change", updateCollaborator)
+
+  $('.remove-collaborator')
+    .unbind("submit", removeCollaborator)
+    .bind("submit", removeCollaborator)
+
+  $('#package-access-toggle')
+    .unbind("change", togglePackageAccess)
+    .bind("change", togglePackageAccess)
+
+  // enable/disable permission togglers
+  $("input[type=radio][name='collaborator.permissions']")
+    .attr('disabled', !$("#collaborators").data("enablePermissionTogglers"))
+
+  // Reveal delete links
+  if ($("#collaborators").data("enableDeletion")) {
+    $("form.remove-collaborator").css({display: "block"})
+  }
+
+  // Clear the 'add' input
+  $("#add-collaborator input[name='collaborator.name']").val("")
 }
 
 var addCollaborator = function(e) {
   e.preventDefault()
-  var opts = formToRequestOptions($(this))
-  opts.data = {collaborator: formToObject($(this))}
-
-  $.ajax(opts)
+  $.ajax(formToRequestObject($(this)))
     .done(function(data){
-      $("tr.collaborator:last").after(template(data.collaborator))
+      console.log("done", data)
+      if (data.collaborator) {
+        $("tr.collaborator:last").after(template(data.collaborator))
+        updateInputsAndHandlers()
+      }
     })
-    .done(successHandler)
     .fail(errorHandler)
 }
 
 var updateCollaborator = function(e) {
   e.preventDefault()
   var $form = $(this).parents("form")
-  var opts = formToRequestOptions($form)
-  opts.data = {
-    collaborator: formToObject($form),
-    crumb: window.crumb
-  }
+  var opts = formToRequestObject($form)
   $.ajax(opts)
-    .done(successHandler)
+    .done(updateInputsAndHandlers)
     .fail(errorHandler)
 }
 
 var removeCollaborator = function(e) {
   e.preventDefault()
-  var opts = formToRequestOptions($(this))
-  $.ajax(opts)
-    .done(function(data){
-      $("#collaborator-"+data.username).slideUp()
-    })
-    .done(successHandler)
+  $(this).parents(".collaborator").remove()
+  $.ajax(formToRequestObject($(this)))
+    .done(updateInputsAndHandlers)
     .fail(errorHandler)
 }
 
-var formToRequestOptions = function($el) {
-  return {
-    method: $el.attr("method"),
-    url: $el.attr("action"),
-    headers: {'x-csrf-token': window.crumb},
-    json: true
-  }
-}
+var togglePackageAccess = function(e) {
+  e.preventDefault()
+  var private = $(this).prop("checked")
 
-var formToObject = function($el) {
-  var obj = {}
-  $el.serializeArray().forEach(function(input){
-    obj[input.name] = input.value
-  })
-  return obj
+  if (!private) {
+    var $readOnlyInputs = $("[type=radio][name='collaborator.permissions'][value='read']:checked")
+
+    var confirmation = "This will make your package world-readable"
+    if ($readOnlyInputs.length) confirmation += " and will remove the read-only collaborators"
+    confirmation += ". Are you sure?"
+
+    if (!confirm(confirmation)) {
+      $(this).prop("checked", true)
+      return false;
+    }
+
+    $readOnlyInputs.parents(".collaborator").remove()
+  }
+
+  var opts = formToRequestObject($(this).parents("form"))
+  opts.data.package = {private: private}
+
+  $("#collaborators").data("enablePermissionTogglers", private)
+
+  updateInputsAndHandlers()
+  $.ajax(opts)
+    .done(updateInputsAndHandlers)
+    .fail(errorHandler)
 }
 
  var errorHandler = function(xhr, status, error) {
-   console.error(error)
-   $("p.error").text(error).show()
- }
-
- var successHandler = function(data) {
-   updateInputsAndHandlers()
+   console.error(xhr, status, error)
+   $("p.error").text(xhr.responseJSON.message || error).show()
  }

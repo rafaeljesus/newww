@@ -161,10 +161,11 @@ describe("Collaborator", function(){
         .delete('/package/grizzle/collaborators/ralph_the_reader')
         .reply(200, ralph);
 
-      Collaborator.del("grizzle", "ralph_the_reader", function (err, collaborator) {
+      Collaborator.del("grizzle", "ralph_the_reader", function (err, result) {
         mock.done();
         expect(err).to.be.null();
-        expect(collaborator.name).to.equal(ralph.name);
+        expect(result.package).to.equal('grizzle');
+        expect(result.deleted).to.equal(true);
         done();
       });
 

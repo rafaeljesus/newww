@@ -1,6 +1,7 @@
-var collaborator = module.exports = {};
 var Collaborator = require("../models/collaborator")
 var decorate = require("../presenters/collaborator")
+
+var collaborator = module.exports = {};
 
 collaborator.list = function(request, reply) {
   Collaborator.new(request)
@@ -17,13 +18,22 @@ collaborator.list = function(request, reply) {
 
 collaborator.add = function(request, reply) {
   Collaborator.new(request)
-  .add(request.packageName, request.payload.collaborator, function(err, collaborator) {
+  .add(request.packageName, request.payload.collaborator, function(err, collab) {
+
     if (err) {
       request.logger.error(err);
-      return reply(err)
+      if (err.statusCode === 404) {
+        return reply({
+          statusCode: 404,
+          message: "user not found: "+request.payload.collaborator.name
+        }).code(404)
+      } else {
+        return reply(err)
+      }
     }
+
     return reply({
-      collaborator: decorate(collaborator[request.payload.collaborator.name], request.packageName)
+      collaborator: decorate(collab, request.packageName)
     });
   });
 };
@@ -36,20 +46,18 @@ collaborator.update = function(request, reply) {
       return reply(err)
     }
     return reply({
-      collaborator: collaborator
+      collaborator: decorate(collaborator, request.packageName)
     });
   });
 };
 
 collaborator.del = function(request, reply) {
   Collaborator.new(request)
-  .del(request.packageName, request.params.username, function(err, collaborator) {
+  .del(request.packageName, request.params.username, function(err, result) {
     if (err) {
       request.logger.error(err);
       return reply(err)
     }
-    return reply({
-      username: request.params.username
-    })
+    return reply(result)
   });
 };

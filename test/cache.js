@@ -14,9 +14,10 @@ var Code = require('code'),
 
 var cache = require('../lib/cache');
 
-before(function (done)
+before(function(done)
 {
-    cache.disconnect(done);
+    cache.disconnect();
+    done();
 });
 
 describe('lib/cache.js', function()
@@ -439,11 +440,9 @@ describe('lib/cache.js', function()
             {
                 expect(err).to.not.exist();
                 expect(keys).to.exist();
-                cache.disconnect(function ()
-                {
-                    expect(cache.redis).to.be.null();
-                    done();
-                });
+                cache.disconnect();
+                expect(cache.redis).to.be.null();
+                done();
             });
         });
     });

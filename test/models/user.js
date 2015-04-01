@@ -44,7 +44,8 @@ before(function (done) {
 
 after(function (done) {
   delete process.env.USE_CACHE;
-  cache.disconnect(done);
+  cache.disconnect();
+  done();
 });
 
 describe("User", function(){

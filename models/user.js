@@ -110,19 +110,10 @@ User.prototype.get = function(name, options, callback) {
   }
 
   return new Promise(function(resolve, reject) {
-
-    if (process.env.USE_CACHE) {
       cache.get(_this.generateUserACLOptions(name), function(err, body){
         if (err) { return reject(err); }
         return resolve(body);
       });
-    } else {
-      request(_this.generateUserACLOptions(name), function(err, resp, body){
-        if (err) { return reject(err); }
-        if (resp.statusCode !== 200) { return reject(new Error('unexpected status code ' + resp.statusCode)); }
-        return resolve(body);
-      });
-    }
   })
   .then(function(_user){
     user = decorate(_user);

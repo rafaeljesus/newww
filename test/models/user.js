@@ -147,7 +147,7 @@ describe("User", function(){
         .get('/user/bob')
         .reply(200, fixtures.users.bob);
 
-      User.drop(fixtures.users.bob.name, function () {
+      User.dropCache(fixtures.users.bob.name, function () {
 
         User.get(fixtures.users.bob.name, function(err, body) {
           expect(err).to.be.null();

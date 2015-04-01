@@ -13,7 +13,8 @@ module.exports = {
         app:      process.title,
         host:     process.env.SMF_ZONENAME,
         uptime:   process.uptime(),
-        version:  appVersion
+        version:  appVersion,
+        gitHead:  require('../lib/git-head')()
       };
 
       return reply(info).code(200);

@@ -65,6 +65,7 @@ server.views({
 });
 
 server.stamp = require("./lib/stamp")()
+server.gitHead = require("./lib/git-head")()
 
 // configure metrics as a side effect
 var metrics = require('./adapters/metrics')();

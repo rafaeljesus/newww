@@ -1,13 +1,9 @@
-var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
 var cache = require('../lib/cache');
 
 var Download = module.exports = function (opts) {
-  if (opts && !opts.cache) {
-    opts.cache = cache;
-  }
   _.extend(this, {
     host: process.env.DOWNLOADS_API || "https://downloads-api-example.com",
     timeout: 2000,
@@ -69,7 +65,7 @@ Download.prototype.getSome = function(period, packageName) {
 
     if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
-    _this.cache.get(opts, function(err, body){
+    cache.get(opts, function(err, body){
       return resolve(body || null);
     });
 

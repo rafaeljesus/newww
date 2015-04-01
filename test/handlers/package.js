@@ -489,7 +489,7 @@ describe("package handler", function(){
   });
 
 
-  describe('POST /package/@wrigley_the_writer/scoped_public', function () {
+  describe('updating package access', function () {
     var options
 
     beforeEach(function(done){

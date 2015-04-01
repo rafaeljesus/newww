@@ -2,7 +2,7 @@ var pluck = require("lodash").pluck
 var package = module.exports = {}
 var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
-var Package = require("../models/package");
+var PackageModel = require("../models/package");
 
 package.show = function(request, reply) {
   var package;
@@ -12,10 +12,11 @@ package.show = function(request, reply) {
   var Download = require("../models/download").new({
     request: request, cache: require("../lib/cache")
   })
+  var Package = PackageModel.new(request);
 
   request.logger.info('get package: ' + name);
 
-  var promise = Package.new(request).get(name)
+  var promise = Package.get(name)
     .catch(function(err){
 
       if (err.statusCode === 404) {
@@ -86,7 +87,7 @@ package.show = function(request, reply) {
 }
 
 package.update = function(request, reply) {
-  Package.new(request).update(request.packageName, request.payload.package)
+  PackageModel.new(request).update(request.packageName, request.payload.package)
     .then(function(package) {
       return reply({package: package});
     })

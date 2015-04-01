@@ -1,5 +1,5 @@
 var utils = require('../../lib/utils'),
-    User = require('../../models/user');
+    UserModel = require('../../models/user');
 
 module.exports = function confirmEmail (request, reply) {
   var opts = {};
@@ -39,9 +39,9 @@ module.exports = function confirmEmail (request, reply) {
     var name = cached.name;
     request.logger.warn('Confirming email for user ' + name);
 
-    var UserModel = User.new(request);
+    var User = UserModel.new(request);
 
-    UserModel.get(name, function (err, user) {
+    User.get(name, function (err, user) {
 
       if (err) {
         request.logger.error('Failed to get user ' + name);
@@ -49,24 +49,27 @@ module.exports = function confirmEmail (request, reply) {
         return reply.view('errors/internal', opts).code(500);
       }
 
-      UserModel.confirmEmail(user, function (err) {
+      User.confirmEmail(user, function (err) {
         if (err) {
           request.logger.error('Failed to confirm email for ' + name);
           request.logger.error(err);
           return reply.view('errors/internal', opts).code(500);
         }
 
-        request.redis.del(key, function (err) {
+        User.dropCache(user.name, function () {
 
-          if (err) {
-            request.logger.warn('Unable to drop key ' + key);
-            request.logger.warn(err);
-          }
+          request.redis.del(key, function (err) {
 
-          request.timing.page = 'email-confirmed';
+            if (err) {
+              request.logger.warn('Unable to drop confirm token ' + key);
+              request.logger.warn(err);
+            }
 
-          request.metrics.metric({ name: 'email-confirmed' });
-          return reply.view('user/email-confirmed', opts);
+            request.timing.page = 'email-confirmed';
+
+            request.metrics.metric({ name: 'email-confirmed' });
+            return reply.view('user/email-confirmed', opts);
+          });
         });
       });
     });

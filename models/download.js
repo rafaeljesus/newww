@@ -1,7 +1,7 @@
-var request = require('request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
+var cache = require('../lib/cache');
 
 var Download = module.exports = function (opts) {
   _.extend(this, {
@@ -12,14 +12,11 @@ var Download = module.exports = function (opts) {
 };
 
 Download.new = function(request) {
-  var opts = {}
-  if (request && request.auth && request.auth.credentials) {
-    opts.bearer = request.auth.credentials.name
-  }
-  if (process.env.USE_CACHE) {
-    opts.cache = require("../lib/cache")
-  }
-  return new Download(opts)
+  var opts = {};
+
+  opts.bearer = request.loggedInuser && request.loggedInuser.name;
+
+  return new Download(opts);
 };
 
 Download.prototype.getDaily = function(packageName) {
@@ -68,15 +65,9 @@ Download.prototype.getSome = function(period, packageName) {
 
     if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
-    if (_this.cache) {
-      _this.cache.get(opts, function(err, body){
-        return resolve(body || null);
-      });
-    } else {
-      request(opts, function(err, resp, body){
-        return resolve(body || null);
-      });
-    }
+    cache.get(opts, function(err, body){
+      return resolve(body || null);
+    });
 
   });
 };

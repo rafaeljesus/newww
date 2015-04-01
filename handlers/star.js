@@ -2,22 +2,19 @@ var PackageModel = require('../models/package');
 
 module.exports = function (request, reply) {
   var Package = PackageModel.new(request);
-
-  var opts = {
-    user: request.auth.credentials
-  };
+  var loggedInUser = request.loggedInUser;
 
   if (request.method === 'get') {
-    return reply.redirect('browse/userstar/' + opts.user.name);
+    return reply.redirect('browse/userstar/' + loggedInUser.name);
   }
 
-  if (!opts.user) {
+  if (!loggedInUser) {
     request.logger.error('user is not logged in');
     reply('user is not logged in').code(403);
     return;
   }
 
-  var username = opts.user.name,
+  var username = loggedInUser.name,
       body = request.payload,
       pkg = body.name,
       starIt = !!body.isStarred.match(/true/i);

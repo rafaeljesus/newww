@@ -13,7 +13,7 @@ module.exports = function login (request, reply) {
 
   if (request.auth.isAuthenticated) {
     request.timing.page = 'login-redirect-to-home';
-    return reply().redirect('/~'+ request.auth.credentials.name);
+    return reply().redirect('/~'+ request.loggedInUser.name);
   }
 
   var opts = { };
@@ -73,8 +73,8 @@ module.exports = function login (request, reply) {
             return;
           }
 
-          // log.info("Login received, user available, setting session")
-          // log.info("User is",user)
+          // request.logger.info("Login received, user available, setting session")
+          // request.logger.info("User is",user)
 
           user.avatar = avatar(user.email);
 

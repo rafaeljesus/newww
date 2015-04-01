@@ -1,7 +1,7 @@
 var User = require('../../models/user');
 
 module.exports = function(request, reply) {
-  var loggedInUser = request.auth.credentials;
+  var loggedInUser = request.loggedInUser;
 
   // Could be arriving from /~ or /~username
   var name = request.params.name || loggedInUser.name;
@@ -15,7 +15,7 @@ module.exports = function(request, reply) {
 
       if (err) {
         request.logger.error(err);
-        if (err.statusCode === 404) {
+        if (err.message === 'unexpected status code 404') {
           return reply.view('errors/user-not-found', opts).code(404);
         } else {
           return reply.view('errors/internal', opts).code(500);

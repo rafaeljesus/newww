@@ -94,11 +94,7 @@ module.exports = function (request, reply) {
       query: request.query.q
     });
 
-    var opts = {
-      user: request.auth.credentials,
-
-      namespace: 'registry-search'
-    };
+    var opts = { };
 
     if (error) {
       request.logger.warn('elasticsearch failed searching ' + request.query.q);

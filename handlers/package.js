@@ -1,5 +1,4 @@
-var pluck = require("lodash").pluck
-var package = module.exports = {}
+var package = module.exports = {};
 var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
 var PackageModel = require("../models/package");
@@ -8,10 +7,10 @@ package.show = function(request, reply) {
   var package;
   var name = request.packageName;
   var context = {title: name};
-  var loggedInUser = request.auth.credentials;
+  var loggedInUser = request.loggedInUser;
   var Download = require("../models/download").new({
     request: request, cache: require("../lib/cache")
-  })
+  });
   var Package = PackageModel.new(request);
 
   request.logger.info('get package: ' + name);
@@ -20,31 +19,31 @@ package.show = function(request, reply) {
     .catch(function(err){
 
       if (err.statusCode === 404) {
-        var package = npa(name)
-        package.available = false
+        var package = npa(name);
+        package.available = false;
 
         if (!validate(name).validForNewPackages) {
-          context.package = package
+          context.package = package;
           reply.view('errors/package-not-found', context).code(400);
           return promise.cancel();
         }
 
         if (package.scope) {
-          package.owner = package.scope.slice(1)
+          package.owner = package.scope.slice(1);
           if (loggedInUser) {
             if (package.owner === loggedInUser.name) {
-              package.available = true
+              package.available = true;
             } else {
-              package.unavailableToLoggedInUser = true
+              package.unavailableToLoggedInUser = true;
             }
           } else {
-            package.unavailableToAnonymousUser = true
+            package.unavailableToAnonymousUser = true;
           }
         } else {
-          package.available = true
+          package.available = true;
         }
 
-        context.package = package
+        context.package = package;
         reply.view('errors/package-not-found', context).code(404);
         return promise.cancel();
       }
@@ -54,7 +53,7 @@ package.show = function(request, reply) {
       return promise.cancel();
     })
     .then(function(p) {
-      package = p
+      package = p;
 
       if (package.time && package.time.unpublished) {
         request.logger.info('package is unpublished: ' + name);
@@ -62,34 +61,34 @@ package.show = function(request, reply) {
         return promise.cancel();
       }
 
-      return Package.list({dependency: name, limit: 50})
+      return Package.list({dependency: name, limit: 50});
     })
     .then(function(dependents) {
-      package.dependents = dependents
+      package.dependents = dependents;
 
       if (dependents.results.length) {
         package.numMoreDependents = package.dependentCount - dependents.results.length
       }
 
-      return Download.getAll(package.name)
+      return Download.getAll(package.name);
     })
     .then(function(downloads) {
 
-      package.downloads = downloads
+      package.downloads = downloads;
 
       package.isStarred = Boolean(loggedInUser)
         && Array.isArray(package.stars)
-        && package.stars.indexOf(loggedInUser.name) > -1
+        && package.stars.indexOf(loggedInUser.name) > -1;
 
       package.isCollaboratedOnByUser = process.env.FEATURE_ACCESS === "true"
         && Boolean(loggedInUser)
         && (typeof package.collaborators === "object")
-        && (loggedInUser.name in package.collaborators)
+        && (loggedInUser.name in package.collaborators);
 
-      context.package = package
+      context.package = package;
       return reply.view('package/show', context);
-    })
-}
+    });
+};
 
 package.update = function(request, reply) {
   PackageModel.new(request).update(request.packageName, request.payload.package)
@@ -98,6 +97,6 @@ package.update = function(request, reply) {
     })
     .catch(function(err){
       request.logger.error(err);
-      return reply(err)
+      return reply(err);
     });
 };

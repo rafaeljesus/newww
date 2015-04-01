@@ -14,6 +14,13 @@ var Code = require('code'),
 
 var cache = require('../lib/cache');
 
+before(function(done)
+{
+    process.env.USE_CACHE = 'true';
+    cache.disconnect();
+    done();
+});
+
 describe('lib/cache.js', function()
 {
     describe('configure()', function()
@@ -309,18 +316,18 @@ describe('lib/cache.js', function()
             });
         });
 
-        it('responds with an error when the remote service responds with 404', function(done)
+        it('responds with an error when the remote service responds with 400', function(done)
         {
-            var opts = { url: 'http://example.com/not-found' };
+            var opts = { url: 'http://example.com/bad-request' };
             var mock = nock('http://example.com')
-                .get('/not-found')
-                .reply(404);
+                .get('/bad-request')
+                .reply(400);
 
             cache.get(opts, function(err, data)
             {
                 mock.done();
                 expect(err).to.exist();
-                expect(err.message).to.equal('unexpected status code 404');
+                expect(err.message).to.equal('unexpected status code 400');
                 done();
             });
         });
@@ -360,7 +367,6 @@ describe('lib/cache.js', function()
                     done();
                 }
             };
-            sinon.spy(cache.logger, 'error');
 
             var opts = { url: 'https://example.com/setex-fails' };
             var mock = nock('https://example.com')
@@ -373,10 +379,131 @@ describe('lib/cache.js', function()
                 expect(data).to.equal('blistering barnacles');
             });
         });
+
+        it('does not use redis if process.env.USE_CACHE is unset', function(done)
+        {
+            delete process.env.USE_CACHE;
+
+            var opts =
+            {
+                method: 'get',
+                url: 'https://example.com/no-cache'
+            };
+            var mock = nock('https://example.com')
+                .get('/no-cache')
+                .reply(200, 'blistering barnacles');
+
+            sinon.spy(cache, '_getNoCache');
+            sinon.spy(cache.redis, 'get');
+
+            cache.get(opts, function(err, data)
+            {
+                expect(err).to.not.exist();
+                expect(data).to.equal('blistering barnacles');
+                mock.done();
+                expect(cache.redis.get.called).to.be.false();
+                expect(cache._getNoCache.called).to.be.true();
+
+                cache._getNoCache.restore();
+                cache.redis.get.restore();
+                process.env.USE_CACHE = 'true';
+
+                done();
+            });
+        });
+    });
+
+    describe('drop()', function()
+    {
+        it('removes a previously-set value from the cache', function(done)
+        {
+            var opts = {
+                method: 'get',
+                url: 'https://cache.com/hello-again'
+            };
+            var key = cache._fingerprint(opts);
+
+            cache.redis.get(key, function(err, value)
+            {
+                expect(err).to.not.exist();
+                expect(value).to.be.a.string();
+                cache.drop(opts, function(err)
+                {
+                    expect(err).to.not.exist();
+                    cache.redis.get(key, function(err, value2)
+                    {
+                        expect(err).to.not.exist();
+                        expect(value2).to.not.exist();
+                        done();
+                    });
+                });
+            });
+        });
+
+        it('does not complain on error', function(done)
+        {
+            sinon.stub(cache.redis, 'del').yields(Error('del error'));
+            var saved = cache.logger.error;
+
+            var count = 0;
+            cache.logger.error = function()
+            {
+                count++;
+            };
+
+            var opts = { url: 'https://example.com/drop-fails' };
+            cache.drop(opts, function()
+            {
+                expect(count).to.equal(2);
+                sinon.restore(cache.redis.del);
+                cache.logger.error = saved;
+                done();
+            });
+        });
+
+        it('does nothing when USE_CACHE is unset', function(done)
+        {
+            delete process.env.USE_CACHE;
+
+            var opts =
+            {
+                method: 'get',
+                url: 'https://example.com/no-cache'
+            };
+
+            sinon.spy(cache.redis, 'del');
+
+            cache.drop(opts, function()
+            {
+                expect(cache.redis.del.called).to.be.false();
+                cache.redis.del.restore();
+                process.env.USE_CACHE = 'true';
+                done();
+            });
+
+        });
+    });
+
+    describe('disconnect()', function ()
+    {
+        it('disconnects the cache', function (done)
+        {
+            cache.configure({ redis: 'redis://localhost:6379' });
+            cache.redis.keys('*', function (err, keys)
+            {
+                expect(err).to.not.exist();
+                expect(keys).to.exist();
+                cache.disconnect();
+                expect(cache.redis).to.be.null();
+                done();
+            });
+        });
     });
 
     after(function(done)
     {
+        delete process.env.USE_CACHE;
+        cache.configure({ redis: 'redis://localhost:6379' });
         cache.redis.keys('fred:*', function(err, list)
         {
             expect(err).to.not.exist();

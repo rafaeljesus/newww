@@ -1,9 +1,7 @@
-var _ = require('lodash'),
-    userValidate = require('npm-user-validate'),
+var userValidate = require('npm-user-validate'),
     crypto = require('crypto'),
     utils = require('../../lib/utils'),
-    UserModel = require('../../models/user'),
-    from = "support@npmjs.com";
+    UserModel = require('../../models/user');
 
 module.exports = function (request, reply) {
   var opts = { };
@@ -12,9 +10,9 @@ module.exports = function (request, reply) {
     if (request.params && request.params.token) {
       switch (request.params.token.split('/')[0]) {
         case 'revert':
-          return revert(request, reply);
+          return revertEmail(request, reply);
         case 'confirm':
-          return confirm(request, reply);
+          return confirmEmail(request, reply);
         default:
           request.logger.warn('Page not found: ', request.url.path);
           reply.view('errors/not-found', opts).code(404);
@@ -43,10 +41,10 @@ module.exports = function (request, reply) {
       return reply.view('user/email-edit', opts).code(400);
     }
 
-    var user = request.auth.credentials;
+    var loggedInUser = request.loggedInUser;
 
     UserModel.new(request)
-      .verifyPassword(user.name, data.password, function (err, isCorrect) {
+      .verifyPassword(loggedInUser.name, data.password, function (err, isCorrect) {
         if (!isCorrect) {
           opts.error = {password: true};
 
@@ -66,11 +64,11 @@ module.exports = function (request, reply) {
 function handle (request, reply, emailTo) {
   var opts = { };
 
-  var name = request.auth.credentials.name;
+  var name = request.loggedInUser.name;
 
   var data = {
     name: name,
-    changeEmailFrom: request.auth.credentials.email,
+    changeEmailFrom: request.loggedInUser.email,
     changeEmailTo: emailTo,
     confToken: crypto.randomBytes(18).toString('hex'),
     revToken: crypto.randomBytes(18).toString('hex')
@@ -105,12 +103,11 @@ function handle (request, reply, emailTo) {
     });
 }
 
-function confirm (request, reply) {
-  var setSession = request.server.methods.user.setSession(request),
-      User = UserModel.new(request);
+function confirmEmail (request, reply) {
+  var User = UserModel.new(request);
 
   var opts = { },
-      user = request.auth.credentials;
+      loggedInUser = request.loggedInUser;
 
   var token = request.params.token.split('/')[1],
       confHash = utils.sha(token),
@@ -134,8 +131,8 @@ function confirm (request, reply) {
     }
 
     var name = cached.name;
-    if (name !== user.name) {
-      request.logger.error(user.name + ' attempted to change email for ' + name);
+    if (name !== loggedInUser.name) {
+      request.logger.error(loggedInUser.name + ' attempted to change email for ' + name);
       // TODO we should really bubble this one up to the user!
       reply.view('errors/internal', opts).code(500);
       return;
@@ -157,30 +154,24 @@ function confirm (request, reply) {
       }
 
       var toSave = {
-        name: user.name,
+        name: loggedInUser.name,
         email: emailTo
       };
 
       User.save(toSave, function (er) {
 
         if (er) {
-          request.logger.error('Unable to change email for ' + user.name + ' to ' + emailTo);
+          request.logger.error('Unable to change email for ' + loggedInUser.name + ' to ' + emailTo);
           request.logger.error(er);
           reply.view('errors/internal', opts).code(500);
           return;
         }
 
-        user.email = emailTo;
+        loggedInUser.email = emailTo;
         opts.confirmed = true;
 
-        setSession(user, function (err) {
-
-          if (err) {
-            request.logger.error('Unable to set the session for user ' + user.name);
-            request.logger.error(err);
-            reply.view('errors/internal', opts).code(500);
-            return;
-          }
+        // drop the user in the cache to reflect the updated email address
+        User.dropCache(loggedInUser.name, function () {
 
           request.timing.page = 'confirmEmailChange';
           request.metrics.metric({ name: 'confirmEmailChange' });
@@ -194,12 +185,11 @@ function confirm (request, reply) {
   });
 }
 
-function revert (request, reply) {
-  var setSession = request.server.methods.user.setSession(request),
-      User = UserModel.new(request);
+function revertEmail (request, reply) {
+  var User = UserModel.new(request);
 
   var opts = { },
-      user = request.auth.credentials;
+      loggedInUser = request.loggedInUser;
 
   var token = request.params.token.split('/')[1],
       revHash = utils.sha(token),
@@ -223,8 +213,8 @@ function revert (request, reply) {
     }
 
     var name = cached.name;
-    if (name !== user.name) {
-      request.logger.error(user.name + ' attempted to revert email for ' + name);
+    if (name !== loggedInUser.name) {
+      request.logger.error(loggedInUser.name + ' attempted to revert email for ' + name);
       // TODO we should really bubble this one up to the user!
       reply.view('errors/internal', opts).code(500);
       return;
@@ -254,29 +244,21 @@ function revert (request, reply) {
         }
 
         var toSave = {
-          name: user.name,
+          name: loggedInUser.name,
           email: emailFrom
         };
 
         User.save(toSave, function (er) {
 
           if (er) {
-            request.logger.error('Unable to revert email for ' + user.name + ' to ' + emailFrom);
+            request.logger.error('Unable to revert email for ' + loggedInUser.name + ' to ' + emailFrom);
             request.logger.error(er);
             reply.view('errors/internal', opts).code(500);
             return;
           }
 
-          user.email = emailFrom;
-
-          setSession(user, function (err) {
-
-            if (err) {
-              request.logger.error('Unable to set the session for user ' + user.name);
-              request.logger.error(err);
-              reply.view('errors/internal', opts).code(500);
-              return;
-            }
+          // drop the user in the cache to reflect the updated email address
+          User.dropCache(loggedInUser.name, function () {
 
             request.timing.page = 'revertEmailChange';
             request.metrics.metric({ name: 'revertEmailChange' });

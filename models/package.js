@@ -17,10 +17,9 @@ var Package = module.exports = function(opts) {
 Package.new = function(request) {
   var opts = {
     logger: request.logger
-  }
-  if (request.auth.credentials) {
-    opts.bearer = request.auth.credentials.name;
-  }
+  };
+
+  opts.bearer = request.loggedInUser && request.loggedInUser.name;
   return new Package(opts);
 };
 
@@ -34,7 +33,7 @@ Package.prototype.get = function(name) {
       json: true,
     };
 
-    if (_this.bearer) opts.headers = {bearer: _this.bearer};
+    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
     request.get(opts, function(err, resp, body) {
       if (err) { return reject(err); }
@@ -69,10 +68,10 @@ Package.prototype.update = function(name, body) {
     // hapi is converting the private boolean to a string
     // so... yeah.
     if (opts.body && 'private' in opts.body) {
-      opts.body.private = String(opts.body.private) === "true"
+      opts.body.private = String(opts.body.private) === "true";
     }
 
-    if (_this.bearer) opts.headers = {bearer: _this.bearer};
+    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
     request(opts, function(err, resp, body) {
       if (err) { return reject(err); }
@@ -148,7 +147,7 @@ Package.prototype.star = function (package) {
       json: true,
     };
 
-    if (_this.bearer) opts.headers = {bearer: _this.bearer};
+    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
     request.put(opts, function (err, resp, body) {
       if (err) {
@@ -176,7 +175,7 @@ Package.prototype.unstar = function (package) {
       json: true,
     };
 
-    if (_this.bearer) opts.headers = {bearer: _this.bearer};
+    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
     request.del(opts, function (err, resp, body) {
       if (err) { return reject(err); }

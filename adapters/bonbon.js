@@ -3,7 +3,8 @@ var bole      = require('bole'),
     Hoek      = require('hoek'),
     npmHumans = require("npm-humans"),
     toCommonLogFormat = require('hapi-common-log'),
-    url       = require('url');
+    url       = require('url'),
+    UserModel = require('../models/user');
 
 exports.register = function(server, options, next) {
 
@@ -24,17 +25,30 @@ exports.register = function(server, options, next) {
       start: Date.now(),
     };
 
-    if (request.method !== "post") {
+    if (request.auth && request.auth.credentials) {
+      UserModel.new(request).get(request.auth.credentials.name)
+      .then(function(loggedInUser) {
+        request.loggedInUser = loggedInUser;
+      }).catch(function(err) {
+        request.logger.warn(err);
+      }).finally(completePreHandler);
+    } else {
+      completePreHandler();
+    }
+
+    function completePreHandler () {
+      if (request.method !== "post") {
+        return reply.continue();
+      }
+
+      if (request.payload.honey && request.payload.honey.length) {
+        return reply(Boom.badRequest(request.path));
+      }
+
+      delete request.payload.honey;
       return reply.continue();
     }
 
-    if (request.payload.honey && request.payload.honey.length) {
-      return reply(Boom.badRequest(request.path));
-    }
-
-    delete request.payload.honey;
-
-    return reply.continue();
   });
 
   server.ext('onPreResponse', function(request, reply) {
@@ -60,7 +74,7 @@ exports.register = function(server, options, next) {
     switch (request.response.variety) {
       case "view":
         request.response.source.context = Hoek.applyToDefaults(options, request.response.source.context);
-        request.response.source.context.user = request.auth.credentials;
+        request.response.source.context.user = request.loggedInUser;
         break;
       case "plain":
         if (typeof(request.response.source) === "object") {
@@ -81,6 +95,7 @@ exports.register = function(server, options, next) {
     // by adding a `?json` query parameter to the URL
     if ('json' in request.query) {
       var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "auth.credentials.name"));
+
       if (process.env.NODE_ENV === "dev" || isNpmEmployee) {
         var ctx = Hoek.reach(request, 'response.source.context');
 
@@ -92,7 +107,6 @@ exports.register = function(server, options, next) {
           if (request.query.json.length > 1) {
             context = Hoek.reach(context, request.query.json);
           }
-
           return reply(context);
         }
       }

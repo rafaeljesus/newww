@@ -1,8 +1,7 @@
-var User = require('../../models/user'),
+var UserModel = require('../../models/user'),
     userValidate = require('npm-user-validate'),
     utils = require('../../lib/utils'),
-    crypto = require('crypto'),
-    from = "support@npmjs.com";
+    crypto = require('crypto');
 
 module.exports = function (request, reply) {
   var opts = { };
@@ -21,7 +20,7 @@ module.exports = function (request, reply) {
 
     request.metrics.metric({name: 'password-recovery-form'});
     return reply.view('user/password-recovery-form', opts);
-  };
+  }
 };
 
 function processToken(request, reply) {
@@ -66,8 +65,9 @@ function processToken(request, reply) {
 
     request.logger.warn('About to change password', { name: name });
 
-    User.new(request)
-      .save(newAuth, function (err) {
+    var User = UserModel.new(request);
+
+    User.save(newAuth, function (err) {
 
       if (err) {
         request.logger.error('Failed to set password for ' + newAuth.name);
@@ -76,23 +76,25 @@ function processToken(request, reply) {
         return;
       }
 
-      cache.del(pwKey, function (err) {
+      // make sure we're getting the latest user object next time we need it
+      User.dropCache(name, function () {
 
-        if (err) {
-          request.logger.warn('Unable to drop key ' + pwKey);
-          request.logger.warn(err);
-        }
+        cache.del(pwKey, function (err) {
 
-        opts.password = newPass;
-        opts.user = null;
+          if (err) {
+            request.logger.warn('Unable to drop key ' + pwKey);
+            request.logger.warn(err);
+          }
 
-        request.timing.page = 'password-changed';
+          opts.password = newPass;
 
-        request.metrics.metric({ name: 'password-changed' });
-        return reply.view('user/password-changed', opts);
+          request.timing.page = 'password-changed';
+
+          request.metrics.metric({ name: 'password-changed' });
+          return reply.view('user/password-changed', opts);
+        });
       });
     });
-
   });
 }
 
@@ -134,11 +136,9 @@ function handle(request, reply) {
 }
 
 function lookupUserByEmail (email, request, reply) {
-  var opts = {
-    user: request.auth.credentials
-   };
+  var opts = { };
 
-   User.new(request).lookupEmail(email, function (er, users) {
+   UserModel.new(request).lookupEmail(email, function (er, users) {
     if (er) {
       opts.error = er.message;
 
@@ -172,7 +172,7 @@ function lookupUserByEmail (email, request, reply) {
 function lookupUserByUsername (name, request, reply) {
   var opts = { };
 
-  User.new(request).get(name, function (er, user) {
+  UserModel.new(request).get(name, function (er, user) {
     if (er) {
       opts.error = er.message;
 
@@ -217,7 +217,7 @@ function sendEmail(request, reply, data) {
 
   emailIt('forgot-password', data, request.redis)
     .catch(function (er) {
-      request.logger.error('Unable to sent revert email to ' + mail.to);
+      request.logger.error('Unable to sent revert email to ' + data.email);
       request.logger.error(er);
       return reply.view('errors/internal', opts).code(500);
     })

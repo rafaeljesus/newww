@@ -24,12 +24,12 @@ after(function (done) {
 });
 
 describe('GET /~bob for a user other than bob', function () {
-  var $
-  var resp
-  var context
+  var $;
+  var resp;
+  var context;
 
   before(function(done) {
-
+    nock.cleanAll();
     var mock = nock("https://user-api-example.com")
       .get('/user/bob')
       .reply(200, users.bob)
@@ -40,7 +40,7 @@ describe('GET /~bob for a user other than bob', function () {
 
     server.inject('/~bob', function (response) {
       resp = response;
-      $ = cheerio.load(resp.result)
+      $ = cheerio.load(resp.result);
       context = resp.request.response.source.context;
       mock.done();
       done();
@@ -50,52 +50,51 @@ describe('GET /~bob for a user other than bob', function () {
   it("renders a list of bob's packages", function(done){
     expect($("ul.collaborated-packages > li").length).to.equal(20);
     expect($("ul.collaborated-packages > li > a[href='/package/googalytics']").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
   it("truncates package names longer than 50 characters", function(done){
     expect($("a[href='/package/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz']").text())
       .to.equal("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx...");
-    done()
-  })
+    done();
+  });
 
   it("renders a list of packages starred by bob", function(done){
     expect($("ul.starred-packages > li").length).to.equal(4);
     expect($("ul.starred-packages > li > a[href='/package/jade']").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
   it("renders a link to bob's github profile", function(done){
     expect($("a[href='https://github.com/bob']").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
   it("renders a link to bob's twitter profile", function(done){
     expect($("a[href='https://twitter.com/twob']").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
   it("renders bob's full name", function(done){
     expect($("h2.fullname").text()).to.equal("Bob Henderson");
-    done()
-  })
+    done();
+  });
 
   it("renders bob's obfuscated email address", function(done){
     expect($("li.email a[data-email]").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
 });
 
 describe('GET /~bob for logged-in bob', function () {
-  var $
-  var resp
-  var context
-  var name = 'bob';
+  var $;
+  var resp;
+  var context;
 
   before(function(done) {
     var mock = nock("https://user-api-example.com")
-      .get('/user/bob')
+      .get('/user/bob').times(2)
       .reply(200, users.bob)
       .get('/user/bob/package?format=detailed&per_page=9999')
       .reply(200, users.packages)
@@ -104,8 +103,9 @@ describe('GET /~bob for logged-in bob', function () {
 
     server.inject({url:'/~bob', credentials: users.bob}, function (response) {
       resp = response;
-      $ = cheerio.load(resp.result)
+      $ = cheerio.load(resp.result);
       context = resp.request.response.source.context;
+      expect(resp.statusCode).to.equal(200);
       mock.done();
       done();
     });
@@ -113,34 +113,33 @@ describe('GET /~bob for logged-in bob', function () {
 
   it("renders a blurb about how bob can edit his profile", function(done){
     expect($("p.notice.profile-edit").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
   it("renders a link to profile edit page", function(done){
     expect($("p.profile-edit a[href='/profile-edit']").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
   it("renders a link to change password page", function(done){
     expect($("p.profile-edit a[href='/password']").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
   it("renders a link to change gravatar", function(done){
     expect($("p.profile-edit a[href='http://gravatar.com/emails/']").length).to.equal(1);
-    done()
-  })
+    done();
+  });
 
 });
 
 
 describe("GET /~nonexistent-user", function() {
-
-  var mock = nock("https://user-api-example.com")
-    .get("/user/nonexistent-user")
-    .reply(404);
-
   it("renders a 404 page", function (done) {
+    var mock = nock("https://user-api-example.com")
+      .get("/user/nonexistent-user")
+      .reply(404);
+
     server.inject('/~nonexistent-user', function (resp) {
       mock.done();
       var source = resp.request.response.source;
@@ -150,4 +149,4 @@ describe("GET /~nonexistent-user", function() {
     });
   });
 
-})
+});

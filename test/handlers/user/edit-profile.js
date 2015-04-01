@@ -6,10 +6,13 @@ var generateCrumb = require("../crumb"),
     before = lab.before,
     after = lab.after,
     it = lab.test,
+    beforeEach = lab.beforeEach,
     expect = Code.expect,
     nock = require('nock'),
     _ = require('lodash'),
-    server;
+    users = require('../../fixtures').users;
+
+var server, userMock;
 
 // leave original fixtures intact for the sake of other tests
 var users = _.cloneDeep(require('../../fixtures').users);
@@ -23,6 +26,22 @@ before(function (done) {
 
 after(function (done) {
   server.stop(done);
+});
+
+beforeEach(function(done) {
+  nock.cleanAll();
+  userMock = nock('https://user-api-example.com')
+    .get('/user/' + users.bob.name).times(3)
+    .reply(200, users.bob)
+    .post('/user/' + users.bob.name, users.bobUpdateBody)
+    .reply(200, users.bobUpdated)
+    .get('/user/' + users.bob.name)
+    .reply(200, users.bobUpdated)
+    .get('/user/' + users.bob.name + '/package?format=detailed&per_page=9999')
+    .reply(200, users.packages)
+    .get('/user/' + users.bob.name + '/stars?format=detailed')
+    .reply(200, users.stars);
+    done();
 });
 
 describe('Getting to the profile-edit page', function () {
@@ -85,9 +104,6 @@ describe('Modifying the profile', function () {
   it('allows authorized profile modifications and redirects to profile page', function (done) {
 
     generateCrumb(server, function (crumb){
-      var mock = nock('https://user-api-example.com')
-        .post('/user/bob', users.bobUpdateBody)
-        .reply(200, users.bobUpdated);
 
       var options = {
         url: '/profile-edit',
@@ -100,15 +116,24 @@ describe('Modifying the profile', function () {
       options.payload.crumb = crumb;
 
       server.inject(options, function (resp) {
-        mock.done()
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.include('profile');
-        var cache = resp.request.server.app.cache._cache.connection.cache['|sessions'];
-        // modifies the profile properly
-        var cacheData = JSON.parse(cache['8bdb39fa'].item);
-        expect(cacheData.resource.github).to.equal(users.bobUpdated.resource.github);
-        expect(cacheData.resource.twitter).to.equal(users.bobUpdated.resource.twitter);
-        done();
+
+        // now let's make sure it's calling to the user-acl for the
+        // updated version
+        options = {
+          url: resp.headers.location,
+          credentials: users.bob,
+        };
+
+        server.inject(options, function (resp) {
+          expect(resp.statusCode).to.equal(200);
+          var context = resp.request.response.source.context;
+          expect(context.profile.name).to.equal("bob");
+          expect(context.profile.resource.github).to.equal(users.profileUpdate.github);
+          expect(context.profile.resource.twitter).to.equal(users.profileUpdate.twitter);
+          done();
+        });
       });
     });
   });
@@ -141,6 +166,6 @@ describe('Modifying the profile', function () {
         expect(source.template).to.equal('user/profile-edit');
         done();
       });
-    });
+    })
   });
 });

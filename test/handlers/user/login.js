@@ -41,12 +41,17 @@ describe('Getting to the login page', function () {
   });
 
   it('redirects already authenticated users to their profile', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, users.bob);
+
     var options = {
       url: '/login',
       credentials: users.bob
     };
 
     server.inject(options, function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.equal('/~bob');
       done();

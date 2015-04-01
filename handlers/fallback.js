@@ -1,12 +1,9 @@
-var validatePackageName = require('validate-npm-package-name')
+var validatePackageName = require('validate-npm-package-name');
 
 module.exports = function (request, reply) {
 
   var route = request.params.p;
-  var opts = {user: request.auth.credentials};
-  var loggedInUser = request.auth.credentials;
-  var bearer = loggedInUser && loggedInUser.name;
-  var Package = require("../models/package").new(request)
+  var opts = { };
 
   request.server.methods.corp.getPage(route, function(er, content) {
 
@@ -22,4 +19,4 @@ module.exports = function (request, reply) {
 
     return reply.redirect('/package/' + route).code(302);
   });
-}
+};

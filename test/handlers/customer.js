@@ -2,22 +2,37 @@ var generateCrumb = require("../handlers/crumb.js"),
     Lab = require('lab'),
     Code = require('code'),
     nock = require('nock'),
-    fs = require('fs'),
     cheerio = require('cheerio'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     beforeEach = lab.beforeEach,
     it = lab.test,
     expect = Code.expect,
     server,
     fixtures = require('../fixtures');
 
+var userMock;
+
 before(function (done) {
+  userMock = nock("https://user-api-example.com")
+    .get("/user/bob").times(14)
+    .reply(200, fixtures.users.bob)
+    .get("/user/diana_delinquent").twice()
+    .reply(200, fixtures.users.diana_delinquent)
+    .get("/user/norbert_newbie").times(3)
+    .reply(200, fixtures.users.norbert_newbie);
+
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
+});
+
+after(function (done) {
+  userMock.done();
+  server.stop(done);
 });
 
 describe('GET /settings/billing', function () {
@@ -40,6 +55,7 @@ describe('GET /settings/billing', function () {
   });
 
   it('displays cancellation notice if `canceled` query param is present', function (done) {
+
     options = {
       method: "get",
       url: "/settings/billing?canceled=1",

@@ -8,6 +8,7 @@ var fixtures = require("../fixtures"),
     describe = lab.experiment,
     before = lab.before,
     beforeEach = lab.beforeEach,
+    afterEach = lab.afterEach,
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
@@ -42,19 +43,20 @@ describe("package handler", function(){
       .reply(200, fixtures.downloads.browserify.week)
       .get('/point/last-month/browserify').twice()
       .reply(200, fixtures.downloads.browserify.month)
-      .get('/point/last-day/request')
+      .get('/point/last-day/request').twice()
       .reply(200, fixtures.downloads.request.day)
-      .get('/point/last-week/request')
+      .get('/point/last-week/request').twice()
       .reply(200, fixtures.downloads.request.week)
-      .get('/point/last-month/request')
+      .get('/point/last-month/request').twice()
       .reply(200, fixtures.downloads.request.month);
 
     userMock = nock("https://user-api-example.com")
-      .get('/user/bob').times(4)
+      .get('/user/bob').times(3)
       .reply(200, fixtures.users.bob)
-      .get('/user/mikeal').twice()
+      .get('/user/bcoe')
+      .reply(200, fixtures.users.bcoe)
+      .get('/user/mikeal').times(3)
       .reply(200, fixtures.users.mikeal);
-
 
     require('../mocks/server')(function (obj) {
       server = obj;
@@ -352,22 +354,8 @@ describe("package handler", function(){
   });
 
   describe('add collaborator link', function () {
-    var packageMock;
-    var downloadsMock;
-
     beforeEach(function(done){
       process.env.FEATURE_ACCESS = 'true';
-      packageMock = nock("https://user-api-example.com")
-        .get('/package/request')
-        .reply(200, fixtures.packages.request);
-
-      downloadsMock = nock("https://downloads-api-example.com")
-        .get('/point/last-day/request')
-        .reply(200, fixtures.downloads.request.day)
-        .get('/point/last-week/request')
-        .reply(200, fixtures.downloads.request.week)
-        .get('/point/last-month/request')
-        .reply(200, fixtures.downloads.request.month);
       done();
     });
 

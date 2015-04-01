@@ -8,7 +8,6 @@ package.show = function(request, reply) {
   var name = request.packageName;
   var context = {title: name};
   var loggedInUser = request.loggedInUser;
-  var Package = require("../models/package").new(request);
   var Download = require("../models/download").new({
     request: request, cache: require("../lib/cache")
   });

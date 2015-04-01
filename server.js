@@ -1,11 +1,11 @@
 require("./lib/environment")()
 
-var _          = require('lodash'),
-    URL        = require("url"),
-    Hapi       = require('hapi'),
-    replify    = require('replify'),
-    bole       = require('bole'),
-    TWO_WEEKS  = 14 * 24 * 60 * 60 * 1000;
+var _         = require('lodash'),
+    URL       = require("url"),
+    Hapi      = require('hapi'),
+    replify   = require('replify'),
+    bole      = require('bole'),
+    TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
 
 var log = bole('server');
 bole.output({

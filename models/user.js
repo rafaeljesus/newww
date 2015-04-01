@@ -97,7 +97,7 @@ User.prototype.drop = function drop (name, callback) {
     return cache.drop(this.generateUserACLOptions(name), callback);
   }
 
-  return callback(null);
+  process.nextTick(callback);
 };
 
 User.prototype.get = function(name, options, callback) {

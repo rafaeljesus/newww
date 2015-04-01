@@ -186,7 +186,7 @@
           <a href="/package/{{name}}">{{name}}</a>{{else}}
           <a href="/package/{{name}}">{{name}}</a>,
         {{/if}}{{/each}}{{#if dependents.hasMore}},
-        <a href="/browse/depended/{{../../name}}">and {{{minus dependentCount dependents.results.length}}} more</a>
+        <a href="/browse/depended/{{../../name}}">and {{{math dependentCount '-' dependents.results.length}}} more</a>
       {{/if}}
     </p>
   {{/if}}

@@ -1,15 +1,11 @@
 require("./lib/environment")()
 
 var _          = require('lodash'),
-    handlebars = require('handlebars'),
     URL        = require("url"),
     Hapi       = require('hapi'),
     replify    = require('replify'),
     bole       = require('bole'),
     TWO_WEEKS  = 14 * 24 * 60 * 60 * 1000;
-
-// register some useful handlebars helpers.
-require('./lib/hb-helpers')(handlebars);
 
 var log = bole('server');
 bole.output({
@@ -59,7 +55,7 @@ if (process.env.NODE_ENV === 'dev') {
 server.connection(connection);
 
 server.views({
-  engines: {hbs: handlebars},
+  engines: {hbs: require('handlebars')},
   relativeTo: __dirname,
   path: './templates',
   helpersPath: './templates/helpers',

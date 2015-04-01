@@ -452,12 +452,32 @@ describe('lib/cache.js', function()
             };
 
             var opts = { url: 'https://example.com/drop-fails' };
-            cache.drop(opts, function(err)
+            cache.drop(opts, function()
             {
-                expect(err).to.not.exist();
                 expect(count).to.equal(2);
                 sinon.restore(cache.redis.del);
                 cache.logger.error = saved;
+                done();
+            });
+        });
+
+        it('does nothing when USE_CACHE is unset', function(done)
+        {
+            delete process.env.USE_CACHE;
+
+            var opts =
+            {
+                method: 'get',
+                url: 'https://example.com/no-cache'
+            };
+
+            sinon.spy(cache.redis, 'del');
+
+            cache.drop(opts, function()
+            {
+                expect(cache.redis.del.called).to.be.false();
+                cache.redis.del.restore();
+                process.env.USE_CACHE = 'true';
                 done();
             });
 

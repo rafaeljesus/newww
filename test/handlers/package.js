@@ -23,6 +23,8 @@ describe("package handler", function(){
     packageMock = nock("https://user-api-example.com")
       .get('/package/browserify').twice()
       .reply(200, fixtures.packages.browserify)
+      .get('/package?dependency=browserify&limit=50').twice()
+      .reply(200, fixtures.dependents)
       .get('/package/nothingness')
       .reply(404)
       .get('/package/@zeke%2Fnope').twice()
@@ -34,7 +36,9 @@ describe("package handler", function(){
       .get('/package/hitler')
       .reply(200, fixtures.packages.hitler)
       .get('/package/request').times(4)
-      .reply(200, fixtures.packages.request);
+      .reply(200, fixtures.packages.request)
+      .get('/package?dependency=request&limit=50').times(4)
+      .reply(200, fixtures.dependents);
 
     downloadsMock = nock("https://downloads-api-example.com")
       .get('/point/last-day/browserify').twice()
@@ -110,6 +114,15 @@ describe("package handler", function(){
       done();
     });
 
+    it('adds dependents to the view context', function (done) {
+      var dependents = resp.request.response.source.context.package.dependents;
+      expect(dependents).to.be.an.object();
+      expect(dependents).to.contain('results');
+      expect(dependents).to.contain('offset');
+      expect(dependents).to.contain('hasMore');
+      done();
+    });
+
     it('renders download counts', function (done) {
       var downloads = resp.request.response.source.context.package.downloads;
       expect(downloads.day.downloads).to.be.above(0);
@@ -118,6 +131,11 @@ describe("package handler", function(){
       expect($(".daily-downloads").text()).to.equal(String(downloads.day.downloads));
       expect($(".weekly-downloads").text()).to.equal(String(downloads.week.downloads));
       expect($(".monthly-downloads").text()).to.equal(String(downloads.month.downloads));
+      done();
+    });
+
+    it('renders dependents', function (done) {
+      expect($("p.dependents a").length).to.equal(51);
       done();
     });
 
@@ -438,7 +456,7 @@ describe("package handler", function(){
   });
 
 
-  describe('POST /package/@wrigley_the_writer/scoped_public', function () {
+  describe('updating package access', function () {
     var options;
 
     beforeEach(function(done){

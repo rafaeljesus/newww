@@ -171,12 +171,7 @@ function confirmEmail (request, reply) {
         opts.confirmed = true;
 
         // drop the user in the cache to reflect the updated email address
-        User.drop(loggedInUser.name, function (err) {
-
-          if (err) {
-            request.logger.warn('Unable to drop cache for user ' + loggedInUser.name);
-            request.logger.warn(err);
-          }
+        User.drop(loggedInUser.name, function () {
 
           request.timing.page = 'confirmEmailChange';
           request.metrics.metric({ name: 'confirmEmailChange' });
@@ -263,12 +258,7 @@ function revertEmail (request, reply) {
           }
 
           // drop the user in the cache to reflect the updated email address
-          User.drop(loggedInUser.name, function (err) {
-
-            if (err) {
-              request.logger.warn('Unable to drop cache for user ' + loggedInUser.name);
-              request.logger.warn(err);
-            }
+          User.drop(loggedInUser.name, function () {
 
             request.timing.page = 'revertEmailChange';
             request.metrics.metric({ name: 'revertEmailChange' });

@@ -77,11 +77,7 @@ function processToken(request, reply) {
       }
 
       // make sure we're getting the latest user object next time we need it
-      User.drop(name, function (err) {
-        if (err) {
-          request.logger.warn('unable to drop cache for user ' + name);
-          request.logger.warn(err);
-        }
+      User.drop(name, function () {
 
         cache.del(pwKey, function (err) {
 

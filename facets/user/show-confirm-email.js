@@ -56,16 +56,12 @@ module.exports = function confirmEmail (request, reply) {
           return reply.view('errors/internal', opts).code(500);
         }
 
-        User.drop(user.name, function (err) {
-          if (err) {
-            request.logger.warn('Unable to drop user cache for ' + user.name);
-            request.logger.warn(err);
-          }
+        User.drop(user.name, function () {
 
           request.redis.del(key, function (err) {
 
             if (err) {
-              request.logger.warn('Unable to drop key ' + key);
+              request.logger.warn('Unable to drop confirm token ' + key);
               request.logger.warn(err);
             }
 

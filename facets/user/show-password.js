@@ -46,11 +46,7 @@ module.exports = function (request, reply) {
           return reply.view('errors/internal', opts).code(500);
         }
 
-        User.drop(loggedInUser.name, function (err) {
-          if (err) {
-            request.logger.warn('unable to drop cache for user ' + name);
-            request.logger.warn(err);
-          }
+        User.drop(loggedInUser.name, function () {
 
           // Log out all of this user's existing sessions across all devices
           redisSessions.dropKeysWithPrefix(newAuth.name, function(err){

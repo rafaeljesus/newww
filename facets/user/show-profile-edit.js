@@ -43,11 +43,7 @@ module.exports = function (request, reply) {
             return reply.view('errors/internal', opts).code(500);
           }
 
-          User.drop(user.name, function (err) {
-            if (err) {
-              request.logger.warn('unable to drop cache for user ' + user.name);
-              request.logger.warn(err);
-            }
+          User.drop(user.name, function () {
 
             request.timing.page = 'saveProfile';
             request.metrics.metric({ name: 'saveProfile' });

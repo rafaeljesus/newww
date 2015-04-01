@@ -66,11 +66,6 @@ package.show = function(request, reply) {
     })
     .then(function(dependents) {
       package.dependents = dependents
-
-      if (dependents.results.length) {
-        package.numMoreDependents = package.dependentCount - dependents.results.length
-      }
-
       return Download.getAll(package.name)
     })
     .then(function(downloads) {

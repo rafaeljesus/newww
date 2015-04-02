@@ -1,0 +1,14 @@
+{
+	"version": "1.0",
+	"name": "npm",
+	"description": "The npm website",
+	"icons": {
+		"60": ".\/static\/images\/touch-icons\/firefox_app_60x60.png",
+		"128": ".\/static\/images\/touch-icons\/firefox_app_128x128.png",
+		"512": ".\/static\/images\/touch-icons\/firefox_app_512x512.png"
+	},
+	"developer": {
+		"name": "npm, Inc.",
+		"url": "https:\/\/npmjs.com"
+	}
+}

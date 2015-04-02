@@ -1,0 +1,9 @@
+{
+	"version": "1",
+	"api_version": 1,
+	"layout": {
+		"logo": "./static/images/touch-icons/yandex-browser-50x50.png",
+		"color": "#cb3837",
+		"show_title": true
+	}
+}

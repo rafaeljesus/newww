@@ -95,6 +95,7 @@
     "browserify": "^5.8.0",
     "code": "^1.2.1",
     "dotenv": "^0.4.0",
+    "favicons": "^3.0.2",
     "grunt": "^0.4.5",
     "gulp": "^3.8.10",
     "gulp-concat": "^2.2.0",

@@ -2,6 +2,7 @@ var fmt = require('util').format,
     url = require('url'),
     isUrl = require('is-url'),
     gh = require('github-url-to-object'),
+    normalizeLicenseData = require('normalize-license-data'),
     marky = require('marky-markdown'),
     presentUser = require("./user"),
     presentCollaborator = require("./collaborator");
@@ -17,7 +18,10 @@ module.exports = function (package) {
     return Error('invalid package: '+ package.name);
   }
 
-  setLicense(package);
+  package.license = normalizeLicenseData(package.license);
+  if (!package.license) {
+    delete package.license;
+  }
 
   package.versionsCount = package.versions && Object.keys(package.versions).length;
   package.singleVersion = package.versionsCount === 1;
@@ -112,29 +116,6 @@ module.exports = function (package) {
 
   return package;
 };
-
-function setLicense (package) {
-  var license = package.license;
-  package.license = {};
-
-  if (Array.isArray(license)) { license = license[0]; }
-
-  if (typeof license === 'object') {
-    if (license.type) { package.license.name = license.type; }
-    if (license.name) { package.license.name = license.name; }
-    if (license.url) { package.license.url = license.url; }
-  }
-
-  if (typeof license === 'string') {
-    var parsedLicense = url.parse(license);
-    if (parsedLicense && parsedLicense.protocol && parsedLicense.protocol.match(/^https?:$/)) {
-      package.license.url = package.license.type = parsedLicense.href;
-    } else {
-      package.license.url = require("oss-license-name-to-url")(license);
-      package.license.name = license;
-    }
-  }
-}
 
 function processDependents (items, urlRoot, name) {
   if (!items.length) { return items; }

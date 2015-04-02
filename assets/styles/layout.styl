@@ -28,20 +28,20 @@ section
 
 .content-column
   float left
-  width minColumnWidth - sidebarMaxWidth - 100px
+  width 65%
   margin-bottom 90px
 
-  @media only screen and (max-width: minColumnWidth)
+  @media only screen and (max-width: mobileMaxWidth)
     float none
-    max-width 100%
+    width 100%
     margin-bottom 40px
 
 .sidebar
   float right
   margin-top 40px
-  max-width sidebarMaxWidth
-  @media only screen and (max-width: minColumnWidth)
-    max-width 100%
+  width 30%
+  @media only screen and (max-width: mobileMaxWidth)
+    width 100%
     float none
     clear both
     overflow hidden

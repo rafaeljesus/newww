@@ -152,36 +152,6 @@ p.change-avatar
     margin-right 10px
     border-radius 3px
 
-form.star
-  position absolute
-  top 29px
-  left -16px
-  display block
-  margin 10px 0
-  @media only screen and (max-width: mobileMaxWidth)
-    left auto
-    top 28px
-    right starHeight+2px
-
-  input[type=checkbox]
-    display none
-
-    & + label
-      font-size 16px
-      line-height starHeight
-      vertical-align top
-      color text-color
-      cursor pointer
-      &:before
-        transition transform 0.5s
-        font-size starHeight
-        color greigh5
-        margin-right 5px
-
-    &:checked + label:before
-      color npmred
-      transform rotate(360deg)
-
 .honey
   display none
 

@@ -137,9 +137,10 @@ User.prototype.getPackages = function(name, callback) {
         format: 'detailed',
         per_page: 9999
       },
-      json: true,
-      headers: {bearer: _this.bearer}
+      json: true
     };
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request.get(opts, function(err, resp, body){
 
@@ -161,9 +162,10 @@ User.prototype.getStars = function(name, callback) {
   return new Promise(function(resolve, reject) {
     var opts = {
       url: url,
-      json: true,
-      headers: {bearer: _this.bearer}
+      json: true
     };
+
+    if (_this.bearer) opts.headers = {bearer: _this.bearer};
 
     request.get(opts, function(err, resp, body){
 

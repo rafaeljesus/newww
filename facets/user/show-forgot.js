@@ -174,10 +174,12 @@ function lookupUserByUsername (name, request, reply) {
 
   UserModel.new(request).get(name, function (er, user) {
     if (er) {
-      opts.error = er.message;
-
+      if (er.message && String(er.message).match('404')) {
+        opts.error = "Sorry, there's no npm user named " + name
+      } else {
+        opts.error = er.message
+      }
       request.timing.page = 'password-recovery-error';
-
       request.metrics.metric({ name: 'password-recovery-error' });
       return reply.view('user/password-recovery-form', opts).code(404);
     }

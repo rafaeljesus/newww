@@ -175,7 +175,7 @@ function lookupUserByUsername (name, request, reply) {
   UserModel.new(request).get(name, function (er, user) {
     if (er) {
       if (er.message && String(er.message).match('404')) {
-        opts.error = "Sorry, there's no user by that name."
+        opts.error = "Sorry, there's no npm user named " + name
       } else {
         opts.error = er.message
       }

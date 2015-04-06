@@ -80,8 +80,7 @@ package.show = function(request, reply) {
         && Array.isArray(package.stars)
         && package.stars.indexOf(loggedInUser.name) > -1;
 
-      package.isCollaboratedOnByUser = Boolean(request.features.access_page)
-        && Boolean(loggedInUser)
+      package.isCollaboratedOnByUser = Boolean(loggedInUser)
         && (typeof package.collaborators === "object")
         && (loggedInUser.name in package.collaborators);
 

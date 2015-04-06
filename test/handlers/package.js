@@ -394,6 +394,7 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.be.true();
         var $ = cheerio.load(resp.result);
+        expect($("h3[title='collaborators'] a[href='/package/request/access']")).to.have.length(1);
         expect($("ul.collaborators a.add")).to.have.length(1);
         done();
       });
@@ -410,10 +411,12 @@ describe("package handler", function(){
 
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(200);
-        var package = resp.request.response.source.context.package;
+        var context = resp.request.response.source.context;
+        var package = context.package;
         expect(package.name).to.equal('request');
-        expect(package.isCollaboratedOnByUser).to.equal(false);
+        expect(package.isCollaboratedOnByUser).to.be.true();
         var $ = cheerio.load(resp.result);
+        expect($("h3[title='collaborators'] a")).to.have.length(0);
         expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });
@@ -431,6 +434,7 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.equal(false);
         var $ = cheerio.load(resp.result);
+        expect($("h3[title='collaborators'] a")).to.have.length(1);
         expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });
@@ -448,6 +452,7 @@ describe("package handler", function(){
         expect(package.name).to.equal('request');
         expect(package.isCollaboratedOnByUser).to.equal(false);
         var $ = cheerio.load(resp.result);
+        expect($("h3[title='collaborators'] a")).to.have.length(1);
         expect($("ul.collaborators a.add")).to.have.length(0);
         done();
       });

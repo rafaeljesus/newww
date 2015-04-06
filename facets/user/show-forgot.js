@@ -165,7 +165,7 @@ function lookupUserByEmail (email, request, reply) {
     request.timing.page = 'emailLookup';
 
     request.metrics.metric({ name: 'emailLookup' });
-    return lookupUserByUsername(users[0].trim(), request, reply);
+    return lookupUserByUsername(users[0].name.trim(), request, reply);
   });
 }
 

@@ -252,7 +252,7 @@ describe('Looking up a user', function () {
 
       var mock = nock("https://user-api-example.com")
         .get("/user/" + email)
-        .reply(200, ['bob'])
+        .reply(200, [users.bob])
         .get("/user/bob")
         .reply(200, users.bob);
 

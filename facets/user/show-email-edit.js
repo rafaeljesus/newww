@@ -257,6 +257,9 @@ function revertEmail (request, reply) {
             return;
           }
 
+          loggedInUser.email = emailFrom;
+          opts.confirmed = false;
+
           // drop the user in the cache to reflect the updated email address
           User.dropCache(loggedInUser.name, function () {
 

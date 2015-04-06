@@ -8,19 +8,14 @@ var expect = require('code').expect,
   feature = require('../lib/feature-flags')
 
 var requests = {
-  sindresorhus: {loggedInUser: {name: 'sindresorhus'}},
-  maxogden: {loggedInUser: {name: 'maxogden'}},
-  smikes: {loggedInUser: {name: 'smikes'}},
-  cat: {loggedInUser: {name: 'cat'}},
-  zeke: {loggedInUser: {name: 'zeke'}},
-  rockbot: {loggedInUser: {name: 'rockbot'}},
+  sindresorhus: {auth: {credentials: {name: 'sindresorhus'}}},
+  maxogden: {auth: {credentials: {name: 'maxogden'}}},
+  smikes: {auth: {credentials: {name: 'smikes'}}},
+  cat: {auth: {credentials: {name: 'cat'}}},
+  zeke: {auth: {credentials: {name: 'zeke'}}},
+  rockbot: {auth: {credentials: {name: 'rockbot'}}},
   anonymous: {}
 }
-
-var requestMax = {loggedInUser: {name: 'maxogden'}}
-var requestCat = {loggedInUser: {name: 'cat'}}
-var requestAnonymous = {}
-
 
 describe('feature flags', function () {
   // Delete all process.env.FEATURE_* vars before each test
@@ -49,6 +44,12 @@ describe('feature flags', function () {
     it('allows lowercase values', function (done) {
       process.env.FEATURE_SNAKE_TIME = 'true'
       expect(feature('snake_time')).to.be.true()
+      done()
+    })
+
+    it('allows feature name to include `feature_` prefix', function (done) {
+      process.env.FEATURE_SNAKE_TIME = 'true'
+      expect(feature('feature_snake_time')).to.be.true()
       done()
     })
   })

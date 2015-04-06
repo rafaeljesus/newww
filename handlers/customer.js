@@ -3,7 +3,7 @@ var Customer = require("../models/customer").new();
 
 billing.getBillingInfo = function (request, reply) {
 
-  if (process.env.FEATURE_ACCESS !== "true") {
+  if (!request.features.access_page) {
     return reply.view('errors/not-found').code(404);
   }
 
@@ -26,7 +26,7 @@ billing.getBillingInfo = function (request, reply) {
 
 billing.updateBillingInfo = function(request, reply) {
 
-  if (process.env.FEATURE_ACCESS !== "true") {
+  if (!request.features.access_page) {
     return reply.view('errors/not-found').code(404);
   }
 
@@ -58,7 +58,7 @@ billing.updateBillingInfo = function(request, reply) {
 
 billing.deleteBillingInfo = function(request, reply) {
 
-  if (process.env.FEATURE_ACCESS !== "true") {
+  if (!request.features.access_page) {
     return reply.view('errors/not-found').code(404);
   }
 

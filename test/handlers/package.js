@@ -373,12 +373,12 @@ describe("package handler", function(){
 
   describe('add collaborator link', function () {
     beforeEach(function(done){
-      process.env.FEATURE_ACCESS = 'true';
+      process.env.FEATURE_ACCESS_PAGE = 'true';
       done();
     });
 
     afterEach(function(done){
-      delete process.env.FEATURE_ACCESS;
+      delete process.env.FEATURE_ACCESS_PAGE;
       done();
     });
 
@@ -400,13 +400,13 @@ describe("package handler", function(){
 
     });
 
-    it('is not displayed if FEATURE_ACCESS is not set', function (done) {
+    it('is not displayed if FEATURE_ACCESS_PAGE is not set', function (done) {
       var options = {
         url: '/package/request',
         credentials: fixtures.users.mikeal
       };
 
-      delete process.env.FEATURE_ACCESS;
+      delete process.env.FEATURE_ACCESS_PAGE;
 
       server.inject(options, function (resp) {
         expect(resp.statusCode).to.equal(200);

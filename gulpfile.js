@@ -16,7 +16,7 @@ var gulp = require('gulp'),
 var paths = {
   fonts: ['./assets/fonts/*'],
   styles: ['./assets/styles/*.styl'],
-  images: ['./assets/images/*', './assets/images/favicons/*'],
+  images: ['./assets/images/**/*'],
   misc: ['./assets/misc/*'],
   scripts: {
     browserify: ["./assets/scripts/*.js"],

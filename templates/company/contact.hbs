@@ -1,4 +1,4 @@
-   <div class="content">
+   <div class="content-column">
 
     <div id="readme">
     <hgroup>
@@ -8,6 +8,8 @@
 
     {{#if sent}}
       <p>Thanks for reaching out! One of us will get back to you as soon as possible.</p>
+
+      {{#if mail}}{{mail}}{{/if}}
 
     {{else}}
       <form action="/send-contact" method="post">
@@ -32,8 +34,8 @@
             <input id="inquire-support" name="inquire" value="support" type="radio"> I need help with something
           </label>
 
-          <label for="inquire-support">
-            <input id="inquire-support" name="inquire" value="security" type="radio"> I'm reporting a security issue
+          <label for="inquire-security">
+            <input id="inquire-security" name="inquire" value="security" type="radio"> I'm reporting a security issue
           </label>
         </div>
 

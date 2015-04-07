@@ -1,11 +1,12 @@
 var request = require('request'),
     log = require('bole')('npme-create-trial'),
-    config = require('../../../config');
+    trial_length = 30,
+    trial_seats = 50;
 
 module.exports = function (customer, callback) {
 
-  var trialEndpoint = config.license.api + '/trial',
-      productId = config.npme.product_id;
+  var trialEndpoint = process.env.LICENSE_API + '/trial',
+      productId = process.env.NPME_PRODUCT_ID;
 
   // check if they already have a trial; 1 per customer
   request.get({
@@ -33,10 +34,10 @@ module.exports = function (customer, callback) {
 
 function createNewTrial (customer, callback) {
 
-  var trialEndpoint = config.license.api + '/trial',
-      productId = config.npme.product_id,
-      trialLength = config.npme.trial_length,
-      trialSeats = config.npme.trial_seats;
+  var trialEndpoint = process.env.LICENSE_API + '/trial',
+      productId = process.env.NPME_PRODUCT_ID,
+      trialLength = trial_length,
+      trialSeats = trial_seats;
 
   request.put({
     url: trialEndpoint,

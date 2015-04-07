@@ -32,7 +32,8 @@
   <![endif]-->
 
 </head>
-<body itemscope itemtype="http://schema.org/WebSite">
+
+<body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
   <meta itemprop="url" content="https://www.npmjs.com/">
   <nav>
     <div class="container">
@@ -53,13 +54,13 @@
 
       <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
         {{#if user}}
-          <a href="/~{{user.name}}"><img src="{{user.avatarMedium}}" id="user-avatar" /></a>
+          <a href="/~{{user.name}}"><img src="{{user.avatar.small}}" id="user-avatar" /></a>
           <ul>
             <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
             <li class="logout"><a href="/logout" class="subdued">log out</a></li>
           </ul>
         {{else}}
-          <a href="/login"><img src="/static/images/wombat-avatar.png" id="user-avatar" /></a>
+          <a href="/login"><img src="/static/images/wombat-avatar-small.png" id="user-avatar" /></a>
           <ul class="single">
             <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
           </ul>

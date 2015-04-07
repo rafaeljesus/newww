@@ -1,59 +1,37 @@
-var NAMESPACE = 'user-forgot';
-
-var userValidate = require('npm-user-validate'),
-    nodemailer = require('nodemailer'),
+var UserModel = require('../../models/user'),
+    userValidate = require('npm-user-validate'),
+    utils = require('../../lib/utils'),
     crypto = require('crypto');
 
-var transport, mailer;
+module.exports = function (request, reply) {
+  var opts = { };
 
-var from, host, devMode;
+  if (request.method === 'post') {
+    return handle(request, reply);
+  }
 
-var ONE_HOUR = 60 * 60 * 1000; // in milliseconds
+  if (request.method === 'get') {
 
-module.exports = function (options) {
-  return function (request, reply) {
-
-    var opts = { };
-
-    from = options.emailFrom;
-    host = options.canonicalHost;
-
-    if (process.env.NODE_ENV === 'dev') {
-      devMode = true;
-    } else {
-      transport = require(options.mailTransportModule);
-      mailer = nodemailer.createTransport( transport(options.mailTransportSettings) );
+    if (request.params && request.params.token) {
+      return processToken(request, reply);
     }
 
-    if (request.method === 'post') {
-      return handle(request, reply);
-    }
+    request.timing.page = 'password-recovery-form';
 
-    if (request.method === 'get' || request.method === 'head') {
-
-      if (request.params && request.params.token) {
-        return processToken(request, reply);
-      }
-
-      request.timing.page = 'password-recovery-form';
-
-      request.metrics.metric({name: 'password-recovery-form'});
-      return reply.view('user/password-recovery-form', opts);
-    }
-  };
+    request.metrics.metric({name: 'password-recovery-form'});
+    return reply.view('user/password-recovery-form', opts);
+  }
 };
-
-// ======= functions =======
 
 function processToken(request, reply) {
   var opts = {},
-      cache = request.server.app.cache;
+      cache = request.server.app.cache._cache.connection.client;
 
   var token = request.params.token,
-      hash = sha(token),
+      hash = utils.sha(token),
       pwKey = 'pwrecover_' + hash;
 
-  cache.get(pwKey, function (err, item, cached) {
+  cache.get(pwKey, function (err, value) {
     if (err) {
       request.logger.error('Error getting token from redis', pwKey);
       request.logger.error(err);
@@ -61,17 +39,19 @@ function processToken(request, reply) {
       return;
     }
 
+    var cached = utils.safeJsonParse(value);
+
     if (!cached) {
       request.logger.error('Token not found or invalid: ', pwKey);
       reply.view('errors/internal', opts).code(500);
       return;
     }
 
-    var name = cached.item.name,
-        verify = cached.item.token;
+    var name = cached.name,
+        verify = cached.token;
 
     if (verify !== token) {
-      request.logger.error('token in cache does not match user token; cached=' + cached.item.token + '; token=' + token);
+      request.logger.error('token in cache does not match user token; cached=' + cached.token + '; token=' + token);
       reply.view('errors/internal', opts).code(500);
       return;
     }
@@ -85,7 +65,9 @@ function processToken(request, reply) {
 
     request.logger.warn('About to change password', { name: name });
 
-    request.server.methods.user.changePass(newAuth, function (err) {
+    var User = UserModel.new(request);
+
+    User.save(newAuth, function (err) {
 
       if (err) {
         request.logger.error('Failed to set password for ' + newAuth.name);
@@ -94,23 +76,25 @@ function processToken(request, reply) {
         return;
       }
 
-      cache.drop(pwKey, function (err) {
+      // make sure we're getting the latest user object next time we need it
+      User.dropCache(name, function () {
 
-        if (err) {
-          request.logger.warn('Unable to drop key ' + pwKey);
-          request.logger.warn(err);
-        }
+        cache.del(pwKey, function (err) {
 
-        opts.password = newPass;
-        opts.user = null;
+          if (err) {
+            request.logger.warn('Unable to drop key ' + pwKey);
+            request.logger.warn(err);
+          }
 
-        request.timing.page = 'password-changed';
+          opts.password = newPass;
 
-        request.metrics.metric({ name: 'password-changed' });
-        return reply.view('user/password-changed', opts);
+          request.timing.page = 'password-changed';
+
+          request.metrics.metric({ name: 'password-changed' });
+          return reply.view('user/password-changed', opts);
+        });
       });
     });
-
   });
 }
 
@@ -152,12 +136,9 @@ function handle(request, reply) {
 }
 
 function lookupUserByEmail (email, request, reply) {
-  var opts = {
-    user: request.auth.credentials,
-    namespace: NAMESPACE
-   };
+  var opts = { };
 
-  request.server.methods.user.lookupUserByEmail(email, function (er, usernames) {
+   UserModel.new(request).lookupEmail(email, function (er, users) {
     if (er) {
       opts.error = er.message;
 
@@ -167,8 +148,8 @@ function lookupUserByEmail (email, request, reply) {
       return reply.view('user/password-recovery-form', opts).code(404);
     }
 
-    if (usernames.length > 1) {
-      opts.users = usernames;
+    if (users.length > 1) {
+      opts.users = users;
 
       request.timing.page = 'password-recovery-multiuser';
 
@@ -176,7 +157,7 @@ function lookupUserByEmail (email, request, reply) {
       return reply.view('user/password-recovery-form', opts);
     }
 
-    if (!usernames || !usernames.length) {
+    if (!users || !users.length) {
       opts.error = "No user found with email address " + email;
       return reply.view('user/password-recovery-form', opts).code(400);
     }
@@ -184,19 +165,21 @@ function lookupUserByEmail (email, request, reply) {
     request.timing.page = 'emailLookup';
 
     request.metrics.metric({ name: 'emailLookup' });
-    return lookupUserByUsername(usernames[0].trim(), request, reply);
+    return lookupUserByUsername(users[0].name.trim(), request, reply);
   });
 }
 
 function lookupUserByUsername (name, request, reply) {
   var opts = { };
 
-  request.server.methods.user.getUser(name, function (er, user) {
+  UserModel.new(request).get(name, function (er, user) {
     if (er) {
-      opts.error = er.message;
-
+      if (er.message && String(er.message).match('404')) {
+        opts.error = "Sorry, there's no npm user named " + name
+      } else {
+        opts.error = er.message
+      }
       request.timing.page = 'password-recovery-error';
-
       request.metrics.metric({ name: 'password-recovery-error' });
       return reply.view('user/password-recovery-form', opts).code(404);
     }
@@ -224,72 +207,28 @@ function lookupUserByUsername (name, request, reply) {
     request.timing.page = 'getUser';
 
     request.metrics.metric({ name: 'getUser' });
-    return sendEmail(name, email, request, reply);
+    return sendEmail(request, reply, {name: name, email: email});
   });
 }
 
-function sendEmail(name, email, request, reply) {
+function sendEmail(request, reply, data) {
 
   var opts = {};
 
-  // the token needs to be url-safe
-  var token = crypto.randomBytes(30).toString('base64')
-              .split('/').join('_')
-              .split('+').join('-'),
-      hash = sha(token),
-      data = {
-        name: name + '',
-        email: email + '',
-        token: token + ''
-      },
-      key = 'pwrecover_' + hash;
+  var emailIt = request.server.methods.email.send;
 
-  request.server.app.cache.set(key, data, ONE_HOUR, function (err) {
+  emailIt('forgot-password', data, request.redis)
+    .catch(function (er) {
+      request.logger.error('Unable to sent revert email to ' + data.email);
+      request.logger.error(er);
+      return reply.view('errors/internal', opts).code(500);
+    })
+    .then(function () {
+      opts.sent = true;
 
-    if (err) {
-      request.logger.error('Unable to set ' + key + ' to the cache');
-      request.logger.error(err);
-      reply.view('errors/internal', opts).code(500);
-      return;
-    }
-
-    var u = host + '/forgot/' + encodeURIComponent(token);
-
-    var mail = {
-      to: '"' + name + '" <' + email + '>',
-      from: from,
-      subject : "npm Password Reset",
-      headers: { "X-SMTPAPI": { category: "password-reset" } },
-      text: require('./emailTemplates/forgotPassword')(name, u, from)
-    };
-
-    if (devMode) {
       request.timing.page = 'sendForgotEmail';
-
       request.metrics.metric({ name: 'sendForgotEmail' });
-      return reply(mail);
-    } else {
-      mailer.sendMail(mail, function (er) {
 
-        if (er) {
-          request.logger.error('Unable to sent revert email to ' + mail.to);
-          request.logger.error(er);
-          reply.view('errors/internal', opts).code(500);
-          return;
-        }
-
-        opts.sent = true;
-
-        request.timing.page = 'sendForgotEmail';
-
-        request.metrics.metric({ name: 'sendForgotEmail' });
-        return reply.view('user/password-recovery-form', opts);
-      });
-    }
-
-  });
-}
-
-function sha (token) {
-  return crypto.createHash('sha1').update(token).digest('hex');
+      return reply.view('user/password-recovery-form', opts);
+    });
 }

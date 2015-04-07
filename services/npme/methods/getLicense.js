@@ -1,10 +1,9 @@
 var request = require('request'),
-    log = require('bole')('npme-get-license'),
-    config = require('../../../config')
+    log = require('bole')('npme-get-license');
 
 module.exports = function (productId, customerEmailOrId, licenseId, callback) {
 
-  var licenseEndpoint = config.license.api + '/license';
+  var licenseEndpoint = process.env.LICENSE_API + '/license';
 
   request.get({
     url: licenseEndpoint + '/' + productId + '/' + customerEmailOrId + '/' + licenseId,
@@ -20,8 +19,8 @@ module.exports = function (productId, customerEmailOrId, licenseId, callback) {
       return callback(null, body.details);
     }
 
-    var msg = 'unexpected status code fetching license; status=' + resp.statusCode + '; customer=' + customerEmailOrId + ';license=' + licenseId
+    var msg = 'unexpected status code fetching license; status=' + resp.statusCode + '; customer=' + customerEmailOrId + ';license=' + licenseId;
     log.error(msg);
     callback(new Error(msg));
   });
-}
+};

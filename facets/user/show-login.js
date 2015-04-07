@@ -1,19 +1,19 @@
 var Boom = require('boom'),
-    Hapi = require('hapi'),
     url = require('url'),
     fmt = require("util").format,
-    redis = require("../../adapters/redis-sessions");
+    redis = require("../../adapters/redis-sessions"),
+    avatar = require("../../lib/avatar"),
+    User = require('../../models/user');
 
 var lockoutInterval = 60; // seconds
 var maxAttemptsBeforeLockout = 5;
 
 module.exports = function login (request, reply) {
-  var loginUser = request.server.methods.user.loginUser,
-      setSession = request.server.methods.user.setSession(request);
+  var setSession = request.server.methods.user.setSession(request);
 
   if (request.auth.isAuthenticated) {
     request.timing.page = 'login-redirect-to-home';
-    return reply().redirect('/~'+ request.auth.credentials.name);
+    return reply().redirect('/~'+ request.loggedInUser.name);
   }
 
   var opts = { };
@@ -28,11 +28,9 @@ module.exports = function login (request, reply) {
 
       var loginAttemptsKey = "login-attempts-"+request.payload.name;
       redis.get(loginAttemptsKey, function(err, attempts) {
-
         if (err) {
           request.logger.error("redis: unable to get " + loginAttemptsKey);
         }
-
         // Lock 'em out...
         attempts = Number(attempts);
         if (attempts >= maxAttemptsBeforeLockout) {
@@ -43,10 +41,13 @@ module.exports = function login (request, reply) {
         }
 
         // User is not above the login attempt threshold, so try to log in...
-        loginUser(request.payload, function (er, user) {
+        User.new(request)
+          .login(request.payload, function (er, user) {
+
           if (er || !user) {
 
             request.logger.error(Boom.badRequest('Invalid username or password'), request.payload.name);
+            request.logger.error(er);
             opts.error = 'Invalid username or password';
 
             // Temporarily lock users out after several failed login attempts
@@ -69,19 +70,19 @@ module.exports = function login (request, reply) {
               request.metrics.metric({name: 'login-error'});
               return reply.view('user/login', opts).code(400);
             });
-
             return;
           }
 
-          // log.info("Login received, user available, setting session")
-          // log.info("User is",user)
+          // request.logger.info("Login received, user available, setting session")
+          // request.logger.info("User is",user)
+
+          user.avatar = avatar(user.email);
 
           setSession(user, function (err) {
             if (err) {
               request.logger.error('could not set session for ' + user.name);
               request.logger.error(err);
-              reply.view('errors/internal', opts).code(500);
-              return;
+              return reply.view('errors/internal', opts).code(500);
             }
 
             if (user && user.mustChangePass) {

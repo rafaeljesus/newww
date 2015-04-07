@@ -1,6 +1,6 @@
 module.exports = function (rev, revUrl, host, from) {
 
-  var text = 'You are receiving this because you have (or someone else has) '
+  var text = 'You are receiving this because you (or someone else) '
         + 'requested that the email address of the \''
         + rev.name
         + '\' npm user account be changed from\r\n'

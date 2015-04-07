@@ -1,79 +1,68 @@
-var Joi = require('joi');
 
-module.exports = function (options) {
-  var stripe = require('stripe')(options.secretkey),
-      VALID_CHARGE_AMOUNTS = [35000, 100000];
+var Joi = require('joi'),
+    stripe = require('stripe')(process.env.STRIPE_SECRET_KEY),
+    VALID_CHARGE_AMOUNTS = [35000, 100000];
 
-  return function (request, reply) {
+module.exports = function (request, reply) {
 
-    var opts = {
-      title: "Join the Who's Hiring Page",
-    };
+  var opts = {
+    title: "Join the Who's Hiring Page",
+    stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+  };
 
-    if (request.method === 'get') {
-      opts.stripeKey = options.publickey;
+  if (request.method === 'get') {
+    request.timing.page = 'whoshiring-paymentShow';
+    return reply.view('company/payments', opts);
+  }
 
-      request.timing.page = 'whoshiring-payments';
-      request.metrics.metric({name: 'whoshiring-payments'});
-      return reply.view('company/payments', opts);
+  var schema = Joi.object().keys({
+    id: Joi.string().token(),
+    livemode: Joi.string(),
+    created: Joi.string(),
+    used: Joi.string(),
+    object: Joi.string(),
+    type: Joi.string(),
+    card: Joi.object(),
+    email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
+    verification_allowed: Joi.string(),
+    amount: Joi.number(),
+    client_ip: Joi.string()
+  });
+
+  Joi.validate(request.payload, schema, function (err, token) {
+    if (err) {
+      request.logger.error('validation error');
+      request.logger.error(err);
+      return reply('validation error').code(403);
     }
 
-    var schema = Joi.object().keys({
-      id: Joi.string().token(),
-      livemode: Joi.string(),
-      created: Joi.string(),
-      used: Joi.string(),
-      object: Joi.string(),
-      type: Joi.string(),
-      card: Joi.object(),
-      email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
-      verification_allowed: Joi.string(),
-      amount: Joi.number(),
-    });
+    if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
+      request.logger.error('internal charge amount error; token amount is ', token.amount);
+      request.logger.error(err);
+      return reply('invalid charge amount error').code(403);
+    }
 
-    Joi.validate(request.payload, schema, function (err, token) {
-
+    var stripeStart = Date.now();
+    stripe.charges.create({
+      amount: token.amount,
+      currency: "usd",
+      card: token.id, // obtained with Stripe.js
+      description: "Charge for " + token.email
+    }, function(err, charge) {
       if (err) {
-        request.logger.error('validation error');
+        request.logger.error('internal stripe error; token amount is ', token.amount);
         request.logger.error(err);
-        reply('validation error').code(403);
-        return;
+        return reply('internal stripe error').code(500);
       }
 
-      if (VALID_CHARGE_AMOUNTS.indexOf(token.amount) === -1) {
-        request.logger.error('invalid charge amount: ' + token.amount + '; email=' + token.email);
-        reply('invalid charge amount error').code(403);
-        return;
-      }
-
-      var stripeStart = Date.now();
-      stripe.charges.create({
-        amount: token.amount,
-        currency: "usd",
-        card: token.id, // obtained with Stripe.js
-        description: "Charge for " + token.email
-      }, function(err, charge) {
-
-        if (err) {
-          request.logger.error('internal stripe error; amount=' + token.amount + '; email=' + token.email);
-          request.logger.error(err);
-          reply('internal stripe error').code(500);
-          return;
-        }
-
-        request.metrics.metric({
-          name: 'latency',
-          value: Date.now() - stripeStart,
-          type: 'stripe'
-        });
-
-        request.logger.info('Successful charge: ', charge);
-
-        request.timing.page = 'whoshiring-paymentProcessed';
-        request.metrics.metric({name: 'whoshiring-paymentProcessed'});
-
-        return reply('Stripe charge successful').code(200);
+      request.metrics.metric({
+        name:  'latency',
+        value: Date.now() - stripeStart,
+        type:  'stripe'
       });
+
+      request.timing.page = 'whoshiring-paymentProcessed';
+      return reply('Stripe charge successful').code(200);
     });
-  };
-};
+  });
+}

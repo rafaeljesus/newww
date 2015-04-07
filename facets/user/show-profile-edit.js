@@ -1,74 +1,64 @@
-var transform = require('./presenters/profile').transform,
-    Hapi = require('hapi'),
+var UserModel = require('../../models/user'),
+    presenter = require('../../presenters/user'),
     Joi = require('joi'),
     merge = require('lodash').merge;
 
-module.exports = function (options) {
-  return function (request, reply) {
-    var saveProfile = request.server.methods.user.saveProfile,
-        setSession = request.server.methods.user.setSession(request);
+module.exports = function (request, reply) {
+  var loggedInUser = request.loggedInUser;
+  var User = UserModel.new(request);
 
-    var opts = {
-      user: transform(request.auth.credentials, options),
+  var opts = { };
 
-      namespace: 'user-profile-edit'
-    }
+  if (request.method === 'post' || request.method === 'put') {
 
-    if (request.method === 'post' || request.method === 'put') {
+    var editableUserProperties = Joi.object().keys({
+      fullname: Joi.string().allow(''),
+      homepage: Joi.string().allow(''),
+      github: Joi.string().allow(''),
+      twitter: Joi.string().allow(''),
+      freenode: Joi.string().allow('')
+    });
 
-      var editableUserProperties = Joi.object().keys({
-        fullname: Joi.string().allow(''),
-        homepage: Joi.string().allow(''),
-        github: Joi.string().allow(''),
-        twitter: Joi.string().allow(''),
-        freenode: Joi.string().allow('')
-      });
+    Joi.validate(request.payload, editableUserProperties, function (err, userChanges) {
+      if (err) {
+        opts.error = err;
+        return reply.view('user/profile-edit', opts).code(400);
+      }
 
-      Joi.validate(request.payload, editableUserProperties, function (err, userChanges) {
+      User.get(loggedInUser.name, function (err, user) {
 
         if (err) {
-          opts.error = err;
-          return reply.view('user/profile-edit', opts).code(400);
+          request.logger.error('unable to get user ' + loggedInUser.name);
+          request.logger.error(err);
+          return reply.view('errors/user-not-found', opts).code(404);
         }
 
-        merge(opts.user, userChanges);
+        merge(user.resource, userChanges);
+        user = presenter(user);
 
-        opts.user = transform(opts.user, options);
-
-        saveProfile(opts.user, function (err, data) {
+        User.save(user, function (err, data) {
           if (err) {
+            request.logger.warn('unable to save profile; user=' + user.name);
             request.logger.warn(err);
-            request.logger.warn('unable to save profile; user=' + opts.user.name);
             return reply.view('errors/internal', opts).code(500);
           }
 
-          setSession(opts.user, function (err) {
-            if (err) {
-              // TODO this is an error with our cache. Does the user really need to see it?
-              request.logger.warn('unable to set session; user=' + opts.user.name);
-              return reply.view('errors/internal', opts).code(500);
-            }
+          User.dropCache(user.name, function () {
 
             request.timing.page = 'saveProfile';
             request.metrics.metric({ name: 'saveProfile' });
             return reply.redirect('/profile');
           });
-
         });
       });
-    }
-
-    if (request.method === 'head' || request.method === 'get' || opts.error) {
-      request.timing.page = 'profile-edit';
-      opts.title = 'Edit Profile';
-      return reply.view('user/profile-edit', opts);
-    }
+    });
   }
-}
 
-function applyChanges (user, profileChanges) {
-  for (var i in profileChanges) {
-    user[i] = profileChanges[i];
+  if (request.method === 'get') {
+    request.timing.page = 'profile-edit';
+    opts.title = 'Edit Profile';
+    opts.showEmailSentNotice = request.query['verification-email-sent'] === 'true';
+    opts.showWelcomeMessage = request.query['new-user'] === 'true';
+    return reply.view('user/profile-edit', opts);
   }
-  return user;
-}
+};

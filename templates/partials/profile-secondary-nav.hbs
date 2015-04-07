@@ -1,7 +1,10 @@
-<div id="secondary-nav">
+<div class="secondary-nav">
   <div class="container">
-    <a href="/profile-edit" class="tab" data-tab="profile">edit profile</a>
-    <a href="/email-edit" class="tab" data-tab="edit-email">edit email</a>
-    <a href="/password" class="tab" data-tab="password">change password</a>
+    <a href="/profile-edit">profile</a>
+    <a href="/email-edit">email</a>
+    <a href="/password">password</a>
+    {{#if features.billing_page}}
+      <a href="/settings/billing">billing</a>
+    {{/if}}
   </div>
 </div>

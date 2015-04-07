@@ -1,6 +1,3 @@
-var config = require('../config');
-
-// all those plugins
 module.exports = [
   {
     register: require('crumb'),
@@ -9,27 +6,15 @@ module.exports = [
   require('scooter'),
   {
     register: require('blankie'),
-    options: config.csp
+    options: require('../lib/csp').default
   },
-  {
-    register: require('../services/user'),
-    options: config.couch
-  },
-  require('../services/registry'),
+  require('../services/user'),
   require('../services/corporate'),
-  {
-    register: require('../services/npme'),
-    options: config
-  },
-  {
-    register: require('../services/downloads'),
-    options: config.downloads
-  },
+  require('../services/email'),
+  require('../services/npme'),
   {
     register: require('./bonbon'),
     options: {
-      stamp: config.stamp,
-      canonicalHost: config.canonicalHost,
       lang: "en_US"
     }
   }

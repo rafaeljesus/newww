@@ -1,6 +1,3 @@
-var nodemailer = require('nodemailer');
-
-var config = require('../../config');
 
 // if they agree to the ULA, notify hubspot, create a trial and send verification link
 
@@ -13,7 +10,7 @@ module.exports = function trialSignup (request, reply) {
   // we can trust the email is fine because we've verified it in the show-ula handler
   var data = { email: request.payload.customer_email };
 
-  postToHubspot(config.license.hubspot.form_npme_agreed_ula, data, function (er) {
+  postToHubspot(process.env.HUBSPOT_FORM_NPME_AGREED_ULA, data, function (er) {
 
     if (er) {
       request.logger.error('Could not hit ULA notification form on Hubspot');
@@ -52,11 +49,10 @@ function createTrialAccount(request, reply, customer) {
   var createTrial = request.server.methods.npme.createTrial;
 
   var opts = {};
-
   createTrial(customer, function (er, trial) {
     if (er) {
       request.logger.error('There was an error with creating a trial for ', customer.id);
-      request.logger.error(er)
+      request.logger.error(er);
       reply.view('errors/internal', opts).code(500);
       return;
     }
@@ -69,43 +65,22 @@ function sendVerificationEmail (request, reply, customer, trial) {
 
   var opts = {};
 
-  var from = config.user.mail.emailFrom;
+  var sendEmail = request.server.methods.email.send;
 
-  var mail = {
-    to: '"' + customer.name + '" <' + customer.email + '>',
-    from: '" npm Enterprise " <' + from + '>',
-    subject: "npm Enterprise: please verify your email",
-    text: "Hi " + customer.name + " -\r\n\r\n" +
-      "Thanks for trying out npm Enterprise!\r\n\r\n" +
-      "To get started, please click this link to verify your email address:\r\n\r\n" +
-      "https://www.npmjs.com/enterprise-verify?v=" + trial.verification_key + "\r\n\r\n" +
-      "Thanks!\r\n\r\n" +
-      "If you have questions or problems, you can reply to this message,\r\n" +
-      "or email " + from + "\r\n" +
-      "\r\n\r\nnpm loves you.\r\n"
+  var user = {
+    name: customer.name,
+    email: customer.email,
+    verification_key: trial.verification_key
   };
 
-  if (process.env.NODE_ENV === 'dev') {
-
-    opts.mail = JSON.stringify(mail);
-
-    return reply.view('enterprise/thanks', opts);
-
-  } else {
-    var mailSettings = config.user.mail;
-
-    var transport = require(mailSettings.mailTransportModule);
-    var mailer = nodemailer.createTransport( transport(mailSettings.mailTransportSettings) );
-
-    mailer.sendMail(mail, function (er) {
-      if (er) {
-        request.logger.error('Unable to send verification email to ', customer);
-        request.logger.error(er);
-        reply.view('errors/internal', opts).code(500);
-        return;
-      }
-
+  sendEmail('npme-trial-verification', user, request.redis)
+    .catch(function (er) {
+      request.logger.error('Unable to send verification email to ', customer);
+      request.logger.error(er);
+      reply.view('errors/internal', opts).code(500);
+      return;
+    })
+    .then(function () {
       return reply.view('enterprise/thanks', opts);
     });
-  }
 }

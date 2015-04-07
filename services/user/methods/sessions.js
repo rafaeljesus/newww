@@ -1,20 +1,20 @@
 var Boom = require('boom'),
-    Hapi = require('hapi'),
-    log = require('bole')('user-login'),
     metrics = require('../../../adapters/metrics')(),
     redisSessions = require('../../../adapters/redis-sessions');
-
 
 module.exports = {
   set: function set (request) {
     return function (user, next) {
       var timer = { start: Date.now() };
 
-      user.sid = redisSessions.generateRandomUserHash(user.name);
+      var data = {
+        name: user.name,
+        sid: redisSessions.generateRandomUserHash(user.name)
+      };
 
-      request.server.app.cache.set(user.sid, user, 0, function (err) {
+      request.server.app.cache.set(data.sid, data, 0, function (err) {
         if (err) {
-          log.error(Boom.internal('there was an error setting the cache'));
+          request.logger.error(Boom.internal('there was an error setting the cache'));
 
           metrics.metric({name: 'setSessionError'});
           return next(err);
@@ -28,38 +28,39 @@ module.exports = {
           action: 'setSession'
         });
 
-        request.auth.session.set({user: user.name, sid: user.sid});
+        request.auth.session.set(data);
         return next(null);
       });
-    }
+    };
   },
 
   del: function del (request) {
     return function (user, next) {
-      var timer = { start: Date.now() };
+      var start = Date.now();
 
-      request.server.methods.user.logoutUser(user.token, function () {
+      if (!user.sid) {
+        request.auth.session.clear();
+        return next(null);
+      }
 
-        request.server.app.cache.drop(user.sid, function (err) {
-          if (err) {
-            log.error(Boom.internal('there was an error clearing the cache'));
-            metrics.metric({name: 'delSessionError'});
-            return next(err);
-          }
+      request.server.app.cache.drop(user.sid, function (err) {
+        if (err) {
+          request.logger.error(Boom.internal('there was an error clearing the cache'));
+          request.logger.error(err);
+          metrics.metric({name: 'delSessionError'});
+        }
 
-          timer.end = Date.now();
-          metrics.metric({
-            name: 'latency',
-            value: timer.end - timer.start,
-            type: 'redis',
-            action: 'delSession'
-          });
-
-          request.auth.session.clear();
-
-          return next(null);
+        metrics.metric({
+          name: 'latency',
+          value: Date.now() - start,
+          type: 'redis',
+          action: 'delSession'
         });
+
+        request.auth.session.clear();
+
+        return next(null);
       });
-    }
+    };
   }
-}
+};

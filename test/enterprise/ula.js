@@ -1,4 +1,5 @@
-var Code = require('code'),
+var generateCrumb = require("../handlers/crumb.js"),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -9,9 +10,9 @@ var Code = require('code'),
 
 var server;
 
-// prepare the server
+
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
@@ -24,14 +25,7 @@ after(function (done) {
 describe('Getting to the ULA page', function () {
   it('creates a new customer when one doesn\'t exist', function (done) {
 
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -43,16 +37,16 @@ describe('Getting to the ULA page', function () {
           company: 'npm, Inc.',
           numemployees: '1-25',
           comments: 'teehee',
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
-        expect(source.context.customer_id).to.equal('23456');
+        expect(source.context.customer_id).to.equal(23456);
         expect(source.context.customer_email).to.equal('new@bam.com');
         done();
       });
@@ -61,14 +55,7 @@ describe('Getting to the ULA page', function () {
 
   it('re-renders signup page with errors if form input contains non-whitelisted properties', function (done) {
 
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -82,9 +69,9 @@ describe('Getting to the ULA page', function () {
           company: 'npm, Inc.',
           numemployees: '1-25',
           comments: 'teehee',
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
@@ -93,10 +80,10 @@ describe('Getting to the ULA page', function () {
         expect(source.template).to.equal('enterprise/index');
         expect(source.context.errors).to.exist();
         var names = source.context.errors.map(function(error){
-          return error.path
-        })
-        expect(names).to.include('malicious_intent')
-        expect(names).to.include('secrets')
+          return error.path;
+        });
+        expect(names).to.include('malicious_intent');
+        expect(names).to.include('secrets');
         done();
       });
     });
@@ -105,14 +92,7 @@ describe('Getting to the ULA page', function () {
 
   it('re-renders signup page with errors if form input is invalid', function (done) {
 
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -124,9 +104,9 @@ describe('Getting to the ULA page', function () {
           company: "",
           numemployees: '1-25',
           comments: "",
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
@@ -135,11 +115,11 @@ describe('Getting to the ULA page', function () {
         expect(source.template).to.equal('enterprise/index');
         expect(source.context.errors).to.exist();
         var names = source.context.errors.map(function(error){
-          return error.path
-        })
-        expect(names).to.not.include('comments') // because they're optional
-        expect(names).to.include('company')
-        expect(names).to.include('email')
+          return error.path;
+        });
+        expect(names).to.not.include('comments'); // because they're optional
+        expect(names).to.include('company');
+        expect(names).to.include('email');
         done();
       });
     });
@@ -147,14 +127,7 @@ describe('Getting to the ULA page', function () {
 
   it('gets the customer when they already exist', function (done) {
 
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -166,16 +139,16 @@ describe('Getting to the ULA page', function () {
           company: 'npm, Inc.',
           numemployees: '1-25',
           comments: 'teehee',
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
-        expect(source.context.customer_id).to.equal('12345');
+        expect(source.context.customer_id).to.equal(12345);
         expect(source.context.customer_email).to.equal('exists@bam.com');
         done();
       });
@@ -184,14 +157,7 @@ describe('Getting to the ULA page', function () {
 
   it('renders an error when hubspot errors out when getting a customer', function (done) {
 
-    server.inject({url: '/enterprise'}, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      var cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
-
+    generateCrumb(server, function (crumb){
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -203,9 +169,9 @@ describe('Getting to the ULA page', function () {
           company: 'npm, Inc.',
           numemployees: '1-25',
           comments: 'teehee',
-          crumb: cookieCrumb
+          crumb: crumb
         },
-        headers: { cookie: 'crumb=' + cookieCrumb }
+        headers: { cookie: 'crumb=' + crumb }
       };
 
       server.inject(opts, function (resp) {

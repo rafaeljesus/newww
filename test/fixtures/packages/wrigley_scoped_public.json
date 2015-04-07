@@ -1,0 +1,32 @@
+{
+  "versions": ["0.0.1"],
+  "name": "@wrigley_the_writer/scoped_public",
+  "description": "@wrigley_the_writer's public package",
+  "readme": "ERROR: No README data found!",
+  "stars": [],
+  "bugs": null,
+  "global": false,
+  "repository": {
+    "type": null,
+    "url": "https://github.com/bob/scoped_public.git"
+  },
+  "dependencies": {},
+  "keywords": [],
+  "devDependencies": {},
+  "publisher": {
+    "name": "bob",
+    "email": "bob@example.com",
+    "url": null
+  },
+  "collaborators": {"bob":{
+    "name": "bob",
+    "email": "bob@example.com",
+    "access": "write"
+  }},
+  "version": "0.0.1",
+  "license": {
+    "name": "ISC",
+    "url": "http://opensource.org/licenses/ISC"
+  },
+  "lastPublishedAt": "2014-12-11T21:21:17.139Z"
+}

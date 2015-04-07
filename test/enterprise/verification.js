@@ -9,15 +9,17 @@ var Code = require('code'),
 
 var server;
 
-// prepare the server
+
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
+    server.app.cache._cache.connection.client = {};
     done();
   });
 });
 
 after(function (done) {
+  delete server.app.cache._cache.connection.client;
   server.stop(done);
 });
 

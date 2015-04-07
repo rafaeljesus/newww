@@ -3,30 +3,27 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
+    after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    expect = Code.expect,
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
     nock = require('nock'),
-    config = require('../../config');
-
-config.license.hubspot.portal_id = 123456;
-
-var server;
+    server;
 
 before(function (done) {
+  process.env.HUBSPOT_PORTAL_ID = "123456"
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9112' });
 
-  server.register([
-    {
-      register: npme,
-      options: config
-    }
-  ], function () {
+  server.register(npme, function () {
     server.start(done);
   });
+});
+
+after(function (done) {
+  delete process.env.HUBSPOT_PORTAL_ID;
+  done();
 });
 
 describe('posting a form to hubspot', function () {
@@ -73,4 +70,3 @@ describe('posting a form to hubspot', function () {
     });
   });
 });
-

@@ -1,5 +1,3 @@
-require("dotenv").load()
-
 var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -7,21 +5,14 @@ var Code = require('code'),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var redis = require('redis'),
+    expect = Code.expect,
+    redis = require('redis'),
     spawn = require('child_process').spawn,
-    config = require('../../config').server.cache;
-
-    config.port = 6379;
-    config.password = '';
-
-var redisSessions = require('../../adapters/redis-sessions'),
+    redisSessions = require('../../adapters/redis-sessions'),
     redisProcess;
 
 before(function (done) {
-  var redisConfig = '--port ' + config.port;
-  redisProcess = spawn('redis-server', [redisConfig]);
+  redisProcess = spawn('redis-server');
   done();
 });
 
@@ -37,8 +28,8 @@ describe('redis-requiring session stuff', function() {
   var prefix = "hapi-cache:%7Csessions:";
 
   before(function (done) {
-    client = redis.createClient(config.port, config.host);
-    client.auth(config.password, function () {});
+    client = require("redis-url").connect();
+    client.flushdb();
     client.on("error", function (err) {
       console.log("Error " + err);
     });
@@ -46,13 +37,8 @@ describe('redis-requiring session stuff', function() {
   });
 
   after('cleans up the db', function (done) {
-    client.del([prefix+bob1, prefix+bob2, prefix+alice1], done)
+    client.flushdb(done);
   });
-
-  it('has a SESSION_SALT environment variable', function(done) {
-    expect(process.env.SESSION_SALT).to.exist();
-    done();
-  })
 
   it('creates a random hash for each user', function (done) {
     bob1 = redisSessions.generateRandomUserHash('bob');

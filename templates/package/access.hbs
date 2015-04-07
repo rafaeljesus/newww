@@ -1,0 +1,72 @@
+{{#with package}}
+  <h1 class="package-name centered">
+    <a href="/package/{{name}}">{{name}}</a>
+  </h1>
+  <p class="package-description centered">{{{description}}}</p>
+{{/with}}
+
+{{> package-header package}}
+
+<div class="tablet-width container">
+
+  {{#unless user}}
+    <p class="notice please-log-in">
+      Are you an admin of this package? 
+      Please <a href="/login?done={{canonicalURL}}">log in</a> to manage access.
+    </p>
+  {{/unless}}
+
+  {{#if package.scoped}}
+    <form class="centered" method="POST" action="/package/{{package.name}}">
+      <input
+        type="checkbox"
+        class="toggle"
+        name="package.private"
+        id="package-access-toggle"
+        value="true"
+        {{#unless userHasWriteAccessToPackage}}disabled="disabled"{{/unless}}
+        {{#if package.private}}checked="checked"{{/if}} >
+      <label for="package-access-toggle"><span></span></label>
+    </form>
+  {{/if}}
+
+  <p class="error" style="display:none"></p>
+
+  <table
+    class="ruled humans"
+    id="collaborators"
+    data-enable-permission-togglers="{{enablePermissionTogglers}}"
+    data-enable-deletion="{{userHasWriteAccessToPackage}}">
+
+    <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>User</th>
+        <th>Access</th>
+        <th>Revoke</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {{#each package.collaborators}}
+        {{> collaborator}}
+      {{/each}}
+
+      {{#if userHasWriteAccessToPackage}}
+        <tr>
+          <td>
+            &nbsp;
+          </td>
+          <td colspan="1">
+            <form id="add-collaborator" method="PUT" action="/package/{{package.name}}/collaborators">
+              <input type="hidden" name="collaborator.permissions" value="{{#if package.private}}read{{else}}write{{/if}}">
+              <input type="text" name="collaborator.name" required="required" value="" tabindex="2" placeholder="Add a collaborator...">
+            </form>
+          </td>
+        </tr>
+      {{/if}}
+
+    </tbody>
+  </table>
+
+</div>

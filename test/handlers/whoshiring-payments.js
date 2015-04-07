@@ -1,4 +1,5 @@
-var Code = require('code'),
+var generateCrumb = require("./crumb.js"),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -7,11 +8,11 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect;
 
-var server, cookieCrumb;
+var server;
 
-// prepare the server
+
 before(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
@@ -28,15 +29,9 @@ describe('Accessing the joinwhoshiring page', function () {
     };
 
     server.inject(opts, function (resp) {
-      var header = resp.headers['set-cookie'];
-      expect(header.length).to.equal(1);
-
-      cookieCrumb = header[0].match(/crumb=([^\x00-\x20\"\,\;\\\x7F]*)/)[1];
-
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.template).to.equal('company/payments');
-      expect(resp.result).to.include('<input type="hidden" name="crumb" value="' + cookieCrumb + '"/>');
       done();
     });
   });
@@ -56,82 +51,94 @@ describe('Accessing the joinwhoshiring page', function () {
 
   // when the internet is slow, the longer timeout becomes necessary
   it('renders an error when a stripe key is reused', { timeout: 4000 }, function (done) {
-    var opts = {
-      url: '/joinwhoshiring',
-      method: 'POST',
-      payload: {
-        id: 'tok_104Js54fnGb60djYLjp7ISQd',
-        email: 'boom@boom.com',
-        amount: '35000',
-        crumb: cookieCrumb
-      },
-      headers: { cookie: 'crumb=' + cookieCrumb }
-    };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(500);
-      expect(resp.result).to.include('internal stripe error');
-      done();
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/joinwhoshiring',
+        method: 'POST',
+        payload: {
+          id: 'tok_104Js54fnGb60djYLjp7ISQd',
+          email: 'boom@boom.com',
+          amount: '35000',
+          crumb: crumb
+        },
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(500);
+        expect(resp.result).to.include('internal stripe error');
+        done();
+      });
     });
   });
 
   it('renders an error if the email is invalid', function (done) {
-    var opts = {
-      url: '/joinwhoshiring',
-      method: 'POST',
-      payload: {
-        id: 'tok_104Js54fnGb60djYLjp7ISQd',
-        email: 'boom@boom',
-        amount: '35000',
-        crumb: cookieCrumb
-      },
-      headers: { cookie: 'crumb=' + cookieCrumb }
-    };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(403);
-      expect(resp.result).to.include('validation error');
-      done();
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/joinwhoshiring',
+        method: 'POST',
+        payload: {
+          id: 'tok_104Js54fnGb60djYLjp7ISQd',
+          email: 'boom@boom',
+          amount: '35000',
+          crumb: crumb
+        },
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(403);
+        expect(resp.result).to.include('validation error');
+        done();
+      });
     });
   });
 
   it('renders an error if the amount is not a number', function (done) {
-    var opts = {
-      url: '/joinwhoshiring',
-      method: 'POST',
-      payload: {
-        id: 'tok_104Js54fnGb60djYLjp7ISQd',
-        email: 'boom@boom.com',
-        amount: 'two',
-        crumb: cookieCrumb
-      },
-      headers: { cookie: 'crumb=' + cookieCrumb }
-    };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(403);
-      expect(resp.result).to.include('validation error');
-      done();
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/joinwhoshiring',
+        method: 'POST',
+        payload: {
+          id: 'tok_104Js54fnGb60djYLjp7ISQd',
+          email: 'boom@boom.com',
+          amount: 'two',
+          crumb: crumb
+        },
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(403);
+        expect(resp.result).to.include('validation error');
+        done();
+      });
     });
   });
 
   it('renders an error if the amount is invalid', function (done) {
-    var opts = {
-      url: '/joinwhoshiring',
-      method: 'POST',
-      payload: {
-        id: 'tok_104Js54fnGb60djYLjp7ISQd',
-        email: 'boom@boom.com',
-        amount: '135',
-        crumb: cookieCrumb
-      },
-      headers: { cookie: 'crumb=' + cookieCrumb }
-    };
 
-    server.inject(opts, function (resp) {
-      expect(resp.statusCode).to.equal(403);
-      expect(resp.result).to.include('invalid charge amount error');
-      done();
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/joinwhoshiring',
+        method: 'POST',
+        payload: {
+          id: 'tok_104Js54fnGb60djYLjp7ISQd',
+          email: 'boom@boom.com',
+          amount: '135',
+          crumb: crumb
+        },
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(403);
+        expect(resp.result).to.include('invalid charge amount error');
+        done();
+      });
     });
   });
 

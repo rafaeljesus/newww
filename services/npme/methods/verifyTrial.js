@@ -1,10 +1,9 @@
 var request = require('request'),
-    log = require('bole')('npme-verify-trial'),
-    config = require('../../../config')
+    log = require('bole')('npme-verify-trial');
 
 module.exports = function(verificationKey, callback) {
 
-  var trialEndpoint = config.license.api + '/trial';
+  var trialEndpoint = process.env.LICENSE_API + '/trial';
 
   // check if a trial with this verification key exists already
   request.get({
@@ -42,4 +41,4 @@ module.exports = function(verificationKey, callback) {
       return callback(new Error('problem starting trial for ' + trial.id));
     });
   });
-}
+};

@@ -1,21 +1,11 @@
-var NAMESPACE = 'enterprise-contact-me';
-
-var Hoek = require('hoek'),
-    Hapi = require('hapi'),
-    Joi = require('joi');
-
-var config = require('../../config').license;
+var Joi = require('joi');
 
 // if they decide not to agree to the ULA
 // hit the hubspot contact-me form instead, and thank them
 module.exports = function contactMe (request, reply) {
   var postToHubspot = request.server.methods.npme.sendData;
 
-  var opts = {
-    user: request.auth.credentials,
-
-    namespace: NAMESPACE
-  };
+  var opts = { };
 
   // Is email invalid?
   if (Joi.validate(request.payload.contact_customer_email, Joi.string().regex(/^.+@.+\..+$/)).error) {
@@ -24,7 +14,7 @@ module.exports = function contactMe (request, reply) {
 
   var data = { email: request.payload.contact_customer_email };
 
-  postToHubspot(config.hubspot.form_npme_contact_me, data, function(er) {
+  postToHubspot(process.env.HUBSPOT_FORM_NPME_CONTACT_ME, data, function(er) {
 
       if (er) {
         request.logger.error('Could not contact hubspot to register user');
@@ -38,4 +28,4 @@ module.exports = function contactMe (request, reply) {
     }
   );
 
-}
+};

@@ -1,4 +1,3 @@
-var $ = require("jquery")
 var fmt = require("util").format
 
 module.exports = function() {

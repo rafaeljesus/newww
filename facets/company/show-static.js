@@ -1,7 +1,6 @@
 module.exports = function (type, text) {
   return function (request, reply) {
-    var opts = { user: request.auth.credentials },
-        timer = { start: Date.now() };
+    var opts = { };
 
     opts.text = text;
 

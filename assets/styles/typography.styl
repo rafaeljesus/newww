@@ -33,15 +33,15 @@ a
 
 h1
   margin 0
-  padding 30px 0 0 0
+  padding 20px 0 0 0
   font-weight 400
   font-size 44px
   line-height 1.2
   letter-spacing -1.5px
   color greigh1
-  &.centered
-    text-align center
-    padding 40px 0 20px 0
+  // &.centered
+  //   text-align center
+  //   padding 40px 0 20px 0
 
   .narrow &
     margin 0.2em 0
@@ -53,11 +53,6 @@ h2
   font-size 24px
   color text-color
   letter-spacing 0
-  a
-    font-weight 700
-
-  span
-    font-weight 400
 
   &:before
     font-size 45px
@@ -84,7 +79,7 @@ hgroup
       color greigh1
       text-decoration none
       &:hover
-        text-decoration none
+        text-decoration underline
 
   h2
     font-weight 300 !important
@@ -113,8 +108,34 @@ h1, h2, h3
     a
       color text-color
 
+.featherweight-heading
+  font-weight 300
+  line-height 1.2
+  font-size 24px
+  margin 0 0 10px 0
+  padding 0
+  a
+    font-weight 300
+    color text-color
+    text-decoration underline
+    &:hover
+      color npmred
+
 p
   margin 0 0 15px 0
+
+  &.notice
+    line-height 1.5
+
+  &.whoa
+    background npmred
+    color white
+    border-color darken(npmred, 20%)
+    a
+      color white
+      text-decoration underline
+      &:hover
+        color white
 
   &.list-of-links a
     font-weight 400
@@ -139,3 +160,26 @@ pre
     margin 0 0 15px 0
     padding 8px
     border-radius 2px
+
+&.package-name
+  padding-bottom 0
+  a
+    color text-color
+    text-decoration none
+
+&.package-name-redundant
+  display none
+
+&.package-description-redundant
+  display none
+
+&.package-description
+  @extend .featherweight-heading
+
+.notice
+  margin-top 15px
+  margin-bottom 25px
+  padding 12px 10px
+  background greigh8
+  border 1px solid greigh6
+  border-radius 3px

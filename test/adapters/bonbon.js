@@ -5,15 +5,16 @@ var Code = require('code'),
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
-    expect = Code.expect;
+    expect = Code.expect,
+    fixtures = require('../fixtures'),
+    nock = require('nock');
+
 
 var server;
-var users = require('../fixtures/users');
-
-var username1 = 'fakeuser';
+var username1 = 'bob';
 
 beforeEach(function (done) {
-  require('../fixtures/setupServer')(function (obj) {
+  require('../mocks/server')(function (obj) {
     server = obj;
     done();
   });
@@ -27,16 +28,118 @@ describe("bonbon", function() {
   });
 
   afterEach(function (done) {
-    process.env.NODE_ENV = 'dev';
+    delete process.env.NODE_ENV;
     done();
   });
 
+  nock("https://user-api-example.com")
+    .get('/user/' + username1).times(8)
+    .reply(200, fixtures.users.bob)
+    .get('/user/seldo').times(3)
+    .reply(200, fixtures.users.npmEmployee)
+    .get('/user/' + username1 + '/package?format=detailed&per_page=9999').times(6)
+    .reply(200, fixtures.users.packages)
+    .get('/user/' + username1 + '/stars?format=detailed').times(6)
+    .reply(200, fixtures.users.stars);
+
+  describe("feature flags", function() {
+
+    beforeEach(function(done){
+      process.env.FEATURE_STEALTH = 'false'
+      process.env.FEATURE_ALPHA = 'group:npm-humans'
+      process.env.FEATURE_BETA = 'group:npm-humans,group:friends,bob'
+      process.env.FEATURE_COMMON = 'true'
+      done()
+    })
+
+    afterEach(function(done){
+      delete process.env.FEATURE_STEALTH
+      delete process.env.FEATURE_ALPHA
+      delete process.env.FEATURE_BETA
+      delete process.env.FEATURE_COMMON
+      done()
+    })
+
+    it('gives anonymous users access to common features', function(done){
+      var options = {
+        url: '/~bob'
+      };
+
+      server.inject(options, function (resp) {
+        var context = resp.request.response.source.context
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: false,
+          beta: false,
+          common: true
+        });
+        done();
+      });
+    })
+
+    it('gives people in the friends group access to beta and common features', function(done){
+      var options = {
+        url: '/~bob',
+        credentials: fixtures.users.mikeal
+      };
+
+      server.inject(options, function (resp) {
+        var context = resp.request.response.source.context
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: false,
+          beta: true,
+          common: true
+        });
+        done();
+      });
+    })
+
+    it('gives one-off listed friends access to beta and common features', function(done){
+      var options = {
+        url: '/~bob',
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function (resp) {
+        var context = resp.request.response.source.context
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: false,
+          beta: true,
+          common: true
+        });
+        done();
+      });
+    })
+
+    it('gives npm employees access to alpha, beta, and common features', function(done){
+      var options = {
+        url: '/~bob',
+        credentials: fixtures.users.npmEmployee
+      };
+
+      server.inject(options, function (resp) {
+        var context = resp.request.response.source.context
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: true,
+          beta: true,
+          common: true
+        });
+        done();
+      });
+    })
+
+  })
 
   it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
+
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: users.npmEmployee
+      credentials: fixtures.users.npmEmployee
     };
+
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
@@ -47,23 +150,26 @@ describe("bonbon", function() {
   });
 
   it('returns the whole context object if `json` has no value', function (done) {
+
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: users.npmEmployee
+      credentials: fixtures.users.npmEmployee
     };
+
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.profile).to.exist();
-      expect(resp.result.profile.meta).to.exist();
+      expect(resp.result.profile.name).to.exist();
       done();
     });
   });
 
   it('returns a subset of the context if `json` has a value', function (done) {
+
     var options = {
-      url: '/~' + username1 + '?json=profile.meta',
-      credentials: users.npmEmployee
+      url: '/~' + username1 + '?json=profile.resource',
+      credentials: fixtures.users.npmEmployee
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
@@ -76,9 +182,10 @@ describe("bonbon", function() {
   });
 
   it('does not allow logged-in non-employees to request the view context', function (done) {
+
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: users.fakeuser
+      credentials: fixtures.users.bob
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
@@ -90,10 +197,11 @@ describe("bonbon", function() {
     });
   });
 
-  it('does not allow anonymous users to request the view context', function (done) {
+  it('does not allow anonymous fixtures.users to request the view context', function (done) {
+
     var options = {
       url: '/~' + username1 + '?json',
-      credentials: users.fakeuser
+      credentials: fixtures.users.bob
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
@@ -108,6 +216,7 @@ describe("bonbon", function() {
   it('allows anyone to request the view context if NODE_ENV is `dev`', function (done) {
     process.env.NODE_ENV = "dev";
     expect(process.env.NODE_ENV).to.equal("dev");
+
     var options = {
       url: '/~' + username1 + '?json',
       credentials: null
@@ -116,6 +225,7 @@ describe("bonbon", function() {
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result).to.be.an.object();
+      delete process.env.NODE_ENV;
       done();
     });
   });

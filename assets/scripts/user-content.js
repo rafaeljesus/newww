@@ -2,7 +2,6 @@
 // with user-content- in READMEs, this snippet
 // checks whther someone has clicked on an
 // auto-generated id.
-var $ = require("jquery")
 var hashchange = require('green-mesa-hashchange')
 
 module.exports = function() {

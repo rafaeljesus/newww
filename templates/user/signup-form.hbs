@@ -9,7 +9,7 @@
 
   <form action="" method="post">
     <label for="name">{{t "user.signup.form.username"}}</label>
-    <input type="text" id="name" name="name" autocorrect="off" autocapitalize="off" />
+    <input type="text" id="name" name="name" autocorrect="off" autocapitalize="off" value="{{userInput.name}}" />
     <p class="help-text">{{t "user.signup.form.nameHelp"}}</p>
 
     <label for="password">{{t "user.signup.form.password"}}</label>
@@ -19,12 +19,12 @@
     <input type="password" id="verify" name="verify" />
 
     <label for="email">{{t "user.signup.form.email"}}</label>
-    <input type="text" id="email" name="email" autocorrect="off" autocapitalize="off" />
+    <input type="text" id="email" name="email" autocorrect="off" autocapitalize="off" value="{{userInput.email}}" />
     <p class="help-text">{{{t "user.signup.form.emailHelp"}}}</p>
 
     <div class="radio-group">
       <label for="npmweekly">
-        <input type="checkbox" id="npmweekly" name="npmweekly" autocorrect="off" autocapitalize="off" />
+        <input type="checkbox" id="npmweekly" name="npmweekly" checked="checked" autocorrect="off" autocapitalize="off" />
         {{t "user.signup.form.npmWeekly"}}
       </label>
     </div>

@@ -1,101 +1,109 @@
 {{#with profile}}
 
-<div id="profile">
+<div class="content-column">
 
-  <div class="content">
+  <h1>{{name}}</h1>
 
-    <h1>{{name}}</h1>
-
-    {{#if packages}}
-      <h2 class="undecorated">
-        <a id="packages" href="#packages">
-          {{pluralize packages.length "Packages" true}} by {{name}}
-        </a>
-      </h2>
-      <ul class="bullet-free">
-        {{#each packages}}
-          <li>
-            <a href="{{url}}">{{truncate name 20}}</a> {{description}}
-          </li>
-        {{/each}}
-      </ul>
-    {{/if}}
-
-    {{#if starred}}
-      <h2 class="undecorated">
-        <a id="starred" href="#starred">
-          {{pluralize starred.length "Packages" true}} starred by {{name}}
-        </a>
-      </h2>
-      <ul class="bullet-free">
-        {{#each starred}}
-          <li>
-            <a href="{{url}}">{{truncate name 20}}</a> {{description}}
-          </li>
-        {{/each}}
-      </ul>
-    {{/if}}
-  </div>
-
-  <div class="sidebar">
-
-    {{#if isSelf}}
-      <a href="http://en.gravatar.com/emails/" class="avatar">
-        <img src="{{#if avatarLarge}}{{avatarLarge}}{{else}}{{avatarMedium}}{{/if}}">
+  {{#if packages}}
+    <h2 class="undecorated">
+      <a id="packages" href="#packages">
+        {{pluralize packages.count "Packages" true}} by {{name}}
       </a>
-    {{else}}
-      <a href="/~{{name}}" class="avatar">
-        <img src="{{#if avatarLarge}}{{avatarLarge}}{{else}}{{avatarMedium}}{{/if}}">
-      </a>
-    {{/if}}
-
-    <h2>{{fullname}}</h2>
-
-    <ul class="meta">
-
-      {{#if emailObfuscated}}
-        <li class="email">
-          <a href="#" data-email={{emailObfuscated}}>obfuscated</a>
+    </h2>
+    <ul class="bullet-free collaborated-packages">
+      {{#each packages.items}}
+        <li>
+          <a href="/package/{{name}}">{{truncate name 50}}</a> {{description}}
         </li>
-      {{/if}}
-
-      {{#if meta.homepage}}
-        <li class="homepage">
-          <a href="{{meta.homepage}}">{{schemeless meta.homepage}}</a>
-        </li>
-      {{/if}}
-
-      {{#if meta.github}}
-        <li class="github">
-          <a href="https://github.com/{{meta.github}}">@{{meta.github}}</a> on GitHub
-        </li>
-      {{/if}}
-
-      {{#if meta.twitter}}
-        <li class="twitter">
-          <a href="https://twitter.com/{{meta.twitter}}">@{{meta.twitter}}</a> on Twitter
-        </li>
-      {{/if}}
-
-      <li class="npm">
-        <a href="/~{{name}}">@{{name}}</a> on npm
-      </li>
-
-      {{#if meta.freenode}}
-        <li class="freenode">
-          <a href="irc://chat.freenode.net/npm">{{meta.freenode}}</a> on freenode
-        </li>
-      {{/if}}
-
-      {{#if isSelf}}
-          <li><a href=/profile-edit class="unadorned">Edit your Profile</a></li>
-          <li><a href=/password class="unadorned">Change your Password</a></li>
-          <li><a href="http://gravatar.com/emails/" class="unadorned">Change your Picture</a></li>
-      {{/if}}
-
+      {{/each}}
     </ul>
+  {{/if}}
 
-  </div>
+  {{#if stars}}
+    <h2 class="undecorated">
+      <a id="starred" href="#starred">
+        {{pluralize stars.length "Packages" true}} starred by {{name}}
+      </a>
+    </h2>
+    <ul class="bullet-free starred-packages">
+      {{#each stars}}
+        <li>
+          <a href="/package/{{this}}">{{truncate this 50}}</a> {{description}}
+        </li>
+      {{/each}}
+    </ul>
+  {{/if}}
+</div>
+
+<div class="sidebar">
+
+  {{#if isSelf}}
+    <a href="http://en.gravatar.com/emails/" class="avatar">
+      <img src="{{#if avatar.large}}{{avatar.large}}{{else}}{{avatar.medium}}{{/if}}">
+    </a>
+  {{else}}
+    <a href="/~{{name}}" class="avatar">
+      <img src="{{#if avatar.large}}{{avatar.large}}{{else}}{{avatar.medium}}{{/if}}">
+    </a>
+  {{/if}}
+
+  {{#if isSelf}}
+    <p class="notice profile-edit">
+      This is your profile page, {{name}}! You can
+      <a href="/profile-edit">update your social info</a>,
+      <a href="/password">change your password</a>, or
+      <a href="http://gravatar.com/emails/">update your avatar</a>.
+    </p>
+
+    {{> email-verify-nag}}
+  {{/if}}
+
+  {{#if resource.fullname}}
+    <h2 class="fullname">{{resource.fullname}}</h2>
+  {{/if}}
+
+  <ul class="meta">
+
+    {{#if emailObfuscated}}
+      <li class="email">
+        <a href="#" data-email={{emailObfuscated}}>obfuscated</a>
+      </li>
+    {{/if}}
+
+    {{#with resource}}
+
+      {{#if homepage}}
+        <li class="homepage">
+          <a href="{{homepage}}">{{schemeless homepage}}</a>
+        </li>
+      {{/if}}
+
+      {{#if github}}
+        <li class="github">
+          <a href="https://github.com/{{github}}">@{{github}}</a> on GitHub
+        </li>
+      {{/if}}
+
+      {{#if twitter}}
+        <li class="twitter">
+          <a href="https://twitter.com/{{twitter}}">@{{twitter}}</a> on Twitter
+        </li>
+      {{/if}}
+
+      {{#if freenode}}
+        <li class="freenode">
+          <a href="irc://chat.freenode.net/npm">{{freenode}}</a> on freenode
+        </li>
+      {{/if}}
+
+    {{/with}}
+
+    <li class="npm">
+      <a href="/~{{name}}">@{{name}}</a> on npm
+    </li>
+
+  </ul>
 
 </div>
+
 {{/with}}

@@ -1,28 +1,30 @@
+var P = require('bluebird');
+
 module.exports = function (request, reply) {
   var Package = require("../models/package").new(request)
   var Download = require("../models/download").new({
     request: request, cache: require("../lib/cache")
-  })
+  });
   var context = {
     explicit: require("npm-explicit-installs")
-  }
+  };
 
-  Package.list({sort: "modified"})
-    .then(function(modified){
-      context.modified = modified
-      return Package.list({sort: "dependents"})
-    })
-    .then(function(dependents){
-      context.dependents = dependents
-      return Download.getAll()
-    })
-    .then(function(downloads){
-      context.downloads = downloads
-      return Package.count()
-    })
-    .then(function(count){
-      context.totalPackages = count
-      return reply.view('homepage', context)
-    })
+  var actions = {
+    modified:      Package.list({sort: "modified"}),
+    dependents:    Package.list({sort: "dependents"}),
+    downloads:     Download.getAll(),
+    totalPackages: Package.count(),
+  };
 
-}
+  P.props(actions)
+  .then(function(results)
+  {
+    context.modified = results.modified;
+    context.dependents = results.dependents;
+    context.downloads = results.downloads;
+    context.totalPackages = results.totalPackages;
+
+    reply.view('homepage', context);
+  });
+
+};

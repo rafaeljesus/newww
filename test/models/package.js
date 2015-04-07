@@ -278,7 +278,6 @@ describe("Package", function(){
 
         Package.list(options)
         .then(function(){
-          // mock.done();
           expect(stub.called).to.be.true();
           var args = stub.args[0][0];
           expect(args.ttl).to.equal(DEFAULT_TTL);
@@ -303,7 +302,6 @@ describe("Package", function(){
 
         Package.list(options, TTL)
         .then(function(){
-          // mock.done();
           expect(stub.called).to.be.true();
           var args = stub.args[0][0];
           expect(args.ttl).to.equal(TTL);
@@ -324,7 +322,6 @@ describe("Package", function(){
 
         Package.list(TTL)
         .then(function(){
-          // mock.done();
           expect(stub.called).to.be.true();
           var args = stub.args[0][0];
           expect(args.ttl).to.equal(DEFAULT_TTL);

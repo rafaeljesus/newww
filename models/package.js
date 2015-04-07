@@ -1,9 +1,10 @@
-var request = require('request');
-var Promise = require('bluebird');
-var _ = require('lodash');
-var fmt = require('util').format;
-var URL = require('url');
+var _        = require('lodash');
+var cache    = require('../lib/cache');
 var decorate = require(__dirname + '/../presenters/package');
+var fmt      = require('util').format;
+var P        = require('bluebird');
+var Request  = require('request');
+var URL      = require('url');
 
 var Package = module.exports = function(opts) {
   _.extend(this, {
@@ -23,70 +24,66 @@ Package.new = function(request) {
   return new Package(opts);
 };
 
+Package.prototype.generatePackageOpts = function generatePackageOpts(name) {
+  var opts = {
+    url: fmt("%s/package/%s", this.host, name.replace("/", "%2F")),
+    json: true
+  };
+
+  if (this.bearer) { opts.headers = { bearer: this.bearer }; }
+
+  return opts;
+};
+
 Package.prototype.get = function(name) {
-  var _this = this;
-  var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
+  var opts = this.generatePackageOpts(name);
 
-  return new Promise(function(resolve, reject) {
-    var opts = {
-      url: url,
-      json: true,
-    };
-
-    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
-
-    request.get(opts, function(err, resp, body) {
-      if (err) { return reject(err); }
-
-      if (resp.statusCode > 399) {
-        err = Error('error getting package ' + name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      return resolve(body);
-    });
-  })
+  return cache.getP(opts)
   .then(function(_package) {
     return decorate(_package);
   });
 
 };
 
+Package.prototype.dropCache = function dropCache(name) {
+  return cache.dropP(this.generatePackageOpts(name));
+};
+
 Package.prototype.update = function(name, body) {
-  var _this = this;
+
   var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
+  var opts = {
+    method: "POST",
+    url: url,
+    json: true,
+    body: _.pick(body, 'private') // remove all other props
+  };
 
-  return new Promise(function(resolve, reject) {
-    var opts = {
-      method: "POST",
-      url: url,
-      json: true,
-      body: _.pick(body, 'private') // remove all other props
-    };
+  // hapi is converting the private boolean to a string
+  // so... yeah.
+  if (opts.body && 'private' in opts.body) {
+    opts.body.private = (String(opts.body.private) === "true");
+  }
 
-    // hapi is converting the private boolean to a string
-    // so... yeah.
-    if (opts.body && 'private' in opts.body) {
-      opts.body.private = String(opts.body.private) === "true";
-    }
+  if (this.bearer) { opts.headers = {bearer: this.bearer}; }
 
-    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
-
-    request(opts, function(err, resp, body) {
-      if (err) { return reject(err); }
-      if (resp.statusCode > 399) {
-        err = Error('error updating package ' + name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-      return resolve(body);
+  return this.dropCache(name)
+  .then(function() {
+    return new P(function(resolve, reject) {
+      Request(opts, function(err, resp, body) {
+        if (err) { return reject(err); }
+        if (resp.statusCode > 399) {
+          err = Error('error updating package ' + name);
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+        return resolve(body);
+      });
     });
   })
   .then(function(_package) {
     return _package ? decorate(_package) : {package: name, updated: true};
   });
-
 };
 
 Package.prototype.list = function(options) {
@@ -96,52 +93,29 @@ Package.prototype.list = function(options) {
     pathname: "/package",
     query: options,
   });
+  var opts = {
+    url: url,
+    json: true
+  };
 
-  return new Promise(function(resolve, reject) {
-    var opts = {
-      url: url,
-      json: true
-    };
-
-    request.get(opts, function(err, resp, body) {
-      if (err) { return reject(err); }
-
-      if (resp.statusCode > 399) {
-        err = Error('error getting package list');
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      return resolve(body);
-    });
-  });
-
+  return cache.getP(opts);
 };
 
 Package.prototype.count = function() {
   var url = fmt("%s/package/-/count", this.host);
-  return new Promise(function(resolve, reject) {
-    var opts = {
-      url: url,
-      json: true
-    };
-    request.get(opts, function(err, resp, body) {
-      if (err) { return reject(err); }
-      if (resp.statusCode > 399) {
-        err = Error('error getting package count');
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-      return resolve(body);
-    });
-  });
+  var opts = {
+    url: url,
+    json: true
+  };
+
+  return cache.getP(opts);
 };
 
 Package.prototype.star = function (package) {
   var _this = this;
   var url = fmt("%s/package/%s/star", _this.host, package);
 
-  return new Promise(function (resolve, reject) {
+  return new P(function (resolve, reject) {
     var opts = {
       url: url,
       json: true,
@@ -149,7 +123,7 @@ Package.prototype.star = function (package) {
 
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    request.put(opts, function (err, resp, body) {
+    Request.put(opts, function (err, resp, body) {
       if (err) {
         _this.logger.error(err);
         return reject(err);
@@ -169,7 +143,7 @@ Package.prototype.unstar = function (package) {
   var _this = this;
   var url = fmt("%s/package/%s/star", _this.host, package);
 
-  return new Promise(function (resolve, reject) {
+  return new P(function (resolve, reject) {
     var opts = {
       url: url,
       json: true,
@@ -177,7 +151,7 @@ Package.prototype.unstar = function (package) {
 
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    request.del(opts, function (err, resp, body) {
+    Request.del(opts, function (err, resp, body) {
       if (err) { return reject(err); }
 
       if (resp.statusCode > 399) {

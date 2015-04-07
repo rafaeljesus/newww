@@ -4,8 +4,6 @@ var Code = require('code'),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
-    beforeEach = lab.beforeEach,
-    afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
     crypto = require('crypto'),
@@ -413,6 +411,69 @@ describe('lib/cache.js', function()
         });
     });
 
+    describe('getP()', function()
+    {
+        it('returns a promise', function(done)
+        {
+            var opts =
+            {
+                url: 'https://example.com/promised-cache'
+            };
+            var mock = nock('https://example.com')
+                .get('/promised-cache')
+                .reply(200, 'blistering barnacles');
+
+            var r = cache.getP(opts);
+            expect(r).to.be.an.object();
+            expect(r.then).to.be.a.function();
+
+            done();
+        });
+
+        it('calls get() with the passed-in options', function(done)
+        {
+            var spy = sinon.spy(cache, 'get');
+            var opts =
+            {
+                method: 'get',
+                url: 'https://example.com/promised-cache'
+            };
+            var mock = nock('https://example.com')
+                .get('/promised-cache')
+                .reply(200, 'blistering barnacles');
+
+            cache.getP(opts)
+            .then(function()
+            {
+                mock.done();
+                expect(spy.calledWith(opts)).to.be.true();
+                cache.get.restore();
+                done();
+            }).done();
+        });
+
+        it('rejects the promise on error', function(done)
+        {
+            var opts = { url: 'http://example.com/bad-request' };
+            var mock = nock('http://example.com')
+                .get('/bad-request')
+                .reply(400);
+
+            cache.getP(opts)
+            .then(function(data)
+            {
+                throw new Error('this was supposed to fail!');
+            })
+            .catch(function(err)
+            {
+                mock.done();
+                expect(err).to.exist();
+                expect(err.message).to.equal('unexpected status code 400');
+                done();
+            }).done();
+        });
+    });
+
     describe('drop()', function()
     {
         it('removes a previously-set value from the cache', function(done)
@@ -481,6 +542,47 @@ describe('lib/cache.js', function()
                 done();
             });
 
+        });
+    });
+
+    describe('dropP()', function()
+    {
+        it('returns a promise', function(done)
+        {
+            var opts = { url: 'https://example.com/promised-cache' };
+
+            var r = cache.dropP(opts);
+            expect(r).to.be.an.object();
+            expect(r.then).to.be.a.function();
+
+            done();
+        });
+
+        it('calls drop() with the passed-in options', function(done)
+        {
+            var spy = sinon.spy(cache, 'drop');
+            var opts = { url: 'https://example.com/promised-cache' };
+
+            cache.dropP(opts)
+            .then(function()
+            {
+                expect(spy.calledWith(opts)).to.be.true();
+                cache.drop.restore();
+                done();
+            }).done();
+        });
+
+        it('resolves the promise on error', function(done)
+        {
+            var opts = { url: 'https://example.com/drop-fails' };
+            sinon.stub(cache.redis, 'del').yields(Error('del error'));
+
+            cache.dropP(opts)
+            .then(function()
+            {
+                sinon.restore(cache.redis.del);
+                done();
+            }).done();
         });
     });
 

@@ -91,7 +91,7 @@ describe("Package", function(){
         })
         .catch(function(err){
           expect(err).to.exist();
-          expect(err.message).to.equal("error getting package foo");
+          expect(err.message).to.match(/unexpected status code/);
           expect(err.statusCode).to.equal(404);
         })
         .then(function(){
@@ -215,7 +215,7 @@ describe("Package", function(){
         })
         .catch(function(err){
           expect(err).to.exist();
-          expect(err.message).to.equal("error getting package list");
+          expect(err.message).to.match(/unexpected status code/);
           expect(err.statusCode).to.equal(404);
         })
         .then(function(){

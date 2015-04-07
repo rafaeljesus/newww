@@ -114,27 +114,31 @@ Package.prototype.count = function() {
 Package.prototype.star = function (package) {
   var _this = this;
   var url = fmt("%s/package/%s/star", _this.host, package);
+  var opts = {
+    url: url,
+    json: true,
+  };
 
-  return new P(function (resolve, reject) {
-    var opts = {
-      url: url,
-      json: true,
-    };
+  if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
+  return this.dropCache(package)
+  .then(function() {
+    return new P(function (resolve, reject) {
 
-    Request.put(opts, function (err, resp, body) {
-      if (err) {
-        _this.logger.error(err);
-        return reject(err);
-      }
+      Request.put(opts, function (err, resp, body) {
+        if (err) {
+          _this.logger.error(err);
+          return reject(err);
+        }
 
-      if (resp.statusCode > 399) {
-        err = Error('error starring package ' + package);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-      return resolve(package + ' starred by ' + _this.bearer);
+        if (resp.statusCode > 399) {
+          err = Error('error starring package ' + package);
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+
+        return resolve(package + ' starred by ' + _this.bearer);
+      });
     });
   });
 };
@@ -142,24 +146,28 @@ Package.prototype.star = function (package) {
 Package.prototype.unstar = function (package) {
   var _this = this;
   var url = fmt("%s/package/%s/star", _this.host, package);
+  var opts = {
+    url: url,
+    json: true,
+  };
 
-  return new P(function (resolve, reject) {
-    var opts = {
-      url: url,
-      json: true,
-    };
+  if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
+  return this.dropCache(package)
+  .then(function() {
+    return new P(function (resolve, reject) {
 
-    Request.del(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
+      Request.del(opts, function (err, resp, body) {
+        if (err) { return reject(err); }
 
-      if (resp.statusCode > 399) {
-        err = Error('error unstarring package ' + package);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-      return resolve(package + ' unstarred by ' + _this.bearer);
+        if (resp.statusCode > 399) {
+          err = Error('error unstarring package ' + package);
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+
+        return resolve(package + ' unstarred by ' + _this.bearer);
+      });
     });
   });
 };

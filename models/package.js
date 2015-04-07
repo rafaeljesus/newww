@@ -86,7 +86,7 @@ Package.prototype.update = function(name, body) {
   });
 };
 
-Package.prototype.list = function(options) {
+Package.prototype.list = function(options, ttl) {
   var url = URL.format({
     protocol: "https",
     host: URL.parse(this.host).hostname,
@@ -95,7 +95,8 @@ Package.prototype.list = function(options) {
   });
   var opts = {
     url: url,
-    json: true
+    json: true,
+    ttl: ttl || 500 // seconds
   };
 
   return cache.getP(opts);

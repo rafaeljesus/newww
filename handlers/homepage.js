@@ -1,7 +1,11 @@
 var P = require('bluebird');
 
+var MINUTE = 60; // seconds
+var MODIFIED_TTL = 1 * MINUTE;
+var DEPENDENTS_TTL = 30 * MINUTE;
+
 module.exports = function (request, reply) {
-  var Package = require("../models/package").new(request)
+  var Package = require("../models/package").new(request);
   var Download = require("../models/download").new({
     request: request, cache: require("../lib/cache")
   });
@@ -10,8 +14,8 @@ module.exports = function (request, reply) {
   };
 
   var actions = {
-    modified:      Package.list({sort: "modified"}),
-    dependents:    Package.list({sort: "dependents"}),
+    modified:      Package.list({sort: "modified"}, MODIFIED_TTL),
+    dependents:    Package.list({sort: "dependents"}, DEPENDENTS_TTL),
     downloads:     Download.getAll(),
     totalPackages: Package.count(),
   };

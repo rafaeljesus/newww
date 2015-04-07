@@ -131,4 +131,9 @@ describe('GET / for a logged-in user', function () {
     done();
   });
 
+  it("adds a data-user-name attribute", function (done) {
+    expect($("[data-user-name]").data().userName).to.equal("mikeal");
+    done();
+  });
+
 });

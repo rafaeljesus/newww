@@ -61,13 +61,14 @@ package.show = function(request, reply) {
         return promise.cancel();
       }
 
-      return Package.list({dependency: name, limit: 50});
+      var DEPENDENCY_TTL = 5 * 60; // 5 minutes
+      return Package.list({dependency: name, limit: 50}, DEPENDENCY_TTL);
     })
     .then(function(dependents) {
       package.dependents = dependents;
 
       if (dependents.results.length) {
-        package.numMoreDependents = package.dependentCount - dependents.results.length
+        package.numMoreDependents = package.dependentCount - dependents.results.length;
       }
 
       return Download.getAll(package.name);

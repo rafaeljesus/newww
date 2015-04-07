@@ -2,6 +2,7 @@ var bole      = require('bole'),
     Boom      = require('boom'),
     Hoek      = require('hoek'),
     npmHumans = require("npm-humans"),
+    featureFlag = require("../lib/feature-flags.js"),
     toCommonLogFormat = require('hapi-common-log'),
     url       = require('url'),
     UserModel = require('../models/user');
@@ -11,6 +12,15 @@ exports.register = function(server, options, next) {
   var metrics = require('./metrics')();
 
   server.ext('onPreHandler', function(request, reply) {
+
+    // Add feature flags to request
+    request.features = {}
+    Object.keys(process.env)
+      .filter(function (key) { return key.match(/^feature_/i) })
+      .forEach(function (key) {
+        key = key.replace(/^feature_/i, "").toLowerCase()
+        request.features[key] = featureFlag(key, request)
+      })
 
     // Generate `request.packageName` for global and scoped package requests
     if (request.params.package || request.params.scope) {
@@ -53,10 +63,11 @@ exports.register = function(server, options, next) {
 
   server.ext('onPreResponse', function(request, reply) {
 
-    if (request.response
-      && request.response.source
-      && request.response.source.context) {
-      request.response.source.context.stamp = request.server.stamp
+    var context = Hoek.reach(request, 'response.source.context')
+
+    if (context) {
+      context.stamp = request.server.stamp
+      context.features = request.features
     }
 
     options.correlationID = request.id;
@@ -83,31 +94,23 @@ exports.register = function(server, options, next) {
         break;
     }
 
-    // Add feature flags to view context
-    if (process.env.FEATURE_ACCESS == "true") {
-      var context = Hoek.reach(request, 'response.source.context');
-      if (context) {
-        context.features = {access: true}
-      }
-    }
-
     // Allow npm employees to view JSON context for any page
     // by adding a `?json` query parameter to the URL
     if ('json' in request.query) {
-      var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "auth.credentials.name"));
+      var isNpmEmployee = Hoek.contain(npmHumans, Hoek.reach(request, "loggedInUser.name"));
 
       if (process.env.NODE_ENV === "dev" || isNpmEmployee) {
         var ctx = Hoek.reach(request, 'response.source.context');
 
-        if (ctx) {
-          var context = Hoek.applyToDefaults({}, ctx);
+        if (context) {
+          var ctx = Hoek.applyToDefaults({}, context);
 
           // If the `json` param is something other than an empty string,
           // treat it as a (deep) key in the context object.
           if (request.query.json.length > 1) {
-            context = Hoek.reach(context, request.query.json);
+            ctx = Hoek.reach(context, request.query.json);
           }
-          return reply(context);
+          return reply(ctx);
         }
       }
     }

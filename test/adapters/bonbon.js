@@ -9,6 +9,7 @@ var Code = require('code'),
     fixtures = require('../fixtures'),
     nock = require('nock');
 
+
 var server;
 var username1 = 'bob';
 
@@ -41,6 +42,96 @@ describe("bonbon", function() {
     .get('/user/' + username1 + '/stars?format=detailed').times(6)
     .reply(200, fixtures.users.stars);
 
+  describe("feature flags", function() {
+
+    beforeEach(function(done){
+      process.env.FEATURE_STEALTH = 'false'
+      process.env.FEATURE_ALPHA = 'group:npm-humans'
+      process.env.FEATURE_BETA = 'group:npm-humans,group:friends,bob'
+      process.env.FEATURE_COMMON = 'true'
+      done()
+    })
+
+    afterEach(function(done){
+      delete process.env.FEATURE_STEALTH
+      delete process.env.FEATURE_ALPHA
+      delete process.env.FEATURE_BETA
+      delete process.env.FEATURE_COMMON
+      done()
+    })
+
+    it('gives anonymous users access to common features', function(done){
+      var options = {
+        url: '/~bob'
+      };
+
+      server.inject(options, function (resp) {
+        var context = resp.request.response.source.context
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: false,
+          beta: false,
+          common: true
+        });
+        done();
+      });
+    })
+
+    it('gives people in the friends group access to beta and common features', function(done){
+      var options = {
+        url: '/~bob',
+        credentials: fixtures.users.mikeal
+      };
+
+      server.inject(options, function (resp) {
+        var context = resp.request.response.source.context
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: false,
+          beta: true,
+          common: true
+        });
+        done();
+      });
+    })
+
+    it('gives one-off listed friends access to beta and common features', function(done){
+      var options = {
+        url: '/~bob',
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function (resp) {
+        var context = resp.request.response.source.context
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: false,
+          beta: true,
+          common: true
+        });
+        done();
+      });
+    })
+
+    it('gives npm employees access to alpha, beta, and common features', function(done){
+      var options = {
+        url: '/~bob',
+        credentials: fixtures.users.npmEmployee
+      };
+
+      server.inject(options, function (resp) {
+        var context = resp.request.response.source.context
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: true,
+          beta: true,
+          common: true
+        });
+        done();
+      });
+    })
+
+  })
 
   it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
 

@@ -16,6 +16,7 @@ var generateCrumb = require("../handlers/crumb.js"),
 var userMock;
 
 before(function (done) {
+  process.env.FEATURE_BILLING_PAGE = 'true'
   userMock = nock("https://user-api-example.com")
     .get("/user/bob").times(14)
     .reply(200, fixtures.users.bob)
@@ -31,6 +32,7 @@ before(function (done) {
 });
 
 after(function (done) {
+  delete process.env.FEATURE_BILLING_PAGE
   userMock.done();
   server.stop(done);
 });

@@ -37,11 +37,11 @@ describe("package access", function(){
     server.stop(done);
   });
 
-  describe('FEATURE_ACCESS disabled', function() {
+  describe('features.feature_page disabled', function() {
     var resp;
 
     before(function(done){
-      delete process.env.FEATURE_ACCESS;
+      delete process.env.FEATURE_ACCESS_PAGE;
       done();
     });
 
@@ -78,7 +78,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -122,7 +122,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -163,7 +163,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -234,7 +234,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -278,7 +278,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -319,7 +319,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -357,7 +357,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -429,7 +429,7 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -457,7 +457,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -485,7 +485,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -508,7 +508,7 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS = 'true';
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;

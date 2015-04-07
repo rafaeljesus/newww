@@ -157,8 +157,8 @@ describe("Package", function(){
 
       Package.get('@zeke/ord')
         .then(function(package) {
-          mock.done()
-          done()
+          mock.done();
+          done();
         });
     });
 
@@ -174,8 +174,8 @@ describe("Package", function(){
       Package.update("@wrigley_the_writer/scoped_private", {private: true})
         .then(function(result) {
           mock.done();
-          expect(result).to.be.an.object()
-          expect(result.private).to.be.true()
+          expect(result).to.be.an.object();
+          expect(result.private).to.be.true();
           done();
         });
     });
@@ -221,7 +221,7 @@ describe("Package", function(){
         .then(function(){
           mock.done();
           done();
-        })
+        });
 
     });
 
@@ -234,7 +234,7 @@ describe("Package", function(){
         sort: "modified",
         count: 1,
         offset: 2
-      }
+      };
 
       Package.list(options)
         .then(function(){
@@ -251,7 +251,7 @@ describe("Package", function(){
 
         var options = {
           author: "zeke"
-        }
+        };
 
         Package.list(options)
         .then(function(){
@@ -261,6 +261,78 @@ describe("Package", function(){
       });
     });
 
+    describe("ttl", function () {
+      var DEFAULT_TTL = 500;
+
+      it('sets a default ttl of 500 if one is not set', function(done) {
+        var sinon = require('sinon');
+        var cache = require('../../lib/cache');
+
+        var stub = sinon.stub(cache, '_getNoCache', function (opts, callback) {
+          callback(null);
+        });
+
+        var options = {
+          author: "zeke"
+        };
+
+        Package.list(options)
+        .then(function(){
+          // mock.done();
+          expect(stub.called).to.be.true();
+          var args = stub.args[0][0];
+          expect(args.ttl).to.equal(DEFAULT_TTL);
+          stub.restore();
+          done();
+        });
+      });
+
+      it('sets a specific ttl', function(done) {
+        var sinon = require('sinon');
+        var cache = require('../../lib/cache');
+
+        var stub = sinon.stub(cache, '_getNoCache', function (opts, callback) {
+          callback(null);
+        });
+
+        var options = {
+          author: "zeke"
+        };
+
+        var TTL = 60;
+
+        Package.list(options, TTL)
+        .then(function(){
+          // mock.done();
+          expect(stub.called).to.be.true();
+          var args = stub.args[0][0];
+          expect(args.ttl).to.equal(TTL);
+          stub.restore();
+          done();
+        });
+      });
+
+      it('defaults to a default ttl if a TTL is passed accidentally as the only argument', function(done) {
+        var sinon = require('sinon');
+        var cache = require('../../lib/cache');
+
+        var stub = sinon.stub(cache, '_getNoCache', function (opts, callback) {
+          callback(null);
+        });
+
+        var TTL = 60;
+
+        Package.list(TTL)
+        .then(function(){
+          // mock.done();
+          expect(stub.called).to.be.true();
+          var args = stub.args[0][0];
+          expect(args.ttl).to.equal(DEFAULT_TTL);
+          stub.restore();
+          done();
+        });
+      });
+    });
   });
 
   describe("count()", function(){
@@ -275,9 +347,9 @@ describe("Package", function(){
           expect(result).to.equal(12345);
           mock.done();
           done();
-        })
+        });
     });
 
-  })
+  });
 
 });

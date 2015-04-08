@@ -59,9 +59,22 @@ var updateCollaborator = function(e) {
 
 var removeCollaborator = function(e) {
   e.preventDefault()
+
+  // Make it hard for users to remove themselves
+  var removingSelf = $("[data-user-name]").data('userName') === $(this).data('collaboratorName')
+  var confirmation = "Are you sure you want to remove yourself from this package?"
+  if (removingSelf && !confirm(confirmation)) {
+    return false
+  }
+
   $(this).parents(".collaborator").remove()
   $.ajax(formToRequestObject($(this)))
-    .done(updateInputsAndHandlers)
+    .done(function(){
+      if (removingSelf) {
+        return window.location = $(this).data('packageUrl') + "?removed-self-from-collaborators"
+      }
+      updateInputsAndHandlers()
+    })
     .fail(errorHandler)
 }
 

@@ -209,8 +209,9 @@ describe("package access", function(){
         });
       });
 
-      it("renders collaborator removal links", function(done){
+      it("renders collaborator removal links with data attributes required by front-end", function(done){
         expect($("#collaborators").data('enableDeletion')).to.equal(true);
+        expect($(".remove-collaborator[data-collaborator-name][data-package-url]").length).to.equal(2);
         done();
       });
     });

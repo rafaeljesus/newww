@@ -28,7 +28,7 @@ var updateInputsAndHandlers = function() {
 
   // Reveal delete links
   if ($("#collaborators").data("enableDeletion")) {
-    $("form.remove-collaborator").css({display: "block"})
+    $("form.remove-collaborator").css({visibility: "visible"})
   }
 
   // Clear the 'add' input

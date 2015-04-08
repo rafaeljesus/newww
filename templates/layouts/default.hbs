@@ -35,6 +35,14 @@
 
 <body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
   <meta itemprop="url" content="https://www.npmjs.com/">
+
+  <div id="notification-banner">
+    <span>private npm is here</span>
+
+    <a class="button" href="/private-modules">sign up</a>
+    <button id="close-banner">no thanks</button>
+  </div>
+
   <nav>
     <div class="container">
       <a href="#" id="npm-expansions">node package manager</a>

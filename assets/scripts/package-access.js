@@ -51,27 +51,27 @@ var addCollaborator = function(e) {
 var updateCollaborator = function(e) {
   e.preventDefault()
   var $form = $(this).parents("form")
-  var opts = formToRequestObject($form)
-  $.ajax(opts)
+  $.ajax(formToRequestObject($form))
     .done(updateInputsAndHandlers)
     .fail(errorHandler)
 }
 
 var removeCollaborator = function(e) {
   e.preventDefault()
+  var $form = $(this)
 
-  // Make it hard for users to remove themselves
-  var removingSelf = $("[data-user-name]").data('userName') === $(this).data('collaboratorName')
+  // make it hard for users to remove themselves
+  var removingSelf = $("[data-user-name]").data('userName') === $form.data('collaboratorName')
   var confirmation = "Are you sure you want to remove yourself from this package?"
-  if (removingSelf && !confirm(confirmation)) {
-    return false
-  }
+  if (removingSelf && !confirm(confirmation)) return false;
 
-  $(this).parents(".collaborator").remove()
-  $.ajax(formToRequestObject($(this)))
+  // hide the element right away for that snappy feel
+  $form.parents(".collaborator").remove()
+
+  $.ajax(formToRequestObject($form))
     .done(function(){
       if (removingSelf) {
-        return window.location = $(this).data('packageUrl') + "?removed-self-from-collaborators"
+        return window.location = $form.data('packageUrl') + "?removed-self-from-collaborators"
       }
       updateInputsAndHandlers()
     })
@@ -80,24 +80,25 @@ var removeCollaborator = function(e) {
 
 var togglePackageAccess = function(e) {
   e.preventDefault()
-  var private = $(this).prop("checked")
+  var $checkbox = $(this)
+  var $form = $checkbox.parents("form")
+  var private = $checkbox.prop("checked")
 
   if (!private) {
-    var $readOnlyInputs = $("[type=radio][name='collaborator.permissions'][value='read']:checked")
-
     var confirmation = "This will make your package world-readable"
+    var $readOnlyInputs = $("[type=radio][name='collaborator.permissions'][value='read']:checked")
     if ($readOnlyInputs.length) confirmation += " and will remove the read-only collaborators"
     confirmation += ". Are you sure?"
 
     if (!confirm(confirmation)) {
-      $(this).prop("checked", true)
-      return false;
+      $checkbox.prop("checked", true)
+      return false
     }
 
     $readOnlyInputs.parents(".collaborator").remove()
   }
 
-  var opts = formToRequestObject($(this).parents("form"))
+  var opts = formToRequestObject($form)
   opts.data.package = {private: private}
 
   $("#collaborators").data("enablePermissionTogglers", private)

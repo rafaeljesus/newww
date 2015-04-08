@@ -23,6 +23,13 @@
     </p>
   {{/if}}
 
+  {{#if package}}
+    <p class="notice payment-required-notice">
+      Someone added you as a collaborator on the <a href="/package/{{package}}">{{package}}</a> package,
+      but you'll need to sign up as a paying user before you can access the package.
+    </p>
+  {{/if}}
+
   {{#if customer.license_expired }}
     <p class="error license-expired">
       Your license has expired, and your account

@@ -51,7 +51,18 @@ var addCollaborator = function(e) {
 var updateCollaborator = function(e) {
   e.preventDefault()
   var $form = $(this).parents("form")
-  $.ajax(formToRequestObject($form))
+  var opts = formToRequestObject($form)
+
+  // make it hard for users to demote themselves to read-only access
+  if (
+    opts.data.collaborator.permissions === "read"
+    && opts.data.collaborator.name === $("[data-user-name]").data('userName')
+  ) {
+    var confirmation = "Are you sure you want to set your own access level to read-only?"
+    if (!confirm(confirmation)) return false;
+  }
+
+  $.ajax(opts)
     .done(updateInputsAndHandlers)
     .fail(errorHandler)
 }

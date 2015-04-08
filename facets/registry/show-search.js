@@ -1,13 +1,10 @@
 var elasticsearch = require('elasticsearch'),
-    Hapi = require('hapi'),
     merge = require('lodash').merge,
     perPage = 24;
 
-module.exports = function (request, reply) {
+var client = new elasticsearch.Client({ host: process.env.ELASTICSEARCH_URL });
 
-  var client = new elasticsearch.Client({
-    host: process.env.ELASTICSEARCH_URL
-  });
+module.exports = function (request, reply) {
 
   // Redirect /search/foo to /search/?foo
   if (request.params && request.params.q) {

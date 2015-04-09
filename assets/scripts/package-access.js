@@ -31,6 +31,13 @@ var updateInputsAndHandlers = function() {
     $("form.remove-collaborator").css({visibility: "visible"})
   }
 
+  // If there's only one collaborator, disallow removal or demotion
+  if ($(".collaborator").length === 1) {
+    $("form.remove-collaborator").css({visibility: "hidden"})
+    $("input[type=radio][name='collaborator.permissions']")
+      .attr('disabled', true)
+  }
+
   // Set default permissions for new collaborators based on package publicity
   // private: default is read-only
   // public: default is read-write

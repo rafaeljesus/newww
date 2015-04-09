@@ -59,7 +59,10 @@ var updateCollaborator = function(e) {
     && opts.data.collaborator.name === $("[data-user-name]").data('userName')
   ) {
     var confirmation = "Are you sure you want to set your own access level to read-only?"
-    if (!confirm(confirmation)) return false;
+    if (!confirm(confirmation)) {
+      $form.find("input[value='write']").prop("checked", true)
+      return false;
+    }
   }
 
   $.ajax(opts)

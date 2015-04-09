@@ -56,7 +56,7 @@ exports.profileUpdate = {
 exports.bobUpdateBody = {
   name: 'bob',
   email: 'bob@boom.me',
-  email_verified: null,
+  email_verified: true,
   verification_key: '12345',
   resource: {
     github: 'bob',
@@ -79,7 +79,7 @@ exports.bobUpdateBody = {
 exports.bobUpdated = {
   name: 'bob',
   email: 'bob@boom.me',
-  email_verified: null,
+  email_verified: true,
   verification_key: '12345',
   resource: {
     fullname: 'Big Bob',

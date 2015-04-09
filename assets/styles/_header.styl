@@ -319,26 +319,31 @@ nav
       font-size 14px
 
 #notification-banner
-  height 100px
+  padding 70px 10px
   color background-color
   font-size 14px
   font-weight 600
-  background npmred
+  background greigh2
 
-  span
-    display block
-    // width 200px
+  .container
+    text-align center
+    color green
+
+  hgroup
+    display inline-block
+    margin 0
+    h2,h3
+      text-align left
+    h2
+      color white
+      font-size 32px
+      font-weight 600
+    h3
+      @extend .featherweight-heading
+      font-size 22px
+      color rgba(white, 0.8)
 
   a.button
     color rgba(background-color, 0.8)
-    width 150px
     background-color darken(npmred, 10%)
     display inline-block
-
-  button
-    color rgba(background-color, 0.5)
-    border none
-    background-color npmred
-
-    &:hover
-      cursor pointer

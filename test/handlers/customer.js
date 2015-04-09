@@ -270,6 +270,46 @@ describe('GET /settings/billing', function () {
 
   });
 
+  describe("user with unverified email", function(){
+    var mock;
+    var resp;
+    var $;
+
+    beforeEach(function(done){
+      var options = {
+        url: "/settings/billing",
+        credentials: fixtures.users.uncle_unverified
+      }
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/uncle_unverified")
+        .reply(200, fixtures.users.uncle_unverified)
+
+      var customerMock = nock("https://license-api-example.com")
+        .get("/stripe/uncle_unverified")
+        .reply(404)
+
+      server.inject(options, function (response) {
+        resp = response;
+        $ = cheerio.load(resp.result);
+        userMock.done();
+        customerMock.done();
+        done();
+      });
+    });
+
+    it("renders a verify-email-notice", function(done) {
+      expect($(".verify-email-notice").length).to.equal(1);
+      done();
+    });
+
+    it("does not render the payment form", function(done) {
+      expect($("#payment-form").length).to.equal(0);
+      done();
+    });
+
+  });
+
 });
 
 describe('POST /settings/billing', function () {

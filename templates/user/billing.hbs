@@ -83,27 +83,28 @@
 
   {{> errors}}
 
-  <!-- stripe error container -->
-  <p class="error billing-error" style="display:none;"></p>
+  {{#if user.email_verified}}
+    <p class="error billing-error" style="display:none;"></p>
 
-  <form action="" method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
+    <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
 
-    <label for="card-number">Card Number</label>
-    <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
+      <label for="card-number">Card Number</label>
+      <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
 
-    <label for="card-cvc">Card security code</label>
-    <input required="required" type="text" size="4" data-stripe="cvc" placeholder="123" class="cvc" id="card-cvc" />
+      <label for="card-cvc">Card security code</label>
+      <input required="required" type="text" size="4" data-stripe="cvc" placeholder="123" class="cvc" id="card-cvc" />
 
-    <label for="card-exp-month">Expiration Month</label>
-    <input required="required" type="text" size="2" data-stripe="exp-month" placeholder="MM" id="card-exp-month" />
+      <label for="card-exp-month">Expiration Month</label>
+      <input required="required" type="text" size="2" data-stripe="exp-month" placeholder="MM" id="card-exp-month" />
 
-    <label for="card-exp-year">Expiration Year</label>
-    <input required="required" type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
+      <label for="card-exp-year">Expiration Year</label>
+      <input required="required" type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
 
-    {{> form_security}}
-    <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}sign me up{{/if}}">
+      {{> form_security}}
+      <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}sign me up{{/if}}">
 
-  </form>
+    </form>
+  {{/if}}
 
   {{#if customer}}
     <form id="cancel-subscription" action="/settings/billing/cancel" method="post" style="display:none">

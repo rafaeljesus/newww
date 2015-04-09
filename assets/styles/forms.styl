@@ -168,7 +168,7 @@ input.toggle
     width toggleWidth
     height toggleHeight + (togglePadding*2)
     border-radius (toggleHeight/2) + togglePadding
-    background greigh4
+    background greigh3
     margin 0
     padding togglePadding
     cursor pointer
@@ -226,9 +226,11 @@ label.wrapping-hidden-radio
     &:checked + span, &:enabled span:hover
       background greigh4
       color white
+      opacity 1
 
     &:disabled + span
       cursor not-allowed
+      opacity 0
 
   span
     cursor pointer

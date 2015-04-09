@@ -31,6 +31,13 @@ var updateInputsAndHandlers = function() {
     $("form.remove-collaborator").css({visibility: "visible"})
   }
 
+  // Set default permissions for new collaborators based on package publicity
+  // private: default is read-only
+  // public: default is read-write
+  var private = $("#package-access-toggle").prop("checked")
+  $("#add-collaborator input[name='collaborator.permissions']")
+    .val(private ? "read" : "write")
+
   // Clear the 'add' input
   $("#add-collaborator input[name='collaborator.name']").val("")
 }

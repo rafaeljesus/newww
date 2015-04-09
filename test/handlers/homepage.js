@@ -92,25 +92,25 @@ describe('GET / for a logged-in user', function () {
     credentials: fixtures.users.mikeal
   }
 
-  var userMock = nock('https://user-api-example.com')
-    .get('/user/mikeal')
-    .reply(200, fixtures.users.mikeal);
-  var packageMock = nock("https://user-api-example.com")
-    .get('/package?sort=dependents')
-    .reply(200, fixtures.aggregates.most_depended_upon_packages)
-    .get('/package?sort=modified')
-    .reply(200, fixtures.aggregates.recently_updated_packages)
-    .get('/package/-/count')
-    .reply(200, 12345);
-  var downloadsMock = nock("https://downloads-api-example.com")
-    .get('/point/last-day')
-    .reply(200, fixtures.downloads.all.day)
-    .get('/point/last-week')
-    .reply(200, fixtures.downloads.all.week)
-    .get('/point/last-month')
-    .reply(200, fixtures.downloads.all.month);
-
   before(function(done){
+    var userMock = nock('https://user-api-example.com')
+      .get('/user/mikeal')
+      .reply(200, fixtures.users.mikeal);
+    var packageMock = nock("https://user-api-example.com")
+      .get('/package?sort=dependents')
+      .reply(200, fixtures.aggregates.most_depended_upon_packages)
+      .get('/package?sort=modified')
+      .reply(200, fixtures.aggregates.recently_updated_packages)
+      .get('/package/-/count')
+      .reply(200, 12345);
+    var downloadsMock = nock("https://downloads-api-example.com")
+      .get('/point/last-day')
+      .reply(200, fixtures.downloads.all.day)
+      .get('/point/last-week')
+      .reply(200, fixtures.downloads.all.week)
+      .get('/point/last-month')
+      .reply(200, fixtures.downloads.all.month);
+
     server.inject(options, function (response) {
       resp = response
       $ = cheerio.load(resp.result)

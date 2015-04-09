@@ -2,6 +2,7 @@ var fixtures = require("../fixtures"),
     merge = require("lodash").merge,
     nock = require("nock"),
     cheerio = require("cheerio"),
+    URL = require('url'),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -529,6 +530,41 @@ describe("package access", function(){
         done();
       });
     });
+
+    describe('logged-in unpaid collaborator', function () {
+      var resp
+      var options = {
+        url: '/package/@wrigley_the_writer/scoped_private/access',
+        credentials: fixtures.users.wrigley_the_writer,
+      };
+
+      before(function(done) {
+        var mock = nock("https://user-api-example.com")
+          .get('/package/@wrigley_the_writer%2Fscoped_private')
+          .reply(402)
+
+        process.env.FEATURE_ACCESS_PAGE = 'true';
+        server.inject(options, function(response) {
+          // mock.done()
+          resp = response;
+          delete process.env.FEATURE_ACCESS_PAGE;
+          done();
+        });
+      });
+
+      it('redirects to the billing page'/*, function (done) {
+        expect(resp.statusCode).to.equal(302);
+        expect(URL.parse(resp.headers.location).pathname).to.equal("/settings/billing");
+        done()
+      }*/);
+
+      it('sets a `package` query param so a helpful message can be displayed'/*, function (done) {
+        expect(URL.parse(resp.headers.location, true).query.package).to.equal("@wrigley_the_writer/scope_private");
+        done()
+      }*/);
+
+    });
+
 
   });
 

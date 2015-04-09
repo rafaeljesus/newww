@@ -2,6 +2,7 @@ var fixtures = require("../fixtures"),
     generateCrumb = require("../handlers/crumb.js"),
     nock = require("nock"),
     cheerio = require("cheerio"),
+    URL = require('url'),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -159,6 +160,35 @@ describe("package handler", function(){
 
   });
 
+  describe('scoped private package viewed by unpaid collaborator', function () {
+    var resp;
+    var options = {url: '/package/@zeke/secrets'};
+
+    before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/@zeke%2Fsecrets')
+        .reply(402)
+
+      server.inject(options, function (response) {
+        packageMock.done()
+        resp = response
+        done();
+      });
+    });
+
+    it('redirects to the billing page', function (done) {
+      expect(resp.statusCode).to.equal(302);
+      expect(URL.parse(resp.headers.location).pathname).to.equal("/settings/billing");
+      done()
+    });
+
+    it('sets a `package` query param so a helpful message can be displayed', function (done) {
+      expect(URL.parse(resp.headers.location, true).query.package).to.equal("@zeke/secrets");
+      done()
+    });
+
+  });
+
   describe('nonexistent global packages with valid names', function () {
     var $;
     var resp;
@@ -195,8 +225,6 @@ describe("package handler", function(){
       expect($("pre code").text()).to.include("npm init\n");
       done();
     });
-
-
   });
 
   describe('nonexistent scoped packages for anonymous users', function () {
@@ -223,7 +251,6 @@ describe("package handler", function(){
       expect($("hgroup h2").text()).to.include("try logging in");
       done();
     });
-
   });
 
   describe('nonexistent scoped packages for logged-in users', function () {

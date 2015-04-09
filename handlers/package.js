@@ -18,6 +18,12 @@ package.show = function(request, reply) {
   var promise = Package.get(name)
     .catch(function(err){
 
+      // unpaid collaborator
+      if (err.statusCode === 402) {
+        reply.redirect('/settings/billing?package='+name);
+        return promise.cancel();
+      }
+
       if (err.statusCode === 404) {
         var package = npa(name);
         package.available = false;
@@ -61,13 +67,14 @@ package.show = function(request, reply) {
         return promise.cancel();
       }
 
-      return Package.list({dependency: name, limit: 50});
+      var DEPENDENCY_TTL = 5 * 60; // 5 minutes
+      return Package.list({dependency: name, limit: 50}, DEPENDENCY_TTL);
     })
     .then(function(dependents) {
       package.dependents = dependents;
 
       if (dependents.results.length) {
-        package.numMoreDependents = package.dependentCount - dependents.results.length
+        package.numMoreDependents = package.dependentCount - dependents.results.length;
       }
 
       return Download.getAll(package.name);

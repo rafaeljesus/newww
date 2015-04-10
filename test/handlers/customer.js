@@ -13,10 +13,10 @@ var generateCrumb = require("../handlers/crumb.js"),
     server,
     fixtures = require('../fixtures');
 
-var userMock;
+var userMock, licenseMock;
 
 before(function (done) {
-  process.env.FEATURE_BILLING_PAGE = 'true'
+  process.env.FEATURE_BILLING_PAGE = 'true';
   userMock = nock("https://user-api-example.com")
     .get("/user/bob").times(14)
     .reply(200, fixtures.users.bob)
@@ -25,6 +25,12 @@ before(function (done) {
     .get("/user/norbert_newbie").times(3)
     .reply(200, fixtures.users.norbert_newbie);
 
+  licenseMock = nock("https://license-api-example.com:443")
+    .get("/stripe/bob")
+    .reply(200, fixtures.customers.happy)
+    .get("/stripe/bob").times(4)
+    .reply(404);
+
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -32,8 +38,9 @@ before(function (done) {
 });
 
 after(function (done) {
-  delete process.env.FEATURE_BILLING_PAGE
+  delete process.env.FEATURE_BILLING_PAGE;
   userMock.done();
+  licenseMock.done();
   server.stop(done);
 });
 
@@ -279,15 +286,15 @@ describe('GET /settings/billing', function () {
       var options = {
         url: "/settings/billing",
         credentials: fixtures.users.uncle_unverified
-      }
+      };
 
       var userMock = nock("https://user-api-example.com")
         .get("/user/uncle_unverified")
-        .reply(200, fixtures.users.uncle_unverified)
+        .reply(200, fixtures.users.uncle_unverified);
 
       var customerMock = nock("https://license-api-example.com")
         .get("/stripe/uncle_unverified")
-        .reply(404)
+        .reply(404);
 
       server.inject(options, function (response) {
         resp = response;

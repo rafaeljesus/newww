@@ -1,5 +1,7 @@
 var _ = require('lodash');
 var cache = require('../lib/cache');
+var utils = require('../lib/utils');
+var clf = utils.toCommonLogFormat;
 var decorate = require(__dirname + '/../presenters/user');
 var fmt = require('util').format;
 var mailchimp = require('mailchimp-api');
@@ -10,15 +12,9 @@ var userValidate = require('npm-user-validate');
 var User = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API || "https://user-api-example.com",
-    bearer: false
+    bearer: false,
+    logger: utils.testLogger,
   }, opts);
-
-  if (!this.logger) {
-    this.logger = {
-      error: console.error,
-      info: console.log
-    };
-  }
 
   return this;
 };
@@ -29,8 +25,8 @@ User.new = function(request) {
 };
 
 User.prototype.confirmEmail = function (user, callback) {
+  var _this = this;
   var url = fmt("%s/user/%s/verify", this.host, user.name);
-  this.log(url);
 
   return new Promise(function(resolve, reject) {
     var opts = {
@@ -42,7 +38,13 @@ User.prototype.confirmEmail = function (user, callback) {
     };
 
     request.post(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
+      _this.logger('EXTERNAL').info(clf(resp));
+
+      if (err) {
+        _this.logger.error(body);
+        return reject(err);
+      }
+
       if (resp.statusCode > 399) {
         err = Error('error verifying user ' + user.name);
         err.statusCode = resp.statusCode;
@@ -54,6 +56,7 @@ User.prototype.confirmEmail = function (user, callback) {
 };
 
 User.prototype.login = function(loginInfo, callback) {
+  var _this = this;
   var url = fmt("%s/user/%s/login", this.host, loginInfo.name);
 
   return new Promise(function (resolve, reject) {
@@ -64,8 +67,12 @@ User.prototype.login = function(loginInfo, callback) {
         password: loginInfo.password
       }
     }, function (err, resp, body) {
+      _this.logger('EXTERNAL').info(clf(resp));
 
-      if (err) { return reject(err); }
+      if (err) {
+        _this.logger.error(body);
+        return reject(err);
+      }
 
       if (resp.statusCode === 401) {
         err = Error('password is incorrect for ' + loginInfo.name);
@@ -140,11 +147,16 @@ User.prototype.getPackages = function(name, callback) {
       json: true
     };
 
-    if (_this.bearer) opts.headers = {bearer: _this.bearer};
+    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
     request.get(opts, function(err, resp, body){
+      _this.logger('EXTERNAL').info(clf(resp));
 
-      if (err) { return reject(err); }
+      if (err) {
+        _this.logger.error(body);
+        return reject(err);
+      }
+
       if (resp.statusCode > 399) {
         err = Error('error getting packages for user ' + name);
         err.statusCode = resp.statusCode;
@@ -165,11 +177,16 @@ User.prototype.getStars = function(name, callback) {
       json: true
     };
 
-    if (_this.bearer) opts.headers = {bearer: _this.bearer};
+    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
     request.get(opts, function(err, resp, body){
+      _this.logger('EXTERNAL').info(clf(resp));
 
-      if (err) { return reject(err); }
+      if (err) {
+        _this.logger.error(body);
+        return reject(err);
+      }
+
       if (resp.statusCode > 399) {
         err = Error('error getting stars for user ' + name);
         err.statusCode = resp.statusCode;
@@ -181,13 +198,9 @@ User.prototype.getStars = function(name, callback) {
   .nodeify(callback);
 };
 
-User.prototype.log = function(msg) {
-  if (this.debug) { this.logger.info(msg); }
-};
-
 User.prototype.login = function(loginInfo, callback) {
+  var _this = this;
   var url = fmt("%s/user/%s/login", this.host, loginInfo.name);
-  this.log(url);
 
   return new Promise(function (resolve, reject) {
 
@@ -198,8 +211,12 @@ User.prototype.login = function(loginInfo, callback) {
         password: loginInfo.password
       }
     }, function (err, resp, body) {
+      _this.logger('EXTERNAL').info(clf(resp));
 
-      if (err) { return reject(err); }
+      if (err) {
+        _this.logger.error(body);
+        return reject(err);
+      }
 
       if (resp.statusCode === 401) {
         err = Error('password is incorrect for ' + loginInfo.name);
@@ -225,15 +242,20 @@ User.prototype.lookupEmail = function(email, callback) {
     if(userValidate.email(email)) {
       var err = new Error('email is invalid');
       err.statusCode = 400;
-      _this.log(err);
+      _this.logger.error(err);
       return reject(err);
     }
 
     var url = _this.host + "/user/" + email;
-    _this.log(url);
 
     request.get({url: url, json: true}, function (err, resp, body) {
-      if (err) { return reject(err); }
+      _this.logger('EXTERNAL').info(clf(resp));
+
+      if (err) {
+        _this.logger.error(body);
+        return reject(err);
+      }
+
       if (resp.statusCode > 399) {
         err = Error('error looking up username(s) for ' + email);
         err.statusCode = resp.statusCode;
@@ -246,6 +268,7 @@ User.prototype.lookupEmail = function(email, callback) {
 };
 
 User.prototype.save = function (user, callback) {
+  var _this = this;
   var url = this.host + "/user/" + user.name;
 
   return new Promise(function (resolve, reject) {
@@ -256,7 +279,13 @@ User.prototype.save = function (user, callback) {
     };
 
     request.post(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
+      _this.logger('EXTERNAL').info(clf(resp));
+
+      if (err) {
+        _this.logger.error(body);
+        return reject(err);
+      }
+
       if (resp.statusCode > 399) {
         err = Error('error updating profile for ' + user.name);
         err.statusCode = resp.statusCode;
@@ -292,7 +321,13 @@ User.prototype.signup = function (user, callback) {
     };
 
     request.put(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
+      _this.logger('EXTERNAL').info(clf(resp));
+
+      if (err) {
+        _this.logger.error(body);
+        return reject(err);
+      }
+
       if (resp.statusCode > 399) {
         err = Error('error creating user ' + user.name);
         err.statusCode = resp.statusCode;

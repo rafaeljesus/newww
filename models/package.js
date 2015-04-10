@@ -1,15 +1,19 @@
 var _        = require('lodash');
 var cache    = require('../lib/cache');
+var utils    = require('../lib/utils');
+var clf      = utils.toCommonLogFormat;
 var decorate = require(__dirname + '/../presenters/package');
 var fmt      = require('util').format;
 var P        = require('bluebird');
 var Request  = require('request');
 var URL      = require('url');
 
+
 var Package = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API || "https://user-api-example.com",
-    bearer: false
+    bearer: false,
+    logger: utils.testLogger
   }, opts);
 
   return this;
@@ -17,10 +21,10 @@ var Package = module.exports = function(opts) {
 
 Package.new = function(request) {
   var opts = {
-    logger: request.logger
+    logger: request.logger,
+    bearer: request.loggedInUser && request.loggedInUser.name
   };
 
-  opts.bearer = request.loggedInUser && request.loggedInUser.name;
   return new Package(opts);
 };
 
@@ -50,6 +54,7 @@ Package.prototype.dropCache = function dropCache(name) {
 };
 
 Package.prototype.update = function(name, body) {
+  var _this = this;
 
   var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
   var opts = {
@@ -71,12 +76,19 @@ Package.prototype.update = function(name, body) {
   .then(function() {
     return new P(function(resolve, reject) {
       Request(opts, function(err, resp, body) {
-        if (err) { return reject(err); }
+        _this.logger('EXTERNAL').info(clf(resp));
+
+        if (err) {
+          _this.logger.error(body); // get more info about the error
+          return reject(err);
+        }
+
         if (resp.statusCode > 399) {
           err = Error('error updating package ' + name);
           err.statusCode = resp.statusCode;
           return reject(err);
         }
+
         return resolve(body);
       });
     });
@@ -127,7 +139,9 @@ Package.prototype.star = function (package) {
     return new P(function (resolve, reject) {
 
       Request.put(opts, function (err, resp, body) {
+        _this.logger('EXTERNAL').info(clf(resp));
         if (err) {
+          _this.logger.error(body); // get more info about the error
           _this.logger.error(err);
           return reject(err);
         }
@@ -159,7 +173,12 @@ Package.prototype.unstar = function (package) {
     return new P(function (resolve, reject) {
 
       Request.del(opts, function (err, resp, body) {
-        if (err) { return reject(err); }
+        _this.logger('EXTERNAL').info(clf(resp));
+        if (err) {
+          _this.logger.error(body); // get more info about the error
+          _this.logger.error(err);
+          return reject(err);
+        }
 
         if (resp.statusCode > 399) {
           err = Error('error unstarring package ' + package);

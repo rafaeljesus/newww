@@ -39,7 +39,6 @@ describe("package access", function(){
   });
 
   describe('features.feature_page disabled', function() {
-    var resp;
 
     before(function(done){
       delete process.env.FEATURE_ACCESS_PAGE;
@@ -68,13 +67,24 @@ describe("package access", function(){
     var resp;
     var context;
     var options = {url: '/package/browserify/access'};
-    var mock = nock("https://user-api-example.com")
-      .get('/package/browserify')
-      .times(3)
-      .reply(200, fixtures.packages.browserify)
-      .get('/package/browserify/collaborators')
-      .times(3)
-      .reply(200, fixtures.collaborators);
+    var mock;
+
+    before(function (done) {
+      mock = nock("https://user-api-example.com")
+        .get('/package/browserify')
+        .times(3)
+        .reply(200, fixtures.packages.browserify)
+        .get('/package/browserify/collaborators')
+        .times(3)
+        .reply(200, fixtures.collaborators);
+
+      done();
+    });
+
+    after(function (done) {
+      mock.done();
+      done();
+    });
 
     describe('anonymous user', function () {
 
@@ -532,7 +542,7 @@ describe("package access", function(){
     });
 
     describe('logged-in unpaid collaborator', function () {
-      var resp
+      var resp;
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
         credentials: fixtures.users.wrigley_the_writer,
@@ -540,12 +550,12 @@ describe("package access", function(){
 
       before(function(done) {
         var mock = nock("https://user-api-example.com")
-          .get('/package/@wrigley_the_writer%2Fscoped_private')
-          .reply(402)
+          .get('/user/wrigley_the_writer')
+          .reply(404);
 
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
-          // mock.done()
+          mock.done();
           resp = response;
           delete process.env.FEATURE_ACCESS_PAGE;
           done();

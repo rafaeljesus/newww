@@ -1,5 +1,5 @@
 var billing = module.exports = {};
-var Customer = require("../models/customer").new();
+var Customer = require("../models/customer");
 
 billing.getBillingInfo = function (request, reply) {
 
@@ -18,10 +18,10 @@ billing.getBillingInfo = function (request, reply) {
   // Display a message to unpaid collaborators about the
   // package they could be accessing if they paid for it
   if (request.query.package) {
-    opts.package = request.query.package
+    opts.package = request.query.package;
   }
 
-  Customer.get(request.loggedInUser.name, function(err, customer) {
+  Customer.new(request).get(request.loggedInUser.name, function(err, customer) {
 
     if (customer) {
       opts.customer = customer;
@@ -44,7 +44,7 @@ billing.updateBillingInfo = function(request, reply) {
     card: request.payload.stripeToken
   };
 
-  Customer.update(billingInfo, function(err, customer) {
+  Customer.new(request).update(billingInfo, function(err, customer) {
     if (err) {
       request.logger.error(err);
       return reply.view('errors/internal').code(500);
@@ -68,7 +68,7 @@ billing.deleteBillingInfo = function(request, reply) {
     return reply.view('errors/not-found').code(404);
   }
 
-  Customer.del(request.loggedInUser.name, function(err, customer) {
+  Customer.new(request).del(request.loggedInUser.name, function(err, customer) {
     if (err) {
       request.logger.error("unable to delete billing info for " + customer);
       request.logger.error(err);

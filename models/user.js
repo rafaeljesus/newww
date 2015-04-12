@@ -1,13 +1,12 @@
 var _ = require('lodash');
 var cache = require('../lib/cache');
-var utils = require('../lib/utils');
-var clf = utils.toCommonLogFormat;
 var decorate = require(__dirname + '/../presenters/user');
 var fmt = require('util').format;
 var mailchimp = require('mailchimp-api');
 var Promise = require('bluebird');
-var request = require('request');
+var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
+var utils = require('../lib/utils');
 
 var User = module.exports = function(opts) {
   _.extend(this, {
@@ -37,14 +36,8 @@ User.prototype.confirmEmail = function (user, callback) {
       }
     };
 
-    request.post(opts, function (err, resp, body) {
-      _this.logger('EXTERNAL').info(clf(resp));
-
-      if (err) {
-        _this.logger.error(body);
-        return reject(err);
-      }
-
+    Request.post(opts, function (err, resp, body) {
+      if (err) {return reject(err);}
       if (resp.statusCode > 399) {
         err = Error('error verifying user ' + user.name);
         err.statusCode = resp.statusCode;
@@ -60,20 +53,14 @@ User.prototype.login = function(loginInfo, callback) {
   var url = fmt("%s/user/%s/login", this.host, loginInfo.name);
 
   return new Promise(function (resolve, reject) {
-    request.post({
+    Request.post({
       url: url,
       json: true,
       body: {
         password: loginInfo.password
       }
     }, function (err, resp, body) {
-      _this.logger('EXTERNAL').info(clf(resp));
-
-      if (err) {
-        _this.logger.error(body);
-        return reject(err);
-      }
-
+      if (err) {return reject(err);}
       if (resp.statusCode === 401) {
         err = Error('password is incorrect for ' + loginInfo.name);
         err.statusCode = resp.statusCode;
@@ -149,14 +136,8 @@ User.prototype.getPackages = function(name, callback) {
 
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    request.get(opts, function(err, resp, body){
-      _this.logger('EXTERNAL').info(clf(resp));
-
-      if (err) {
-        _this.logger.error(body);
-        return reject(err);
-      }
-
+    Request.get(opts, function(err, resp, body){
+      if (err) {return reject(err);}
       if (resp.statusCode > 399) {
         err = Error('error getting packages for user ' + name);
         err.statusCode = resp.statusCode;
@@ -179,14 +160,8 @@ User.prototype.getStars = function(name, callback) {
 
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    request.get(opts, function(err, resp, body){
-      _this.logger('EXTERNAL').info(clf(resp));
-
-      if (err) {
-        _this.logger.error(body);
-        return reject(err);
-      }
-
+    Request.get(opts, function(err, resp, body){
+      if (err) {return reject(err);}
       if (resp.statusCode > 399) {
         err = Error('error getting stars for user ' + name);
         err.statusCode = resp.statusCode;
@@ -204,20 +179,14 @@ User.prototype.login = function(loginInfo, callback) {
 
   return new Promise(function (resolve, reject) {
 
-    request.post({
+    Request.post({
       url: url,
       json: true,
       body: {
         password: loginInfo.password
       }
     }, function (err, resp, body) {
-      _this.logger('EXTERNAL').info(clf(resp));
-
-      if (err) {
-        _this.logger.error(body);
-        return reject(err);
-      }
-
+      if (err) {return reject(err);}
       if (resp.statusCode === 401) {
         err = Error('password is incorrect for ' + loginInfo.name);
         err.statusCode = resp.statusCode;
@@ -248,14 +217,8 @@ User.prototype.lookupEmail = function(email, callback) {
 
     var url = _this.host + "/user/" + email;
 
-    request.get({url: url, json: true}, function (err, resp, body) {
-      _this.logger('EXTERNAL').info(clf(resp));
-
-      if (err) {
-        _this.logger.error(body);
-        return reject(err);
-      }
-
+    Request.get({url: url, json: true}, function (err, resp, body) {
+      if (err) {return reject(err);}
       if (resp.statusCode > 399) {
         err = Error('error looking up username(s) for ' + email);
         err.statusCode = resp.statusCode;
@@ -278,14 +241,8 @@ User.prototype.save = function (user, callback) {
       body: user
     };
 
-    request.post(opts, function (err, resp, body) {
-      _this.logger('EXTERNAL').info(clf(resp));
-
-      if (err) {
-        _this.logger.error(body);
-        return reject(err);
-      }
-
+    Request.post(opts, function (err, resp, body) {
+      if (err) {return reject(err);}
       if (resp.statusCode > 399) {
         err = Error('error updating profile for ' + user.name);
         err.statusCode = resp.statusCode;
@@ -320,14 +277,8 @@ User.prototype.signup = function (user, callback) {
       json: true
     };
 
-    request.put(opts, function (err, resp, body) {
-      _this.logger('EXTERNAL').info(clf(resp));
-
-      if (err) {
-        _this.logger.error(body);
-        return reject(err);
-      }
-
+    Request.put(opts, function (err, resp, body) {
+      if (err) {return reject(err);}
       if (resp.statusCode > 399) {
         err = Error('error creating user ' + user.name);
         err.statusCode = resp.statusCode;

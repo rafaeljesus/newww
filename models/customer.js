@@ -1,7 +1,6 @@
 var _       = require('lodash');
 var utils   = require('../lib/utils');
-var clf     = utils.toCommonLogFormat;
-var request = require('request');
+var Request = require('../lib/external-request');
 
 var Customer = module.exports = function(opts) {
   _.extend(this, {
@@ -21,19 +20,10 @@ Customer.new = function(request) {
 };
 
 Customer.prototype.get = function(name, callback) {
-  var _this = this;
   var url = this.host + '/stripe/' + name;
 
-  request.get({url: url, json: true}, function(err, resp, body){
-
-    _this.logger('EXTERNAL').info(clf(resp));
-
-    if (err) {
-      _this.logger.error(body);
-      _this.logger.error(err);
-      return callback(err);
-    }
-
+  Request.get({url: url, json: true}, function(err, resp, body){
+    if (err) {return callback(err);}
     if (resp.statusCode === 404) {
       err = Error('customer not found: ' + name);
       err.statusCode = resp.statusCode;
@@ -66,16 +56,8 @@ Customer.prototype.update = function(body, callback) {
     // Create new customer
     if (err && err.statusCode === 404) {
       url = _this.host + '/stripe';
-      return request.put({url: url, json: true, body: body}, function(err, resp, body){
-        _this.logger('EXTERNAL').info(clf(resp));
-
-        if (err) {
-          _this.logger.error(body);
-          _this.logger.error(err);
-          return callback(err);
-        }
-
-        return callback(null, body);
+      return Request.put({url: url, json: true, body: body}, function(err, resp, body){
+        return err ? callback(err) : callback(null, body);
       });
     }
 
@@ -84,7 +66,7 @@ Customer.prototype.update = function(body, callback) {
 
     // Update existing customer
     url = _this.host + '/stripe/' + body.name;
-    return request.post({url: url, json: true, body: body}, function(err, resp, body){
+    return Request.post({url: url, json: true, body: body}, function(err, resp, body){
       return err ? callback(err) : callback(null, body);
     });
 
@@ -92,17 +74,8 @@ Customer.prototype.update = function(body, callback) {
 };
 
 Customer.prototype.del = function(name, callback) {
-  var _this = this;
   var url = this.host + '/stripe/' + name;
-  request.del({url: url, json: true}, function(err, resp, body){
-    _this.logger('EXTERNAL').info(clf(resp));
-
-    if (err) {
-      _this.logger.error(body);
-      _this.logger.error(err);
-      return callback(err);
-    }
-
-    return callback(null, body);
+  Request.del({url: url, json: true}, function(err, resp, body){
+    return err ? callback(err) : callback(null, body);
   });
 };

@@ -518,6 +518,13 @@ describe("User", function(){
       var params = { id: 'e17fe5d778', email: {email:'boom@boom.com'} };
 
       it('adds the user to the mailing list when checked', function (done) {
+
+        var userMock = nock("https://user.com")
+          .put('/user', {"name":"boom","password":"12345","verify":"12345","email":"boom@boom.com"})
+          .reply(404)
+          .put('/user', {"name":"boom","password":"12345","verify":"12345","email":"boom@boom.com","npmweekly":"on"})
+          .reply(404);
+
         spy.reset();
         User.signup({
           name: 'boom',
@@ -526,12 +533,14 @@ describe("User", function(){
           email: 'boom@boom.com',
           npmweekly: "on"
         }, function (er, user) {
+          // userMock.done();
           expect(spy.calledWith(params)).to.be.true();
           done();
         });
       });
 
       it('does not add the user to the mailing list when unchecked', function (done) {
+
         spy.reset();
         User.getMailchimp = function () {return {lists: {subscribe: spy}}};
 

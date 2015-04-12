@@ -18,7 +18,7 @@ billing.getBillingInfo = function (request, reply) {
   // Display a message to unpaid collaborators about the
   // package they could be accessing if they paid for it
   if (request.query.package) {
-    opts.package = request.query.package
+    opts.package = request.query.package;
   }
 
   Customer.get(request.loggedInUser.name, function(err, customer) {

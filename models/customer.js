@@ -1,29 +1,23 @@
 var _       = require('lodash');
-var utils   = require('../lib/utils');
 var Request = require('../lib/external-request');
 
 var Customer = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.LICENSE_API || "https://license-api-example.com",
-    logger: utils.testLogger
   }, opts);
 };
 
-Customer.new = function(request) {
-  var opts = {};
-
-  if (request && request.logger) {
-    opts.logger = request.logger;
-  }
-
-  return new Customer(opts);
+Customer.new = function() {
+  return new Customer();
 };
 
 Customer.prototype.get = function(name, callback) {
   var url = this.host + '/stripe/' + name;
 
   Request.get({url: url, json: true}, function(err, resp, body){
-    if (err) {return callback(err);}
+
+    if (err) { return callback(err); }
+
     if (resp.statusCode === 404) {
       err = Error('customer not found: ' + name);
       err.statusCode = resp.statusCode;

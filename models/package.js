@@ -5,13 +5,11 @@ var fmt      = require('util').format;
 var P        = require('bluebird');
 var Request  = require('../lib/external-request');
 var URL      = require('url');
-var utils    = require('../lib/utils');
 
 var Package = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API || "https://user-api-example.com",
-    bearer: false,
-    logger: utils.testLogger
+    bearer: false
   }, opts);
 
   return this;
@@ -19,7 +17,6 @@ var Package = module.exports = function(opts) {
 
 Package.new = function(request) {
   var opts = {
-    logger: request.logger,
     bearer: request.loggedInUser && request.loggedInUser.name
   };
 
@@ -52,7 +49,6 @@ Package.prototype.dropCache = function dropCache(name) {
 };
 
 Package.prototype.update = function(name, body) {
-  var _this = this;
 
   var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
   var opts = {
@@ -74,15 +70,12 @@ Package.prototype.update = function(name, body) {
   .then(function() {
     return new P(function(resolve, reject) {
       Request(opts, function(err, resp, body) {
-
         if (err) { return reject(err); }
-
         if (resp.statusCode > 399) {
           err = Error('error updating package ' + name);
           err.statusCode = resp.statusCode;
           return reject(err);
         }
-
         return resolve(body);
       });
     });
@@ -133,7 +126,7 @@ Package.prototype.star = function (package) {
     return new P(function (resolve, reject) {
 
       Request.put(opts, function (err, resp, body) {
-        if (err) {return reject(err);}
+        if (err) { return reject(err); }
         if (resp.statusCode > 399) {
           err = Error('error starring package ' + package);
           err.statusCode = resp.statusCode;
@@ -161,7 +154,8 @@ Package.prototype.unstar = function (package) {
     return new P(function (resolve, reject) {
 
       Request.del(opts, function (err, resp, body) {
-        if (err) {return reject(err);}
+        if (err) { return reject(err); }
+
         if (resp.statusCode > 399) {
           err = Error('error unstarring package ' + package);
           err.statusCode = resp.statusCode;

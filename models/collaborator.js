@@ -3,25 +3,19 @@ var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
 var decorate = require(__dirname + '/../presenters/collaborator');
-var utils    = require('../lib/utils');
 
 var Collaborator = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API || "https://user-api-example.com",
-    bearer: false,
-    logger: utils.testLogger
+    bearer: false
   }, opts);
 
   return this;
 };
 
 Collaborator.new = function(request) {
-  var opts = {
-    logger: request.logger,
-    bearer: request.loggedInUser && request.loggedInUser.name
-  };
-
-  return new Collaborator(opts);
+  var bearer = request.loggedInUser && request.loggedInUser.name;
+  return new Collaborator({bearer: bearer});
 };
 
 Collaborator.prototype.list = function(package, callback) {
@@ -70,7 +64,7 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
     Request(opts, function(err, resp, body) {
-      if (err) {return reject(err);}
+      if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error(fmt("error adding collaborator to package '%s': %s)", package, resp.body));
         err.statusCode = resp.statusCode;
@@ -96,7 +90,7 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
 
   return new Promise(function(resolve, reject) {
     Request(opts, function(err, resp, body) {
-      if (err) {return reject(err);}
+      if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error(fmt("error updating collaborator access to package '%s': %s)", package, resp.body));
         err.statusCode = resp.statusCode;
@@ -121,7 +115,7 @@ Collaborator.prototype.del = function(package, collaboratorName, callback) {
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
     Request(opts, function(err, resp, body){
-      if (err) {return reject(err);}
+      if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error(fmt("error removing collaborator from package '%s': %s)", package, resp.body));
         err.statusCode = resp.statusCode;

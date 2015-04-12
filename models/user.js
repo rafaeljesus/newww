@@ -24,7 +24,6 @@ User.new = function(request) {
 };
 
 User.prototype.confirmEmail = function (user, callback) {
-  var _this = this;
   var url = fmt("%s/user/%s/verify", this.host, user.name);
 
   return new Promise(function(resolve, reject) {

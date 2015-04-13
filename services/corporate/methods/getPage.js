@@ -17,8 +17,8 @@ function getPage (repo) {
         return next(err, null);
       }
 
-      var org = (new Date() > new Date("2015-04-13T03:30:00-07:00")) ? "linclark" : "npm";
-      var branch = "master"
+      var org = "npm";
+      var branch = (new Date() > new Date("2015-04-13T03:30:00-07:00")) ? "master" : "prerelease";
       var url = fmt('https://raw.githubusercontent.com/%s/%s/%s/%s.md', org, repo, branch, validName);
 
       request(url, function (err, resp, content) {

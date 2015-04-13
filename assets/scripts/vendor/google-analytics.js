@@ -22,7 +22,7 @@ $(document).ready(function () {
   });
 
   $(document).on("click", "[data-event-trigger='click']", function (e) {
-    ga('send', 'event', $(this).data("eventName"), 'click', $(this).attr("title"));
+    ga('send', 'event', $(this).data("eventName"), 'click');
   });
 
 });

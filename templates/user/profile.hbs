@@ -48,12 +48,14 @@
   {{/if}}
 
   {{#if isSelf}}
-    <p class="notice profile-edit">
-      This is your profile page, {{name}}! You can
-      <a href="/profile-edit">update your profile</a>,
-      <a href="/password">change your password</a>, or
-      <a href="http://gravatar.com/emails/">update your avatar</a>.
-    </p>
+    <h2>Your Account</h2>
+
+    <ul class="box">
+      <li><a href="/settings/billing">sign up for private modules</a></li>
+      <li><a href="/profile-edit">update your profile</a></li>
+      <li><a href="/password">change your password</a></li>
+      <li><a href="http://gravatar.com/emails/">set your avatar</a></li>
+    </ul>
 
     {{> email-verify-nag}}
   {{/if}}

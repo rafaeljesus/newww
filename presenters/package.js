@@ -45,7 +45,7 @@ module.exports = function (package) {
     && Boolean(package.collaborators[package.publisher.name])
 
   package.showCollaborators = package.collaborators
-    && Object.keys(package.collaborators).length > 1
+    && Object.keys(package.collaborators).length
     && package.lastPublisherIsACollaborator;
 
   if (package.collaborators) {

@@ -1,7 +1,7 @@
 exports.bob = {
   name: 'bob',
   email: 'bob@boom.me',
-  email_verified: null,
+  email_verified: true,
   verification_key: '12345',
   resource: {
     fullname: "Bob Henderson",
@@ -56,7 +56,7 @@ exports.profileUpdate = {
 exports.bobUpdateBody = {
   name: 'bob',
   email: 'bob@boom.me',
-  email_verified: null,
+  email_verified: true,
   verification_key: '12345',
   resource: {
     github: 'bob',
@@ -79,7 +79,7 @@ exports.bobUpdateBody = {
 exports.bobUpdated = {
   name: 'bob',
   email: 'bob@boom.me',
-  email_verified: null,
+  email_verified: true,
   verification_key: '12345',
   resource: {
     fullname: 'Big Bob',
@@ -132,8 +132,7 @@ exports.diana_delinquent = {
 exports.norbert_newbie = {
   name: 'norbert_newbie',
   email: 'norbert@newbies.com',
-  email_verified: null,
-  verification_key: '12345',
+  email_verified: true,
   resource: {
     github: 'norbs',
     twitter: 'norbington',
@@ -142,6 +141,12 @@ exports.norbert_newbie = {
   created: '2014-11-21T20:05:05.423Z',
   updated: '2015-01-24T00:08:41.269Z',
   deleted: null
+};
+
+exports.uncle_unverified = {
+  name: 'uncle_unverified',
+  email: 'uncle@unverified.com',
+  email_verified: null
 };
 
 exports.no_email = {

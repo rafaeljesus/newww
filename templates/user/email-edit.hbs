@@ -10,7 +10,12 @@
 
     <form data-tab="edit-email" method="post" action="/email-edit">
 
-      <p>An email will be sent to the new address to confirm. Another email will also be sent to the old address to verify that this is intentional.</p>
+      <p>
+        An email will be sent to the new address to confirm.
+        Another email will also be sent to the old
+        <a href="mailto:{{user.email}}">{{user.email}}</a> address
+        to verify that this is intentional.
+      </p>
 
       <input type="hidden" name="_id" value="{{profile._id}}">
       <input type="hidden" name="name" value="{{profile.name}}">

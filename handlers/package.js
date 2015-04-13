@@ -18,6 +18,12 @@ package.show = function(request, reply) {
   var promise = Package.get(name)
     .catch(function(err){
 
+      // unpaid collaborator
+      if (err.statusCode === 402) {
+        reply.redirect('/settings/billing?package='+name);
+        return promise.cancel();
+      }
+
       if (err.statusCode === 404) {
         var package = npa(name);
         package.available = false;

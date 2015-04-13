@@ -20,10 +20,16 @@ module.exports = function(request, reply) {
   .catch(function(err){
     request.logger.error("unable to get package " + request.packageName);
     request.logger.error(err);
-    if (err.statusCode === 404) {
-      return reply.view('errors/not-found').code(404);
-    } else {
-      reply.view('errors/internal', context).code(500);
+
+    switch(err.statusCode) {
+      case 402:
+        reply.redirect('/settings/billing?package='+request.packageName);
+        break
+      case 404:
+        reply.view('errors/not-found').code(404);
+        break;
+      default:
+        reply.view('errors/internal', context).code(500);
     }
     return promise.cancel();
   })

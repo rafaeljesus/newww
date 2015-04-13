@@ -4,7 +4,6 @@ module.exports = function() {
     var disabled = localStorage.getItem('disable-private-modules-banner')
 
     if (!ready || disabled || location.pathname === "/private-modules") {
-      console.log("no banner")
       return
     }
 

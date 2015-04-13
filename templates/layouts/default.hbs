@@ -39,21 +39,25 @@
   <div id="notification-banner" style="display:none">
     <div class="container">
       <hgroup>
-        <a href="/private-modules">
+        <a href="/private-modules"
+          data-event-trigger="click"
+          data-event-name="private-modules-banner-signup-via-wombat">
           <img src="/static/images/wombat-by-night.svg" alt="night wombat">
         </a>
         <h2>private npm is here.</h2>
         <h3>publish unlimited private modules for just $7/month</h3>
       </hgroup>
-      <a class="button" href="/private-modules">sign up</a>
-      <a class="button button-subtle banner-close">no thanks</a>
+      <a class="button" href="/private-modules"
+        data-event-trigger="click"
+        data-event-name="private-modules-banner-signup">sign up</a>
+      <a class="button button-subtle banner-close" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks">no thanks</a>
     </div>
   </div>
 
   <nav>
     <div class="container">
-      <a href="#" id="npm-expansions">node package manager</a>
-      <a href="/private-modules">npm private modules</a>
+      <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
+      <a href="/private-modules" data-event-trigger="click" data-event-name="private-modules-nav-link">npm private modules</a>
       <a href="/enterprise">npm Enterprise</a>
       <a href="https://docs.npmjs.com">documentation</a>
       <a href="http://blog.npmjs.org/">blog</a>

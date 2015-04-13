@@ -21,4 +21,8 @@ $(document).ready(function () {
     ga('send', 'event', 'npm Enterprise', 'click');
   });
 
+  $(document).on("click", "[data-event-trigger='click']", function (e) {
+    ga('send', 'event', $(this).data("eventName"), 'click', $(this).attr("title"));
+  });
+
 });

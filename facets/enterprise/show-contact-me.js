@@ -1,4 +1,5 @@
-var Joi = require('joi');
+var Joi = require('joi'),
+    utils = require('../../lib/utils');
 
 // if they decide not to agree to the ULA
 // hit the hubspot contact-me form instead, and thank them
@@ -12,7 +13,13 @@ module.exports = function contactMe (request, reply) {
     return reply.view('enterprise/index').code(400);
   }
 
-  var data = { email: request.payload.contact_customer_email };
+  var data = {
+    hs_context: {
+      pageName: "enterprise-contact-me",
+      ipAddress: utils.getUserIP(request)
+    },
+    email: request.payload.contact_customer_email
+  };
 
   postToHubspot(process.env.HUBSPOT_FORM_NPME_CONTACT_ME, data, function(er) {
 

@@ -1,5 +1,6 @@
 var billing = module.exports = {};
 var Customer = require("../models/customer").new();
+var utils = require('../lib/utils');
 
 billing.getBillingInfo = function (request, reply) {
 
@@ -53,7 +54,15 @@ billing.updateBillingInfo = function(request, reply) {
       return reply.view('user/billing', opts);
     }
 
-    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, {email: billingInfo.email}, function (er) {
+    var data = {
+      hs_context: {
+        pageName: "customer-billing-update",
+        ipAddress: utils.getUserIP(request)
+      },
+      email: billingInfo.email
+    };
+
+    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {
       if (er) {
         request.logger.error('unable to send billing email to HubSpot');
         request.logger.error(er);

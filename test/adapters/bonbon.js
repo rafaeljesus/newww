@@ -33,32 +33,38 @@ describe("bonbon", function() {
   });
 
   nock("https://user-api-example.com")
-    .get('/user/' + username1).times(8)
+    .get('/user/bob').times(8)
     .reply(200, fixtures.users.bob)
     .get('/user/seldo').times(3)
     .reply(200, fixtures.users.npmEmployee)
-    .get('/user/' + username1 + '/package?format=detailed&per_page=9999').times(6)
+    .get('/user/bob/package?format=detailed&per_page=9999').times(6)
     .reply(200, fixtures.users.packages)
-    .get('/user/' + username1 + '/stars?format=detailed').times(6)
-    .reply(200, fixtures.users.stars);
+    .get('/user/bob/stars?format=detailed').times(6)
+    .reply(200, fixtures.users.stars)
+    .get('/user/bob').times(5)
+    .reply(404)
+    .get('/user/seldo')
+    .reply(404)
+    .get('/user/mikeal')
+    .reply(404);
 
   describe("feature flags", function() {
 
     beforeEach(function(done){
-      process.env.FEATURE_STEALTH = 'false'
-      process.env.FEATURE_ALPHA = 'group:npm-humans'
-      process.env.FEATURE_BETA = 'group:npm-humans,group:friends,bob'
-      process.env.FEATURE_COMMON = 'true'
-      done()
-    })
+      process.env.FEATURE_STEALTH = 'false';
+      process.env.FEATURE_ALPHA = 'group:npm-humans';
+      process.env.FEATURE_BETA = 'group:npm-humans,group:friends,bob';
+      process.env.FEATURE_COMMON = 'true';
+      done();
+    });
 
     afterEach(function(done){
-      delete process.env.FEATURE_STEALTH
-      delete process.env.FEATURE_ALPHA
-      delete process.env.FEATURE_BETA
-      delete process.env.FEATURE_COMMON
-      done()
-    })
+      delete process.env.FEATURE_STEALTH;
+      delete process.env.FEATURE_ALPHA;
+      delete process.env.FEATURE_BETA;
+      delete process.env.FEATURE_COMMON;
+      done();
+    });
 
     it('gives anonymous users access to common features', function(done){
       var options = {
@@ -66,7 +72,7 @@ describe("bonbon", function() {
       };
 
       server.inject(options, function (resp) {
-        var context = resp.request.response.source.context
+        var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,
           alpha: false,
@@ -75,7 +81,7 @@ describe("bonbon", function() {
         });
         done();
       });
-    })
+    });
 
     it('gives people in the friends group access to beta and common features', function(done){
       var options = {
@@ -84,7 +90,7 @@ describe("bonbon", function() {
       };
 
       server.inject(options, function (resp) {
-        var context = resp.request.response.source.context
+        var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,
           alpha: false,
@@ -93,7 +99,7 @@ describe("bonbon", function() {
         });
         done();
       });
-    })
+    });
 
     it('gives one-off listed friends access to beta and common features', function(done){
       var options = {
@@ -102,7 +108,7 @@ describe("bonbon", function() {
       };
 
       server.inject(options, function (resp) {
-        var context = resp.request.response.source.context
+        var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,
           alpha: false,
@@ -111,7 +117,7 @@ describe("bonbon", function() {
         });
         done();
       });
-    })
+    });
 
     it('gives npm employees access to alpha, beta, and common features', function(done){
       var options = {
@@ -120,7 +126,7 @@ describe("bonbon", function() {
       };
 
       server.inject(options, function (resp) {
-        var context = resp.request.response.source.context
+        var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,
           alpha: true,
@@ -129,9 +135,9 @@ describe("bonbon", function() {
         });
         done();
       });
-    })
+    });
 
-  })
+  });
 
   it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
 

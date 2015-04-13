@@ -93,6 +93,11 @@ describe('Getting to the login page', function () {
   });
 
   it('renders an error if the username or password is incorrect', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .post("/user/fakeboom/login", {"password":"booooom"})
+      .reply(404);
+
     generateCrumb(server, function (crumb){
       var options = {
         url: '/login',
@@ -106,6 +111,7 @@ describe('Getting to the login page', function () {
       };
 
       server.inject(options, function (resp) {
+        mock.done();
         expect(resp.statusCode).to.equal(400);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/login');

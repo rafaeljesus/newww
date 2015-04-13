@@ -1,4 +1,4 @@
-var request = require('request');
+var Request = require('../lib/external-request');
 var Promise = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
@@ -31,7 +31,7 @@ Collaborator.prototype.list = function(package, callback) {
 
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    request(opts,
+    Request(opts,
       function(err, resp, body) {
         if (err) {return reject(err);}
         if (resp.statusCode > 399) {
@@ -63,7 +63,7 @@ Collaborator.prototype.add = function(package, collaborator, callback) {
 
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    request(opts, function(err, resp, body) {
+    Request(opts, function(err, resp, body) {
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error(fmt("error adding collaborator to package '%s': %s)", package, resp.body));
@@ -89,7 +89,7 @@ Collaborator.prototype.update = function(package, collaborator, callback) {
   if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
   return new Promise(function(resolve, reject) {
-    request(opts, function(err, resp, body) {
+    Request(opts, function(err, resp, body) {
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error(fmt("error updating collaborator access to package '%s': %s)", package, resp.body));
@@ -114,7 +114,7 @@ Collaborator.prototype.del = function(package, collaboratorName, callback) {
 
     if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
 
-    request(opts, function(err, resp, body){
+    Request(opts, function(err, resp, body){
       if (err) { return reject(err); }
       if (resp.statusCode > 399) {
         err = Error(fmt("error removing collaborator from package '%s': %s)", package, resp.body));

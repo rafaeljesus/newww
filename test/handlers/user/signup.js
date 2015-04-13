@@ -86,7 +86,13 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with incomplete form fields', function (done) {
+
+    var mock = nock("https://user-api-example.com")
+      .get("/user/fakeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.incomplete), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -96,7 +102,12 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with a bad email address', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .get("/user/fakeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.badEmail), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -106,7 +117,12 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with a bad username (dot)', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .get("/user/.fakeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.badUsernameDot), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -116,7 +132,12 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with a bad username (uppercase)', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .get("/user/FAkeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.badUsernameCaps), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -126,6 +147,10 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with a bad username (encodeURI)', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .get("/user/blärgh")
+      .reply(404);
+
     server.inject(postSignup(forms.badUsernameEncodeURI), function (resp) {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
@@ -136,7 +161,12 @@ describe('Signing up a new user', function () {
   });
 
   it('fails validation with non-matching passwords', function (done) {
+    var mock = nock("https://user-api-example.com")
+      .get("/user/fakeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.invalidPassMatch), function (resp) {
+      mock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');

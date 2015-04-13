@@ -53,7 +53,13 @@ describe("package handler", function(){
       .get('/point/last-week/request').twice()
       .reply(200, fixtures.downloads.request.week)
       .get('/point/last-month/request').twice()
-      .reply(200, fixtures.downloads.request.month);
+      .reply(200, fixtures.downloads.request.month)
+      .get('/point/last-day/request').twice()
+      .reply(404)
+      .get('/point/last-week/request').twice()
+      .reply(404)
+      .get('/point/last-month/request').twice()
+      .reply(404);
 
     userMock = nock("https://user-api-example.com")
       .get('/user/bob').times(3)

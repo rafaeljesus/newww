@@ -3,7 +3,7 @@ var cache    = require('../lib/cache');
 var decorate = require(__dirname + '/../presenters/package');
 var fmt      = require('util').format;
 var P        = require('bluebird');
-var Request  = require('request');
+var Request  = require('../lib/external-request');
 var URL      = require('url');
 
 var Package = module.exports = function(opts) {
@@ -17,10 +17,9 @@ var Package = module.exports = function(opts) {
 
 Package.new = function(request) {
   var opts = {
-    logger: request.logger
+    bearer: request.loggedInUser && request.loggedInUser.name
   };
 
-  opts.bearer = request.loggedInUser && request.loggedInUser.name;
   return new Package(opts);
 };
 
@@ -127,11 +126,7 @@ Package.prototype.star = function (package) {
     return new P(function (resolve, reject) {
 
       Request.put(opts, function (err, resp, body) {
-        if (err) {
-          _this.logger.error(err);
-          return reject(err);
-        }
-
+        if (err) { return reject(err); }
         if (resp.statusCode > 399) {
           err = Error('error starring package ' + package);
           err.statusCode = resp.statusCode;

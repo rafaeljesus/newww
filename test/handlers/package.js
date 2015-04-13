@@ -253,8 +253,8 @@ describe("package handler", function(){
     });
 
     it('encourages user to try logging in for access', function (done) {
-      expect($("hgroup h2").length).to.equal(1);
-      expect($("hgroup h2").text()).to.include("try logging in");
+      expect($(".content h2").length).to.equal(1);
+      expect($(".content h2").text()).to.include("try logging in");
       done();
     });
   });
@@ -284,8 +284,8 @@ describe("package handler", function(){
     });
 
     it("tells user that package exist but they don't have access", function (done) {
-      expect($("hgroup h2").length).to.equal(1);
-      expect($("hgroup h2").text()).to.include("you may not have permission");
+      expect($(".content h2").length).to.equal(1);
+      expect($(".content h2").text()).to.include("you may not have permission");
       done();
     });
 

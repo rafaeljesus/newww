@@ -317,3 +317,43 @@ nav
     &.subdued
       color greigh4
       font-size 14px
+
+#notification-banner
+  padding 70px 10px
+  color background-color
+  font-size 14px
+  font-weight 600
+  background midnight
+
+  .container
+    text-align center
+    color green
+
+  img
+    display inline-block
+    max-width 200px
+    @media only screen and (max-width: mobileMaxWidth)
+      max-width 140px
+
+  hgroup
+    display block
+    margin 0 0 30px 0
+    h2,h3
+      text-align center
+    h2
+      color white
+      font-size 36px
+      font-weight 600
+    h3
+      @extend .featherweight-heading
+      font-size 24px
+      color rgba(white, 0.8)
+
+  a.button
+    color rgba(background-color, 0.8)
+    background-color darken(npmred, 10%)
+    display inline-block
+
+    &.button-subtle
+      background none
+      color rgba(background-color, 0.3)

@@ -330,20 +330,24 @@ nav
     color green
 
   hgroup
-    display inline-block
-    margin 0
+    display block
+    margin 0 0 30px 0
     h2,h3
-      text-align left
+      text-align center
     h2
       color white
-      font-size 32px
+      font-size 36px
       font-weight 600
     h3
       @extend .featherweight-heading
-      font-size 22px
+      font-size 24px
       color rgba(white, 0.8)
 
   a.button
     color rgba(background-color, 0.8)
     background-color darken(npmred, 10%)
     display inline-block
+
+    &.button-subtle
+      background none
+      color rgba(background-color, 0.3)

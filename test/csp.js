@@ -42,13 +42,18 @@ describe("csp (content security policy)", function () {
     })
 
     describe("frameSrc", function(){
-      it("only has one allowance", function (done) {
-        expect(csp.default.frameSrc.length).to.equal(1)
+      it("has two allowances", function (done) {
+        expect(csp.default.frameSrc.length).to.equal(2)
         done();
       })
 
       it("allows checkout.stripe.com", function (done) {
         expect(csp.default.frameSrc).to.include('https://checkout.stripe.com');
+        done();
+      })
+
+      it("allows js.stripe.com", function (done) {
+        expect(csp.default.frameSrc).to.include('https://js.stripe.com');
         done();
       })
     })

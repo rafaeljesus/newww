@@ -15,15 +15,6 @@ var unathenticatedRouteConfig = {
   }
 };
 
-var stripeSafeConfig = {
-  plugins: {
-    blankie: {
-      scriptSrc: ['self', 'unsafe-eval', 'https://www.google-analytics.com', 'https://checkout.stripe.com', 'https://js.hs-analytics.net/analytics/'],
-      frameSrc: 'https://checkout.stripe.com'
-    }
-  }
-};
-
 var ajaxy = {
   plugins: {
     crumb: {
@@ -105,12 +96,10 @@ var publicRoutes = [
     path: "/enterprise/license",
     method: ["GET","POST"],
     handler: require('../facets/enterprise/find-license'),
-    config: stripeSafeConfig
   },{
     path: "/enterprise/license-options",
     method: "GET",
     handler: require('../facets/enterprise/license-options'),
-    config: stripeSafeConfig
   },{
     path: "/enterprise/buy-license",
     method: "POST",

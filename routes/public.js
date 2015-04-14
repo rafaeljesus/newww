@@ -105,12 +105,12 @@ var publicRoutes = [
     path: "/enterprise/license",
     method: ["GET","POST"],
     handler: require('../facets/enterprise/find-license'),
-    config: stripeSafeConfig
+    // config: stripeSafeConfig
   },{
     path: "/enterprise/license-options",
     method: "GET",
     handler: require('../facets/enterprise/license-options'),
-    config: stripeSafeConfig
+    // config: stripeSafeConfig
   },{
     path: "/enterprise/buy-license",
     method: "POST",

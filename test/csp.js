@@ -41,19 +41,19 @@ describe("csp (content security policy)", function () {
       })
     })
 
-    describe("childSrc", function(){
+    describe("frameSrc", function(){
       it("has two allowances", function (done) {
-        expect(csp.default.childSrc.length).to.equal(2)
+        expect(csp.default.frameSrc.length).to.equal(2)
         done();
       })
 
       it("allows checkout.stripe.com", function (done) {
-        expect(csp.default.childSrc).to.include('https://checkout.stripe.com');
+        expect(csp.default.frameSrc).to.include('https://checkout.stripe.com');
         done();
       })
 
       it("allows js.stripe.com", function (done) {
-        expect(csp.default.childSrc).to.include('https://js.stripe.com');
+        expect(csp.default.frameSrc).to.include('https://js.stripe.com');
         done();
       })
     })

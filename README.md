@@ -43,65 +43,27 @@ We use the [blankie](https://github.com/nlf/blankie) Hapi plugin to enforce a st
 
 Every route in the application is defined in [routes.js](routes.js).
 
-### Facets
+### Handlers
 
-A **facet** is a way of separating different business-logic bits of the app. They're essentially just folders for holding handlers (aka controllers) for various routes.
+Handlers (sometimes called controllers) are functions that accept two parameters: `request` and `reply`.
 
-There are currently five facets:
+The `request` parameter is an object with details about the end user's request, such as path parameters, an associated payload, authentication information, headers, etc.
 
-* The **company** facet focuses on all the npm, Inc. bits:
-	* / (Home)
-	* Business partnerships (i.e. the Who's Hiring? page)
-	* Static documents (i.e. jobs, about, contact, policies)
+The second parameter, `reply`, is the method used to respond to the request.
 
-* The **enterprise** facet takes care of our npm Enterprise signup process.
-
-* The **user** facet focuses on all the things that users who visit the site might care about:
-	* Login/logout
-	* Editing profiles
-	* Editing email
-	* Viewing profiles
-	* Setting/Resetting passwords
-	* Signing up
-
-* The **registry** facet focuses on the bits that specifically pertain to the registry/using npm:
-	* Package pages
-	* Documentation
-	* Browsing (i.e. keywords)
-	* Search
-	* Download counts
-  * Starring packages
-
-* The **ops** facet focuses on the things that we care about from an operational standpoint, but don't really fall into any of the other buckets:
-	* Healthchecks
-	* Content Security Policy logging
-
-### Services
-
-A service is a Hapi plugin that can be used by any handler. They're a lot like models, but they are completely encapsulated so that they can (eventually) be spun out into entirely independent services. This may change eventually, though, because the separated tests make it hard to keep track of all the moving pieces.
-
-An example:
-
-_In `services/downloads/`:_
+Here's an example of a simple handler:
 
 ```js
-  service.method('downloads.getAllDownloadsForPackage', ...);
+server.route({
+    method: 'GET',
+    path: '/',
+    handler: function (request, reply) {
+        reply('Hello!');
+    }
+});
 ```
 
-_Then, in `handlers/package.js`:_
-
-```js
-  var getAllDownloadsForPackage = request.server.methods.downloads.getAllDownloadsForPackage;
-
-  // Show download count for the last day, week, and month
-  getAllDownloadsForPackage(pkg.name, function (err, downloads) {
-
-    opts.package.downloads = downloads;
-
-    reply.view('package/show', opts);
-  });
-
-```
+The above handler is defined inline, but most of the handlers in this application are defined in their own file in the [handlers](handlers) directory.
 
 ## Tests
 

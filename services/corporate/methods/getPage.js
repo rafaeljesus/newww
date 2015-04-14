@@ -17,7 +17,14 @@ function getPage (repo) {
         return next(err, null);
       }
 
-      var url = fmt('https://raw.githubusercontent.com/npm/' + repo + '/master/%s.md', validName);
+      var org = "npm";
+      if (repo === "static-pages"){
+        var branch = (new Date() > new Date("2015-04-14T03:30:00-07:00")) ? "master" : "prerelease";
+      } else {
+        var branch = "master";
+      }
+
+      var url = fmt('https://raw.githubusercontent.com/%s/%s/%s/%s.md', org, repo, branch, validName);
 
       request(url, function (err, resp, content) {
 

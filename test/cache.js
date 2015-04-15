@@ -69,6 +69,27 @@ describe('lib/cache.js', function()
         });
     });
 
+    describe('redis errors', function ()
+    {
+        it('logs on error', function (done)
+        {
+            sinon.spy(cache.logger, 'error');
+            cache.redis.emit('error', new Error('my little pony'));
+            expect(cache.logger.error.calledWith('cache redis connection lost; reconnecting')).to.be.true();
+            cache.logger.error.restore();
+            done();
+        });
+
+        it('reconnects on error', function (done)
+        {
+            cache.redis.on('reconnecting', function () {
+                expect(true).to.be.true();
+                done();
+            });
+            cache.redis.stream.emit('error', new Error('my little pony'));
+        });
+    });
+
     describe('_fingerprint()', function()
     {
         it('returns an md5 hash prefixed by the key prefix', function(done)

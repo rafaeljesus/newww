@@ -105,23 +105,19 @@ User.prototype.get = function(name, options, callback) {
     options = {};
   }
 
-  return new P(function(resolve, reject) {
-      cache.get(_this.generateUserACLOptions(name), function(err, body){
-        if (err) { return reject(err); }
-        return resolve(body);
-      });
-  })
-  .then(function(_user){
+  return cache.getP(_this.generateUserACLOptions(name))
+  .then(function(_user) {
     user = decorate(_user);
+    var actions = {};
+    if (options.stars) { actions.stars = _this.getStars(user.name); }
+    if (options.packages) { actions.packages = _this.getPackages(user.name); }
 
-    return options.stars ? _this.getStars(user.name) : null;
+    return P.props(actions);
   })
-  .then(function(_stars){
-    if (_stars) { user.stars = _stars; }
-    return options.packages ? _this.getPackages(user.name) : null;
-  })
-  .then(function(_packages){
-    if (_packages) { user.packages = _packages; }
+  .then(function(results) {
+    user.stars = results.stars;
+    user.packages = results.packages;
+
     return user;
   })
   .nodeify(callback);

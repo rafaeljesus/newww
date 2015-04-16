@@ -1,11 +1,11 @@
-var bole      = require('bole'),
-    Boom      = require('boom'),
-    Hoek      = require('hoek'),
-    humans = require("npm-humans"),
-    featureFlag = require("../lib/feature-flags.js"),
+var bole              = require('bole'),
+    Boom              = require('boom'),
+    Hoek              = require('hoek'),
+    humans            = require('npm-humans'),
+    featureFlag       = require('../lib/feature-flags.js'),
     toCommonLogFormat = require('hapi-common-log'),
-    url       = require('url'),
-    UserModel = require('../models/user');
+    url               = require('url'),
+    UserModel         = require('../models/user');
 
 exports.register = function(server, options, next) {
 
@@ -14,13 +14,13 @@ exports.register = function(server, options, next) {
   server.ext('onPreHandler', function(request, reply) {
 
     // Add feature flags to request
-    request.features = {}
+    request.features = {};
     Object.keys(process.env)
       .filter(function (key) { return key.match(/^feature_/i) })
       .forEach(function (key) {
-        key = key.replace(/^feature_/i, "").toLowerCase()
-        request.features[key] = featureFlag(key, request)
-      })
+        key = key.replace(/^feature_/i, "").toLowerCase();
+        request.features[key] = featureFlag(key, request);
+      });
 
     // Generate `request.packageName` for global and scoped package requests
     if (request.params.package || request.params.scope) {
@@ -67,7 +67,7 @@ exports.register = function(server, options, next) {
       correlationID: request.id,
       stamp: request.server.stamp,
       features: request.features,
-    }
+    };
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
       if (process.env.CANONICAL_HOST) {
@@ -93,10 +93,9 @@ exports.register = function(server, options, next) {
 
     // Allow npm humans to view JSON context for any page
     // by adding a `?json` query parameter to the URL
-    if (
-      'json' in request.query
-      && Hoek.reach(request, 'response.source.context')
-      && (process.env.NODE_ENV === "dev" || Hoek.reach(request, "loggedInUser.name") in humans)
+    if ('json' in request.query &&
+        Hoek.reach(request, 'response.source.context') &&
+        (process.env.NODE_ENV === "dev" || Hoek.reach(request, "loggedInUser.name") in humans)
     ) {
       if (request.query.json.length > 1) {
         // deep reference: ?json=profile.packages

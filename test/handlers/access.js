@@ -1,5 +1,4 @@
 var fixtures = require("../fixtures"),
-    merge = require("lodash").merge,
     nock = require("nock"),
     cheerio = require("cheerio"),
     URL = require('url'),
@@ -9,8 +8,6 @@ var fixtures = require("../fixtures"),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
-    beforeEach = lab.beforeEach,
-    afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
     server, userMock,
@@ -22,7 +19,7 @@ describe("package access", function(){
     userMock = nock("https://user-api-example.com")
     .get("/user/bob").times(3)
     .reply(200, users.bob)
-    .get("/user/wrigley_the_writer").times(3)
+    .get("/user/wrigley_the_writer").times(4)
     .reply(200, users.wrigley_the_writer)
     .get("/user/ralph_the_reader").twice()
     .reply(200, users.ralph_the_reader);
@@ -361,7 +358,7 @@ describe("package access", function(){
       });
     });
 
-    describe('logged-in collaborator with write access', function () {
+    describe('logged-in paid collaborator with write access', function () {
 
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
@@ -370,7 +367,13 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        var customerMock = nock("https://license-api-example.com")
+          .get("/stripe/wrigley_the_writer")
+          .reply(200, fixtures.customers.happy);
+
         server.inject(options, function(response) {
+          customerMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -378,7 +381,7 @@ describe("package access", function(){
         });
       });
 
-      it("renders a disabled public/private toggle", function(done){
+      it("renders an enabled public/private toggle", function(done){
         expect($("#package-access-toggle:enabled").length).to.equal(1);
         done();
       });
@@ -420,6 +423,43 @@ describe("package access", function(){
         done();
       });
     });
+
+    describe('logged-in unpaid collaborator with write access', function () {
+
+      var options = {
+        url: '/package/@wrigley_the_writer/scoped_public/access',
+        credentials: fixtures.users.wrigley_the_writer,
+      };
+
+      before(function(done) {
+        process.env.FEATURE_ACCESS_PAGE = 'true';
+        var customerMock = nock("https://license-api-example.com")
+          .get("/stripe/wrigley_the_writer")
+          .reply(404);
+
+        server.inject(options, function(response) {
+          customerMock.done();
+          $ = cheerio.load(response.result);
+          done();
+        });
+      });
+
+      after(function(done) {
+        delete process.env.FEATURE_ACCESS_PAGE;
+        done();
+      });
+
+      it("does not render the public/private toggle", function(done){
+        expect($("#package-access-toggle").length).to.equal(0);
+        done();
+      });
+
+      it("renders a pay-to-restrict-access prompt", function(done) {
+        expect($("p.notice.pay-to-restrict-access").length).to.equal(1);
+        done();
+      });
+    });
+
   });
 
   describe('scoped private package', function() {
@@ -432,10 +472,10 @@ describe("package access", function(){
     };
     var mock = nock("https://user-api-example.com")
       .get('/package/@wrigley_the_writer%2Fscoped_private')
-      .times(10)
+      .times(4)
       .reply(200, fixtures.packages.wrigley_scoped_private)
       .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
-      .times(10)
+      .times(4)
       .reply(200, fixtures.collaborators);
 
     describe('anonymous user', function () {
@@ -512,7 +552,7 @@ describe("package access", function(){
       });
     });
 
-    describe('logged-in collaborator with write access', function () {
+    describe('logged-in paid collaborator with write access', function () {
 
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
@@ -551,7 +591,9 @@ describe("package access", function(){
       before(function(done) {
         var mock = nock("https://user-api-example.com")
           .get('/user/wrigley_the_writer')
-          .reply(404);
+          .reply(200, fixtures.users.wrigley_the_writer)
+          .get('/package/@wrigley_the_writer%2Fscoped_private')
+          .reply(402);
 
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
@@ -562,16 +604,16 @@ describe("package access", function(){
         });
       });
 
-      it('redirects to the billing page'/*, function (done) {
+      it('redirects to the billing page', function (done) {
         expect(resp.statusCode).to.equal(302);
         expect(URL.parse(resp.headers.location).pathname).to.equal("/settings/billing");
-        done()
-      }*/);
+        done();
+      });
 
-      it('sets a `package` query param so a helpful message can be displayed'/*, function (done) {
-        expect(URL.parse(resp.headers.location, true).query.package).to.equal("@wrigley_the_writer/scope_private");
-        done()
-      }*/);
+      it('sets a `package` query param so a helpful message can be displayed', function (done) {
+        expect(URL.parse(resp.headers.location, true).query.package).to.equal("@wrigley_the_writer/scoped_private");
+        done();
+      });
 
     });
 

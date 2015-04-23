@@ -11,23 +11,30 @@
 
   {{#unless user}}
     <p class="notice please-log-in">
-      Are you an admin of this package? 
+      Are you an admin of this package?
       Please <a href="/login?done={{canonicalURL}}">log in</a> to manage access.
     </p>
   {{/unless}}
 
-  {{#if package.scoped}}
-    <form class="centered" method="POST" action="/package/{{package.name}}">
-      <input
-        type="checkbox"
-        class="toggle"
-        name="package.private"
-        id="package-access-toggle"
-        value="true"
-        {{#unless userHasWriteAccessToPackage}}disabled="disabled"{{/unless}}
-        {{#if package.private}}checked="checked"{{/if}} >
-      <label for="package-access-toggle"><span></span></label>
-    </form>
+  {{#if paymentRequiredToTogglePrivacy}}
+    <p class="notice pay-to-restrict-access">
+      To make this package private, you'll need to
+      <a href="/settings/billing">sign up for private modules</a>.
+    </p>
+  {{else}}
+    {{#if package.scoped}}
+      <form class="centered" method="POST" action="/package/{{package.name}}">
+        <input
+          type="checkbox"
+          class="toggle"
+          name="package.private"
+          id="package-access-toggle"
+          value="true"
+          {{#unless userHasWriteAccessToPackage}}disabled="disabled"{{/unless}}
+          {{#if package.private}}checked="checked"{{/if}} >
+        <label for="package-access-toggle"><span></span></label>
+      </form>
+    {{/if}}
   {{/if}}
 
   <p class="error" style="display:none"></p>

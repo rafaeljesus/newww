@@ -101,7 +101,7 @@ describe('GET /settings/billing', function () {
 
     server.inject(options, function (resp) {
       var $ = cheerio.load(resp.result);
-      expect($("script[src='//platform.twitter.com/oct.js']").length).to.equal(1);
+      expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xz2']").length).to.equal(1);
       expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xz2']").length).to.equal(1);
       done();
     });

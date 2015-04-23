@@ -31,6 +31,10 @@ For more information, see the [style guide](assets/styles/README.md).
 
 We're using [Handlebars](http://handlebarsjs.com/) as our templating engine. Server-rendered templates live in [templates](templates). Frontend templates live in [assets/templates](assets/templates). They are browserified into the bundled JS file using the `hbsfy` transform.
 
+### Partials
+
+Handlebars partials are handy for markup that is needed in more than one place. All the partials are located in [templates/partials](templates/partials). Every `.hbs` file in the partials directory becomes avaiable in all handlebars templates. For a good explanation of how to use partials, check out [Passing variables through handlebars partial](http://stackoverflow.com/questions/11523331/passing-variables-through-handlebars-partial) on Stack Overflow, or search for `{{>` in this codebase to see how we're using them.
+
 ### Locales
 
 A rudimentary localization effort is under way. The [locales](locales) directory contains javascript files that export translations of various strings used throughout the app.

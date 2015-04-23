@@ -18,7 +18,7 @@ var userMock, licenseMock;
 before(function (done) {
   process.env.FEATURE_BILLING_PAGE = 'true';
   userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(15)
+    .get("/user/bob").times(16)
     .reply(200, fixtures.users.bob)
     .get("/user/diana_delinquent").twice()
     .reply(200, fixtures.users.diana_delinquent)
@@ -28,7 +28,7 @@ before(function (done) {
   licenseMock = nock("https://license-api-example.com:443")
     .get("/stripe/bob")
     .reply(200, fixtures.customers.happy)
-    .get("/stripe/bob").times(5)
+    .get("/stripe/bob").times(6)
     .reply(404);
 
   require('../mocks/server')(function (obj) {
@@ -92,7 +92,22 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  it('renders a twitter tracking card', function (done) {
+  it('renders a twitter tracking card after successful update', function (done) {
+    var options = {
+      method: "get",
+      url: "/settings/billing?updated=1",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function (resp) {
+      var $ = cheerio.load(resp.result);
+      expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xz2']").length).to.equal(1);
+      expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xz2']").length).to.equal(1);
+      done();
+    });
+  });
+
+  it('does not render a twitter by default', function (done) {
     var options = {
       method: "get",
       url: "/settings/billing",
@@ -101,8 +116,8 @@ describe('GET /settings/billing', function () {
 
     server.inject(options, function (resp) {
       var $ = cheerio.load(resp.result);
-      expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xz2']").length).to.equal(1);
-      expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xz2']").length).to.equal(1);
+      expect($("script[src='//platform.twitter.com/oct.js']").length).to.equal(0);
+      expect($("noscript img[src*='//t.co']").length).to.equal(0);
       done();
     });
   });

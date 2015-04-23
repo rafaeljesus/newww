@@ -1,4 +1,5 @@
 var omit = require("lodash").omit;
+var Customer = require("../models/customer").new();
 
 module.exports = function(request, reply) {
 
@@ -24,7 +25,7 @@ module.exports = function(request, reply) {
     switch(err.statusCode) {
       case 402:
         reply.redirect('/settings/billing?package='+request.packageName);
-        break
+        break;
       case 404:
         reply.view('errors/not-found').code(404);
         break;
@@ -49,11 +50,30 @@ module.exports = function(request, reply) {
       return reply.view('errors/not-found').code(404);
     }
 
-    context.enablePermissionTogglers = Boolean(package.private)
-      && context.userHasWriteAccessToPackage;
+    context.enablePermissionTogglers = Boolean(package.private) && context.userHasWriteAccessToPackage;
 
     context.package = package;
-    return reply.view('package/access', context);
+
+    // Disallow unpaid users from toggling their public scoped packages to private
+    if (Boolean(package.scoped) && !Boolean(package.private) && context.userHasWriteAccessToPackage) {
+      context.paymentRequiredToTogglePrivacy = true;
+      Customer.get(loggedInUser.name, function(err, customer) {
+        if (err && err.statusCode !== 404) {
+          request.logger.error("error fetching customer data for user " + loggedInUser.name);
+          request.logger.error(err);
+          return reply.view('errors/internal', context).code(500);
+        } else {
+          if (customer) {
+            context.paymentRequiredToTogglePrivacy = false;
+            context.customer = customer;
+          }
+          return reply.view('package/access', context);
+        }
+      });
+    } else {
+      return reply.view('package/access', context);
+    }
+
   });
 
 };

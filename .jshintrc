@@ -85,6 +85,8 @@
     "globals"       : {
       "require": false,
       "module": false,
-      "exports": false
-    }        // additional predefined global variables
+      "exports": false,
+      "$": false,
+      "twttr": false
+    }
 }

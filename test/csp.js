@@ -30,6 +30,11 @@ describe("csp (content security policy)", function () {
         done();
       })
 
+      it("allows twitter tracking", function (done) {
+        expect(csp.default.scriptSrc).to.include('https://platform.twitter.com/oct.js');
+        done();
+      })
+
       it("does not allow unsafe-inline", function (done) {
         expect(csp.default.scriptSrc).to.not.include('unsafe-inline');
         done();

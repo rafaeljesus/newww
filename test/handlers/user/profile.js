@@ -85,12 +85,6 @@ describe('GET /~bob for a user other than bob', function () {
     done();
   });
 
-  it('renders a twitter tracking card', function (done) {
-    expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xyy']").length).to.equal(1);
-    expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xyy']").length).to.equal(1);
-    done();
-  });
-
 });
 
 describe('GET /~bob for logged-in bob', function () {

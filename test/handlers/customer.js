@@ -92,7 +92,7 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  it('renders a twitter tracking card after successful update', function (done) {
+  it("renders a twitter tracking snippet for 'private modules purchase'", function (done) {
     var options = {
       method: "get",
       url: "/settings/billing?updated=1",
@@ -101,13 +101,13 @@ describe('GET /settings/billing', function () {
 
     server.inject(options, function (resp) {
       var $ = cheerio.load(resp.result);
-      expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xz2']").length).to.equal(1);
-      expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xz2']").length).to.equal(1);
+      expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xyy']").length).to.equal(1);
+      expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xyy']").length).to.equal(1);
       done();
     });
   });
 
-  it('does not render a twitter by default', function (done) {
+  it("renders a twitter tracking snippet for 'private modules billing signup page'", function (done) {
     var options = {
       method: "get",
       url: "/settings/billing",
@@ -116,8 +116,8 @@ describe('GET /settings/billing', function () {
 
     server.inject(options, function (resp) {
       var $ = cheerio.load(resp.result);
-      expect($("script[src='//platform.twitter.com/oct.js']").length).to.equal(0);
-      expect($("noscript img[src*='//t.co']").length).to.equal(0);
+      expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xz2']").length).to.equal(1);
+      expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xz2']").length).to.equal(1);
       done();
     });
   });

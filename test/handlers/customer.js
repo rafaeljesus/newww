@@ -18,7 +18,7 @@ var userMock, licenseMock;
 before(function (done) {
   process.env.FEATURE_BILLING_PAGE = 'true';
   userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(14)
+    .get("/user/bob").times(15)
     .reply(200, fixtures.users.bob)
     .get("/user/diana_delinquent").twice()
     .reply(200, fixtures.users.diana_delinquent)
@@ -28,7 +28,7 @@ before(function (done) {
   licenseMock = nock("https://license-api-example.com:443")
     .get("/stripe/bob")
     .reply(200, fixtures.customers.happy)
-    .get("/stripe/bob").times(4)
+    .get("/stripe/bob").times(5)
     .reply(404);
 
   require('../mocks/server')(function (obj) {
@@ -88,6 +88,21 @@ describe('GET /settings/billing', function () {
       expect(resp.request.response.source.context.updated).to.be.true();
       var $ = cheerio.load(resp.result);
       expect($(".update-notice").text()).to.include('successfully updated');
+      done();
+    });
+  });
+
+  it('renders a twitter tracking card', function (done) {
+    var options = {
+      method: "get",
+      url: "/settings/billing",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function (resp) {
+      var $ = cheerio.load(resp.result);
+      expect($("script[src='//platform.twitter.com/oct.js']").length).to.equal(1);
+      expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xz2']").length).to.equal(1);
       done();
     });
   });

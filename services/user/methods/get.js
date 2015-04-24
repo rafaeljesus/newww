@@ -2,7 +2,7 @@ var UserModel = require("../../../models/user");
 var Customer = require("../../../models/customer");
 
 module.exports = function(name, next) {
-  var User = new UserModel({bearer: name});
+  var User = new UserModel();
 
   User.get(name, {stars: true, packages: true}, function(err, user) {
     if (err) {

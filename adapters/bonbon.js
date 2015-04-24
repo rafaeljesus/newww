@@ -4,8 +4,7 @@ var bole              = require('bole'),
     humans            = require('npm-humans'),
     featureFlag       = require('../lib/feature-flags.js'),
     toCommonLogFormat = require('hapi-common-log'),
-    url               = require('url'),
-    UserModel         = require('../models/user');
+    url               = require('url');
 
 exports.register = function(server, options, next) {
 
@@ -36,12 +35,14 @@ exports.register = function(server, options, next) {
     };
 
     if (request.auth && request.auth.credentials) {
-      UserModel.new(request).get(request.auth.credentials.name)
-      .then(function(loggedInUser) {
+      request.server.methods.user.get(request.auth.credentials.name, function(err, loggedInUser){
+        if (err) {
+          request.logger.warn("problem fetching user: " + request.auth.credentials.name);
+          request.logger.warn(err);
+        }
         request.loggedInUser = loggedInUser;
-      }).catch(function(err) {
-        request.logger.warn(err);
-      }).finally(completePreHandler);
+        completePreHandler();
+      });
     } else {
       completePreHandler();
     }

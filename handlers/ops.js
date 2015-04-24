@@ -22,9 +22,9 @@ module.exports = {
   },
 
   csplog: function (request, reply) {
-    var data = utils.safeJsonParse(request.payload);
-
-    request.logger.warn('content-security-policy validation', data);
+    request.logger.warn('csp report');
+    request.logger.warn(request.payload);
     return reply('ok').code(200);
   }
+
 };

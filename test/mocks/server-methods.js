@@ -171,6 +171,13 @@ module.exports = function (server) {
     },
 
     user: {
+      get: function(name, next) {
+        var user = fixtures.users.bob;
+        user.packages = fixtures.users.packages;
+        user.stars = fixtures.users.star;
+        return next(null, user);
+      },
+
       delSession: function (request) {
         return function (user, next) {
           var sid = murmurhash.v3(user.name, 55).toString(16);

@@ -56,7 +56,7 @@ module.exports = function confirmEmail (request, reply) {
           return reply.view('errors/internal', opts).code(500);
         }
 
-        User.dropCache(user.name, function () {
+        request.server.methods.user.get.cache.drop(user.name, function () {
 
           request.redis.del(key, function (err) {
 

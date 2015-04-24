@@ -77,7 +77,7 @@ function processToken(request, reply) {
       }
 
       // make sure we're getting the latest user object next time we need it
-      User.dropCache(name, function () {
+      request.server.methods.user.get.cache.drop(name, function () {
 
         cache.del(pwKey, function (err) {
 

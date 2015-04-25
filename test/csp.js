@@ -47,8 +47,8 @@ describe("csp (content security policy)", function () {
     })
 
     describe("frameSrc", function(){
-      it("has two allowances", function (done) {
-        expect(csp.default.frameSrc.length).to.equal(2)
+      it("has three allowances", function (done) {
+        expect(csp.default.frameSrc.length).to.equal(3)
         done();
       })
 
@@ -61,6 +61,12 @@ describe("csp (content security policy)", function () {
         expect(csp.default.frameSrc).to.include('https://js.stripe.com');
         done();
       })
+
+      it("allows www.youtube.com", function (done) {
+        expect(csp.default.frameSrc).to.include('https://www.youtube.com');
+        done();
+      })
+
     })
 
   })

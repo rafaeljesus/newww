@@ -43,7 +43,7 @@ module.exports = function (request, reply) {
             return reply.view('errors/internal', opts).code(500);
           }
 
-          request.server.methods.user.get.cache.drop(user.name, function () {
+          User.dropCache(user.name, function () {
 
             request.timing.page = 'saveProfile';
             request.metrics.metric({ name: 'saveProfile' });

@@ -41,7 +41,7 @@ module.exports = function login (request, reply) {
         }
 
         // User is not above the login attempt threshold, so try to log in...
-        User.new(request)
+        User.new({request: request})
           .login(request.payload, function (er, user) {
 
           if (er || !user) {

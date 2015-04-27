@@ -6,14 +6,25 @@ var mailchimp = require('mailchimp-api');
 var P = require('bluebird');
 var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
-
+var reach = require('steeltoe');
 var chimp;
 
 var User = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.USER_API || 'https://user-api-example.com',
-    bearer: false
+    bearer: null,
+    request: null,
   }, opts);
+
+  // Infer bearer from hapi request object
+  if (!this.bearer && reach(this).get('request.loggedInUser.name')) {
+    this.bearer = this.request.loggedInUser.name;
+  }
+
+  // Infer logger from hapi request object
+  if (!this.logger && reach(this).get('request.logger')) {
+    this.logger = this.request.logger;
+  }
 
   if (!this.logger) {
     this.logger = {
@@ -25,9 +36,8 @@ var User = module.exports = function(opts) {
   return this;
 };
 
-User.new = function(request) {
-  var bearer = request.loggedInUser && request.loggedInUser.name;
-  return new User({bearer: bearer, logger: request.logger});
+User.new = function(opts) {
+  return new User(opts);
 };
 
 User.prototype.confirmEmail = function (user, callback) {

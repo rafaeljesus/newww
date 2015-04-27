@@ -10,7 +10,7 @@ module.exports = function(request, reply) {
     title: "@" + name
   };
 
-  User.new(request)
+  User.new({request: request})
     .get(name, {stars: true, packages: true}, function(err, user) {
 
       if (err) {

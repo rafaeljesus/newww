@@ -7,6 +7,7 @@ var P = require('bluebird');
 var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
 var reach = require('steeltoe');
+var npm = require('@zeke/acl-client')();
 var chimp;
 
 var User = module.exports = function(opts) {
@@ -319,4 +320,20 @@ User.prototype.verifyPassword = function (name, password, callback) {
   };
 
   return this.login(loginInfo, callback);
+};
+
+User.getLoggedInUserWithCustomer = function(name) {
+  var loggedInUser;
+  return npm.users.get(name, {ttl: '10 seconds'})
+    .then(function(user){
+      loggedInUser = user;
+      return npm.customers.get(name, {ttl: '10 seconds'});
+    })
+    .then(function(customer){
+      if (customer) {
+        loggedInUser.isPaid = true;
+        loggedInUser.customer = customer;
+      }
+      return decorate(loggedInUser);
+    });
 };

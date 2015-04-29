@@ -2,8 +2,9 @@ var fixtures = require("../fixtures"),
     generateCrumb = require("../handlers/crumb.js"),
     nock = require("nock"),
     cheerio = require("cheerio"),
+    mocks = require('../helpers/mocks'),
     URL = require('url'),
-    Code = require('code'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -12,63 +13,11 @@ var fixtures = require("../fixtures"),
     afterEach = lab.afterEach,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect,
     server;
-
-var packageMock, downloadsMock, userMock;
 
 describe("package handler", function(){
 
   before(function (done) {
-    nock.cleanAll();
-    packageMock = nock("https://user-api-example.com")
-      .get('/package/browserify').twice()
-      .reply(200, fixtures.packages.browserify)
-      .get('/package?dependency=browserify&limit=50').twice()
-      .reply(200, fixtures.dependents)
-      .get('/package/nothingness')
-      .reply(404)
-      .get('/package/@zeke%2Fnope').twice()
-      .reply(404)
-      .get('/package/@bob%2Fnope')
-      .reply(404)
-      .get('/package/_.escape')
-      .reply(404)
-      .get('/package/hitler')
-      .reply(200, fixtures.packages.hitler)
-      .get('/package/request').times(4)
-      .reply(200, fixtures.packages.request)
-      .get('/package?dependency=request&limit=50').times(4)
-      .reply(200, fixtures.dependents);
-
-    downloadsMock = nock("https://downloads-api-example.com")
-      .get('/point/last-day/browserify').twice()
-      .reply(200, fixtures.downloads.browserify.day)
-      .get('/point/last-week/browserify').twice()
-      .reply(200, fixtures.downloads.browserify.week)
-      .get('/point/last-month/browserify').twice()
-      .reply(200, fixtures.downloads.browserify.month)
-      .get('/point/last-day/request').twice()
-      .reply(200, fixtures.downloads.request.day)
-      .get('/point/last-week/request').twice()
-      .reply(200, fixtures.downloads.request.week)
-      .get('/point/last-month/request').twice()
-      .reply(200, fixtures.downloads.request.month)
-      .get('/point/last-day/request').twice()
-      .reply(404)
-      .get('/point/last-week/request').twice()
-      .reply(404)
-      .get('/point/last-month/request').twice()
-      .reply(404);
-
-    userMock = nock("https://user-api-example.com")
-      .get('/user/bob').times(3)
-      .reply(200, fixtures.users.bob)
-      .get('/user/bcoe')
-      .reply(200, fixtures.users.bcoe)
-      .get('/user/mikeal').times(3)
-      .reply(200, fixtures.users.mikeal);
-
     require('../mocks/server')(function (obj) {
       server = obj;
       done();
@@ -76,9 +25,6 @@ describe("package handler", function(){
   });
 
   after(function (done) {
-    packageMock.done();
-    downloadsMock.done();
-    userMock.done();
     server.stop(done);
   });
 
@@ -88,7 +34,24 @@ describe("package handler", function(){
     var options = {url: '/package/browserify'};
 
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/browserify').once()
+        .reply(200, fixtures.packages.browserify)
+        .get('/package?dependency=browserify&limit=50').once()
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/browserify').once()
+        .reply(200, fixtures.downloads.browserify.day)
+        .get('/point/last-week/browserify').once()
+        .reply(200, fixtures.downloads.browserify.week)
+        .get('/point/last-month/browserify').once()
+        .reply(200, fixtures.downloads.browserify.month);
+
+
       server.inject(options, function (response) {
+        packageMock.done();
+        downloadsMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         done();
@@ -173,11 +136,11 @@ describe("package handler", function(){
     before(function(done){
       var packageMock = nock("https://user-api-example.com")
         .get('/package/@zeke%2Fsecrets')
-        .reply(402)
+        .reply(402);
 
       server.inject(options, function (response) {
-        packageMock.done()
-        resp = response
+        packageMock.done();
+        resp = response;
         done();
       });
     });
@@ -185,12 +148,12 @@ describe("package handler", function(){
     it('redirects to the billing page', function (done) {
       expect(resp.statusCode).to.equal(302);
       expect(URL.parse(resp.headers.location).pathname).to.equal("/settings/billing");
-      done()
+      done();
     });
 
     it('sets a `package` query param so a helpful message can be displayed', function (done) {
       expect(URL.parse(resp.headers.location, true).query.package).to.equal("@zeke/secrets");
-      done()
+      done();
     });
 
   });
@@ -201,8 +164,13 @@ describe("package handler", function(){
     var context;
     var options = {url: '/package/nothingness'};
 
+    var packageMock = nock("https://user-api-example.com")
+      .get('/package/nothingness')
+      .reply(404);
+
     before(function(done){
       server.inject(options, function (response) {
+        packageMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         context = resp.request.response.source.context;
@@ -263,6 +231,7 @@ describe("package handler", function(){
     var $;
     var resp;
     var context;
+    var userMock = mocks.loggedInPaidUser('bob');
     var options = {
       url: '/package/@zeke/nope',
       credentials: fixtures.users.bob
@@ -270,6 +239,7 @@ describe("package handler", function(){
 
     before(function(done){
       server.inject(options, function (response) {
+        userMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         context = resp.request.response.source.context;
@@ -295,6 +265,7 @@ describe("package handler", function(){
     var $;
     var resp;
     var context;
+    var userMock = mocks.loggedInPaidUser('bob');
     var options = {
       url: '/package/@bob/nope',
       credentials: fixtures.users.bob
@@ -302,6 +273,7 @@ describe("package handler", function(){
 
     before(function(done){
       server.inject(options, function (response) {
+        userMock.done;
         resp = response;
         $ = cheerio.load(resp.result);
         context = resp.request.response.source.context;
@@ -367,7 +339,13 @@ describe("package handler", function(){
     var options = {url: '/package/hitler'};
 
     before(function(done){
+
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/hitler')
+        .reply(200, fixtures.packages.hitler);
+
       server.inject(options, function (response) {
+        packageMock.done();
         resp = response;
         done();
       });
@@ -388,12 +366,22 @@ describe("package handler", function(){
 
   describe('star', function () {
     it('is active if the user is logged in and has starred the package', function (done) {
+      var userMock = mocks.loggedInPaidUser('bcoe');
+
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/browserify').once()
+        .reply(200, fixtures.packages.browserify)
+        .get('/package?dependency=browserify&limit=50').once()
+        .reply(200, fixtures.dependents);
+
       var options = {
         url: '/package/browserify',
         credentials: fixtures.users.bcoe
       };
 
       server.inject(options, function (resp) {
+        userMock.done();
+        packageMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('browserify');
@@ -416,12 +404,20 @@ describe("package handler", function(){
     });
 
     it('is displayed if user is a collaborator', function (done) {
+
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request').once()
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50').once()
+        .reply(200, fixtures.dependents);
+
       var options = {
         url: '/package/request',
         credentials: fixtures.users.mikeal
       };
 
       server.inject(options, function (resp) {
+        packageMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('request');
@@ -435,6 +431,14 @@ describe("package handler", function(){
     });
 
     it('is not displayed if FEATURE_ACCESS_PAGE is not set', function (done) {
+      var userMock = mocks.loggedInPaidUser('mikeal');
+
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request').once()
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50').once()
+        .reply(200, fixtures.dependents);
+
       var options = {
         url: '/package/request',
         credentials: fixtures.users.mikeal
@@ -443,6 +447,7 @@ describe("package handler", function(){
       delete process.env.FEATURE_ACCESS_PAGE;
 
       server.inject(options, function (resp) {
+        packageMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
         var package = context.package;
@@ -456,12 +461,23 @@ describe("package handler", function(){
     });
 
     it('is not displayed if user is logged in but not a collaborator', function (done) {
+      var userMock = mocks.loggedInPaidUser('bob');
+
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request').once()
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50').once()
+        .reply(200, fixtures.dependents);
+
+
       var options = {
         url: '/package/request',
         credentials: fixtures.users.bob
       };
 
       server.inject(options, function (resp) {
+        userMock.done();
+        packageMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('request');
@@ -475,11 +491,19 @@ describe("package handler", function(){
 
 
     it('is not displayed if user is not logged in', function (done) {
+
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request').once()
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50').once()
+        .reply(200, fixtures.dependents);
+
       var options = {
         url: '/package/request',
       };
 
       server.inject(options, function (resp) {
+        packageMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('request');
@@ -496,6 +520,7 @@ describe("package handler", function(){
 
   describe('updating package access', function () {
     var options;
+    var userMock = mocks.loggedInPaidUser('mikeal');
 
     beforeEach(function(done){
       generateCrumb(server, function(crumb) {
@@ -521,6 +546,7 @@ describe("package handler", function(){
         .reply(200);
 
       server.inject(options, function (resp) {
+        userMock.done();
         mock.done();
         expect(resp.statusCode).to.equal(200);
         done();

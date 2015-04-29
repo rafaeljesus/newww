@@ -1,9 +1,14 @@
 var nock = require('nock');
 var fixtures = require('../fixtures');
+var isObject = require('lodash').isObject;
 
-var mocks = module.exports = {}
+var mocks = module.exports = {};
 
 mocks.loggedInUser = function(username) {
+  if (isObject(username)){
+    username = username.name;
+  }
+
   return nock('https://api.npmjs.com')
     .get('/user/'+username).once()
     .reply(200, fixtures.users[username])
@@ -12,6 +17,10 @@ mocks.loggedInUser = function(username) {
 };
 
 mocks.profile = function(username) {
+  if (isObject(username)){
+    username = username.name;
+  }
+
   return nock("https://user-api-example.com")
     .get('/user/' + username)
     .reply(200, fixtures.users[username])

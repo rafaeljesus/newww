@@ -10,19 +10,20 @@ var fixtures = require("../fixtures"),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
-    server, userMock,
-    users = require('../fixtures').users;
+    server,
+    users = require('../fixtures').users,
+    mocks = require('../helpers/mocks');
 
 describe("package access", function(){
 
   before(function (done) {
-    userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(3)
-    .reply(200, users.bob)
-    .get("/user/wrigley_the_writer").times(4)
-    .reply(200, users.wrigley_the_writer)
-    .get("/user/ralph_the_reader").twice()
-    .reply(200, users.ralph_the_reader);
+    // userMock = nock("https://user-api-example.com")
+    // .get("/user/bob").times(3)
+    // .reply(200, users.bob)
+    // .get("/user/wrigley_the_writer").times(4)
+    // .reply(200, users.wrigley_the_writer)
+    // .get("/user/ralph_the_reader").twice()
+    // .reply(200, users.ralph_the_reader);
 
     require('../mocks/server')(function (obj) {
       server = obj;
@@ -31,7 +32,7 @@ describe("package access", function(){
   });
 
   after(function (done) {
-    userMock.done();
+    // userMock.done();
     server.stop(done);
   });
 
@@ -165,6 +166,7 @@ describe("package access", function(){
 
     describe('logged-in collaborator', function () {
 
+      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
       var options = {
         url: '/package/browserify/access',
         credentials: fixtures.users.wrigley_the_writer
@@ -173,6 +175,7 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -280,7 +283,7 @@ describe("package access", function(){
     });
 
     describe('logged-in non-collaborator', function () {
-
+      var userMock = mocks.loggedInUser('bob');
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
         credentials: fixtures.users.bob,
@@ -289,6 +292,7 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -321,7 +325,7 @@ describe("package access", function(){
     });
 
     describe('logged-in collaborator with read access', function () {
-
+      var userMock = mocks.loggedInUser(fixtures.users.ralph_the_reader);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
         credentials: fixtures.users.ralph_the_reader,
@@ -330,6 +334,7 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -359,7 +364,7 @@ describe("package access", function(){
     });
 
     describe('logged-in paid collaborator with write access', function () {
-
+      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
         credentials: fixtures.users.wrigley_the_writer,
@@ -373,6 +378,7 @@ describe("package access", function(){
           .reply(200, fixtures.customers.happy);
 
         server.inject(options, function(response) {
+          userMock.done();
           customerMock.done();
           resp = response;
           context = resp.request.response.source.context;
@@ -425,7 +431,7 @@ describe("package access", function(){
     });
 
     describe('logged-in unpaid collaborator with write access', function () {
-
+      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
         credentials: fixtures.users.wrigley_the_writer,
@@ -438,6 +444,7 @@ describe("package access", function(){
           .reply(404);
 
         server.inject(options, function(response) {
+          userMock.done();
           customerMock.done();
           $ = cheerio.load(response.result);
           done();
@@ -502,7 +509,7 @@ describe("package access", function(){
     });
 
     describe('logged-in non-collaborator', function () {
-
+      var userMock = mocks.loggedInUser('bob');
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
         credentials: fixtures.users.bob,
@@ -511,6 +518,7 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -530,7 +538,7 @@ describe("package access", function(){
     });
 
     describe('logged-in collaborator with read access', function () {
-
+      var userMock = mocks.loggedInUser(fixtures.users.ralph_the_reader);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
         credentials: fixtures.users.ralph_the_reader,
@@ -539,6 +547,7 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -553,7 +562,7 @@ describe("package access", function(){
     });
 
     describe('logged-in paid collaborator with write access', function () {
-
+      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
         credentials: fixtures.users.wrigley_the_writer,
@@ -562,6 +571,7 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -582,6 +592,7 @@ describe("package access", function(){
     });
 
     describe('logged-in unpaid collaborator', function () {
+      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
       var resp;
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
@@ -590,13 +601,12 @@ describe("package access", function(){
 
       before(function(done) {
         var mock = nock("https://user-api-example.com")
-          .get('/user/wrigley_the_writer')
-          .reply(200, fixtures.users.wrigley_the_writer)
           .get('/package/@wrigley_the_writer%2Fscoped_private')
           .reply(402);
 
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
           mock.done();
           resp = response;
           delete process.env.FEATURE_ACCESS_PAGE;

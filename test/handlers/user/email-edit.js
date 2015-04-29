@@ -10,9 +10,9 @@ var generateCrumb = require("../crumb"),
     expect = Code.expect,
     nock = require("nock"),
     _ = require('lodash'),
-    redis = require('redis'),
     spawn = require('child_process').spawn,
     fixtures = require('../../fixtures'),
+    mocks = require('../../helpers/mocks'),
     users = fixtures.users,
     emails = fixtures.email_edit;
 
@@ -31,20 +31,18 @@ var postEmail = function (emailOpts) {
   };
 };
 
-// prepare the server
 before(function (done) {
-  nock.cleanAll();
-
-  nock("https://user-api-example.com")
-    .get('/user/' + users.bob.name).times(11)
-    .reply(200, fixtures.users.bob)
-    .get('/user/' + users.mikeal.name)
-    .reply(200, fixtures.users.mikeal)
-    .get('/user/noone')
-    .reply(200, {
-      name: "noone",
-      email: "f@boom.me",
-    });
+  // nock.cleanAll();
+  // nock("https://user-api-example.com")
+  //   .get('/user/' + users.bob.name).times(11)
+  //   .reply(200, fixtures.users.bob)
+  //   .get('/user/' + users.mikeal.name)
+  //   .reply(200, fixtures.users.mikeal)
+  //   .get('/user/noone')
+  //   .reply(200, {
+  //     name: "noone",
+  //     email: "f@boom.me",
+  //   });
 
   require('../../mocks/server')(function (obj) {
     server = obj;
@@ -86,6 +84,7 @@ describe('Accessing the email-edit page', function () {
   });
 
   it('takes authorized users to the email-edit page', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var opts = {
       url: '/email-edit',
       credentials: users.bob
@@ -93,9 +92,9 @@ describe('Accessing the email-edit page', function () {
 
     server.inject(opts, function (resp) {
       generateCrumb(server, function (crumb){
+        userMock.done();
         cookieCrumb = crumb;
         emails = emails(cookieCrumb);
-
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/email-edit');
@@ -121,6 +120,7 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if the cookie crumb is missing', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var options = {
       url: '/email-edit',
       method: 'POST',
@@ -129,12 +129,21 @@ describe('Requesting an email change', function () {
     };
 
     server.inject(options, function (resp) {
+      userMock.done;
       expect(resp.statusCode).to.equal(403);
       done();
     });
   });
 
   it('renders an error if an email address is not provided', function (done) {
+
+    nock("https://user-api-example.com")
+      .get('/user/noone')
+      .reply(200, {
+        name: "noone",
+        email: "f@boom.me",
+      });
+
     server.inject(postEmail(emails.missingEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
@@ -145,6 +154,15 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if an invalid email address is provided', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
+
+    nock("https://user-api-example.com")
+      .get('/user/noone')
+      .reply(200, {
+        name: "noone",
+        email: "f@boom.me",
+      });
+
     server.inject(postEmail(emails.invalidEmail), function (resp) {
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
@@ -155,6 +173,7 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if the password is invalid', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
 
     var mock = nock("https://user-api-example.com")
       .post("/user/" + emails.invalidPassword.name + "/login", {password: emails.invalidPassword.password})
@@ -171,6 +190,7 @@ describe('Requesting an email change', function () {
   });
 
   it('sends two emails if everything goes properly', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
 
     var mock = nock("https://user-api-example.com")
       .post("/user/" + emails.newEmail.name + "/login", {password: emails.newEmail.password})
@@ -187,6 +207,7 @@ describe('Requesting an email change', function () {
 
 describe('Confirming an email change', function () {
   it('redirects unauthenticated user to login', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var opts = {
       url: '/email-edit/confirm/something'
     };
@@ -199,6 +220,7 @@ describe('Confirming an email change', function () {
   });
 
   it('renders an error if a token is not included in the url', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var opts = {
       url: '/email-edit/confirm',
       credentials: users.bob
@@ -211,6 +233,7 @@ describe('Confirming an email change', function () {
   });
 
   it('renders an error if the token doesn\'t exist', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var opts = {
       url: '/email-edit/confirm/something',
       credentials: users.bob
@@ -226,7 +249,7 @@ describe('Confirming an email change', function () {
 
   it('renders an error if the the wrong user is logged in', function (done) {
     setEmailHashesInRedis(function (err, tokens) {
-
+      var userMock = mocks.loggedInPaidUser('mikeal');
       var opts = {
         url: '/email-edit/confirm/' + tokens.confToken,
         credentials: users.mikeal
@@ -243,10 +266,10 @@ describe('Confirming an email change', function () {
 
   it('changes the user\'s email when everything works properly', function (done) {
 
+    var userMock = mocks.loggedInPaidUser('bob');
     var mock = nock("https://user-api-example.com")
       .post("/user/" + users.bob.name, {"name":"bob","email":"new@boom.me"})
       .reply(200);
-
 
     setEmailHashesInRedis(function (err, tokens) {
 
@@ -281,6 +304,7 @@ describe('Reverting an email change', function () {
   });
 
   it('renders an error if a token is not included in the url', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var opts = {
       url: '/email-edit/revert',
       credentials: users.bob
@@ -293,6 +317,7 @@ describe('Reverting an email change', function () {
   });
 
   it('renders an error if the token doesn\'t exist', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var opts = {
       url: '/email-edit/revert/something',
       credentials: users.bob
@@ -307,11 +332,14 @@ describe('Reverting an email change', function () {
   });
 
   it('renders an error if the the wrong user is logged in', function (done) {
+
+    var userMock = mocks.loggedInPaidUser('seldo');
+
     setEmailHashesInRedis(function (err, tokens) {
       var opts = {
         url: '/email-edit/revert/' + tokens.revToken,
         credentials: {
-         name: "noone",
+         name: "seldo",
          email: "f@boom.me",
         }
       };
@@ -326,7 +354,7 @@ describe('Reverting an email change', function () {
   });
 
   it('changes the user\'s email when everything works properly', function (done) {
-
+    var userMock = mocks.loggedInPaidUser('bob');
     var mock = nock("https://user-api-example.com")
       .post("/user/" + users.bob.name, {"name":"bob","email":"bob@boom.me"})
       .reply(200);

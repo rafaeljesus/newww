@@ -188,7 +188,7 @@ describe("bonbon", function() {
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
-      userMock.done();
+      // userMock.done();
       profileMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/html/);
@@ -208,7 +208,7 @@ describe("bonbon", function() {
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
-      userMock.done();
+      // userMock.done();
       profileMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/html/);

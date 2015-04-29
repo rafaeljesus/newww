@@ -14,17 +14,11 @@ var fixtures = require("../fixtures"),
     users = require('../fixtures').users,
     mocks = require('../helpers/mocks');
 
+nock.cleanAll();
+
 describe("package access", function(){
 
   before(function (done) {
-    // userMock = nock("https://user-api-example.com")
-    // .get("/user/bob").times(3)
-    // .reply(200, users.bob)
-    // .get("/user/wrigley_the_writer").times(4)
-    // .reply(200, users.wrigley_the_writer)
-    // .get("/user/ralph_the_reader").twice()
-    // .reply(200, users.ralph_the_reader);
-
     require('../mocks/server')(function (obj) {
       server = obj;
       done();
@@ -32,7 +26,6 @@ describe("package access", function(){
   });
 
   after(function (done) {
-    // userMock.done();
     server.stop(done);
   });
 
@@ -167,6 +160,8 @@ describe("package access", function(){
     describe('logged-in collaborator', function () {
 
       var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
+      var userMock2 = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
+
       var options = {
         url: '/package/browserify/access',
         credentials: fixtures.users.wrigley_the_writer
@@ -175,7 +170,7 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
-          userMock.done();
+          // userMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -509,7 +504,8 @@ describe("package access", function(){
     });
 
     describe('logged-in non-collaborator', function () {
-      var userMock = mocks.loggedInPaidUser('bob');
+      var userMock = mocks.loggedInUnpaidUser('bob');
+      var userMock2 = mocks.loggedInUnpaidUser('bob');
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
         credentials: fixtures.users.bob,
@@ -519,6 +515,7 @@ describe("package access", function(){
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           userMock.done();
+          userMock2.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);

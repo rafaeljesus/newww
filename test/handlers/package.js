@@ -15,6 +15,8 @@ var fixtures = require("../fixtures"),
     it = lab.test,
     server;
 
+nock.cleanAll();
+
 describe("package handler", function(){
 
   before(function (done) {

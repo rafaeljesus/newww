@@ -166,7 +166,7 @@ describe("package access", function(){
 
     describe('logged-in collaborator', function () {
 
-      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
+      var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
       var options = {
         url: '/package/browserify/access',
         credentials: fixtures.users.wrigley_the_writer
@@ -283,7 +283,7 @@ describe("package access", function(){
     });
 
     describe('logged-in non-collaborator', function () {
-      var userMock = mocks.loggedInUser('bob');
+      var userMock = mocks.loggedInPaidUser('bob');
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
         credentials: fixtures.users.bob,
@@ -325,7 +325,7 @@ describe("package access", function(){
     });
 
     describe('logged-in collaborator with read access', function () {
-      var userMock = mocks.loggedInUser(fixtures.users.ralph_the_reader);
+      var userMock = mocks.loggedInPaidUser(fixtures.users.ralph_the_reader);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
         credentials: fixtures.users.ralph_the_reader,
@@ -364,7 +364,7 @@ describe("package access", function(){
     });
 
     describe('logged-in paid collaborator with write access', function () {
-      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
+      var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
         credentials: fixtures.users.wrigley_the_writer,
@@ -431,7 +431,7 @@ describe("package access", function(){
     });
 
     describe('logged-in unpaid collaborator with write access', function () {
-      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
+      var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_public/access',
         credentials: fixtures.users.wrigley_the_writer,
@@ -509,7 +509,7 @@ describe("package access", function(){
     });
 
     describe('logged-in non-collaborator', function () {
-      var userMock = mocks.loggedInUser('bob');
+      var userMock = mocks.loggedInPaidUser('bob');
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
         credentials: fixtures.users.bob,
@@ -538,7 +538,7 @@ describe("package access", function(){
     });
 
     describe('logged-in collaborator with read access', function () {
-      var userMock = mocks.loggedInUser(fixtures.users.ralph_the_reader);
+      var userMock = mocks.loggedInPaidUser(fixtures.users.ralph_the_reader);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
         credentials: fixtures.users.ralph_the_reader,
@@ -562,7 +562,7 @@ describe("package access", function(){
     });
 
     describe('logged-in paid collaborator with write access', function () {
-      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
+      var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',
         credentials: fixtures.users.wrigley_the_writer,
@@ -592,7 +592,7 @@ describe("package access", function(){
     });
 
     describe('logged-in unpaid collaborator', function () {
-      var userMock = mocks.loggedInUser(fixtures.users.wrigley_the_writer);
+      var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
       var resp;
       var options = {
         url: '/package/@wrigley_the_writer/scoped_private/access',

@@ -121,7 +121,7 @@ describe("bonbon", function() {
   });
 
   it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
-    var userMock = mocks.loggedInUser(fixtures.users.npmEmployee.name);
+    var userMock = mocks.loggedInPaidUser(fixtures.users.npmEmployee.name);
     var options = {
       url: '/~bob?json',
       credentials: fixtures.users.npmEmployee
@@ -138,7 +138,7 @@ describe("bonbon", function() {
   });
 
   it('returns the whole context object if `json` has no value', function (done) {
-    var userMock = mocks.loggedInUser(fixtures.users.npmEmployee.name);
+    var userMock = mocks.loggedInPaidUser(fixtures.users.npmEmployee.name);
     var profileMock = mocks.profile('bob');
 
     var options = {
@@ -158,7 +158,7 @@ describe("bonbon", function() {
   });
 
   it('returns a subset of the context if `json` has a value', function (done) {
-    var userMock = mocks.loggedInUser(fixtures.users.npmEmployee.name);
+    var userMock = mocks.loggedInPaidUser(fixtures.users.npmEmployee);
     var profileMock = mocks.profile('bob');
 
     var options = {
@@ -179,7 +179,7 @@ describe("bonbon", function() {
   });
 
   it('does not allow logged-in non-employees to request the view context', function (done) {
-    var userMock = mocks.loggedInUser('bob');
+    var userMock = mocks.loggedInPaidUser('bob');
     var profileMock = mocks.profile('bob');
 
     var options = {
@@ -199,7 +199,7 @@ describe("bonbon", function() {
   });
 
   it('does not allow anonymous fixtures.users to request the view context', function (done) {
-    var userMock = mocks.loggedInUser('bob');
+    var userMock = mocks.loggedInPaidUser('bob');
     var profileMock = mocks.profile('bob');
 
     var options = {

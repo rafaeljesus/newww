@@ -4,7 +4,19 @@ var isObject = require('lodash').isObject;
 
 var mocks = module.exports = {};
 
-mocks.loggedInUser = function(username) {
+mocks.loggedInUnpaidUser = function(username) {
+  if (isObject(username)){
+    username = username.name;
+  }
+
+  return nock('https://api.npmjs.com')
+    .get('/user/'+username).once()
+    .reply(200, fixtures.users[username])
+    .get('/stripe/'+username).once()
+    .reply(404);
+};
+
+mocks.loggedInPaidUser = function(username) {
   if (isObject(username)){
     username = username.name;
   }
@@ -14,6 +26,18 @@ mocks.loggedInUser = function(username) {
     .reply(200, fixtures.users[username])
     .get('/stripe/'+username).once()
     .reply(200, fixtures.customers.happy);
+};
+
+mocks.loggedInPaidUserWithExpiredLicense = function(username) {
+  if (isObject(username)){
+    username = username.name;
+  }
+
+  return nock('https://api.npmjs.com')
+    .get('/user/'+username).once()
+    .reply(200, fixtures.users[username])
+    .get('/stripe/'+username).once()
+    .reply(200, fixtures.customers.license_expired);
 };
 
 mocks.profile = function(username) {

@@ -329,6 +329,10 @@ User.getLoggedInUserWithCustomer = function(name) {
    user: npm.users.get(name, {ttl: ttl}),
    customer: npm.customers.get(name, {ttl: ttl})
  })
+ .catch(function(err) {
+   console.log("error getting logged-in user");
+   console.log(err);
+ })
  .then(function (results) {
    if (results.customer) {
      results.user.isPaid = true;

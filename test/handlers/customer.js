@@ -1,6 +1,6 @@
 var generateCrumb = require("../handlers/crumb.js"),
     Lab = require('lab'),
-    Code = require('code'),
+    expect = require('code').expect,
     nock = require('nock'),
     cheerio = require('cheerio'),
     lab = exports.lab = Lab.script(),
@@ -9,27 +9,27 @@ var generateCrumb = require("../handlers/crumb.js"),
     after = lab.after,
     beforeEach = lab.beforeEach,
     it = lab.test,
-    expect = Code.expect,
     server,
-    fixtures = require('../fixtures');
+    fixtures = require('../fixtures'),
+    mocks = require('../helpers/mocks');
 
-var userMock, licenseMock;
+// var userMock, licenseMock;
 
 before(function (done) {
   process.env.FEATURE_BILLING_PAGE = 'true';
-  userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(16)
-    .reply(200, fixtures.users.bob)
-    .get("/user/diana_delinquent").twice()
-    .reply(200, fixtures.users.diana_delinquent)
-    .get("/user/norbert_newbie").times(3)
-    .reply(200, fixtures.users.norbert_newbie);
-
-  licenseMock = nock("https://license-api-example.com:443")
-    .get("/stripe/bob")
-    .reply(200, fixtures.customers.happy)
-    .get("/stripe/bob").times(6)
-    .reply(404);
+  // userMock = nock("https://user-api-example.com")
+  //   .get("/user/bob").times(16)
+  //   .reply(200, fixtures.users.bob)
+  //   .get("/user/diana_delinquent").twice()
+  //   .reply(200, fixtures.users.diana_delinquent)
+  //   .get("/user/norbert_newbie").times(3)
+  //   .reply(200, fixtures.users.norbert_newbie);
+  //
+  // licenseMock = nock("https://license-api-example.com:443")
+  //   .get("/stripe/bob")
+  //   .reply(200, fixtures.customers.happy)
+  //   .get("/stripe/bob").times(6)
+  //   .reply(404);
 
   require('../mocks/server')(function (obj) {
     server = obj;
@@ -39,8 +39,8 @@ before(function (done) {
 
 after(function (done) {
   delete process.env.FEATURE_BILLING_PAGE;
-  userMock.done();
-  licenseMock.done();
+  // userMock.done();
+  // licenseMock.done();
   server.stop(done);
 });
 
@@ -64,13 +64,14 @@ describe('GET /settings/billing', function () {
   });
 
   it('displays cancellation notice if `canceled` query param is present', function (done) {
-
+    var userMock = mocks.loggedInPaidUser('bob');
     options = {
       method: "get",
       url: "/settings/billing?canceled=1",
       credentials: fixtures.users.bob
     };
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.request.response.source.context.canceled).to.be.true();
       var $ = cheerio.load(resp.result);
       expect($(".cancellation-notice").text()).to.include('cancelled your private npm');
@@ -79,12 +80,14 @@ describe('GET /settings/billing', function () {
   });
 
   it('displays update notice if `updated` query param is present', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     options = {
       method: "get",
       url: "/settings/billing?updated=1",
       credentials: fixtures.users.bob
     };
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.request.response.source.context.updated).to.be.true();
       var $ = cheerio.load(resp.result);
       expect($(".update-notice").text()).to.include('successfully updated');
@@ -93,6 +96,7 @@ describe('GET /settings/billing', function () {
   });
 
   it("renders a twitter tracking snippet for 'private modules purchase'", function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var options = {
       method: "get",
       url: "/settings/billing?updated=1",
@@ -100,6 +104,7 @@ describe('GET /settings/billing', function () {
     };
 
     server.inject(options, function (resp) {
+      userMock.done();
       var $ = cheerio.load(resp.result);
       expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xyy']").length).to.equal(1);
       expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xyy']").length).to.equal(1);
@@ -108,6 +113,7 @@ describe('GET /settings/billing', function () {
   });
 
   it("renders a twitter tracking snippet for 'private modules billing signup page'", function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var options = {
       method: "get",
       url: "/settings/billing",
@@ -115,6 +121,7 @@ describe('GET /settings/billing', function () {
     };
 
     server.inject(options, function (resp) {
+      userMock.done();
       var $ = cheerio.load(resp.result);
       expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xz2']").length).to.equal(1);
       expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xz2']").length).to.equal(1);
@@ -123,8 +130,10 @@ describe('GET /settings/billing', function () {
   });
 
   it('does not render notices by default', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     options.credentials = fixtures.users.bob;
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.request.response.source.context.canceled).to.be.false();
       expect(resp.request.response.source.context.updated).to.be.false();
       expect(resp.result).to.not.include('cancellation-notice');
@@ -134,9 +143,11 @@ describe('GET /settings/billing', function () {
   });
 
   it('renders billing form if user is logged in', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     options.credentials = fixtures.users.bob;
 
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('user/billing');
       expect(resp.result).to.include('id="payment-form"');
@@ -145,12 +156,14 @@ describe('GET /settings/billing', function () {
   });
 
   it('injects stripe public key and stripe script into page', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     options.credentials = fixtures.users.bob;
 
     var oldStripeKey = process.env.STRIPE_PUBLIC_KEY;
     process.env.STRIPE_PUBLIC_KEY = "I am a zebra";
 
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('user/billing');
       expect(resp.result).to.include('https://js.stripe.com/v2/');
@@ -166,6 +179,7 @@ describe('GET /settings/billing', function () {
     var $;
 
     beforeEach(function(done){
+      var userMock = mocks.loggedInPaidUser('bob');
       options.credentials = fixtures.users.bob;
 
       mock = nock("https://license-api-example.com")
@@ -173,6 +187,7 @@ describe('GET /settings/billing', function () {
         .reply(200, fixtures.customers.happy);
 
       server.inject(options, function (response) {
+        userMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         mock.done();
@@ -233,20 +248,22 @@ describe('GET /settings/billing', function () {
   });
 
   describe("paid user with expired license", function() {
-    var mock;
     var resp;
     var $;
 
     beforeEach(function(done){
+      var userMock = mocks.loggedInPaidUserWithExpiredLicense(fixtures.users.diana_delinquent);
       options.credentials = fixtures.users.diana_delinquent;
-      mock = nock("https://license-api-example.com")
+
+      var customerMock = nock("https://license-api-example.com")
         .get("/stripe/diana_delinquent")
         .reply(200, fixtures.customers.license_expired);
 
       server.inject(options, function (response) {
+        userMock.done();
+        customerMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
-        mock.done();
         done();
       });
     });
@@ -266,49 +283,45 @@ describe('GET /settings/billing', function () {
 
   });
 
-  describe("unpaid user", function(){
-    var mock;
-    var resp;
-    var $;
-
-    beforeEach(function(done){
-      options.credentials = fixtures.users.norbert_newbie;
-      mock = nock("https://license-api-example.com")
-        .get("/stripe/norbert_newbie")
-        .reply(404);
-
-      server.inject(options, function (response) {
-        resp = response;
-        $ = cheerio.load(resp.result);
-        mock.done();
-        done();
-      });
-    });
-
-    it("does not display billing info, because it does not exist", function(done) {
-      expect($("body").length).to.equal(1);
-      expect($(".card-info").length).to.equal(0);
-      expect($(".card-brand").length).to.equal(0);
-      expect($(".card-exp-month").length).to.equal(0);
-      expect($(".card-exp-year").length).to.equal(0);
-      done();
-    });
-
-    it("displays a submit button with creation verbiage", function(done){
-      expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
-      done();
-    });
-
-    it("does not render a cancellation form", function(done) {
-      var form = $("#cancel-subscription");
-      expect(form.length).to.equal(0);
-      done();
-    });
-
-  });
+  // describe("unpaid user", function(){
+  //   var resp;
+  //   var $;
+  //
+  //   beforeEach(function(done){
+  //     var userMock = mocks.loggedInUnpaidUser(fixtures.users.norbert_newbie);
+  //     options.credentials = fixtures.users.norbert_newbie;
+  //
+  //     server.inject(options, function (response) {
+  //       userMock.done();
+  //       resp = response;
+  //       $ = cheerio.load(resp.result);
+  //       done();
+  //     });
+  //   });
+  //
+  //   it("does not display billing info, because it does not exist", function(done) {
+  //     expect($("body").length).to.equal(1);
+  //     expect($(".card-info").length).to.equal(0);
+  //     expect($(".card-brand").length).to.equal(0);
+  //     expect($(".card-exp-month").length).to.equal(0);
+  //     expect($(".card-exp-year").length).to.equal(0);
+  //     done();
+  //   });
+  //
+  //   it("displays a submit button with creation verbiage", function(done){
+  //     expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
+  //     done();
+  //   });
+  //
+  //   it("does not render a cancellation form", function(done) {
+  //     var form = $("#cancel-subscription");
+  //     expect(form.length).to.equal(0);
+  //     done();
+  //   });
+  //
+  // });
 
   describe("user with unverified email", function(){
-    var mock;
     var resp;
     var $;
 
@@ -318,9 +331,7 @@ describe('GET /settings/billing', function () {
         credentials: fixtures.users.uncle_unverified
       };
 
-      var userMock = nock("https://user-api-example.com")
-        .get("/user/uncle_unverified")
-        .reply(200, fixtures.users.uncle_unverified);
+      var userMock = mocks.loggedInPaidUser(fixtures.users.uncle_unverified);
 
       var customerMock = nock("https://license-api-example.com")
         .get("/stripe/uncle_unverified")
@@ -373,6 +384,7 @@ describe('POST /settings/billing', function () {
     it('sends updated billing info to the billing API', function (done) {
 
       generateCrumb(server, function (crumb){
+
         var opts = {
           url: '/settings/billing',
           method: 'POST',
@@ -384,6 +396,8 @@ describe('POST /settings/billing', function () {
           headers: { cookie: 'crumb=' + crumb }
         };
 
+        var userMock = mocks.loggedInPaidUser('bob');
+
         var mock = nock("https://license-api-example.com")
           .get("/stripe/bob")
           .reply(200, fixtures.customers.happy)
@@ -391,6 +405,7 @@ describe('POST /settings/billing', function () {
           .reply(200, fixtures.customers.happy);
 
         server.inject(opts, function (resp) {
+          userMock.done();
           mock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
@@ -418,6 +433,8 @@ describe('POST /settings/billing', function () {
           headers: { cookie: 'crumb=' + crumb }
         };
 
+        var userMock = mocks.loggedInPaidUser('bob');
+
         var mock = nock("https://license-api-example.com")
           .get("/stripe/bob")
           .reply(404)
@@ -425,6 +442,7 @@ describe('POST /settings/billing', function () {
           .reply(200, fixtures.customers.happy);
 
         server.inject(opts, function (resp) {
+          userMock.done();
           mock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
@@ -472,11 +490,13 @@ describe('POST /settings/billing/cancel', function () {
         headers: { cookie: 'crumb=' + crumb }
       };
 
+      var userMock = mocks.loggedInPaidUser('bob');
       var mock = nock("https://license-api-example.com")
         .delete("/stripe/bob")
         .reply(200, fixtures.customers.happy);
 
       server.inject(opts, function (resp) {
+        userMock.done();
         mock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.match(/\/settings\/billing\?canceled=1$/);

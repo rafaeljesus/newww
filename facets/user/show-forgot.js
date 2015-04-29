@@ -60,7 +60,9 @@ function processToken(request, reply) {
         newAuth = {
           name: name,
           password: newPass,
-          mustChangePass: true
+          resource: {
+            mustChangePass: 'true' // must be a string, as per user-acl
+          }
         };
 
     request.logger.warn('About to change password', { name: name });

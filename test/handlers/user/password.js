@@ -25,7 +25,13 @@ before(function (done) {
     .reply(200, users.bob)
     .post("/user/" + users.bob.name + "/login", {password: 'abcde'})
     .reply(200, users.bob)
-    .post("/user/" + users.bob.name, {"name":"bob","password":"abcde","mustChangePass":false})
+    .post("/user/" + users.bob.name, {
+      "name":"bob",
+      "password":"abcde",
+      "resource": {
+        "mustChangePass":null
+      }
+    })
     .reply(200, users.bob);
 
   require('../../mocks/server')(function (obj) {

@@ -86,11 +86,11 @@ exports.bobUpdated = {
     github: 'bob',
     twitter: 'bobby',
     homepage: '',
-    freenode: ''
+    freenode: '',
+    mustChangePass: 'true'
   },
   created: '2014-11-21T20:05:05.423Z',
   updated: '2015-01-24T00:08:41.269Z',
-  mustChangePass: true,
   deleted: null
 };
 

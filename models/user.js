@@ -323,17 +323,17 @@ User.prototype.verifyPassword = function (name, password, callback) {
 };
 
 User.getLoggedInUserWithCustomer = function(name) {
-  var loggedInUser;
-  return npm.users.get(name, {ttl: '10 seconds'})
-    .then(function(user){
-      loggedInUser = user;
-      return npm.customers.get(name, {ttl: '10 seconds'});
-    })
-    .then(function(customer){
-      if (customer) {
-        loggedInUser.isPaid = true;
-        loggedInUser.customer = customer;
-      }
-      return decorate(loggedInUser);
-    });
+ var ttl = '10 seconds';
+
+ return P.props({
+   user: npm.users.get(name, {ttl: ttl}),
+   customer: npm.customers.get(name, {ttl: ttl})
+ })
+ .then(function (results) {
+   if (results.customer) {
+     results.user.isPaid = true;
+     results.user.customer = results.customer;
+   }
+   return decorate(results.user);
+ });
 };

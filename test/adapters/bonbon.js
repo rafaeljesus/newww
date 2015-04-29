@@ -7,11 +7,8 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect,
     fixtures = require('../fixtures'),
-    nock = require('nock');
-
-
-var server;
-var username1 = 'bob';
+    mocks = require('../helpers/mocks'),
+    server;
 
 beforeEach(function (done) {
   require('../mocks/server')(function (obj) {
@@ -31,22 +28,6 @@ describe("bonbon", function() {
     delete process.env.NODE_ENV;
     done();
   });
-
-  nock("https://user-api-example.com")
-    .get('/user/bob').times(8)
-    .reply(200, fixtures.users.bob)
-    .get('/user/seldo').times(3)
-    .reply(200, fixtures.users.npmEmployee)
-    .get('/user/bob/package?format=detailed&per_page=9999').times(6)
-    .reply(200, fixtures.users.packages)
-    .get('/user/bob/stars?format=detailed').times(6)
-    .reply(200, fixtures.users.stars)
-    .get('/user/bob').times(5)
-    .reply(404)
-    .get('/user/seldo')
-    .reply(404)
-    .get('/user/mikeal')
-    .reply(404);
 
   describe("feature flags", function() {
 
@@ -140,14 +121,15 @@ describe("bonbon", function() {
   });
 
   it('allows logged-in npm employees to request the view context with a `json` query param', function (done) {
-
+    var userMock = mocks.loggedInUser(fixtures.users.npmEmployee.name);
     var options = {
-      url: '/~' + username1 + '?json',
+      url: '/~bob?json',
       credentials: fixtures.users.npmEmployee
     };
 
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result).to.be.an.object();
@@ -156,14 +138,18 @@ describe("bonbon", function() {
   });
 
   it('returns the whole context object if `json` has no value', function (done) {
+    var userMock = mocks.loggedInUser(fixtures.users.npmEmployee.name);
+    var profileMock = mocks.profile('bob');
 
     var options = {
-      url: '/~' + username1 + '?json',
+      url: '/~bob?json',
       credentials: fixtures.users.npmEmployee
     };
 
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
+      profileMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.profile).to.exist();
       expect(resp.result.profile.name).to.exist();
@@ -172,13 +158,18 @@ describe("bonbon", function() {
   });
 
   it('returns a subset of the context if `json` has a value', function (done) {
+    var userMock = mocks.loggedInUser(fixtures.users.npmEmployee.name);
+    var profileMock = mocks.profile('bob');
 
     var options = {
-      url: '/~' + username1 + '?json=profile.resource',
+      url: '/~bob?json=profile.resource',
       credentials: fixtures.users.npmEmployee
     };
+
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
+      profileMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result.github).to.exist();
@@ -188,13 +179,17 @@ describe("bonbon", function() {
   });
 
   it('does not allow logged-in non-employees to request the view context', function (done) {
+    var userMock = mocks.loggedInUser('bob');
+    var profileMock = mocks.profile('bob');
 
     var options = {
-      url: '/~' + username1 + '?json',
+      url: '/~bob?json',
       credentials: fixtures.users.bob
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
+      profileMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/html/);
       var source = resp.request.response.source;
@@ -204,13 +199,17 @@ describe("bonbon", function() {
   });
 
   it('does not allow anonymous fixtures.users to request the view context', function (done) {
+    var userMock = mocks.loggedInUser('bob');
+    var profileMock = mocks.profile('bob');
 
     var options = {
-      url: '/~' + username1 + '?json',
+      url: '/~bob?json',
       credentials: fixtures.users.bob
     };
     expect(process.env.NODE_ENV).to.equal("production");
     server.inject(options, function (resp) {
+      userMock.done();
+      profileMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/html/);
       var source = resp.request.response.source;
@@ -220,14 +219,17 @@ describe("bonbon", function() {
   });
 
   it('allows anyone to request the view context if NODE_ENV is `dev`', function (done) {
+    var profileMock = mocks.profile('bob');
+
     process.env.NODE_ENV = "dev";
     expect(process.env.NODE_ENV).to.equal("dev");
 
     var options = {
-      url: '/~' + username1 + '?json',
+      url: '/~bob?json',
       credentials: null
     };
     server.inject(options, function (resp) {
+      profileMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.headers['content-type']).to.match(/json/);
       expect(resp.result).to.be.an.object();

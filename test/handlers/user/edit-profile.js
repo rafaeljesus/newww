@@ -1,5 +1,5 @@
 var generateCrumb = require("../crumb"),
-    Code = require('code'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -7,12 +7,11 @@ var generateCrumb = require("../crumb"),
     after = lab.after,
     it = lab.test,
     beforeEach = lab.beforeEach,
-    expect = Code.expect,
     nock = require('nock'),
     _ = require('lodash'),
-    users = require('../../fixtures').users;
-
-var server, userMock;
+    users = require('../../fixtures').users,
+    mocks = require('../../helpers/mocks'),
+    server;
 
 // leave original fixtures intact for the sake of other tests
 var users = _.cloneDeep(require('../../fixtures').users);
@@ -29,18 +28,18 @@ after(function (done) {
 });
 
 beforeEach(function(done) {
-  nock.cleanAll();
-  userMock = nock('https://user-api-example.com')
-    .get('/user/' + users.bob.name).times(3)
-    .reply(200, users.bob)
-    .post('/user/' + users.bob.name, users.bobUpdateBody)
-    .reply(200, users.bobUpdated)
-    .get('/user/' + users.bob.name)
-    .reply(200, users.bobUpdated)
-    .get('/user/' + users.bob.name + '/package?format=detailed&per_page=9999')
-    .reply(200, users.packages)
-    .get('/user/' + users.bob.name + '/stars?format=detailed')
-    .reply(200, users.stars);
+  // nock.cleanAll();
+  // userMock = nock('https://user-api-example.com')
+  //   .get('/user/' + users.bob.name).times(3)
+  //   .reply(200, users.bob)
+  //   .post('/user/' + users.bob.name, users.bobUpdateBody)
+  //   .reply(200, users.bobUpdated)
+  //   .get('/user/' + users.bob.name)
+  //   .reply(200, users.bobUpdated)
+  //   .get('/user/' + users.bob.name + '/package?format=detailed&per_page=9999')
+  //   .reply(200, users.packages)
+  //   .get('/user/' + users.bob.name + '/stars?format=detailed')
+  //   .reply(200, users.stars);
     done();
 });
 
@@ -58,12 +57,14 @@ describe('Getting to the profile-edit page', function () {
   });
 
   it('takes authorized users to the profile-edit page', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob')
     var options = {
       url: '/profile-edit',
       credentials: users.bob
     };
 
     server.inject(options, function (resp) {
+      userMock.done();
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/profile-edit');
@@ -72,7 +73,7 @@ describe('Getting to the profile-edit page', function () {
   });
 });
 
-describe('Modifying the profile', function () {
+describe('modifying the profile', function () {
   it('redirects an unauthorized user to the login page', function (done) {
     var options = {
       url: '/profile-edit',
@@ -102,9 +103,21 @@ describe('Modifying the profile', function () {
   });
 
   it('allows authorized profile modifications and redirects to profile page', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
+    var userMock2 = mocks.loggedInPaidUser('bob');
+    var userMock3 = nock('https://user-api-example.com')
+      .get('/user/' + users.bob.name).once()
+      .reply(200, users.bob)
+      .post('/user/' + users.bob.name, users.bobUpdateBody)
+      .reply(200, users.bobUpdated)
+      .get('/user/' + users.bob.name)
+      .reply(200, users.bobUpdated)
+      .get('/user/' + users.bob.name + '/package?format=detailed&per_page=9999')
+      .reply(200, users.packages)
+      .get('/user/' + users.bob.name + '/stars?format=detailed')
+      .reply(200, users.stars);
 
     generateCrumb(server, function (crumb){
-
       var options = {
         url: '/profile-edit',
         method: 'POST',
@@ -116,6 +129,7 @@ describe('Modifying the profile', function () {
       options.payload.crumb = crumb;
 
       server.inject(options, function (resp) {
+        userMock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.include('profile');
 
@@ -139,6 +153,7 @@ describe('Modifying the profile', function () {
   });
 
   it('rejects _id, name, and email from the payload', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     generateCrumb(server, function (crumb){
       var options = {
         url: '/profile-edit',

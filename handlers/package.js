@@ -1,10 +1,13 @@
 var package = module.exports = {};
+
+var P = require('bluebird');
 var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
 var PackageModel = require("../models/package");
 
+var DEPENDENCY_TTL = 5 * 60; // 5 minutes
+
 package.show = function(request, reply) {
-  var package;
   var name = request.packageName;
   var context = {title: name};
   var loggedInUser = request.loggedInUser;
@@ -15,84 +18,80 @@ package.show = function(request, reply) {
 
   request.logger.info('get package: ' + name);
 
-  var promise = Package.get(name)
-    .catch(function(err){
+  var actions = {
+    package: Package.get(name),
+    dependents: Package.list({dependency: name, limit: 50}, DEPENDENCY_TTL),
+    downloads: Download.getAll(name),
+  };
 
+  P.props(actions)
+    .then(function (results) {
+      var pkg = results.package;
+      pkg.dependents = results.dependents;
+      pkg.downloads = results.downloads;
+
+      if (pkg && pkg.time && pkg.time.unpublished) {
+        request.logger.info('package is unpublished: ' + name);
+        reply.view('package/unpublished', context).code(404);
+        return;
+      }
+
+      if (pkg.dependents.results.length) {
+        pkg.numMoreDependents = pkg.dependentCount - pkg.dependents.results.length;
+      }
+
+      pkg.isStarred = Boolean(loggedInUser)
+        && Array.isArray(pkg.stars)
+        && pkg.stars.indexOf(loggedInUser.name) > -1;
+
+      pkg.isCollaboratedOnByUser = Boolean(loggedInUser)
+        && (typeof pkg.collaborators === "object")
+        && (loggedInUser.name in pkg.collaborators);
+
+      context.package = pkg;
+      return reply.view('package/show', context);
+
+    })
+    .catch(function(err){
       // unpaid collaborator
       if (err.statusCode === 402) {
         reply.redirect('/settings/billing?package='+name);
-        return promise.cancel();
+        return;
       }
 
       if (err.statusCode === 404) {
-        var package = npa(name);
-        package.available = false;
+        var pkg = npa(name);
+        pkg.available = false;
 
         if (!validate(name).validForNewPackages) {
-          context.package = package;
+          context.package = pkg;
           reply.view('errors/package-not-found', context).code(400);
-          return promise.cancel();
+          return;
         }
 
-        if (package.scope) {
-          package.owner = package.scope.slice(1);
+        if (pkg.scope) {
+          pkg.owner = pkg.scope.slice(1);
           if (loggedInUser) {
-            if (package.owner === loggedInUser.name) {
-              package.available = true;
+            if (pkg.owner === loggedInUser.name) {
+              pkg.available = true;
             } else {
-              package.unavailableToLoggedInUser = true;
+              pkg.unavailableToLoggedInUser = true;
             }
           } else {
-            package.unavailableToAnonymousUser = true;
+            pkg.unavailableToAnonymousUser = true;
           }
         } else {
-          package.available = true;
+          pkg.available = true;
         }
 
-        context.package = package;
+        context.package = pkg;
         reply.view('errors/package-not-found', context).code(404);
-        return promise.cancel();
+        return;
       }
 
       request.logger.error(err);
       reply.view('errors/internal', context).code(500);
-      return promise.cancel();
-    })
-    .then(function(p) {
-      package = p;
-
-      if (package.time && package.time.unpublished) {
-        request.logger.info('package is unpublished: ' + name);
-        reply.view('package/unpublished', context).code(404);
-        return promise.cancel();
-      }
-
-      var DEPENDENCY_TTL = 5 * 60; // 5 minutes
-      return Package.list({dependency: name, limit: 50}, DEPENDENCY_TTL);
-    })
-    .then(function(dependents) {
-      package.dependents = dependents;
-
-      if (dependents.results.length) {
-        package.numMoreDependents = package.dependentCount - dependents.results.length;
-      }
-
-      return Download.getAll(package.name);
-    })
-    .then(function(downloads) {
-
-      package.downloads = downloads;
-
-      package.isStarred = Boolean(loggedInUser)
-        && Array.isArray(package.stars)
-        && package.stars.indexOf(loggedInUser.name) > -1;
-
-      package.isCollaboratedOnByUser = Boolean(loggedInUser)
-        && (typeof package.collaborators === "object")
-        && (loggedInUser.name in package.collaborators);
-
-      context.package = package;
-      return reply.view('package/show', context);
+      return;
     });
 };
 

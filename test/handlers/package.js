@@ -26,6 +26,8 @@ describe("package handler", function(){
       .reply(200, fixtures.packages.browserify)
       .get('/package?dependency=browserify&limit=50').twice()
       .reply(200, fixtures.dependents)
+      .get('/package?dependency=%40zeke%2Fsecrets&limit=50')
+      .reply(200)
       .get('/package/nothingness')
       .reply(404)
       .get('/package/@zeke%2Fnope').twice()
@@ -36,6 +38,8 @@ describe("package handler", function(){
       .reply(404)
       .get('/package/hitler')
       .reply(200, fixtures.packages.hitler)
+      .get('/package?dependency=hitler&limit=50')
+      .reply(200)
       .get('/package/request').times(4)
       .reply(200, fixtures.packages.request)
       .get('/package?dependency=request&limit=50').times(4)
@@ -173,11 +177,11 @@ describe("package handler", function(){
     before(function(done){
       var packageMock = nock("https://user-api-example.com")
         .get('/package/@zeke%2Fsecrets')
-        .reply(402)
+        .reply(402);
 
       server.inject(options, function (response) {
-        packageMock.done()
-        resp = response
+        packageMock.done();
+        resp = response;
         done();
       });
     });
@@ -185,12 +189,12 @@ describe("package handler", function(){
     it('redirects to the billing page', function (done) {
       expect(resp.statusCode).to.equal(302);
       expect(URL.parse(resp.headers.location).pathname).to.equal("/settings/billing");
-      done()
+      done();
     });
 
     it('sets a `package` query param so a helpful message can be displayed', function (done) {
       expect(URL.parse(resp.headers.location, true).query.package).to.equal("@zeke/secrets");
-      done()
+      done();
     });
 
   });

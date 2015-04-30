@@ -7,7 +7,7 @@ var P = require('bluebird');
 var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
 var reach = require('steeltoe');
-var npm = require('@zeke/acl-client')();
+var npm = require('@npm/acl-client')();
 var chimp;
 
 var User = module.exports = function(opts) {

@@ -28,18 +28,6 @@ after(function (done) {
 });
 
 beforeEach(function(done) {
-  // nock.cleanAll();
-  // userMock = nock('https://user-api-example.com')
-  //   .get('/user/' + users.bob.name).times(3)
-  //   .reply(200, users.bob)
-  //   .post('/user/' + users.bob.name, users.bobUpdateBody)
-  //   .reply(200, users.bobUpdated)
-  //   .get('/user/' + users.bob.name)
-  //   .reply(200, users.bobUpdated)
-  //   .get('/user/' + users.bob.name + '/package?format=detailed&per_page=9999')
-  //   .reply(200, users.packages)
-  //   .get('/user/' + users.bob.name + '/stars?format=detailed')
-  //   .reply(200, users.stars);
     done();
 });
 
@@ -164,7 +152,6 @@ describe('modifying the profile', function () {
       };
 
       options.payload.crumb = crumb;
-
       options.payload.name = 'badguy';
       options.payload.email = 'badguy@bad.com';
 

@@ -107,11 +107,13 @@ describe('Looking up a user', function () {
     it('renders an error if the username doesn\'t exist', function (done) {
 
       var name = 'mr-perdido';
-      var mock = nock("https://user-api-example.com")
-        .get("/user/" + name)
-        .reply(404);
 
       generateCrumb(server, function (crumb){
+
+        var mock = nock("https://user-api-example.com")
+          .get("/user/" + name)
+          .reply(404);
+
         server.inject(postName(name, crumb), function (resp) {
           mock.done();
           var source = resp.request.response.source;
@@ -126,11 +128,12 @@ describe('Looking up a user', function () {
     it('renders an error if the user does not have an email address', function (done) {
       var name = 'early_user';
 
-      var mock = nock("https://user-api-example.com")
-        .get("/user/" + name)
-        .reply(200, users.no_email);
-
       generateCrumb(server, function (crumb){
+
+        var mock = nock("https://user-api-example.com")
+          .get("/user/" + name)
+          .reply(200, users.no_email);
+
         server.inject(postName(name, crumb), function (resp) {
           mock.done();
           var source = resp.request.response.source;
@@ -144,12 +147,12 @@ describe('Looking up a user', function () {
 
     it('renders an error if the user\'s email address is invalid', function (done) {
       var name = 'lolbademail';
-
-      var mock = nock("https://user-api-example.com")
-        .get("/user/" + name)
-        .reply(200, users.bad_email);
-
       generateCrumb(server, function (crumb){
+
+        var mock = nock("https://user-api-example.com")
+          .get("/user/" + name)
+          .reply(200, users.bad_email);
+
         server.inject(postName(name, crumb), function (resp) {
           mock.done();
           var source = resp.request.response.source;
@@ -164,11 +167,12 @@ describe('Looking up a user', function () {
     it('sends an email when everything finally goes right', function (done) {
       var name = 'bob';
 
-      var mock = nock("https://user-api-example.com")
-        .get("/user/" + name)
-        .reply(200, users.bob);
-
       generateCrumb(server, function (crumb){
+
+        var mock = nock("https://user-api-example.com")
+          .get("/user/" + name)
+          .reply(200, users.bob);
+
         server.inject(postName(name, crumb), function (resp) {
           mock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
@@ -183,11 +187,12 @@ describe('Looking up a user', function () {
     it('renders an error if the email doesn\'t exist', function (done) {
       var email = 'doesnotexist@boom.com';
 
-      var mock = nock("https://user-api-example.com")
-        .get("/user/" + email)
-        .reply(200, []);
-
       generateCrumb(server, function (crumb){
+
+        var mock = nock("https://user-api-example.com")
+          .get("/user/" + email)
+          .reply(200, []);
+
         server.inject(postName(email, crumb), function (resp) {
           mock.done();
           var source = resp.request.response.source;
@@ -202,11 +207,12 @@ describe('Looking up a user', function () {
     it('renders a list of usernames if the email matches more than one username', function (done) {
       var email = "bob@boom.me";
 
-      var mock = nock("https://user-api-example.com")
-        .get("/user/" + email)
-        .reply(200, ['bob', 'bobUpdated']);
-
       generateCrumb(server, function (crumb){
+
+        var mock = nock("https://user-api-example.com")
+          .get("/user/" + email)
+          .reply(200, ['bob', 'bobUpdated']);
+
         server.inject(postName(email, crumb), function (resp) {
           mock.done();
           var source = resp.request.response.source;
@@ -222,10 +228,6 @@ describe('Looking up a user', function () {
 
     it('sends an email when a username is chosen from the dropdown', function (done) {
 
-      var mock = nock("https://user-api-example.com")
-        .get("/user/bob")
-        .reply(200, users.bob);
-
       generateCrumb(server, function (crumb){
         var options = {
           url: '/forgot',
@@ -237,6 +239,11 @@ describe('Looking up a user', function () {
           headers: { cookie: 'crumb=' + crumb }
         };
 
+        var mock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, users.bob);
+
+
         server.inject(options, function (resp) {
           mock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
@@ -247,16 +254,16 @@ describe('Looking up a user', function () {
     });
 
     it('sends an email when everything finally goes right', function (done) {
-
       var email = "bob@boom.me";
 
-      var mock = nock("https://user-api-example.com")
-        .get("/user/" + email)
-        .reply(200, [users.bob])
-        .get("/user/bob")
-        .reply(200, users.bob);
-
       generateCrumb(server, function (crumb){
+
+        var mock = nock("https://user-api-example.com")
+          .get("/user/" + email)
+          .reply(200, [users.bob])
+          .get("/user/bob")
+          .reply(200, users.bob);
+
         server.inject(postName(email, crumb), function (resp) {
           mock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');

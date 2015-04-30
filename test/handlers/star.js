@@ -8,6 +8,7 @@ var generateCrumb = require("../handlers/crumb.js"),
     it = lab.test,
     expect = Code.expect,
     nock = require('nock'),
+    mocks = require('../helpers/mocks'),
     fixtures = require('../fixtures');
 
 var server, packageMock, userMock,
@@ -23,10 +24,6 @@ before(function (done) {
     .delete("/package/" + pkg + "/star")
     .reply(200);
 
-  userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(3)
-    .reply(200, user);
-
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -35,7 +32,6 @@ before(function (done) {
 
 after(function (done) {
   packageMock.done();
-  userMock.done();
   server.stop(done);
 });
 
@@ -53,6 +49,7 @@ describe('Accessing the star page via GET', function () {
   });
 
   it('goes to the userstar browse page for authorized users', function (done) {
+    var userMock = mocks.loggedInPaidUser(user);
     var opts = {
       url: '/star',
       credentials: user
@@ -106,7 +103,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
   });
 
   it('should star an unstarred package', function (done) {
-
+    var userMock = mocks.loggedInPaidUser(user);
     generateCrumb(server, function (crumb){
       var opts = {
         url: '/star',
@@ -121,6 +118,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       };
 
       server.inject(opts, function (resp) {
+        userMock.done();
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' starred ' + pkg);
         done();
@@ -129,7 +127,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
   });
 
   it('should unstar an starred package', function (done) {
-
+    var userMock = mocks.loggedInPaidUser(user);
     generateCrumb(server, function (crumb){
       var opts = {
         url: '/star',
@@ -144,6 +142,7 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       };
 
       server.inject(opts, function (resp) {
+        userMock.done();
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' unstarred ' + pkg);
         done();

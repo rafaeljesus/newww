@@ -53,3 +53,13 @@ mocks.profile = function(username) {
     .get('/user/'+username+'/stars?format=detailed')
     .reply(200, fixtures.users.stars);
 };
+
+mocks.happyCustomer = function(username) {
+  if (isObject(username)){
+    username = username.name;
+  }
+
+  return nock("https://license-api-example.com")
+    .get("/stripe/"+username)
+    .reply(200, fixtures.customers.happy);
+};

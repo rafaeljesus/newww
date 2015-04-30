@@ -14,7 +14,6 @@ var fixtures = require("../fixtures"),
     users = require('../fixtures').users,
     mocks = require('../helpers/mocks');
 
-nock.cleanAll();
 
 describe("package access", function(){
 
@@ -29,7 +28,7 @@ describe("package access", function(){
     server.stop(done);
   });
 
-  describe('features.feature_page disabled', function() {
+  describe('features.access_page disabled', function() {
 
     before(function(done){
       delete process.env.FEATURE_ACCESS_PAGE;
@@ -61,7 +60,6 @@ describe("package access", function(){
     var mock;
 
     before(function (done) {
-      nock.cleanAll();
       mock = nock("https://user-api-example.com")
         .get('/package/browserify')
         .times(3)
@@ -75,7 +73,6 @@ describe("package access", function(){
 
     after(function (done) {
       mock.done();
-      nock.cleanAll();
       done();
     });
 
@@ -126,8 +123,10 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        var userMock = mocks.loggedInPaidUser('bob');
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -172,7 +171,6 @@ describe("package access", function(){
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           userMock.done();
-          nock.cleanAll();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -287,13 +285,11 @@ describe("package access", function(){
       };
 
       before(function(done) {
-
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         var userMock = mocks.loggedInPaidUser('bob');
 
-        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           userMock.done();
-          nock.cleanAll();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -333,12 +329,13 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        var userMock = mocks.loggedInPaidUser(fixtures.users.ralph_the_reader);
-
         process.env.FEATURE_ACCESS_PAGE = 'true';
+        var userMock = mocks.loggedInPaidUser(fixtures.users.ralph_the_reader);
+        // var customerMock = mocks.happyCustomer('ralph_the_reader');
+
+
         server.inject(options, function(response) {
           userMock.done();
-          nock.cleanAll();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -376,16 +373,12 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
-        nock.cleanAll();
         var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
-        var customerMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer")
-          .reply(200, fixtures.customers.happy);
+        var customerMock = mocks.happyCustomer('wrigley_the_writer');
 
         server.inject(options, function(response) {
           userMock.done();
           customerMock.done();
-          nock.cleanAll();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -445,13 +438,9 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
         var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
-        var customerMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer")
-          .reply(404);
 
         server.inject(options, function(response) {
           userMock.done();
-          customerMock.done();
           $ = cheerio.load(response.result);
           done();
         });
@@ -525,12 +514,10 @@ describe("package access", function(){
       before(function(done) {
 
         var userMock = mocks.loggedInUnpaidUser('bob');
-        var userMock2 = mocks.loggedInUnpaidUser('bob');
 
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           userMock.done();
-          userMock2.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -556,9 +543,9 @@ describe("package access", function(){
       };
 
       before(function(done) {
-
-        var userMock = mocks.loggedInPaidUser(fixtures.users.ralph_the_reader);
         process.env.FEATURE_ACCESS_PAGE = 'true';
+        var userMock = mocks.loggedInPaidUser(fixtures.users.ralph_the_reader);
+
         server.inject(options, function(response) {
           userMock.done();
           resp = response;
@@ -582,8 +569,9 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
         process.env.FEATURE_ACCESS_PAGE = 'true';
+        var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
+
         server.inject(options, function(response) {
           userMock.done();
           resp = response;
@@ -614,15 +602,16 @@ describe("package access", function(){
       };
 
       before(function(done) {
+        process.env.FEATURE_ACCESS_PAGE = 'true';
         var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
-        var mock = nock("https://user-api-example.com")
+        var packageMock = nock("https://user-api-example.com")
           .get('/package/@wrigley_the_writer%2Fscoped_private')
           .reply(402);
 
-        process.env.FEATURE_ACCESS_PAGE = 'true';
+
         server.inject(options, function(response) {
           userMock.done();
-          mock.done();
+          packageMock.done();
           resp = response;
           delete process.env.FEATURE_ACCESS_PAGE;
           done();

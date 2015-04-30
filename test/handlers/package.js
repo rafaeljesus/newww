@@ -407,6 +407,7 @@ describe("package handler", function(){
 
     it('is displayed if user is a collaborator', function (done) {
 
+      var userMock = mocks.loggedInPaidUser('mikeal');
       var packageMock = nock("https://user-api-example.com")
         .get('/package/request').once()
         .reply(200, fixtures.packages.request)
@@ -419,6 +420,7 @@ describe("package handler", function(){
       };
 
       server.inject(options, function (resp) {
+        userMock.done();
         packageMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
@@ -449,6 +451,7 @@ describe("package handler", function(){
       delete process.env.FEATURE_ACCESS_PAGE;
 
       server.inject(options, function (resp) {
+        userMock.done();
         packageMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
@@ -522,9 +525,10 @@ describe("package handler", function(){
 
   describe('updating package access', function () {
     var options;
-    var userMock = mocks.loggedInPaidUser('mikeal');
+    var userMock;
 
     beforeEach(function(done){
+      userMock = mocks.loggedInPaidUser('mikeal');
       generateCrumb(server, function(crumb) {
         options = {
           method: "post",

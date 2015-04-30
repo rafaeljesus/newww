@@ -1,14 +1,14 @@
 var cheerio = require('cheerio'),
-    nock = require("nock"),
-    fixtures = require("../fixtures"),
-    Code = require('code'),
+    nock = require('nock'),
+    fixtures = require('../fixtures'),
+    mocks = require('../helpers/mocks'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect,
     server;
 
 before(function (done) {
@@ -23,34 +23,34 @@ after(function (done) {
 });
 
 describe('GET / for an anonymous user', function () {
-  var $
-  var resp
-  var options = {url: "/"}
-  var packageMock = nock("https://user-api-example.com")
-    .get('/package?sort=dependents')
-    .reply(200, fixtures.aggregates.most_depended_upon_packages)
-    .get('/package?sort=modified')
-    .reply(200, fixtures.aggregates.recently_updated_packages)
-    .get('/package/-/count')
-    .reply(200, 12345);
-  var downloadsMock = nock("https://downloads-api-example.com")
-    .get('/point/last-day')
-    .reply(200, fixtures.downloads.all.day)
-    .get('/point/last-week')
-    .reply(200, fixtures.downloads.all.week)
-    .get('/point/last-month')
-    .reply(200, fixtures.downloads.all.month);
+  var $;
+  var resp;
+  var options = {url: '/'};
 
   before(function(done){
-    server.inject(options, function (response) {
-      resp = response
-      $ = cheerio.load(resp.result)
-      packageMock.done()
-      downloadsMock.done()
-      done()
-    })
-  })
+    var packageMock = nock("https://user-api-example.com")
+      .get('/package?sort=dependents')
+      .reply(200, fixtures.aggregates.most_depended_upon_packages)
+      .get('/package?sort=modified')
+      .reply(200, fixtures.aggregates.recently_updated_packages)
+      .get('/package/-/count')
+      .reply(200, 12345);
+    var downloadsMock = nock("https://downloads-api-example.com")
+      .get('/point/last-day')
+      .reply(200, fixtures.downloads.all.day)
+      .get('/point/last-week')
+      .reply(200, fixtures.downloads.all.week)
+      .get('/point/last-month')
+      .reply(200, fixtures.downloads.all.month);
 
+    server.inject(options, function (response) {
+      resp = response;
+      $ = cheerio.load(resp.result);
+      packageMock.done();
+      downloadsMock.done();
+      done();
+    });
+  });
 
   it('gets there, no problem', function (done) {
     expect(resp.statusCode).to.equal(200);
@@ -71,7 +71,7 @@ describe('GET / for an anonymous user', function () {
   it('renders a data-filled template', function (done) {
     var context = resp.request.response.source.context;
     expect(context.totalPackages).to.be.a.number();
-    var $ = cheerio.load(resp.result)
+    var $ = cheerio.load(resp.result);
     expect($(".total-packages").text()).to.equal(String(context.totalPackages));
     done();
   });
@@ -85,17 +85,15 @@ describe('GET / for an anonymous user', function () {
 
 
 describe('GET / for a logged-in user', function () {
-  var $
-  var resp
+  var $;
+  var resp;
   var options = {
     url: "/",
     credentials: fixtures.users.mikeal
   }
 
   before(function(done){
-    var userMock = nock('https://user-api-example.com')
-      .get('/user/mikeal')
-      .reply(200, fixtures.users.mikeal);
+    var userMock = mocks.loggedInPaidUser('mikeal');
     var packageMock = nock("https://user-api-example.com")
       .get('/package?sort=dependents')
       .reply(200, fixtures.aggregates.most_depended_upon_packages)
@@ -112,14 +110,14 @@ describe('GET / for a logged-in user', function () {
       .reply(200, fixtures.downloads.all.month);
 
     server.inject(options, function (response) {
-      resp = response
-      $ = cheerio.load(resp.result)
-      userMock.done()
-      packageMock.done()
-      downloadsMock.done()
-      done()
-    })
-  })
+      resp = response;
+      $ = cheerio.load(resp.result);
+      userMock.done();
+      packageMock.done();
+      downloadsMock.done();
+      done();
+    });
+  });
 
   it("displays an avatar linking to the user's profile page", function (done) {
     expect($("#user-info a[href='/~mikeal'] img[src^='https://secure.gravatar']").length).to.equal(1);

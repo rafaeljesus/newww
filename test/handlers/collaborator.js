@@ -1,26 +1,19 @@
 var fixtures = require("../fixtures"),
+    wrigley = fixtures.collaborators.wrigley_the_writer,
     generateCrumb = require("./crumb.js"),
     Lab = require('lab'),
     nock = require('nock'),
-    Code = require('code'),
+    mocks = require('../helpers/mocks'),
+    expect = require('code').expect,
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     beforeEach = lab.beforeEach,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect,
-    server,
-    userMock;
-
-var ralph = fixtures.collaborators.ralph_the_reader;
-var wrigley = fixtures.collaborators.wrigley_the_writer;
+    server;
 
 before(function (done) {
-  userMock = nock("https://user-api-example.com")
-    .get('/user/bob').twice()
-    .reply(200, fixtures.users.bob);
-
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -28,7 +21,6 @@ before(function (done) {
 });
 
 after(function (done) {
-  userMock.done();
   server.stop(done);
 });
 
@@ -45,11 +37,13 @@ describe('GET /package/foo/collaborators', function () {
   });
 
   it('calls back with a JSON object containing collaborators', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var mock = nock("https://user-api-example.com")
       .get('/package/foo/collaborators')
       .reply(200, fixtures.collaborators);
 
     server.inject(options, function (resp) {
+      userMock.done();
       mock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborators.ralph_the_reader).to.be.an.object();
@@ -112,11 +106,13 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
   });
 
   it('calls back with a JSON object containing the updated collaborator', function (done) {
+    var userMock = mocks.loggedInPaidUser('bob');
     var mock = nock("https://user-api-example.com")
       .post('/package/zing/collaborators/wrigley_the_writer', wrigley)
       .reply(200, wrigley);
 
     server.inject(options, function (resp) {
+      userMock.done();
       mock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();

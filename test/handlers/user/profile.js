@@ -7,6 +7,7 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect,
     nock = require("nock"),
+    mocks = require('../../helpers/mocks'),
     cheerio = require("cheerio"),
     users = require('../../fixtures').users;
 
@@ -93,8 +94,10 @@ describe('GET /~bob for logged-in bob', function () {
   var context;
 
   before(function(done) {
+    var userMock = mocks.loggedInPaidUser('bob');
+
     var mock = nock("https://user-api-example.com")
-      .get('/user/bob').times(2)
+      .get('/user/bob')
       .reply(200, users.bob)
       .get('/user/bob/package?format=detailed&per_page=9999')
       .reply(200, users.packages)
@@ -102,11 +105,12 @@ describe('GET /~bob for logged-in bob', function () {
       .reply(200, users.stars);
 
     server.inject({url:'/~bob', credentials: users.bob}, function (response) {
+      userMock.done();
+      mock.done();
       resp = response;
       $ = cheerio.load(resp.result);
       context = resp.request.response.source.context;
       expect(resp.statusCode).to.equal(200);
-      mock.done();
       done();
     });
   });

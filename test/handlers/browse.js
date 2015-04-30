@@ -26,14 +26,16 @@ describe('browse handler', function () {
 
   describe("GET /browse/keyword/{keyword}", function() {
     var resp;
-    var mock = nock("https://user-api-example.com")
-      .get('/package?keyword=http&count=36&offset=0')
-      .reply(200, fixtures.browse.keyword);
     var opts = {
       url: "/browse/keyword/http",
     };
 
     before(function(done){
+
+      var mock = nock("https://user-api-example.com")
+        .get('/package?keyword=http&count=36&offset=0')
+        .reply(200, fixtures.browse.keyword);
+
       server.inject(opts, function(response) {
         resp = response;
         mock.done();
@@ -62,14 +64,15 @@ describe('browse handler', function () {
 
   describe("GET /browse/depended", function() {
     var resp;
-    var mock = nock("https://user-api-example.com")
-      .get('/package?sort=dependents&count=36&offset=0')
-      .reply(200, fixtures.browse.depended);
     var opts = {
       url: "/browse/depended",
     };
 
     before(function(done){
+      var mock = nock("https://user-api-example.com")
+        .get('/package?sort=dependents&count=36&offset=0')
+        .reply(200, fixtures.browse.depended);
+
       server.inject(opts, function(response) {
         resp = response;
         mock.done();
@@ -98,14 +101,16 @@ describe('browse handler', function () {
 
   describe("GET /browse/depended/{package}", function() {
     var resp;
-    var mock = nock("https://user-api-example.com")
-      .get('/package?dependency=express&count=36&offset=0')
-      .reply(200, fixtures.browse.package_dependents);
     var opts = {
       url: "/browse/depended/express",
     };
 
     before(function(done){
+
+      var mock = nock("https://user-api-example.com")
+        .get('/package?dependency=express&count=36&offset=0')
+        .reply(200, fixtures.browse.package_dependents);
+
       server.inject(opts, function(response) {
         resp = response;
         mock.done();
@@ -134,14 +139,15 @@ describe('browse handler', function () {
 
   describe("GET /browse/star", function() {
     var resp;
-    var mock = nock("https://user-api-example.com")
-      .get('/package?sort=stars&count=36&offset=0')
-      .reply(200, fixtures.browse.starred);
     var opts = {
       url: "/browse/star",
     };
 
     before(function(done){
+      var mock = nock("https://user-api-example.com")
+        .get('/package?sort=stars&count=36&offset=0')
+        .reply(200, fixtures.browse.starred);
+
       server.inject(opts, function(response) {
         resp = response;
         mock.done();
@@ -170,14 +176,15 @@ describe('browse handler', function () {
 
   describe("GET /browse/updated", function() {
     var resp;
-    var mock = nock("https://user-api-example.com")
-      .get('/package?sort=modified&count=36&offset=0')
-      .reply(200, fixtures.browse.recently_updated);
     var opts = {
       url: "/browse/updated",
     };
 
     before(function(done){
+      var mock = nock("https://user-api-example.com")
+        .get('/package?sort=modified&count=36&offset=0')
+        .reply(200, fixtures.browse.recently_updated);
+
       server.inject(opts, function(response) {
         resp = response;
         mock.done();
@@ -206,14 +213,15 @@ describe('browse handler', function () {
 
   describe("GET /browse/created", function() {
     var resp;
-    var mock = nock("https://user-api-example.com")
-      .get('/package?sort=created&count=36&offset=0')
-      .reply(200, fixtures.browse.recently_created);
     var opts = {
       url: "/browse/created",
     };
 
-    before(function(done){
+    before(function(done){      
+      var mock = nock("https://user-api-example.com")
+        .get('/package?sort=created&count=36&offset=0')
+        .reply(200, fixtures.browse.recently_created);
+
       server.inject(opts, function(response) {
         resp = response;
         mock.done();

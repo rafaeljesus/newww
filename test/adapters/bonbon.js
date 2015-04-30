@@ -8,6 +8,7 @@ var Code = require('code'),
     expect = Code.expect,
     fixtures = require('../fixtures'),
     mocks = require('../helpers/mocks'),
+    nock = require('nock'),
     server;
 
 beforeEach(function (done) {
@@ -65,12 +66,16 @@ describe("bonbon", function() {
     });
 
     it('gives people in the friends group access to beta and common features', function(done){
+      nock.cleanAll();
+      var userMock = mocks.loggedInPaidUser('mikeal');
       var options = {
         url: '/~bob',
         credentials: fixtures.users.mikeal
       };
 
       server.inject(options, function (resp) {
+        userMock.done();
+        nock.cleanAll();
         var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,
@@ -83,12 +88,16 @@ describe("bonbon", function() {
     });
 
     it('gives one-off listed friends access to beta and common features', function(done){
+      nock.cleanAll();
+      var userMock = mocks.loggedInPaidUser('bob');
       var options = {
         url: '/~bob',
         credentials: fixtures.users.bob
       };
 
       server.inject(options, function (resp) {
+        userMock.done();
+        nock.cleanAll();
         var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,
@@ -101,12 +110,14 @@ describe("bonbon", function() {
     });
 
     it('gives npm employees access to alpha, beta, and common features', function(done){
+      var userMock = mocks.loggedInPaidUser(fixtures.users.npmEmployee);
       var options = {
         url: '/~bob',
         credentials: fixtures.users.npmEmployee
       };
 
       server.inject(options, function (resp) {
+        userMock.done();
         var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,

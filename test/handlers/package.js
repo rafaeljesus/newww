@@ -15,8 +15,6 @@ var fixtures = require("../fixtures"),
     it = lab.test,
     server;
 
-nock.cleanAll();
-
 describe("package handler", function(){
 
   before(function (done) {
@@ -37,19 +35,18 @@ describe("package handler", function(){
 
     before(function(done){
       var packageMock = nock("https://user-api-example.com")
-        .get('/package/browserify').once()
+        .get('/package/browserify')
         .reply(200, fixtures.packages.browserify)
         .get('/package?dependency=browserify&limit=50').once()
         .reply(200, fixtures.dependents);
 
       var downloadsMock = nock("https://downloads-api-example.com")
-        .get('/point/last-day/browserify').once()
+        .get('/point/last-day/browserify')
         .reply(200, fixtures.downloads.browserify.day)
-        .get('/point/last-week/browserify').once()
+        .get('/point/last-week/browserify')
         .reply(200, fixtures.downloads.browserify.week)
-        .get('/point/last-month/browserify').once()
+        .get('/point/last-month/browserify')
         .reply(200, fixtures.downloads.browserify.month);
-
 
       server.inject(options, function (response) {
         packageMock.done();
@@ -166,11 +163,11 @@ describe("package handler", function(){
     var context;
     var options = {url: '/package/nothingness'};
 
-    var packageMock = nock("https://user-api-example.com")
-      .get('/package/nothingness')
-      .reply(404);
-
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/nothingness')
+        .reply(404);
+
       server.inject(options, function (response) {
         packageMock.done();
         resp = response;

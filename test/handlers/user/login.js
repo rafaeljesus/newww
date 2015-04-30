@@ -1,5 +1,5 @@
 var generateCrumb = require("../crumb"),
-    Code = require('code'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -8,8 +8,8 @@ var generateCrumb = require("../crumb"),
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
-    expect = Code.expect,
     nock = require("nock"),
+    mocks = require('../../helpers/mocks'),
     redis = require("../../../adapters/redis-sessions"),
     server,
     users = require('../../fixtures').users;
@@ -41,9 +41,7 @@ describe('Getting to the login page', function () {
   });
 
   it('redirects already authenticated users to their profile', function (done) {
-    var mock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, users.bob);
+    var userMock = mocks.loggedInPaidUser('bob');
 
     var options = {
       url: '/login',
@@ -51,7 +49,7 @@ describe('Getting to the login page', function () {
     };
 
     server.inject(options, function (resp) {
-      mock.done();
+      userMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.equal('/~bob');
       done();

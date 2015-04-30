@@ -83,11 +83,6 @@ describe('Confirming an email address', function () {
   });
 
   it('drops the token after confirming the email', function (done) {
-    var mock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, users.bob)
-      .post("/user/bob/verify", { verification_key: users.bob.verification_key })
-      .reply(200);
 
     var boom = JSON.stringify({
           name: 'bob',
@@ -98,6 +93,12 @@ describe('Confirming an email address', function () {
     var opts = {url: '/confirm-email/12345'};
 
     client.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, function () {
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, users.bob)
+        .post("/user/bob/verify", { verification_key: users.bob.verification_key })
+        .reply(200);
 
       server.inject(opts, function (resp) {
         mock.done();
@@ -114,12 +115,6 @@ describe('Confirming an email address', function () {
 
   it('goes to the email confirmation template on success', function (done) {
 
-    var mock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, users.bob)
-      .post("/user/bob/verify", { verification_key: users.bob.verification_key })
-      .reply(200);
-
     var boom = JSON.stringify({
           name: 'bob',
           email: 'boom@bang.com',
@@ -129,6 +124,12 @@ describe('Confirming an email address', function () {
     var opts = {url: '/confirm-email/12345'};
 
     client.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, function () {
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, users.bob)
+        .post("/user/bob/verify", { verification_key: users.bob.verification_key })
+        .reply(200);
 
       server.inject(opts, function (resp) {
         mock.done();
@@ -142,12 +143,6 @@ describe('Confirming an email address', function () {
 
   it('renders a twitter tracking snippet', function (done) {
 
-    var mock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, users.bob)
-      .post("/user/bob/verify", { verification_key: users.bob.verification_key })
-      .reply(200);
-
     var boom = JSON.stringify({
           name: 'bob',
           email: 'boom@bang.com',
@@ -157,6 +152,12 @@ describe('Confirming an email address', function () {
     var opts = {url: '/confirm-email/12345'};
 
     client.set('email_confirm_8cb2237d0679ca88db6464eac60da96345513964', boom, function () {
+
+      var mock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, users.bob)
+        .post("/user/bob/verify", { verification_key: users.bob.verification_key })
+        .reply(200);
 
       server.inject(opts, function (resp) {
         mock.done();

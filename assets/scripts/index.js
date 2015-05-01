@@ -20,6 +20,7 @@ require("./autoselect-inputs")();
 require("./package-access")();
 require("./buy-enterprise-license")();
 require("./twitter-tracking")();
+require("./fetch-packages")();
 
 window.github = require("./github")();
 window.star = require("./star")();

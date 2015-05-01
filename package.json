@@ -49,6 +49,7 @@
     "joi": "^5.1.0",
     "jquery": "^2.1.1",
     "leven": "^1.0.1",
+    "lodash": "^3.7.0",
     "mailchimp-api": "^2.0.7",
     "malarkey": "^1.1.0",
     "marky-markdown": "^5.0.2",

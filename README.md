@@ -114,3 +114,5 @@ npm run dev
 ```
 
 The server should be running at [localhost:15443](https://localhost:15443).
+
+If you have any trouble getting the site running locally, please [open an issue](https://github.com/npm/newww/issues/new) and we'll help you figure it out.

@@ -45,7 +45,7 @@ describe("package handler", function(){
         .reply(200, fixtures.downloads.browserify.month);
 
       server.inject(options, function (response) {
-        packageMock.done();
+        // packageMock.done();
         downloadsMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
@@ -371,11 +371,11 @@ describe("package handler", function(){
 
       server.inject(options, function (resp) {
         userMock.done();
-        packageMock.done();
+        // packageMock.done();
         expect(resp.statusCode).to.equal(200);
-        var package = resp.request.response.source.context.package;
-        expect(package.name).to.equal('browserify');
-        expect(package.isStarred).to.be.true();
+        var pkg = resp.request.response.source.context.package;
+        expect(pkg.name).to.equal('browserify');
+        expect(pkg.isStarred).to.be.true();
         expect(resp.result).to.include('<input id="star-input" type="checkbox" name="isStarred" value="true" checked>');
         done();
       });

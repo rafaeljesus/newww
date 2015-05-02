@@ -1,7 +1,5 @@
 var fixtures = require("../../fixtures"),
-    nock = require("nock"),
     cheerio = require("cheerio"),
-    URL = require('url'),
     Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
@@ -50,27 +48,16 @@ describe("package access", function(){
   });
 
   describe('global package', function() {
-
     var $;
     var resp;
     var context;
     var options = {url: '/package/browserify/access'};
-    var mock;
 
     before(function (done) {
-      mock = nock("https://user-api-example.com")
-        .get('/package/browserify')
-        .times(3)
-        .reply(200, fixtures.packages.browserify)
-        .get('/package/browserify/collaborators')
-        .times(3)
-        .reply(200, fixtures.collaborators);
-
       done();
     });
 
     after(function (done) {
-      mock.done();
       done();
     });
 
@@ -78,7 +65,10 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+        var packageMock = mocks.globalPackageWithCollaborators();
+
         server.inject(options, function(response) {
+          packageMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -122,9 +112,11 @@ describe("package access", function(){
 
       before(function(done) {
         var userMock = mocks.loggedInPaidUser('bob');
+        var packageMock = mocks.globalPackageWithCollaborators();
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           userMock.done();
+          packageMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -164,11 +156,13 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
-
         process.env.FEATURE_ACCESS_PAGE = 'true';
+        var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
+        var packageMock = mocks.globalPackageWithCollaborators();
+
         server.inject(options, function(response) {
           userMock.done();
+          packageMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);

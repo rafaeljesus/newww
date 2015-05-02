@@ -72,6 +72,16 @@ mocks.packageWithDependencies = function(name) {
     .reply(200, fixtures.dependents);
 };
 
+mocks.globalPackageWithCollaborators = function() {
+  return nock("https://user-api-example.com")
+    .get('/package/browserify')
+    .once()
+    .reply(200, fixtures.packages.browserify)
+    .get('/package/browserify/collaborators')
+    .once()
+    .reply(200, fixtures.collaborators);
+};
+
 mocks.scopedPublicPackageWithCollaborators = function() {
   return nock("https://user-api-example.com")
     .get('/package/@wrigley_the_writer%2Fscoped_public')

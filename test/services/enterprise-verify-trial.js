@@ -37,6 +37,7 @@ describe('verifying a trial in hubspot', function () {
         .reply(200, {verified: true});
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
+      hubspot.done();
       expect(err).to.not.exist();
       expect(verifiedTrial.verified).to.be.true();
       done();
@@ -52,6 +53,7 @@ describe('verifying a trial in hubspot', function () {
         .reply(200, {id: trialId, verified: true});
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
+      hubspot.done();
       expect(err).to.not.exist();
       expect(verifiedTrial.id).to.equal(trialId);
       expect(verifiedTrial.verified).to.be.true();
@@ -60,14 +62,14 @@ describe('verifying a trial in hubspot', function () {
   });
 
   it('returns an error for a verification key that does not exist', function (done) {
-    var verificationKey = '12-34-56',
-        trialId = 'ab-cd-ef';
+    var verificationKey = '12-34-56';
 
     var hubspot = nock('https://billing.website.com')
         .get('/trial/' + verificationKey)
         .reply(404);
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
+      hubspot.done();
       expect(err).to.exist();
       expect(err.message).to.equal('verification key not found');
       expect(verifiedTrial).to.not.exist();
@@ -76,14 +78,14 @@ describe('verifying a trial in hubspot', function () {
   });
 
   it('returns an error if there is a problem verifying the trial', function (done) {
-    var verificationKey = '12-34-56',
-        trialId = 'ab-cd-ef';
+    var verificationKey = '12-34-56';
 
     var hubspot = nock('https://billing.website.com')
         .get('/trial/' + verificationKey)
         .reply(400);
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
+      hubspot.done();
       expect(err).to.exist();
       expect(err.message).to.equal('problem verifying trial for ' + verificationKey);
       expect(verifiedTrial).to.not.exist();
@@ -102,6 +104,7 @@ describe('verifying a trial in hubspot', function () {
         .reply(400);
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
+      hubspot.done();
       expect(err).to.exist();
       expect(err.message).to.equal('problem starting trial for ' + trialId);
       expect(verifiedTrial).to.not.exist();

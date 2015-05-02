@@ -146,7 +146,7 @@ describe('Looking up a user', function () {
     });
 
     it('renders an error if the user\'s email address is invalid', function (done) {
-      var name = 'lolbademail';
+      var name = 'bad_email';
       generateCrumb(server, function (crumb){
 
         var mock = nock("https://user-api-example.com")

@@ -169,7 +169,7 @@ exports.no_email = {
 };
 
 exports.bad_email = {
-  name: 'lolbademail',
+  name: 'bad_email',
   email: 'lolbad@email',
   email_verified: null,
   verification_key: '12345',

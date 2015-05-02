@@ -34,11 +34,7 @@ describe("package handler", function(){
     var options = {url: '/package/browserify'};
 
     before(function(done){
-      var packageMock = nock("https://user-api-example.com")
-        .get('/package/browserify')
-        .reply(200, fixtures.packages.browserify)
-        .get('/package?dependency=browserify&limit=50').once()
-        .reply(200, fixtures.dependents);
+      var packageMock = mocks.packageWithDependencies('browserify');
 
       var downloadsMock = nock("https://downloads-api-example.com")
         .get('/point/last-day/browserify')
@@ -230,13 +226,13 @@ describe("package handler", function(){
     var $;
     var resp;
     var context;
-    var userMock = mocks.loggedInPaidUser('bob');
     var options = {
       url: '/package/@zeke/nope',
       credentials: fixtures.users.bob
     };
 
     before(function(done){
+      var userMock = mocks.loggedInPaidUser('bob');
       server.inject(options, function (response) {
         userMock.done();
         resp = response;
@@ -264,13 +260,13 @@ describe("package handler", function(){
     var $;
     var resp;
     var context;
-    var userMock = mocks.loggedInPaidUser('bob');
     var options = {
       url: '/package/@bob/nope',
       credentials: fixtures.users.bob
     };
 
     before(function(done){
+      var userMock = mocks.loggedInPaidUser('bob');
       server.inject(options, function (response) {
         userMock.done;
         resp = response;
@@ -366,12 +362,7 @@ describe("package handler", function(){
   describe('star', function () {
     it('is active if the user is logged in and has starred the package', function (done) {
       var userMock = mocks.loggedInPaidUser('bcoe');
-
-      var packageMock = nock("https://user-api-example.com")
-        .get('/package/browserify').once()
-        .reply(200, fixtures.packages.browserify)
-        .get('/package?dependency=browserify&limit=50').once()
-        .reply(200, fixtures.dependents);
+      var packageMock = mocks.packageWithDependencies('browserify');
 
       var options = {
         url: '/package/browserify',
@@ -405,11 +396,7 @@ describe("package handler", function(){
     it('is displayed if user is a collaborator', function (done) {
 
       var userMock = mocks.loggedInPaidUser('mikeal');
-      var packageMock = nock("https://user-api-example.com")
-        .get('/package/request').once()
-        .reply(200, fixtures.packages.request)
-        .get('/package?dependency=request&limit=50').once()
-        .reply(200, fixtures.dependents);
+      var packageMock = mocks.packageWithDependencies('request');
 
       var options = {
         url: '/package/request',
@@ -433,12 +420,7 @@ describe("package handler", function(){
 
     it('is not displayed if FEATURE_ACCESS_PAGE is not set', function (done) {
       var userMock = mocks.loggedInPaidUser('mikeal');
-
-      var packageMock = nock("https://user-api-example.com")
-        .get('/package/request').once()
-        .reply(200, fixtures.packages.request)
-        .get('/package?dependency=request&limit=50').once()
-        .reply(200, fixtures.dependents);
+      var packageMock = mocks.packageWithDependencies('request');
 
       var options = {
         url: '/package/request',
@@ -464,13 +446,7 @@ describe("package handler", function(){
 
     it('is not displayed if user is logged in but not a collaborator', function (done) {
       var userMock = mocks.loggedInPaidUser('bob');
-
-      var packageMock = nock("https://user-api-example.com")
-        .get('/package/request').once()
-        .reply(200, fixtures.packages.request)
-        .get('/package?dependency=request&limit=50').once()
-        .reply(200, fixtures.dependents);
-
+      var packageMock = mocks.packageWithDependencies('request');
 
       var options = {
         url: '/package/request',
@@ -493,13 +469,7 @@ describe("package handler", function(){
 
 
     it('is not displayed if user is not logged in', function (done) {
-
-      var packageMock = nock("https://user-api-example.com")
-        .get('/package/request').once()
-        .reply(200, fixtures.packages.request)
-        .get('/package?dependency=request&limit=50').once()
-        .reply(200, fixtures.dependents);
-
+      var packageMock = mocks.packageWithDependencies('request');
       var options = {
         url: '/package/request',
       };

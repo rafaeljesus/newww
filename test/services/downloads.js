@@ -7,7 +7,7 @@ var Code = require('code'),
   it = lab.test,
   expect = Code.expect,
   nock = require('nock'),
-  downloadsHost = 'https://not-the-real.npmjs.org',
+  downloadsHost = 'https://api.npmjs.com',
   fixtures = require("../fixtures");
 
 var Hapi = require('hapi'),

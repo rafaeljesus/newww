@@ -41,7 +41,6 @@ describe('Getting to the login page', function () {
   });
 
   it('redirects already authenticated users to their profile', function (done) {
-    var userMock = mocks.loggedInPaidUser('bob');
 
     var options = {
       url: '/login',
@@ -49,7 +48,6 @@ describe('Getting to the login page', function () {
     };
 
     server.inject(options, function (resp) {
-      userMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.equal('/~bob');
       done();

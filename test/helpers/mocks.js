@@ -63,3 +63,21 @@ mocks.happyCustomer = function(username) {
     .get("/stripe/"+username)
     .reply(200, fixtures.customers.happy);
 };
+
+mocks.packageWithDependencies = function(name) {
+  return nock("https://user-api-example.com")
+    .get('/package/'+name).once()
+    .reply(200, fixtures.packages[name])
+    .get('/package?dependency='+name+'&limit=50').once()
+    .reply(200, fixtures.dependents);
+};
+
+mocks.scopedPublicPackageWithCollaborators = function() {
+  return nock("https://user-api-example.com")
+    .get('/package/@wrigley_the_writer%2Fscoped_public')
+    .once()
+    .reply(200, fixtures.packages.wrigley_scoped_public)
+    .get('/package/@wrigley_the_writer%2Fscoped_public/collaborators')
+    .once()
+    .reply(200, fixtures.collaborators);
+};

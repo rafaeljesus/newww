@@ -66,7 +66,6 @@ describe("bonbon", function() {
     });
 
     it('gives people in the friends group access to beta and common features', function(done){
-      nock.cleanAll();
       var userMock = mocks.loggedInPaidUser('mikeal');
       var options = {
         url: '/~bob',
@@ -75,7 +74,6 @@ describe("bonbon", function() {
 
       server.inject(options, function (resp) {
         userMock.done();
-        nock.cleanAll();
         var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,
@@ -88,7 +86,6 @@ describe("bonbon", function() {
     });
 
     it('gives one-off listed friends access to beta and common features', function(done){
-      nock.cleanAll();
       var userMock = mocks.loggedInPaidUser('bob');
       var options = {
         url: '/~bob',
@@ -97,7 +94,6 @@ describe("bonbon", function() {
 
       server.inject(options, function (resp) {
         userMock.done();
-        nock.cleanAll();
         var context = resp.request.response.source.context;
         expect(context.features).to.deep.equal({
           stealth: false,

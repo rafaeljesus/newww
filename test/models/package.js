@@ -1,11 +1,11 @@
-var Code = require('code'),
+var expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
-    expect = Code.expect,
+
     nock = require("nock"),
     fixtures = require("../fixtures"),
     Package;

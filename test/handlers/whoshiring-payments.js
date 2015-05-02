@@ -1,15 +1,12 @@
 var generateCrumb = require("./crumb.js"),
-    Code = require('code'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var server;
-
+    server;
 
 before(function (done) {
   require('../mocks/server')(function (obj) {

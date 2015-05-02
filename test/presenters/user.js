@@ -1,9 +1,9 @@
-var Code = require('code'),
+var expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     it = lab.test,
-    expect = Code.expect,
+
     present = require(__dirname + "/../../presenters/user"),
     fixtures = require(__dirname + "/../fixtures.js");
 

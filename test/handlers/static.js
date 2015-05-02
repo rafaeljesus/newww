@@ -1,12 +1,12 @@
 var fixtures = require("../fixtures"),
-    Code = require('code'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
-    expect = Code.expect,
+
     server;
 
 describe('static routes', function () {

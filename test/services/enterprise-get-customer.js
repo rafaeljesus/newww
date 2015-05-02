@@ -1,20 +1,17 @@
-var Code = require('code'),
+var expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
-    nock = require('nock');
-
-var server;
+    nock = require('nock'),
+    server;
 
 before(function (done) {
-  process.env.LICENSE_API = "https://billing.website.com"
+  process.env.LICENSE_API = "https://billing.website.com";
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9111' });
 
@@ -25,7 +22,7 @@ before(function (done) {
 
 after(function (done) {
   delete process.env.LICENSE_API;
-  done()
+  done();
 });
 
 describe('getting a customer from hubspot', function () {
@@ -34,7 +31,7 @@ describe('getting a customer from hubspot', function () {
 
     var hubspot = nock('https://billing.website.com')
       .get('/customer/' + email)
-      .reply(200, {name: "boom"})
+      .reply(200, {name: "boom"});
 
     server.methods.npme.getCustomer(email, function (err, customer) {
 
@@ -50,7 +47,7 @@ describe('getting a customer from hubspot', function () {
 
     var hubspot = nock('https://billing.website.com')
       .get('/customer/' + email)
-      .reply(404)
+      .reply(404);
 
     server.methods.npme.getCustomer(email, function (err, customer) {
 
@@ -65,12 +62,12 @@ describe('getting a customer from hubspot', function () {
 
     var hubspot = nock('https://billing.website.com')
       .get('/customer/' + email)
-      .reply(400)
+      .reply(400);
 
     server.methods.npme.getCustomer(email, function (err, customer) {
 
       expect(err).to.exist();
-      expect(err.message).to.equal("unexpected status code: 400")
+      expect(err.message).to.equal("unexpected status code: 400");  
       expect(customer).to.not.exist();
       done();
     });

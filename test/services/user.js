@@ -1,10 +1,10 @@
-var Code = require('code'),
+var expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     it = lab.test,
-    expect = Code.expect,
+
     sinon = require('sinon');
 
 var Hapi = require('hapi'),

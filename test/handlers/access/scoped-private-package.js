@@ -2,14 +2,14 @@ var fixtures = require("../../fixtures"),
     nock = require("nock"),
     cheerio = require("cheerio"),
     URL = require('url'),
-    Code = require('code'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect,
+
     server,
     mocks = require('../../helpers/mocks');
 

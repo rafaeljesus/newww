@@ -1,4 +1,4 @@
-var Code = require('code'),
+var expect = require('code').expect,
     nock = require('nock'),
     fixtures = require("../fixtures"),
     Lab = require('lab'),
@@ -7,10 +7,7 @@ var Code = require('code'),
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var server;
-
+    server;
 
 before(function (done) {
   require('../mocks/server')(function (obj) {

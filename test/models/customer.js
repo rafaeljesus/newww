@@ -1,4 +1,4 @@
-var Code = require('code'),
+var expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -7,7 +7,7 @@ var Code = require('code'),
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
-    expect = Code.expect,
+
     nock = require("nock");
 
 var Customer = new (require("../../models/customer"))({

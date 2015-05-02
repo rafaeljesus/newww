@@ -1,14 +1,11 @@
-var Code = require('code'),
+var expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var server;
-
+    server;
 
 before(function (done) {
   require('../mocks/server')(function (obj) {
@@ -142,4 +139,3 @@ describe('Getting to the enterprise license purchase page', function () {
     });
   });
 });
-

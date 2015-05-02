@@ -1,20 +1,17 @@
-var Code = require('code'),
+var expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect;
-
-var Hapi = require('hapi'),
+    Hapi = require('hapi'),
     npme = require('../../services/npme'),
-    nock = require('nock');
-
-var server;
+    nock = require('nock'),
+    server;
 
 before(function (done) {
-  process.env.LICENSE_API = 'https://billing.website.com'
+  process.env.LICENSE_API = 'https://billing.website.com';
   server = new Hapi.Server();
   server.connection({ host: 'localhost', port: '9116' });
 
@@ -26,7 +23,7 @@ before(function (done) {
 after(function(done){
   delete process.env.LICENSE_API;
   done();
-})
+});
 
 describe('verifying a trial in hubspot', function () {
   it('returns a trial when a customer submits a valid verification key', function (done) {
@@ -37,7 +34,7 @@ describe('verifying a trial in hubspot', function () {
         .get('/trial/' + verificationKey)
         .reply(200, {id: trialId})
         .put('/trial/' + trialId + '/verification')
-        .reply(200, {verified: true})
+        .reply(200, {verified: true});
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.not.exist();
@@ -52,7 +49,7 @@ describe('verifying a trial in hubspot', function () {
 
     var hubspot = nock('https://billing.website.com')
         .get('/trial/' + verificationKey)
-        .reply(200, {id: trialId, verified: true})
+        .reply(200, {id: trialId, verified: true});
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.not.exist();
@@ -68,7 +65,7 @@ describe('verifying a trial in hubspot', function () {
 
     var hubspot = nock('https://billing.website.com')
         .get('/trial/' + verificationKey)
-        .reply(404)
+        .reply(404);
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.exist();
@@ -84,7 +81,7 @@ describe('verifying a trial in hubspot', function () {
 
     var hubspot = nock('https://billing.website.com')
         .get('/trial/' + verificationKey)
-        .reply(400)
+        .reply(400);
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.exist();
@@ -102,7 +99,7 @@ describe('verifying a trial in hubspot', function () {
         .get('/trial/' + verificationKey)
         .reply(200, {id: trialId})
         .put('/trial/' + trialId + '/verification')
-        .reply(400)
+        .reply(400);
 
     server.methods.npme.verifyTrial(verificationKey, function (err, verifiedTrial) {
       expect(err).to.exist();

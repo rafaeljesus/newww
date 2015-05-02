@@ -1,7 +1,7 @@
 var fixtures = require("../fixtures"),
     nock = require("nock"),
     cheerio = require("cheerio"),
-    Code = require('code'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -10,7 +10,7 @@ var fixtures = require("../fixtures"),
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
-    expect = Code.expect,
+
     server;
 
 describe("monitoring", function(){

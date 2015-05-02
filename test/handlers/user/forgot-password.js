@@ -1,12 +1,12 @@
 var generateCrumb = require("../crumb"),
-    Code = require('code'),
+    expect = require('code').expect,
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     before = lab.before,
     after = lab.after,
     it = lab.test,
-    expect = Code.expect,
+
     nock = require('nock'),
     users = require('../../fixtures').users;
 

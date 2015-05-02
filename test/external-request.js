@@ -1,10 +1,10 @@
 var Lab = require('lab'),
-    Code = require('code'),
+    expect = require('code').expect,
     nock = require('nock'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     it = lab.test,
-    expect = Code.expect,
+
     Request = require('../lib/external-request'),
     sinon = require('sinon');
 

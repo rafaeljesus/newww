@@ -283,43 +283,43 @@ describe('GET /settings/billing', function () {
 
   });
 
-  // describe("unpaid user", function(){
-  //   var resp;
-  //   var $;
-  //
-  //   beforeEach(function(done){
-  //     var userMock = mocks.loggedInUnpaidUser(fixtures.users.norbert_newbie);
-  //     options.credentials = fixtures.users.norbert_newbie;
-  //
-  //     server.inject(options, function (response) {
-  //       userMock.done();
-  //       resp = response;
-  //       $ = cheerio.load(resp.result);
-  //       done();
-  //     });
-  //   });
-  //
-  //   it("does not display billing info, because it does not exist", function(done) {
-  //     expect($("body").length).to.equal(1);
-  //     expect($(".card-info").length).to.equal(0);
-  //     expect($(".card-brand").length).to.equal(0);
-  //     expect($(".card-exp-month").length).to.equal(0);
-  //     expect($(".card-exp-year").length).to.equal(0);
-  //     done();
-  //   });
-  //
-  //   it("displays a submit button with creation verbiage", function(done){
-  //     expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
-  //     done();
-  //   });
-  //
-  //   it("does not render a cancellation form", function(done) {
-  //     var form = $("#cancel-subscription");
-  //     expect(form.length).to.equal(0);
-  //     done();
-  //   });
-  //
-  // });
+  describe("unpaid user", function(){
+    var resp;
+    var $;
+
+    beforeEach(function(done){
+      var userMock = mocks.loggedInUnpaidUser(fixtures.users.norbert_newbie);
+      options.credentials = fixtures.users.norbert_newbie;
+
+      server.inject(options, function (response) {
+        userMock.done();
+        resp = response;
+        $ = cheerio.load(resp.result);
+        done();
+      });
+    });
+
+    it("does not display billing info, because it does not exist", function(done) {
+      expect($("body").length).to.equal(1);
+      expect($(".card-info").length).to.equal(0);
+      expect($(".card-brand").length).to.equal(0);
+      expect($(".card-exp-month").length).to.equal(0);
+      expect($(".card-exp-year").length).to.equal(0);
+      done();
+    });
+
+    it("displays a submit button with creation verbiage", function(done){
+      expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
+      done();
+    });
+
+    it("does not render a cancellation form", function(done) {
+      var form = $("#cancel-subscription");
+      expect(form.length).to.equal(0);
+      done();
+    });
+
+  });
 
   describe("user with unverified email", function(){
     var resp;

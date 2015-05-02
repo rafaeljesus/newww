@@ -81,3 +81,13 @@ mocks.scopedPublicPackageWithCollaborators = function() {
     .once()
     .reply(200, fixtures.collaborators);
 };
+
+mocks.scopedPrivatePackageWithCollaborators = function() {
+  return nock("https://user-api-example.com")
+    .get('/package/@wrigley_the_writer%2Fscoped_private')
+    .once()
+    .reply(200, fixtures.packages.wrigley_scoped_private)
+    .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
+    .once()
+    .reply(200, fixtures.collaborators);
+};

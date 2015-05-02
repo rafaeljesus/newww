@@ -37,16 +37,10 @@ describe('scoped private package', function() {
 
     before(function(done) {
       process.env.FEATURE_ACCESS_PAGE = 'true';
-
-      var mock = nock("https://user-api-example.com")
-        .get('/package/@wrigley_the_writer%2Fscoped_private')
-        .times(10)
-        .reply(200, fixtures.packages.wrigley_scoped_private)
-        .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
-        .times(10)
-        .reply(200, fixtures.collaborators);
+      var packageMock = mocks.scopedPrivatePackageWithCollaborators();
 
       server.inject(options, function(response) {
+        packageMock.done();
         resp = response;
         context = resp.request.response.source.context;
         $ = cheerio.load(resp.result);
@@ -72,12 +66,13 @@ describe('scoped private package', function() {
     };
 
     before(function(done) {
-
       var userMock = mocks.loggedInUnpaidUser('bob');
+      var packageMock = mocks.scopedPrivatePackageWithCollaborators();
 
       process.env.FEATURE_ACCESS_PAGE = 'true';
       server.inject(options, function(response) {
         userMock.done();
+        packageMock.done();
         resp = response;
         context = resp.request.response.source.context;
         $ = cheerio.load(resp.result);
@@ -105,9 +100,11 @@ describe('scoped private package', function() {
     before(function(done) {
       process.env.FEATURE_ACCESS_PAGE = 'true';
       var userMock = mocks.loggedInPaidUser(fixtures.users.ralph_the_reader);
+      var packageMock = mocks.scopedPrivatePackageWithCollaborators();
 
       server.inject(options, function(response) {
         userMock.done();
+        packageMock.done();
         resp = response;
         context = resp.request.response.source.context;
         $ = cheerio.load(resp.result);
@@ -131,9 +128,11 @@ describe('scoped private package', function() {
     before(function(done) {
       process.env.FEATURE_ACCESS_PAGE = 'true';
       var userMock = mocks.loggedInPaidUser(fixtures.users.wrigley_the_writer);
+      var packageMock = mocks.scopedPrivatePackageWithCollaborators();
 
       server.inject(options, function(response) {
         userMock.done();
+        packageMock.done();
         resp = response;
         context = resp.request.response.source.context;
         $ = cheerio.load(resp.result);
@@ -167,7 +166,6 @@ describe('scoped private package', function() {
       var packageMock = nock("https://user-api-example.com")
         .get('/package/@wrigley_the_writer%2Fscoped_private')
         .reply(402);
-
 
       server.inject(options, function(response) {
         userMock.done();

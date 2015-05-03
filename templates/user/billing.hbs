@@ -25,6 +25,8 @@
       <br/><br/>
       Please run `npm login` on the command line (even if you are already logged in) to get all the benefits of private npm!
     </p>
+  {{else}}
+    {{> twitter-tracking pid='l5xz2'}}
   {{/if}}
 
   {{#if package}}
@@ -88,7 +90,7 @@
   {{> errors}}
 
   {{#if user.email_verified}}
-    {{> twitter-tracking pid='l5xz2'}}
+    {{> twitter-tracking pid='l5ybn'}}
 
     <p class="error billing-error" style="display:none;"></p>
 

@@ -11,5 +11,7 @@ $(function(){
       console.log("tracking twitter conversion: " + pid);
       twttr.conversion.trackPid(pid);
     }
+  } else {
+    console.log("twttr is not ready");
   }
 });

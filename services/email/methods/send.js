@@ -7,7 +7,7 @@ var log = require('bole')('email-send'),
 var send = module.exports = function send (template, data, redis) {
 
   var mailOpts = _.extend({}, {
-    from: "support@npmjs.com",
+    from: "website@npmjs.com",
     host: process.env.CANONICAL_HOST
   }, data);
 

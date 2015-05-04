@@ -97,10 +97,22 @@ We're using semi-colons and comma-last. No rhyme or reason; just cuz.
 
 ## Running the server locally
 
+It is not currently possible for non-employees to run the development server. This is being tracked at [github.com/npm/newww/issues/761](https://github.com/npm/newww/issues/761).
+
 ```sh
+# run redis in a background process
+redis-server&
+
+# copy environment-based config/secrets
 cp .env.example .env
+
+# install deps
 npm install
+
+# run the hapi server
 npm run dev
 ```
 
 The server should be running at [localhost:15443](https://localhost:15443).
+
+If you have any trouble getting the site running locally, please [open an issue](https://github.com/npm/newww/issues/new) and we'll help you figure it out.

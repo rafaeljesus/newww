@@ -41,7 +41,7 @@ A rudimentary localization effort is under way. The [locales](locales) directory
 
 ### Content Security Policy (CSP)
 
-We use the [blankie](https://github.com/nlf/blankie) Hapi plugin to enforce a strict content security policy that disallows execution of unsafe Javascript. It's defined in [config.js](config.js).
+We use the [blankie](https://github.com/nlf/blankie) Hapi plugin to enforce a strict content security policy that disallows execution of unsafe Javascript. It's defined in [csp.js](lib/csp.js).
 
 ### Routes
 

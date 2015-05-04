@@ -176,7 +176,7 @@ Be wary of comments. They may be a sign of unnecessary complexity.
 ## Quotes
 
 While quotes for URLs and multi-word font names are optional in CSS, we find quotes to be
-visually clearer. Please used double quotes instead of single quotes.
+visually clearer. Please use double quotes instead of single quotes.
 
 ```css
 /* good */
@@ -201,13 +201,13 @@ visually clearer. Please used double quotes instead of single quotes.
 ## Vendor Prefixes
 
 We don't have to think about vendor prefixes, because they're applied
-automatically by [nib](http://visionmedia.github.io/nib/).  
+automatically by [nib](http://tj.github.io/nib/).  
 
 ## Performance
 
 ### Specificity
 
-Although in the name (cascading style sheets) cascading can introduce
+Although in the name (cascading style sheets), cascading can introduce
 unnecessary performance overhead for applying styles. Take the following
 example:
 
@@ -218,9 +218,9 @@ ul.user-list li span a:hover { color: red; }
 Styles are resolved during the renderer's layout pass. The selectors are
 resolved right to left, exiting when it has been detected the selector does
 not match. Therefore, in this example every `a` tag has to be inspected to see
-if it resides inside a `span` and a `li`. As you can imagine this requires a
-lot of DOM walking and and for large documents can cause a significant
-increase in the layout time.
+if it resides inside a `span` and a `li`. As you can imagine, this requires a
+lot of DOM walking which, for large documents, can cause a significant
+increase in layout time.
 
 If we know we want to give all `a` elements inside the `.user-list` red on
 hover we can simplify this style to:

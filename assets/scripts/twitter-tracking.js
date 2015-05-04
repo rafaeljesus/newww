@@ -4,14 +4,20 @@
   l5ybn: email verified
 */
 
-$(function(){
-  if (typeof twttr === "object" && twttr.conversion && twttr.conversion.trackPid) {
-    var pid = $("[data-twitter-pid]").data('twitterPid');
-    if (pid) {
-      console.log("tracking twitter conversion: " + pid);
-      twttr.conversion.trackPid(pid);
+module.exports = function() {
+
+  $(function(){
+    if (typeof twttr === "object" && twttr.conversion && twttr.conversion.trackPid) {
+      var pid = $("[data-twitter-pid]").data('twitterPid');
+      if (pid) {
+        console.log("tracking twitter conversion: " + pid);
+        twttr.conversion.trackPid(pid);
+      } else {
+        console.log("twttr is ready, but there's no pid", $("[data-twitter-pid]").data('twitterPid'));
+      }
+    } else {
+      console.log("twttr is not ready");
     }
-  } else {
-    console.log("twttr is not ready");
-  }
-});
+  });
+
+};

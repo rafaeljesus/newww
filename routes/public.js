@@ -201,17 +201,17 @@ var publicRoutes = [
     method: "GET",
     handler: require('../facets/registry/show-search')
   },{
-    path: "/~{name}",
+    paths: [
+      "/~{name}",
+      "/profile/{name}",
+      "/~/{name}"
+    ],
     method: "GET",
     handler: require('../facets/user/show-profile')
   },{
-    path: "/profile/{name}",
+    path: "/profile/{name}/packages",
     method: "GET",
-    handler: require('../facets/user/show-profile')
-  },{
-    path: "/~/{name}",
-    method: "GET",
-    handler: require('../facets/user/show-profile')
+    handler: require('../facets/user/show-packages')
   },{
     path: "/signup",
     method: "GET",

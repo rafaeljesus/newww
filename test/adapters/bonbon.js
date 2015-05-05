@@ -37,7 +37,7 @@ describe("bonbon", function() {
     .reply(200, fixtures.users.bob)
     .get('/user/seldo').times(3)
     .reply(200, fixtures.users.npmEmployee)
-    .get('/user/bob/package?format=detailed&per_page=9999').times(6)
+    .get('/user/bob/package?format=mini&per_page=100&page=0').times(6)
     .reply(200, fixtures.users.packages)
     .get('/user/bob/stars?format=detailed').times(6)
     .reply(200, fixtures.users.stars)

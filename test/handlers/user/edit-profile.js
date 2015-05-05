@@ -37,7 +37,7 @@ beforeEach(function(done) {
     .reply(200, users.bobUpdated)
     .get('/user/' + users.bob.name)
     .reply(200, users.bobUpdated)
-    .get('/user/' + users.bob.name + '/package?format=detailed&per_page=9999')
+    .get('/user/' + users.bob.name + '/package?format=mini&per_page=100&page=0')
     .reply(200, users.packages)
     .get('/user/' + users.bob.name + '/stars?format=detailed')
     .reply(200, users.stars);

@@ -16,6 +16,9 @@
           <a href="/package/{{name}}">{{truncate name 50}}</a> {{description}}
         </li>
       {{/each}}
+      {{#if packages.hasMore}}
+        <a href="#" class="button fetch-more-packages">view more packages</a>
+      {{/if}}
     </ul>
   {{/if}}
 

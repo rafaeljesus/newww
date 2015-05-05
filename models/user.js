@@ -110,7 +110,7 @@ User.prototype.get = function(name, options, callback) {
     user = decorate(_user);
     var actions = {};
     if (options.stars) { actions.stars = _this.getStars(user.name); }
-    if (options.packages) { actions.packages = _this.getPackages(user.name); }
+    if (options.packages) { actions.packages = _this.getPackages(user.name, 0); }
 
     return P.props(actions);
   })
@@ -123,16 +123,24 @@ User.prototype.get = function(name, options, callback) {
   .nodeify(callback);
 };
 
-User.prototype.getPackages = function(name, callback) {
+User.prototype.getPackages = function(name, page, callback) {
   var _this = this;
   var url = fmt('%s/user/%s/package', this.host, name);
 
+  if (typeof page === 'function' || typeof page === 'undefined') {
+    callback = page;
+    page = 0;
+  }
+
   return new P(function(resolve, reject) {
+    var PER_PAGE = 100;
+
     var opts = {
       url: url,
       qs: {
-        format: 'detailed',
-        per_page: 9999
+        format: 'mini',
+        per_page: PER_PAGE,
+        page: page
       },
       json: true
     };
@@ -147,6 +155,13 @@ User.prototype.getPackages = function(name, callback) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
+
+      var num = _.get(body, 'items.length');
+
+      if (+num * (+page + 1) < body.count && num >= PER_PAGE) {
+        body.hasMore = true;
+      }
+
       return resolve(body);
     });
   }).nodeify(callback);

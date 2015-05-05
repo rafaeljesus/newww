@@ -5,7 +5,6 @@
 */
 
 module.exports = function() {
-
   $(function(){
     if (typeof twttr === "object" && twttr.conversion && twttr.conversion.trackPid) {
       var pid = $("[data-twitter-pid]").data('twitterPid');
@@ -15,9 +14,6 @@ module.exports = function() {
       } else {
         console.log("twttr is ready, but there's no pid", $("[data-twitter-pid]").data('twitterPid'));
       }
-    } else {
-      console.log("twttr is not ready");
     }
   });
-
 };

@@ -127,6 +127,11 @@ User.prototype.getPackages = function(name, page, callback) {
   var _this = this;
   var url = fmt('%s/user/%s/package', this.host, name);
 
+  if (typeof page === 'function' || typeof page === 'undefined') {
+    callback = page;
+    page = 0;
+  }
+
   return new P(function(resolve, reject) {
     var PER_PAGE = 100;
 
@@ -135,7 +140,7 @@ User.prototype.getPackages = function(name, page, callback) {
       qs: {
         format: 'mini',
         per_page: PER_PAGE,
-        page: page || 0
+        page: page
       },
       json: true
     };

@@ -23,7 +23,7 @@ beforeEach(function (done) {
     host: "https://user.com"
   });
   spy = sinon.spy(function (a, b, c) {});
-  User.getMailchimp = function () {return {lists: {subscribe: spy}}};
+  User.getMailchimp = function () {return {lists: {subscribe: spy}};};
   done();
 });
 
@@ -104,7 +104,7 @@ describe("User", function(){
     });
   });
 
-  describe("generate options for user ACL", function (done) {
+  describe("generate options for user ACL", function () {
     it("formats the options object for request/cache", function (done) {
       var obj = User.generateUserACLOptions('foobar');
       expect(obj).to.be.an.object();
@@ -203,7 +203,7 @@ describe("User", function(){
         ]);
 
       var packageMock = nock(User.host)
-        .get('/user/eager-beaver/package?format=detailed&per_page=9999')
+        .get('/user/eager-beaver/package?format=mini&per_page=100&page=0')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -244,7 +244,7 @@ describe("User", function(){
       var packageMock = nock(User.host, {
           reqheaders: {bearer: 'rockbot'}
         })
-        .get('/user/eager-beaver/package?format=detailed&per_page=9999')
+        .get('/user/eager-beaver/package?format=mini&per_page=100&page=0')
         .reply(200, [
           {name: "foo", description: "It's a foo!"},
           {name: "bar", description: "It's a bar!"}
@@ -267,9 +267,17 @@ describe("User", function(){
 
   describe("getPackages()", function() {
 
+    var body = {
+      items: [
+        {name: "foo", description: "It's a foo!"},
+        {name: "bar", description: "It's a bar!"}
+      ],
+      count: 2
+    };
+
     it("makes an external request for /{user}/package", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/bob/package?format=detailed&per_page=9999')
+        .get('/user/bob/package?format=mini&per_page=100&page=0')
         .reply(200, []);
 
       User.getPackages(fixtures.users.bob.name, function(err, body) {
@@ -282,17 +290,15 @@ describe("User", function(){
 
     it("returns the response body in the callback", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/bob/package?format=detailed&per_page=9999')
-        .reply(200, [
-          {name: "foo", description: "It's a foo!"},
-          {name: "bar", description: "It's a bar!"}
-        ]);
+        .get('/user/bob/package?format=mini&per_page=100&page=0')
+        .reply(200, body);
 
       User.getPackages(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
-        expect(body).to.be.an.array();
-        expect(body[0].name).to.equal("foo");
-        expect(body[1].name).to.equal("bar");
+        expect(body).to.be.an.object();
+        expect(body.items).to.be.an.array();
+        expect(body.items[0].name).to.equal("foo");
+        expect(body.items[1].name).to.equal("bar");
         packageMock.done();
         done();
       });
@@ -300,7 +306,7 @@ describe("User", function(){
 
     it("returns an error in the callback if the request failed", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/foo/package?format=detailed&per_page=9999')
+        .get('/user/foo/package?format=mini&per_page=100&page=0')
         .reply(404);
 
       User.getPackages('foo', function(err, body) {
@@ -323,11 +329,8 @@ describe("User", function(){
       var packageMock = nock(User.host, {
           reqheaders: {bearer: 'sally'}
         })
-        .get('/user/sally/package?format=detailed&per_page=9999')
-        .reply(200, [
-          {name: "foo", description: "It's a foo!"},
-          {name: "bar", description: "It's a bar!"}
-        ]);
+        .get('/user/sally/package?format=mini&per_page=100&page=0')
+        .reply(200, body);
 
       User.getPackages('sally', function(err, body) {
         expect(err).to.be.null();
@@ -339,15 +342,50 @@ describe("User", function(){
 
     it("does not include bearer token in request header if user is not logged in", function(done) {
       var packageMock = nock(User.host)
-        .get('/user/sally/package?format=detailed&per_page=9999')
-        .reply(200, [
-          {name: "foo", description: "It's a foo!"},
-          {name: "bar", description: "It's a bar!"}
-        ]);
+        .get('/user/sally/package?format=mini&per_page=100&page=0')
+        .reply(200, body);
 
       User.getPackages('sally', function(err, body) {
         expect(err).to.be.null();
         expect(body).to.exist();
+        packageMock.done();
+        done();
+      });
+    });
+
+    it("gets a specific page of packages", function (done) {
+      var packageMock = nock(User.host)
+        .get('/user/sally/package?format=mini&per_page=100&page=2')
+        .reply(200, body);
+
+      User.getPackages('sally', 2, function(err, body) {
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        expect(body.hasMore).to.be.undefined();
+        packageMock.done();
+        done();
+      });
+    });
+
+    it("adds a `hasMore` key for groups that have more packages hiding", function (done) {
+      var arr = [];
+      for (var i = 0, l = 100; i < l; ++i) {
+        arr.push({name: "foo" + i, description: "It's a foo!"});
+      }
+
+      var body = {
+        items: arr,
+        count: 150
+      };
+
+      var packageMock = nock(User.host)
+        .get('/user/sally/package?format=mini&per_page=100&page=0')
+        .reply(200, body);
+
+      User.getPackages('sally', 0, function(err, body) {
+        expect(err).to.be.null();
+        expect(body).to.exist();
+        expect(body.hasMore).to.be.true();
         packageMock.done();
         done();
       });
@@ -542,7 +580,7 @@ describe("User", function(){
       it('does not add the user to the mailing list when unchecked', function (done) {
 
         spy.reset();
-        User.getMailchimp = function () {return {lists: {subscribe: spy}}};
+        User.getMailchimp = function () {return {lists: {subscribe: spy}};};
 
         User.signup({
           name: 'boom',

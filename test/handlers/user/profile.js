@@ -33,7 +33,7 @@ describe('GET /~bob for a user other than bob', function () {
     var mock = nock("https://user-api-example.com")
       .get('/user/bob')
       .reply(200, users.bob)
-      .get('/user/bob/package?format=detailed&per_page=9999')
+      .get('/user/bob/package?format=mini&per_page=100&page=0')
       .reply(200, users.packages)
       .get('/user/bob/stars?format=detailed')
       .reply(200, users.stars);
@@ -96,7 +96,7 @@ describe('GET /~bob for logged-in bob', function () {
     var mock = nock("https://user-api-example.com")
       .get('/user/bob').times(2)
       .reply(200, users.bob)
-      .get('/user/bob/package?format=detailed&per_page=9999')
+      .get('/user/bob/package?format=mini&per_page=100&page=0')
       .reply(200, users.packages)
       .get('/user/bob/stars?format=detailed')
       .reply(200, users.stars);

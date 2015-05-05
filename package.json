@@ -61,6 +61,7 @@
     "mustache-mailer": "^2.1.2",
     "nib": "^1.1.0",
     "node-uuid": "^1.4.3",
+    "node-zendesk": "^1.1.2",
     "nodemailer-ses-transport": "^1.2.0",
     "normalize-license-data": "^1.0.1",
     "npm-email-templates": "^1.4.1",

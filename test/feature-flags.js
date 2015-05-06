@@ -116,7 +116,6 @@ describe('feature flags', function () {
     })
 
     it('returns true for npm humans', function (done) {
-      expect(feature('unicorn_page', requests.zeke)).to.be.true()
       expect(feature('unicorn_page', requests.rockbot)).to.be.true()
       done()
     })

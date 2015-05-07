@@ -1,5 +1,6 @@
 var Hoek = require('hoek'),
-    Joi = require('joi');
+    Joi = require('joi'),
+    utils = require('../../lib/utils');
 
 module.exports = function createHubspotLead (request, reply) {
   var postToHubspot = request.server.methods.npme.sendData;
@@ -30,7 +31,8 @@ module.exports = function createHubspotLead (request, reply) {
 
   var data = {
     hs_context: {
-      pageName: "enterprise-signup"
+      pageName: "enterprise-signup",
+      ipAddress: utils.getUserIP(request)
     }
   };
 

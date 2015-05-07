@@ -1,3 +1,4 @@
+var utils = require('../../lib/utils');
 
 // if they agree to the ULA, notify hubspot, create a trial and send verification link
 
@@ -7,8 +8,14 @@ module.exports = function trialSignup (request, reply) {
 
   var opts = {};
 
-  // we can trust the email is fine because we've verified it in the show-ula handler
-  var data = { email: request.payload.customer_email };
+  var data = {
+    hs_context: {
+      pageName: "enterprise-trial-signup",
+      ipAddress: utils.getUserIP(request)
+    },
+    // we can trust the email is fine because we've verified it in the show-ula handler
+    email: request.payload.customer_email,
+  };
 
   postToHubspot(process.env.HUBSPOT_FORM_NPME_AGREED_ULA, data, function (er) {
 

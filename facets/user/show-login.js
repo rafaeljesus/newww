@@ -85,7 +85,7 @@ module.exports = function login (request, reply) {
               return reply.view('errors/internal', opts).code(500);
             }
 
-            if (user && user.mustChangePass) {
+            if (user && user.resource.mustChangePass) {
               request.timing.page = 'login-must-change-pass';
 
               request.metrics.metric({name: 'login-must-change-pass'});

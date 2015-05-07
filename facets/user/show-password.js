@@ -37,8 +37,14 @@ module.exports = function (request, reply) {
 
       request.logger.warn('Changing password', { name: loggedInUser.name });
 
-      var newAuth = { name: loggedInUser.name, password: data.new };
-      newAuth.mustChangePass = false;
+      var newAuth = {
+        name: loggedInUser.name,
+        password: data.new,
+        resource: {
+          mustChangePass: null
+        }
+      };
+
       User.save(newAuth, function (er, data) {
         if (er) {
           request.logger.warn('Failed to change password; user=' + newAuth.name);

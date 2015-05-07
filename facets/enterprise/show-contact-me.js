@@ -19,7 +19,6 @@ module.exports = function contactMe (request, reply) {
       ipAddress: utils.getUserIP(request)
     },
     email: request.payload.contact_customer_email,
-    userip: utils.getUserIP(request)
   };
 
   postToHubspot(process.env.HUBSPOT_FORM_NPME_CONTACT_ME, data, function(er) {

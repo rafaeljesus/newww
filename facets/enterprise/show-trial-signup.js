@@ -15,7 +15,6 @@ module.exports = function trialSignup (request, reply) {
     },
     // we can trust the email is fine because we've verified it in the show-ula handler
     email: request.payload.customer_email,
-    userip: utils.getUserIP(request)
   };
 
   postToHubspot(process.env.HUBSPOT_FORM_NPME_AGREED_ULA, data, function (er) {

@@ -33,8 +33,7 @@ module.exports = function createHubspotLead (request, reply) {
     hs_context: {
       pageName: "enterprise-signup",
       ipAddress: utils.getUserIP(request)
-    },
-    userip: utils.getUserIP(request)
+    }
   };
 
   data = Hoek.applyToDefaults(data, validatedData.value);

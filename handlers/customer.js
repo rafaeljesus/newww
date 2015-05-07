@@ -59,8 +59,7 @@ billing.updateBillingInfo = function(request, reply) {
         pageName: "customer-billing-update",
         ipAddress: utils.getUserIP(request)
       },
-      email: billingInfo.email,
-      userip: utils.getUserIP(request)
+      email: billingInfo.email
     };
 
     sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {

@@ -63,7 +63,59 @@ describe('sending a contact email', function() {
     });
   });
 
-  it("sends an email to support if it's a support inquiry", function(done) {
+  it("posts to zendesk if it's a support inquiry", function(done) {
+
+    // first, forcibly mock the ticket.create method
+    var Tickets = require("node-zendesk/lib/client/tickets.js").Tickets;
+    Tickets.prototype.create = function (data, callback) {
+      expect(data.ticket.requester.name).to.equal('Boom');
+      expect(data.ticket.requester.email).to.equal('boom@bam.com');
+      expect(data.ticket.subject).to.equal('Hi!');
+      expect(data.ticket.comment.body).to.equal('This is a message.');
+
+      callback(null, 201, {
+        "url": "https://npmhelp.zendesk.com/api/v2/tickets/1.json",
+        "id": 1,
+        "external_id": null,
+        "via": {
+          "channel": "testing",
+          "source": {
+            "from": {},
+            "to": {},
+            "rel": null
+          }
+        },
+        "created_at": "2015-04-15T22:05:55Z",
+        "updated_at": "2015-04-19T23:02:16Z",
+        "type": "incident",
+        "subject": "Hi!",
+        "raw_subject": "Hi!",
+        "description": "description",
+        "priority": "high",
+        "status": "new",
+        "recipient": null,
+        "requester_id": 13245,
+        "submitter_id": 13245,
+        "assignee_id": 13245,
+        "organization_id": 12345,
+        "group_id": 12345,
+        "collaborator_ids": [],
+        "forum_topic_id": null,
+        "problem_id": null,
+        "has_incidents": false,
+        "due_at": null,
+        "tags": [
+          "sample",
+          "zendesk"
+        ],
+        "custom_fields": [],
+        "satisfaction_rating": null,
+        "sharing_agreement_ids": [],
+        "fields": [],
+        "followup_ids": [],
+        "brand_id": 13245
+      })
+    };
 
     server.inject({
       url: '/contact'

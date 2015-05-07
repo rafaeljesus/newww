@@ -1,3 +1,9 @@
+var zdClient = require('node-zendesk').createClient({
+  username: process.env.ZENDESK_USERNAME,
+  token: process.env.ZENDESK_TOKEN,
+  remoteUri: process.env.ZENDESK_URI,
+  disableGlobalState: true
+});
 
 module.exports = function showSendContact(request, reply) {
   var opts = { };
@@ -7,8 +13,8 @@ module.exports = function showSendContact(request, reply) {
   var recipient;
   switch (data.inquire) {
     case "support":
-      recipient = "support <support@npmjs.com>";
-      break;
+      createZendeskTicket(data, request, reply);
+      return;
     case "security":
       recipient = "security <security@npmjs.com>";
       break;
@@ -36,3 +42,27 @@ module.exports = function showSendContact(request, reply) {
       return reply.view('company/contact', opts);
     });
 };
+
+function createZendeskTicket(data, request, reply) {
+  var ticket = {
+    "ticket": {
+      "requester": {
+        "name": data.name,
+        "email": data.email
+      },
+      "subject": data.subject,
+      "comment": {
+        "body": data.message
+      }
+    }
+  };
+
+  zdClient.tickets.create(ticket, function (er, statusCode, result) {
+    if (er || statusCode !== 201) {
+      request.logger.error('unable to post ticket to zendesk');
+      request.logger.error(er);
+      return reply.view('errors/internal', {}).code(500);
+    }
+    return reply.view('company/contact', { sent: true }).code(200);
+  });
+}

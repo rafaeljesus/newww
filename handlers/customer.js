@@ -45,9 +45,12 @@ billing.updateBillingInfo = function(request, reply) {
   };
 
   Customer.update(billingInfo, function(err, customer) {
+    var opts = {};
+
     if (err) {
-      request.logger.error(err);
-      return reply.view('errors/internal').code(500);
+      opts.errors = [];
+      opts.errors.push(new Error(err));
+      return reply.view('user/billing', opts);
     }
 
     sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, {email: billingInfo.email}, function (er) {

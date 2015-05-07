@@ -47,22 +47,31 @@ Customer.prototype.update = function(body, callback) {
 
   this.get(body.name, function(err, customer) {
 
+    var cb = function(err, resp, body){
+
+      if (typeof body === 'string') {
+        // not an "error", per se, according to stripe
+        // but should still be bubbled up to the user
+        err = new Error(body);
+      }
+
+      return err ? callback(err) : callback(null, body);
+    };
+
     // Create new customer
     if (err && err.statusCode === 404) {
       url = _this.host + '/stripe';
-      return Request.put({url: url, json: true, body: body}, function(err, resp, body){
-        return err ? callback(err) : callback(null, body);
-      });
+      return Request.put({url: url, json: true, body: body}, cb);
     }
 
     // Some other kind of error
-    if (err) { return callback(err); }
+    if (err) {
+      return callback(err);
+    }
 
     // Update existing customer
     url = _this.host + '/stripe/' + body.name;
-    return Request.post({url: url, json: true, body: body}, function(err, resp, body){
-      return err ? callback(err) : callback(null, body);
-    });
+    return Request.post({url: url, json: true, body: body}, cb);
 
   });
 };

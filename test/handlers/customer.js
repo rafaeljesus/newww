@@ -400,6 +400,39 @@ describe('POST /settings/billing', function () {
 
     });
 
+    it('bubbles billing issues up to the user', function (done) {
+
+      generateCrumb(server, function (crumb){
+        var opts = {
+          url: '/settings/billing',
+          method: 'POST',
+          credentials: fixtures.users.bob,
+          payload: {
+            stripeToken: 'tok_1234567890',
+            crumb: crumb
+          },
+          headers: { cookie: 'crumb=' + crumb }
+        };
+
+        var mock = nock("https://license-api-example.com")
+          .get("/stripe/bob")
+          .reply(200, fixtures.customers.happy)
+          .post("/stripe/bob")
+          .reply(200, "Your card's security code is incorrect.");
+
+        server.inject(opts, function (resp) {
+          mock.done();
+          expect(resp.statusCode).to.equal(200);
+          expect(resp.request.response.source.template).to.equal('user/billing');
+          var $ = cheerio.load(resp.result);
+          expect($('.errors li')[0].children.length).to.equal(1);
+          expect($('.errors li')[0].children[0].data).to.equal("Error: Your card's security code is incorrect.");
+          done();
+        });
+      });
+
+    });
+
   });
 
   describe("new paid user", function() {
@@ -465,19 +498,24 @@ describe('POST /settings/billing/cancel', function () {
       var opts = {
         method: 'post',
         url: '/settings/billing/cancel',
-        credentials: fixtures.users.bob,
         payload: {
           crumb: crumb
         },
-        headers: { cookie: 'crumb=' + crumb }
+        headers: { cookie: 'crumb=' + crumb },
+        credentials: fixtures.users.bob
       };
 
-      var mock = nock("https://license-api-example.com")
+      var licenseMock = nock("https://license-api-example.com")
         .delete("/stripe/bob")
         .reply(200, fixtures.customers.happy);
 
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
       server.inject(opts, function (resp) {
-        mock.done();
+        licenseMock.done();
+        userMock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.match(/\/settings\/billing\?canceled=1$/);
         done();

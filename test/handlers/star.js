@@ -12,6 +12,7 @@ var generateCrumb = require("../handlers/crumb.js"),
 
 var server, packageMock, userMock,
     pkg = 'fake',
+    scopedpkg = '@foo/fake',
     user = fixtures.users.bob;
 
 before(function (done) {
@@ -21,10 +22,14 @@ before(function (done) {
     .put("/package/" + pkg + "/star")
     .reply(200)
     .delete("/package/" + pkg + "/star")
+    .reply(200)
+    .put("/package/" + encodeURIComponent(scopedpkg) + "/star")
+    .reply(200)
+    .delete("/package/" + encodeURIComponent(scopedpkg) + "/star")
     .reply(200);
 
   userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(3)
+    .get("/user/bob").times(5)
     .reply(200, user);
 
   require('../mocks/server')(function (obj) {
@@ -146,6 +151,50 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       server.inject(opts, function (resp) {
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' unstarred ' + pkg);
+        done();
+      });
+    });
+  });
+
+  it('should star an unstarred scoped package', function (done) {
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/star',
+        method: 'POST',
+        payload: {
+          name: scopedpkg,
+          isStarred: 'true',
+          crumb: crumb
+        },
+        credentials: user,
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.result).to.equal(user.name + ' starred ' + scopedpkg);
+        done();
+      });
+    });
+  });
+
+  it('should unstar a starred scoped package', function (done) {
+    generateCrumb(server, function (crumb){
+      var opts = {
+        url: '/star',
+        method: 'POST',
+        payload: {
+          name: scopedpkg,
+          isStarred: 'false',
+          crumb: crumb
+        },
+        credentials: user,
+        headers: { cookie: 'crumb=' + crumb }
+      };
+
+      server.inject(opts, function (resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.result).to.equal(user.name + ' unstarred ' + scopedpkg);
         done();
       });
     });

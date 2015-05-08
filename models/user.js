@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var async = require('async');
 var cache = require('../lib/cache');
 var decorate = require(__dirname + '/../presenters/user');
 var fmt = require('util').format;
@@ -23,6 +24,8 @@ var User = module.exports = function(opts) {
       info: console.log
     };
   }
+
+  this.get = P.promisify(this._get);
 
   return this;
 };
@@ -99,87 +102,71 @@ User.prototype.dropCache = function dropCache (name, callback) {
 };
 
 
-User.prototype.fetchFromUserACL = function fetchFromUserACL(name)
+User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback)
 {
-  var deferred = P.defer();
-
-  console.log('fetchFromUserACL')
-
   Request.get(this.generateUserACLOptions(name), function(err, response, body)
   {
-    if (err) { return deferred.reject(err); }
+    if (err) { return callback(err); }
+
     if (response.statusCode !== 200)
     {
         var e = new Error('unexpected status code ' + response.statusCode);
         e.statusCode = response.statusCode;
-        return deferred.reject(e);
+        return callback(e);
     }
 
-    console.log('fetchFromUserACL returning')
-    deferred.resolve(body);
+    callback(null, body);
   });
-
-  return deferred.promise;
 };
 
-User.prototype.fetchCustomer = function fetchCustomer(name)
+User.prototype.fetchCustomer = function fetchCustomer(name, callback)
 {
-  console.log('fetchCustomer')
   var licenseAPI = new LicenseAPI();
-  var deferred = P.defer();
-
-  console.log('fetchCustomer about to get')
-  licenseAPI.get(name, function(err, customer)
-  {
-    console.log('fetchCustomer back from get')
-    if (err) { return deferred.reject(err); }
-    deferred.resolve(customer);
-  });
-
-  return deferred.promise;
+  licenseAPI.get(name, callback);
 };
 
-User.prototype.get = function(name) {
-  var self = this, deferred = P.defer();
+User.prototype._get = function _get(name, callback) {
+  var self = this;
   var user;
 
   cache.getKey(name, function(err, value)
   {
+    if (err) { return callback(err); }
+
     if (value)
     {
       user = utils.safeJsonParse(value);
-      return deferred.resolve(user);
+      return callback(null, user);
     }
 
-    self.fetchData(name)
-    .then(function(user)
+    self.fetchData(name, function(err, user)
     {
+      if (err) { return callback(err); }
       cache.setKey(name, JSON.stringify(user));
-      deferred.resolve(user);
-    }).catch(function(err) {
-      deferred.reject(err);
+      return callback(null, user);
     });
   });
 };
 
-User.prototype.fetchData = function fetchData(name)
+User.prototype.fetchData = function fetchData(name, callback)
 {
-  var user, self = this;
+  var self = this;
 
   var actions = {
-    user: self.fetchFromUserACL(name),
-    customer: self.fetchCustomer(name),
+    user: function(cb) { self.fetchFromUserACL(name, cb); },
+    customer: function(cb) { self.fetchCustomer(name, cb); },
   };
 
-  return P.props(actions)
-  .then(function(results)
+  async.parallel(actions, function(err, results)
   {
-    user = decorate(results.user);
+    if (err) { return callback(err); }
+
+    var user = decorate(results.user);
 
     user.customer = results.customer;
     user.isPaid = !!user.customer;
 
-    return user;
+    callback(null, user);
   });
 };
 

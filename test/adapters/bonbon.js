@@ -48,6 +48,10 @@ describe("bonbon", function() {
     .get('/user/mikeal')
     .reply(404);
 
+    var licenseMock = nock('https://license-api-example.com')
+      .get('/stripe/seldo')
+      .reply(200, {});
+
   describe("feature flags", function() {
 
     beforeEach(function(done){

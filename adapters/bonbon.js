@@ -35,11 +35,12 @@ exports.register = function(server, options, next) {
       start: Date.now(),
     };
 
-    if (request.auth && request.auth.credentials) {
+    if (request.auth && request.auth.credentials && !request.path.match(/static/)) {
       UserModel.new(request).get(request.auth.credentials.name)
       .then(function(loggedInUser) {
         request.loggedInUser = loggedInUser;
       }).catch(function(err) {
+        console.log(err);
         request.logger.warn(err);
       }).finally(completePreHandler);
     } else {

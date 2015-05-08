@@ -38,11 +38,16 @@ describe('GET /~bob for a user other than bob', function () {
       .get('/user/bob/stars?format=detailed')
       .reply(200, users.stars);
 
+    var licenseMock = nock('https://license-api-example.com')
+      .get('/stripe/bob')
+      .reply(200, {});
+
     server.inject('/~bob', function (response) {
       resp = response;
       $ = cheerio.load(resp.result);
       context = resp.request.response.source.context;
       mock.done();
+      licenseMock.done();
       done();
     });
   });

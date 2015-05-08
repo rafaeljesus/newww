@@ -1,5 +1,5 @@
 var UserAPI = require('../../models/user'),
-    P    = require('bluebird');
+  async = require('async');
 
 module.exports = function(request, reply) {
   var loggedInUser = request.loggedInUser;
@@ -13,21 +13,13 @@ module.exports = function(request, reply) {
 
   var User = UserAPI.new(request);
   var actions = {
-    user:     User.get(name),
-    stars:    User.getStars(name),
-    packages: User.getPackages(name),
+    user:     function(cb) { User.get(name, cb); },
+    stars:    function(cb) { User.getStars(name, cb); },
+    packages: function(cb) { User.getPackages(name, cb); },
   };
 
-  return P.props(actions)
-  .then(function(results)
-  {
-    opts.profile = results.user;
-    opts.profile.stars = results.stars;
-    opts.profile.packages = results.packages;
-    opts.profile.isSelf = loggedInUser && name === loggedInUser.name;
+  async.parallel(actions, function(err, results) {
 
-    return reply.view('user/profile', opts);
-  }).catch(function(err) {
     if (err) {
       request.logger.error(err);
       if (err.message === 'unexpected status code 404') {
@@ -36,5 +28,12 @@ module.exports = function(request, reply) {
         return reply.view('errors/internal', opts).code(500);
       }
     }
+
+    opts.profile = results.user;
+    opts.profile.stars = results.stars;
+    opts.profile.packages = results.packages;
+    opts.profile.isSelf = loggedInUser && name === loggedInUser.name;
+
+    return reply.view('user/profile', opts);
   });
 };

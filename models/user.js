@@ -98,7 +98,7 @@ User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
 };
 
 User.prototype.dropCache = function dropCache (name, callback) {
-    cache.drop(this.generateUserACLOptions(name), callback);
+    cache.dropKey(name, callback);
 };
 
 
@@ -142,8 +142,10 @@ User.prototype._get = function _get(name, callback) {
     self.fetchData(name, function(err, user)
     {
       if (err) { return callback(err); }
-      cache.setKey(name, JSON.stringify(user));
-      return callback(null, user);
+      cache.setKey(name, cache.DEFAULT_TTL, JSON.stringify(user), function(err, result)
+      {
+        return callback(null, user);
+      });
     });
   });
 };

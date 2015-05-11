@@ -25,7 +25,7 @@ describe('lib/cache.js', function()
     {
         it('requires that configure be called before use', function(done)
         {
-            function shouldThrow() { return cache.get('foo'); }
+            function shouldThrow() { return cache.getKey('foo'); }
             expect(shouldThrow).to.throw(/configure/);
             done();
         });

@@ -32,7 +32,6 @@ billing.getBillingInfo = function (request, reply) {
 };
 
 billing.updateBillingInfo = function(request, reply) {
-
   if (!request.features.billing_page) {
     return reply.view('errors/not-found').code(404);
   }
@@ -42,7 +41,8 @@ billing.updateBillingInfo = function(request, reply) {
   var billingInfo = {
     name: request.loggedInUser.name,
     email: request.loggedInUser.email,
-    card: request.payload.stripeToken
+    card: request.payload.stripeToken,
+    coupon: request.payload.coupon
   };
 
   Customer.update(billingInfo, function(err, customer) {

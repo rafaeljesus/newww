@@ -394,6 +394,7 @@ describe('lib/cache.js', function()
                 if (count === 2)
                 {
                     cache.logger.error = saved;
+                    cache.redis.setex.restore();
                     done();
                 }
             };

@@ -395,6 +395,7 @@ describe('lib/cache.js', function()
                 {
                     cache.logger.error = saved;
                     cache.redis.setex.restore();
+                    mock.done();
                     done();
                 }
             };

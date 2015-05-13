@@ -512,7 +512,7 @@ describe('lib/cache.js', function()
     {
         it('adds an item to the cache with a specific key', function (done)
         {
-            var CACHE_TTL = 5 * 60; // seconds
+            var CACHE_TTL = 5; // seconds
             var key = 'boom';
             var data = 'bam';
 
@@ -528,10 +528,21 @@ describe('lib/cache.js', function()
         });
     });
 
-    // describe('getKey()', function ()
-    // {
-    //     // cache.
-    // });
+    describe('getKey()', function ()
+    {
+        it('gets an item from the cache with a specific key', function (done)
+        {
+            var key = 'boom';
+            var data = 'bam';
+
+            cache.getKey(key, function (err, result)
+            {
+                expect(err).to.not.exist();
+                expect(result).to.equal(data);
+                done();
+            });
+        });
+    });
 
     describe('drop()', function()
     {

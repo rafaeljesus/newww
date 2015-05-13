@@ -1,4 +1,5 @@
-var cache = require('../lib/cache'),
+var _ = require('lodash'),
+    cache = require('../lib/cache'),
     fmt = require('util').format,
     gh = require('github-url-to-object'),
     isUrl = require('is-url'),
@@ -123,44 +124,50 @@ module.exports = function (pkg) {
 };
 
 function processReadme (pkg) {
-  if (typeof pkg.readme === "string") {
-    var cacheKey = pkg.name + '_readme';
-
-    return new P(function(resolve, reject) {
-      // cache.getKey(cacheKey, function (err, readme) {
-      //   if (err) { return reject(err); }
-
-        // if (readme) {
-        //   return resolve(readme);
-        // } else {
-          var readme = marky(pkg.readme, {package: pkg}).html();
-          // cache.setKey(cacheKey, CACHE_TTL, readme);
-          return resolve(readme);
-        // }
-      });
-    // });
+  if (!_.isString(pkg.readme)) {
+    return P.resolve('');
   }
+
+  var cacheKey = pkg.name + '_readme';
+
+  return new P(function(resolve, reject) {
+    cache.getKey(cacheKey, function (err, readme) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (readme) {
+        return resolve(readme);
+      } else {
+        readme = marky(pkg.readme, {package: pkg}).html();
+        cache.setKey(cacheKey, CACHE_TTL, readme);
+        return resolve(readme);
+      }
+    });
+  });
 }
 
 function processDescription (pkg) {
-  // Parse description as markdown
-  if (typeof pkg.description === "string") {
-    var cacheKey = pkg.name + '_desc';
-
-    return new P(function (resolve, reject) {
-      // cache.getKey(cacheKey, function (err, description) {
-      //   if (err) { return reject(err); }
-
-        // if (description) {
-        //   return resolve(description);
-        // } else {
-          var description = marky.parsePackageDescription(pkg.description);
-          // cache.setKey(cacheKey, CACHE_TTL, description);
-          return resolve(description);
-        // }
-      // });
-    });
+  if (typeof pkg.description !== "string") {
+    return P.resolve('');
   }
+
+  // Parse description as markdown
+  var cacheKey = pkg.name + '_desc';
+
+  return new P(function (resolve, reject) {
+    cache.getKey(cacheKey, function (err, description) {
+      if (err) { return reject(err); }
+
+      if (description) {
+        return resolve(description);
+      } else {
+        description = marky.parsePackageDescription(pkg.description);
+        cache.setKey(cacheKey, CACHE_TTL, description);
+        return resolve(description);
+      }
+    });
+  });
 }
 
 function processDependents (items, urlRoot, name) {

@@ -25,7 +25,7 @@ describe('lib/cache.js', function()
     {
         it('requires that configure be called before use', function(done)
         {
-            function shouldThrow() { return cache.get('foo'); }
+            function shouldThrow() { return cache.getKey('foo'); }
             expect(shouldThrow).to.throw(/configure/);
             done();
         });
@@ -505,6 +505,31 @@ describe('lib/cache.js', function()
             }).done();
         });
     });
+
+    describe('setKey()', function ()
+    {
+        it('adds an item to the cache with a specific key', function (done)
+        {
+            var CACHE_TTL = 5 * 60; // seconds
+            var key = 'boom';
+            var data = 'bam';
+
+            cache.setKey(key, CACHE_TTL, data, function (err)
+            {
+                expect(err).to.not.exist();
+                cache.redis.get(key, function (err, result)
+                {
+                    expect(result).to.equal(data);
+                    done();
+                });
+            });
+        });
+    });
+
+    // describe('getKey()', function ()
+    // {
+    //     // cache.
+    // });
 
     describe('drop()', function()
     {

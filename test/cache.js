@@ -25,7 +25,7 @@ describe('lib/cache.js', function()
     {
         it('requires that configure be called before use', function(done)
         {
-            function shouldThrow() { return cache.get('foo'); }
+            function shouldThrow() { return cache.getKey('foo'); }
             expect(shouldThrow).to.throw(/configure/);
             done();
         });
@@ -394,6 +394,8 @@ describe('lib/cache.js', function()
                 if (count === 2)
                 {
                     cache.logger.error = saved;
+                    cache.redis.setex.restore();
+                    mock.done();
                     done();
                 }
             };
@@ -503,6 +505,39 @@ describe('lib/cache.js', function()
                 expect(err.message).to.equal('unexpected status code 400');
                 done();
             }).done();
+        });
+    });
+
+    describe('setKey() and getKey()', function ()
+    {
+        it('adds an item to the cache with a specific key', function (done)
+        {
+            var CACHE_TTL = 5; // seconds
+            var key = 'boom';
+            var data = 'bam';
+
+            cache.setKey(key, CACHE_TTL, data, function (err)
+            {
+                expect(err).to.not.exist();
+                cache.redis.get(key, function (err, result)
+                {
+                    expect(result).to.equal(data);
+                    done();
+                });
+            });
+        });
+
+        it('retrieves an item from the cache with a specific key', function (done)
+        {
+            var key = 'boom';
+            var data = 'bam';
+
+            cache.getKey(key, function (err, result)
+            {
+                expect(err).to.not.exist();
+                expect(result).to.equal(data);
+                done();
+            });
         });
     });
 

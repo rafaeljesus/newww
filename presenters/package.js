@@ -1,121 +1,174 @@
-var fmt = require('util').format,
-    url = require('url'),
-    isUrl = require('is-url'),
+var _ = require('lodash'),
+    cache = require('../lib/cache'),
+    fmt = require('util').format,
     gh = require('github-url-to-object'),
-    normalizeLicenseData = require('normalize-license-data'),
+    isUrl = require('is-url'),
     marky = require('marky-markdown'),
+    normalizeLicenseData = require('normalize-license-data'),
+    P = require('bluebird'),
+    presentCollaborator = require("./collaborator"),
     presentUser = require("./user"),
-    presentCollaborator = require("./collaborator");
+    url = require('url');
 
-module.exports = function (package) {
+var MINUTES = 60; // seconds
+var CACHE_TTL = 5 * MINUTES;
 
-  delete package.maintainers
+module.exports = function (pkg) {
 
-  package.scoped = package.name.charAt(0) === "@"
-  package.encodedName = package.name.replace("/", "%2F")
+  delete pkg.maintainers;
 
-  if (package.versions && package.versions.indexOf(package.version) === -1) {
-    return Error('invalid package: '+ package.name);
+  pkg.scoped = pkg.name.charAt(0) === "@";
+  pkg.encodedName = pkg.name.replace("/", "%2F");
+
+  if (pkg.versions && pkg.versions.indexOf(pkg.version) === -1) {
+    return Error('invalid pkg: '+ pkg.name);
   }
 
-  package.license = normalizeLicenseData(package.license);
-  if (!package.license) {
-    delete package.license;
+  pkg.license = normalizeLicenseData(pkg.license);
+  if (!pkg.license) {
+    delete pkg.license;
   }
 
-  package.versionsCount = package.versions && Object.keys(package.versions).length;
-  package.singleVersion = package.versionsCount === 1;
+  pkg.versionsCount = pkg.versions && Object.keys(pkg.versions).length;
+  pkg.singleVersion = pkg.versionsCount === 1;
 
-  if (package.publisher) {
-    package.publisher = presentUser(package.publisher);
+  if (pkg.publisher) {
+    pkg.publisher = presentUser(pkg.publisher);
   }
 
   /* here's the potential situation: let's say I'm a hacker and I make a
-  package that does Something Evil™ then I add you as a collaborators `npm
-  adduser zeke evil-package` and then I publish the package and then I remove
+  package that does Something Evil™ then I add you as a collaborator `npm
+  adduser isaacs evil-pkg` and then I publish the package and then I remove
   myself from the package so it looks like YOU are the one who made the
   package well, that's nasty so we blocked that from showing because
-  hypothetically your friends would be like, hey! this evil-package from zeke
+  hypothetically your friends would be like, hey! this evil-pkg from isaacs
   looks awesome, let me use it! and then I get all their bank account numbers
   and get super duper rich and become a VC and create LinkedIn for Cats */
 
-  package.lastPublisherIsACollaborator = Boolean(package.publisher)
-    && Boolean(package.publisher.name)
-    && Boolean(typeof package.collaborators === "object")
-    && Boolean(package.collaborators[package.publisher.name])
+  pkg.lastPublisherIsACollaborator = Boolean(pkg.publisher) &&
+    Boolean(pkg.publisher.name) &&
+    Boolean(typeof pkg.collaborators === "object") &&
+    Boolean(pkg.collaborators[pkg.publisher.name]);
 
-  package.showCollaborators = package.collaborators
-    && Object.keys(package.collaborators).length
-    && package.lastPublisherIsACollaborator;
+  pkg.showCollaborators = pkg.collaborators &&
+    Object.keys(pkg.collaborators).length &&
+    pkg.lastPublisherIsACollaborator;
 
-  if (package.collaborators) {
-    Object.keys(package.collaborators).forEach(function(name){
-      var collaborator = package.collaborators[name];
+  if (pkg.collaborators) {
+    Object.keys(pkg.collaborators).forEach(function(name){
+      var collaborator = pkg.collaborators[name];
       collaborator = presentCollaborator(collaborator);
-    })
+    });
   }
 
-  if (package.dependents) {
-    package.dependents = processDependents(package.dependents, '/browse/depended/', package.name);
+  if (pkg.dependents) {
+    pkg.dependents = processDependents(pkg.dependents, '/browse/depended/', pkg.name);
   }
 
-  if (package.dependencies) {
-    package.dependencies = processDependencies(package.dependencies);
+  if (pkg.dependencies) {
+    pkg.dependencies = processDependencies(pkg.dependencies);
   }
 
   // homepage: convert array to string
-  if (package.homepage && Array.isArray(package.homepage)) {
-    package.homepage = package.homepage[0];
+  if (pkg.homepage && Array.isArray(pkg.homepage)) {
+    pkg.homepage = pkg.homepage[0];
   }
 
   // homepage: disallow non-URLs
-  if (package.homepage && !isUrl(package.homepage)) {
-    delete package.homepage;
+  if (pkg.homepage && !isUrl(pkg.homepage)) {
+    delete pkg.homepage;
   }
 
   // homepage: discard if github repo URL
-  if (package.homepage && url.parse(package.homepage).hostname.match(/^(www\.)?github\.com/i)) {
-    delete package.homepage;
+  if (pkg.homepage && url.parse(pkg.homepage).hostname.match(/^(www\.)?github\.com/i)) {
+    delete pkg.homepage;
   }
 
   // repository: sanitize into https URL if it's a github repo
-  if (package.repository && package.repository.url && gh(package.repository.url)) {
-    package.repository.url = gh(package.repository.url).https_url;
+  if (pkg.repository && pkg.repository.url && gh(pkg.repository.url)) {
+    pkg.repository.url = gh(pkg.repository.url).https_url;
   }
 
   // Create `npm install foo` command
-  // Shorten to `npm i` for long package names
-  var installWord = (package.name.length > 15) ? "i" : "install"
-  var globalFlag = package.preferGlobal ? "-g" : ""
-  package.installCommand = fmt("npm %s %s %s", installWord, globalFlag, package.name)
+  // Shorten to `npm i` for long pkg names
+  var installWord = (pkg.name.length > 15) ? "i" : "install";
+  var globalFlag = pkg.preferGlobal ? "-g" : "";
+  pkg.installCommand = fmt("npm %s %s %s", installWord, globalFlag, pkg.name)
     .replace(/\s+/g, " ")
-    .trim()
+    .trim();
 
   // Infer GitHub API URL from bugs URL
-  if (package.bugs && package.bugs.url && gh(package.bugs.url)) {
-    package.ghapi = gh(package.bugs.url).api_url;
-    package.pull_requests = {
-      url: package.bugs.url.replace(/issues/, "pulls")
+  if (pkg.bugs && pkg.bugs.url && gh(pkg.bugs.url)) {
+    pkg.ghapi = gh(pkg.bugs.url).api_url;
+    pkg.pull_requests = {
+      url: pkg.bugs.url.replace(/issues/, "pulls")
     };
   }
 
   // Get star count
-  if (package.stars) {
-    package.starCount = Object.keys(package.stars).length;
+  if (pkg.stars) {
+    pkg.starCount = Object.keys(pkg.stars).length;
   }
 
-  // Process README
-  if (typeof package.readme === "string") {
-    package.readme = marky(package.readme, {package: package}).html();
+  var actions = {
+    readme: processReadme(pkg),
+    description: processDescription(pkg)
+  };
+
+  return P.props(actions)
+  .then(function (results) {
+    pkg.readme = results.readme;
+    pkg.description = results.description;
+    return pkg;
+  });
+};
+
+function processReadme (pkg) {
+  if (!_.isString(pkg.readme)) {
+    return P.resolve('');
+  }
+
+  var cacheKey = pkg.name + '_readme';
+
+  return new P(function(resolve, reject) {
+    cache.getKey(cacheKey, function (err, readme) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (readme) {
+        return resolve(readme);
+      } else {
+        readme = marky(pkg.readme, {package: pkg}).html();
+        cache.setKey(cacheKey, CACHE_TTL, readme);
+        return resolve(readme);
+      }
+    });
+  });
+}
+
+function processDescription (pkg) {
+  if (typeof pkg.description !== "string") {
+    return P.resolve('');
   }
 
   // Parse description as markdown
-  if (typeof package.description === "string") {
-    package.description = marky.parsePackageDescription(package.description)
-  }
+  var cacheKey = pkg.name + '_desc';
 
-  return package;
-};
+  return new P(function (resolve, reject) {
+    cache.getKey(cacheKey, function (err, description) {
+      if (err) { return reject(err); }
+
+      if (description) {
+        return resolve(description);
+      } else {
+        description = marky.parsePackageDescription(pkg.description);
+        cache.setKey(cacheKey, CACHE_TTL, description);
+        return resolve(description);
+      }
+    });
+  });
+}
 
 function processDependents (items, urlRoot, name) {
   if (!items.length) { return items; }

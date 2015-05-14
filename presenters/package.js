@@ -4,6 +4,7 @@ var _ = require('lodash'),
     gh = require('github-url-to-object'),
     isUrl = require('is-url'),
     marky = require('marky-markdown'),
+    metrics = require('../adapters/metrics')(),
     normalizeLicenseData = require('normalize-license-data'),
     P = require('bluebird'),
     presentCollaborator = require("./collaborator"),
@@ -137,10 +138,25 @@ function processReadme (pkg) {
       }
 
       if (readme) {
+
+        metrics.metric({
+          name: 'readme.cache.hit',
+          package: pkg.name,
+          value: 1
+        });
+
         return resolve(readme);
       } else {
+
         readme = marky(pkg.readme, {package: pkg}).html();
         cache.setKey(cacheKey, CACHE_TTL, readme);
+
+        metrics.metric({
+          name: 'readme.cache.miss',
+          package: pkg.name,
+          value: 1
+        });
+
         return resolve(readme);
       }
     });

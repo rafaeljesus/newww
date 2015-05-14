@@ -508,7 +508,7 @@ describe('lib/cache.js', function()
         });
     });
 
-    describe('setKey()', function ()
+    describe('setKey() and getKey()', function ()
     {
         it('adds an item to the cache with a specific key', function (done)
         {
@@ -526,11 +526,8 @@ describe('lib/cache.js', function()
                 });
             });
         });
-    });
 
-    describe('getKey()', function ()
-    {
-        it('gets an item from the cache with a specific key', function (done)
+        it('retrieves an item from the cache with a specific key', function (done)
         {
             var key = 'boom';
             var data = 'bam';

@@ -5,8 +5,8 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect,
     present = require(__dirname + "/../../presenters/package"),
-    fixtures = require("../fixtures");
-
+    cache = require(__dirname + "/../../lib/cache"),
+    sinon = require('sinon');
 
 describe("name", function () {
 
@@ -395,4 +395,61 @@ describe("repo url", function () {
     });
   });
 
+});
+
+describe("readme", function () {
+  it('gets processed if it is not cached yet', function (done) {
+    sinon.spy(cache, 'setKey');
+
+    present({
+      "versions": ["1.3.0"],
+      "name": "hello",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/someone/ohai.git"
+      },
+      "publisher": {
+        "name": "ohai",
+        "email": "ohai@email.com"
+      },
+      "version": "1.3.0",
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z",
+      "readme": "# heading\n\n> quote"
+    }).then(function (pkg) {
+      expect(pkg.readme).to.include("<h1 id=\"user-content-heading\"");
+      expect(cache.setKey.called).to.be.true();
+      expect(cache.setKey.calledWith('hello_readme')).to.be.true();
+      cache.setKey.restore();
+      done();
+    });
+  });
+
+  it('does not get processed if it is cached', function (done) {
+    sinon.stub(cache, 'getKey', function (key, cb) {
+      cb(null, "<h1>boom</h1>");
+    });
+    sinon.spy(cache, 'setKey');
+
+    present({
+      "versions": ["1.3.0"],
+      "name": "hello",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/someone/ohai.git"
+      },
+      "publisher": {
+        "name": "ohai",
+        "email": "ohai@email.com"
+      },
+      "version": "1.3.0",
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z",
+      "readme": "# heading\n\n> quote"
+    }).then(function (pkg) {
+      expect(pkg.readme).to.equal("<h1>boom</h1>");
+      expect(cache.setKey.called).to.be.false();
+      cache.getKey.restore();
+      cache.setKey.restore();
+      done();
+    });
+  });
 });

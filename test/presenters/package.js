@@ -129,7 +129,7 @@ describe('installCommand', function(){
     });
   });
 
-  it('uses shorthand for pkgs with long names', function (done) {
+  it('uses shorthand for packages with long names', function (done) {
     present({
       name: "supercalifragilisticexpialidocious",
       preferGlobal: true
@@ -249,7 +249,7 @@ describe("different types of deps", function () {
       expect(first.name).to.exist();
       expect(first.url).to.exist();
       expect(first.name).to.equal('connect-orientdb');
-      expect(first.url).to.equal('/pkg/connect-orientdb');
+      expect(first.url).to.equal('/package/connect-orientdb');
 
       done();
     });

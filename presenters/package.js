@@ -37,11 +37,11 @@ module.exports = function (pkg) {
   }
 
   /* here's the potential situation: let's say I'm a hacker and I make a
-  pkg that does Something Evil™ then I add you as a collaborators `npm
-  adduser zeke evil-pkg` and then I publish the pkg and then I remove
-  myself from the pkg so it looks like YOU are the one who made the
-  pkg well, that's nasty so we blocked that from showing because
-  hypothetically your friends would be like, hey! this evil-pkg from zeke
+  package that does Something Evil™ then I add you as a collaborator `npm
+  adduser isaacs evil-pkg` and then I publish the package and then I remove
+  myself from the package so it looks like YOU are the one who made the
+  package well, that's nasty so we blocked that from showing because
+  hypothetically your friends would be like, hey! this evil-pkg from isaacs
   looks awesome, let me use it! and then I get all their bank account numbers
   and get super duper rich and become a VC and create LinkedIn for Cats */
 
@@ -176,7 +176,7 @@ function processDependents (items, urlRoot, name) {
   items = items.map(function (i) {
     return {
       name: i,
-      url: '/pkg/' + i
+      url: '/package/' + i
     };
   });
 

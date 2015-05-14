@@ -112,8 +112,9 @@ Package.prototype.count = function() {
 };
 
 Package.prototype.star = function (package) {
+
   var _this = this;
-  var url = fmt("%s/package/%s/star", _this.host, package);
+  var url = fmt("%s/package/%s/star", _this.host, encodeURIComponent(package));
   var opts = {
     url: url,
     json: true,
@@ -140,8 +141,9 @@ Package.prototype.star = function (package) {
 };
 
 Package.prototype.unstar = function (package) {
+
   var _this = this;
-  var url = fmt("%s/package/%s/star", _this.host, package);
+  var url = fmt("%s/package/%s/star", _this.host, encodeURIComponent(package));
   var opts = {
     url: url,
     json: true,

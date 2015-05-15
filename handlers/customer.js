@@ -38,11 +38,13 @@ billing.updateBillingInfo = function(request, reply) {
 
   var sendToHubspot = request.server.methods.npme.sendData;
 
+  var coupon = request.payload.coupon;
+
   var billingInfo = {
     name: request.loggedInUser.name,
     email: request.loggedInUser.email,
     card: request.payload.stripeToken,
-    coupon: request.payload.coupon
+    coupon: coupon && coupon.toLowerCase()
   };
 
   Customer.update(billingInfo, function(err, customer) {

@@ -18,7 +18,7 @@ var userMock, licenseMock;
 before(function (done) {
   process.env.FEATURE_BILLING_PAGE = 'true';
   userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(16)
+    .get("/user/bob").times(17)
     .reply(200, fixtures.users.bob)
     .get("/user/diana_delinquent").twice()
     .reply(200, fixtures.users.diana_delinquent)
@@ -436,6 +436,44 @@ describe('POST /settings/billing', function () {
   });
 
   describe("new paid user", function() {
+
+    it('forces coupon code to be lowercase', function (done) {
+      generateCrumb(server, function (crumb){
+        var opts = {
+          url: '/settings/billing',
+          method: 'POST',
+          credentials: fixtures.users.bob,
+          payload: {
+            stripeToken: 'tok_1234567890',
+            coupon: 'LALALAcoupon',
+            crumb: crumb
+          },
+          headers: { cookie: 'crumb=' + crumb }
+        };
+
+        var mock = nock("https://license-api-example.com")
+          .get("/stripe/bob")
+          .reply(404)
+          .put("/stripe")
+          .reply(200, fixtures.customers.happy);
+
+        var Customer = require('../../models/customer');
+        var oldUpdate = Customer.update;
+
+        Customer.update = function (billingInfo, cb) {
+          expect(billingInfo.coupon).to.equal(opts.payload.coupon.toLowerCase());
+          return cb(null);
+        };
+
+        server.inject(opts, function (resp) {
+          mock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
+          Customer.update = oldUpdate;
+          done();
+        });
+      });
+    });
 
     it('sends new billing info to the billing API', function (done) {
 

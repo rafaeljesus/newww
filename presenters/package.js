@@ -140,7 +140,7 @@ function processReadme (pkg) {
       if (readme) {
 
         metrics.metric({
-          name: 'readme.cache.hit',
+          name: 'cache.readme.hit',
           package: pkg.name,
           value: 1
         });
@@ -152,7 +152,7 @@ function processReadme (pkg) {
         cache.setKey(cacheKey, CACHE_TTL, readme);
 
         metrics.metric({
-          name: 'readme.cache.miss',
+          name: 'cache.readme.miss',
           package: pkg.name,
           value: 1
         });

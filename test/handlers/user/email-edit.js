@@ -33,19 +33,6 @@ var postEmail = function (emailOpts) {
 
 // prepare the server
 before(function (done) {
-  nock.cleanAll();
-
-  nock("https://user-api-example.com")
-    .get('/user/' + users.bob.name).times(11)
-    .reply(200, fixtures.users.bob)
-    .get('/user/' + users.mikeal.name)
-    .reply(200, fixtures.users.mikeal)
-    .get('/user/noone')
-    .reply(200, {
-      name: "noone",
-      email: "f@boom.me",
-    });
-
   require('../../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -86,12 +73,22 @@ describe('Accessing the email-edit page', function () {
   });
 
   it('takes authorized users to the email-edit page', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/' + users.bob.name)
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/' + users.bob.name)
+      .reply(404);
+
     var opts = {
       url: '/email-edit',
       credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
+      userMock.done();
+      licenseMock.done();
       generateCrumb(server, function (crumb){
         cookieCrumb = crumb;
         emails = emails(cookieCrumb);
@@ -135,7 +132,17 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if an email address is not provided', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/' + users.bob.name)
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/' + users.bob.name)
+      .reply(404);
+
     server.inject(postEmail(emails.missingEmail), function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
@@ -145,7 +152,17 @@ describe('Requesting an email change', function () {
   });
 
   it('renders an error if an invalid email address is provided', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/' + users.bob.name)
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/' + users.bob.name)
+      .reply(404);
+
     server.inject(postEmail(emails.invalidEmail), function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
@@ -156,12 +173,19 @@ describe('Requesting an email change', function () {
 
   it('renders an error if the password is invalid', function (done) {
 
-    var mock = nock("https://user-api-example.com")
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/' + users.bob.name)
+      .reply(200, fixtures.users.bob)
       .post("/user/" + emails.invalidPassword.name + "/login", {password: emails.invalidPassword.password})
       .reply(401);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/' + users.bob.name)
+      .reply(404);
+
     server.inject(postEmail(emails.invalidPassword), function (resp) {
-      mock.done();
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(403);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
@@ -171,13 +195,19 @@ describe('Requesting an email change', function () {
   });
 
   it('sends two emails if everything goes properly', function (done) {
-
-    var mock = nock("https://user-api-example.com")
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/' + users.bob.name)
+      .reply(200, fixtures.users.bob)
       .post("/user/" + emails.newEmail.name + "/login", {password: emails.newEmail.password})
       .reply(200, users.bob);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/' + users.bob.name)
+      .reply(404);
+
     server.inject(postEmail(emails.newEmail), function (resp) {
-      mock.done();
+      userMock.done();
+      licenseMock.done();
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
       done();
@@ -199,24 +229,44 @@ describe('Confirming an email change', function () {
   });
 
   it('renders an error if a token is not included in the url', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/' + users.bob.name)
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/' + users.bob.name)
+      .reply(404);
+
     var opts = {
       url: '/email-edit/confirm',
       credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(404);
       done();
     });
   });
 
   it('renders an error if the token doesn\'t exist', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/' + users.bob.name)
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/' + users.bob.name)
+      .reply(404);
+
     var opts = {
       url: '/email-edit/confirm/something',
       credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(404);
       var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
@@ -225,6 +275,14 @@ describe('Confirming an email change', function () {
   });
 
   it('renders an error if the the wrong user is logged in', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/mikeal')
+      .reply(200, fixtures.users.mikeal);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/mikeal')
+      .reply(404);
+
     setEmailHashesInRedis(function (err, tokens) {
 
       var opts = {
@@ -233,6 +291,8 @@ describe('Confirming an email change', function () {
       };
 
       server.inject(opts, function (resp) {
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(500);
         var source = resp.request.response.source;
         expect(source.template).to.equal('errors/internal');
@@ -242,11 +302,15 @@ describe('Confirming an email change', function () {
   });
 
   it('changes the user\'s email when everything works properly', function (done) {
-
-    var mock = nock("https://user-api-example.com")
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/' + users.bob.name)
+      .reply(200, fixtures.users.bob)
       .post("/user/" + users.bob.name, {"name":"bob","email":"new@boom.me"})
       .reply(200);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/' + users.bob.name)
+      .reply(404);
 
     setEmailHashesInRedis(function (err, tokens) {
 
@@ -256,7 +320,8 @@ describe('Confirming an email change', function () {
       };
 
       server.inject(opts, function (resp) {
-        mock.done();
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.context.user.email).to.equal(newEmail);
@@ -281,24 +346,44 @@ describe('Reverting an email change', function () {
   });
 
   it('renders an error if a token is not included in the url', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/bob')
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/bob')
+      .reply(404);
+
     var opts = {
       url: '/email-edit/revert',
       credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(404);
       done();
     });
   });
 
   it('renders an error if the token doesn\'t exist', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/bob')
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/bob')
+      .reply(404);
+
     var opts = {
       url: '/email-edit/revert/something',
       credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(404);
       var source = resp.request.response.source;
       expect(source.template).to.equal('errors/not-found');
@@ -307,16 +392,23 @@ describe('Reverting an email change', function () {
   });
 
   it('renders an error if the the wrong user is logged in', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/mikeal')
+      .reply(200, fixtures.users.mikeal);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/mikeal')
+      .reply(404);
+
     setEmailHashesInRedis(function (err, tokens) {
       var opts = {
         url: '/email-edit/revert/' + tokens.revToken,
-        credentials: {
-         name: "noone",
-         email: "f@boom.me",
-        }
+        credentials: fixtures.users.mikeal
       };
 
       server.inject(opts, function (resp) {
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(500);
         var source = resp.request.response.source;
         expect(source.template).to.equal('errors/internal');
@@ -327,9 +419,15 @@ describe('Reverting an email change', function () {
 
   it('changes the user\'s email when everything works properly', function (done) {
 
-    var mock = nock("https://user-api-example.com")
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/bob')
+      .reply(200, fixtures.users.bob)
       .post("/user/" + users.bob.name, {"name":"bob","email":"bob@boom.me"})
       .reply(200);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/bob')
+      .reply(404);
 
     setEmailHashesInRedis(function (err, tokens) {
       var opts = {
@@ -338,7 +436,8 @@ describe('Reverting an email change', function () {
       };
 
       server.inject(opts, function (resp) {
-        mock.done();
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         expect(users.bob.email).to.equal(oldEmail);
         var source = resp.request.response.source;

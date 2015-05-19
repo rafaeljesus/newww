@@ -54,26 +54,27 @@ exports.profileUpdate = {
 };
 
 exports.bobUpdateBody = {
-  name: 'bob',
-  email: 'bob@boom.me',
-  email_verified: true,
-  verification_key: '12345',
-  resource: {
-    github: 'bob',
-    twitter: 'bobby',
-    homepage: 'http://boom.me',
-    freenode: 'bobob',
-    fullname: 'Big Bob'
+  "name": "bob",
+  "email": "bob@boom.me",
+  "email_verified": true,
+  "verification_key": "12345",
+  "resource": {
+    "fullname": "Big Bob",
+    "github": "bob",
+    "twitter": "bobby",
+    "mustChangePass": "true"
   },
-  created: '2014-11-21T20:05:05.423Z',
-  updated: '2015-01-24T00:08:41.269Z',
-  deleted: null,
-  emailObfuscated: '%62%6f%62%40%62%6f%6f%6d%2e%6d%65',
-  avatar: {
-    small: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=50&default=retro',
-    medium: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=100&default=retro',
-    large: 'https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=496&default=retro'
-  }
+  "created": "2014-11-21T20:05:05.423Z",
+  "updated": "2015-01-24T00:08:41.269Z",
+  "deleted": null,
+  "emailObfuscated": "%62%6f%62%40%62%6f%6f%6d%2e%6d%65",
+  "avatar": {
+    "small": "https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=50&default=retro",
+    "medium": "https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=100&default=retro",
+    "large": "https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=496&default=retro"
+  },
+  "customer": {},
+  "isPaid": true
 };
 
 exports.bobUpdated = {

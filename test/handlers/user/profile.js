@@ -29,25 +29,24 @@ describe('GET /~bob for a user other than bob', function () {
   var context;
 
   before(function(done) {
-    nock.cleanAll();
-    var mock = nock("https://user-api-example.com")
+    var userMock = nock("https://user-api-example.com")
       .get('/user/bob')
       .reply(200, users.bob)
       .get('/user/bob/package?format=mini&per_page=100&page=0')
       .reply(200, users.packages)
       .get('/user/bob/stars?format=detailed')
-      .reply(200, users.stars);
+      .reply(200, users.stars) ;
 
     var licenseMock = nock('https://license-api-example.com')
       .get('/stripe/bob')
-      .reply(200, {});
+      .reply(404);
 
     server.inject('/~bob', function (response) {
+      userMock.done();
+      licenseMock.done();
       resp = response;
       $ = cheerio.load(resp.result);
       context = resp.request.response.source.context;
-      mock.done();
-      licenseMock.done();
       done();
     });
   });
@@ -98,20 +97,25 @@ describe('GET /~bob for logged-in bob', function () {
   var context;
 
   before(function(done) {
-    var mock = nock("https://user-api-example.com")
-      .get('/user/bob').times(2)
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/bob').twice()
       .reply(200, users.bob)
       .get('/user/bob/package?format=mini&per_page=100&page=0')
       .reply(200, users.packages)
       .get('/user/bob/stars?format=detailed')
       .reply(200, users.stars);
 
+    var licenseMock = nock('https://license-api-example.com')
+      .get('/stripe/bob').twice()
+      .reply(404);
+
     server.inject({url:'/~bob', credentials: users.bob}, function (response) {
+      userMock.done();
+      licenseMock.done();
       resp = response;
       $ = cheerio.load(resp.result);
       context = resp.request.response.source.context;
       expect(resp.statusCode).to.equal(200);
-      mock.done();
       done();
     });
   });
@@ -141,12 +145,21 @@ describe('GET /~bob for logged-in bob', function () {
 
 describe("GET /~nonexistent-user", function() {
   it("renders a 404 page", function (done) {
-    var mock = nock("https://user-api-example.com")
-      .get("/user/nonexistent-user")
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/nonexistent-user')
+      .reply(404)
+      .get('/user/nonexistent-user/package?format=mini&per_page=100&page=0')
+      .reply(404)
+      .get('/user/nonexistent-user/stars?format=detailed')
+      .reply(404);
+
+    var licenseMock = nock('https://license-api-example.com')
+      .get('/stripe/nonexistent-user')
       .reply(404);
 
     server.inject('/~nonexistent-user', function (resp) {
-      mock.done();
+      userMock.done();
+      licenseMock.done();
       var source = resp.request.response.source;
       expect(resp.statusCode).to.equal(404);
       expect(source.template).to.equal('errors/user-not-found');

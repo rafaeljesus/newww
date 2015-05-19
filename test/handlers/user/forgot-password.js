@@ -110,10 +110,14 @@ describe('Looking up a user', function () {
       var mock = nock("https://user-api-example.com")
         .get("/user/" + name)
         .reply(404);
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/stripe/" + name)
+        .reply(404);
 
       generateCrumb(server, function (crumb){
         server.inject(postName(name, crumb), function (resp) {
           mock.done();
+          licenseMock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
           expect(source.context.error).to.equal("Sorry, there's no npm user named mr-perdido");
@@ -130,9 +134,14 @@ describe('Looking up a user', function () {
         .get("/user/" + name)
         .reply(200, users.no_email);
 
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/stripe/" + name)
+        .reply(404);
+
       generateCrumb(server, function (crumb){
         server.inject(postName(name, crumb), function (resp) {
           mock.done();
+          licenseMock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
           expect(source.context.error).to.equal('Username does not have an email address; please contact support');
@@ -149,9 +158,14 @@ describe('Looking up a user', function () {
         .get("/user/" + name)
         .reply(200, users.bad_email);
 
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/stripe/" + name)
+        .reply(404);
+
       generateCrumb(server, function (crumb){
         server.inject(postName(name, crumb), function (resp) {
           mock.done();
+          licenseMock.done();
           var source = resp.request.response.source;
           expect(source.template).to.equal('user/password-recovery-form');
           expect(source.context.error).to.equal("Username's email address is invalid; please contact support");
@@ -168,9 +182,14 @@ describe('Looking up a user', function () {
         .get("/user/" + name)
         .reply(200, users.bob);
 
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/stripe/" + name)
+        .reply(404);
+
       generateCrumb(server, function (crumb){
         server.inject(postName(name, crumb), function (resp) {
           mock.done();
+          licenseMock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
           done();
@@ -226,6 +245,10 @@ describe('Looking up a user', function () {
         .get("/user/bob")
         .reply(200, users.bob);
 
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/stripe/bob")
+        .reply(404);
+
       generateCrumb(server, function (crumb){
         var options = {
           url: '/forgot',
@@ -239,6 +262,7 @@ describe('Looking up a user', function () {
 
         server.inject(options, function (resp) {
           mock.done();
+          licenseMock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
           done();
@@ -256,9 +280,14 @@ describe('Looking up a user', function () {
         .get("/user/bob")
         .reply(200, users.bob);
 
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/stripe/bob")
+        .reply(404);
+
       generateCrumb(server, function (crumb){
         server.inject(postName(email, crumb), function (resp) {
           mock.done();
+          licenseMock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
           done();

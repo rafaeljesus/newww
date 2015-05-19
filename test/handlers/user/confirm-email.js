@@ -8,7 +8,6 @@ var Code = require('code'),
     expect = Code.expect,
     nock = require("nock"),
     users = require('../../fixtures').users,
-    redis = require('redis'),
     spawn = require('child_process').spawn;
 
 var server,
@@ -89,6 +88,10 @@ describe('Confirming an email address', function () {
       .post("/user/bob/verify", { verification_key: users.bob.verification_key })
       .reply(200);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(200, {});
+
     var boom = JSON.stringify({
           name: 'bob',
           email: 'boom@bang.com',
@@ -101,6 +104,7 @@ describe('Confirming an email address', function () {
 
       server.inject(opts, function (resp) {
         mock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/email-confirmed');
@@ -120,6 +124,10 @@ describe('Confirming an email address', function () {
       .post("/user/bob/verify", { verification_key: users.bob.verification_key })
       .reply(200);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(200, {});
+
     var boom = JSON.stringify({
           name: 'bob',
           email: 'boom@bang.com',
@@ -132,6 +140,7 @@ describe('Confirming an email address', function () {
 
       server.inject(opts, function (resp) {
         mock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/email-confirmed');
@@ -148,6 +157,10 @@ describe('Confirming an email address', function () {
       .post("/user/bob/verify", { verification_key: users.bob.verification_key })
       .reply(200);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(200, {});
+
     var boom = JSON.stringify({
           name: 'bob',
           email: 'boom@bang.com',
@@ -160,6 +173,7 @@ describe('Confirming an email address', function () {
 
       server.inject(opts, function (resp) {
         mock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.include("platform.twitter.com/oct.js");
         done();

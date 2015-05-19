@@ -10,30 +10,10 @@ var generateCrumb = require("../crumb"),
     nock = require("nock"),
     redisSessions = require('../../../adapters/redis-sessions');
 
-var server, userMock,
+var server,
     users = require('../../fixtures').users;
 
-
 before(function (done) {
-
-  userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(3)
-    .reply(200, users.bob)
-    .post("/user/bob")
-    .reply(200, users.bob)
-    .post("/user/bob/login", {password: '12345'}).twice()
-    .reply(200, users.bob)
-    .post("/user/" + users.bob.name + "/login", {password: 'abcde'})
-    .reply(200, users.bob)
-    .post("/user/" + users.bob.name, {
-      "name":"bob",
-      "password":"abcde",
-      "resource": {
-        "mustChangePass":null
-      }
-    })
-    .reply(200, users.bob);
-
   require('../../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -41,7 +21,6 @@ before(function (done) {
 });
 
 after(function (done) {
-  userMock.done();
   server.stop(done);
 });
 
@@ -59,12 +38,22 @@ describe('Getting to the password page', function () {
   });
 
   it('takes authorized users to the password page', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(404);
+
     var options = {
       url: '/password',
       credentials: users.bob
     };
 
     server.inject(options, function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/password');
@@ -105,6 +94,24 @@ describe('Changing the password', function () {
 
   it('renders an error if unable to drop sessions for the user', function (done) {
 
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, users.bob)
+      .post("/user/bob/login", {password: '12345'})
+      .reply(200, users.bob)
+      .post("/user/" + users.bob.name, {
+        "name":"bob",
+        "password":"abcde",
+        "resource": {
+          "mustChangePass":null
+        }
+      })
+      .reply(200, users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(404);
+
     // mock out drop keys method
     var oldDropKeys = redisSessions.dropKeysWithPrefix;
     redisSessions.dropKeysWithPrefix = function (name, cb) {
@@ -123,6 +130,8 @@ describe('Changing the password', function () {
       options.payload.crumb = crumb;
 
       server.inject(options, function (resp) {
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(500);
         var source = resp.request.response.source;
         expect(source.template).to.include('errors/internal');
@@ -134,6 +143,26 @@ describe('Changing the password', function () {
   });
 
   it('allows authorized password changes to go through', function (done) {
+
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, users.bob)
+      .post("/user/bob/login", {password: '12345'})
+      .reply(200, users.bob)
+      .post("/user/" + users.bob.name + "/login", {password: 'abcde'})
+      .reply(200, users.bob)
+      .post("/user/" + users.bob.name, {
+        "name":"bob",
+        "password":"abcde",
+        "resource": {
+          "mustChangePass":null
+        }
+      })
+      .reply(200, users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(404);
 
     // mock out drop keys method
     var oldDropKeys = redisSessions.dropKeysWithPrefix;
@@ -153,6 +182,8 @@ describe('Changing the password', function () {
       options.payload.crumb = crumb;
 
       server.inject(options, function (resp) {
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.headers.location).to.include('profile');
         redisSessions.dropKeysWithPrefix = oldDropKeys;

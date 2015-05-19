@@ -102,14 +102,12 @@ User.prototype.dropCache = function dropCache (name, callback) {
 };
 
 
-User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback)
-{
+User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
   Request.get(this.generateUserACLOptions(name), function(err, response, body)
   {
     if (err) { return callback(err); }
 
-    if (response.statusCode !== 200)
-    {
+    if (response.statusCode !== 200) {
         var e = new Error('unexpected status code ' + response.statusCode);
         e.statusCode = response.statusCode;
         return callback(e);
@@ -119,39 +117,35 @@ User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback)
   });
 };
 
-User.prototype.fetchCustomer = function fetchCustomer(name, callback)
-{
+User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
   var licenseAPI = new LicenseAPI();
-  licenseAPI.get(name, callback);
+  licenseAPI.get(name, function (err, customer) {
+    return callback(null, customer);
+  });
 };
 
 User.prototype._get = function _get(name, callback) {
   var self = this;
   var user;
 
-  cache.getKey(name, function(err, value)
-  {
+  cache.getKey(name, function(err, value) {
     if (err) { return callback(err); }
 
-    if (value)
-    {
+    if (value) {
       user = utils.safeJsonParse(value);
       return callback(null, user);
     }
 
-    self.fetchData(name, function(err, user)
-    {
+    self.fetchData(name, function(err, user) {
       if (err) { return callback(err); }
-      cache.setKey(name, cache.DEFAULT_TTL, JSON.stringify(user), function(err, result)
-      {
+      cache.setKey(name, cache.DEFAULT_TTL, JSON.stringify(user), function(err, result) {
         return callback(null, user);
       });
     });
   });
 };
 
-User.prototype.fetchData = function fetchData(name, callback)
-{
+User.prototype.fetchData = function fetchData(name, callback) {
   var self = this;
 
   var actions = {
@@ -159,8 +153,7 @@ User.prototype.fetchData = function fetchData(name, callback)
     customer: function(cb) { self.fetchCustomer(name, cb); },
   };
 
-  async.parallel(actions, function(err, results)
-  {
+  async.parallel(actions, function(err, results) {
     if (err) { return callback(err); }
 
     var user = decorate(results.user);

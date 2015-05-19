@@ -7,7 +7,6 @@ var Code = require('code'),
     it = lab.test,
     expect = Code.expect,
     nock = require("nock"),
-    _ = require('lodash'),
     Collaborator,
     fixtures = require("../fixtures.js");
 

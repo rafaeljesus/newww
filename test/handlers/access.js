@@ -10,20 +10,12 @@ var fixtures = require("../fixtures"),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
-    server, userMock,
+    server, userMock, licenseMock,
     users = require('../fixtures').users;
 
 describe("package access", function(){
 
   before(function (done) {
-    userMock = nock("https://user-api-example.com")
-    .get("/user/bob").times(3)
-    .reply(200, users.bob)
-    .get("/user/wrigley_the_writer").times(4)
-    .reply(200, users.wrigley_the_writer)
-    .get("/user/ralph_the_reader").twice()
-    .reply(200, users.ralph_the_reader);
-
     require('../mocks/server')(function (obj) {
       server = obj;
       done();
@@ -31,7 +23,6 @@ describe("package access", function(){
   });
 
   after(function (done) {
-    userMock.done();
     server.stop(done);
   });
 
@@ -131,7 +122,18 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, users.bob);
+
+        licenseMock = nock("https://license-api-example.com")
+          .get("/stripe/bob")
+          .reply(200, {});
+
         server.inject(options, function(response) {
+          userMock.done();
+          licenseMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -171,8 +173,19 @@ describe("package access", function(){
       };
 
       before(function(done) {
+
+        userMock = nock("https://user-api-example.com")
+          .get("/user/wrigley_the_writer")
+          .reply(200, users.wrigley_the_writer);
+
+        licenseMock = nock("https://license-api-example.com")
+          .get("/stripe/wrigley_the_writer")
+          .reply(200, {});
+
         process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
+          userMock.done();
+          licenseMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -288,7 +301,18 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, users.bob);
+
+        licenseMock = nock("https://license-api-example.com")
+          .get("/stripe/bob")
+          .reply(200, {});
+
         server.inject(options, function(response) {
+          userMock.done();
+          licenseMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -329,7 +353,18 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        userMock = nock("https://user-api-example.com")
+          .get("/user/ralph_the_reader")
+          .reply(200, users.ralph_the_reader);
+
+        licenseMock = nock("https://license-api-example.com")
+          .get("/stripe/ralph_the_reader")
+          .reply(200, {});
+
         server.inject(options, function(response) {
+          userMock.done();
+          licenseMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -368,12 +403,17 @@ describe("package access", function(){
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
 
-        var customerMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer")
+        userMock = nock("https://user-api-example.com")
+          .get("/user/wrigley_the_writer")
+          .reply(200, users.wrigley_the_writer);
+
+        licenseMock = nock("https://license-api-example.com")
+          .get("/stripe/wrigley_the_writer").twice()
           .reply(200, fixtures.customers.happy);
 
         server.inject(options, function(response) {
-          customerMock.done();
+          userMock.done();
+          licenseMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -433,12 +473,18 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
-        var customerMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer")
+
+        userMock = nock("https://user-api-example.com")
+          .get("/user/wrigley_the_writer")
+          .reply(200, fixtures.users.wrigley_the_writer);
+
+        licenseMock = nock("https://license-api-example.com")
+          .get("/stripe/wrigley_the_writer").twice()
           .reply(404);
 
         server.inject(options, function(response) {
-          customerMock.done();
+          userMock.done();
+          licenseMock.done();
           $ = cheerio.load(response.result);
           done();
         });
@@ -470,19 +516,20 @@ describe("package access", function(){
     var options = {
       url: '/package/@wrigley_the_writer/scoped_private/access'
     };
-    var mock = nock("https://user-api-example.com")
-      .get('/package/@wrigley_the_writer%2Fscoped_private')
-      .times(4)
-      .reply(200, fixtures.packages.wrigley_scoped_private)
-      .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
-      .times(4)
-      .reply(200, fixtures.collaborators);
 
     describe('anonymous user', function () {
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        var packageMock = nock("https://user-api-example.com")
+          .get('/package/@wrigley_the_writer%2Fscoped_private')
+          .reply(200, fixtures.packages.wrigley_scoped_private)
+          .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
+          .reply(200, fixtures.collaborators);
+
         server.inject(options, function(response) {
+          packageMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -510,7 +557,25 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        var userMock = nock("https://user-api-example.com")
+          .get('/user/bob')
+          .reply(200, fixtures.users.bob);
+
+        var packageMock = nock("https://user-api-example.com")
+          .get('/package/@wrigley_the_writer%2Fscoped_private')
+          .reply(200, fixtures.packages.wrigley_scoped_private)
+          .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
+          .reply(200, fixtures.collaborators);
+
+        var customerMock = nock("https://license-api-example.com")
+          .get("/stripe/bob")
+          .reply(200, {});
+
         server.inject(options, function(response) {
+          userMock.done();
+          packageMock.done();
+          customerMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -538,7 +603,25 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        var userMock = nock("https://user-api-example.com")
+          .get('/user/ralph_the_reader')
+          .reply(200, fixtures.users.ralph_the_reader);
+
+        var packageMock = nock("https://user-api-example.com")
+          .get('/package/@wrigley_the_writer%2Fscoped_private')
+          .reply(200, fixtures.packages.wrigley_scoped_private)
+          .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
+          .reply(200, fixtures.collaborators);
+
+        var customerMock = nock("https://license-api-example.com")
+          .get("/stripe/ralph_the_reader")
+          .reply(200, {});
+
         server.inject(options, function(response) {
+          userMock.done();
+          packageMock.done();
+          customerMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -561,7 +644,25 @@ describe("package access", function(){
 
       before(function(done) {
         process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        var userMock = nock("https://user-api-example.com")
+          .get('/user/wrigley_the_writer')
+          .reply(200, fixtures.users.wrigley_the_writer);
+
+        var packageMock = nock("https://user-api-example.com")
+          .get('/package/@wrigley_the_writer%2Fscoped_private')
+          .reply(200, fixtures.packages.wrigley_scoped_private)
+          .get('/package/@wrigley_the_writer%2Fscoped_private/collaborators')
+          .reply(200, fixtures.collaborators);
+
+        var customerMock = nock("https://license-api-example.com")
+          .get("/stripe/wrigley_the_writer")
+          .reply(200, {});
+
         server.inject(options, function(response) {
+          userMock.done();
+          packageMock.done();
+          customerMock.done();
           resp = response;
           context = resp.request.response.source.context;
           $ = cheerio.load(resp.result);
@@ -589,15 +690,24 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        var mock = nock("https://user-api-example.com")
+        process.env.FEATURE_ACCESS_PAGE = 'true';
+
+        var userMock = nock("https://user-api-example.com")
           .get('/user/wrigley_the_writer')
-          .reply(200, fixtures.users.wrigley_the_writer)
+          .reply(200, fixtures.users.wrigley_the_writer);
+
+        var packageMock = nock("https://user-api-example.com")
           .get('/package/@wrigley_the_writer%2Fscoped_private')
           .reply(402);
 
-        process.env.FEATURE_ACCESS_PAGE = 'true';
+        var customerMock = nock("https://license-api-example.com")
+          .get("/stripe/wrigley_the_writer")
+          .reply(200, {});
+
         server.inject(options, function(response) {
-          mock.done();
+          userMock.done();
+          packageMock.done();
+          customerMock.done();
           resp = response;
           delete process.env.FEATURE_ACCESS_PAGE;
           done();

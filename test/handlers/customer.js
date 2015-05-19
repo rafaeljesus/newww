@@ -26,9 +26,9 @@ before(function (done) {
     .reply(200, fixtures.users.norbert_newbie);
 
   licenseMock = nock("https://license-api-example.com:443")
-    .get("/stripe/bob")
+    .get("/stripe/bob").times(12)
     .reply(200, fixtures.customers.happy)
-    .get("/stripe/bob").times(6)
+    .get("/stripe/bob").times(2)
     .reply(404);
 
   require('../mocks/server')(function (obj) {
@@ -169,7 +169,7 @@ describe('GET /settings/billing', function () {
       options.credentials = fixtures.users.bob;
 
       mock = nock("https://license-api-example.com")
-        .get("/stripe/bob")
+        .get("/stripe/bob").twice(2)
         .reply(200, fixtures.customers.happy);
 
       server.inject(options, function (response) {
@@ -240,7 +240,7 @@ describe('GET /settings/billing', function () {
     beforeEach(function(done){
       options.credentials = fixtures.users.diana_delinquent;
       mock = nock("https://license-api-example.com")
-        .get("/stripe/diana_delinquent")
+        .get("/stripe/diana_delinquent").times(2)
         .reply(200, fixtures.customers.license_expired);
 
       server.inject(options, function (response) {
@@ -274,6 +274,8 @@ describe('GET /settings/billing', function () {
     beforeEach(function(done){
       options.credentials = fixtures.users.norbert_newbie;
       mock = nock("https://license-api-example.com")
+        .get("/stripe/norbert_newbie")
+        .reply(200, fixtures.customers.happy)
         .get("/stripe/norbert_newbie")
         .reply(404);
 
@@ -323,7 +325,7 @@ describe('GET /settings/billing', function () {
         .reply(200, fixtures.users.uncle_unverified);
 
       var customerMock = nock("https://license-api-example.com")
-        .get("/stripe/uncle_unverified")
+        .get("/stripe/uncle_unverified").times(2)
         .reply(404);
 
       server.inject(options, function (response) {
@@ -385,7 +387,7 @@ describe('POST /settings/billing', function () {
         };
 
         var mock = nock("https://license-api-example.com")
-          .get("/stripe/bob")
+          .get("/stripe/bob").times(2)
           .reply(200, fixtures.customers.happy)
           .post("/stripe/bob")
           .reply(200, fixtures.customers.happy);
@@ -415,7 +417,7 @@ describe('POST /settings/billing', function () {
         };
 
         var mock = nock("https://license-api-example.com")
-          .get("/stripe/bob")
+          .get("/stripe/bob").twice()
           .reply(200, fixtures.customers.happy)
           .post("/stripe/bob")
           .reply(200, "Your card's security code is incorrect.");
@@ -452,10 +454,10 @@ describe('POST /settings/billing', function () {
         };
 
         var mock = nock("https://license-api-example.com")
-          .get("/stripe/bob")
-          .reply(404)
-          .put("/stripe")
-          .reply(200, fixtures.customers.happy);
+          .get("/stripe/bob").times(2)
+          .reply(200, fixtures.customers.happy)
+          .post("/stripe/bob", {"name":"bob","email":"bob@boom.me","card":"tok_1234567890"})
+          .reply(200)
 
         server.inject(opts, function (resp) {
           mock.done();
@@ -506,6 +508,8 @@ describe('POST /settings/billing/cancel', function () {
       };
 
       var licenseMock = nock("https://license-api-example.com")
+        .get("/stripe/bob")
+        .reply(200, fixtures.customers.happy)
         .delete("/stripe/bob")
         .reply(200, fixtures.customers.happy);
 

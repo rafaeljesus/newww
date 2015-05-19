@@ -15,64 +15,9 @@ var fixtures = require("../fixtures"),
     expect = Code.expect,
     server;
 
-var packageMock, downloadsMock, userMock;
-
 describe("package handler", function(){
 
   before(function (done) {
-    nock.cleanAll();
-    packageMock = nock("https://user-api-example.com")
-      .get('/package/browserify').twice()
-      .reply(200, fixtures.packages.browserify)
-      .get('/package?dependency=browserify&limit=50').twice()
-      .reply(200, fixtures.dependents)
-      .get('/package?dependency=%40zeke%2Fsecrets&limit=50')
-      .reply(200)
-      .get('/package/nothingness')
-      .reply(404)
-      .get('/package/@zeke%2Fnope').twice()
-      .reply(404)
-      .get('/package/@bob%2Fnope')
-      .reply(404)
-      .get('/package/_.escape')
-      .reply(404)
-      .get('/package/hitler')
-      .reply(200, fixtures.packages.hitler)
-      .get('/package?dependency=hitler&limit=50')
-      .reply(200)
-      .get('/package/request').times(4)
-      .reply(200, fixtures.packages.request)
-      .get('/package?dependency=request&limit=50').times(4)
-      .reply(200, fixtures.dependents);
-
-    downloadsMock = nock("https://downloads-api-example.com")
-      .get('/point/last-day/browserify').twice()
-      .reply(200, fixtures.downloads.browserify.day)
-      .get('/point/last-week/browserify').twice()
-      .reply(200, fixtures.downloads.browserify.week)
-      .get('/point/last-month/browserify').twice()
-      .reply(200, fixtures.downloads.browserify.month)
-      .get('/point/last-day/request').twice()
-      .reply(200, fixtures.downloads.request.day)
-      .get('/point/last-week/request').twice()
-      .reply(200, fixtures.downloads.request.week)
-      .get('/point/last-month/request').twice()
-      .reply(200, fixtures.downloads.request.month)
-      .get('/point/last-day/request').twice()
-      .reply(404)
-      .get('/point/last-week/request').twice()
-      .reply(404)
-      .get('/point/last-month/request').twice()
-      .reply(404);
-
-    userMock = nock("https://user-api-example.com")
-      .get('/user/bob').times(3)
-      .reply(200, fixtures.users.bob)
-      .get('/user/bcoe')
-      .reply(200, fixtures.users.bcoe)
-      .get('/user/mikeal').times(3)
-      .reply(200, fixtures.users.mikeal);
-
     require('../mocks/server')(function (obj) {
       server = obj;
       done();
@@ -80,9 +25,6 @@ describe("package handler", function(){
   });
 
   after(function (done) {
-    packageMock.done();
-    downloadsMock.done();
-    userMock.done();
     server.stop(done);
   });
 
@@ -92,7 +34,23 @@ describe("package handler", function(){
     var options = {url: '/package/browserify'};
 
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/browserify')
+        .reply(200, fixtures.packages.browserify)
+        .get('/package?dependency=browserify&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/browserify')
+        .reply(200, fixtures.downloads.browserify.day)
+        .get('/point/last-week/browserify')
+        .reply(200, fixtures.downloads.browserify.week)
+        .get('/point/last-month/browserify')
+        .reply(200, fixtures.downloads.browserify.month);
+
       server.inject(options, function (response) {
+        packageMock.done();
+        downloadsMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         done();
@@ -172,15 +130,26 @@ describe("package handler", function(){
 
   describe('scoped private package viewed by unpaid collaborator', function () {
     var resp;
-    var options = {url: '/package/@zeke/secrets'};
+    var options = {url: '/package/@user/secrets'};
 
     before(function(done){
       var packageMock = nock("https://user-api-example.com")
-        .get('/package/@zeke%2Fsecrets')
-        .reply(402);
+        .get('/package/@user%2Fsecrets')
+        .reply(402)
+        .get('/package?dependency=%40user%2Fsecrets&limit=50')
+        .reply(200);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/@user/secrets')
+        .reply(404)
+        .get('/point/last-week/@user/secrets')
+        .reply(404)
+        .get('/point/last-month/@user/secrets')
+        .reply(404);
 
       server.inject(options, function (response) {
         packageMock.done();
+        downloadsMock.done();
         resp = response;
         done();
       });
@@ -193,7 +162,7 @@ describe("package handler", function(){
     });
 
     it('sets a `package` query param so a helpful message can be displayed', function (done) {
-      expect(URL.parse(resp.headers.location, true).query.package).to.equal("@zeke/secrets");
+      expect(URL.parse(resp.headers.location, true).query.package).to.equal("@user/secrets");
       done();
     });
 
@@ -206,7 +175,23 @@ describe("package handler", function(){
     var options = {url: '/package/nothingness'};
 
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/nothingness')
+        .reply(404)
+        .get('/package?dependency=nothingness&limit=50')
+        .reply(404);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/nothingness')
+        .reply(404)
+        .get('/point/last-week/nothingness')
+        .reply(404)
+        .get('/point/last-month/nothingness')
+        .reply(404);
+
       server.inject(options, function (response) {
+        packageMock.done();
+        downloadsMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         context = resp.request.response.source.context;
@@ -240,10 +225,26 @@ describe("package handler", function(){
   describe('nonexistent scoped packages for anonymous users', function () {
     var $;
     var resp;
-    var options = {url: '/package/@zeke/nope'};
+    var options = {url: '/package/@user/nope'};
 
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/@user%2Fnope')
+        .reply(404)
+        .get('/package?dependency=%40user%2Fnope&limit=50')
+        .reply(404);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/@user/nope')
+        .reply(404)
+        .get('/point/last-week/@user/nope')
+        .reply(404)
+        .get('/point/last-month/@user/nope')
+        .reply(404);
+
       server.inject(options, function (response) {
+        packageMock.done();
+        downloadsMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         done();
@@ -268,12 +269,38 @@ describe("package handler", function(){
     var resp;
     var context;
     var options = {
-      url: '/package/@zeke/nope',
+      url: '/package/@user/nope',
       credentials: fixtures.users.bob
     };
 
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/@user%2Fnope')
+        .reply(404)
+        .get('/package?dependency=%40user%2Fnope&limit=50')
+        .reply(404);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/@user/nope')
+        .reply(404)
+        .get('/point/last-week/@user/nope')
+        .reply(404)
+        .get('/point/last-month/@user/nope')
+        .reply(404);
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/bob')
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get('/stripe/bob')
+        .reply(404);
+
       server.inject(options, function (response) {
+        packageMock.done();
+        downloadsMock.done();
+        userMock.done();
+        licenseMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         context = resp.request.response.source.context;
@@ -305,7 +332,33 @@ describe("package handler", function(){
     };
 
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/@bob%2Fnope')
+        .reply(404)
+        .get('/package?dependency=%40bob%2Fnope&limit=50')
+        .reply(404);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/@bob/nope')
+        .reply(404)
+        .get('/point/last-week/@bob/nope')
+        .reply(404)
+        .get('/point/last-month/@bob/nope')
+        .reply(404);
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/bob')
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get('/stripe/bob')
+        .reply(404);
+
       server.inject(options, function (response) {
+        packageMock.done();
+        downloadsMock.done();
+        userMock.done();
+        licenseMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         context = resp.request.response.source.context;
@@ -339,7 +392,23 @@ describe("package handler", function(){
     var options = {url: '/package/_.escape'};
 
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/_.escape')
+        .reply(404)
+        .get('/package?dependency=_.escape&limit=50')
+        .reply(404);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/_.escape')
+        .reply(404)
+        .get('/point/last-week/_.escape')
+        .reply(404)
+        .get('/point/last-month/_.escape')
+        .reply(404);
+
       server.inject(options, function (response) {
+        packageMock.done();
+        downloadsMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
         context = resp.request.response.source.context;
@@ -371,7 +440,23 @@ describe("package handler", function(){
     var options = {url: '/package/hitler'};
 
     before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/hitler')
+        .reply(200, fixtures.packages.hitler)
+        .get('/package?dependency=hitler&limit=50')
+        .reply(200);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/hitler')
+        .reply(404)
+        .get('/point/last-week/hitler')
+        .reply(404)
+        .get('/point/last-month/hitler')
+        .reply(404);
+
       server.inject(options, function (response) {
+        packageMock.done();
+        downloadsMock.done();
         resp = response;
         done();
       });
@@ -397,7 +482,33 @@ describe("package handler", function(){
         credentials: fixtures.users.bcoe
       };
 
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/browserify')
+        .reply(200, fixtures.packages.browserify)
+        .get('/package?dependency=browserify&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/browserify')
+        .reply(200, fixtures.downloads.browserify.day)
+        .get('/point/last-week/browserify')
+        .reply(200, fixtures.downloads.browserify.week)
+        .get('/point/last-month/browserify')
+        .reply(200, fixtures.downloads.browserify.month);
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/bcoe')
+        .reply(200, fixtures.users.bcoe);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get('/stripe/bcoe')
+        .reply(404);
+
       server.inject(options, function (resp) {
+        packageMock.done();
+        downloadsMock.done();
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('browserify');
@@ -420,12 +531,38 @@ describe("package handler", function(){
     });
 
     it('is displayed if user is a collaborator', function (done) {
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request')
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/request')
+        .reply(200, fixtures.downloads.request.day)
+        .get('/point/last-week/request')
+        .reply(200, fixtures.downloads.request.week)
+        .get('/point/last-month/request')
+        .reply(200, fixtures.downloads.request.month);
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/mikeal')
+        .reply(200, fixtures.users.mikeal);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get('/stripe/mikeal')
+        .reply(404);
+
       var options = {
         url: '/package/request',
         credentials: fixtures.users.mikeal
       };
 
       server.inject(options, function (resp) {
+        packageMock.done();
+        downloadsMock.done();
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('request');
@@ -439,6 +576,28 @@ describe("package handler", function(){
     });
 
     it('is not displayed if FEATURE_ACCESS_PAGE is not set', function (done) {
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request')
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/request')
+        .reply(200, fixtures.downloads.request.day)
+        .get('/point/last-week/request')
+        .reply(200, fixtures.downloads.request.week)
+        .get('/point/last-month/request')
+        .reply(200, fixtures.downloads.request.month);
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/mikeal')
+        .reply(200, fixtures.users.mikeal);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get('/stripe/mikeal')
+        .reply(404);
+
       var options = {
         url: '/package/request',
         credentials: fixtures.users.mikeal
@@ -447,6 +606,10 @@ describe("package handler", function(){
       delete process.env.FEATURE_ACCESS_PAGE;
 
       server.inject(options, function (resp) {
+        packageMock.done();
+        downloadsMock.done();
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
         var package = context.package;
@@ -460,12 +623,38 @@ describe("package handler", function(){
     });
 
     it('is not displayed if user is logged in but not a collaborator', function (done) {
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request')
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/request')
+        .reply(200, fixtures.downloads.request.day)
+        .get('/point/last-week/request')
+        .reply(200, fixtures.downloads.request.week)
+        .get('/point/last-month/request')
+        .reply(200, fixtures.downloads.request.month);
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/bob')
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get('/stripe/bob')
+        .reply(404);
+
       var options = {
         url: '/package/request',
         credentials: fixtures.users.bob
       };
 
       server.inject(options, function (resp) {
+        packageMock.done();
+        downloadsMock.done();
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('request');
@@ -479,11 +668,27 @@ describe("package handler", function(){
 
 
     it('is not displayed if user is not logged in', function (done) {
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request')
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/request')
+        .reply(200, fixtures.downloads.request.day)
+        .get('/point/last-week/request')
+        .reply(200, fixtures.downloads.request.week)
+        .get('/point/last-month/request')
+        .reply(200, fixtures.downloads.request.month);
+
       var options = {
         url: '/package/request',
       };
 
       server.inject(options, function (resp) {
+        packageMock.done();
+        downloadsMock.done();
         expect(resp.statusCode).to.equal(200);
         var package = resp.request.response.source.context.package;
         expect(package.name).to.equal('request');
@@ -520,12 +725,39 @@ describe("package handler", function(){
     });
 
     it('calls back with a JSON object containing the updated package', function (done) {
-      var mock = nock("https://user-api-example.com")
-        .post('/package/@wrigley_the_writer%2Fscoped_public', {private: true})
-        .reply(200);
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/request')
+        .reply(200, fixtures.packages.request)
+        .get('/package?dependency=request&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/request')
+        .reply(200, fixtures.downloads.request.day)
+        .get('/point/last-week/request')
+        .reply(200, fixtures.downloads.request.week)
+        .get('/point/last-month/request')
+        .reply(200, fixtures.downloads.request.month);
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/mikeal')
+        .reply(200, fixtures.users.mikeal);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get('/stripe/mikeal')
+        .reply(404);
+
+      var options = {
+        url: '/package/request',
+        credentials: fixtures.users.mikeal
+      };
+
 
       server.inject(options, function (resp) {
-        mock.done();
+        packageMock.done();
+        downloadsMock.done();
+        userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(200);
         done();
       });

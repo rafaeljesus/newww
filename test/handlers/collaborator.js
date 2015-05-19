@@ -10,17 +10,9 @@ var fixtures = require("../fixtures"),
     after = lab.after,
     it = lab.test,
     expect = Code.expect,
-    server,
-    userMock;
-
-var ralph = fixtures.collaborators.ralph_the_reader;
-var wrigley = fixtures.collaborators.wrigley_the_writer;
+    server;
 
 before(function (done) {
-  userMock = nock("https://user-api-example.com")
-    .get('/user/bob').twice()
-    .reply(200, fixtures.users.bob);
-
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -28,7 +20,6 @@ before(function (done) {
 });
 
 after(function (done) {
-  userMock.done();
   server.stop(done);
 });
 
@@ -45,12 +36,19 @@ describe('GET /package/foo/collaborators', function () {
   });
 
   it('calls back with a JSON object containing collaborators', function (done) {
-    var mock = nock("https://user-api-example.com")
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/bob')
+      .reply(200, fixtures.users.bob)
       .get('/package/foo/collaborators')
       .reply(200, fixtures.collaborators);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/bob')
+      .reply(400);
+
     server.inject(options, function (resp) {
-      mock.done();
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborators.ralph_the_reader).to.be.an.object();
       expect(resp.result.collaborators.wrigley_the_writer).to.be.an.object();
@@ -70,7 +68,7 @@ describe('PUT /package/foo/collaborators', function () {
       url: "/package/foo/collaborators",
       credentials: fixtures.users.bob,
       payload: {
-        collaborator: wrigley
+        collaborator: fixtures.collaborators.wrigley_the_writer
       }
     };
     done();
@@ -103,7 +101,7 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
         credentials: fixtures.users.bob,
         payload: {
           crumb: crumb,
-          collaborator: wrigley
+          collaborator: fixtures.collaborators.wrigley_the_writer
         },
         headers: {cookie: 'crumb='+crumb}
       };
@@ -112,12 +110,20 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
   });
 
   it('calls back with a JSON object containing the updated collaborator', function (done) {
-    var mock = nock("https://user-api-example.com")
-      .post('/package/zing/collaborators/wrigley_the_writer', wrigley)
-      .reply(200, wrigley);
+
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/bob')
+      .reply(200, fixtures.users.bob)
+      .post('/package/zing/collaborators/wrigley_the_writer', fixtures.collaborators.wrigley_the_writer)
+      .reply(200, fixtures.collaborators.wrigley_the_writer);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get('/stripe/bob')
+      .reply(400);
 
     server.inject(options, function (resp) {
-      mock.done();
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.result.collaborator).to.be.an.object();
       expect(resp.result.collaborator.name).to.equal("wrigley_the_writer");

@@ -75,8 +75,13 @@ describe('Signing up a new user', function () {
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(404);
+
     server.inject(postSignup(forms.alreadyExists), function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -91,8 +96,13 @@ describe('Signing up a new user', function () {
       .get("/user/fakeusercli")
       .reply(404);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/fakeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.incomplete), function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -106,8 +116,13 @@ describe('Signing up a new user', function () {
       .get("/user/fakeusercli")
       .reply(404);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/fakeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.badEmail), function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -121,8 +136,13 @@ describe('Signing up a new user', function () {
       .get("/user/.fakeusercli")
       .reply(404);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/.fakeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.badUsernameDot), function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -136,8 +156,13 @@ describe('Signing up a new user', function () {
       .get("/user/FAkeusercli")
       .reply(404);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/FAkeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.badUsernameCaps), function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -151,7 +176,13 @@ describe('Signing up a new user', function () {
       .get("/user/blärgh")
       .reply(404);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/blärgh")
+      .reply(404);
+
     server.inject(postSignup(forms.badUsernameEncodeURI), function (resp) {
+      mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -165,8 +196,13 @@ describe('Signing up a new user', function () {
       .get("/user/fakeusercli")
       .reply(404);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/fakeusercli")
+      .reply(404);
+
     server.inject(postSignup(forms.invalidPassMatch), function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -189,8 +225,13 @@ describe('Signing up a new user', function () {
       })
       .reply(200, fixtures.users.mikeal);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/newuser")
+      .reply(404);
+
     server.inject(postSignup(forms.good), function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
       done();
@@ -211,8 +252,13 @@ describe('Signing up a new user', function () {
       })
       .reply(200, fixtures.users.mikeal);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/newuser")
+      .reply(404);
+
     server.inject(postSignup(forms.goodPassWithUmlaut), function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
       done();

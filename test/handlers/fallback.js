@@ -1,6 +1,4 @@
 var Code = require('code'),
-    nock = require('nock'),
-    fixtures = require("../fixtures"),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -10,7 +8,6 @@ var Code = require('code'),
     expect = Code.expect;
 
 var server;
-
 
 before(function (done) {
   require('../mocks/server')(function (obj) {
@@ -40,10 +37,6 @@ describe('Accessing fallback URLs', function () {
 
   it('redirects to package page if static page is not found', function (done) {
     var opts = {url: '/browserify'};
-
-    var mock = nock("https://user-api-example.com")
-      .get("/package/browserify")
-      .reply(200, fixtures.packages.browserify)
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(302);

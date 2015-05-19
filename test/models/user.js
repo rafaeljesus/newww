@@ -10,11 +10,8 @@ var Code = require('code'),
     expect = Code.expect,
     nock = require("nock"),
     sinon = require("sinon"),
-    cache = require("../../lib/cache");
-
-var fixtures = {
-  users: require("../fixtures/users")
-};
+    cache = require("../../lib/cache"),
+    fixtures = require('../fixtures');
 
 var User, spy;
 
@@ -34,6 +31,7 @@ afterEach(function (done) {
 
 before(function (done) {
   process.env.USE_CACHE = 'true';
+  process.env.LICENSE_API = "https://license-api-example.com";
   cache.configure({
     redis: "redis://localhost:6379",
     ttl: 5,
@@ -123,16 +121,15 @@ describe("User", function(){
 
       var licenseMock = nock('https://license-api-example.com')
         .get('/stripe/bob')
-        .reply(200, {});
+        .reply(404);
 
       User.get(fixtures.users.bob.name, function(err, body) {
+        userMock.done();
+        licenseMock.done();
         expect(err).to.be.null();
         expect(body).to.exist();
         expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
-
-        userMock.done();
-        licenseMock.done();
         done();
       });
     });
@@ -143,6 +140,7 @@ describe("User", function(){
       User.get(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
         expect(body).to.exist();
+
         expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
         done();
@@ -174,9 +172,10 @@ describe("User", function(){
       var userMock = nock(User.host)
         .get('/user/foo')
         .reply(404);
+
       var licenseMock = nock('https://license-api-example.com')
         .get('/stripe/foo')
-        .reply(200, {});
+        .reply(404);
 
 
       User.get('foo', function(err, body) {
@@ -195,7 +194,7 @@ describe("User", function(){
         .reply(200);
       var licenseMock = nock('https://license-api-example.com')
         .get('/stripe/hermione')
-        .reply(200, {});
+        .reply(404);
 
       User.get('hermione', function(err, body) {
         expect(err).to.be.null();

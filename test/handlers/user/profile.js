@@ -1,14 +1,15 @@
-var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
+var Code     = require('code'),
+    Lab      = require('lab'),
+    lab      = exports.lab = Lab.script(),
     describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    it = lab.test,
-    expect = Code.expect,
-    nock = require("nock"),
-    cheerio = require("cheerio"),
-    users = require('../../fixtures').users;
+    before   = lab.before,
+    after    = lab.after,
+    it       = lab.test,
+    expect   = Code.expect,
+    nock     = require("nock"),
+    cheerio  = require("cheerio"),
+    users    = require('../../fixtures').users,
+    customers= require('../../fixtures').customers;
 
 var server;
 
@@ -122,6 +123,7 @@ describe('GET /~bob for logged-in bob', function () {
 
   it("renders a link to billing page", function(done){
     expect($(".profile-edit-links a[href='/settings/billing']").length).to.equal(1);
+    expect($(".profile-edit-links a[href='/settings/billing']").text()).to.equal("sign up for private modules");
     done();
   });
 
@@ -140,8 +142,33 @@ describe('GET /~bob for logged-in bob', function () {
     done();
   });
 
-});
+  it("shows a different billing page link for paid users", function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get('/user/bob').twice()
+      .reply(200, users.bob)
+      .get('/user/bob/package?format=mini&per_page=100&page=0')
+      .reply(200, users.packages)
+      .get('/user/bob/stars?format=detailed')
+      .reply(200, users.stars);
 
+    var licenseMock = nock('https://license-api-example.com')
+      .get('/stripe/bob').twice()
+      .reply(200, customers.bob);
+
+    server.inject({url:'/~bob', credentials: users.bob}, function (response) {
+      userMock.done();
+      licenseMock.done();
+      resp = response;
+      $ = cheerio.load(resp.result);
+      context = resp.request.response.source.context;
+      expect(resp.statusCode).to.equal(200);
+      expect($(".profile-edit-links a[href='/settings/billing']").length).to.equal(1);
+      expect($(".profile-edit-links a[href='/settings/billing']").text()).to.equal("manage billing");
+      done();
+    });
+  });
+
+});
 
 describe("GET /~nonexistent-user", function() {
   it("renders a 404 page", function (done) {

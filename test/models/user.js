@@ -156,19 +156,7 @@ describe("User", function(){
 
       var licenseMock = nock('https://license-api-example.com')
         .get('/stripe/bob')
-        .reply(200, {
-          "status": "active",
-          "expired": false,
-          "email": "bob@boom.me",
-          "next_billing_date": "2015-06-14T01:08:12.000Z",
-          "next_billing_amount": 700,
-          "card": {
-            "brand": "Visa",
-            "last4": "4242",
-            "exp_month": 1,
-            "exp_year": 2016
-          }
-        });
+        .reply(200, fixtures.customers.bob);
 
       User.dropCache(fixtures.users.bob.name, function () {
 

@@ -10,11 +10,8 @@ var Code = require('code'),
     expect = Code.expect,
     nock = require("nock"),
     sinon = require("sinon"),
-    cache = require("../../lib/cache");
-
-var fixtures = {
-  users: require("../fixtures/users")
-};
+    cache = require("../../lib/cache"),
+    fixtures = require('../fixtures');
 
 var User, spy;
 
@@ -34,6 +31,7 @@ afterEach(function (done) {
 
 before(function (done) {
   process.env.USE_CACHE = 'true';
+  process.env.LICENSE_API = "https://license-api-example.com";
   cache.configure({
     redis: "redis://localhost:6379",
     ttl: 5,
@@ -121,12 +119,18 @@ describe("User", function(){
         .get('/user/bob')
         .reply(200, fixtures.users.bob);
 
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/stripe/bob')
+        .reply(404);
+
       User.get(fixtures.users.bob.name, function(err, body) {
+        userMock.done();
+        licenseMock.done();
         expect(err).to.be.null();
         expect(body).to.exist();
         expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
-        userMock.done();
+        expect(body.isPaid).to.be.false();
         done();
       });
     });
@@ -137,8 +141,10 @@ describe("User", function(){
       User.get(fixtures.users.bob.name, function(err, body) {
         expect(err).to.be.null();
         expect(body).to.exist();
+
         expect(body.name).to.equal("bob");
         expect(body.email).to.exist();
+        expect(body.isPaid).to.exist();
         done();
       });
     });
@@ -148,12 +154,30 @@ describe("User", function(){
         .get('/user/bob')
         .reply(200, fixtures.users.bob);
 
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/stripe/bob')
+        .reply(200, {
+          "status": "active",
+          "expired": false,
+          "email": "bob@boom.me",
+          "next_billing_date": "2015-06-14T01:08:12.000Z",
+          "next_billing_amount": 700,
+          "card": {
+            "brand": "Visa",
+            "last4": "4242",
+            "exp_month": 1,
+            "exp_year": 2016
+          }
+        });
+
       User.dropCache(fixtures.users.bob.name, function () {
 
         User.get(fixtures.users.bob.name, function(err, body) {
           expect(err).to.be.null();
           expect(body.name).to.equal("bob");
+          expect(body.isPaid).to.be.true();
           userMock.done();
+          licenseMock.done();
           done();
         });
       });
@@ -164,105 +188,37 @@ describe("User", function(){
         .get('/user/foo')
         .reply(404);
 
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/stripe/foo')
+        .reply(404);
+
+
       User.get('foo', function(err, body) {
         expect(err).to.exist();
         expect(err.message).to.equal("unexpected status code 404");
         expect(body).to.not.exist();
         userMock.done();
+        licenseMock.done();
         done();
       });
     });
 
     it("does not require a bearer token", function(done) {
       var userMock = nock(User.host, {reqheaders: {}})
-        .get('/user/dogbreath')
+        .get('/user/hermione')
         .reply(200);
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/stripe/hermione')
+        .reply(404);
 
-      User.get('dogbreath', function(err, body) {
+      User.get('hermione', function(err, body) {
         expect(err).to.be.null();
         expect(body).to.exist();
         userMock.done();
+        licenseMock.done();
         done();
       });
     });
-
-    it("allows loading user stars and packages too", function(done) {
-
-      var userMock = nock(User.host)
-        .get('/user/eager-beaver')
-        .reply(200, {
-          name: "eager-beaver",
-          email: "eager-beaver@example.com"
-        });
-
-      var starMock = nock(User.host)
-        .get('/user/eager-beaver/stars?format=detailed')
-        .reply(200, [
-          'minimist',
-          'hapi'
-        ]);
-
-      var packageMock = nock(User.host)
-        .get('/user/eager-beaver/package?format=mini&per_page=100&page=0')
-        .reply(200, [
-          {name: "foo", description: "It's a foo!"},
-          {name: "bar", description: "It's a bar!"}
-        ]);
-
-      User.get('eager-beaver', {stars: true, packages: true}, function(err, user) {
-        expect(err).to.not.exist();
-        userMock.done();
-        packageMock.done();
-        starMock.done();
-        expect(user.name).to.equal('eager-beaver');
-        expect(user.email).to.equal('eager-beaver@example.com');
-        expect(user.packages).to.be.an.array();
-        expect(user.stars).to.be.an.array();
-        done();
-      });
-
-    });
-
-    it("includes the bearer token if user is logged in when loading user stars and packages", function(done) {
-
-      User = new (require("../../models/user"))({
-        host: "https://user.com",
-        bearer: "rockbot"
-      });
-
-      // no userMock here because yay caching
-
-      var starMock = nock(User.host, {
-          reqheaders: {bearer: 'rockbot'}
-        })
-        .get('/user/eager-beaver/stars?format=detailed')
-        .reply(200, [
-          'minimist',
-          'hapi'
-        ]);
-
-      var packageMock = nock(User.host, {
-          reqheaders: {bearer: 'rockbot'}
-        })
-        .get('/user/eager-beaver/package?format=mini&per_page=100&page=0')
-        .reply(200, [
-          {name: "foo", description: "It's a foo!"},
-          {name: "bar", description: "It's a bar!"}
-        ]);
-
-      User.get('eager-beaver', {stars: true, packages: true}, function(err, user) {
-        expect(err).to.not.exist();
-        packageMock.done();
-        starMock.done();
-        expect(user.name).to.equal('eager-beaver');
-        expect(user.email).to.equal('eager-beaver@example.com');
-        expect(user.packages).to.be.an.array();
-        expect(user.stars).to.be.an.array();
-        done();
-      });
-
-    });
-
   });
 
   describe("getPackages()", function() {

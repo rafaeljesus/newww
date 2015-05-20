@@ -1,11 +1,14 @@
 var _ = require('lodash');
+var async = require('async');
 var cache = require('../lib/cache');
 var decorate = require(__dirname + '/../presenters/user');
 var fmt = require('util').format;
+var LicenseAPI = require('./customer');
 var mailchimp = require('mailchimp-api');
 var P = require('bluebird');
 var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
+var utils = require('../lib/utils');
 
 var chimp;
 
@@ -21,6 +24,8 @@ var User = module.exports = function(opts) {
       info: console.log
     };
   }
+
+  this.get = P.promisify(this._get);
 
   return this;
 };
@@ -93,38 +98,75 @@ User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
 };
 
 User.prototype.dropCache = function dropCache (name, callback) {
-    cache.drop(this.generateUserACLOptions(name), callback);
+    cache.dropKey(name, callback);
 };
 
-User.prototype.get = function(name, options, callback) {
-  var _this = this;
+
+User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
+  Request.get(this.generateUserACLOptions(name), function(err, response, body)
+  {
+    if (err) { return callback(err); }
+
+    if (response.statusCode !== 200) {
+        var e = new Error('unexpected status code ' + response.statusCode);
+        e.statusCode = response.statusCode;
+        return callback(e);
+    }
+
+    callback(null, body);
+  });
+};
+
+User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
+  var licenseAPI = new LicenseAPI();
+  licenseAPI.get(name, function (err, customer) {
+    return callback(null, customer);
+  });
+};
+
+User.prototype._get = function _get(name, callback) {
+  var self = this;
   var user;
 
-  if (!callback) {
-    callback = options;
-    options = {};
-  }
+  cache.getKey(name, function(err, value) {
+    if (err) { return callback(err); }
 
-  return cache.getP(_this.generateUserACLOptions(name))
-  .then(function(_user) {
-    user = decorate(_user);
-    var actions = {};
-    if (options.stars) { actions.stars = _this.getStars(user.name); }
-    if (options.packages) { actions.packages = _this.getPackages(user.name, 0); }
+    if (value) {
+      user = utils.safeJsonParse(value);
+      return callback(null, user);
+    }
 
-    return P.props(actions);
-  })
-  .then(function(results) {
-    user.stars = results.stars;
-    user.packages = results.packages;
+    self.fetchData(name, function(err, user) {
+      if (err) { return callback(err); }
+      cache.setKey(name, cache.DEFAULT_TTL, JSON.stringify(user), function(err, result) {
+        return callback(null, user);
+      });
+    });
+  });
+};
 
-    return user;
-  })
-  .nodeify(callback);
+User.prototype.fetchData = function fetchData(name, callback) {
+  var self = this;
+
+  var actions = {
+    user: function(cb) { self.fetchFromUserACL(name, cb); },
+    customer: function(cb) { self.fetchCustomer(name, cb); },
+  };
+
+  async.parallel(actions, function(err, results) {
+    if (err) { return callback(err); }
+
+    var user = decorate(results.user);
+
+    user.customer = results.customer;
+    user.isPaid = !!user.customer;
+
+    callback(null, user);
+  });
 };
 
 User.prototype.getPackages = function(name, page, callback) {
-  var _this = this;
+  var self = this;
   var url = fmt('%s/user/%s/package', this.host, name);
 
   if (typeof page === 'function' || typeof page === 'undefined') {
@@ -145,7 +187,7 @@ User.prototype.getPackages = function(name, page, callback) {
       json: true
     };
 
-    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
+    if (self.bearer) { opts.headers = {bearer: self.bearer}; }
 
     Request.get(opts, function(err, resp, body){
 
@@ -168,7 +210,7 @@ User.prototype.getPackages = function(name, page, callback) {
 };
 
 User.prototype.getStars = function(name, callback) {
-  var _this = this;
+  var self = this;
   var url = fmt('%s/user/%s/stars?format=detailed', this.host, name);
 
   return new P(function(resolve, reject) {
@@ -177,7 +219,7 @@ User.prototype.getStars = function(name, callback) {
       json: true
     };
 
-    if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
+    if (self.bearer) { opts.headers = {bearer: self.bearer}; }
 
     Request.get(opts, function(err, resp, body){
 
@@ -226,17 +268,17 @@ User.prototype.login = function(loginInfo, callback) {
 };
 
 User.prototype.lookupEmail = function(email, callback) {
-  var _this = this;
+  var self = this;
 
   return new P(function (resolve, reject) {
     if (userValidate.email(email)) {
       var err = new Error('email is invalid');
       err.statusCode = 400;
-      _this.logger.error(err);
+      self.logger.error(err);
       return reject(err);
     }
 
-    var url = _this.host + '/user/' + email;
+    var url = self.host + '/user/' + email;
 
     Request.get({url: url, json: true}, function (err, resp, body) {
       if (err) { return reject(err); }
@@ -274,16 +316,16 @@ User.prototype.save = function (user, callback) {
 };
 
 User.prototype.signup = function (user, callback) {
-  var _this = this;
+  var self = this;
 
   if (user.npmweekly === 'on') {
     var mc = this.getMailchimp();
     mc.lists.subscribe({id: 'e17fe5d778', email:{email:user.email}}, function() {
       // do nothing on success
     }, function(error) {
-      _this.logger.error('Could not register user for npm Weekly: ' + user.email);
+      self.logger.error('Could not register user for npm Weekly: ' + user.email);
       if (error.error) {
-        _this.logger.error(error.error);
+        self.logger.error(error.error);
       }
     });
   }

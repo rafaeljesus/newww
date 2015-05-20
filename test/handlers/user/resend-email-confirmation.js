@@ -9,15 +9,9 @@ var Code = require('code'),
     nock = require("nock"),
     users = require('../../fixtures').users;
 
-var server, userMock;
+var server;
 
 before(function (done) {
-  userMock = nock("https://user-api-example.com")
-    .get("/user/bob")
-    .reply(200, users.bob)
-    .get("/user/lolbademail")
-    .reply(200, users.bad_email);
-
   require('../../mocks/server')(function (obj) {
     server = obj;
     server.app.cache._cache.connection.client = {};
@@ -26,7 +20,6 @@ before(function (done) {
 });
 
 after(function(done) {
-  userMock.done();
   server.stop(function () {
     done();
   });
@@ -47,12 +40,22 @@ describe('Request to resend confirmation email', function () {
   });
 
   it('sends an email & takes the user to the /profile-edit page without any errors', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(404);
+
     var opts = {
       url: '/resend-email-confirmation',
       credentials: users.bob
     };
 
     server.inject(opts, function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.equal('/profile-edit?verification-email-sent=true');
       done();
@@ -60,12 +63,22 @@ describe('Request to resend confirmation email', function () {
   });
 
   it('renders an error if we were unable to send the email', function (done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/" + users.bad_email.name)
+      .reply(200, users.bad_email);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/" + users.bad_email.name)
+      .reply(404);
+
     var opts = {
       url: '/resend-email-confirmation',
       credentials: users.bad_email
     };
 
     server.inject(opts, function (resp) {
+      userMock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(500);
       var source = resp.request.response.source;
       expect(source.template).to.equal('errors/internal');

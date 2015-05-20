@@ -155,7 +155,7 @@ describe('lib/cache.js', function()
 
             cache.get(opts, function(err, data)
             {
-                expect(cache._fingerprint.calledOnce).to.be.true();
+                expect(cache._fingerprint.calledTwice).to.be.true();
                 expect(cache._fingerprint.calledWith(opts)).to.be.true();
                 cache._fingerprint.restore();
                 done();
@@ -519,7 +519,7 @@ describe('lib/cache.js', function()
             cache.setKey(key, CACHE_TTL, data, function (err)
             {
                 expect(err).to.not.exist();
-                cache.redis.get(key, function (err, result)
+                cache.redis.get(cache._fingerprint(key), function (err, result)
                 {
                     expect(result).to.equal(data);
                     done();
@@ -558,7 +558,7 @@ describe('lib/cache.js', function()
                 cache.drop(opts, function(err)
                 {
                     expect(err).to.not.exist();
-                    cache.redis.get(key, function(err, value2)
+                    cache.redis.get(cache._fingerprint(key), function(err, value2)
                     {
                         expect(err).to.not.exist();
                         expect(value2).to.not.exist();

@@ -35,18 +35,18 @@ exports.register = function(server, options, next) {
       start: Date.now(),
     };
 
-    if (request.auth && request.auth.credentials) {
-      UserModel.new(request).get(request.auth.credentials.name)
-      .then(function(loggedInUser) {
-        request.loggedInUser = loggedInUser;
-      }).catch(function(err) {
-        request.logger.warn(err);
-      }).finally(completePreHandler);
+    if (request.auth && request.auth.credentials && !request.path.match(/static/)) {
+      UserModel.new(request).get(request.auth.credentials.name, function(err, user) {
+        if (err) { request.logger.warn(err); }
+        request.loggedInUser = user;
+        completePreHandler();
+      });
     } else {
       completePreHandler();
     }
 
     function completePreHandler () {
+
       if (request.method !== "post") {
         return reply.continue();
       }

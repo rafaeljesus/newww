@@ -10,14 +10,12 @@ var generateCrumb = require("../handlers/crumb.js"),
     nock = require('nock'),
     fixtures = require('../fixtures');
 
-var server, packageMock, userMock,
+var server, packageMock, userMock, licenseMock,
     pkg = 'fake',
     scopedpkg = '@foo/fake',
     user = fixtures.users.bob;
 
 before(function (done) {
-  nock.cleanAll();
-
   packageMock = nock("https://user-api-example.com")
     .put("/package/" + pkg + "/star")
     .reply(200)
@@ -32,6 +30,10 @@ before(function (done) {
     .get("/user/bob").times(5)
     .reply(200, user);
 
+  licenseMock = nock("https://license-api-example.com")
+    .get("/stripe/bob").times(5)
+    .reply(404);
+
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -41,6 +43,7 @@ before(function (done) {
 after(function (done) {
   packageMock.done();
   userMock.done();
+  licenseMock.done();
   server.stop(done);
 });
 

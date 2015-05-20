@@ -45,6 +45,10 @@ describe('Getting to the login page', function () {
       .get("/user/bob")
       .reply(200, users.bob);
 
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/stripe/bob")
+      .reply(404);
+
     var options = {
       url: '/login',
       credentials: users.bob
@@ -52,6 +56,7 @@ describe('Getting to the login page', function () {
 
     server.inject(options, function (resp) {
       mock.done();
+      licenseMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.equal('/~bob');
       done();

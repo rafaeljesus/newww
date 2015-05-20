@@ -23,9 +23,9 @@ after(function (done) {
 });
 
 describe('GET / for an anonymous user', function () {
-  var $
-  var resp
-  var options = {url: "/"}
+  var $;
+  var resp;
+  var options = {url: "/"};
   var packageMock = nock("https://user-api-example.com")
     .get('/package?sort=dependents')
     .reply(200, fixtures.aggregates.most_depended_upon_packages)
@@ -43,13 +43,13 @@ describe('GET / for an anonymous user', function () {
 
   before(function(done){
     server.inject(options, function (response) {
-      resp = response
-      $ = cheerio.load(resp.result)
-      packageMock.done()
-      downloadsMock.done()
-      done()
-    })
-  })
+      resp = response;
+      $ = cheerio.load(resp.result);
+      packageMock.done();
+      downloadsMock.done();
+      done();
+    });
+  });
 
 
   it('gets there, no problem', function (done) {
@@ -71,7 +71,7 @@ describe('GET / for an anonymous user', function () {
   it('renders a data-filled template', function (done) {
     var context = resp.request.response.source.context;
     expect(context.totalPackages).to.be.a.number();
-    var $ = cheerio.load(resp.result)
+    var $ = cheerio.load(resp.result);
     expect($(".total-packages").text()).to.equal(String(context.totalPackages));
     done();
   });
@@ -85,17 +85,20 @@ describe('GET / for an anonymous user', function () {
 
 
 describe('GET / for a logged-in user', function () {
-  var $
-  var resp
+  var $;
+  var resp;
   var options = {
     url: "/",
     credentials: fixtures.users.mikeal
-  }
+  };
 
   before(function(done){
     var userMock = nock('https://user-api-example.com')
       .get('/user/mikeal')
       .reply(200, fixtures.users.mikeal);
+    var licenseMock = nock('https://license-api-example.com')
+      .get('/stripe/mikeal')
+      .reply(404);
     var packageMock = nock("https://user-api-example.com")
       .get('/package?sort=dependents')
       .reply(200, fixtures.aggregates.most_depended_upon_packages)
@@ -112,14 +115,15 @@ describe('GET / for a logged-in user', function () {
       .reply(200, fixtures.downloads.all.month);
 
     server.inject(options, function (response) {
-      resp = response
-      $ = cheerio.load(resp.result)
-      userMock.done()
-      packageMock.done()
-      downloadsMock.done()
-      done()
-    })
-  })
+      resp = response;
+      $ = cheerio.load(resp.result);
+      userMock.done();
+      licenseMock.done();
+      packageMock.done();
+      downloadsMock.done();
+      done();
+    });
+  });
 
   it("displays an avatar linking to the user's profile page", function (done) {
     expect($("#user-info a[href='/~mikeal'] img[src^='https://secure.gravatar']").length).to.equal(1);

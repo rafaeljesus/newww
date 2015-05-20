@@ -2,24 +2,15 @@ var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
     beforeEach = lab.beforeEach,
-    afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
-    nock = require("nock");
+    nock = require("nock"),
+    fixtures = require('../fixtures');
 
 var Customer = new (require("../../models/customer"))({
   host: "https://customer.com"
 });
-
-var fixtures = {
-  customers: {
-    happy: require("../fixtures/customers/happy"),
-    license_expired: require("../fixtures/customers/license_expired")
-  }
-};
 
 describe("Customer", function(){
 
@@ -163,10 +154,13 @@ describe("Customer", function(){
 
       it("errors if the card is invalid", function(done) {
         var createCustomerMock = nock(Customer.host)
-          .put('/stripe', billingInfo)
+          .get('/stripe/bob')
+          .reply(200, {})
+          .post('/stripe/bob', billingInfo)
           .reply(200, "Your card's security code is incorrect.");
 
         Customer.update(billingInfo, function (err, customer) {
+          createCustomerMock.done();
           expect(err).to.exist();
           expect(err.message).to.equal("Your card's security code is incorrect.");
           done();

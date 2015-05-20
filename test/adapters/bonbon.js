@@ -2,13 +2,14 @@ var Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
+    before = lab.before,
+    after = lab.after,
     beforeEach = lab.beforeEach,
     afterEach = lab.afterEach,
     it = lab.test,
     expect = Code.expect,
     fixtures = require('../fixtures'),
     nock = require('nock');
-
 
 var server;
 var username1 = 'bob';
@@ -18,6 +19,42 @@ beforeEach(function (done) {
     server = obj;
     done();
   });
+});
+
+var userMock, licenseMock;
+
+before(function (done) {
+  userMock = nock("https://user-api-example.com")
+    .get('/user/bob').times(8)
+    .reply(200, fixtures.users.bob)
+    .get('/user/seldo').times(3)
+    .reply(200, fixtures.users.npmEmployee)
+    .get('/user/bob/package?format=mini&per_page=100&page=0').times(10)
+    .reply(200, fixtures.users.packages)
+    .get('/user/bob/stars?format=detailed').times(10)
+    .reply(200, fixtures.users.stars)
+    .get('/user/bob').times(5)
+    .reply(404)
+    .get('/user/seldo')
+    .reply(404)
+    .get('/user/mikeal')
+    .reply(404);
+
+  licenseMock = nock('https://license-api-example.com')
+    .get('/stripe/bob').times(13)
+    .reply(200, {})
+    .get('/stripe/mikeal')
+    .reply(200, {})
+    .get('/stripe/seldo').times(4)
+    .reply(200, {});
+
+  done();
+});
+
+after(function (done) {
+  userMock.done();
+  licenseMock.done();
+  done();
 });
 
 describe("bonbon", function() {
@@ -31,22 +68,6 @@ describe("bonbon", function() {
     delete process.env.NODE_ENV;
     done();
   });
-
-  nock("https://user-api-example.com")
-    .get('/user/bob').times(8)
-    .reply(200, fixtures.users.bob)
-    .get('/user/seldo').times(3)
-    .reply(200, fixtures.users.npmEmployee)
-    .get('/user/bob/package?format=mini&per_page=100&page=0').times(6)
-    .reply(200, fixtures.users.packages)
-    .get('/user/bob/stars?format=detailed').times(6)
-    .reply(200, fixtures.users.stars)
-    .get('/user/bob').times(5)
-    .reply(404)
-    .get('/user/seldo')
-    .reply(404)
-    .get('/user/mikeal')
-    .reply(404);
 
   describe("feature flags", function() {
 

@@ -13,7 +13,6 @@ var Code = require('code'),
     server,
     MockTransport = require('nodemailer-mock-transport'),
     mock = new MockTransport({boom: 'bam'}),
-    redis = require('redis'),
     spawn = require('child_process').spawn,
     client,
     redisProcess;
@@ -70,6 +69,7 @@ describe('send an email', function () {
       .then(function () {
         var msg = mock.sentMail[0];
         expect(msg.data.to).to.equal('"user" <user@npmjs.com>');
+        expect(msg.data.support_email).to.equal('support@npmjs.com');
         done();
       })
       .catch(function (err) {

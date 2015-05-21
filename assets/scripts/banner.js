@@ -1,7 +1,7 @@
 module.exports = function() {
   $(function(){
     var ready = new Date() > new Date("2015-04-14T03:30:00-07:00")
-    var disabled = localStorage.getItem('disable-private-modules-banner')
+    var disabled = localStorage.getItem('disable-private-modules-banner') || $('#user-info a').data('is-paid')
 
     if (
       !ready

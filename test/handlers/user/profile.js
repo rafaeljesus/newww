@@ -124,6 +124,7 @@ describe('GET /~bob for logged-in bob', function () {
   it("renders a link to billing page", function(done){
     expect($(".profile-edit-links a[href='/settings/billing']").length).to.equal(1);
     expect($(".profile-edit-links a[href='/settings/billing']").text()).to.equal("sign up for private modules");
+    expect($('#user-info a').data('is-paid')).to.be.empty();
     done();
   });
 
@@ -164,6 +165,7 @@ describe('GET /~bob for logged-in bob', function () {
       expect(resp.statusCode).to.equal(200);
       expect($(".profile-edit-links a[href='/settings/billing']").length).to.equal(1);
       expect($(".profile-edit-links a[href='/settings/billing']").text()).to.equal("manage billing");
+      expect($('#user-info a').data('is-paid')).to.be.true();
       done();
     });
   });

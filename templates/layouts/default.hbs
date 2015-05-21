@@ -73,7 +73,11 @@
 
       <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
         {{#if user}}
-          <a data-user-name="{{user.name}}" href="/~{{user.name}}"><img src="{{user.avatar.small}}" /></a>
+          <a data-user-name="{{user.name}}"
+             data-is-paid="{{#if user.isPaid}}true{{/if}}"
+             href="/~{{user.name}}">
+            <img src="{{user.avatar.small}}" />
+          </a>
           <ul>
             <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
             <li class="logout"><a href="/logout" class="subdued">log out</a></li>

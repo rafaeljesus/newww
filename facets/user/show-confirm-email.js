@@ -26,7 +26,7 @@ module.exports = function confirmEmail (request, reply) {
 
     if (!cached) {
       request.logger.error('Token not found or invalid: ', key);
-      reply.view('errors/not-found', opts).code(404);
+      reply.view('errors/token-expired', opts).code(404);
       return;
     }
 

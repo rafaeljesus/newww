@@ -126,7 +126,7 @@ function confirmEmail (request, reply) {
 
     if (!cached) {
       request.logger.error('Token not found or invalid: ' + confKey);
-      reply.view('errors/not-found', opts).code(404);
+      reply.view('errors/token-expired', opts).code(404);
       return;
     }
 
@@ -208,7 +208,7 @@ function revertEmail (request, reply) {
 
     if (!cached) {
       request.logger.error('Token not found or invalid: ' + revKey);
-      reply.view('errors/not-found', opts).code(404);
+      reply.view('errors/token-expired', opts).code(404);
       return;
     }
 

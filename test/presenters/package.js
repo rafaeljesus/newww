@@ -202,18 +202,19 @@ describe("avatar", function() {
   });
 });
 
-describe("OSS license", function() {
-  it("is added to the pkg", function(done) {
+describe("SPDX license links", function () {
+  it("are added to the pkg", function (done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
       "version": "1.3.0",
-      "license": "MIT",
+      "license": "(MIT AND BSD-2-Clause)",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     }).then(function(pkg) {
       expect(pkg.license).to.be.an.object();
-      expect(pkg.license.name).to.equal('MIT');
-      expect(pkg.license.url).to.include('opensource.org');
+      expect(pkg.license.links).to.include('MIT');
+      expect(pkg.license.links).to.include('BSD-2-Clause');
+      expect(pkg.license.links).to.include('spdx.org');
       done();
     });
   });

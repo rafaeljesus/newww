@@ -4,12 +4,13 @@ var _ = require('lodash'),
   gh = require('github-url-to-object'),
   marky = require('marky-markdown'),
   metrics = require('../adapters/metrics')(),
-  normalizeLicenseData = require('normalize-license-data'),
   P = require('bluebird'),
   presentCollaborator = require("./collaborator"),
   presentUser = require("./user"),
+  spdxToHTML = require('spdx-to-html'),
   npd = require('normalize-package-data'),
-  url = require('url');
+  url = require('url'),
+  validLicense = require('validate-npm-package-license');
 
 var MINUTES = 60; // seconds
 var CACHE_TTL = 5 * MINUTES;
@@ -22,9 +23,21 @@ module.exports = function(pkg) {
   pkg.scoped = pkg.name.charAt(0) === "@";
   pkg.encodedName = pkg.name.replace("/", "%2F");
 
-  pkg.license = normalizeLicenseData(pkg.license);
-  if (!pkg.license) {
+  if (!pkg.license || typeof pkg.license !== 'string') {
     delete pkg.license;
+  } else {
+    var valid = validLicense(pkg.license)
+    if (!valid.validForOldPackages) {
+      delete pkg.license;
+    } else {
+      if (valid.spdx) {
+        pkg.license = {links: spdxToHTML(pkg.license)};
+      } else if (valid.inFile) {
+        pkg.license = {string: 'See license in ' + valid.inFile};
+      } else {
+        delete pkg.license;
+      }
+    }
   }
 
   pkg.versionsCount = pkg.versions && Object.keys(pkg.versions).length;

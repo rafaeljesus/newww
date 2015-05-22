@@ -93,12 +93,12 @@
 
     {{#if license}}
       <li>
-        {{#if license.url}}
-          <a href="{{license.url}}">{{license.name}}</a>
-        {{else}}
-          <strong>{{license.name}}</strong>
+        {{#if license.links}}
+          {{{license.links}}}
         {{/if}}
-        <span> license</span>
+        {{#if license.string}}
+          {{license.string}}
+        {{/if}}
       </li>
     {{/if}}
   </ul>

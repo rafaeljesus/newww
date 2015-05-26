@@ -41,6 +41,8 @@ var sanitizers = {
 
     // Not-fully-qualified URL
     if (isURL("http://"+input)) { return "http://"+input; }
+
+    return '';
   },
 
   twitter: function(input) {

@@ -143,6 +143,11 @@ describe('GET /~bob for logged-in bob', function () {
     done();
   });
 
+  it("renders a little lock icon next to private packages", function(done) {
+    expect($(".icon-lock ~ a").text()).to.equal("@bob/shhh");
+    done();
+  });
+
   it("shows a different billing page link for paid users", function(done) {
     var userMock = nock("https://user-api-example.com")
       .get('/user/bob').twice()

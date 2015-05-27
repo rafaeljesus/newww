@@ -30,7 +30,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2014-12-17T01:08:23.454Z"
+    "lastPublishedAt": "2014-12-17T01:08:23.454Z",
+    "access": "public"
   }, {
     "versions": ["0.0.1", "0.0.2", "0.0.3", "0.0.4", "0.0.5", "0.0.6", "0.0.7", "0.1.0", "0.1.1", "0.1.10", "0.1.11", "0.1.12", "0.1.13", "0.1.14", "0.1.15", "0.1.16", "0.1.17", "0.1.18", "0.1.19", "0.1.2", "0.1.20", "0.1.3", "0.1.4", "0.1.5", "0.1.6", "0.1.7", "0.1.8", "0.1.9", "1.0.0", "1.0.1"],
     "name": "couch-login",
@@ -68,7 +69,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2014-06-20T23:05:50.128Z"
+    "lastPublishedAt": "2014-06-20T23:05:50.128Z",
+    "access": "public"
   }, {
     "versions": ["0.0.1"],
     "name": "googalytics",
@@ -105,7 +107,8 @@
       "name": "none",
       "url": null
     },
-    "lastPublishedAt": "2012-08-30T01:24:55.224Z"
+    "lastPublishedAt": "2012-08-30T01:24:55.224Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "1.0.1", "1.1.0"],
     "name": "hapi-common-log",
@@ -141,7 +144,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2014-12-30T23:55:42.244Z"
+    "lastPublishedAt": "2014-12-30T23:55:42.244Z",
+    "access": "public"
   }, {
     "versions": ["1.0.1", "1.0.2", "1.1.0"],
     "name": "items",
@@ -177,7 +181,8 @@
       "name": "BSD",
       "url": null
     },
-    "lastPublishedAt": "2014-10-16T15:50:42.927Z"
+    "lastPublishedAt": "2014-10-16T15:50:42.927Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "1.0.1"],
     "name": "madlibify",
@@ -209,7 +214,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-03-20T04:30:31.905Z"
+    "lastPublishedAt": "2015-03-20T04:30:31.905Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "1.0.1", "1.0.2", "1.0.3", "1.0.4", "1.1.0", "1.1.1", "1.1.2", "1.2.0", "1.2.1", "1.2.2", "1.2.3", "1.2.4", "1.3.0", "2.0.0", "2.0.1", "2.1.0", "2.1.1", "2.1.2", "2.2.0", "2.2.1", "2.2.2", "2.2.3", "2.2.4", "3.0.0", "3.0.1", "4.0.0", "4.1.0", "4.1.1", "4.1.2", "4.1.3", "4.2.0", "4.3.0", "5.0.0", "5.0.1", "5.0.2", "5.1.0"],
     "name": "marky-markdown",
@@ -279,7 +285,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-03-23T23:13:18.892Z"
+    "lastPublishedAt": "2015-03-23T23:13:18.892Z",
+    "access": "public"
   }, {
     "versions": ["1.1.0", "2.0.0", "2.1.0", "2.1.1", "2.1.2"],
     "name": "mustache-mailer",
@@ -325,7 +332,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-02-18T22:44:04.416Z"
+    "lastPublishedAt": "2015-02-18T22:44:04.416Z",
+    "access": "public"
   }, {
     "versions": ["0.1.0", "0.2.0", "0.2.1", "0.2.2", "1.0.0", "2.0.0", "2.1.0"],
     "name": "newww",
@@ -449,7 +457,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-01-23T01:12:45.398Z"
+    "lastPublishedAt": "2015-01-23T01:12:45.398Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "1.1.0", "1.1.1"],
     "name": "newww-metrics",
@@ -482,7 +491,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2014-09-26T00:29:11.195Z"
+    "lastPublishedAt": "2014-09-26T00:29:11.195Z",
+    "access": "public"
   }, {
     "versions": ["0.0.2", "0.0.3", "0.0.4", "0.0.5", "0.0.6"],
     "name": "nodealytics",
@@ -521,7 +531,8 @@
       "name": "MIT",
       "url": null
     },
-    "lastPublishedAt": "2014-05-28T12:22:46.282Z"
+    "lastPublishedAt": "2014-05-28T12:22:46.282Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "1.1.0", "1.1.1", "1.2.0", "1.3.0", "1.3.1", "1.4.0"],
     "name": "npm-email-templates",
@@ -558,7 +569,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-03-11T18:04:44.328Z"
+    "lastPublishedAt": "2015-03-11T18:04:44.328Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "1.1.0", "1.10.0", "1.11.0", "1.12.0", "1.13.0", "1.14.0", "1.2.0", "1.3.0", "1.4.0", "1.5.0", "1.6.0", "1.7.0", "1.8.0", "1.9.0", "2.0.0", "2.0.1", "2.0.2"],
     "name": "npm-expansions",
@@ -612,7 +624,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-03-28T07:40:07.514Z"
+    "lastPublishedAt": "2015-03-28T07:40:07.514Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.6"],
     "name": "npm-humans",
@@ -652,7 +665,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-03-20T23:56:26.925Z"
+    "lastPublishedAt": "2015-03-20T23:56:26.925Z",
+    "access": "public"
   }, {
     "versions": ["2.1.4", "2.2.0", "2.3.0", "2.3.1", "2.3.2", "2.3.3", "2.3.4", "2.3.5", "2.3.6", "2.3.7", "2.4.0", "2.4.1", "2.4.2", "2.4.3", "2.4.4", "2.5.0", "2.5.1", "2.5.2", "2.5.3", "2.5.4", "2.5.5", "2.6.2", "2.6.3", "2.6.4", "2.6.5", "2.6.6", "2.6.7"],
     "name": "npm-registry-couchapp",
@@ -706,7 +720,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-03-16T21:12:20.237Z"
+    "lastPublishedAt": "2015-03-16T21:12:20.237Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "1.0.1", "1.1.0", "1.2.0"],
     "name": "pkgs",
@@ -746,7 +761,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2014-11-04T06:15:11.176Z"
+    "lastPublishedAt": "2014-11-04T06:15:11.176Z",
+    "access": "public"
   }, {
     "versions": ["0.0.1", "0.0.2", "0.0.3", "0.0.4", "0.0.5", "0.0.6", "0.0.7", "0.0.8", "0.0.9", "0.1.0", "0.1.1", "0.2.0", "0.3.0", "0.3.1", "0.3.2", "0.3.3", "0.4.0", "0.4.1", "1.0.0", "1.1.0"],
     "name": "redsess",
@@ -791,7 +807,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2014-04-19T00:56:43.947Z"
+    "lastPublishedAt": "2014-04-19T00:56:43.947Z",
+    "access": "public"
   }, {
     "versions": ["1.0.0", "1.0.1", "2.0.0", "2.1.0", "2.1.1"],
     "name": "token-facilitator",
@@ -828,7 +845,8 @@
       "name": "ISC",
       "url": "http://opensource.org/licenses/ISC"
     },
-    "lastPublishedAt": "2015-02-25T22:41:18.555Z"
+    "lastPublishedAt": "2015-02-25T22:41:18.555Z",
+    "access": "public"
   }, {
     "versions": ["0.0.1", "0.0.2", "0.1.0", "0.2.0", "0.3.0"],
     "name": "vektor",
@@ -865,52 +883,35 @@
       "name": "MIT",
       "url": null
     },
-    "lastPublishedAt": "2014-12-24T22:32:14.611Z"
+    "lastPublishedAt": "2014-12-24T22:32:14.611Z",
+    "access": "public"
   }, {
-    "versions": ["1.0.0", "1.0.1"],
-    "name": "@zeke/ord",
-    "description": "A website/webservice for displaying wikipedia word translations",
-    "readme": "# Ord\n\n[ord.zeke.sikelianos.com](http://ord.zeke.sikelianos.com)\n\n## About\n\n[Ord](http://ord.zeke.sikelianos.com) is a free service for translating words using data from Wikipedia.\nOrd is also the Danish, Swedish, and Norwegian word for\n[word](http://ord.zeke.sikelianos.com/?query=word).\nOrd is hosted on\n[Heroku](https://devcenter.heroku.com/articles/getting-started-with-nodejs),\nopen-sourced on\n[GitHub](https://github.com/zeke/translator),\nand maintained by\n[Zeke](https://twitter.com/zeke).\n\n## JSON API\n\nAdd `format=json` to any query to get a JSON response:\n\n[ord.zeke.sikelianos.com/?query=monkey&format=json](http://ord.zeke.sikelianos.com/?query=monkey&format=json)\n\n## License\n\nMIT",
+    "versions": ["1.0.0"],
+    "name": "@bob/shhh",
+    "description": "Totes seekrit",
+    "readme": "DON'T TELL ANYONE ABOUT IT OKAY",
     "stars": [],
     "dependentCount": "0",
     "bugs": null,
     "global": false,
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/zeke/translator.git"
-    },
-    "dependencies": {
-      "wikipedias": "~0.1.2",
-      "wikipedia-translator": "~1.1.0",
-      "merge": "~1.1.2",
-      "marked": "~0.3.1",
-      "logfmt": "git+https://github.com/zeke/node-logfmt",
-      "jade": "~1.1.5",
-      "harp": "^0.14.0",
-      "express": "^4",
-      "cors": "~2.1.1"
-    },
-    "keywords": ["translation", "wikipedia", "scraping", "language", "words"],
-    "devDependencies": {
-      "supertest": "~0.9.0",
-      "should": "~3.1.2",
-      "nodemon": "^1.2.1",
-      "mocha": "~1.17.1"
-    },
+    "dependencies": {},
+    "keywords": ["seekrit"],
+    "devDependencies": {},
     "publisher": {
-      "name": "zeke",
-      "email": "zeke@sikelianos.com",
+      "name": "bob",
+      "email": "bob@boom.me",
       "url": null
     },
     "maintainers": [{
-      "name": "zeke",
-      "email": "zeke@sikelianos.com"
+      "name": "bob",
+      "email": "bob@boom.me"
     }],
-    "version": "1.0.1",
+    "version": "1.0.0",
     "license": {
       "name": "MIT",
       "url": null
     },
-    "lastPublishedAt": "2015-02-26T01:19:25.038Z"
+    "lastPublishedAt": "2015-02-26T01:19:25.038Z",
+    "access": "restricted"
   }]
 }

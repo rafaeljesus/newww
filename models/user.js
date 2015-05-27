@@ -130,7 +130,6 @@ User.prototype._get = function _get(name, callback) {
 
   cache.getKey(name, function(err, value) {
     if (err) { return callback(err); }
-
     if (value) {
       user = utils.safeJsonParse(value);
       return callback(null, user);
@@ -202,12 +201,14 @@ User.prototype.getPackages = function(name, page, callback) {
       // though we have client-side code
       // (assets/scripts/fetch-packages.js) that needs this
       // functionality as well... thoughts?
-      body.items = body.items.map(function (p) {
-        if (p.access === 'restricted') {
-          p.isPrivate = true;
-        }
-        return p;
-      });
+      if (body.items) {
+        body.items = body.items.map(function (p) {
+          if (p.access === 'restricted') {
+            p.isPrivate = true;
+          }
+          return p;
+        });
+      }
 
       var num = _.get(body, 'items.length');
 

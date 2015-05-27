@@ -126,6 +126,59 @@ describe("package handler", function(){
       done();
     });
 
+    it('renders a public label', function (done) {
+      expect($('.package-name i').hasClass('icon-public')).to.be.true();
+      done();
+    });
+
+  });
+
+  describe('scoped private package viewed by paid collaborator', function () {
+    var resp;
+    var $;
+    var options = {
+      url: '/package/@wrigley_the_writer/scoped_private',
+      credentials: fixtures.users.wrigley_the_writer
+    };
+
+    before(function(done){
+      var packageMock = nock("https://user-api-example.com")
+        .get('/package/@wrigley_the_writer%2Fscoped_private')
+        .reply(200, fixtures.packages.wrigley_scoped_private)
+        .get('/package?dependency=%40wrigley_the_writer%2Fscoped_private&limit=50')
+        .reply(200);
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/wrigley_the_writer')
+        .reply(200, fixtures.users.wrigley_the_writer);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/stripe/wrigley_the_writer")
+        .reply(404);
+
+      var downloadsMock = nock("https://downloads-api-example.com")
+        .get('/point/last-day/@wrigley_the_writer/scoped_private')
+        .reply(404)
+        .get('/point/last-week/@wrigley_the_writer/scoped_private')
+        .reply(404)
+        .get('/point/last-month/@wrigley_the_writer/scoped_private')
+        .reply(404);
+
+      server.inject(options, function (response) {
+        packageMock.done();
+        userMock.done();
+        licenseMock.done();
+        downloadsMock.done();
+        resp = response;
+        $ = cheerio.load(resp.result);
+        done();
+      });
+    });
+
+    it('renders a private label', function (done) {
+      expect($('.package-name i').hasClass('icon-private')).to.be.true();
+      done();
+    });
   });
 
   describe('scoped private package viewed by unpaid collaborator', function () {

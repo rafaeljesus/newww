@@ -198,6 +198,17 @@ User.prototype.getPackages = function(name, page, callback) {
         return reject(err);
       }
 
+      // it feels like this should really go in the handler instead,
+      // though we have client-side code
+      // (assets/scripts/fetch-packages.js) that needs this
+      // functionality as well... thoughts?
+      body.items = body.items.map(function (p) {
+        if (p.access === 'restricted') {
+          p.isPrivate = true;
+        }
+        return p;
+      });
+
       var num = _.get(body, 'items.length');
 
       if (+num * (+page + 1) < body.count && num >= PER_PAGE) {

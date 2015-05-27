@@ -4,6 +4,11 @@
 
   <h1 class="package-name">
     <a href="/package/{{name}}">{{name}}</a>
+    {{#if private}}
+      <i class="icon-private"></i>
+    {{else}}
+      <i class="icon-public"></i>
+    {{/if}}
   </h1>
   <p class="package-description">{{{description}}}</p>
 

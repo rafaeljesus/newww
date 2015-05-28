@@ -130,7 +130,6 @@ User.prototype._get = function _get(name, callback) {
 
   cache.getKey(name, function(err, value) {
     if (err) { return callback(err); }
-
     if (value) {
       user = utils.safeJsonParse(value);
       return callback(null, user);
@@ -196,6 +195,19 @@ User.prototype.getPackages = function(name, page, callback) {
         err = Error('error getting packages for user ' + name);
         err.statusCode = resp.statusCode;
         return reject(err);
+      }
+
+      // it feels like this should really go in the handler instead,
+      // though we have client-side code
+      // (assets/scripts/fetch-packages.js) that needs this
+      // functionality as well... thoughts?
+      if (body.items) {
+        body.items = body.items.map(function (p) {
+          if (p.access === 'restricted') {
+            p.isPrivate = true;
+          }
+          return p;
+        });
       }
 
       var num = _.get(body, 'items.length');

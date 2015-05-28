@@ -1,5 +1,6 @@
 var package = module.exports = {};
 
+var _ = require('lodash');
 var P = require('bluebird');
 var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
@@ -36,7 +37,7 @@ package.show = function(request, reply) {
         return;
       }
 
-      if (pkg.dependents.results.length) {
+      if (_.get(pkg, 'dependents.results.length')) {
         pkg.numMoreDependents = pkg.dependentCount - pkg.dependents.results.length;
       }
 

@@ -13,6 +13,7 @@
     <ul class="bullet-free collaborated-packages">
       {{#each packages.items}}
         <li>
+          {{#if isPrivate}}<i class="icon-lock"></i>{{/if}}
           <a href="/package/{{name}}">{{truncate name 50}}</a> {{description}}
         </li>
       {{/each}}

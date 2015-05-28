@@ -269,7 +269,7 @@ describe('Confirming an email change', function () {
       licenseMock.done();
       expect(resp.statusCode).to.equal(404);
       var source = resp.request.response.source;
-      expect(source.template).to.equal('errors/not-found');
+      expect(source.template).to.equal('errors/token-expired');
       done();
     });
   });
@@ -386,7 +386,7 @@ describe('Reverting an email change', function () {
       licenseMock.done();
       expect(resp.statusCode).to.equal(404);
       var source = resp.request.response.source;
-      expect(source.template).to.equal('errors/not-found');
+      expect(source.template).to.equal('errors/token-expired');
       done();
     });
   });

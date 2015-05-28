@@ -1,7 +1,7 @@
-var UserModel = require('../../models/user'),
-    userValidate = require('npm-user-validate'),
-    utils = require('../../lib/utils'),
-    crypto = require('crypto');
+var crypto      = require('crypto'),
+    UserModel   = require('../../models/user'),
+    userValidate= require('npm-user-validate'),
+    utils       = require('../../lib/utils');
 
 module.exports = function (request, reply) {
   var opts = { };
@@ -43,7 +43,7 @@ function processToken(request, reply) {
 
     if (!cached) {
       request.logger.error('Token not found or invalid: ', pwKey);
-      reply.view('errors/internal', opts).code(500);
+      reply.view('errors/token-expired', opts).code(404);
       return;
     }
 

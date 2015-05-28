@@ -186,7 +186,7 @@ describe('lib/cache.js', function()
         it('makes a request using the options argument if redis has no value', function(done)
         {
           sinon.stub(cache.redis, 'get').yields(null);
-          sinon.spy(cache.logger, 'info');
+          sinon.spy(cache.logger, 'debug');
 
           var opts = {
             method: 'get',
@@ -200,9 +200,9 @@ describe('lib/cache.js', function()
           cache.get(opts, function(err, data)
           {
               expect(cache.redis.get.calledOnce).to.equal(true);
-              expect(cache.logger.info.calledWithMatch(/get: /i)).to.equal(true);
+              expect(cache.logger.debug.calledWithMatch(/get: /i)).to.equal(true);
               cache.redis.get.restore();
-              cache.logger.info.restore();
+              cache.logger.debug.restore();
               mock.done();
               done();
           });

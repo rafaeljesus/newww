@@ -105,7 +105,7 @@ describe("resource", function () {
           homepage: "kate"
         }
       });
-      expect(user.resource.homepage).to.not.exist();
+      expect(user.resource.homepage).to.equal("");
       done();
     });
   });

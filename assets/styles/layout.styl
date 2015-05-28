@@ -77,6 +77,11 @@ form.star
       color npmred
       transform rotate(360deg)
 
+.package-name
+  i
+    position relative
+    left 0px
+    bottom 8px
 
 ul.columnar
   @extend .vanilla-list
@@ -90,6 +95,16 @@ ul.columnar
 
   @media only screen and (max-width: mobileMaxWidth)
     columns 1
+
+.collaborated-packages
+  li
+    .icon-lock
+      position absolute
+      left -20px
+      color greigh3
+
+      @media only screen and (max-width: mobileMaxWidth)
+        left -14px
 
 .package-widget
 

@@ -1,7 +1,7 @@
 @font-face
   font-family "icomoon"
   src url("/static/fonts/icomoon.eot?gqpuz")
-  src url("/static/fonts/icomoon.eot?#iefixgqpuz") format("embedded-opentype"), url("/static/fonts/icomoon.woff?gqpuz") format("woff"), url("/static/fonts/icomoon.ttf?gqpuz") format("truetype"), url("/static/fonts/icomoon.svg?gqpuz#icomoon") format("svg")
+  src url("/static/fonts/icomoon.eot?#iefixgqpuz") format("embedded-opentype"), url("/static/fonts/icomoon.woff2?gqpuz") format("woff2"), url("/static/fonts/icomoon.woff?gqpuz") format("woff"), url("/static/fonts/icomoon.ttf?gqpuz") format("truetype"), url("/static/fonts/icomoon.svg?gqpuz#icomoon") format("svg")
   font-weight normal
   font-style normal
 
@@ -107,6 +107,10 @@
   &:before
     content "\e616"
 
+.icon-lock
+  &:before
+    content "\e98f"
+
 .icon-package-hex
   &:before
     content "\e617"
@@ -146,3 +150,27 @@
 .icon-website
   &:before
     content "\e620"
+
+.icon-private
+  &:before
+    content "private"
+    color white
+    normal-font()
+    font-size 0.4em
+    background-color rgba(203,56,55,0.7)
+    display inline-block
+    padding 5px 6px 7px 5px
+    border-radius 5px
+    text-align center
+
+.icon-public
+  &:before
+    content "public"
+    color white
+    normal-font()
+    font-size 0.4em
+    background-color greigh5
+    display inline-block
+    padding 5px 6px 7px 5px
+    border-radius 5px
+    text-align center

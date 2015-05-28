@@ -58,6 +58,8 @@ describe('Confirming an email address', function () {
 
     server.inject(opts, function (resp) {
       expect(resp.statusCode).to.equal(404);
+      var source = resp.request.response.source;
+      expect(source.template).to.equal('errors/token-expired');
       done();
     });
   });

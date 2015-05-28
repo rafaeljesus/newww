@@ -213,8 +213,8 @@ describe("User", function(){
 
     var body = {
       items: [
-        {name: "foo", description: "It's a foo!"},
-        {name: "bar", description: "It's a bar!"}
+        {name: "foo", description: "It's a foo!", access: "restricted"},
+        {name: "bar", description: "It's a bar!", access: "public"}
       ],
       count: 2
     };
@@ -243,6 +243,22 @@ describe("User", function(){
         expect(body.items).to.be.an.array();
         expect(body.items[0].name).to.equal("foo");
         expect(body.items[1].name).to.equal("bar");
+        packageMock.done();
+        done();
+      });
+    });
+
+    it("updates privacy of packages", function(done) {
+      var packageMock = nock(User.host)
+        .get('/user/bob/package?format=mini&per_page=100&page=0')
+        .reply(200, body);
+
+      User.getPackages(fixtures.users.bob.name, function(err, body) {
+        expect(err).to.be.null();
+        expect(body).to.be.an.object();
+        expect(body.items).to.be.an.array();
+        expect(body.items[0].isPrivate).to.be.true();
+        expect(body.items[1].isPrivate).to.not.exist();
         packageMock.done();
         done();
       });
@@ -314,7 +330,7 @@ describe("User", function(){
     it("adds a `hasMore` key for groups that have more packages hiding", function (done) {
       var arr = [];
       for (var i = 0, l = 100; i < l; ++i) {
-        arr.push({name: "foo" + i, description: "It's a foo!"});
+        arr.push({name: "foo" + i, description: "It's a foo!", access: "public"});
       }
 
       var body = {

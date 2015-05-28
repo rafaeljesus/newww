@@ -8,7 +8,8 @@ var send = module.exports = function send (template, data, redis) {
 
   var mailOpts = _.extend({}, {
     from: "website@npmjs.com",
-    host: process.env.CANONICAL_HOST
+    host: process.env.CANONICAL_HOST,
+    support_email: "support@npmjs.com",
   }, data);
 
   var mm = new MustacheMailer({
@@ -35,4 +36,4 @@ send.mailConfig = {
     region: "us-west-2"
   }),
   emailFrom: 'support@npmjs.com'
-}
+};

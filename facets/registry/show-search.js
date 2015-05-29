@@ -24,7 +24,14 @@ module.exports = function (request, reply) {
       "query" : {
           "bool": {
             "should": [
-              {"match_phrase": {"name": request.query.q} },
+                { "match": {
+                  "name" : {
+                    "query" : request.query.q,
+                    "type" : "phrase",
+                    "operator" : "and",
+                    boost: 20
+                  }
+              }},
               {"match_phrase": {"keywords": request.query.q} },
               {"match_phrase": {"description": request.query.q} },
               {"match_phrase": {"readme": request.query.q} }

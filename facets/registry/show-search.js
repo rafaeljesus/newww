@@ -1,6 +1,6 @@
 var elasticsearch = require('elasticsearch'),
     merge = require('lodash').merge,
-    perPage = 24;
+    perPage = 20;
 
 var client = new elasticsearch.Client({ host: process.env.ELASTICSEARCH_URL });
 
@@ -17,7 +17,7 @@ module.exports = function (request, reply) {
 
   var page = Math.abs(parseInt(request.query.page, 10)) || 1;
   var searchQuery = {
-    fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek'],
+    fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek', 'readme'],
     body: {
       from: (page - 1) * perPage,
       size : perPage,

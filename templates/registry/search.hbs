@@ -9,12 +9,48 @@
   <a href="/search?q={{q}}&page={{page}}">&lsquo;{{q}}&rsquo;</a>
 </h2>
 
-<ul class="columnar">
-  {{#each results}}
-    {{#with fields}}
-      <li>{{> package-widget}}</li>
-    {{/with}}
-  {{/each}}
-</ul>
+<div class="content-column">
+  <ul class="search-results">
+    {{#each results}}
+      {{#with fields}}
+        <li>
+          <div class="package-details">
+            <h3>
+              <a class="name" href="/package/{{name}}">{{name}}</a>
+              &nbsp;&nbsp;<a class="author" href="/~{{author}}">{{author}}</a>
+            </h3>
 
-{{> pagination}}
+
+            <p class="description">{{description}}</p>
+
+            {{#if keywords}}
+              <p class="keywords">
+                <i class="icon-tag"></i>
+                {{#each keywords}}
+                  {{#if @last}}
+                    {{this}}
+                  {{else}}
+                    {{this}},&nbsp;
+                  {{/if}}
+                {{/each}}
+              </p>
+            {{/if}}
+
+            {{#if readme}}
+              {{#each readme}}
+                <p class="readme">{{truncate this 250}}</p>
+              {{/each}}
+            {{/if}}
+
+          </div>
+        </li>
+      {{/with}}
+    {{/each}}
+  </ul>
+  {{> pagination}}
+</div>
+
+<div class="sidebar">
+  <div class="hiring-container" data-template="vanilla"></div>
+</div>
+

@@ -23,6 +23,13 @@
 
             <p class="description">{{description}}</p>
 
+            <p class="stats">
+              {{!-- <span class="downloads"><i class="icon-download"></i>{{dlWeek}}</span> --}}
+              <span class="stars"><i class="icon-star"></i>{{stars}}</span>
+              &nbsp;&nbsp;<span class="version">v{{version}}</span>
+
+            </p>
+
             {{#if keywords}}
               <p class="keywords">
                 <i class="icon-tag"></i>
@@ -37,9 +44,9 @@
             {{/if}}
 
             {{#if readme}}
-              {{#each readme}}
-                <p class="readme">{{truncate this 250}}</p>
-              {{/each}}
+              <div class="readme-context">
+              {{{readmeSnippet}}}
+              </div>
             {{/if}}
 
           </div>

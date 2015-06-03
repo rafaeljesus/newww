@@ -1,4 +1,6 @@
 var elasticsearch = require('elasticsearch'),
+    md = require('markdown-it')(),
+    truncatise = require('truncatise'),
     merge = require('lodash').merge,
     perPage = 20;
 
@@ -73,6 +75,8 @@ module.exports = function (request, reply) {
       nextPage: response.hits.total >= (perPage * page) ? page + 1 : null
     });
 
+    getReadme(opts.results);
+
     if (opts.prevPage || opts.nextPage) {
       opts.pages = {};
       if (opts.prevPage) {
@@ -86,3 +90,12 @@ module.exports = function (request, reply) {
     return reply.view('registry/search', opts);
   });
 };
+
+function getReadme (results) {
+  results.forEach(function (r) {
+    var renderedReadme = md.render(r.fields.readme[0]);
+    r.fields.readmeSnippet = truncatise(renderedReadme);
+  });
+
+  return;
+}

@@ -439,3 +439,46 @@ img.roomy-and-flexible
     height npmInstallHeight+2px
     cursor text
     font-size npmInstallFontSize
+
+.search-results
+  li
+    list-style none
+
+  h3
+    // padding-top 40px
+    padding-bottom 0
+
+  .name
+    font-weight bold
+    font-size 1.2em
+
+  .author
+    code-font()
+    font-size .9em
+    color greigh4
+    a
+      color greigh4
+      &:hover
+        color npmred
+
+  p
+    margin-bottom 0px
+
+  .package-details
+    position relative
+
+  .keywords, .stats
+    color greigh4
+    font-size 0.8em
+
+  .readme-context
+    background-color #f6f6f6
+    padding 5px
+    font-size 0.8em
+    color greigh3
+
+  i
+    position relative
+    font-size 0.9em
+    margin-right 4px
+    top 1px

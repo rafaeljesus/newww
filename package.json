@@ -48,12 +48,10 @@
     "is-url": "^1.2.0",
     "joi": "^5.1.0",
     "jquery": "^2.1.4",
-    "keyword-context": "^1.0.0",
     "leven": "^1.0.1",
     "lodash": "^3.8.0",
     "mailchimp-api": "^2.0.7",
     "malarkey": "^1.2.0",
-    "markdown-it": "^4.2.1",
     "marky-markdown": "^5.3.0",
     "moment": "^2.10.2",
     "moment-tokens": "^1.0.0",
@@ -93,7 +91,6 @@
     "tipsy-browserify": "^1.0.0",
     "token-facilitator": "^2.1.1",
     "truncate": "^1.0.4",
-    "truncatise": "0.0.2",
     "validate-npm-package-name": "^2.2.0"
   },
   "devDependencies": {

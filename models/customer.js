@@ -1,25 +1,23 @@
 var _       = require('lodash');
 var Request = require('../lib/external-request');
 
-var Customer = module.exports = function(opts) {
+var Customer = module.exports = function(name, opts) {
   _.extend(this, {
     host: process.env.LICENSE_API || "https://license-api-example.com",
+    name: name,
   }, opts);
 };
 
-Customer.new = function() {
-  return new Customer();
-};
-
-Customer.prototype.get = function(name, callback) {
-  var url = this.host + '/stripe/' + name;
+Customer.prototype.get = function(callback) {
+  var self = this;
+  var url = this.host + '/stripe/' + self.name;
 
   Request.get({url: url, json: true}, function(err, resp, body){
 
     if (err) { return callback(err); }
 
     if (resp.statusCode === 404) {
-      err = Error('customer not found: ' + name);
+      err = Error('customer not found: ' + self.name);
       err.statusCode = resp.statusCode;
       return callback(err);
     }
@@ -45,7 +43,7 @@ Customer.prototype.update = function(body, callback) {
     }
   }
 
-  this.get(body.name, function(err, customer) {
+  this.get(function(err, customer) {
 
     var cb = function(err, resp, body){
 
@@ -76,8 +74,8 @@ Customer.prototype.update = function(body, callback) {
   });
 };
 
-Customer.prototype.del = function(name, callback) {
-  var url = this.host + '/stripe/' + name;
+Customer.prototype.del = function(callback) {
+  var url = this.host + '/stripe/' + this.name;
   Request.del({url: url, json: true}, function(err, resp, body){
     return err ? callback(err) : callback(null, body);
   });

@@ -1,5 +1,4 @@
 var billing = module.exports = {};
-var Customer = require("../models/customer").new();
 var utils = require('../lib/utils');
 
 billing.getBillingInfo = function (request, reply) {
@@ -22,7 +21,7 @@ billing.getBillingInfo = function (request, reply) {
     opts.package = request.query.package;
   }
 
-  Customer.get(request.loggedInUser.name, function(err, customer) {
+  request.customer.get(function(err, customer) {
 
     if (customer) {
       opts.customer = customer;
@@ -47,7 +46,7 @@ billing.updateBillingInfo = function(request, reply) {
     coupon: coupon && coupon.toLowerCase()
   };
 
-  Customer.update(billingInfo, function(err, customer) {
+  request.customer.update(billingInfo, function(err) {
     var opts = {};
 
     if (err) {
@@ -82,7 +81,7 @@ billing.deleteBillingInfo = function(request, reply) {
     return reply.view('errors/not-found').code(404);
   }
 
-  Customer.del(request.loggedInUser.name, function(err, customer) {
+  request.customer.del(function(err, customer) {
     if (err) {
       request.logger.error("unable to delete billing info for " + customer);
       request.logger.error(err);

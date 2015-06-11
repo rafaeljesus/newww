@@ -1,5 +1,6 @@
 var bole              = require('bole'),
     Boom              = require('boom'),
+    CustomerModel     = require('../models/customer'),
     Hoek              = require('hoek'),
     humans            = require('npm-humans'),
     featureFlag       = require('../lib/feature-flags.js'),
@@ -39,6 +40,7 @@ exports.register = function(server, options, next) {
       UserModel.new(request).get(request.auth.credentials.name, function(err, user) {
         if (err) { request.logger.warn(err); }
         request.loggedInUser = user;
+        request.customer = user && new CustomerModel(user.name);
         completePreHandler();
       });
     } else {

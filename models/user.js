@@ -118,8 +118,8 @@ User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
 };
 
 User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
-  var licenseAPI = new LicenseAPI();
-  licenseAPI.get(name, function (err, customer) {
+  var licenseAPI = new LicenseAPI(name);
+  licenseAPI.get(function (err, customer) {
     return callback(null, customer);
   });
 };

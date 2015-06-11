@@ -1,5 +1,4 @@
 var omit = require("lodash").omit;
-var Customer = require("../models/customer").new();
 
 module.exports = function(request, reply) {
 
@@ -57,7 +56,7 @@ module.exports = function(request, reply) {
     // Disallow unpaid users from toggling their public scoped packages to private
     if (Boolean(package.scoped) && !Boolean(package.private) && context.userHasWriteAccessToPackage) {
       context.paymentRequiredToTogglePrivacy = true;
-      Customer.get(loggedInUser.name, function(err, customer) {
+      request.customer.get(function(err, customer) {
         if (err && err.statusCode !== 404) {
           request.logger.error("error fetching customer data for user " + loggedInUser.name);
           request.logger.error(err);

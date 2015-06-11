@@ -1,14 +1,13 @@
-var billing = module.exports = {};
+var customer = module.exports = {};
 var utils = require('../lib/utils');
 
-billing.getBillingInfo = function (request, reply) {
+customer.getBillingInfo = function (request, reply) {
 
   if (!request.features.billing_page) {
     return reply.view('errors/not-found').code(404);
   }
 
   var opts = {
-    namespace: 'billing',
     title: 'Billing',
     updated: ('updated' in request.query),
     canceled: ('canceled' in request.query),
@@ -30,7 +29,7 @@ billing.getBillingInfo = function (request, reply) {
   });
 };
 
-billing.updateBillingInfo = function(request, reply) {
+customer.updateBillingInfo = function(request, reply) {
   if (!request.features.billing_page) {
     return reply.view('errors/not-found').code(404);
   }
@@ -75,7 +74,7 @@ billing.updateBillingInfo = function(request, reply) {
 
 };
 
-billing.deleteBillingInfo = function(request, reply) {
+customer.deleteBillingInfo = function(request, reply) {
 
   if (!request.features.billing_page) {
     return reply.view('errors/not-found').code(404);

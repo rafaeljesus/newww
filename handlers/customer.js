@@ -42,10 +42,13 @@ customer.updateBillingInfo = function(request, reply) {
     name: request.loggedInUser.name,
     email: request.loggedInUser.email,
     card: request.payload.stripeToken,
-    coupon: coupon && coupon.toLowerCase()
   };
 
-  request.customer.update(billingInfo, function(err) {
+  if (coupon) {
+    billingInfo.coupon = coupon && coupon.toLowerCase();
+  }
+
+  request.customer.updateBilling(billingInfo, function(err) {
     var opts = {};
 
     if (err) {
@@ -89,3 +92,25 @@ customer.deleteBillingInfo = function(request, reply) {
     return reply.redirect('/settings/billing?canceled=1');
   });
 };
+
+var plans = {
+  private_modules: 'npm-paid-individual-user-7',
+  orgs: 'npm-paid-org-6'
+};
+
+customer.subscribe = function (request, reply) {
+  var planInfo = {
+    plan: plans[request.query.plan]
+  };
+
+  request.customer.updateSubscription(planInfo, function (err, subscriptions) {
+    if (err) {
+      request.logger.error("unable to update subscription to " + planInfo.plan);
+      request.logger.error(err);
+    }
+
+    console.log('==subs==', subscriptions)
+
+    return reply.redirect('/settings/billing');
+  });
+}

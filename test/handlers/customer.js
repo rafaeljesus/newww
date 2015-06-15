@@ -26,9 +26,9 @@ before(function (done) {
     .reply(200, fixtures.users.norbert_newbie);
 
   licenseMock = nock("https://license-api-example.com:443")
-    .get("/stripe/bob").times(12)
+    .get("/customer/bob/stripe").times(12)
     .reply(200, fixtures.customers.happy)
-    .get("/stripe/bob").times(2)
+    .get("/customer/bob/stripe").times(2)
     .reply(404);
 
   require('../mocks/server')(function (obj) {
@@ -169,7 +169,7 @@ describe('GET /settings/billing', function () {
       options.credentials = fixtures.users.bob;
 
       mock = nock("https://license-api-example.com")
-        .get("/stripe/bob").twice(2)
+        .get("/customer/bob/stripe").twice(2)
         .reply(200, fixtures.customers.happy);
 
       server.inject(options, function (response) {
@@ -240,7 +240,7 @@ describe('GET /settings/billing', function () {
     beforeEach(function(done){
       options.credentials = fixtures.users.diana_delinquent;
       mock = nock("https://license-api-example.com")
-        .get("/stripe/diana_delinquent").times(2)
+        .get("/customer/diana_delinquent/stripe").times(2)
         .reply(200, fixtures.customers.license_expired);
 
       server.inject(options, function (response) {
@@ -274,9 +274,9 @@ describe('GET /settings/billing', function () {
     beforeEach(function(done){
       options.credentials = fixtures.users.norbert_newbie;
       mock = nock("https://license-api-example.com")
-        .get("/stripe/norbert_newbie")
+        .get("/customer/norbert_newbie/stripe")
         .reply(200, fixtures.customers.happy)
-        .get("/stripe/norbert_newbie")
+        .get("/customer/norbert_newbie/stripe")
         .reply(404);
 
       server.inject(options, function (response) {
@@ -325,7 +325,7 @@ describe('GET /settings/billing', function () {
         .reply(200, fixtures.users.uncle_unverified);
 
       var customerMock = nock("https://license-api-example.com")
-        .get("/stripe/uncle_unverified").times(2)
+        .get("/customer/uncle_unverified/stripe").times(2)
         .reply(404);
 
       server.inject(options, function (response) {
@@ -387,9 +387,9 @@ describe('POST /settings/billing', function () {
         };
 
         var mock = nock("https://license-api-example.com")
-          .get("/stripe/bob").times(2)
+          .get("/customer/bob/stripe").times(2)
           .reply(200, fixtures.customers.happy)
-          .post("/stripe/bob")
+          .post("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy);
 
         server.inject(opts, function (resp) {
@@ -417,9 +417,9 @@ describe('POST /settings/billing', function () {
         };
 
         var mock = nock("https://license-api-example.com")
-          .get("/stripe/bob").twice()
+          .get("/customer/bob/stripe").twice()
           .reply(200, fixtures.customers.happy)
-          .post("/stripe/bob")
+          .post("/customer/bob/stripe")
           .reply(200, "Your card's security code is incorrect.");
 
         server.inject(opts, function (resp) {
@@ -454,9 +454,9 @@ describe('POST /settings/billing', function () {
         };
 
         var mock = nock("https://license-api-example.com")
-          .get("/stripe/bob")
+          .get("/customer/bob/stripe")
           .reply(404)
-          .put("/stripe")
+          .put("/customer/stripe")
           .reply(200, fixtures.customers.happy);
 
         var Customer = require('../../models/customer');
@@ -492,9 +492,9 @@ describe('POST /settings/billing', function () {
         };
 
         var mock = nock("https://license-api-example.com")
-          .get("/stripe/bob").times(2)
+          .get("/customer/bob/stripe").times(2)
           .reply(200, fixtures.customers.happy)
-          .post("/stripe/bob", {"name":"bob","email":"bob@boom.me","card":"tok_1234567890"})
+          .post("/customer/bob/stripe", {"name":"bob","email":"bob@boom.me","card":"tok_1234567890"})
           .reply(200)
 
         server.inject(opts, function (resp) {
@@ -546,9 +546,9 @@ describe('POST /settings/billing/cancel', function () {
       };
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/stripe/bob")
+        .get("/customer/bob/stripe")
         .reply(200, fixtures.customers.happy)
-        .delete("/stripe/bob")
+        .delete("/customer/bob/stripe")
         .reply(200, fixtures.customers.happy);
 
       var userMock = nock("https://user-api-example.com")

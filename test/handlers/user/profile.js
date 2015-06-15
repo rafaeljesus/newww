@@ -39,7 +39,7 @@ describe('GET /~bob for a user other than bob', function () {
       .reply(200, users.stars) ;
 
     var licenseMock = nock('https://license-api-example.com')
-      .get('/stripe/bob')
+      .get('/customer/bob/stripe')
       .reply(404);
 
     server.inject('/~bob', function (response) {
@@ -107,7 +107,7 @@ describe('GET /~bob for logged-in bob', function () {
       .reply(200, users.stars);
 
     var licenseMock = nock('https://license-api-example.com')
-      .get('/stripe/bob').twice()
+      .get('/customer/bob/stripe').twice()
       .reply(404);
 
     server.inject({url:'/~bob', credentials: users.bob}, function (response) {
@@ -158,7 +158,7 @@ describe('GET /~bob for logged-in bob', function () {
       .reply(200, users.stars);
 
     var licenseMock = nock('https://license-api-example.com')
-      .get('/stripe/bob').twice()
+      .get('/customer/bob/stripe').twice()
       .reply(200, customers.bob);
 
     server.inject({url:'/~bob', credentials: users.bob}, function (response) {
@@ -188,7 +188,7 @@ describe("GET /~nonexistent-user", function() {
       .reply(404);
 
     var licenseMock = nock('https://license-api-example.com')
-      .get('/stripe/nonexistent-user')
+      .get('/customer/nonexistent-user/stripe')
       .reply(404);
 
     server.inject('/~nonexistent-user', function (resp) {

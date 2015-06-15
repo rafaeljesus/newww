@@ -91,7 +91,7 @@ describe('Confirming an email address', function () {
       .reply(200);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/bob")
+      .get("/customer/bob/stripe")
       .reply(200, {});
 
     var boom = JSON.stringify({
@@ -127,7 +127,7 @@ describe('Confirming an email address', function () {
       .reply(200);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/bob")
+      .get("/customer/bob/stripe")
       .reply(200, {});
 
     var boom = JSON.stringify({
@@ -160,7 +160,7 @@ describe('Confirming an email address', function () {
       .reply(200);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/bob")
+      .get("/customer/bob/stripe")
       .reply(200, {});
 
     var boom = JSON.stringify({

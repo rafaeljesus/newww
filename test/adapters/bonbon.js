@@ -41,11 +41,11 @@ before(function (done) {
     .reply(404);
 
   licenseMock = nock('https://license-api-example.com')
-    .get('/stripe/bob').times(13)
+    .get('/customer/bob/stripe').times(13)
     .reply(200, {})
-    .get('/stripe/mikeal')
+    .get('/customer/mikeal/stripe')
     .reply(200, {})
-    .get('/stripe/seldo').times(4)
+    .get('/customer/seldo/stripe').times(4)
     .reply(200, {});
 
   done();

@@ -46,7 +46,7 @@ describe('Getting to the login page', function () {
       .reply(200, users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/bob")
+      .get("/customer/bob/stripe")
       .reply(404);
 
     var options = {

@@ -65,13 +65,23 @@ customer.updateBillingInfo = function(request, reply) {
       email: billingInfo.email
     };
 
-    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {
-      if (er) {
-        request.logger.error('unable to send billing email to HubSpot');
-        request.logger.error(er);
+    var planInfo = { plan: 'npm-paid-individual-user-7' };
+
+    request.customer.updateSubscription(planInfo, function (err, unused) {
+
+      if (err) {
+        request.logger.error("unable to update subscription to " + planInfo.plan);
+        request.logger.error(err);
       }
 
-      return reply.redirect('/settings/billing?updated=1');
+      sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {
+        if (er) {
+          request.logger.error('unable to send billing email to HubSpot');
+          request.logger.error(er);
+        }
+
+        return reply.redirect('/settings/billing?updated=1');
+      });
     });
   });
 
@@ -93,24 +103,24 @@ customer.deleteBillingInfo = function(request, reply) {
   });
 };
 
-var plans = {
-  private_modules: 'npm-paid-individual-user-7',
-  orgs: 'npm-paid-org-6'
-};
+// var plans = {
+//   private_modules: 'npm-paid-individual-user-7',
+//   orgs: 'npm-paid-org-6'
+// };
 
-customer.subscribe = function (request, reply) {
-  var planInfo = {
-    plan: plans[request.query.plan]
-  };
+// customer.subscribe = function (request, reply) {
+//   var planInfo = {
+//     plan: plans[request.query.plan]
+//   };
 
-  request.customer.updateSubscription(planInfo, function (err, subscriptions) {
-    if (err) {
-      request.logger.error("unable to update subscription to " + planInfo.plan);
-      request.logger.error(err);
-    }
+//   request.customer.updateSubscription(planInfo, function (err, subscriptions) {
+//     if (err) {
+//       request.logger.error("unable to update subscription to " + planInfo.plan);
+//       request.logger.error(err);
+//     }
 
-    console.log('==subs==', subscriptions)
+//     console.log('==subs==', subscriptions)
 
-    return reply.redirect('/settings/billing');
-  });
-}
+//     return reply.redirect('/settings/billing');
+//   });
+// }

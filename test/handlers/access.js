@@ -128,7 +128,7 @@ describe("package access", function(){
           .reply(200, users.bob);
 
         licenseMock = nock("https://license-api-example.com")
-          .get("/stripe/bob")
+          .get("/customer/bob/stripe")
           .reply(200, {});
 
         server.inject(options, function(response) {
@@ -179,7 +179,7 @@ describe("package access", function(){
           .reply(200, users.wrigley_the_writer);
 
         licenseMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer")
+          .get("/customer/wrigley_the_writer/stripe")
           .reply(200, {});
 
         process.env.FEATURE_ACCESS_PAGE = 'true';
@@ -307,7 +307,7 @@ describe("package access", function(){
           .reply(200, users.bob);
 
         licenseMock = nock("https://license-api-example.com")
-          .get("/stripe/bob")
+          .get("/customer/bob/stripe")
           .reply(200, {});
 
         server.inject(options, function(response) {
@@ -359,7 +359,7 @@ describe("package access", function(){
           .reply(200, users.ralph_the_reader);
 
         licenseMock = nock("https://license-api-example.com")
-          .get("/stripe/ralph_the_reader")
+          .get("/customer/ralph_the_reader/stripe")
           .reply(200, {});
 
         server.inject(options, function(response) {
@@ -408,7 +408,7 @@ describe("package access", function(){
           .reply(200, users.wrigley_the_writer);
 
         licenseMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer").twice()
+          .get("/customer/wrigley_the_writer/stripe").twice()
           .reply(200, fixtures.customers.happy);
 
         server.inject(options, function(response) {
@@ -479,7 +479,7 @@ describe("package access", function(){
           .reply(200, fixtures.users.wrigley_the_writer);
 
         licenseMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer").twice()
+          .get("/customer/wrigley_the_writer/stripe").twice()
           .reply(404);
 
         server.inject(options, function(response) {
@@ -569,7 +569,7 @@ describe("package access", function(){
           .reply(200, fixtures.collaborators);
 
         var customerMock = nock("https://license-api-example.com")
-          .get("/stripe/bob")
+          .get("/customer/bob/stripe")
           .reply(200, {});
 
         server.inject(options, function(response) {
@@ -615,7 +615,7 @@ describe("package access", function(){
           .reply(200, fixtures.collaborators);
 
         var customerMock = nock("https://license-api-example.com")
-          .get("/stripe/ralph_the_reader")
+          .get("/customer/ralph_the_reader/stripe")
           .reply(200, {});
 
         server.inject(options, function(response) {
@@ -656,7 +656,7 @@ describe("package access", function(){
           .reply(200, fixtures.collaborators);
 
         var customerMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer")
+          .get("/customer/wrigley_the_writer/stripe")
           .reply(200, {});
 
         server.inject(options, function(response) {
@@ -701,7 +701,7 @@ describe("package access", function(){
           .reply(402);
 
         var customerMock = nock("https://license-api-example.com")
-          .get("/stripe/wrigley_the_writer")
+          .get("/customer/wrigley_the_writer/stripe")
           .reply(200, {});
 
         server.inject(options, function(response) {

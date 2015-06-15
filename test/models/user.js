@@ -120,7 +120,7 @@ describe("User", function(){
         .reply(200, fixtures.users.bob);
 
       var licenseMock = nock('https://license-api-example.com')
-        .get('/stripe/bob')
+        .get('/customer/bob/stripe')
         .reply(404);
 
       User.get(fixtures.users.bob.name, function(err, body) {
@@ -155,7 +155,7 @@ describe("User", function(){
         .reply(200, fixtures.users.bob);
 
       var licenseMock = nock('https://license-api-example.com')
-        .get('/stripe/bob')
+        .get('/customer/bob/stripe')
         .reply(200, fixtures.customers.bob);
 
       User.dropCache(fixtures.users.bob.name, function () {
@@ -177,7 +177,7 @@ describe("User", function(){
         .reply(404);
 
       var licenseMock = nock('https://license-api-example.com')
-        .get('/stripe/foo')
+        .get('/customer/foo/stripe')
         .reply(404);
 
 
@@ -196,7 +196,7 @@ describe("User", function(){
         .get('/user/hermione')
         .reply(200);
       var licenseMock = nock('https://license-api-example.com')
-        .get('/stripe/hermione')
+        .get('/customer/hermione/stripe')
         .reply(404);
 
       User.get('hermione', function(err, body) {

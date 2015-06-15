@@ -43,7 +43,7 @@ describe('GET /package/foo/collaborators', function () {
       .reply(200, fixtures.collaborators);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/bob')
+      .get('/customer/bob/stripe')
       .reply(400);
 
     server.inject(options, function (resp) {
@@ -118,7 +118,7 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function () {
       .reply(200, fixtures.collaborators.wrigley_the_writer);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/bob')
+      .get('/customer/bob/stripe')
       .reply(400);
 
     server.inject(options, function (resp) {

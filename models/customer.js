@@ -73,16 +73,16 @@ Customer.prototype.updateBilling = function(body, callback) {
   });
 };
 
-Customer.prototype.del = function(callback) {
-  var url = this.host + '/customer/' + this.name + '/stripe';
-  Request.del({url: url, json: true}, function(err, resp, body){
-    return err ? callback(err) : callback(null, body);
-  });
-};
-
 Customer.prototype.updateSubscription = function (planInfo, callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription';
   Request.put({ url: url, json: true, body: planInfo }, function (err, resp, body) {
     callback(err, body);
+  });
+};
+
+Customer.prototype.del = function(callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe';
+  Request.del({url: url, json: true}, function(err, resp, body){
+    return err ? callback(err) : callback(null, body);
   });
 };

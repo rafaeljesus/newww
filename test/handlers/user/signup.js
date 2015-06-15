@@ -76,7 +76,7 @@ describe('Signing up a new user', function () {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/bob")
+      .get("/customer/bob/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.alreadyExists), function (resp) {
@@ -97,7 +97,7 @@ describe('Signing up a new user', function () {
       .reply(404);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/fakeusercli")
+      .get("/customer/fakeusercli/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.incomplete), function (resp) {
@@ -117,7 +117,7 @@ describe('Signing up a new user', function () {
       .reply(404);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/fakeusercli")
+      .get("/customer/fakeusercli/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.badEmail), function (resp) {
@@ -137,7 +137,7 @@ describe('Signing up a new user', function () {
       .reply(404);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/.fakeusercli")
+      .get("/customer/.fakeusercli/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.badUsernameDot), function (resp) {
@@ -157,7 +157,7 @@ describe('Signing up a new user', function () {
       .reply(404);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/FAkeusercli")
+      .get("/customer/FAkeusercli/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.badUsernameCaps), function (resp) {
@@ -177,7 +177,7 @@ describe('Signing up a new user', function () {
       .reply(404);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/blärgh")
+      .get("/customer/blärgh/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.badUsernameEncodeURI), function (resp) {
@@ -197,7 +197,7 @@ describe('Signing up a new user', function () {
       .reply(404);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/fakeusercli")
+      .get("/customer/fakeusercli/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.invalidPassMatch), function (resp) {
@@ -226,7 +226,7 @@ describe('Signing up a new user', function () {
       .reply(200, fixtures.users.mikeal);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/newuser")
+      .get("/customer/newuser/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.good), function (resp) {
@@ -253,7 +253,7 @@ describe('Signing up a new user', function () {
       .reply(200, fixtures.users.mikeal);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/newuser")
+      .get("/customer/newuser/stripe")
       .reply(404);
 
     server.inject(postSignup(forms.goodPassWithUmlaut), function (resp) {

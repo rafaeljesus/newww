@@ -51,7 +51,7 @@ describe("Customer", function(){
       var Customer = new CustomerModel('haxor');
 
       var customerMock = nock(Customer.host)
-        .get('/customer/haxor')
+        .get('/customer/haxor/stripe')
         .reply(200, fixtures.customers.happy);
 
       Customer.get(function(err, body) {
@@ -65,7 +65,7 @@ describe("Customer", function(){
       var Customer = new CustomerModel('zozo');
 
       var customerMock = nock(Customer.host)
-        .get('/customer/zozo')
+        .get('/customer/zozo/stripe')
         .reply(200, fixtures.customers.happy);
 
       Customer.get(function(err, body) {
@@ -80,7 +80,7 @@ describe("Customer", function(){
       var Customer = new CustomerModel('foo');
 
       var customerMock = nock(Customer.host)
-        .get('/customer/foo')
+        .get('/customer/foo/stripe')
         .reply(404);
 
       Customer.get(function(err, body) {
@@ -94,7 +94,7 @@ describe("Customer", function(){
 
   });
 
-  describe("update()", function() {
+  describe("updateBilling()", function() {
 
     describe("new customer", function() {
       var billingInfo;
@@ -113,12 +113,12 @@ describe("Customer", function(){
 
       it("makes an external request for /stripe/{user}", function(done) {
         var customerMock = nock(Customer.host)
-          .get('/customer/bob')
+          .get('/customer/bob/stripe')
           .reply(404)
-          .put('/stripe', billingInfo)
+          .put('/customer/stripe', billingInfo)
           .reply(200, fixtures.customers.happy);
 
-        Customer.update(billingInfo, function(err, body) {
+        Customer.updateBilling(billingInfo, function(err, body) {
           customerMock.done();
           expect(err).to.be.null();
           expect(body).to.exist();
@@ -128,12 +128,12 @@ describe("Customer", function(){
 
       it("gets customer data back in callback body", function(done) {
         var customerMock = nock(Customer.host)
-          .get('/customer/bob')
+          .get('/customer/bob/stripe')
           .reply(404)
-          .put('/stripe', billingInfo)
+          .put('/customer/stripe', billingInfo)
           .reply(200, fixtures.customers.happy);
 
-        Customer.update(billingInfo, function(err, customer) {
+        Customer.updateBilling(billingInfo, function(err, customer) {
           customerMock.done();
           expect(err).to.be.null();
           expect(customer).to.exist();
@@ -144,7 +144,7 @@ describe("Customer", function(){
 
       it("errors if name is missing", function(done){
         delete billingInfo.name;
-        Customer.update(billingInfo, function(err, customer) {
+        Customer.updateBilling(billingInfo, function(err, customer) {
           expect(err).to.exist();
           expect(err.message).to.equal("name is a required property");
           done();
@@ -153,7 +153,7 @@ describe("Customer", function(){
 
       it("errors if email is missing", function(done){
         delete billingInfo.email;
-        Customer.update(billingInfo, function(err, customer) {
+        Customer.updateBilling(billingInfo, function(err, customer) {
           expect(err).to.exist();
           expect(err.message).to.equal("email is a required property");
           done();
@@ -162,7 +162,7 @@ describe("Customer", function(){
 
       it("errors if card is missing", function(done){
         delete billingInfo.card;
-        Customer.update(billingInfo, function(err, customer) {
+        Customer.updateBilling(billingInfo, function(err, customer) {
           expect(err).to.exist();
           expect(err.message).to.equal("card is a required property");
           done();
@@ -171,12 +171,12 @@ describe("Customer", function(){
 
       it("errors if the card is invalid", function(done) {
         var createCustomerMock = nock(Customer.host)
-          .get('/customer/bob')
+          .get('/customer/bob/stripe')
           .reply(200, {})
           .post('/customer/bob/stripe', billingInfo)
           .reply(200, "Your card's security code is incorrect.");
 
-        Customer.update(billingInfo, function (err, customer) {
+        Customer.updateBilling(billingInfo, function (err, customer) {
           createCustomerMock.done();
           expect(err).to.exist();
           expect(err.message).to.equal("Your card's security code is incorrect.");
@@ -186,21 +186,51 @@ describe("Customer", function(){
     });
   });
 
-  describe("del()", function() {
-    it("cancels a user's subscription", function (done) {
-        var Customer = new CustomerModel('bob');
-        var createCustomerMock = nock(Customer.host)
-          .delete('/customer/bob/stripe')
-          .reply(200, 'customer deleted');
-
-        Customer.del(function (err, response) {
-          createCustomerMock.done();
-          expect(err).to.not.exist();
-          expect(response).to.equal("customer deleted");
-          done();
+  describe("updateSubscription()", function () {
+    it("signs a user up for private modules", function (done) {
+      var Customer = new CustomerModel('bob');
+      var planInfo = {plan: 'npm-paid-individual-user-7'}
+      var customerMock = nock(Customer.host)
+        .put('/customer/bob/stripe/subscription', planInfo)
+        .reply(200, {
+          id: 'sub_12345',
+          current_period_end: 1436995358,
+          current_period_start: 1434403358,
+          quantity: 1,
+          status: 'active',
+          interval: 'month',
+          amount: 700,
+          license_id: 1,
+          npm_org: '_private-modules-bob',
+          npm_user: 'bob',
+          product_id: '1031405a-70b7-4a3f-b552-8609d9e1428f'
         });
+
+    Customer.updateSubscription(planInfo, function (err, subscription) {
+      customerMock.done();
+      expect(err).to.not.exist();
+      expect(subscription.id).to.equal('sub_12345');
+      expect(subscription.npm_org).to.equal('_private-modules-bob');
+      done();
+    });
+
     });
   });
 
+  describe("del()", function() {
+    it("cancels a user's subscription", function (done) {
+      var Customer = new CustomerModel('bob');
+      var createCustomerMock = nock(Customer.host)
+        .delete('/customer/bob/stripe')
+        .reply(200, 'customer deleted');
+
+      Customer.del(function (err, response) {
+        createCustomerMock.done();
+        expect(err).to.not.exist();
+        expect(response).to.equal("customer deleted");
+        done();
+      });
+    });
+  });
 
 });

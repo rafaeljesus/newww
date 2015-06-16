@@ -27,9 +27,18 @@ after(function (done) {
 describe("Customer", function(){
 
   describe("initialization", function() {
+    it("throws if a name is not passed", function (done) {
+      expect(function () { return new CustomerModel()}).to.throw("Must pass a name to Customer model");
+      done();
+    });
+
+    it("throws if a name is not passed but options are", function (done) {
+      expect(function () { return new CustomerModel({host: "https://boom.com"})}).to.throw("Must pass a name to Customer model");
+      done();
+    });
 
     it("defaults to process.env.LICENSE_API as host", function(done) {
-      expect(new CustomerModel().host).to.equal('https://customer.com');
+      expect(new CustomerModel('bob').host).to.equal('https://customer.com');
       done();
     });
 
@@ -40,6 +49,12 @@ describe("Customer", function(){
       });
 
       expect(Customer.host).to.equal(url);
+      done();
+    });
+
+    it("doesn't break if we forget the `new` keyword", function (done) {
+      var Customer = CustomerModel('bob');
+      expect(Customer.host).to.equal('https://customer.com');
       done();
     });
 

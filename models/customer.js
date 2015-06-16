@@ -1,7 +1,14 @@
 var _       = require('lodash');
+var assert  = require('assert');
 var Request = require('../lib/external-request');
 
 var Customer = module.exports = function(name, opts) {
+
+  assert(!_.isObject(name), "Must pass a name to Customer model");
+  assert(_.isString(name), "Must pass a name to Customer model");
+
+  if (!(this instanceof Customer)) { return new Customer(name, opts); }
+
   _.extend(this, {
     host: process.env.LICENSE_API || "https://license-api-example.com",
     name: name,

@@ -45,7 +45,7 @@ customer.updateBillingInfo = function(request, reply) {
   };
 
   if (coupon) {
-    billingInfo.coupon = coupon && coupon.toLowerCase();
+    billingInfo.coupon = coupon.toLowerCase();
   }
 
   request.customer.updateBilling(billingInfo, function(err) {

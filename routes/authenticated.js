@@ -67,6 +67,10 @@ module.exports = [
     method: "POST",
     handler: require('../handlers/customer').deleteBillingInfo
   }, {
+    path: "/settings/billing/subscribe",
+    method: "POST",
+    handler: require('../handlers/customer').subscribe
+  }, {
     paths: [
       "/package/{package}/collaborators",
       "/package/{scope}/{project}/collaborators",

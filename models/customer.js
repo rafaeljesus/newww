@@ -18,7 +18,7 @@ var Customer = module.exports = function(name, opts) {
 
 Customer.prototype.get = function(callback) {
   var self = this;
-  var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
+  var url = self.host + '/customer/' + self.name + '/stripe';
 
   Request.get({url: stripeUrl, json: true}, function(err, resp, stripeData){
 
@@ -31,6 +31,29 @@ Customer.prototype.get = function(callback) {
     }
 
     return callback(null, stripeData);
+  });
+};
+
+Customer.prototype.getSubscriptions = function (callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe/subscription';
+
+  Request.get({url: url, json: true}, function (err, resp, body) {
+
+    if (err) { return callback(err); }
+
+    if (resp.statusCode === 404) {
+      return callback(null, []);
+    }
+
+    body.forEach(function (subscription) {
+      // does this seem right?
+      subscription.next_billing_date = moment.unix(subscription.current_period_end);
+      if (subscription.npm_org.match(/_private-modules/)) {
+        subscription.privateModules = true;
+      }
+    });
+
+    return callback(null, body);
   });
 };
 

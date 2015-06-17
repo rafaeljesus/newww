@@ -121,32 +121,14 @@ customer.subscribe = function (request, reply) {
     planInfo.npm_org = request.payload.orgName;
   }
 
-  // don't do this for only private modules
-  new User().getOrg(planInfo.npm_org)
-    .then(function (users) {
-      // first check to see if the user is the super-admin
-      // notify the user that this org already exists
-    })
-    .catch(function (err) {
-      if (err.statusCode === 404) {
-        // org doesn't yet exist
-        request.customer.createSubscription(planInfo, function (err, subscriptions) {
-          if (err) {
-            request.logger.error("unable to update subscription to " + planInfo.plan);
-            request.logger.error(err);
-          }
+  console.log('== plan info ==', planInfo)
 
-          if (typeof subscriptions === 'string') {
-            request.logger.info("created subscription: ", planInfo);
-          }
+  request.customer.updateSubscription(planInfo, function (err, subscriptions) {
+    if (err) {
+      request.logger.error("unable to update subscription to " + planInfo.plan);
+      request.logger.error(err);
+    }
 
-          return reply.redirect('/settings/billing');
-        });
-      } else {
-        // do actual error handling here
-        request.logger.error(err);
-        return reply.redirect('/settings/billing');
-      }
-    });
-
-};
+    return reply.redirect('/settings/billing');
+  });
+}

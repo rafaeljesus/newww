@@ -25,7 +25,18 @@ customer.getBillingInfo = function (request, reply) {
     if (customer) {
       opts.customer = customer;
     }
-    return reply.view('user/billing', opts);
+
+    request.customer.getSubscriptions(function (err, subscriptions) {
+      if (err) {
+        request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
+        request.logger.error(err);
+        subscriptions = [];
+      }
+
+      opts.subscriptions = subscriptions;
+
+      return reply.view('user/billing', opts);
+    });
   });
 };
 
@@ -65,23 +76,13 @@ customer.updateBillingInfo = function(request, reply) {
       email: billingInfo.email
     };
 
-    var planInfo = { plan: 'npm-paid-individual-user-7' };
-
-    request.customer.createSubscription(planInfo, function (err, unused) {
-
-      if (err) {
-        request.logger.error("unable to update subscription to " + planInfo.plan);
-        request.logger.error(err);
+    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {
+      if (er) {
+        request.logger.error('unable to send billing email to HubSpot');
+        request.logger.error(er);
       }
 
-      sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {
-        if (er) {
-          request.logger.error('unable to send billing email to HubSpot');
-          request.logger.error(er);
-        }
-
-        return reply.redirect('/settings/billing?updated=1');
-      });
+      return reply.redirect('/settings/billing?updated=1');
     });
   });
 
@@ -102,3 +103,31 @@ customer.deleteBillingInfo = function(request, reply) {
     return reply.redirect('/settings/billing?canceled=1');
   });
 };
+
+var plans = {
+  private_modules: 'npm-paid-individual-user-7',
+  orgs: 'npm-paid-org-6'
+};
+
+customer.subscribe = function (request, reply) {
+  var planType = request.payload.planType;
+
+  var planInfo = {
+    plan: plans[planType]
+  };
+
+  if (planType === 'orgs') {
+    planInfo.npm_org = request.payload.orgName;
+  }
+
+  console.log('== plan info ==', planInfo)
+
+  request.customer.updateSubscription(planInfo, function (err, subscriptions) {
+    if (err) {
+      request.logger.error("unable to update subscription to " + planInfo.plan);
+      request.logger.error(err);
+    }
+
+    return reply.redirect('/settings/billing');
+  });
+}

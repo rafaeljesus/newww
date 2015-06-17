@@ -394,10 +394,10 @@ describe('GET /settings/billing', function () {
       done();
     });
 
-    it("does not render the payment form", function(done) {
-      expect($("#payment-form").length).to.equal(0);
-      done();
-    });
+    // it("does not render the payment form", function(done) {
+    //   expect($("#payment-form").length).to.equal(0);
+    //   done();
+    // });
 
   });
 

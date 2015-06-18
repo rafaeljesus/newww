@@ -1,6 +1,8 @@
 {{#each packages.items}}
   <li>
     {{#if isPrivate}}<i class="icon-lock"></i>{{/if}}
-    <a href="/package/{{name}}">{{name}}</a> {{description}}
+    <a href="/package/{{name}}">{{name}}</a>
+    {{#if version}}- <strong>v{{version}}</strong> -{{/if}}
+    {{description}}
   </li>
 {{/each}}

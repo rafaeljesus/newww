@@ -21,7 +21,6 @@ require("./package-access")();
 require("./buy-enterprise-license")();
 require("./twitter-tracking")();
 require("./fetch-packages")();
-require("./remove-private-module-signup")();
 
 window.github = require("./github")();
 window.star = require("./star")();

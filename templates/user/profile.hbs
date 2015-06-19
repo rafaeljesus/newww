@@ -15,8 +15,8 @@
         <li>
           {{#if isPrivate}}<i class="icon-lock"></i>{{/if}}
           <a href="/package/{{name}}">{{truncate name 50}}</a>
-          {{#if version}}- <strong>v{{version}}</strong> -{{/if}}
-          {{description}}
+          {{#if version}}- <strong>v{{version}}</strong>{{/if}}
+          {{#if description}}- {{description}}{{/if}}
         </li>
       {{/each}}
       {{#if packages.hasMore}}

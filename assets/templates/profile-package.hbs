@@ -2,7 +2,7 @@
   <li>
     {{#if isPrivate}}<i class="icon-lock"></i>{{/if}}
     <a href="/package/{{name}}">{{name}}</a>
-    {{#if version}}- <strong>v{{version}}</strong> -{{/if}}
-    {{description}}
+    {{#if version}}- <strong>v{{version}}</strong>{{/if}}
+    {{#if description}}- {{description}}{{/if}}
   </li>
 {{/each}}

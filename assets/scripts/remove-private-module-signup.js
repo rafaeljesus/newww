@@ -1,7 +1,7 @@
 module.exports = function(){
   $(function () {
-    var loggedIn = $('#user-info a').has('[data-is-paid=true]');
-    if( loggedIn ){
+    var privateModuleCustomer = $('#user-info a').is('[data-is-paid=true]');
+    if( privateModuleCustomer ){
       $('.private-module-info-container').remove();
     }
   });

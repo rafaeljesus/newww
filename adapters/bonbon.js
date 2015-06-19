@@ -35,7 +35,7 @@ exports.register = function(server, options, next) {
       start: Date.now(),
     };
 
-    if (request.auth && request.auth.credentials && !request.path.match(/static/)) {
+    if (request.auth && request.auth.credentials && !request.path.match(/static\//)) {
       UserModel.new(request).get(request.auth.credentials.name, function(err, user) {
         if (err) { request.logger.warn(err); }
         request.loggedInUser = user;

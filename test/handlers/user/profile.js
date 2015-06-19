@@ -90,6 +90,12 @@ describe('GET /~bob for a user other than bob', function () {
     done();
   });
 
+  it("shows version for bob's packages", function(done){
+    expect($("ul.collaborated-packages > li > strong").length).to.equal(20);
+    expect($($("ul.collaborated-packages > li > strong" ).get(0)).text()).to.equal("v0.0.4");
+    done();
+  });
+
 });
 
 describe('GET /~bob for logged-in bob', function () {

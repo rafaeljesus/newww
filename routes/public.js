@@ -278,6 +278,25 @@ var publicRoutes = [
     }
   },{
     method: '*',
+    path: '/private-modules',
+    handler: function(request, reply) {
+      var route = request.path.substr(1, request.path.length);
+      var loggedInUser = request.loggedInUser;
+      var isPaid = loggedInUser && loggedInUser.isPaid;
+      var opts = { };
+      opts.isPaid = isPaid;
+
+      request.server.methods.corp.getPage(route, function(er, content) {
+
+        if (content) {
+          opts.md = content;
+          return reply.view('company/private-modules', opts);
+        }
+
+      });
+    }
+  },{
+    method: '*',
     path: '/{p*}',
     handler: require("../handlers/fallback")
   }

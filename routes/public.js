@@ -1,6 +1,7 @@
 var fmt = require('util').format;
 var fs = require('fs');
 var _ = require('lodash');
+var async = require('async');
 
 var unathenticatedRouteConfig = {
   config: {
@@ -275,6 +276,43 @@ var publicRoutes = [
           .replace(/\.html$/, "")
           .replace(/\/npm-/, "/")
       })).code(301);
+    }
+  },{
+    method: '*',
+    path: '/private-modules',
+    handler: function(request, reply) {
+      var route = request.path.substr(1, request.path.length);
+      var loggedInUser = request.loggedInUser;
+      var isPaid = loggedInUser && loggedInUser.isPaid;
+      var opts = { };
+      opts.isPaid = isPaid;
+
+      var actions = {
+        privateModules: function(cb) {
+          request.server.methods.corp.getPage(route, function(er, content) {
+            if (er) {
+              cb(er);
+            } else if (content) {
+              cb(null, content);
+            }
+          });
+        },
+        privateModulesBenefits: function(cb) {
+          request.server.methods.corp.getPage('private-modules-benefits', function(er, content) {
+            if (er) {
+              cb(er);
+            } else if (content) {
+              cb(null, content);
+            }
+          });
+        }
+      };
+      async.parallel(actions, function(err, results){
+        opts.md = results.privateModules;
+        opts.benefits = results.privateModulesBenefits;
+        return reply.view('company/private-modules', opts);
+      });
+
     }
   },{
     method: '*',

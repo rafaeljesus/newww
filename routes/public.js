@@ -136,7 +136,11 @@ var publicRoutes = [
     ],
     method: "GET",
     handler: function(request, reply) {
-      return reply.redirect("/package/" + request.params.package).code(301);
+      if (request.params.scope) {
+        return reply.redirect("/package/" + request.params.scope + "/" + request.params.project).code(301);
+      } else {
+        return reply.redirect("/package/" + request.params.package).code(301);
+      }
     }
   },{
     paths: [

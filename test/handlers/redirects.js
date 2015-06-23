@@ -56,4 +56,26 @@ describe('redirects for legacy routes', function () {
     });
   });
 
+  it('sends /packages/{package} to /package/{package}', function (done) {
+    var options = {
+      url: '/packages/{package}'
+    };
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.equal("/package/{package}");
+      done();
+    });
+  });
+
+  it('sends /packages/{scope}/{project} to /package/{scope}/{project}', function (done) {
+    var options = {
+      url: '/packages/{scope}/{project}'
+    };
+    server.inject(options, function (resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.equal("/package/{scope}/{project}");
+      done();
+    });
+  });
+
 });

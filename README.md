@@ -45,7 +45,7 @@ We use the [blankie](https://github.com/nlf/blankie) Hapi plugin to enforce a st
 
 ### Routes
 
-Every route in the application is defined in [routes.js](routes.js).
+Every route in the application is defined in [routes](/routes).
 
 ### Handlers
 

@@ -17,7 +17,6 @@ module.exports = {
 
   login: {
     title: "login",
-    subtitle: "you look lovely today, btw.",
     error: {
       invalid: "invalid username or password",
       invalidContext: "If you feel that this is a mistake, please email <a href='mailto:support@npmjs.com'>support@npmjs.com</a> with the following unique error ID:"

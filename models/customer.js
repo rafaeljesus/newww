@@ -38,31 +38,7 @@ Customer.prototype.get = function(callback) {
       return callback(err);
     }
 
-    Request.get({
-      url: subscriptionsUrl,
-      json: true
-    }, function(err, resp, subscriptions) {
-      if (err) {
-        return callback(err);
-      }
-
-      if (resp.statusCode === 404) {
-        err = Error('subscriptions for customer ' + self.name + ' not found');
-        err.statusCode = resp.statusCode;
-        return callback(err);
-      }
-
-      if (subscriptions && _.isArray(subscriptions)) {
-        subscriptions.forEach(function(s) {
-          // Coerce integer in seconds into date
-          if (s.npm_org.match(/private-modules/)) {
-            stripeData.next_billing_date = new Date(s.current_period_end * 1000);
-          }
-        });
-      }
-
-      return callback(null, stripeData);
-    });
+    return callback(null, stripeData);
   });
 };
 

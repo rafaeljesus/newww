@@ -3,7 +3,9 @@ var Boom = require('boom'),
     fmt = require("util").format,
     redis = require("../../adapters/redis-sessions"),
     avatar = require("../../lib/avatar"),
-    User = require('../../models/user');
+    User = require('../../models/user'),
+    tips = require('npm-tips'),
+    marky = require('marky-markdown');
 
 var lockoutInterval = 60; // seconds
 var maxAttemptsBeforeLockout = 5;
@@ -116,6 +118,7 @@ module.exports = function login (request, reply) {
   if (request.method === 'get' || opts.error) {
     request.timing.page = 'login';
     request.metrics.metric({name: 'login'});
+    opts.tip = marky(tips()).html();
     return reply.view('user/login', opts).code(opts.error ? 400 : 200);
   }
 };

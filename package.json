@@ -69,6 +69,7 @@
     "npm-explicit-installs": "git://github.com/npm/npm-explicit-installs",
     "npm-humans": "2.6.0",
     "npm-package-arg": "^3.1.1",
+    "npm-tips": "^1.1.0",
     "npm-user-validate": "^0.1.1",
     "npm2es": "git://github.com/npm/npm2es",
     "numbat-collector": "~1.0.1",

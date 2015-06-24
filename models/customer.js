@@ -1,6 +1,5 @@
 var _       = require('lodash');
 var assert  = require('assert');
-var moment  = require('moment');
 var Request = require('../lib/external-request');
 
 var Customer = module.exports = function(name, opts) {
@@ -40,12 +39,14 @@ Customer.prototype.get = function(callback) {
         return callback(err);
       }
 
-      subscriptions.forEach(function (s) {
-        // Coerce integer in seconds into date
-        if (s.npm_org.match(/private-modules/)){
-          stripeData.next_billing_date = new Date(s.current_period_end * 1000);
-        }
-      });
+      if (subscriptions && _.isArray(subscriptions)) {
+        subscriptions.forEach(function (s) {
+          // Coerce integer in seconds into date
+          if (s.npm_org.match(/private-modules/)){
+            stripeData.next_billing_date = new Date(s.current_period_end * 1000);
+          }
+        });
+      }
 
       return callback(null, stripeData);
     });

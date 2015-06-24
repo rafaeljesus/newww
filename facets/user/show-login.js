@@ -118,7 +118,7 @@ module.exports = function login (request, reply) {
   if (request.method === 'get' || opts.error) {
     request.timing.page = 'login';
     request.metrics.metric({name: 'login'});
-    opts.subtitle = marky(tips()).html();
+    opts.tip = marky(tips()).html();
     return reply.view('user/login', opts).code(opts.error ? 400 : 200);
   }
 };

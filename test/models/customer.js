@@ -67,7 +67,9 @@ describe("Customer", function(){
 
       var customerMock = nock(Customer.host)
         .get('/customer/haxor/stripe')
-        .reply(200, fixtures.customers.happy);
+        .reply(200, fixtures.customers.happy)
+        .get('/customer/haxor/stripe/subscription')
+        .reply(200, fixtures.customers.bob_subscriptions);
 
       Customer.get(function(err, body) {
         customerMock.done();
@@ -81,7 +83,9 @@ describe("Customer", function(){
 
       var customerMock = nock(Customer.host)
         .get('/customer/zozo/stripe')
-        .reply(200, fixtures.customers.happy);
+        .reply(200, fixtures.customers.happy)
+        .get('/customer/zozo/stripe/subscription')
+        .reply(200, fixtures.customers.bob_subscriptions);
 
       Customer.get(function(err, body) {
         customerMock.done();
@@ -188,6 +192,8 @@ describe("Customer", function(){
         var createCustomerMock = nock(Customer.host)
           .get('/customer/bob/stripe')
           .reply(200, {})
+          .get('/customer/bob/stripe/subscription')
+          .reply(200, [])
           .post('/customer/bob/stripe', billingInfo)
           .reply(200, "Your card's security code is incorrect.");
 

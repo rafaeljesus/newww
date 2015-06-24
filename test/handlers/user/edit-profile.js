@@ -19,7 +19,9 @@ var users = _.cloneDeep(require('../../fixtures').users);
 before(function (done) {
   licenseMock = nock('https://license-api-example.com')
     .get('/customer/bob/stripe').times(6)
-    .reply(200, {});
+    .reply(200, {})
+    .get('/customer/bob/stripe/subscription').times(6)
+    .reply(200, []);
 
   require('../../mocks/server')(function (obj) {
     server = obj;

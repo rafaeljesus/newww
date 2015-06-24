@@ -64,39 +64,6 @@ User.prototype.confirmEmail = function(user, callback) {
   }).nodeify(callback);
 };
 
-User.prototype.login = function(loginInfo, callback) {
-  var url = fmt('%s/user/%s/login', this.host, loginInfo.name);
-
-  return new P(function(resolve, reject) {
-    Request.post({
-      url: url,
-      json: true,
-      body: {
-        password: loginInfo.password
-      }
-    }, function(err, resp, body) {
-
-      if (err) {
-        return reject(err);
-      }
-
-      if (resp.statusCode === 401) {
-        err = Error('password is incorrect for ' + loginInfo.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      if (resp.statusCode === 404) {
-        err = Error('user ' + loginInfo.name + ' not found');
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      return resolve(body);
-    });
-  }).nodeify(callback);
-};
-
 User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
   return {
     url: fmt('%s/user/%s', this.host, name),
@@ -275,6 +242,68 @@ User.prototype.getStars = function(name, callback) {
     });
   })
     .nodeify(callback);
+};
+
+User.prototype.createOrg = function(orgName, callback) {
+  var self = this;
+  var url = fmt('%s/org', this.host);
+
+  return new P(function(resolve, reject) {
+    var opts = {
+      url: url,
+      json: true,
+      body: {
+        name: orgName
+      }
+    };
+
+    if (self.bearer) {
+      opts.headers = {
+        bearer: self.bearer
+      };
+    }
+
+    Request.put(opts, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = Error('no bearer token included in creation of ' + orgName);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+
+  }).nodeify(callback);
+};
+
+User.prototype.getOrg = function(orgName, callback) {
+  var url = fmt('%s/org/%s/user', this.host, orgName);
+
+  console.log('boom!', url)
+
+  return new P(function(resolve, reject) {
+
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('org ' + orgName + ' not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+  }).nodeify(callback);
 };
 
 User.prototype.login = function(loginInfo, callback) {

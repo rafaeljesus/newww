@@ -402,17 +402,12 @@ describe('GET /settings/billing', function() {
 });
 
 describe('POST /settings/billing', function() {
-  var options;
-
-  before(function(done) {
-    options = {
+  it('redirects to login page if not logged in', function(done) {
+    var options = {
       method: 'post',
       url: '/settings/billing'
     };
-    done();
-  });
 
-  it('redirects to login page if not logged in', function(done) {
     server.inject(options, function(resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('login');
@@ -609,7 +604,93 @@ describe('POST /settings/billing', function() {
 
   });
 
+});
 
+describe("subscribing to an org", function() {
+  it("creates and charges for a paid organization that does not yet exist", function(done) {
+    generateCrumb(server, function(crumb) {
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgName: 'boomer',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob)
+        .get("/org/boomer/user")
+        .reply(404, "not found");
+
+      var customerMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe")
+        .reply(200, fixtures.customers.happy)
+        .put("/customer/bob/stripe/subscription", {
+          plan: "npm-paid-org-6",
+          npm_org: "boomer"
+        })
+        .reply(200);
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.headers.location).to.match(/\/settings\/billing/);
+        done();
+      });
+    });
+  });
+
+  it("allows a super-user to pay for an organization that exists but is not yet paid for", function(done) {
+    generateCrumb(server, function(crumb) {
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgName: 'boomer',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob)
+        .get("/org/boomer/user")
+        .reply(200, {
+          "count": 1,
+          "items": [fixtures.users.bob]
+        });
+
+      var customerMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe")
+        .reply(200, fixtures.customers.happy)
+        .put("/customer/bob/stripe/subscription", {
+          plan: "npm-paid-org-6",
+          npm_org: "boomer"
+        })
+        .reply(200);
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.headers.location).to.match(/\/settings\/billing/);
+        done();
+      });
+    });
+  });
 });
 
 

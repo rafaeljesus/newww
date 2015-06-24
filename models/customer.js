@@ -1,5 +1,6 @@
 var _       = require('lodash');
 var assert  = require('assert');
+var moment  = require('moment');
 var Request = require('../lib/external-request');
 
 var Customer = module.exports = function(name, opts) {
@@ -17,9 +18,10 @@ var Customer = module.exports = function(name, opts) {
 
 Customer.prototype.get = function(callback) {
   var self = this;
-  var url = this.host + '/customer/' + self.name + '/stripe';
+  var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
+  var subscriptionsUrl = this.host + '/customer/' + self.name + '/stripe/subscription';
 
-  Request.get({url: url, json: true}, function(err, resp, body){
+  Request.get({url: stripeUrl, json: true}, function(err, resp, stripeData){
 
     if (err) { return callback(err); }
 
@@ -29,12 +31,24 @@ Customer.prototype.get = function(callback) {
       return callback(err);
     }
 
-    // Coerce integer into date
-    if (body && body.next_billing_date){
-      body.next_billing_date = new Date(body.next_billing_date);
-    }
+    Request.get({url: subscriptionsUrl, json: true}, function (err, resp, subscriptions) {
+      if (err) { return callback(err); }
 
-    return callback(null, body);
+      if (resp.statusCode === 404) {
+        err = Error('subscriptions for customer ' + self.name + ' not found');
+        err.statusCode = resp.statusCode;
+        return callback(err);
+      }
+
+      subscriptions.forEach(function (s) {
+        // Coerce integer in seconds into date
+        if (s.npm_org.match(/private-modules/)){
+          stripeData.next_billing_date = new Date(s.current_period_end * 1000);
+        }
+      });
+
+      return callback(null, stripeData);
+    });
   });
 };
 

@@ -13,6 +13,18 @@ var generateCrumb = require("../handlers/crumb.js"),
     server,
     fixtures = require('../fixtures');
 
+var bole = require('bole')
+var pretty = require('bistre')()
+
+bole.output({
+    level: 'error'
+  , stream: pretty
+})
+
+pretty.pipe(process.stdout)
+
+var userMock, licenseMock;
+
 before(function (done) {
   process.env.FEATURE_BILLING_PAGE = 'true';
   require('../mocks/server')(function (obj) {
@@ -568,10 +580,6 @@ describe('POST /settings/billing', function () {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe").times(2)
           .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription").times(2)
-          .reply(200, fixtures.customers.bob_subscriptions)
-          .put("/customer/bob/stripe/subscription",  {"plan":"npm-paid-individual-user-7"})
-          .reply(200)
           .post("/customer/bob/stripe", {"name":"bob","email":"bob@boom.me","card":"tok_1234567890"})
           .reply(200);
 

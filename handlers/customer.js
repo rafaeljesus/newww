@@ -67,7 +67,7 @@ customer.updateBillingInfo = function(request, reply) {
 
     var planInfo = { plan: 'npm-paid-individual-user-7' };
 
-    request.customer.updateSubscription(planInfo, function (err, unused) {
+    request.customer.createSubscription(planInfo, function (err, unused) {
 
       if (err) {
         request.logger.error("unable to update subscription to " + planInfo.plan);
@@ -102,25 +102,3 @@ customer.deleteBillingInfo = function(request, reply) {
     return reply.redirect('/settings/billing?canceled=1');
   });
 };
-
-// var plans = {
-//   private_modules: 'npm-paid-individual-user-7',
-//   orgs: 'npm-paid-org-6'
-// };
-
-// customer.subscribe = function (request, reply) {
-//   var planInfo = {
-//     plan: plans[request.query.plan]
-//   };
-
-//   request.customer.updateSubscription(planInfo, function (err, subscriptions) {
-//     if (err) {
-//       request.logger.error("unable to update subscription to " + planInfo.plan);
-//       request.logger.error(err);
-//     }
-
-//     console.log('==subs==', subscriptions)
-
-//     return reply.redirect('/settings/billing');
-//   });
-// }

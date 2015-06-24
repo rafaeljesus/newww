@@ -80,7 +80,7 @@ Customer.prototype.updateBilling = function(body, callback) {
   });
 };
 
-Customer.prototype.updateSubscription = function (planInfo, callback) {
+Customer.prototype.createSubscription = function (planInfo, callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription';
   Request.put({ url: url, json: true, body: planInfo }, function (err, resp, body) {
     callback(err, body);

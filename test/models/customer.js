@@ -201,7 +201,7 @@ describe("Customer", function(){
     });
   });
 
-  describe("updateSubscription()", function () {
+  describe("createSubscription()", function () {
     it("signs a user up for private modules", function (done) {
       var Customer = new CustomerModel('bob');
       var planInfo = {plan: 'npm-paid-individual-user-7'}
@@ -221,7 +221,7 @@ describe("Customer", function(){
           product_id: '1031405a-70b7-4a3f-b552-8609d9e1428f'
         });
 
-    Customer.updateSubscription(planInfo, function (err, subscription) {
+    Customer.createSubscription(planInfo, function (err, subscription) {
       customerMock.done();
       expect(err).to.not.exist();
       expect(subscription.id).to.equal('sub_12345');

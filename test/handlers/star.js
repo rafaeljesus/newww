@@ -31,7 +31,7 @@ before(function (done) {
     .reply(200, user);
 
   licenseMock = nock("https://license-api-example.com")
-    .get("/stripe/bob").times(5)
+    .get("/customer/bob/stripe").times(5)
     .reply(404);
 
   require('../mocks/server')(function (obj) {

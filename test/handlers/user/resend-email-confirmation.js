@@ -45,7 +45,7 @@ describe('Request to resend confirmation email', function () {
       .reply(200, users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/bob")
+      .get("/customer/bob/stripe")
       .reply(404);
 
     var opts = {
@@ -68,7 +68,7 @@ describe('Request to resend confirmation email', function () {
       .reply(200, users.bad_email);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/stripe/" + users.bad_email.name)
+      .get("/customer/" + users.bad_email.name + "/stripe")
       .reply(404);
 
     var opts = {

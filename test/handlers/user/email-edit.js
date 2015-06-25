@@ -78,7 +78,7 @@ describe('Accessing the email-edit page', function () {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/' + users.bob.name)
+      .get('/customer/' + users.bob.name + '/stripe')
       .reply(404);
 
     var opts = {
@@ -137,7 +137,7 @@ describe('Requesting an email change', function () {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/' + users.bob.name)
+      .get('/customer/' + users.bob.name + '/stripe')
       .reply(404);
 
     server.inject(postEmail(emails.missingEmail), function (resp) {
@@ -157,7 +157,7 @@ describe('Requesting an email change', function () {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/' + users.bob.name)
+      .get('/customer/' + users.bob.name + '/stripe')
       .reply(404);
 
     server.inject(postEmail(emails.invalidEmail), function (resp) {
@@ -180,7 +180,7 @@ describe('Requesting an email change', function () {
       .reply(401);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/' + users.bob.name)
+      .get('/customer/' + users.bob.name + '/stripe')
       .reply(404);
 
     server.inject(postEmail(emails.invalidPassword), function (resp) {
@@ -202,7 +202,7 @@ describe('Requesting an email change', function () {
       .reply(200, users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/' + users.bob.name)
+      .get('/customer/' + users.bob.name + '/stripe')
       .reply(404);
 
     server.inject(postEmail(emails.newEmail), function (resp) {
@@ -234,7 +234,7 @@ describe('Confirming an email change', function () {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/' + users.bob.name)
+      .get('/customer/' + users.bob.name + '/stripe')
       .reply(404);
 
     var opts = {
@@ -256,7 +256,7 @@ describe('Confirming an email change', function () {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/' + users.bob.name)
+      .get('/customer/' + users.bob.name + '/stripe')
       .reply(404);
 
     var opts = {
@@ -280,7 +280,7 @@ describe('Confirming an email change', function () {
       .reply(200, fixtures.users.mikeal);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/mikeal')
+      .get('/customer/mikeal/stripe')
       .reply(404);
 
     setEmailHashesInRedis(function (err, tokens) {
@@ -309,7 +309,7 @@ describe('Confirming an email change', function () {
       .reply(200);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/' + users.bob.name)
+      .get('/customer/' + users.bob.name + '/stripe')
       .reply(404);
 
     setEmailHashesInRedis(function (err, tokens) {
@@ -351,7 +351,7 @@ describe('Reverting an email change', function () {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/bob')
+      .get('/customer/bob/stripe')
       .reply(404);
 
     var opts = {
@@ -373,7 +373,7 @@ describe('Reverting an email change', function () {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/bob')
+      .get('/customer/bob/stripe')
       .reply(404);
 
     var opts = {
@@ -397,7 +397,7 @@ describe('Reverting an email change', function () {
       .reply(200, fixtures.users.mikeal);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/mikeal')
+      .get('/customer/mikeal/stripe')
       .reply(404);
 
     setEmailHashesInRedis(function (err, tokens) {
@@ -426,7 +426,7 @@ describe('Reverting an email change', function () {
       .reply(200);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get('/stripe/bob')
+      .get('/customer/bob/stripe')
       .reply(404);
 
     setEmailHashesInRedis(function (err, tokens) {

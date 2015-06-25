@@ -4,7 +4,6 @@
   "status": "active",
   "license_expired": false,
   "next_billing_amount": 700,
-  "next_billing_date": 1410201807000,
   "card": {
     "brand": "Visa",
     "last4": "4242",

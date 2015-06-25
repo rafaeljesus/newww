@@ -1,15 +1,13 @@
-var billing = module.exports = {};
-var Customer = require("../models/customer").new();
+var customer = module.exports = {};
 var utils = require('../lib/utils');
 
-billing.getBillingInfo = function (request, reply) {
+customer.getBillingInfo = function (request, reply) {
 
   if (!request.features.billing_page) {
     return reply.view('errors/not-found').code(404);
   }
 
   var opts = {
-    namespace: 'billing',
     title: 'Billing',
     updated: ('updated' in request.query),
     canceled: ('canceled' in request.query),
@@ -22,7 +20,7 @@ billing.getBillingInfo = function (request, reply) {
     opts.package = request.query.package;
   }
 
-  Customer.get(request.loggedInUser.name, function(err, customer) {
+  request.customer.get(function(err, customer) {
 
     if (customer) {
       opts.customer = customer;
@@ -31,7 +29,7 @@ billing.getBillingInfo = function (request, reply) {
   });
 };
 
-billing.updateBillingInfo = function(request, reply) {
+customer.updateBillingInfo = function(request, reply) {
   if (!request.features.billing_page) {
     return reply.view('errors/not-found').code(404);
   }
@@ -44,10 +42,13 @@ billing.updateBillingInfo = function(request, reply) {
     name: request.loggedInUser.name,
     email: request.loggedInUser.email,
     card: request.payload.stripeToken,
-    coupon: coupon && coupon.toLowerCase()
   };
 
-  Customer.update(billingInfo, function(err, customer) {
+  if (coupon) {
+    billingInfo.coupon = coupon.toLowerCase();
+  }
+
+  request.customer.updateBilling(billingInfo, function(err) {
     var opts = {};
 
     if (err) {
@@ -64,25 +65,35 @@ billing.updateBillingInfo = function(request, reply) {
       email: billingInfo.email
     };
 
-    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {
-      if (er) {
-        request.logger.error('unable to send billing email to HubSpot');
-        request.logger.error(er);
+    var planInfo = { plan: 'npm-paid-individual-user-7' };
+
+    request.customer.createSubscription(planInfo, function (err, unused) {
+
+      if (err) {
+        request.logger.error("unable to update subscription to " + planInfo.plan);
+        request.logger.error(err);
       }
 
-      return reply.redirect('/settings/billing?updated=1');
+      sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {
+        if (er) {
+          request.logger.error('unable to send billing email to HubSpot');
+          request.logger.error(er);
+        }
+
+        return reply.redirect('/settings/billing?updated=1');
+      });
     });
   });
 
 };
 
-billing.deleteBillingInfo = function(request, reply) {
+customer.deleteBillingInfo = function(request, reply) {
 
   if (!request.features.billing_page) {
     return reply.view('errors/not-found').code(404);
   }
 
-  Customer.del(request.loggedInUser.name, function(err, customer) {
+  request.customer.del(function(err, customer) {
     if (err) {
       request.logger.error("unable to delete billing info for " + customer);
       request.logger.error(err);

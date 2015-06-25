@@ -111,7 +111,7 @@ describe('Looking up a user', function () {
         .get("/user/" + name)
         .reply(404);
       var licenseMock = nock("https://license-api-example.com")
-        .get("/stripe/" + name)
+        .get("/customer/" + name + "/stripe")
         .reply(404);
 
       generateCrumb(server, function (crumb){
@@ -135,7 +135,7 @@ describe('Looking up a user', function () {
         .reply(200, users.no_email);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/stripe/" + name)
+        .get("/customer/" + name + "/stripe")
         .reply(404);
 
       generateCrumb(server, function (crumb){
@@ -159,7 +159,7 @@ describe('Looking up a user', function () {
         .reply(200, users.bad_email);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/stripe/" + name)
+        .get("/customer/" + name + "/stripe")
         .reply(404);
 
       generateCrumb(server, function (crumb){
@@ -183,7 +183,7 @@ describe('Looking up a user', function () {
         .reply(200, users.bob);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/stripe/" + name)
+        .get("/customer/" + name + "/stripe")
         .reply(404);
 
       generateCrumb(server, function (crumb){
@@ -246,7 +246,7 @@ describe('Looking up a user', function () {
         .reply(200, users.bob);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/stripe/bob")
+        .get("/customer/bob/stripe")
         .reply(404);
 
       generateCrumb(server, function (crumb){
@@ -281,7 +281,7 @@ describe('Looking up a user', function () {
         .reply(200, users.bob);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/stripe/bob")
+        .get("/customer/bob/stripe")
         .reply(404);
 
       generateCrumb(server, function (crumb){

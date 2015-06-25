@@ -3,28 +3,57 @@ var Code = require('code'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
     beforeEach = lab.beforeEach,
+    before = lab.before,
+    after = lab.after,
     it = lab.test,
     expect = Code.expect,
     nock = require("nock"),
     fixtures = require('../fixtures');
 
-var Customer = new (require("../../models/customer"))({
-  host: "https://customer.com"
+var CustomerModel = require("../../models/customer");
+
+var LICENSE_API_OLD;
+before(function (done) {
+  LICENSE_API_OLD = process.env.LICENSE_API;
+  process.env.LICENSE_API = "https://customer.com";
+  done();
+});
+
+after(function (done) {
+  process.env.LICENSE_API = LICENSE_API_OLD;
+  done();
 });
 
 describe("Customer", function(){
 
   describe("initialization", function() {
+    it("throws if a name is not passed", function (done) {
+      expect(function () { return new CustomerModel()}).to.throw("Must pass a name to Customer model");
+      done();
+    });
+
+    it("throws if a name is not passed but options are", function (done) {
+      expect(function () { return new CustomerModel({host: "https://boom.com"})}).to.throw("Must pass a name to Customer model");
+      done();
+    });
 
     it("defaults to process.env.LICENSE_API as host", function(done) {
-      var LICENSE_API_OLD = process.env.LICENSE_API;
-      process.env.LICENSE_API = "https://billing-envy.com/";
-      expect(new (require("../../models/customer"))().host).to.equal('https://billing-envy.com/');
-      process.env.LICENSE_API = LICENSE_API_OLD;
+      expect(new CustomerModel('bob').host).to.equal('https://customer.com');
       done();
     });
 
     it("accepts a custom host", function(done) {
+      var url = "https://billing-envy.com";
+      var Customer = new CustomerModel('boom', {
+        host: url,
+      });
+
+      expect(Customer.host).to.equal(url);
+      done();
+    });
+
+    it("doesn't break if we forget the `new` keyword", function (done) {
+      var Customer = CustomerModel('bob');
       expect(Customer.host).to.equal('https://customer.com');
       done();
     });
@@ -33,12 +62,16 @@ describe("Customer", function(){
 
   describe("get()", function() {
 
-    it("makes an external request for /stripe/{user}", function(done) {
-      var customerMock = nock(Customer.host)
-        .get('/stripe/haxor')
-        .reply(200, fixtures.customers.happy);
+    it("makes an external request for /customer/{user}", function(done) {
+      var Customer = new CustomerModel('haxor');
 
-      Customer.get('haxor', function(err, body) {
+      var customerMock = nock(Customer.host)
+        .get('/customer/haxor/stripe')
+        .reply(200, fixtures.customers.happy)
+        .get('/customer/haxor/stripe/subscription')
+        .reply(200, fixtures.customers.bob_subscriptions);
+
+      Customer.get(function(err, body) {
         customerMock.done();
         expect(err).to.be.null();
         done();
@@ -46,11 +79,15 @@ describe("Customer", function(){
     });
 
     it("returns the response body in the callback", function(done) {
-      var customerMock = nock(Customer.host)
-        .get('/stripe/zozo')
-        .reply(200, fixtures.customers.happy);
+      var Customer = new CustomerModel('zozo');
 
-      Customer.get('zozo', function(err, body) {
+      var customerMock = nock(Customer.host)
+        .get('/customer/zozo/stripe')
+        .reply(200, fixtures.customers.happy)
+        .get('/customer/zozo/stripe/subscription')
+        .reply(200, fixtures.customers.bob_subscriptions);
+
+      Customer.get(function(err, body) {
         customerMock.done();
         expect(err).to.be.null();
         expect(body).to.be.an.object();
@@ -59,11 +96,13 @@ describe("Customer", function(){
     });
 
     it("returns an error in the callback if customer doesn't exist", function(done) {
+      var Customer = new CustomerModel('foo');
+
       var customerMock = nock(Customer.host)
-        .get('/stripe/foo')
+        .get('/customer/foo/stripe')
         .reply(404);
 
-      Customer.get('foo', function(err, body) {
+      Customer.get(function(err, body) {
         customerMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal("customer not found: foo");
@@ -74,12 +113,15 @@ describe("Customer", function(){
 
   });
 
-  describe("update()", function() {
+  describe("updateBilling()", function() {
 
     describe("new customer", function() {
       var billingInfo;
+      var Customer;
 
       beforeEach(function(done) {
+        Customer = new CustomerModel('bob');
+
         billingInfo = {
           name: "bob",
           email: "bob@domain.com",
@@ -89,17 +131,14 @@ describe("Customer", function(){
       });
 
       it("makes an external request for /stripe/{user}", function(done) {
-        var getCustomerMock = nock(Customer.host)
-          .get('/stripe/bob')
-          .reply(404);
-
-        var createCustomerMock = nock(Customer.host)
-          .put('/stripe', billingInfo)
+        var customerMock = nock(Customer.host)
+          .get('/customer/bob/stripe')
+          .reply(404)
+          .put('/customer/stripe', billingInfo)
           .reply(200, fixtures.customers.happy);
 
-        Customer.update(billingInfo, function(err, body) {
-          getCustomerMock.done();
-          createCustomerMock.done();
+        Customer.updateBilling(billingInfo, function(err, body) {
+          customerMock.done();
           expect(err).to.be.null();
           expect(body).to.exist();
           done();
@@ -107,17 +146,14 @@ describe("Customer", function(){
       });
 
       it("gets customer data back in callback body", function(done) {
-        var getCustomerMock = nock(Customer.host)
-          .get('/stripe/bob')
-          .reply(404);
-
-        var createCustomerMock = nock(Customer.host)
-          .put('/stripe', billingInfo)
+        var customerMock = nock(Customer.host)
+          .get('/customer/bob/stripe')
+          .reply(404)
+          .put('/customer/stripe', billingInfo)
           .reply(200, fixtures.customers.happy);
 
-        Customer.update(billingInfo, function(err, customer) {
-          getCustomerMock.done();
-          createCustomerMock.done();
+        Customer.updateBilling(billingInfo, function(err, customer) {
+          customerMock.done();
           expect(err).to.be.null();
           expect(customer).to.exist();
           expect(customer.email).to.equal("bencoe@gmail.com");
@@ -127,7 +163,7 @@ describe("Customer", function(){
 
       it("errors if name is missing", function(done){
         delete billingInfo.name;
-        Customer.update(billingInfo, function(err, customer) {
+        Customer.updateBilling(billingInfo, function(err, customer) {
           expect(err).to.exist();
           expect(err.message).to.equal("name is a required property");
           done();
@@ -136,7 +172,7 @@ describe("Customer", function(){
 
       it("errors if email is missing", function(done){
         delete billingInfo.email;
-        Customer.update(billingInfo, function(err, customer) {
+        Customer.updateBilling(billingInfo, function(err, customer) {
           expect(err).to.exist();
           expect(err.message).to.equal("email is a required property");
           done();
@@ -145,7 +181,7 @@ describe("Customer", function(){
 
       it("errors if card is missing", function(done){
         delete billingInfo.card;
-        Customer.update(billingInfo, function(err, customer) {
+        Customer.updateBilling(billingInfo, function(err, customer) {
           expect(err).to.exist();
           expect(err.message).to.equal("card is a required property");
           done();
@@ -154,12 +190,14 @@ describe("Customer", function(){
 
       it("errors if the card is invalid", function(done) {
         var createCustomerMock = nock(Customer.host)
-          .get('/stripe/bob')
+          .get('/customer/bob/stripe')
           .reply(200, {})
-          .post('/stripe/bob', billingInfo)
+          .get('/customer/bob/stripe/subscription')
+          .reply(200, [])
+          .post('/customer/bob/stripe', billingInfo)
           .reply(200, "Your card's security code is incorrect.");
 
-        Customer.update(billingInfo, function (err, customer) {
+        Customer.updateBilling(billingInfo, function (err, customer) {
           createCustomerMock.done();
           expect(err).to.exist();
           expect(err.message).to.equal("Your card's security code is incorrect.");
@@ -169,9 +207,51 @@ describe("Customer", function(){
     });
   });
 
-  describe("del()", function() {
-    it("isn't tested yet");
+  describe("createSubscription()", function () {
+    it("signs a user up for private modules", function (done) {
+      var Customer = new CustomerModel('bob');
+      var planInfo = {plan: 'npm-paid-individual-user-7'}
+      var customerMock = nock(Customer.host)
+        .put('/customer/bob/stripe/subscription', planInfo)
+        .reply(200, {
+          id: 'sub_12345',
+          current_period_end: 1436995358,
+          current_period_start: 1434403358,
+          quantity: 1,
+          status: 'active',
+          interval: 'month',
+          amount: 700,
+          license_id: 1,
+          npm_org: '_private-modules-bob',
+          npm_user: 'bob',
+          product_id: '1031405a-70b7-4a3f-b552-8609d9e1428f'
+        });
+
+    Customer.createSubscription(planInfo, function (err, subscription) {
+      customerMock.done();
+      expect(err).to.not.exist();
+      expect(subscription.id).to.equal('sub_12345');
+      expect(subscription.npm_org).to.equal('_private-modules-bob');
+      done();
+    });
+
+    });
   });
 
+  describe("del()", function() {
+    it("cancels a user's subscription", function (done) {
+      var Customer = new CustomerModel('bob');
+      var createCustomerMock = nock(Customer.host)
+        .delete('/customer/bob/stripe')
+        .reply(200, 'customer deleted');
+
+      Customer.del(function (err, response) {
+        createCustomerMock.done();
+        expect(err).to.not.exist();
+        expect(response).to.equal("customer deleted");
+        done();
+      });
+    });
+  });
 
 });

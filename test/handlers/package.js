@@ -153,7 +153,7 @@ describe("package handler", function(){
         .reply(200, fixtures.users.wrigley_the_writer);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/stripe/wrigley_the_writer")
+        .get("/customer/wrigley_the_writer/stripe")
         .reply(404);
 
       var downloadsMock = nock("https://downloads-api-example.com")
@@ -346,7 +346,7 @@ describe("package handler", function(){
         .reply(200, fixtures.users.bob);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get('/stripe/bob')
+        .get('/customer/bob/stripe')
         .reply(404);
 
       server.inject(options, function (response) {
@@ -404,7 +404,7 @@ describe("package handler", function(){
         .reply(200, fixtures.users.bob);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get('/stripe/bob')
+        .get('/customer/bob/stripe')
         .reply(404);
 
       server.inject(options, function (response) {
@@ -554,7 +554,7 @@ describe("package handler", function(){
         .reply(200, fixtures.users.bcoe);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get('/stripe/bcoe')
+        .get('/customer/bcoe/stripe')
         .reply(404);
 
       server.inject(options, function (resp) {
@@ -603,7 +603,7 @@ describe("package handler", function(){
         .reply(200, fixtures.users.mikeal);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get('/stripe/mikeal')
+        .get('/customer/mikeal/stripe')
         .reply(404);
 
       var options = {
@@ -648,7 +648,7 @@ describe("package handler", function(){
         .reply(200, fixtures.users.mikeal);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get('/stripe/mikeal')
+        .get('/customer/mikeal/stripe')
         .reply(404);
 
       var options = {
@@ -695,7 +695,7 @@ describe("package handler", function(){
         .reply(200, fixtures.users.bob);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get('/stripe/bob')
+        .get('/customer/bob/stripe')
         .reply(404);
 
       var options = {
@@ -797,7 +797,7 @@ describe("package handler", function(){
         .reply(200, fixtures.users.mikeal);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get('/stripe/mikeal')
+        .get('/customer/mikeal/stripe')
         .reply(404);
 
       var options = {

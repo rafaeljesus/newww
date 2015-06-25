@@ -97,7 +97,7 @@ describe('GET / for a logged-in user', function () {
       .get('/user/mikeal')
       .reply(200, fixtures.users.mikeal);
     var licenseMock = nock('https://license-api-example.com')
-      .get('/stripe/mikeal')
+      .get('/customer/mikeal/stripe')
       .reply(404);
     var packageMock = nock("https://user-api-example.com")
       .get('/package?sort=dependents')

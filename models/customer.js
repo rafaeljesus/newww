@@ -1,39 +1,59 @@
 var _       = require('lodash');
+var assert  = require('assert');
 var Request = require('../lib/external-request');
 
-var Customer = module.exports = function(opts) {
+var Customer = module.exports = function(name, opts) {
+
+  assert(!_.isObject(name), "Must pass a name to Customer model");
+  assert(_.isString(name), "Must pass a name to Customer model");
+
+  if (!(this instanceof Customer)) { return new Customer(name, opts); }
+
   _.extend(this, {
     host: process.env.LICENSE_API || "https://license-api-example.com",
+    name: name,
   }, opts);
 };
 
-Customer.new = function() {
-  return new Customer();
-};
+Customer.prototype.get = function(callback) {
+  var self = this;
+  var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
+  var subscriptionsUrl = this.host + '/customer/' + self.name + '/stripe/subscription';
 
-Customer.prototype.get = function(name, callback) {
-  var url = this.host + '/stripe/' + name;
-
-  Request.get({url: url, json: true}, function(err, resp, body){
+  Request.get({url: stripeUrl, json: true}, function(err, resp, stripeData){
 
     if (err) { return callback(err); }
 
     if (resp.statusCode === 404) {
-      err = Error('customer not found: ' + name);
+      err = Error('customer not found: ' + self.name);
       err.statusCode = resp.statusCode;
       return callback(err);
     }
 
-    // Coerce integer into date
-    if (body && body.next_billing_date){
-      body.next_billing_date = new Date(body.next_billing_date);
-    }
+    Request.get({url: subscriptionsUrl, json: true}, function (err, resp, subscriptions) {
+      if (err) { return callback(err); }
 
-    return callback(null, body);
+      if (resp.statusCode === 404) {
+        err = Error('subscriptions for customer ' + self.name + ' not found');
+        err.statusCode = resp.statusCode;
+        return callback(err);
+      }
+
+      if (subscriptions && _.isArray(subscriptions)) {
+        subscriptions.forEach(function (s) {
+          // Coerce integer in seconds into date
+          if (s.npm_org.match(/private-modules/)){
+            stripeData.next_billing_date = new Date(s.current_period_end * 1000);
+          }
+        });
+      }
+
+      return callback(null, stripeData);
+    });
   });
 };
 
-Customer.prototype.update = function(body, callback) {
+Customer.prototype.updateBilling = function(body, callback) {
   var _this = this;
   var url;
   var props = ['name', 'email', 'card'];
@@ -45,10 +65,9 @@ Customer.prototype.update = function(body, callback) {
     }
   }
 
-  this.get(body.name, function(err, customer) {
+  this.get(function(err, customer) {
 
     var cb = function(err, resp, body){
-
       if (typeof body === 'string') {
         // not an "error", per se, according to stripe
         // but should still be bubbled up to the user
@@ -60,7 +79,7 @@ Customer.prototype.update = function(body, callback) {
 
     // Create new customer
     if (err && err.statusCode === 404) {
-      url = _this.host + '/stripe';
+      url = _this.host + '/customer/stripe';
       return Request.put({url: url, json: true, body: body}, cb);
     }
 
@@ -70,14 +89,21 @@ Customer.prototype.update = function(body, callback) {
     }
 
     // Update existing customer
-    url = _this.host + '/stripe/' + body.name;
+    url = _this.host + '/customer/' + body.name + '/stripe';
     return Request.post({url: url, json: true, body: body}, cb);
 
   });
 };
 
-Customer.prototype.del = function(name, callback) {
-  var url = this.host + '/stripe/' + name;
+Customer.prototype.createSubscription = function (planInfo, callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe/subscription';
+  Request.put({ url: url, json: true, body: planInfo }, function (err, resp, body) {
+    callback(err, body);
+  });
+};
+
+Customer.prototype.del = function(callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe';
   Request.del({url: url, json: true}, function(err, resp, body){
     return err ? callback(err) : callback(null, body);
   });

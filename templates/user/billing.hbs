@@ -8,9 +8,9 @@
 
   {{> email-verify-nag}}
 
-  <h2>Subscriptions</h2>
+  <h2>subscriptions</h2>
   {{#if subscriptions}}
-    <table class="ruled">
+    <table class="ruled subscriptions">
       <tbody>
         <tr>
           <th>Subscription Type</th>
@@ -37,87 +37,9 @@
     <p>You do not have any subscriptions</p>
   {{/if}}
 
-  {{#if canceled}}
-    <p class="notice cancellation-notice">
-      You have successfully cancelled your private npm subscription. Your free account
-      still exists, as do any private modules that you created. Your private modules
-      are still accessible to any other paid users you've shared them with. If you decide
-      to start paying again, those modules will be waiting for you.
-    </p>
-  {{/if}}
-
-  {{#if updated}}
-    {{> twitter-tracking pid='l5xyy'}}
-
-    <p class="notice update-notice">
-      You have successfully updated your billing information.
-      <br/><br/>
-      Please run `npm login` on the command line (even if you are already logged in) to get all the benefits of private npm!
-    </p>
-  {{else}}
-    {{> twitter-tracking pid='l5xz2'}}
-  {{/if}}
-
-  {{#if package}}
-    <p class="notice payment-required-notice">
-      Someone added you as a collaborator on the <a href="/package/{{package}}">{{package}}</a> package,
-      but you'll need to sign up as a paying user before you can access the package.
-    </p>
-  {{/if}}
-
-  {{#if customer.license_expired }}
-    <p class="error license-expired">
-      Your license has expired, and your account
-      status is <strong>{{customer.status}}</strong>.
-      Any private packages you've created still exist, but you
-      will not be able to access them until your license is renewed.
-    </p>
-  {{/if}}
+  <h2>billing</h2>
 
   <div>
-    <a href="#" id="enable-private-modules">sign up for private modules</a>
-    <div id="info-private-modules" style="display:none;">
-      <p>
-        A paid account costs just <strong>$7 a month</strong> per user, and allows you to create
-        and share an unlimited number of modules. The only limit is
-        <a href="http://www.zombo.com/" target="_blank">yourself</a>.
-      </p>
-
-      <form method="POST" id="private-modules-form" action="/settings/billing/subscribe">
-        {{> form_security}}
-        <input type="hidden" name="planType" value="private_modules" />
-        <input type="submit" class="full-width" value="sign up for private modules"/>
-      </form>
-    </div>
-  </div>
-
-  <div>
-    <a href="#" id="enable-orgs">create an org</a>
-    <div  id="info-orgs" style="display:none;">
-      <p>
-        Create your organization for free. To enable private modules in your
-        organization, orgs cost just <strong>$6 a month</strong> per user, and
-        allows you to create and share an unlimited number of modules. Plans start
-        with 4 users. Dee dee
-        <a href="http://www.hamsterdance.org/hamsterdance/" target="_blank">doo doo doo</a>.
-      </p>
-
-      <form method="POST" id="org-form" action="/settings/billing/subscribe">
-
-        <label for="organization-name">Organization Name</label>
-        <input required="required" type="text" id="organization-name" name="orgName" />
-
-        {{> form_security}}
-        <input type="hidden" name="planType" value="orgs" />
-        <input type="submit" class="full-width" value="create my organization" />
-
-      </form>
-    </div>
-  </div>
-
-  <div>
-    <a href="#" id="add-billing-info">handle billing info</a>
-
     {{#if customer}}
 
       <table class="ruled key-value card-info">
@@ -136,12 +58,6 @@
               <span class="card-exp-month">{{month-name customer.card.exp_month}}</span>
               <span class="card-exp-year">{{customer.card.exp_year}}</td></span>
           </tr>
-          <tr>
-            <td>Next billing date</td>
-            <td data-date="{{customer.next_billing_date}}" data-date-format="%B %e %Y">
-              {{customer.next_billing_date}}
-            </td>
-          </tr>
         </tbody>
       </table>
 
@@ -153,7 +69,7 @@
       </p>
 
     {{else}}
-      <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" style="display:none;">
+      <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}">
 
         <label for="card-number">Card Number</label>
         <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
@@ -177,15 +93,11 @@
     {{/if}}
   </div>
 
-  {{> errors}}
-
   {{#if user.email_verified}}
 
     <p class="error billing-error" style="display:none;"></p>
 
     <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" style="display:none;">
-{{!--     <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
- --}}
       <label for="card-number">Card Number</label>
       <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
 
@@ -232,6 +144,88 @@
       <input type="submit" value="Cancel my private npm subscription">
     </form>
   {{/if}}
+
+  <h2>private modules</h2>
+
+  {{#if canceled}}
+    <p class="notice cancellation-notice">
+      You have successfully cancelled your private npm subscription. Your free account
+      still exists, as do any private modules that you created. Your private modules
+      are still accessible to any other paid users you've shared them with. If you decide
+      to start paying again, those modules will be waiting for you.
+    </p>
+  {{/if}}
+
+  {{#if updated}}
+    {{> twitter-tracking pid='l5xyy'}}
+
+    <p class="notice update-notice">
+      You have successfully updated your billing information.
+      <br/><br/>
+      Please run `npm login` on the command line (even if you are already logged in) to get all the benefits of private npm!
+    </p>
+  {{else}}
+    {{> twitter-tracking pid='l5xz2'}}
+  {{/if}}
+
+  {{#if package}}
+    <p class="notice payment-required-notice">
+      Someone added you as a collaborator on the <a href="/package/{{package}}">{{package}}</a> package,
+      but you'll need to sign up as a paying user before you can access the package.
+    </p>
+  {{/if}}
+
+  {{#if customer.license_expired }}
+    <p class="error license-expired">
+      Your license has expired, and your account
+      status is <strong>{{customer.status}}</strong>.
+      Any private packages you've created still exist, but you
+      will not be able to access them until your license is renewed.
+    </p>
+  {{/if}}
+
+  <div>
+    {{#if user.isPaid}}
+      <p>You have private modules :-)</p>
+    {{else}}
+      <p>
+        A paid account costs just <strong>$7 a month</strong> per user, and allows you to create
+        and share an unlimited number of modules. The only limit is
+        <a href="http://www.zombo.com/" target="_blank">yourself</a>.
+      </p>
+
+      <form method="POST" id="private-modules-form" action="/settings/billing/subscribe">
+        {{> form_security}}
+        <input type="hidden" name="planType" value="private_modules" />
+        <input type="submit" class="full-width" value="sign up for private modules"/>
+      </form>
+    {{/if}}
+  </div>
+
+  <h2>orgs and teams</h2>
+
+  <div>
+    <p>
+      Create your organization for free. To enable private modules in your
+      organization, orgs cost just <strong>$6 a month</strong> per user, and
+      allows you to create and share an unlimited number of modules. Plans start
+      with 4 users. Dee dee
+      <a href="http://www.hamsterdance.org/hamsterdance/" target="_blank">doo doo doo doo doo</a>.
+    </p>
+
+    <form method="POST" id="org-form" action="/settings/billing/subscribe">
+
+      <label for="organization-name">Organization Name</label>
+      <input required="required" type="text" id="organization-name" name="orgName" />
+
+      {{> form_security}}
+      <input type="hidden" name="planType" value="orgs" />
+      <input type="submit" class="full-width" value="create my organization" />
+
+    </form>
+  </div>
+
+  {{> errors}}
 
 </div>
 

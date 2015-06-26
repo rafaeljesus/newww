@@ -20,7 +20,8 @@ var paths = {
   misc: ['./assets/misc/*'],
   scripts: {
     browserify: ["./assets/scripts/*.js"],
-    vendor: ["./assets/scripts/vendor/*.js"]
+    vendor: ["./assets/scripts/vendor/*.js"],
+    tota11y: ["./assets/scripts/tota11y.min.js"]
   },
   templates: ['./assets/templates/*.hbs'],
   lintables: [
@@ -64,6 +65,12 @@ gulp.task('concat', function () {
     .pipe(uglify())
     .pipe(concat('vendor.min.js'))
     .pipe(gulp.dest('static/js/'))
+});
+
+gulp.task('tota11y', function () {
+  gulp
+    .src(paths.scripts.tota11y)
+    .pipe(gulp.dest('static/js/'));
 });
 
 gulp.task('fonts', function(){
@@ -116,6 +123,6 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat']);
+gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat', 'tota11y']);
 gulp.task('dev', ['build', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

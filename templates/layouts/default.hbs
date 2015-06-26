@@ -83,7 +83,7 @@
 
   <header>
     <div class="container">
-      <a href="/" id="npm-logo"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
+      <a href="/" id="npm-logo"><span class="a11y-only">Home</span><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
 
       {{#unless features.npmo}}
         <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
@@ -98,8 +98,8 @@
                 <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
             </ul>
             {{else}}
-            <a href="/login"><img src="/static/images/wombat-avatar-small.png" /></a>
-            <ul class="single">
+            <a href="/login"><img src="/static/images/wombat-avatar-small.png" role="presentation"></a>
+            <ul class="single" role="navigation">
                 <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
             </ul>
 
@@ -110,6 +110,7 @@
       <form id="npm-search" action="/search" method="get" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
         <meta itemprop="target" content="https://www.npmjs.com/search?q={q}">
         <div id="site-search-container">
+            <label for="site-search" class="a11y-only">Find packages</label>
             <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
         </div>
         <input type="submit" id="site-search-submit" />

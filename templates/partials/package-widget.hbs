@@ -2,6 +2,7 @@
 
   {{#if logo}}
     <a class="package-logo" href="/package/{{name}}">
+      <span class="a11y-only">{{name}}</span>
       <img src="{{logo}}" alt="{{name}} logo">
     </a>
   {{/if}}
@@ -20,7 +21,7 @@
         version
       {{/unless}} {{/unless}}
 
-      <a class="version" href="/package/{{name}}">{{version}}</a>
+      <a class="version" href="/package/{{name}}"><span class="a11y-only">Version</span>{{version}}</a>
 
       {{#if lastPublishedAt}} {{#if publisher}}
         published

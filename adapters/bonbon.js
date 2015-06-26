@@ -69,6 +69,7 @@ exports.register = function(server, options, next) {
       correlationID: request.id,
       stamp: request.server.stamp,
       features: request.features,
+      devEnv: (process.env.NODE_ENV === 'dev'),
     };
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
@@ -80,6 +81,7 @@ exports.register = function(server, options, next) {
         }
       }
     }
+
 
     switch (request.response.variety) {
       case "view":

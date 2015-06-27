@@ -16,6 +16,7 @@
           <th>Subscription Type</th>
           <th>Name</th>
           <th>Next Billing Date</th>
+          <th>Monthly Fee</th>
         </tr>
         {{#each subscriptions}}
           <tr>
@@ -29,6 +30,7 @@
             <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
               {{next_billing_date}}
             </td>
+            <td>{{amount}}</td>
           </tr>
         {{/each}}
       </tbody>

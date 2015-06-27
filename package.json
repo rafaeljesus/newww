@@ -67,7 +67,7 @@
     "npm-email-templates": "^1.4.1",
     "npm-expansions": "^2.1.0",
     "npm-explicit-installs": "git://github.com/npm/npm-explicit-installs",
-    "npm-humans": "2.8.0",
+    "npm-humans": "2.8.1",
     "npm-package-arg": "^3.1.1",
     "npm-tips": "^1.1.0",
     "npm-user-validate": "^0.1.1",

@@ -25,7 +25,7 @@
             <td>{{npm_user}}</td>
           {{else}}
             <td>Organization</td>
-            <td>{{npm_org}}</td>
+            <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
           {{/if}}
             <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
               {{next_billing_date}}
@@ -89,7 +89,7 @@
         <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon" />
 
         {{> form_security}}
-        <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}sign me up{{/if}}">
+        <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}save my billing info{{/if}}">
 
       </form>
     {{/if}}
@@ -116,7 +116,7 @@
       <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon" />
 
       {{> form_security}}
-      <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}sign me up{{/if}}">
+      <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}save my billing info{{/if}}">
 
     </form>
   {{/if}}
@@ -208,23 +208,26 @@
 
   <div>
     <p>
-      Create your organization for free. To enable private modules in your
-      organization, orgs cost just <strong>$6 a month</strong> per user, and
-      allows you to create and share an unlimited number of modules. Plans start
-      with 4 users. Dee dee
+      To enable private modules in your organization, orgs cost just <strong>$6 a
+      month</strong> per user, and allows you to create and share an unlimited
+      number of modules. Plans start with 2 users. Dee dee
       <a href="http://www.hamsterdance.org/hamsterdance/" target="_blank">doo doo doo doo doo</a>.
     </p>
 
-    <form method="POST" id="org-form" action="/settings/billing/subscribe">
+    {{#if customer}}
+      <form method="POST" id="org-form" action="/settings/billing/subscribe">
 
-      <label for="organization-name">Organization Name</label>
-      <input required="required" type="text" id="organization-name" name="orgName" />
+        <label for="organization-scope">organization scope</label>
+        <input required="required" type="text" id="organization-scope" name="orgName" />
 
-      {{> form_security}}
-      <input type="hidden" name="planType" value="orgs" />
-      <input type="submit" class="full-width" value="create my organization" />
+        {{> form_security}}
+        <input type="hidden" name="planType" value="orgs" />
+        <input type="submit" class="full-width" value="create my organization" />
 
-    </form>
+      </form>
+    {{else}}
+      <p>To sign up for orgs and teams, you need to update your billing information.</p>
+    {{/if}}
   </div>
 
   {{> errors}}

@@ -21,7 +21,6 @@ var Customer = module.exports = function(name, opts) {
 Customer.prototype.get = function(callback) {
   var self = this;
   var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
-  // var subscriptionsUrl = this.host + '/customer/' + self.name + '/stripe/subscription';
 
   Request.get({
     url: stripeUrl,

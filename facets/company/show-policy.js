@@ -15,8 +15,6 @@ module.exports = function (request, reply) {
     opts.md = content;
 
     request.timing.page = 'policy-' + policy;
-    request.metrics.metric({name: 'policy-' + policy});
-
     return reply.view('company/corporate', opts);
   });
 };

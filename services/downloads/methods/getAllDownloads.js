@@ -1,10 +1,7 @@
 var
     async = require('async'),
-    Hapi = require('hapi'),
-    log = require('bole')('downloads'),
     makeDownloadFetchFunc = require('./getDownloads'),
-    metrics = require('../../../adapters/metrics')(),
-    timer = {};
+    metrics = require('../../../adapters/metrics')();
 
 module.exports = function getAllDownloads (url) {
   return function (package, next) {
@@ -16,9 +13,7 @@ module.exports = function getAllDownloads (url) {
     }
 
     var getDownloads = makeDownloadFetchFunc(url);
-
-    var n = 3,
-        dls = {};
+    var dls = {};
 
     var tasks = {
       day:   function(cb) { getDownloads('last-day', 'point', package, cb); },
@@ -33,10 +28,9 @@ module.exports = function getAllDownloads (url) {
       }
 
       metrics.metric({
-        name: 'latency',
+        name: 'latency.downloads',
         value: Date.now() - start,
-        type: 'downloads',
-        action: 'all downloads' + (package ? ' for ' + package : '')
+        package: package
       });
 
       dls.day = results.day || 0;
@@ -45,5 +39,5 @@ module.exports = function getAllDownloads (url) {
 
       next(null, dls);
     });
-  }
-}
+  };
+};

@@ -66,8 +66,6 @@ module.exports = function confirmEmail (request, reply) {
             }
 
             request.timing.page = 'email-confirmed';
-
-            request.metrics.metric({ name: 'email-confirmed' });
             return reply.view('user/email-confirmed', opts);
           });
         });

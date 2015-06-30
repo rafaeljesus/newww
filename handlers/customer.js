@@ -130,10 +130,14 @@ customer.subscribe = function (request, reply) {
     .catch(function (err) {
       if (err.statusCode === 404) {
         // org doesn't yet exist
-        request.customer.updateSubscription(planInfo, function (err, subscriptions) {
+        request.customer.createSubscription(planInfo, function (err, subscriptions) {
           if (err) {
             request.logger.error("unable to update subscription to " + planInfo.plan);
             request.logger.error(err);
+          }
+
+          if (typeof subscriptions === 'string') {
+            request.logger.info("created subscription: ", planInfo);
           }
 
           return reply.redirect('/settings/billing');

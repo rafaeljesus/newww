@@ -19,7 +19,6 @@ var Customer = module.exports = function(name, opts) {
 Customer.prototype.get = function(callback) {
   var self = this;
   var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
-  // var subscriptionsUrl = this.host + '/customer/' + self.name + '/stripe/subscription';
 
   Request.get({url: stripeUrl, json: true}, function(err, resp, stripeData){
 
@@ -30,27 +29,6 @@ Customer.prototype.get = function(callback) {
       err.statusCode = resp.statusCode;
       return callback(err);
     }
-
-    // Request.get({url: subscriptionsUrl, json: true}, function (err, resp, subscriptions) {
-    //   if (err) { return callback(err); }
-
-    //   if (resp.statusCode === 404) {
-    //     err = Error('subscriptions for customer ' + self.name + ' not found');
-    //     err.statusCode = resp.statusCode;
-    //     return callback(err);
-    //   }
-
-    //   if (subscriptions && _.isArray(subscriptions)) {
-    //     subscriptions.forEach(function (s) {
-    //       // Coerce integer in seconds into date
-    //       if (s.npm_org.match(/private-modules/)){
-    //         stripeData.next_billing_date = new Date(s.current_period_end * 1000);
-    //       }
-    //     });
-    //   }
-
-    //   return callback(null, stripeData);
-    // });
 
     return callback(null, stripeData);
   });

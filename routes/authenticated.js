@@ -95,5 +95,9 @@ module.exports = [
     path: "/package/{scope}/{project}",
     method: "POST",
     handler: require('../handlers/package').update
+  },{
+    path: "/org/{org}",
+    method: "GET",
+    handler: require('../handlers/org')
   }
-]
+];

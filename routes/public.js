@@ -229,6 +229,18 @@ var publicRoutes = [
     method: "GET",
     handler: require('../facets/user/show-packages')
   },{
+    path: "/org/{name}",
+    method: "GET",
+    handler: require('../facets/org/show-org')
+  },{
+    path: "/org/{name}/teams",
+    method: "GET",
+    handler: require('../facets/org/show-teams')
+  },{
+    path: "/org/{name}/teams/{{name}}",
+    method: "GET",
+    handler: require('../facets/org/show-team')
+  },{
     path: "/signup",
     method: "GET",
     handler: require('../facets/user/show-signup')

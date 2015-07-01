@@ -1,0 +1,45 @@
+<div class="container">
+
+  <h1><span class="subhead">Team</span><span class="head">Front-end Development</span></h1>
+
+  <ul class="team-details" role="navigation">
+    <li>{{numberOfPackage}} packages</li>
+    <li class="active">{{numberOfCollaborator}} collaborator</li>
+    <li class="settings">Settings</li>
+  </ul>
+
+  <table>
+    <thead>
+      <th>Selector</th>
+      <th>Collaborator</th>
+      <th>Teams</th>
+      <th><span class="a11y-only">Remove Collaborator</span></th>
+    </thead>
+    <tbody>
+      {{#each collaborators}}
+      <tr>
+        <td><label for="collaborator-selector" class="a11y-only">Select {{name}}</label>
+          <input type="checkbox" name="collaborator-selector" />
+        </td>
+        <td>
+          <span class="collaborator-profile-pic-container"><img src="{{avatarurl}}" /></span>
+          <span class="collaborator-name">{{name}}</span>
+        </td>
+        <td>
+          <ul class="teams">
+          {{#each teams}}
+            <li><img src="{{imgsrc}}" alt="{{name}}"/></li>
+          {{/each}}
+          </ul>
+        </td>
+        <td><button type="button" class="remove"><span class="a11y-only">Remove {{name}}</span></button></td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <form action='' method='post'>
+    {{> form_security}}
+  </form>
+
+</div>

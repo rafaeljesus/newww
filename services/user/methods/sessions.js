@@ -16,15 +16,14 @@ module.exports = {
         if (err) {
           request.logger.error(Boom.internal('there was an error setting the cache'));
 
-          metrics.metric({name: 'setSessionError'});
+          metrics.metric({name: 'setSessionError', value: 1});
           return next(err);
         }
 
         timer.end = Date.now();
         metrics.metric({
-          name: 'latency',
+          name: 'latency.redis',
           value: timer.end - timer.start,
-          type: 'redis',
           action: 'setSession'
         });
 
@@ -47,13 +46,12 @@ module.exports = {
         if (err) {
           request.logger.error(Boom.internal('there was an error clearing the cache'));
           request.logger.error(err);
-          metrics.metric({name: 'delSessionError'});
+          metrics.metric({name: 'delSessionError', value: 1 });
         }
 
         metrics.metric({
-          name: 'latency',
+          name: 'latency.redis',
           value: Date.now() - start,
-          type: 'redis',
           action: 'delSession'
         });
 

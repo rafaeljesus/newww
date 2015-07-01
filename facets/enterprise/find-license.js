@@ -126,8 +126,6 @@ module.exports = function(request,reply) {
             })
             .then(function () {
               request.timing.page = 'npmEconfirmEmail';
-              request.metrics.metric({ name: 'npmEconfirmEmail' });
-
               // everything is a-ok!
               return reply.view('enterprise/check-email');
             });

@@ -48,7 +48,7 @@ module.exports = function (request, reply) {
       currency: "usd",
       card: token.id, // obtained with Stripe.js
       description: "Charge for " + token.email
-    }, function(err, charge) {
+    }, function(err) {
       if (err) {
         request.logger.error('internal stripe error; token amount is ', token.amount);
         request.logger.error(err);
@@ -56,13 +56,11 @@ module.exports = function (request, reply) {
       }
 
       request.metrics.metric({
-        name:  'latency',
+        name:  'latency.stripe',
         value: Date.now() - stripeStart,
-        type:  'stripe'
       });
 
-      request.timing.page = 'whoshiring-paymentProcessed';
       return reply('Stripe charge successful').code(200);
     });
   });
-}
+};

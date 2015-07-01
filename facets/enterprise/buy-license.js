@@ -104,15 +104,12 @@ module.exports = function (request, reply) {
         }
 
         request.metrics.metric({
-          name: 'latency',
+          name: 'latency.stripe',
           value: Date.now() - stripeStart,
-          type: 'stripe'
         });
 
         request.logger.info('Stripe customer created: ', stripeCustomer);
-
         request.timing.page = 'enterprise-license-paymentProcessed';
-        request.metrics.metric({name: request.timing.page});
 
         // license purchased! We need to update the customer record with their stripe customer ID
         updateCustomer(customer.id, { stripe_customer_id: stripeCustomer.id }, function(er) {
@@ -146,15 +143,12 @@ module.exports = function (request, reply) {
             }
 
             request.metrics.metric({
-              name: 'latency',
+              name: 'latency.licenseCreation',
               value: Date.now() - licenseStart,
-              type: 'licenseCreation'
             });
 
             request.logger.info('Successful license creation: ', license);
-
             request.timing.page = 'enterprise-license-created';
-            request.metrics.metric({name: request.timing.page});
 
             // now email them the generated license
             var sendEmail = request.server.methods.email.send;

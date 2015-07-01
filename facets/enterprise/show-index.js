@@ -4,6 +4,5 @@ module.exports = function npmE (request, reply) {
   };
 
   request.timing.page = 'enterprise';
-  request.metrics.metric({name: 'enterprise'});
   return reply.view('enterprise/index', opts);
 };

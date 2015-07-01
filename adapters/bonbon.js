@@ -117,9 +117,8 @@ exports.register = function(server, options, next) {
 
     var latency = Date.now() - request.timing.start;
     metrics.metric({
-      name:  'latency',
+      name:  'latency.page',
       value: latency,
-      type:  request.timing.type || 'pageload',
       page:  request.timing.page,
     });
 

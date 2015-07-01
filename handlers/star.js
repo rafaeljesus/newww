@@ -23,7 +23,7 @@ module.exports = function (request, reply) {
     Package.star(pkg)
       .then(function () {
         request.timing.page = 'star';
-        request.metrics.metric({ name: 'star', package: pkg });
+        request.metrics.metric({ name: 'star', package: pkg, value: 1 });
         return reply(username + ' starred ' + pkg).code(200);
       })
       .catch(function (err) {
@@ -37,7 +37,7 @@ module.exports = function (request, reply) {
     Package.unstar(pkg)
       .then(function () {
         request.timing.page = 'unstar';
-        request.metrics.metric({ name: 'unstar', package: pkg });
+        request.metrics.metric({ name: 'unstar', package: pkg, value: 1 });
 
         return reply(username + ' unstarred ' + pkg).code(200);
       })

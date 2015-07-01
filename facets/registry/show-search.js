@@ -45,10 +45,8 @@ module.exports = function (request, reply) {
   var start = Date.now();
   client.search(searchQuery, function (error, response) {
     request.metrics.metric({
-      name: 'latency',
+      name: 'latency.elasticsearch',
       value: Date.now() - start,
-      type: 'elasticsearch',
-      query: request.query.q
     });
 
     var opts = { };
@@ -60,7 +58,6 @@ module.exports = function (request, reply) {
     }
 
     request.timing.page = 'search';
-    request.metrics.metric({ name: 'search', search: request.query.q });
 
     merge(opts, {
       title: 'results for ',

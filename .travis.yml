@@ -9,4 +9,4 @@ env:
 notifications:
   email: false
 before_install:
-  - "npm install -g npm/npm"
+  - "npm install -g npm@latest"

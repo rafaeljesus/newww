@@ -99,5 +99,13 @@ module.exports = [
     path: "/org/{org}",
     method: "GET",
     handler: require('../handlers/org')
+  },{
+    path: "/org/{org}/teams",
+    method: "GET",
+    handler: require('../facets/org/show-teams')
+  },{
+    path: "/org/{org}/teams/{teamName}",
+    method: "GET",
+    handler: require('../facets/org/show-teams')
   }
 ];

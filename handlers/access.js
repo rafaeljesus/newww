@@ -2,10 +2,6 @@ var omit = require("lodash").omit;
 
 module.exports = function(request, reply) {
 
-  if (!request.features.access_page) {
-    return reply.view('errors/not-found').code(404);
-  }
-
   var package;
   var loggedInUser = request.loggedInUser;
   var Collaborator = require("../models/collaborator").new(request);

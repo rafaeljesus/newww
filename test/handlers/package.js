@@ -573,16 +573,6 @@ describe("package handler", function(){
   });
 
   describe('add collaborator link', function () {
-    beforeEach(function(done){
-      process.env.FEATURE_ACCESS_PAGE = 'true';
-      done();
-    });
-
-    afterEach(function(done){
-      delete process.env.FEATURE_ACCESS_PAGE;
-      done();
-    });
-
     it('is displayed if user is a collaborator', function (done) {
       var packageMock = nock("https://user-api-example.com")
         .get('/package/request')
@@ -626,53 +616,6 @@ describe("package handler", function(){
         done();
       });
 
-    });
-
-    it('is not displayed if FEATURE_ACCESS_PAGE is not set', function (done) {
-      var packageMock = nock("https://user-api-example.com")
-        .get('/package/request')
-        .reply(200, fixtures.packages.request)
-        .get('/package?dependency=request&limit=50')
-        .reply(200, fixtures.dependents);
-
-      var downloadsMock = nock("https://downloads-api-example.com")
-        .get('/point/last-day/request')
-        .reply(200, fixtures.downloads.request.day)
-        .get('/point/last-week/request')
-        .reply(200, fixtures.downloads.request.week)
-        .get('/point/last-month/request')
-        .reply(200, fixtures.downloads.request.month);
-
-      var userMock = nock("https://user-api-example.com")
-        .get('/user/mikeal')
-        .reply(200, fixtures.users.mikeal);
-
-      var licenseMock = nock("https://license-api-example.com")
-        .get('/customer/mikeal/stripe')
-        .reply(404);
-
-      var options = {
-        url: '/package/request',
-        credentials: fixtures.users.mikeal
-      };
-
-      delete process.env.FEATURE_ACCESS_PAGE;
-
-      server.inject(options, function (resp) {
-        packageMock.done();
-        downloadsMock.done();
-        userMock.done();
-        licenseMock.done();
-        expect(resp.statusCode).to.equal(200);
-        var context = resp.request.response.source.context;
-        var package = context.package;
-        expect(package.name).to.equal('request');
-        expect(package.isCollaboratedOnByUser).to.be.true();
-        var $ = cheerio.load(resp.result);
-        expect($("h3[title='collaborators'] a")).to.have.length(0);
-        expect($("ul.collaborators a.add")).to.have.length(0);
-        done();
-      });
     });
 
     it('is not displayed if user is logged in but not a collaborator', function (done) {

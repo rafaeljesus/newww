@@ -163,8 +163,8 @@ describe("User", function() {
       var licenseMock = nock('https://license-api-example.com')
         .get('/customer/bob/stripe')
         .reply(200, fixtures.customers.bob)
-        .get('/customer/bob/stripe/subscription')
-        .reply(200, fixtures.customers.bob_subscriptions);
+        // .get('/customer/bob/stripe/subscription')
+        // .reply(200, fixtures.customers.bob_subscriptions);
 
       User.dropCache(fixtures.users.bob.name, function() {
 

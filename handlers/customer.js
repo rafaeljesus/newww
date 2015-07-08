@@ -124,8 +124,12 @@ customer.subscribe = function(request, reply) {
   // don't do this for only private modules
   new User().getOrg(planInfo.npm_org)
     .then(function(users) {
-      // first check to see if the user is the super-admin
-      // notify the user that this org already exists
+      var opts = {};
+      if (users) {
+        opts.errors = [];
+        opts.errors.push(new Error("Error: Org already exists."));
+        return reply.view('user/billing', opts);
+      }
     })
     .catch(function(err) {
       if (err.statusCode === 404) {
@@ -143,8 +147,11 @@ customer.subscribe = function(request, reply) {
         });
       } else {
         // do actual error handling here
+        var opts = {};
+        opts.errors = [];
+        opts.errors.push(new Error(err));
         request.logger.error(err);
-        return reply.redirect('/settings/billing');
+        return reply.view('user/billing', opts);
       }
     });
 

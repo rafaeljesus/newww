@@ -3,10 +3,6 @@ var utils = require('../lib/utils');
 
 customer.getBillingInfo = function (request, reply) {
 
-  if (!request.features.billing_page) {
-    return reply.view('errors/not-found').code(404);
-  }
-
   var opts = {
     title: 'Billing',
     updated: ('updated' in request.query),
@@ -30,10 +26,6 @@ customer.getBillingInfo = function (request, reply) {
 };
 
 customer.updateBillingInfo = function(request, reply) {
-  if (!request.features.billing_page) {
-    return reply.view('errors/not-found').code(404);
-  }
-
   var sendToHubspot = request.server.methods.npme.sendData;
 
   var coupon = request.payload.coupon;
@@ -88,10 +80,6 @@ customer.updateBillingInfo = function(request, reply) {
 };
 
 customer.deleteBillingInfo = function(request, reply) {
-
-  if (!request.features.billing_page) {
-    return reply.view('errors/not-found').code(404);
-  }
 
   request.customer.del(function(err, customer) {
     if (err) {

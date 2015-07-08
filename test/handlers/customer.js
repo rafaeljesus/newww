@@ -14,7 +14,6 @@ var generateCrumb = require("../handlers/crumb.js"),
     fixtures = require('../fixtures');
 
 before(function (done) {
-  process.env.FEATURE_BILLING_PAGE = 'true';
   require('../mocks/server')(function (obj) {
     server = obj;
     done();
@@ -22,7 +21,6 @@ before(function (done) {
 });
 
 after(function (done) {
-  delete process.env.FEATURE_BILLING_PAGE;
   server.stop(done);
 });
 

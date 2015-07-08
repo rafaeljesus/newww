@@ -96,11 +96,7 @@
 
   {{#if showCollaborators}}
     <h3 title="collaborators">
-      {{#if ../../features.access_page}}
-        <a href="/package/{{name}}/access">Collaborators</a>
-      {{else}}
-        Collaborators
-      {{/if}}
+      <a href="/package/{{name}}/access">Collaborators</a>
     </h3>
 
     <ul class="humans collaborators">
@@ -112,12 +108,10 @@
         </li>
       {{/each}}
 
-      {{#if ../../features.access_page}}
-        {{#if isCollaboratedOnByUser}}
-          <li>
-            <a class="add" title="add a collaborator" href="/package/{{name}}/access">+</a>
-          </li>
-        {{/if}}
+      {{#if isCollaboratedOnByUser}}
+        <li>
+          <a class="add" title="add a collaborator" href="/package/{{name}}/access">+</a>
+        </li>
       {{/if}}
 
     </ul>

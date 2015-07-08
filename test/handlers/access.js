@@ -28,11 +28,6 @@ describe("package access", function(){
 
   describe('features.feature_page disabled', function() {
 
-    before(function(done){
-      delete process.env.FEATURE_ACCESS_PAGE;
-      done();
-    });
-
     it("returns a 404 for global packages", function(done){
       server.inject({url: "/package/browserify/access"}, function(resp) {
         expect(resp.statusCode).to.equal(404);
@@ -77,7 +72,6 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -121,8 +115,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, users.bob);
@@ -186,7 +178,6 @@ describe("package access", function(){
           .get("/customer/wrigley_the_writer/stripe/subscription")
           .reply(200, []);
 
-        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           userMock.done();
           licenseMock.done();
@@ -260,7 +251,6 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
         server.inject(options, function(response) {
           resp = response;
           context = resp.request.response.source.context;
@@ -304,8 +294,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, users.bob);
@@ -358,8 +346,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         userMock = nock("https://user-api-example.com")
           .get("/user/ralph_the_reader")
           .reply(200, users.ralph_the_reader);
@@ -409,8 +395,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         userMock = nock("https://user-api-example.com")
           .get("/user/wrigley_the_writer")
           .reply(200, users.wrigley_the_writer);
@@ -482,8 +466,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         userMock = nock("https://user-api-example.com")
           .get("/user/wrigley_the_writer")
           .reply(200, fixtures.users.wrigley_the_writer);
@@ -498,11 +480,6 @@ describe("package access", function(){
           $ = cheerio.load(response.result);
           done();
         });
-      });
-
-      after(function(done) {
-        delete process.env.FEATURE_ACCESS_PAGE;
-        done();
       });
 
       it("does not render the public/private toggle", function(done){
@@ -530,8 +507,6 @@ describe("package access", function(){
     describe('anonymous user', function () {
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         var packageMock = nock("https://user-api-example.com")
           .get('/package/@wrigley_the_writer%2Fscoped_private')
           .reply(200, fixtures.packages.wrigley_scoped_private)
@@ -566,8 +541,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         var userMock = nock("https://user-api-example.com")
           .get('/user/bob')
           .reply(200, fixtures.users.bob);
@@ -614,8 +587,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         var userMock = nock("https://user-api-example.com")
           .get('/user/ralph_the_reader')
           .reply(200, fixtures.users.ralph_the_reader);
@@ -657,8 +628,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         var userMock = nock("https://user-api-example.com")
           .get('/user/wrigley_the_writer')
           .reply(200, fixtures.users.wrigley_the_writer);
@@ -706,8 +675,6 @@ describe("package access", function(){
       };
 
       before(function(done) {
-        process.env.FEATURE_ACCESS_PAGE = 'true';
-
         var userMock = nock("https://user-api-example.com")
           .get('/user/wrigley_the_writer')
           .reply(200, fixtures.users.wrigley_the_writer);
@@ -727,7 +694,6 @@ describe("package access", function(){
           packageMock.done();
           customerMock.done();
           resp = response;
-          delete process.env.FEATURE_ACCESS_PAGE;
           done();
         });
       });

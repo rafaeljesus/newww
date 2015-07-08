@@ -8,7 +8,10 @@ customer.getBillingInfo = function(request, reply) {
     title: 'Billing',
     updated: ('updated' in request.query),
     canceled: ('canceled' in request.query),
-    stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+    stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+    features: {
+      orgs: request.features.org_billing
+    }
   };
 
   // Display a message to unpaid collaborators about the
@@ -69,25 +72,13 @@ customer.updateBillingInfo = function(request, reply) {
       email: billingInfo.email
     };
 
-    var planInfo = {
-      plan: 'npm-paid-individual-user-7'
-    };
-
-    request.customer.createSubscription(planInfo, function(err, unused) {
-
-      if (err) {
-        request.logger.error("unable to update subscription to " + planInfo.plan);
-        request.logger.error(err);
+    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function(er) {
+      if (er) {
+        request.logger.error('unable to send billing email to HubSpot');
+        request.logger.error(er);
       }
 
-      sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function(er) {
-        if (er) {
-          request.logger.error('unable to send billing email to HubSpot');
-          request.logger.error(er);
-        }
-
-        return reply.redirect('/settings/billing?updated=1');
-      });
+      return reply.redirect('/settings/billing?updated=1');
     });
   });
 
@@ -121,38 +112,55 @@ customer.subscribe = function(request, reply) {
     planInfo.npm_org = request.payload.orgName;
   }
 
-  // don't do this for only private modules
-  new User().getOrg(planInfo.npm_org)
-    .then(function(users) {
-      var opts = {};
-      if (users) {
-        opts.errors = [];
-        opts.errors.push(new Error("Error: Org already exists."));
-        return reply.view('user/billing', opts);
-      }
-    })
-    .catch(function(err) {
-      if (err.statusCode === 404) {
-        request.customer.createSubscription(planInfo, function(err, subscriptions) {
-          if (err) {
-            request.logger.error("unable to update subscription to " + planInfo.plan);
-            request.logger.error(err);
-          }
+  if (request.features.org_billing) {
+    var opts = {};
 
-          if (typeof subscriptions === 'string') {
-            request.logger.info("created subscription: ", planInfo);
-          }
+    opts.features.orgs = true;
 
-          return reply.redirect('/settings/billing');
-        });
-      } else {
-        // do actual error handling here
-        var opts = {};
-        opts.errors = [];
-        opts.errors.push(new Error(err));
+    new User().getOrg(planInfo.npm_org)
+      .then(function(users) {
+        if (users) {
+          opts.errors = [];
+          opts.errors.push(new Error("Error: Org already exists."));
+          return reply.view('user/billing', opts);
+        }
+      })
+      .catch(function(err) {
+        if (err.statusCode === 404) {
+          // org doesn't yet exist
+          request.customer.createSubscription(planInfo, function(err, subscriptions) {
+            if (err) {
+              request.logger.error("unable to update subscription to " + planInfo.plan);
+              request.logger.error(err);
+            }
+
+            if (typeof subscriptions === 'string') {
+              request.logger.info("created subscription: ", planInfo);
+            }
+
+            return reply.redirect('/settings/billing');
+          });
+        } else {
+          // do actual error handling here
+          opts.errors = [];
+          opts.errors.push(new Error(err));
+          request.logger.error(err);
+          return reply.view('user/billing', opts);
+        }
+      });
+  } else {
+    request.customer.createSubscription(planInfo, function(err, subscriptions) {
+      if (err) {
+        request.logger.error("unable to update subscription to " + planInfo.plan);
         request.logger.error(err);
-        return reply.view('user/billing', opts);
       }
+
+      if (typeof subscriptions === 'string') {
+        request.logger.info("created subscription: ", planInfo);
+      }
+
+      return reply.redirect('/settings/billing');
     });
+  }
 
 };

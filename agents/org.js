@@ -1,13 +1,43 @@
 var _            = require('lodash');
 var assert       = require('assert');
 var async        = require('async');
-// var LICENSE_HOST = process.env.LICENSE_API || "https://license-api-example.com";
 var Request      = require('../lib/external-request');
 var USER_HOST    = process.env.USER_API || "https://user-api-example.com";
 
-var Org = module.exports;
+var Org = module.exports = function (bearer) {
+  assert(_.isString(bearer), "Must pass a bearer (loggedInUser) to Org agent");
 
-Org.get = function (name, callback) {
+  if (!(this instanceof Org)) { return new Org(bearer); }
+
+  this.bearer = bearer;
+};
+
+Org.prototype.create = function (name, callback) {
+  var url = USER_HOST + '/org';
+
+  var opts = {
+    url: url,
+    json: true,
+    body: {
+      name: name
+    },
+    headers: { bearer: this.bearer },
+  };
+
+  Request.put(opts, function (err, resp, body) {
+    if (err) { return callback(err); }
+
+    if (resp.statusCode === 401) {
+      err = Error('no bearer token included in creation of ' + name);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Org.prototype.get = function (name, callback) {
   assert(_.isString(name), "name must be a string");
 
   var orgUrl = USER_HOST + '/org/' + name;
@@ -16,10 +46,7 @@ Org.get = function (name, callback) {
   var makeRequest = function (url) {
     return function (cb) {
 
-      Request({
-        url: url,
-        json: true,
-      }, function (err, resp, body) {
+      Request({ url: url, json: true }, function (err, resp, body) {
         if (err) { return cb(err); }
 
         if (resp.statusCode === 404) {
@@ -49,3 +76,113 @@ Org.get = function (name, callback) {
     return callback(null, org);
   });
 };
+
+Org.prototype.update = function (data, callback) {
+  var url = USER_HOST + '/org/' + data.name;
+
+  // shall we use joi to ensure the data is legit?
+
+  var opts = {
+    url: url,
+    json: true,
+    body: data,
+    headers: { bearer: this.bearer }
+  };
+
+  Request.post(opts, function (err, resp, body) {
+    if (err) { callback (err); }
+
+    if (resp.statusCode === 401) {
+      err = Error('user is unauthorized to modify this organization');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      err = Error('org not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Org.prototype.delete = function (name, callback) {
+  assert(_.isString(name), "name must be a string");
+
+  var url = USER_HOST + '/org/' + name;
+
+  Request.del({
+    url: url,
+    json: true,
+    headers: { bearer: this.bearer }
+  }, function (err, resp, body) {
+    if (err) { callback (err); }
+
+    if (resp.statusCode === 401) {
+      err = Error('user is unauthorized to delete this organization');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      err = Error('org not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Org.prototype.addUser = function (name, user, callback) {
+  assert(_.isString(name), "name must be a string");
+  assert(_.isObject(user), "must pass a user");
+
+  var url = USER_HOST + '/org/' + name + '/user';
+
+  Request.put({
+    url: url,
+    json: true,
+    body: user,
+    headers: { bearer: this.bearer }
+  }, function (err, resp, user) {
+    if (err) { callback(err); }
+
+    if (resp.statusCode === 401) {
+      err = Error('bearer is unauthorized to add this user to this organization');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      err = Error('org not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, user);
+  });
+};
+
+Org.prototype.getUsers = function (name, callback) {
+  assert(_.isString(name), "name must be a string");
+
+  var url = USER_HOST + '/org/' + name + '/user';
+
+  Request.get({
+    url: url,
+    json: true
+  }, function (err, resp, users) {
+    if (err) { callback(err); }
+
+    if (resp.statusCode === 404) {
+      err = Error('org not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, users);
+  });
+}

@@ -97,8 +97,7 @@ describe('Org', function () {
         orgMocks.done();
         expect(err.statusCode).to.equal(404);
         expect(err.message).to.equal('org not found');
-        expect(org).to.be.an.object();
-        expect(org).to.be.empty();
+        expect(org).to.not.exist();
         done();
       });
     });

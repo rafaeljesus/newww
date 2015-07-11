@@ -66,7 +66,7 @@ Org.prototype.get = function (name, callback) {
   };
 
   async.parallel(requests, function (err, results) {
-    if (err) { return callback(err, {}); }
+    if (err) { return callback(err); }
 
     var org = {};
 

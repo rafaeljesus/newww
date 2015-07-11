@@ -11,6 +11,16 @@ var generateCrumb = require("../handlers/crumb.js"),
   _ = require('lodash'),
   server;
 
+// var bole = require('bole')
+  // var pretty = require('bistre')()
+
+// bole.output({
+  //     level: 'error'
+  //   , stream: pretty
+  // })
+
+// pretty.pipe(process.stdout)
+
 before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;

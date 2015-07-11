@@ -1,5 +1,5 @@
 var customer = module.exports = {};
-var User = require('../models/user');
+var Org = require('../agents/org');
 var utils = require('../lib/utils');
 
 customer.getBillingInfo = function(request, reply) {
@@ -115,17 +115,18 @@ customer.subscribe = function(request, reply) {
   if (request.features.org_billing) {
     var opts = {};
 
-    opts.features = {orgs: true};
+    opts.features = {
+      orgs: true
+    };
 
-    new User().getOrg(planInfo.npm_org)
-      .then(function(users) {
+    Org(request.loggedInUser.name)
+      .get(planInfo.npm_org, function(err, users) {
         if (users) {
           opts.errors = [];
           opts.errors.push(new Error("Error: Org already exists."));
           return reply.view('user/billing', opts);
         }
-      })
-      .catch(function(err) {
+
         if (err.statusCode === 404) {
           // org doesn't yet exist
           request.customer.createSubscription(planInfo, function(err, subscriptions) {

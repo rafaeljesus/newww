@@ -93,7 +93,7 @@ Package.prototype.list = function(options, ttl) {
     query: options,
   };
 
-  if (process.env.NODE_ENV === 'dev') {
+  if (process.env.REMOTE_DEV) {
     urlBits.protocol = "http";
   }
 

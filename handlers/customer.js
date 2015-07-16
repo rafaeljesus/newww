@@ -115,10 +115,6 @@ customer.subscribe = function(request, reply) {
   if (request.features.org_billing) {
     var opts = {};
 
-    opts.features = {
-      orgs: true
-    };
-
     Org(request.loggedInUser.name)
       .get(planInfo.npm_org, function(err, users) {
         if (users) {

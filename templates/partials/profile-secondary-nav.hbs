@@ -3,6 +3,6 @@
     <a href="/profile-edit">profile</a>
     <a href="/email-edit">email</a>
     <a href="/password">password</a>
-    <a href="/settings/billing">subscriptions</a>
+    <a href="/settings/billing">{{#if features.org_billing}}subscriptions{{else}}billing{{/if}}</a>
   </div>
 </div>

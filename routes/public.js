@@ -173,6 +173,15 @@ var publicRoutes = [
       return reply.redirect(fmt("/~%s#packages", request.params.user)).code(301);
     }
   }, {
+    // redirect plural forms to singular
+    paths: [
+      "/orgs",
+    ],
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/org").code(301);
+    }
+  }, {
     path: "/browse/userstar/{user}",
     method: "GET",
     handler: function(request, reply) {

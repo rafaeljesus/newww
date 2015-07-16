@@ -392,3 +392,31 @@ User.prototype.verifyPassword = function(name, password, callback) {
 
   return this.login(loginInfo, callback);
 };
+
+User.prototype.getOrgs = function(name, callback) {
+  var self = this;
+  var url = fmt('%s/user/%s/org', this.host, name);
+
+  return new P(function(resolve, reject) {
+
+    var opts = {
+      url: url,
+      json: true
+    };
+
+    if (self.bearer) { opts.headers = {bearer: self.bearer}; }
+
+    Request.get(opts, function(err, resp, body){
+
+      if (err) { return reject(err); }
+
+      if (resp.statusCode > 399) {
+        err = Error('error getting orgs for user ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+  }).nodeify(callback);
+};

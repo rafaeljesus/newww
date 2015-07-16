@@ -98,6 +98,10 @@ module.exports = [
   },{
     path: "/org/{org}",
     method: "GET",
-    handler: require('../handlers/org')
+    handler: require('../handlers/org').getOrg
+  },{
+    path: "/org",
+    method: "GET",
+    handler: require('../facets/user/show-orgs')
   }
 ];

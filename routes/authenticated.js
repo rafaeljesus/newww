@@ -96,12 +96,12 @@ module.exports = [
     method: "POST",
     handler: require('../handlers/package').update
   },{
-    path: "/org/{org}",
-    method: "GET",
-    handler: require('../handlers/org').getOrg
-  },{
     path: "/org",
     method: "GET",
     handler: require('../facets/user/show-orgs')
+  },{
+    path: "/org/{org}",
+    method: "GET",
+    handler: require('../handlers/org').getOrg
   }
 ];

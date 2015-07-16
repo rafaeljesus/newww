@@ -60,9 +60,7 @@ Customer.prototype.getSubscriptions = function(callback) {
     body.forEach(function(subscription) {
       // does this seem right?
       subscription.next_billing_date = moment.unix(subscription.current_period_end);
-      if (subscription.npm_org.match(/_private-modules/)) {
-        subscription.privateModules = true;
-      }
+      subscription.privateModules = !!subscription.npm_org.match(/_private-modules/);
     });
 
     return callback(null, body);

@@ -1,6 +1,8 @@
 var Org = require('../agents/org');
+var exp = {};
 
-module.exports = function (request, reply) {
+
+exp.getOrg = function (request, reply) {
   var opts = {};
   Org(request.loggedInUser.name).get(request.params.org, function (err, org) {
     if (err) { request.logger.error(err); }
@@ -8,3 +10,14 @@ module.exports = function (request, reply) {
     reply.view('org/info', opts);
   });
 };
+
+exp.createOrg = function (request, reply) {
+  var opts = {};
+  Org(request.loggedInUser.name).create(request.params.org, function (err, org) {
+    if (err) { request.logger.error(err); }
+    opts.body = org;
+    reply.view('org/info', opts);
+  });
+};
+
+module.exports = exp;

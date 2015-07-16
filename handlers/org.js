@@ -12,13 +12,4 @@ exp.getOrg = function (request, reply) {
   });
 };
 
-exp.createOrg = function (request, reply) {
-  var opts = {};
-  Org(request.loggedInUser.name).create(request.params.org, function (err, org) {
-    if (err) { request.logger.error(err); }
-    opts.body = org;
-    reply.view('org/info', opts);
-  });
-};
-
 module.exports = exp;

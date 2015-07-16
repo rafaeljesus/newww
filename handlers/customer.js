@@ -135,7 +135,15 @@ customer.subscribe = function(request, reply) {
               request.logger.info("created subscription: ", planInfo);
             }
 
-            return reply.redirect('/settings/billing');
+            Org(request.loggedInUser.name)
+              .create(planInfo.npm_org, function (err, opts){
+                if (err) {
+                  return reply.view('error/internal', err);
+                }
+
+                return reply.redirect('/settings/billing', opts);
+              });
+
           });
         } else {
           // do actual error handling here

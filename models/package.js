@@ -86,14 +86,19 @@ Package.prototype.update = function(name, body) {
 };
 
 Package.prototype.list = function(options, ttl) {
-  var url = URL.format({
+  var urlBits = {
     protocol: "https",
     host: URL.parse(this.host).hostname,
     pathname: "/package",
     query: options,
-  });
+  };
+
+  if (process.env.REMOTE_DEV) {
+    urlBits.protocol = "http";
+  }
+
   var opts = {
-    url: url,
+    url: URL.format(urlBits),
     json: true,
     ttl: ttl || 500 // seconds
   };

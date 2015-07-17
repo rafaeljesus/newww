@@ -126,7 +126,7 @@ describe('GET / for a logged-in user', function () {
   });
 
   it("displays an avatar linking to the user's profile page", function (done) {
-    expect($("#user-info a[href='/~mikeal'] img[src^='https://secure.gravatar']").length).to.equal(1);
+    expect($("#user-info a[href='/~mikeal'] img[src^='https://s.gravatar']").length).to.equal(1);
     done();
   });
 

@@ -12,3 +12,32 @@ var generateCrumb = require("../handlers/crumb.js"),
     expect = Code.expect,
     server,
     fixtures = require('../fixtures');
+
+before(function (done) {
+  process.env.FEATURE_ORG_BILLING = 'true';
+  require('../mocks/server')(function (obj) {
+    server = obj;
+    done();
+  });
+});
+
+after(function (done) {
+  delete process.env.FEATURE_ORG_BILLING;
+  server.stop(done);
+});
+
+describe('GET /org', function () {
+  var mock;
+  before(function (done) {
+    mock = nock("https://user-api-example.com")
+      .get("/org")
+      .reply(200, {count:1, items: [fixtures.org.boomer]});
+
+    done();
+  });
+
+  after(function (done) {
+    mock.done();
+    done();
+  });
+});

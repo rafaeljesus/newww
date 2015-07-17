@@ -6,9 +6,38 @@
 
   <h2>Users</h2>
   <ul>
-    {{#each org.users.items}}
-    <li>{{name}}</li>
+    {{#each org.users}}
+    <li><a href="/~{{name}}">{{name}}</a></li>
     {{/each}}
   </ul>
+
+  <h2>Add New User?</h2>
+  {{#if features.org_billing}}
+
+    <div>
+      <p>
+      Add a user to your team!
+      </p>
+
+      <form method="POST" id="org-user-add" action="/org/{{org.info.name}}">
+
+          <label for="name">Username</label>
+          <input required="required" type="text" id="username" name="username" />
+          <fieldset>
+            <legend>User Type:</legend>
+            <label for="role-1">Member</label>
+            <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
+            <label for="role-2">Team Admin</label>
+            <input type="radio" id="role-2" name="role" value="super-admin" />
+          </fieldset>
+
+          {{> form_security}}
+          <input type="hidden" name="updateType" value="addUser" />
+          <input type="submit" class="full-width" value="Add User" />
+
+        </form>
+    </div>
+  {{/if}}
+
 
 </div>

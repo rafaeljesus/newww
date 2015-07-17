@@ -103,5 +103,9 @@ module.exports = [
     path: "/org/{org}",
     method: "GET",
     handler: require('../handlers/org').getOrg
+  },{
+    path: "/org/{org}",
+    method: "POST",
+    handler: require('../handlers/org').updateOrg
   }
 ];

@@ -12,4 +12,28 @@ exp.getOrg = function (request, reply) {
   });
 };
 
+exp.updateOrg = function (request, reply) {
+  var opts = {};
+  var loggedInUser = request.loggedInUser.name;
+  var orgName = request.params.org;
+  var user = {
+    user: request.payload.username,
+    role: request.payload.role
+  };
+
+  Org(loggedInUser)
+    .addUser(orgName, user, function (err, addedUser){
+      if (err) {
+        request.logger.error(err);
+        return reply.view('errors/internal', err);
+      }
+      Org(loggedInUser)
+        .get(orgName, function (err, org) {
+          if (err) { request.logger.error(err); }
+          opts.org = org;
+          return reply.view('org/info', opts);
+        });
+    });
+};
+
 module.exports = exp;

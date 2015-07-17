@@ -23,7 +23,7 @@ module.exports = function (request, reply) {
       size : perPage,
       "query" : {
         "dis_max": {
-          "tie_breaker": 0.7,
+          "tie_breaker": 0.9,
           "boost": 1.2,
           "queries": [
             {
@@ -52,7 +52,7 @@ module.exports = function (request, reply) {
                   {"match_phrase": {"readme": request.query.q} }
                 ],
                 "minimum_should_match": 1,
-                "boost": 50
+                "boost": 30
               }
             },
           ]

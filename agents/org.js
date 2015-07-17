@@ -185,4 +185,4 @@ Org.prototype.getUsers = function (name, callback) {
 
     return callback(null, users);
   });
-}
+};

@@ -70,9 +70,9 @@ exports.bobUpdateBody = {
   "deleted": null,
   "emailObfuscated": "%62%6f%62%40%62%6f%6f%6d%2e%6d%65",
   "avatar": {
-    "small": "https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=50&default=retro",
-    "medium": "https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=100&default=retro",
-    "large": "https://secure.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=496&default=retro"
+    "small": "https://s.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=50&default=retro",
+    "medium": "https://s.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=100&default=retro",
+    "large": "https://s.gravatar.com/avatar/5cf1283a6c89c584954971789eda3656?size=496&default=retro"
   },
   "customer": {},
   "isPaid": true

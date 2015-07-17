@@ -37,7 +37,7 @@
     "crumb": "^4.0.3",
     "elasticsearch": "^2.4.3",
     "github-url-to-object": "^1.5.0",
-    "gravatar": "^1.1.1",
+    "gravatar": "^1.2.0",
     "handlebars": "^2.0.0",
     "handlebars-helper-pluralize": "^1.0.3",
     "hapi": "^8.4.0",

@@ -186,3 +186,25 @@ Org.prototype.getUsers = function (name, callback) {
     return callback(null, users);
   });
 };
+
+Org.prototype.getTeams = function (name, callback){
+  var url = USER_HOST + '/org/' + name + '/team';
+
+  Request.get({
+    url: url,
+    json: true,
+    id: name,
+    headers: { bearer: this.bearer }
+  }, function (err, resp, teams) {
+    if (err) { callback(err); }
+
+    if (resp.statusCode === 404) {
+      err = Error('org not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, teams);
+  });
+
+};

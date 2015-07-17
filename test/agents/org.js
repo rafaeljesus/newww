@@ -415,4 +415,40 @@ describe('Org', function () {
       });
     });
   });
+
+  describe('get teams', function () {
+    it('returns all the teams of an org', function (done) {
+      var name = 'bigcoOrg';
+
+      var orgMocks = nock('https://user-api-example.com')
+        .get('/org/'+ name + '/team')
+        .reply(200, fixtures.teams.bigcoOrg);
+
+      Org('bob').getTeams(name, function (err, teams) {
+        orgMocks.done();
+        expect(err).to.be.null();
+        expect(teams.items).to.be.an.array();
+        expect(teams.count).to.equal(1);
+        expect(teams.items[0].name).to.equal('developers');
+        done();
+      });
+    });
+
+    it('returns no teams if the org does not exist', function (done) {
+      var name = 'bigcoOrg';
+
+      var orgMocks = nock('https://user-api-example.com')
+        .get('/org/'+ name + '/team')
+        .reply(404, 'Org not found');
+
+      Org('bob').getTeams(name, function (err, teams) {
+        orgMocks.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('org not found');
+        expect(err.statusCode).to.equal(404);
+        expect(teams).to.not.exist();
+        done();
+      });
+    });
+  });
 });

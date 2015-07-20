@@ -74,7 +74,7 @@
     "npm-user-validate": "^0.1.1",
     "npm2es": "git://github.com/npm/npm2es",
     "numbat-collector": "~1.0.1",
-    "numbat-emitter": "~1.1.1",
+    "numbat-emitter": "~1.1.3",
     "number-grouper": "0.0.1",
     "parse-link-header": "^0.2.0",
     "prettydate": "0.0.1",

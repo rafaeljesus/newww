@@ -127,9 +127,19 @@ gulp.task('lint', function() {
 gulp.task('rev', function() {
 
     var revAll = new RevAll();
+    gulp.src('static/js/index.js')
+        .pipe(revAll.revision())
+        .pipe(gulp.dest('static'));
+
     gulp.src('static/js/index.min.js')
         .pipe(revAll.revision())
-        .pipe(gulp.dest('static/js'));
+        .pipe(gulp.dest('static'));
+
+    gulp.src('static/css/index.css')
+        .pipe(revAll.revision())
+        .pipe(gulp.dest('static'))
+        .pipe(revAll.manifestFile())
+        .pipe(gulp.dest('static'));
 
 });
 

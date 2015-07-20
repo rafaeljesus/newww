@@ -11,7 +11,8 @@ var gulp = require('gulp'),
     rename = require('gulp-rename'),
     // imagemin = require('gulp-imagemin'),
     jshint = require('gulp-jshint'),
-    pngcrush = require('imagemin-pngcrush');
+    pngcrush = require('imagemin-pngcrush'),
+    RevAll = require('gulp-rev-all');
 
 var paths = {
   fonts: ['./assets/fonts/*'],
@@ -123,6 +124,15 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat', 'tota11y']);
+gulp.task('rev', function() {
+
+    var revAll = new RevAll();
+    gulp.src('static/js/index.min.js')
+        .pipe(revAll.revision())
+        .pipe(gulp.dest('static/js'));
+
+});
+
+gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat', 'tota11y', 'rev']);
 gulp.task('dev', ['build', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

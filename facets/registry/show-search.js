@@ -22,22 +22,41 @@ module.exports = function (request, reply) {
       from: (page - 1) * perPage,
       size : perPage,
       "query" : {
-          "bool": {
-            "should": [
-                { "match": {
-                  "name" : {
-                    "query" : request.query.q,
-                    "type" : "phrase",
-                    "operator" : "and",
-                    boost: 20
+        "dis_max": {
+          "tie_breaker": 0.9,
+          "boost": 1.2,
+          "queries": [
+            {
+              "function_score": {
+                "query": {
+                  "match": {
+                    "name.untouched": request.query.q
                   }
-              }},
-              {"match_phrase": {"keywords": request.query.q} },
-              {"match_phrase": {"description": request.query.q} },
-              {"match_phrase": {"readme": request.query.q} }
-            ],
-            "minimum_should_match": 1
-          }
+                },
+                "boost_factor": 100
+              }
+            },
+            {
+              "bool": {
+                "should": [
+                  { "match": {
+                    "name" : {
+                      "query" : request.query.q,
+                      "type" : "phrase",
+                      "operator" : "and",
+                      boost: 20
+                    }}
+                  },
+                  {"match_phrase": {"keywords": request.query.q} },
+                  {"match_phrase": {"description": request.query.q} },
+                  {"match_phrase": {"readme": request.query.q} }
+                ],
+                "minimum_should_match": 1,
+                "boost": 30
+              }
+            },
+          ]
+        }
       }
     }
   };

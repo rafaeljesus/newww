@@ -38,20 +38,19 @@ var paths = {
   ]
 };
 
-gulp.task('watch', ['build'], function(){
+gulp.task('watch', ['dev-build'], function(){
   gulp.watch(paths.fonts, ['fonts']);
-  gulp.watch(paths.styles, ['rev']);
-  gulp.watch(paths.scripts.browserify, ['rev']);
-  gulp.watch(paths.templates, ['rev']);
+  gulp.watch(paths.styles, ['styles']);
+  gulp.watch(paths.scripts.browserify, ['browserify']);
+  gulp.watch(paths.templates, ['browserify']);
   gulp.watch(paths.scripts.vendor, ['concat']);
 });
 
-gulp.task('styles', function (cb) {
-  gulp.src('./assets/styles/index.styl')
+gulp.task('styles', function () {
+  return gulp.src('./assets/styles/index.styl')
     .pipe(stylus({use: [nib()]}))
     .pipe(gulp.dest('static/css/'));
 
-  cb();
 });
 
 gulp.task('browserify', function () {
@@ -97,7 +96,7 @@ gulp.task('misc', function(){
     .pipe(gulp.dest('static/misc'));
 })
 
-gulp.task('nodemon', ['build'], function() {
+gulp.task('nodemon', ['dev-build'], function() {
   process.env.NODE_ENV = 'dev';
   nodemon({
     script: 'server.js',
@@ -135,6 +134,8 @@ gulp.task('rev', ['browserify', 'styles'], function() {
         .pipe(gulp.dest('static'));
 });
 
-gulp.task('build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat', 'tota11y', 'rev']);
-gulp.task('dev', ['build', 'nodemon', 'watch']);
+gulp.task('dev-build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat']);
+gulp.task('prod-build', ['dev-build', 'rev']);
+gulp.task('build', ['prod-build']);
+gulp.task('dev', ['dev-build', 'tota11y', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

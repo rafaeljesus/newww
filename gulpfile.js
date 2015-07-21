@@ -36,7 +36,7 @@ var paths = {
   ]
 };
 
-gulp.task('watch', function(){
+gulp.task('watch', ['build'], function(){
   gulp.watch(paths.fonts, ['fonts']);
   gulp.watch(paths.styles, ['styles']);
   gulp.watch(paths.scripts.browserify, ['browserify']);
@@ -93,7 +93,7 @@ gulp.task('misc', function(){
     .pipe(gulp.dest('static/misc'));
 })
 
-gulp.task('nodemon', function() {
+gulp.task('nodemon', ['build'], function() {
   process.env.NODE_ENV = 'dev';
   nodemon({
     script: 'server.js',

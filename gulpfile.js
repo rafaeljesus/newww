@@ -40,9 +40,9 @@ var paths = {
 
 gulp.task('watch', ['build'], function(){
   gulp.watch(paths.fonts, ['fonts']);
-  gulp.watch(paths.styles, ['styles']);
-  gulp.watch(paths.scripts.browserify, ['browserify']);
-  gulp.watch(paths.templates, ['browserify']);
+  gulp.watch(paths.styles, ['rev']);
+  gulp.watch(paths.scripts.browserify, ['rev']);
+  gulp.watch(paths.templates, ['rev']);
   gulp.watch(paths.scripts.vendor, ['concat']);
 });
 

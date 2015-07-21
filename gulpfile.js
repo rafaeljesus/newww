@@ -45,13 +45,15 @@ gulp.task('watch', function(){
   gulp.watch(paths.scripts.vendor, ['concat']);
 });
 
-gulp.task('styles', function () {
+gulp.task('styles', function (cb) {
   gulp.src('./assets/styles/index.styl')
     .pipe(stylus({use: [nib()]}))
-    .pipe(gulp.dest('static/css/'))
+    .pipe(gulp.dest('static/css/'));
+
+  cb();
 });
 
-gulp.task('browserify', function () {
+gulp.task('browserify', function (cb) {
   browserify("./assets/scripts/index.js")
     .bundle()
     .pipe(source('index.js'))
@@ -59,6 +61,8 @@ gulp.task('browserify', function () {
     .pipe(rename('index.min.js'))
     .pipe(streamify(uglify()))
     .pipe(gulp.dest('static/js/'));
+
+  cb();
 });
 
 gulp.task('concat', function () {

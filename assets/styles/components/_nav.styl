@@ -109,3 +109,36 @@
 
   .nav-breadcrumb-flow-indicator li:last-child
     padding-left 9em
+
+.nav-3 li
+  float: left
+  color #ababab
+  width 200px
+  text-align center
+  position relative
+  border-right-width 1px
+  border-right-style solid
+  -webkit-border-image -webkit-linear-gradient(bottom, #ababab 0%, rgba(0, 0, 0, 0) 66%) 1
+  -moz-border-image -moz-linear-gradient(bottom, #ababab 0%, rgba(0, 0, 0, 0) 66%) 1
+  -o-border-image -o-linear-gradient(bottom, #ababab 0%, rgba(0, 0, 0, 0) 66%) 1
+  border-image linear-gradient(to top, #ababab 0%, rgba(0, 0, 0, 0) 66%) 1
+  &:first-child
+    border-left-width 1px
+    border-left-style solid
+
+
+.nav-3 a
+  color inherit
+  &:hover
+    text-decoration none
+
+.nav-3 .current
+  color #000
+  &:after
+    content "\0020"
+    position absolute
+    bottom 0
+    height 2px
+    width 100%
+    background-color #cb3837
+    display block

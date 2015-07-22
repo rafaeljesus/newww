@@ -296,6 +296,12 @@ var publicRoutes = [
     }
   }, {
     method: '*',
+    path: '/ui-docs',
+    handler: function(request, reply) {
+      return reply.view('ui-docs/index').code(200);
+    }
+  },{
+    method: '*',
     path: '/doc/{p*}',
     handler: function(request, reply) {
       return reply.redirect(require("url").format({

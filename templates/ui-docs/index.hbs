@@ -23,7 +23,12 @@
 <h3>Radios &amp; Checkboxes</h3>
 
 <h4>Slide checkbox</h4>
-<label class="switch-container"><input type="checkbox" class="switch" checked /><div class="switch"></div><span class="a11y-only">Read / Read-write switch</span></label>
+<div class="switch-container">
+  <label><span class="a11y-only">Write permission</span><input type="checkbox" class="switch" checked /><div class="switch"></div>
+  <span class="switch-label unchecked-text" aria-hidden="true">Read-Only</span>
+  <span class="switch-label checked-text" aria-hidden="true">Read/Write</span>
+  </label>
+</div>
 
 <h4>Standard Radio</h4>
 <fieldset>

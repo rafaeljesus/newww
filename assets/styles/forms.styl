@@ -252,11 +252,12 @@ input[type="checkbox"]:checked  /* :checked here acting as a filter for older br
   opacity 0
 
 
-.switch-container
+.switch-container label
   position relative
   display inline-block
   margin 0 1em 1em 0
   text-shadow 0 1px 1px white
+  width 12em
 
 
 input[type="checkbox"].switch + div
@@ -264,7 +265,7 @@ input[type="checkbox"].switch + div
   height .875em
   border 1px solid #f2f3f2
   border-radius 999px
-  margin 0 auto .8em
+  margin 0 auto
   background #fff
   background-origin border-box
   background-clip border-box
@@ -294,3 +295,18 @@ input[type="checkbox"].switch:checked + div:before
 
 input[type="checkbox"].switch:active + div:before
   background-color #aaa
+
+.switch-label
+  margin-top -1.25em
+  &.unchecked-text
+    float left
+  &.checked-text
+    float right
+
+.checked-text
+  font-weight normal
+
+input[type="checkbox"].switch:checked ~ .unchecked-text
+  font-weight normal
+input[type="checkbox"].switch:checked ~ .checked-text
+  font-weight bold

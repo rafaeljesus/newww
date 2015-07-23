@@ -106,7 +106,7 @@ input[type=file]
   padding-left 8px
   &.example
     &:before
-      content: "Example: "
+      content "Example: "
 
 form p
   margin 25px 0 0
@@ -239,3 +239,59 @@ label.wrapping-hidden-radio
     font-weight normal
     border-radius 3px
     padding 1px 8px 3px 8px
+
+
+/**
+ * Switch-style checkboxes.
+ * Inspired by Lea Verou
+ */
+
+input[type="checkbox"]:not(:checked),
+input[type="checkbox"]:checked  /* :checked here acting as a filter for older browsers */
+  position absolute
+  opacity 0
+
+
+.switch-container
+  position relative
+  display inline-block
+  margin 0 1em 1em 0
+  text-shadow 0 1px 1px white
+
+
+input[type="checkbox"].switch + div
+  width 2.125em
+  height .875em
+  border-radius 999px
+  margin 0 auto .8em
+  background #cdcdcd
+  background-origin border-box
+  background-clip border-box
+  box-shadow 0 1px 1px hsla(0,0%,100%,.8)
+  overflow hidden
+  transition-duration .4s
+  transition-property padding, width
+  padding-left .2em
+
+
+input[type="checkbox"].switch:checked + div
+  background rgb(203, 56, 55)
+  padding-left 1.2em
+
+
+input[type="checkbox"].switch + div:before
+  content ''
+  display block
+  width .7em
+  height .7em
+  margin 1px 0
+  border-radius inherit
+  background #878787
+
+
+input[type="checkbox"].switch:checked + div:before
+  background #832729
+
+
+input[type="checkbox"].switch:active + div:before
+  background-color #aaa

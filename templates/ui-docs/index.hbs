@@ -21,65 +21,6 @@
 
 <h2>Forms</h2>
 <h3>Radios &amp; Checkboxes</h3>
-<style>
-
-/**
- * Switch-style checkboxes.
- * Inspired by Espresso’s “Tools” switch
- */
-
-input[type="checkbox"]:not(:checked),
-input[type="checkbox"]:checked { /* :checked here acting as a filter for older browsers */
-  position: absolute;
-  opacity: 0;
-}
-
-.switch-container {
-  position: relative;
-  display: inline-block;
-  margin: 0 1em 1em 0;
-  text-shadow: 0 1px 1px white;
-}
-
-input[type="checkbox"].switch + div {
-  width: 2.125em;
-  height: .875em;
-  border-radius: 999px;
-  margin: 0 auto .8em;
-  background: #cdcdcd;
-  background-origin: border-box;
-  background-clip: border-box;
-  box-shadow: 0 1px 1px hsla(0,0%,100%,.8);
-  overflow: hidden;
-  transition-duration: .4s;
-  transition-property: padding, width;
-  padding-left: .2em;
-}
-
-input[type="checkbox"].switch:checked + div {
-  background: rgb(203, 56, 55);
-  padding-left: 1.2em;
-}
-
-input[type="checkbox"].switch + div:before {
-  content: '';
-  display: block;
-  width: .7em;
-  height: .7em;
-  margin: 1px 0;
-  border-radius: inherit;
-  background: #878787;
-}
-
-input[type="checkbox"].switch:checked + div:before {
-  background: #832729;
-}
-
-input[type="checkbox"].switch:active + div:before {
-  background-color: #aaa;
-}
-
-</style>
 
 <h4>Slide checkbox</h4>
 <label class="switch-container"><input type="checkbox" class="switch" checked /><div class="switch"></div><span class="a11y-only">Read / Read-write switch</span></label>

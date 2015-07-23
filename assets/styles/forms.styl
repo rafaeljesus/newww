@@ -262,20 +262,19 @@ input[type="checkbox"]:checked  /* :checked here acting as a filter for older br
 input[type="checkbox"].switch + div
   width 2.125em
   height .875em
+  border 1px solid #f2f3f2
   border-radius 999px
   margin 0 auto .8em
-  background #cdcdcd
+  background #fff
   background-origin border-box
   background-clip border-box
-  box-shadow 0 1px 1px hsla(0,0%,100%,.8)
   overflow hidden
   transition-duration .4s
-  transition-property padding, width
+  transition-property padding
   padding-left .2em
 
 
 input[type="checkbox"].switch:checked + div
-  background rgb(203, 56, 55)
   padding-left 1.2em
 
 
@@ -286,11 +285,11 @@ input[type="checkbox"].switch + div:before
   height .7em
   margin 1px 0
   border-radius inherit
-  background #878787
+  background #212121
 
 
 input[type="checkbox"].switch:checked + div:before
-  background #832729
+  background #c93a3c
 
 
 input[type="checkbox"].switch:active + div:before

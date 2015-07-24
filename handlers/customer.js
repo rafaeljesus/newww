@@ -169,3 +169,51 @@ customer.subscribe = function(request, reply) {
   }
 
 };
+
+customer.addUserToOrg = function (request, reply) {
+  var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser.name;
+  var userToAdd = {
+    user: request.payload.username,
+    role: request.payload.role
+  };
+  var opts = {};
+
+  Org(loggedInUser)
+    .addUser(orgName, userToAdd, function (err, addedUser) {
+      if (err) {
+        request.logger.error(err);
+        return reply.view('errors/internal', err);
+      }
+      request.customer.getLicense(loggedInUser, function(err, license) {
+        if (err) {
+          request.logger.error(err);
+          return reply.view('errors/internal', err);
+        }
+        request.customer.extendSponsorship(license.id, addedUser, function(err, sponsorship) {
+          if (err) {
+            request.logger.error(err);
+            return reply.view('errors/internal', err);
+          }
+          request.customer.acceptSponsorship(sponsorship.verification_key, function(err, sponsorship) {
+            if (err) {
+              request.logger.error(err);
+              return reply.view('errors/internal', err);
+            }
+            Org(loggedInUser)
+              .get(orgName, function (err, org) {
+                if (err) {
+                  request.logger.error(err);
+                  return reply.view('errors/internal', err);
+                }
+                opts.org = org;
+                return reply.view('org/info', opts);
+              });
+          });
+        });
+      });
+
+    });
+
+
+};

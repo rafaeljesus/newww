@@ -137,3 +137,43 @@ Customer.prototype.del = function(callback) {
     return err ? callback(err) : callback(null, body);
   });
 };
+
+Customer.prototype.getLicense = function (name, callback) {
+  var url = this.host + '/customer/' + name + '/license';
+
+  Request.get({
+    url: url,
+    json: true
+  }, function (err, resp, body) {
+    if (err) { return callback(err); }
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.extendSponsorship = function (licenseId, name, callback) {
+  var url = this.host + '/sponsorship/' + licenseId;
+  Request.put({
+    url: url,
+    json: true,
+    body: {
+      npm_user: name
+    }
+  }, function (err, resp, body) {
+    if (err) { return callback(err); }
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.acceptSponsorship = function (verificationKey, callback) {
+  var url = this.host + '/sponsorship/' + verificationKey + '/accept';
+  Request.post({
+    url: url,
+    json: true,
+
+  }, function (err, resp, body) {
+    if (err) { return callback(err); }
+    return callback(null, body);
+  });
+};

@@ -106,6 +106,6 @@ module.exports = [
   },{
     path: "/org/{org}",
     method: "POST",
-    handler: require('../handlers/org').updateOrg
+    handler: require('../handlers/customer').addUserToOrg
   }
 ];

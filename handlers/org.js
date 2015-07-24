@@ -21,19 +21,6 @@ exp.updateOrg = function (request, reply) {
     role: request.payload.role
   };
   if (request.payload.updateType === "addUser") {
-    Org(loggedInUser)
-      .addUser(orgName, user, function (err, addedUser) {
-        if (err) {
-          request.logger.error(err);
-          return reply.view('errors/internal', err);
-        }
-        Org(loggedInUser)
-          .get(orgName, function (err, org) {
-            if (err) { request.logger.error(err); }
-            opts.org = org;
-            return reply.view('org/info', opts);
-          });
-      });
   } else if (request.payload.updateType === "deleteUser") {
     Org(loggedInUser)
       .removeUser(orgName, user.user, function (err, removedUser) {

@@ -7,7 +7,17 @@
   <h2>Users</h2>
   <ul>
     {{#each org.users}}
-    <li><a href="/~{{name}}">{{name}}</a></li>
+    <li>
+      <a href="/~{{name}}">{{name}}</a>
+      <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">
+        {{#with ../this}}
+        {{> form_security }}
+        {{/with}}
+          <input type="hidden" name="username" value="{{name}}" />
+          <input type="hidden" name="updateType" value="deleteUser" />
+          <input type="submit" class="full-width" value="Delete User" />
+      </form>
+    </li>
     {{/each}}
   </ul>
 

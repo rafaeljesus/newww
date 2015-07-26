@@ -170,17 +170,18 @@ customer.subscribe = function(request, reply) {
 
 };
 
-customer.addUserToOrg = function (request, reply) {
+customer.updateOrg = function (request, reply) {
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser.name;
-  var userToAdd = {
+  var user = {
     user: request.payload.username,
     role: request.payload.role
   };
   var opts = {};
 
+  if (request.payload.updateType === "addUser") {
   Org(loggedInUser)
-    .addUser(orgName, userToAdd, function (err, addedUser) {
+    .addUser(orgName, user, function (err, addedUser) {
       if (err) {
         request.logger.error(err);
         return reply.view('errors/internal', err);
@@ -190,6 +191,7 @@ customer.addUserToOrg = function (request, reply) {
           request.logger.error(err);
           return reply.view('errors/internal', err);
         }
+        console.log(license.id);
         request.customer.extendSponsorship(license.id, addedUser, function(err, sponsorship) {
           if (err) {
             request.logger.error(err);
@@ -214,6 +216,21 @@ customer.addUserToOrg = function (request, reply) {
       });
 
     });
+  } else if (request.payload.updateType === "deleteUser") {
+    Org(loggedInUser)
+      .removeUser(orgName, user.user, function (err, removedUser) {
+        if (err) {
+          request.logger.error(err);
+          return reply.view('errors/internal', err);
+        }
+        Org(loggedInUser)
+          .get(orgName, function (err, org) {
+            if (err) { request.logger.error(err); }
+            opts.org = org;
+            return reply.view('org/info', opts);
+          });
+      });
+  }
 
 
 };

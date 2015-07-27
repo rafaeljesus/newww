@@ -191,8 +191,13 @@ customer.updateOrg = function (request, reply) {
           request.logger.error(err);
           return reply.view('errors/internal', err);
         }
-        console.log(license.id);
-        request.customer.extendSponsorship(license.id, addedUser, function(err, sponsorship) {
+        if (!license.length) {
+          err = new Error('Current user is not a customer');
+          request.logger.error(err);
+          return reply.view('errors/internal', err);
+        }
+        license = license[0];
+        request.customer.extendSponsorship(license.id, user.user, function(err, sponsorship) {
           if (err) {
             request.logger.error(err);
             return reply.view('errors/internal', err);

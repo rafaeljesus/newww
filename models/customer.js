@@ -170,10 +170,21 @@ Customer.prototype.acceptSponsorship = function (verificationKey, callback) {
   var url = this.host + '/sponsorship/' + verificationKey + '/accept';
   Request.post({
     url: url,
-    json: true,
-
+    json: true
   }, function (err, resp, body) {
     if (err) { return callback(err); }
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.getAllSponsorships = function (licenseId, callback) {
+  var url = this.host + '/sponsorship/' + licenseId;
+
+  Request.get({
+    url: url,
+    json: true
+  }, function (err, resp, body) {
+    if (err) { callback(err); }
     return callback(null, body);
   });
 };

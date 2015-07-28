@@ -244,6 +244,7 @@ describe("Customer", function() {
       });
 
     });
+
   });
 
   describe("del()", function() {

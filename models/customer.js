@@ -188,3 +188,26 @@ Customer.prototype.getAllSponsorships = function (licenseId, callback) {
     return callback(null, body);
   });
 };
+
+
+Customer.prototype.getLicenseIdForOrg = function (orgName, callback) {
+  this.getSubscriptions(function (err, subscriptions) {
+    if (err) { return callback(err); }
+
+    var org = _.find(subscriptions, function (subscription) {
+      return orgName === subscription.npm_org;
+    });
+
+    if (!org) {
+      err = new Error('No org with that name exists');
+      return callback(err);
+    }
+
+    if (!org.license_id) {
+      err = new Error('That org does not have a license_id');
+      return callback(err);
+    }
+
+    return callback(null, org.license_id);
+  });
+};

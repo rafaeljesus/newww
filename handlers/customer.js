@@ -216,19 +216,27 @@ customer.updateOrg = function (request, reply) {
 
     });
   } else if (request.payload.updateType === "deleteUser") {
-    Org(loggedInUser)
-      .removeUser(orgName, user.user, function (err, removedUser) {
-        if (err) {
-          request.logger.error(err);
-          return reply.view('errors/internal', err);
-        }
+    request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
+
+      request.customer.revokeSponsorship(user.user, licenseId, function (err, ) {
+
         Org(loggedInUser)
-          .get(orgName, function (err, org) {
-            if (err) { request.logger.error(err); }
-            opts.org = org;
-            return reply.view('org/info', opts);
+          .removeUser(orgName, user.user, function (err, removedUser) {
+            if (err) {
+              request.logger.error(err);
+              return reply.view('errors/internal', err);
+            }
+            Org(loggedInUser)
+              .get(orgName, function (err, org) {
+                if (err) { request.logger.error(err); }
+                opts.org = org;
+                return reply.view('org/info', opts);
+              });
           });
       });
+
+    });
+
   }
 
 

@@ -245,6 +245,35 @@ describe("Customer", function() {
 
     });
 
+    it("signs a user up for an org", function(done) {
+      var Customer = new CustomerModel('bob');
+      var planInfo = {
+        plan: 'npm-paid-org-6'
+      }
+      var customerMock = nock(Customer.host)
+        .put('/customer/bob/stripe/subscription', planInfo)
+        .reply(200, {
+          id: 'sub_12346',
+          current_period_end: 1436995358,
+          current_period_start: 1434403358,
+          quantity: 1,
+          status: 'active',
+          interval: 'month',
+          amount: 1200,
+          license_id: 1,
+          npm_org: 'bobs-big-org',
+          npm_user: 'bob',
+          product_id: '1031405a-70b7-4a3f-b552-8609d9e1428e'
+        });
+      Customer.createSubscription(planInfo, function(err, subscription) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(subscription.id).to.equal('sub_12346');
+        expect(subscription.npm_org).to.equal('bobs-big-org');
+        done();
+      });
+    });
+
   });
 
   describe("del()", function() {

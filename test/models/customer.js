@@ -256,7 +256,7 @@ describe("Customer", function() {
           id: 'sub_12346',
           current_period_end: 1436995358,
           current_period_start: 1434403358,
-          quantity: 1,
+          quantity: 2,
           status: 'active',
           interval: 'month',
           amount: 1200,

@@ -117,6 +117,16 @@ Customer.prototype.updateBilling = function(body, callback) {
   });
 };
 
+Customer.prototype.del = function(callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe';
+  Request.del({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    return err ? callback(err) : callback(null, body);
+  });
+};
+
 Customer.prototype.createSubscription = function(planInfo, callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription';
   Request.put({
@@ -128,88 +138,13 @@ Customer.prototype.createSubscription = function(planInfo, callback) {
   });
 };
 
-Customer.prototype.del = function(callback) {
-  var url = this.host + '/customer/' + this.name + '/stripe';
-  Request.del({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
-    return err ? callback(err) : callback(null, body);
-  });
-};
-
-Customer.prototype.getLicense = function (name, callback) {
-  var url = this.host + '/customer/' + name + '/license';
-
-  Request.get({
-    url: url,
-    json: true
-  }, function (err, resp, body) {
-    if (err) { return callback(err); }
-
-    return callback(null, body);
-  });
-};
-
-Customer.prototype.extendSponsorship = function (licenseId, name, callback) {
-  var url = this.host + '/sponsorship/' + licenseId;
-  Request.put({
-    url: url,
-    json: true,
-    body: {
-      npm_user: name
+Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
+  this.getSubscriptions(function(err, subscriptions) {
+    if (err) {
+      return callback(err);
     }
-  }, function (err, resp, body) {
-    if (err) { return callback(err); }
 
-    return callback(null, body);
-  });
-};
-
-Customer.prototype.acceptSponsorship = function (verificationKey, callback) {
-  var url = this.host + '/sponsorship/' + verificationKey + '/accept';
-  Request.post({
-    url: url,
-    json: true
-  }, function (err, resp, body) {
-    if (err) { return callback(err); }
-    return callback(null, body);
-  });
-};
-
-Customer.prototype.getAllSponsorships = function (licenseId, callback) {
-  var url = this.host + '/sponsorship/' + licenseId;
-
-  Request.get({
-    url: url,
-    json: true
-  }, function (err, resp, body) {
-    if (err) { callback(err); }
-    return callback(null, body);
-  });
-};
-
-Customer.prototype.removeSponsorship = function (npmUser, licenseId, callback) {
-  var url = this.host + '/sponsorship/' + licenseId + '/decline/' + npmUser;
-
-  Request.del({
-    url: url,
-    json: true
-  }, function (err, resp, body) {
-    if (err) { callback(err); }
-    return callback(null, body);
-  });
-};
-
-Customer.prototype.declineSponsorship =
-  Customer.prototype.revokeSponsorship =
-    Customer.prototype.removeSponsorship;
-
-Customer.prototype.getLicenseIdForOrg = function (orgName, callback) {
-  this.getSubscriptions(function (err, subscriptions) {
-    if (err) { return callback(err); }
-
-    var org = _.find(subscriptions, function (subscription) {
+    var org = _.find(subscriptions, function(subscription) {
       return orgName === subscription.npm_org;
     });
 
@@ -226,3 +161,66 @@ Customer.prototype.getLicenseIdForOrg = function (orgName, callback) {
     return callback(null, org.license_id);
   });
 };
+
+Customer.prototype.getAllSponsorships = function(licenseId, callback) {
+  var url = this.host + '/sponsorship/' + licenseId;
+
+  Request.get({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    if (err) {
+      return callback(err);
+    }
+
+
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
+  var url = this.host + '/sponsorship/' + licenseId;
+  Request.put({
+    url: url,
+    json: true,
+    body: {
+      npm_user: name
+    }
+  }, function(err, resp, body) {
+    if (err) {
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
+  var url = this.host + '/sponsorship/' + verificationKey + '/accept';
+  Request.post({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    if (err) {
+      return callback(err);
+    }
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
+  var url = this.host + '/sponsorship/' + licenseId + '/decline/' + npmUser;
+
+  Request.del({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    if (err) {
+      callback(err);
+    }
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.declineSponsorship = Customer.prototype.revokeSponsorship = Customer.prototype.removeSponsorship;

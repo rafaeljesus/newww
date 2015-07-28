@@ -213,6 +213,22 @@ describe("Customer", function() {
     });
   });
 
+  describe("del()", function() {
+    it("cancels a user's subscription", function(done) {
+      var Customer = new CustomerModel('bob');
+      var createCustomerMock = nock(Customer.host)
+        .delete('/customer/bob/stripe')
+        .reply(200, 'customer deleted');
+
+      Customer.del(function(err, response) {
+        createCustomerMock.done();
+        expect(err).to.not.exist();
+        expect(response).to.equal("customer deleted");
+        done();
+      });
+    });
+  });
+
   describe("createSubscription()", function() {
     it("signs a user up for private modules", function(done) {
       var Customer = new CustomerModel('bob');
@@ -276,17 +292,116 @@ describe("Customer", function() {
 
   });
 
-  describe("del()", function() {
-    it("cancels a user's subscription", function(done) {
+  describe("getLicenseIdForOrg", function() {
+    it('returns an error if there is no org with that name', function(done) {
       var Customer = new CustomerModel('bob');
-      var createCustomerMock = nock(Customer.host)
-        .delete('/customer/bob/stripe')
-        .reply(200, 'customer deleted');
+      var customerMock = nock(Customer.host)
+        .get('/customer/bob/stripe/subscription')
+        .reply(404);
 
-      Customer.del(function(err, response) {
-        createCustomerMock.done();
-        expect(err).to.not.exist();
-        expect(response).to.equal("customer deleted");
+      Customer.getLicenseIdForOrg('bobs-big-org', function(err, licenseId) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('No org with that name exists');
+        expect(licenseId).not.exist();
+        done();
+      });
+    });
+
+    it('returns an error if the org does not have a license id', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .get('/customer/bob/stripe/subscription')
+        .reply(200, [
+          {
+            "id": "sub_abcd",
+            "current_period_end": 1439766874,
+            "current_period_start": 1437088474,
+            "quantity": 2,
+            "status": "active",
+            "interval": "month",
+            "amount": 600,
+            "npm_org": "bobs-big-org",
+            "npm_user": "rockbot",
+            "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
+          }
+        ]);
+
+      Customer.getLicenseIdForOrg('bobs-big-org', function(err, licenseId) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('That org does not have a license_id');
+        expect(licenseId).to.not.exist();
+        done();
+      });
+    });
+
+    it('gets the license id for an org', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .get('/customer/bob/stripe/subscription')
+        .reply(200, [
+          {
+            "id": "sub_abcd",
+            "current_period_end": 1439766874,
+            "current_period_start": 1437088474,
+            "quantity": 2,
+            "status": "active",
+            "interval": "month",
+            "amount": 600,
+            "license_id": 1,
+            "npm_org": "bobs-big-org",
+            "npm_user": "rockbot",
+            "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
+          },
+          {
+            "id": "sub_abce",
+            "current_period_end": 1439762958,
+            "current_period_start": 1437084558,
+            "quantity": 1,
+            "status": "active",
+            "interval": "month",
+            "amount": 700,
+            "license_id": 2,
+            "npm_org": "_private-modules-bob",
+            "npm_user": "bob",
+            "product_id": "1031405a-70b7-4a3f-b553-8609d9e1428e"
+          }
+        ]);
+
+      Customer.getLicenseIdForOrg('bobs-big-org', function(err, licenseId) {
+        customerMock.done();
+        expect(err).to.be.null();
+        expect(licenseId).to.equal(1);
+        done();
+      });
+    });
+  });
+
+  describe("getAllSponsorships", function() {
+    it('gets all sponsorships for an organization', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .get('/sponsorship/123')
+        .reply(200, [
+          {
+            "id": 10,
+            "license_id": 123,
+            "npm_user": "bob",
+            "verification_key": "1031405a-70b7-4a3f-b553-8609d9e4428e",
+            "verified": true,
+            "created": "2015-07-28T18:42:00.623Z",
+            "updated": "2015-07-28T18:42:00.715Z",
+            "deleted": null
+          }
+        ]);
+
+      Customer.getAllSponsorships(123, function(err, sponsorships) {
+        customerMock.done();
+        expect(err).to.be.null();
+        expect(sponsorships).to.be.an.array();
+        expect(sponsorships[0].license_id).to.equal(123);
+        expect(sponsorships[0].npm_user).to.equal('bob');
         done();
       });
     });

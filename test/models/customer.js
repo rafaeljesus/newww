@@ -409,6 +409,24 @@ describe("Customer", function() {
   });
 
   describe("extendSponsorship", function() {
+    it("throws an error if licenseId doesn't exist", function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .put('/sponsorship/11111', {
+          npm_user: "boomer"
+        })
+        .reply(404);
+
+      Customer.extendSponsorship(11111, "boomer", function(err, sponsorships) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal("License not found: 11111");
+        expect(err.statusCode).to.equal(404);
+
+        done();
+      });
+    });
+
     it("creates a sponsorship for a user", function(done) {
       var Customer = new CustomerModel('bob');
       var customerMock = nock(Customer.host)

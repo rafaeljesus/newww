@@ -192,6 +192,12 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
       return callback(err);
     }
 
+    if (resp.statusCode === 404) {
+      err = Error('License not found: ' + licenseId);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
     return callback(null, body);
   });
 };

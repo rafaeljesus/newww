@@ -380,7 +380,7 @@ describe('Org', function () {
       Org('bob').addUser(name, user, function (err, user) {
         orgMocks.done();
         expect(err).to.exist();
-        expect(err.message).to.equal("org not found");
+        expect(err.message).to.equal("org or user not found");
         expect(err.statusCode).to.equal(404);
         expect(user).to.not.exist();
         done();

@@ -379,6 +379,7 @@ describe("Customer", function() {
   });
 
   describe("getAllSponsorships", function() {
+    //TODO: handle error cases
     it('gets all sponsorships for an organization', function(done) {
       var Customer = new CustomerModel('bob');
       var customerMock = nock(Customer.host)
@@ -402,6 +403,37 @@ describe("Customer", function() {
         expect(sponsorships).to.be.an.array();
         expect(sponsorships[0].license_id).to.equal(123);
         expect(sponsorships[0].npm_user).to.equal('bob');
+        done();
+      });
+    });
+  });
+
+  describe("extendSponsorship", function() {
+    it("creates a sponsorship for a user", function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .put('/sponsorship/123', {
+          npm_user: "boomer"
+        })
+        .reply(200, [
+          {
+            "created": "2015-07-28T18:42:00.623Z",
+            "deleted": null,
+            "id": 10,
+            "license_id": 20,
+            "npm_user": "boomer",
+            "updated": "2015-07-28T18:42:00.715Z",
+            "verification_key": "4589ad19-c263-4710-819f-7ef7fac8955d",
+            "verified": true
+          }
+        ]);
+
+      Customer.extendSponsorship(123, "boomer", function(err, sponsorships) {
+        customerMock.done();
+        expect(err).to.be.null();
+        expect(sponsorships).to.be.an.array();
+        expect(sponsorships[0].license_id).to.equal(20);
+        expect(sponsorships[0].npm_user).to.equal("boomer");
         done();
       });
     });

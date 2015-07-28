@@ -380,6 +380,21 @@ describe("Customer", function() {
 
   describe("getAllSponsorships", function() {
     //TODO: handle error cases
+    it('has error when string is passed for licenseId', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .get('/sponsorship/asdbadbb')
+        .reply(500, "invalid input syntax for integer: \"asdbadbb\"");
+
+      Customer.getAllSponsorships('asdbadbb', function(err, sponsorships) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(500);
+        expect(err.message).to.equal("invalid input syntax for integer: \"asdbadbb\"");
+        done();
+      });
+    });
+
     it('gets all sponsorships for an organization', function(done) {
       var Customer = new CustomerModel('bob');
       var customerMock = nock(Customer.host)

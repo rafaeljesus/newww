@@ -173,6 +173,13 @@ Customer.prototype.getAllSponsorships = function(licenseId, callback) {
       return callback(err);
     }
 
+    if (resp.statusCode === 500) {
+      err = new Error();
+      err.statusCode = resp.statusCode;
+      err.message = body;
+      return callback(err);
+    }
+
 
 
     return callback(null, body);

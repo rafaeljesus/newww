@@ -196,6 +196,8 @@ var removeSponsorship = function (npmUser, licenseId, callback) {
     url: url,
     json: true
   }, function (err, resp, body) {
+    if (err) { callback(err); }
+    return callback(body);
   });
 };
 

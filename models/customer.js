@@ -189,6 +189,19 @@ Customer.prototype.getAllSponsorships = function (licenseId, callback) {
   });
 };
 
+var removeSponsorship = function (npmUser, licenseId, callback) {
+  var url = this.host + '/sponsorship/' + licenseId + '/decline/' + npmUser;
+
+  Request.del({
+    url: url,
+    json: true
+  }, function (err, resp, body) {
+  });
+};
+
+Customer.prototype.declineSponsorship =
+  Customer.prototype.revokeSponsorship =
+    removeSponsorship.bind(Customer);
 
 Customer.prototype.getLicenseIdForOrg = function (orgName, callback) {
   this.getSubscriptions(function (err, subscriptions) {

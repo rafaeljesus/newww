@@ -189,7 +189,7 @@ Customer.prototype.getAllSponsorships = function (licenseId, callback) {
   });
 };
 
-var removeSponsorship = function (npmUser, licenseId, callback) {
+Customer.prototype.removeSponsorship = function (npmUser, licenseId, callback) {
   var url = this.host + '/sponsorship/' + licenseId + '/decline/' + npmUser;
 
   Request.del({
@@ -197,13 +197,13 @@ var removeSponsorship = function (npmUser, licenseId, callback) {
     json: true
   }, function (err, resp, body) {
     if (err) { callback(err); }
-    return callback(body);
+    return callback(null, body);
   });
 };
 
 Customer.prototype.declineSponsorship =
   Customer.prototype.revokeSponsorship =
-    removeSponsorship.bind(Customer);
+    Customer.prototype.removeSponsorship;
 
 Customer.prototype.getLicenseIdForOrg = function (orgName, callback) {
   this.getSubscriptions(function (err, subscriptions) {

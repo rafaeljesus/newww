@@ -218,10 +218,24 @@ customer.updateOrg = function (request, reply) {
   } else if (request.payload.updateType === "deleteUser") {
     request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
 
-      request.customer.revokeSponsorship(user.user, licenseId, function (err, ) {
+      if (err) {
+        request.logger.error('could not get license ID for ' + orgName);
+        request.logger.error(err);
+        // TODO: make better error page here
+        return reply.view('errors/internal', err);
+      }
+
+      request.customer.revokeSponsorship(user.user, licenseId, function (err) {
+
+        if (err) {
+          request.logger.error('issue revoking sponsorship for user ' + user);
+          request.logger.error(err);
+          // TODO: make better error page here
+          return reply.view('errors/internal', err);
+        }
 
         Org(loggedInUser)
-          .removeUser(orgName, user.user, function (err, removedUser) {
+          .removeUser(orgName, user.user, function (err) {
             if (err) {
               request.logger.error(err);
               return reply.view('errors/internal', err);

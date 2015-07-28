@@ -5,7 +5,7 @@ var exp = {};
 
 exp.getOrg = function (request, reply) {
   var opts = {};
-  var loggedInUser = request.loggedInUser.name;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   Org(loggedInUser)
     .get(request.params.org, function (err, org) {
     if (err) { request.logger.error(err); }

@@ -456,8 +456,8 @@ describe("Customer", function() {
             "license_id": 20,
             "npm_user": "boomer",
             "updated": "2015-07-28T18:42:00.715Z",
-            "verification_key": "4589ad19-c263-4710-819f-7ef7fac8955d",
-            "verified": true
+            "verification_key": "e640f651-ef53-4560-86a6-34cae5a38e15",
+            "verified": null
           }
         ]);
 
@@ -467,6 +467,51 @@ describe("Customer", function() {
         expect(sponsorships).to.be.an.array();
         expect(sponsorships[0].license_id).to.equal(20);
         expect(sponsorships[0].npm_user).to.equal("boomer");
+        done();
+      });
+    });
+  });
+
+  describe("acceptSponsorship", function() {
+    it('returns an error if the verification key is invalid', function(done) {
+      var verification_key = '4aboom';
+
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .post('/sponsorship/' + verification_key)
+        .reply(404);
+
+      Customer.acceptSponsorship(verification_key, function(err, verifiedUser) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('verification key not found');
+        expect(verifiedUser).to.not.exist();
+        done();
+      });
+    });
+
+    it('accepts a sponsorship with a valid verification key', function(done) {
+      var verification_key = 'e640f651-ef53-4560-86a6-34cae5a38e15';
+
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .post('/sponsorship/' + verification_key)
+        .reply(200, {
+          "id": 10,
+          "license_id": 20,
+          "npm_user": "boomer",
+          "verification_key": verification_key,
+          "verified": true,
+          "created": "2015-07-29T14:13:04.826Z",
+          "updated": "2015-07-29T14:13:16.206Z",
+          "deleted": null
+        });
+
+      Customer.acceptSponsorship(verification_key, function(err, verifiedUser) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(verifiedUser.verification_key).to.equal(verification_key);
+        expect(verifiedUser.verified).to.be.true();
         done();
       });
     });

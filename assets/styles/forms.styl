@@ -9,6 +9,10 @@ label
     color npmred
     font-size 14px
 
+  input[type=radio] + &
+    display inline-block
+    vertical-align middle
+
 textarea
   normal-font()
   font-size 16px
@@ -240,6 +244,30 @@ label.wrapping-hidden-radio
     border-radius 3px
     padding 1px 8px 3px 8px
 
+fieldset
+  legend
+    font-weight 600
+    margin-bottom 1em
+  ul,
+  ul li
+    list-style none
+    margin 0
+
+.inline-input-set
+  > div
+    display inline-block
+
+    &:first-child
+      margin-right 20px
+
+  .large
+    width 300px
+
+  .small
+    width 62px
+
+input[type=text] + .description
+  margin-top -1.5em
 
 /**
  * Switch-style checkboxes.

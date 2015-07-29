@@ -51,16 +51,20 @@
       </section>
       <section>
         <h2>Billing information</h2>
-        <label for="billing-email">billing email</label>
-        <input type="email" name="billing-email" id="billing-email" />
+        <div class="inline-input-set">
+          <div class="email large">
+            <label for="billing-email">billing email</label>
+            <input type="email" name="billing-email" id="billing-email" />
+          </div>
+        </div>
 
         <div class="inline-input-set">
-          <div class="card-number">
+          <div class="card-number large">
             <label for="billing-card-num">card #</label>
             <input required="required" type="text" name="billing-card-num" id="billing-card-num" />
           </div>
 
-          <div class="cvv">
+          <div class="cvv small">
             <label for="billing-cvv">cvv</label>
             <input required="required" type="text" name="billing-cvv" id="billing-cvv" />
           </div><!--/.cvv-->
@@ -69,11 +73,11 @@
         <fieldset>
           <legend>expiration date</legend>
           <div class="inline-input-set">
-            <div class="month">
+            <div class="month small">
               <label for="billing-month"><span class="a11y-only">Month</span></label>
               <input required="required" type="text" minlength="2" maxlength="2" name="billing-month" placeholder="MM" />
             </div><!--/.month-->
-            <div class="year">
+            <div class="year small">
               <label for="billing-year"><span class="a11y-only">Year</span></label>
               <input required="required" type="text" minlength="4" maxlength="4" name="billing-year" placeholder="YYYY" />
             </div><!--/.year-->

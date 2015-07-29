@@ -223,7 +223,7 @@ Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
 };
 
 Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
-  var url = this.host + '/sponsorship/' + licenseId + '/decline/' + npmUser;
+  var url = this.host + '/sponsorship/' + licenseId + '/' + npmUser;
 
   Request.del({
     url: url,

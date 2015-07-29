@@ -73,9 +73,7 @@ describe("Customer", function() {
 
       var customerMock = nock(Customer.host)
         .get('/customer/haxor/stripe')
-        .reply(200, fixtures.customers.happy)
-        // .get('/customer/haxor/stripe/subscription')
-        // .reply(200, fixtures.customers.bob_subscriptions);
+        .reply(200, fixtures.customers.happy);
 
       Customer.get(function(err, body) {
         customerMock.done();
@@ -89,9 +87,7 @@ describe("Customer", function() {
 
       var customerMock = nock(Customer.host)
         .get('/customer/zozo/stripe')
-        .reply(200, fixtures.customers.happy)
-        // .get('/customer/zozo/stripe/subscription')
-        // .reply(200, fixtures.customers.bob_subscriptions);
+        .reply(200, fixtures.customers.happy);
 
       Customer.get(function(err, body) {
         customerMock.done();
@@ -198,8 +194,6 @@ describe("Customer", function() {
         var createCustomerMock = nock(Customer.host)
           .get('/customer/bob/stripe')
           .reply(200, {})
-          // .get('/customer/bob/stripe/subscription')
-          // .reply(200, [])
           .post('/customer/bob/stripe', billingInfo)
           .reply(200, "Your card's security code is incorrect.");
 
@@ -517,4 +511,92 @@ describe("Customer", function() {
     });
   });
 
+  describe('removeSponsorship', function() {
+    it('returns an error if the user is not found', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .delete('/sponsorship/20/notfound')
+        .reply(404);
+
+      Customer.removeSponsorship("notfound", 20, function(err, removedUser) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('user or licenseId not found');
+        expect(removedUser).to.not.exist();
+        done();
+      });
+    });
+
+    it('removes the sponsorship for a valid user', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .delete('/sponsorship/20/boomer')
+        .reply(200, {
+          "id": 10,
+          "license_id": 20,
+          "npm_user": "boomer",
+          "verification_key": "e640f651-ef53-4560-86a6-34cae5a38e15",
+          "verified": true,
+          "created": "2015-07-29T14:13:04.826Z",
+          "updated": "2015-07-29T14:13:16.206Z",
+          "deleted": "2015-07-29T14:53:01.243Z"
+        });
+
+      Customer.removeSponsorship("boomer", 20, function(err, removedUser) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(removedUser.npm_user).to.equal('boomer');
+        expect(removedUser.deleted).to.be.a.string();
+        done();
+      });
+    });
+
+    it('is an alias for declineSponsorship', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .delete('/sponsorship/20/boomer')
+        .reply(200, {
+          "id": 10,
+          "license_id": 20,
+          "npm_user": "boomer",
+          "verification_key": "e640f651-ef53-4560-86a6-34cae5a38e15",
+          "verified": true,
+          "created": "2015-07-29T14:13:04.826Z",
+          "updated": "2015-07-29T14:13:16.206Z",
+          "deleted": "2015-07-29T14:53:01.243Z"
+        });
+
+      Customer.declineSponsorship("boomer", 20, function(err, removedUser) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(removedUser.npm_user).to.equal('boomer');
+        expect(removedUser.deleted).to.be.a.string();
+        done();
+      });
+    });
+
+    it('is an alias for revokeSponsorship', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .delete('/sponsorship/20/boomer')
+        .reply(200, {
+          "id": 10,
+          "license_id": 20,
+          "npm_user": "boomer",
+          "verification_key": "e640f651-ef53-4560-86a6-34cae5a38e15",
+          "verified": true,
+          "created": "2015-07-29T14:13:04.826Z",
+          "updated": "2015-07-29T14:13:16.206Z",
+          "deleted": "2015-07-29T14:53:01.243Z"
+        });
+
+      Customer.revokeSponsorship("boomer", 20, function(err, removedUser) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(removedUser.npm_user).to.equal('boomer');
+        expect(removedUser.deleted).to.be.a.string();
+        done();
+      });
+    });
+  });
 });

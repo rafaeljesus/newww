@@ -15,45 +15,37 @@
         <input required="required" type="text" id="fullname" name="fullname" placeholder="Name of Organization&hellip;" />
         <p class="description">Choose wisely! The Org name <strong class="fake-strong">cannot</strong> be changed.</p>
 
-        <label for="name">Organization Namespace</label>
-        <input required="required" type="text" id="name" name="name" />
+        <label for="orgName">Organization Namespace</label>
+        <input required="required" type="text" id="orgName" name="orgName" />
 
         <fieldset>
           <legend>Organization Type</legend>
-          <p>To publish private packages, you need a paid Org</p>
-
-          <input type="radio" id="premium" name="org-type" value="premium" checked="checked"/>
-          <label for="premium" class="collapsible-label">Create a Premium Org</label>
-          <div class="collapsible-content">
-            <ul>
-              <li>
-                <input type="radio" id="focused" name="paid-org-type" value="focused"/>
-                <label for="focused" class="collapsible-label">Focused Org</label>
-                <p class="description">
-                  <span class="included">$14/month for 2 included users</span>
-                  <span class="additional">$7/month for additional users</span>
-                </p>
-              </li>
-              <li>
-                <input type="radio" id="project" name="paid-org-type" value="project"/>
-                <label for="project" class="collapsible-label">Project Org</label>
-                <p class="description">
-                  <span class="included">$70/month for 10 included users</span>
-                  <span class="additional">$7/month for additional users</span>
-                </p>
-              </li>
-              <li>
-                <input type="radio" id="full-company" name="paid-org-type" value="full-company"/>
-                <label for="full-company" class="collapsible-label">Full Company Org</label>
-                <p class="description">
-                  <span class="included">$1000/month for 100 included users &amp; dedicated support</span>
-                  <span class="additional">$7/month for additional users</span>
-                </p>
-              </li>
-          </div>
-
-          <input type="radio" id="free" name="org-type" value="free"/>
-          <label for="free" class="collapsible-label">Free Org</label>
+          <ul>
+            <li>
+              <input type="radio" id="focused" name="paid-org-type" value="focused" slected="selected"/>
+              <label for="focused" class="collapsible-label">Focused Org</label>
+              <p class="description">
+                <span class="included">$14/month for 2 included users</span>
+                <span class="additional">$7/month for additional users</span>
+              </p>
+            </li>
+            <li>
+              <input type="radio" id="project" name="paid-org-type" value="project"/>
+              <label for="project" class="collapsible-label">Project Org</label>
+              <p class="description">
+                <span class="included">$70/month for 10 included users</span>
+                <span class="additional">$7/month for additional users</span>
+              </p>
+            </li>
+            <li>
+              <input type="radio" id="full-company" name="paid-org-type" value="full-company"/>
+              <label for="full-company" class="collapsible-label">Full Company Org</label>
+              <p class="description">
+                <span class="included">$700/month for 100 included users &amp; dedicated support</span>
+                <span class="additional">$7/month for additional users</span>
+              </p>
+            </li>
+          </ul>
 
         </fieldset>
       </section>

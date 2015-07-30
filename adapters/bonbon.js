@@ -39,6 +39,7 @@ exports.register = function(server, options, next) {
     if (request.auth && request.auth.credentials && !request.path.match(/static\//)) {
       UserModel.new(request).get(request.auth.credentials.name, function(err, user) {
         if (err) { request.logger.warn(err); }
+        if (user) { user.sid = request.auth.credentials.sid; }
         request.loggedInUser = user;
         request.customer = user && new CustomerModel(user.name);
         completePreHandler();

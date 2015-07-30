@@ -17,7 +17,7 @@ exp.getOrg = function (request, reply) {
           request.logger.error( err );
           return reply.view('errors/internal', err);
         }
-        var requests = [];
+
         var subscription = subscriptions.filter(function(subscription){
           return subscription.npm_org === request.params.org;
         });
@@ -33,6 +33,17 @@ exp.getOrg = function (request, reply) {
         }
       });
   });
+};
+
+exp.deleteOrg = function (request, reply) {
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  Org(loggedInUser)
+    .delete(request.params.org, function (err) {
+      if (err) { request.logger.error(err); }
+
+      return reply.redirect('/org');
+    });
 };
 
 

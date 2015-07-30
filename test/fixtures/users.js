@@ -211,4 +211,49 @@ exports.bigcoadmin = {
   role: "super-admin"
 };
 
+exports.bobsubscriptions = [
+  {
+    "id": "sub_abcd",
+    "current_period_end": 1439766874,
+    "current_period_start": 1437088474,
+    "quantity": 2,
+    "status": "active",
+    "interval": "month",
+    "amount": 700,
+    "license_id": 1,
+    "npm_org": "bigco",
+    "npm_user": "bob",
+    "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
+  },
+  {
+    "id": "sub_abce",
+    "current_period_end": 1439762958,
+    "current_period_start": 1437084558,
+    "quantity": 1,
+    "status": "active",
+    "interval": "month",
+    "amount": 700,
+    "license_id": 2,
+    "npm_org": "_private-modules-bob",
+    "npm_user": "bob",
+    "product_id": "1031405a-70b7-4a3f-b553-8609d9e1428e"
+  }
+];
+
+exports.bobPrivateModules = [
+  {
+    "id": "sub_abce",
+    "current_period_end": 1439762958,
+    "current_period_start": 1437084558,
+    "quantity": 1,
+    "status": "active",
+    "interval": "month",
+    "amount": 700,
+    "license_id": 2,
+    "npm_org": "_private-modules-bob",
+    "npm_user": "bob",
+    "product_id": "1031405a-70b7-4a3f-b553-8609d9e1428e"
+  }
+];
+
 exports.packages = require("./user_packages")

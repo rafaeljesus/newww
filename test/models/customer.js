@@ -271,7 +271,7 @@ describe("Customer", function() {
           interval: 'month',
           amount: 1200,
           license_id: 1,
-          npm_org: 'bobs-big-org',
+          npm_org: 'bigco',
           npm_user: 'bob',
           product_id: '1031405a-70b7-4a3f-b552-8609d9e1428e'
         });
@@ -279,7 +279,7 @@ describe("Customer", function() {
         customerMock.done();
         expect(err).to.not.exist();
         expect(subscription.id).to.equal('sub_12346');
-        expect(subscription.npm_org).to.equal('bobs-big-org');
+        expect(subscription.npm_org).to.equal('bigco');
         done();
       });
     });
@@ -293,7 +293,7 @@ describe("Customer", function() {
         .get('/customer/bob/stripe/subscription')
         .reply(404);
 
-      Customer.getLicenseIdForOrg('bobs-big-org', function(err, licenseId) {
+      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
         customerMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('No org with that name exists');
@@ -315,13 +315,13 @@ describe("Customer", function() {
             "status": "active",
             "interval": "month",
             "amount": 600,
-            "npm_org": "bobs-big-org",
+            "npm_org": "bigco",
             "npm_user": "rockbot",
             "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
           }
         ]);
 
-      Customer.getLicenseIdForOrg('bobs-big-org', function(err, licenseId) {
+      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
         customerMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('That org does not have a license_id');
@@ -334,36 +334,9 @@ describe("Customer", function() {
       var Customer = new CustomerModel('bob');
       var customerMock = nock(Customer.host)
         .get('/customer/bob/stripe/subscription')
-        .reply(200, [
-          {
-            "id": "sub_abcd",
-            "current_period_end": 1439766874,
-            "current_period_start": 1437088474,
-            "quantity": 2,
-            "status": "active",
-            "interval": "month",
-            "amount": 600,
-            "license_id": 1,
-            "npm_org": "bobs-big-org",
-            "npm_user": "rockbot",
-            "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
-          },
-          {
-            "id": "sub_abce",
-            "current_period_end": 1439762958,
-            "current_period_start": 1437084558,
-            "quantity": 1,
-            "status": "active",
-            "interval": "month",
-            "amount": 700,
-            "license_id": 2,
-            "npm_org": "_private-modules-bob",
-            "npm_user": "bob",
-            "product_id": "1031405a-70b7-4a3f-b553-8609d9e1428e"
-          }
-        ]);
+        .reply(200, fixtures.users.bobsubscriptions);
 
-      Customer.getLicenseIdForOrg('bobs-big-org', function(err, licenseId) {
+      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
         customerMock.done();
         expect(err).to.be.null();
         expect(licenseId).to.equal(1);

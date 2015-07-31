@@ -98,7 +98,7 @@ customer.deleteBillingInfo = function(request, reply) {
 
 var plans = {
   private_modules: 'npm-paid-individual-user-7',
-  orgs: 'npm-paid-org-6'
+  orgs: 'npm-paid-org-7'
 };
 
 customer.subscribe = function(request, reply) {

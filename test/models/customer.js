@@ -258,7 +258,7 @@ describe("Customer", function() {
     it("signs a user up for an org", function(done) {
       var Customer = new CustomerModel('bob');
       var planInfo = {
-        plan: 'npm-paid-org-6'
+        plan: 'npm-paid-org-7'
       }
       var customerMock = nock(Customer.host)
         .put('/customer/bob/stripe/subscription', planInfo)

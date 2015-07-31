@@ -130,8 +130,8 @@ describe('GET / for a logged-in user', function () {
     done();
   });
 
-  it("displays a link to log out", function (done) {
-    expect($("#user-info a[href='/logout']").length).to.equal(1);
+  it("displays a form and button to log out", function (done) {
+    expect($("#user-info form[action='/logout'] button").length).to.equal(1);
     done();
   });
 

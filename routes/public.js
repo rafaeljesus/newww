@@ -250,7 +250,7 @@ var publicRoutes = [
     handler: require('../facets/user/show-login')
   },{
     path: "/logout",
-    method: "GET",
+    method: "POST",
     handler: require('../facets/user/show-logout')
   },{
     path: "/forgot/{token?}",

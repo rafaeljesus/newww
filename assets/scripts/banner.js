@@ -12,7 +12,7 @@ module.exports = function() {
       return
     }
 
-    $('#notification-banner').show()
+    $('#notification-banner').removeClass("hidden")
 
     $('#notification-banner a').click(function (e) {
       localStorage.setItem('disable-private-modules-banner', true)

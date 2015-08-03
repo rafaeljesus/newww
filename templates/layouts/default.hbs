@@ -75,7 +75,7 @@
           </a>
           <ul>
             <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
-            <li class="logout"><a href="/logout" class="subdued">log out</a></li>
+            <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
           </ul>
         {{else}}
           <a href="/login"><img src="/static/images/wombat-avatar-small.png" /></a>

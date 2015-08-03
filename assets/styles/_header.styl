@@ -366,7 +366,7 @@ nav
         text-decoration underline !important
 
 #notification-banner
-  padding 70px 10px
+  padding 40px 10px
   color background-color
   font-size 14px
   font-weight 600
@@ -378,9 +378,7 @@ nav
 
   img
     display inline-block
-    max-width 200px
-    @media only screen and (max-width: mobileMaxWidth)
-      max-width 140px
+    max-width 140px
 
   hgroup
     display block
@@ -401,6 +399,15 @@ nav
     background-color darken(npmred, 10%)
     display inline-block
 
-    &.button-subtle
+    &.button-subtle,
+    &.button-banner-close
       background none
-      color rgba(background-color, 0.3)
+
+    &.button-banner-close
+      position absolute
+      top 1em
+      right 0
+
+@media (max-width: mobileMaxWidth)
+  #notification-banner
+    display none

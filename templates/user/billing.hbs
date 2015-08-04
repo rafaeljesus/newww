@@ -192,16 +192,7 @@
       </p>
 
       {{#if customer}}
-        <form method="POST" id="org-form" action="/settings/billing/subscribe">
-
-          <label for="organization-scope">organization scope</label>
-          <input required="required" type="text" id="organization-scope" name="orgName" />
-
-          {{> form_security}}
-          <input type="hidden" name="planType" value="orgs" />
-          <input type="submit" class="full-width" value="create my organization" />
-
-        </form>
+        <a class="button full-width" href="/org/create">create my organization</a>
       {{else}}
         <p>To sign up for orgs and teams, you need to update your billing information.</p>
       {{/if}}

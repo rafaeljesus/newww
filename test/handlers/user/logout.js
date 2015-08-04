@@ -1,4 +1,5 @@
-var Code = require('code'),
+var generateCrumb = require("../crumb"),
+    Code = require('code'),
     Lab = require('lab'),
     lab = exports.lab = Lab.script(),
     describe = lab.experiment,
@@ -27,28 +28,42 @@ after(function (done) {
 
 describe('logout', function () {
   it('redirects to the homepage if there is no logged in user', function (done) {
-    var options = {
-      url: '/logout'
-    };
+    generateCrumb(server, function (crumb) {
+      var options = {
+        url: '/logout',
+        method: 'POST',
+        payload: {
+          crumb: crumb,
+        },
+        headers: { cookie: 'crumb=' + crumb }
+      };
 
-    server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(302);
-      expect(resp.request.response.headers.location).to.equal('/');
-      done();
+      server.inject(options, function (resp) {
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.equal('/');
+        done();
+      });
     });
   });
 
   it('deletes the session for the logged in user', function (done) {
-    var options = {
-      url: '/logout',
-      credentials: users.bob
-    };
+    generateCrumb(server, function (crumb) {
+      var options = {
+        url: '/logout',
+        method: 'POST',
+        payload: {
+          crumb: crumb,
+        },
+        headers: { cookie: 'crumb=' + crumb },
+        credentials: users.bob
+      };
 
-    server.inject(options, function (resp) {
-      expect(resp.statusCode).to.equal(302);
-      expect(server.methods.user.delSession.called).to.be.true();
-      expect(resp.request.response.headers.location).to.equal('/');
-      done();
+      server.inject(options, function (resp) {
+        expect(resp.statusCode).to.equal(302);
+        expect(server.methods.user.delSession.called).to.be.true();
+        expect(resp.request.response.headers.location).to.equal('/');
+        done();
+      });
     });
   });
 });

@@ -22,7 +22,9 @@
               </span>
               <span class="name">
                 <a class="username" href="/~{{name}}">{{name}}</a>
-                <span class="preferred-name"></span>
+                {{#if resource.fullname}}
+                <span class="fullname">{{resource.fullname}}</span>
+                {{/if}}
               </span><!--/.name-->
             </div>
           </td>

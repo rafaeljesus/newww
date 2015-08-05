@@ -3,6 +3,7 @@ var assert = require('assert');
 var async = require('async');
 var Request = require('../lib/external-request');
 var USER_HOST = process.env.USER_API || "https://user-api-example.com";
+var avatar = require('../lib/avatar');
 
 var Org = module.exports = function(bearer) {
   assert(_.isString(bearer), "Must pass a bearer (loggedInUser) to Org agent");
@@ -84,7 +85,10 @@ Org.prototype.get = function(name, callback) {
     var org = {};
 
     org.info = results.org;
-    org.users = results.users.items;
+    org.users = results.users.items.map(function(user) {
+      user.avatar = avatar(user.email);
+      return user;
+    });
 
     return callback(null, org);
   });

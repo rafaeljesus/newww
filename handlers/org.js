@@ -1,8 +1,7 @@
 var Org = require('../agents/org');
 var Customer = require('../models/customer');
-var Org = {};
 
-Org.getOrg = function (request, reply) {
+exports.getOrg = function (request, reply) {
   var opts = {};
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   Org(loggedInUser)
@@ -34,7 +33,7 @@ Org.getOrg = function (request, reply) {
   });
 };
 
-Org.updateOrg = function (request, reply) {
+exports.updateOrg = function (request, reply) {
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser.name;
   var user = {
@@ -48,22 +47,22 @@ Org.updateOrg = function (request, reply) {
       .addUser(orgName, user, function (err, addedUser) {
         if (err) {
           request.logger.error(err);
-          return reply.view('errors/internal', err);
+          return reply.view('errors/internal', err).code(err.statusCode);
         }
         request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
           if (err) {
             request.logger.error(err);
-            return reply.view('errors/internal', err);
+            return reply.view('errors/internal', err).code(404);
           }
           request.customer.extendSponsorship(licenseId, user.user, function(err, extendedSponsorship) {
             if (err) {
               request.logger.error(err);
-              return reply.view('errors/internal', err);
+              return reply.view('errors/internal', err).code(err.statusCode);
             }
             request.customer.acceptSponsorship(extendedSponsorship.verification_key, function(err) {
               if (err) {
                 request.logger.error(err);
-                return reply.view('errors/internal', err);
+                return reply.view('errors/internal', err).code(err.statusCode);
               }
               Org(loggedInUser)
                 .get(orgName, function (err, org) {
@@ -85,23 +84,23 @@ Org.updateOrg = function (request, reply) {
         request.logger.error('could not get license ID for ' + orgName);
         request.logger.error(err);
         // TODO: make better error page here
-        return reply.view('errors/internal', err);
+        return reply.view('errors/internal', err).code(404);
       }
 
       request.customer.revokeSponsorship(user.user, licenseId, function (err) {
 
         if (err) {
-          request.logger.error('issue revoking sponsorship for user ' + user);
+          request.logger.error('issue revoking sponsorship for user ', user);
           request.logger.error(err);
           // TODO: make better error page here
-          return reply.view('errors/internal', err);
+          return reply.view('errors/internal', err).code(err.statusCode);
         }
 
         Org(loggedInUser)
           .removeUser(orgName, user.user, function (err) {
             if (err) {
               request.logger.error(err);
-              return reply.view('errors/internal', err);
+              return reply.view('errors/internal', err).code(err.statusCode);
             }
             Org(loggedInUser)
               .get(orgName, function (err, org) {
@@ -111,13 +110,11 @@ Org.updateOrg = function (request, reply) {
               });
           });
       });
-
     });
-
   }
 };
 
-Org.deleteOrg = function (request, reply) {
+exports.deleteOrg = function (request, reply) {
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
   Org(loggedInUser)
@@ -127,5 +124,3 @@ Org.deleteOrg = function (request, reply) {
       return reply.redirect('/org');
     });
 };
-
-module.exports = exports;

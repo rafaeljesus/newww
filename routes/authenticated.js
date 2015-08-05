@@ -106,7 +106,7 @@ module.exports = [
   },{
     path: "/org/{org}",
     method: "POST",
-    handler: require('../handlers/customer').updateOrg
+    handler: require('../handlers/org').updateOrg
   },{
     path: "/org/{org}",
     method: "DELETE",

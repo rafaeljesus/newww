@@ -5,21 +5,48 @@
   </hgroup>
 
   <h2>Users</h2>
-  <ul>
-    {{#each org.users}}
-    <li>
-      <a href="/~{{name}}">{{name}}</a>
-      <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">
-        {{#with ../this}}
-        {{> form_security }}
-        {{/with}}
-          <input type="hidden" name="username" value="{{name}}" />
-          <input type="hidden" name="updateType" value="deleteUser" />
-          <input type="submit" class="full-width" value="Delete User" />
-      </form>
-    </li>
-    {{/each}}
-  </ul>
+  {{#if org.users}}
+  <table>
+    <thead>
+      <th>Collaborators</th>
+      <th>Status</th>
+      <th>Action</th>
+    </thead>
+    <tbody>
+      {{#each org.users}}
+        <tr>
+          <td>
+            <div>
+              <span>img</span>
+              <span class="name">
+                <a class="username" href="/~{{name}}">{{name}}</a>
+                <span class="preferred-name"></span>
+              </span><!--/.name-->
+            </div>
+          </td>
+          <td>
+            <div class="switch-container">
+              <label><span class="a11y-only">Paid Status</span><input class="switch" checked="checked" type="checkbox" value="paid"><div class="switch"></div>
+              <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
+              <span class="switch-label checked-text" aria-hidden="true">paid</span>
+              </label>
+            </div>
+          </td>
+          <td>
+            <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">
+              {{#with ../this}}
+              {{> form_security }}
+              {{/with}}
+                <input type="hidden" name="username" value="{{name}}" />
+                <input type="hidden" name="updateType" value="deleteUser" />
+                <button type="submit" class="icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
+            </form>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
 
   <h2>Add New User?</h2>
   {{#if features.org_billing}}

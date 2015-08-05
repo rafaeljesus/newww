@@ -4,9 +4,9 @@
     <h1>{{org.info.name}}</h1>
   </hgroup>
 
-  <h2>Users</h2>
+  <h2>Paid Users</h2>
   {{#if org.users}}
-  <table>
+  <table class="org-users">
     <thead>
       <th>Collaborators</th>
       <th>Status</th>
@@ -17,13 +17,13 @@
         <tr>
           <td>
             <div>
-              <span class="avatar">
+              <span class="circle-avatar">
                 <img src="{{avatar.small}}" />
               </span>
               <span class="name">
                 <a class="username" href="/~{{name}}">{{name}}</a>
                 {{#if resource.fullname}}
-                <span class="fullname">{{resource.fullname}}</span>
+                <span class="display-name">{{resource.fullname}}</span>
                 {{/if}}
               </span><!--/.name-->
             </div>

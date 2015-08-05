@@ -3,84 +3,163 @@
   <hgroup>
     <h1>{{org.info.name}}</h1>
   </hgroup>
-
-  <h2>Paid Users</h2>
-  {{#if org.users}}
-  <table class="org-users">
-    <thead>
-      <th>Collaborators</th>
-      <th>Status</th>
-      <th>Action</th>
-    </thead>
-    <tbody>
-      {{#each org.users}}
-        <tr>
-          <td>
-            <div>
-              <span class="circle-avatar">
-                <img src="{{avatar.small}}" />
-              </span>
-              <span class="name">
-                <a class="username" href="/~{{name}}">{{name}}</a>
-                {{#if resource.fullname}}
-                <span class="display-name">{{resource.fullname}}</span>
-                {{/if}}
-              </span><!--/.name-->
-            </div>
-          </td>
-          <td>
-            <div class="switch-container">
-              <label><span class="a11y-only">Paid Status</span>
-              <input class="switch" checked="checked" type="checkbox" value="paid">
-              <div class="switch"></div>
-              <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
-              <span class="switch-label checked-text" aria-hidden="true">paid</span>
-              </label>
-            </div>
-          </td>
-          <td>
-            <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">
-              {{#with ../this}}
-              {{> form_security }}
-              {{/with}}
-                <input type="hidden" name="username" value="{{name}}" />
-                <input type="hidden" name="updateType" value="deleteUser" />
-                <button type="submit" class="icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
-            </form>
-          </td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
-  {{/if}}
-
-  <h2>Add New User?</h2>
-  {{#if features.org_billing}}
-
-    <div>
-      <p>
-      Add a user to your team!
-      </p>
-
-      <form method="POST" id="org-user-add" action="/org/{{org.info.name}}">
-
-          <label for="name">Username</label>
-          <input required="required" type="text" id="username" name="username" />
-          <fieldset>
-            <legend>User Type:</legend>
-            <label for="role-1">Member</label>
-            <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
-            <label for="role-2">Team Admin</label>
-            <input type="radio" id="role-2" name="role" value="team-admin" />
-          </fieldset>
-
-          {{> form_security}}
-          <input type="hidden" name="updateType" value="addUser" />
-          <input type="submit" class="full-width" value="Add User" />
-
-        </form>
+  <div class="tabs">
+    <div class="tab-nav-container">
+      <div class="nav-3-container">
+        <ul class="nav-3 clear" role="navigation">
+          <li class="current"><a href="#org-info-tab-1">{{org.packages.count}} Packages</a></li>
+          <li><a href="#org-info-tab-2">{{org.users.count}} Collaborators</a></li>
+          <li><a href="#">Payment Information</a></li>
+        </ul>
+      </div>
     </div>
-  {{/if}}
+
+    <div id="org-info-tab-1" class="tab tab-1">
+      <h2>Overview</h2>
+
+      <h3>{{org.packages.count}} Packages</h3>
+      {{#if org.packages.items}}
+      <table class="org-packages">
+        <thead>
+          <th>Package</th>
+          <th>Access</th>
+          <th>Action</th>
+        </thead>
+        <tbody>
+        {{#each org.packages.items}}
+          <tr>
+            <td>
+              <div>
+                <span class="circle-avatar">
+                  <img src="{{avatar.small}}" />
+                </span>
+                <span class="name">
+                  <a class="username" href="/~{{name}}">{{name}}</a>
+                  {{#if resource.fullname}}
+                  <span class="display-name">{{resource.fullname}}</span>
+                  {{/if}}
+                </span><!--/.name-->
+              </div>
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
+      <h3>{{org.users.count}} Users</h3>
+      {{#if org.users.items}}
+      <table class="org-users">
+        <thead>
+          <th>Collaborators</th>
+        </thead>
+        <tbody>
+        {{#each org.users.items}}
+          <tr>
+            <td>
+              <div>
+                <span class="circle-avatar">
+                  <img src="{{avatar.small}}" />
+                </span>
+                <span class="name">
+                  <a class="username" href="/~{{name}}">{{name}}</a>
+                  {{#if resource.fullname}}
+                  <span class="display-name">{{resource.fullname}}</span>
+                  {{/if}}
+                </span><!--/.name-->
+              </div>
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
+    </div><!--/tab-1-->
+
+    <div id="org-info-tab-2" class="tab tab-2">
+      <h2>Paid Users</h2>
+      {{#if org.users.items}}
+      <table class="org-users">
+        <thead>
+          <th>Collaborators</th>
+          <th>Status</th>
+          <th>Action</th>
+        </thead>
+        <tbody>
+          {{#each org.users.items}}
+            <tr>
+              <td>
+                <div>
+                  <span class="circle-avatar">
+                    <img src="{{avatar.small}}" />
+                  </span>
+                  <span class="name">
+                    <a class="username" href="/~{{name}}">{{name}}</a>
+                    {{#if resource.fullname}}
+                    <span class="display-name">{{resource.fullname}}</span>
+                    {{/if}}
+                  </span><!--/.name-->
+                </div>
+              </td>
+              <td>
+                <div class="switch-container">
+                  <label><span class="a11y-only">Paid Status</span>
+                  <input class="switch" checked="checked" type="checkbox" value="paid">
+                  <div class="switch"></div>
+                  <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
+                  <span class="switch-label checked-text" aria-hidden="true">paid</span>
+                  </label>
+                </div>
+              </td>
+              <td>
+                <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">
+                  {{#with ../this}}
+                  {{> form_security }}
+                  {{/with}}
+                    <input type="hidden" name="username" value="{{name}}" />
+                    <input type="hidden" name="updateType" value="deleteUser" />
+                    <button type="submit" class="icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
+                </form>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
+      <h2>Add New User?</h2>
+      {{#if features.org_billing}}
+
+        <div>
+          <p>
+          Add a user to your team!
+          </p>
+
+          <form method="POST" id="org-user-add" action="/org/{{org.info.name}}">
+
+              <label for="name">Username</label>
+              <input required="required" type="text" id="username" name="username" />
+              <fieldset>
+                <legend>User Type:</legend>
+                <label for="role-1">Member</label>
+                <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
+                <label for="role-2">Team Admin</label>
+                <input type="radio" id="role-2" name="role" value="team-admin" />
+              </fieldset>
+
+              {{> form_security}}
+              <input type="hidden" name="updateType" value="addUser" />
+              <input type="submit" class="full-width" value="Add User" />
+
+            </form>
+        </div>
+      {{/if}}
+    </div><!--/.tab-2-->
+    <div class="tab tab-3">
+      <h2>Payment Information</h2>
+    </div><!--/.tab-3-->
+  </div><!--/tabs-->
 
 
 </div>

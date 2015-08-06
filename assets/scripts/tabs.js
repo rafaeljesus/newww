@@ -6,7 +6,7 @@ module.exports = function() {
 
     this.element = element;
     this.$element = $(element);
-    this.tabNav = $("[href='#" + element.id + "']");
+    this.tabNav = $(".tabs [href='#" + element.id + "']");
     this.isOpen = false;
     this.siblings = $(className).not(this.$element);
     this.$element.data("tab", this);
@@ -29,7 +29,6 @@ module.exports = function() {
 
     $.each(this.siblings, function (idx, el) {
       var tab = $(el).data( "tab" );
-      console.log(tab);
       if(tab){
         tab.close();
       }

@@ -55,6 +55,25 @@
             </td>
           </tr>
         {{/each}}
+          <tr>
+            <td colspan=2>
+              <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
+                <label for="name"><span class="a11y-only">Username</span></label>
+                <input required="required" type="text" id="username" name="username" placeholder="Invite a Member"/>
+                <fieldset>
+                  <legend><span class="a11y-only">User Type:</span></legend>
+                  <label for="role-1">Member</label>
+                  <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
+                  <label for="role-2">Team Admin</label>
+                  <input type="radio" id="role-2" name="role" value="super-admin" />
+                </fieldset>
+
+                {{> form_security}}
+                <input type="hidden" name="updateType" value="addUser" />
+                <button type="submit" class="button">Add User</button>
+              </form>
+            </td>
+          </tr>
         </tbody>
       </table>
       {{/if}}
@@ -110,38 +129,31 @@
               </td>
             </tr>
           {{/each}}
+          <tr>
+            <td colspan=2>
+              <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
+                <label for="name"><span class="a11y-only">Username</span></label>
+                <input required="required" type="text" id="username" name="username" placeholder="Invite a Member"/>
+                <fieldset>
+                  <legend><span class="a11y-only">User Type:</span></legend>
+                  <label for="role-1">Member</label>
+                  <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
+                  <label for="role-2">Team Admin</label>
+                  <input type="radio" id="role-2" name="role" value="team-admin" />
+                </fieldset>
+
+                {{> form_security}}
+                <input type="hidden" name="updateType" value="addUser" />
+                <button type="submit" class="button">Add User</button>
+              </form>
+            </td>
+          </tr>
         </tbody>
       </table>
       {{/if}}
 
-      <h2>Add New User?</h2>
-      {{#if features.org_billing}}
-
-        <div>
-          <p>
-          Add a user to your team!
-          </p>
-
-          <form method="POST" id="org-user-add" action="/org/{{org.info.name}}">
-
-              <label for="name">Username</label>
-              <input required="required" type="text" id="username" name="username" />
-              <fieldset>
-                <legend>User Type:</legend>
-                <label for="role-1">Member</label>
-                <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
-                <label for="role-2">Team Admin</label>
-                <input type="radio" id="role-2" name="role" value="team-admin" />
-              </fieldset>
-
-              {{> form_security}}
-              <input type="hidden" name="updateType" value="addUser" />
-              <input type="submit" class="full-width" value="Add User" />
-
-            </form>
-        </div>
-      {{/if}}
     </div><!--/.tab-2-->
+
     <div class="tab tab-3">
       <h2>Payment Information</h2>
     </div><!--/.tab-3-->

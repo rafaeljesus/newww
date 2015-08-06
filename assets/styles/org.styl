@@ -17,6 +17,11 @@
       text-align center
       width 10%
 
+  tbody tr:last-child
+    td:last-child
+      text-align left
+      width auto
+
   .circle-avatar,
   .name
     display inline-block
@@ -33,7 +38,19 @@
   .display-name
     display block
 
-  button
+  .icon-x
     border 0
     background none
     cursor pointer
+
+.org-user-add
+  input[type=text],
+  input[type=radio],
+  fieldset,
+  label,
+  button
+    display inline-block
+    vertical-align middle
+
+  input[type=text]
+    width 60%

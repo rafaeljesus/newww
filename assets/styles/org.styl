@@ -1,12 +1,30 @@
 .billing-header
   text-align left
 
+.org-table
+  border 1px solid #ababab
+
+  tbody tr
+    border-top 1px solid #ababab
+
+  th,td
+    padding 20px
+
+    &:first-child
+      width 70%
+
+    &:last-child
+      text-align center
+      width 10%
+
   .circle-avatar,
   .name
     display inline-block
     vertical-align middle
 
   .circle-avatar
+    padding-right 20px
+
     img
       border-radius 50%
       width 42px
@@ -14,3 +32,8 @@
 
   .display-name
     display block
+
+  button
+    border 0
+    background none
+    cursor pointer

@@ -220,8 +220,7 @@ describe('Signing up a new user', function () {
         name: 'newuser',
         password: '12345',
         verify: '12345',
-        email: 'fakeusercli@boom.com',
-        sid: "39071865"
+        email: 'fakeusercli@boom.com'
       })
       .reply(200, fixtures.users.mikeal);
 
@@ -247,8 +246,7 @@ describe('Signing up a new user', function () {
         name: 'newuser',
         password: 'one two threë',
         verify: 'one two threë',
-        email: 'fakeusercli@boom.com',
-        sid: '39071865'
+        email: 'fakeusercli@boom.com'
       })
       .reply(200, fixtures.users.mikeal);
 

@@ -56,12 +56,6 @@ var publicRoutes = [
       return reply.redirect("/private-modules").code(301);
     }
   },{
-    path: "/orgs",
-    method: "GET",
-    handler: function(request, reply) {
-      return reply.redirect("http://npmjs.hs-sites.com/test-orgs").code(301);
-  }
-  },{
     path: "/contact",
     method: "GET",
     handler: require('../facets/company/show-contact')

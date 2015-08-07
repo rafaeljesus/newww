@@ -12,15 +12,13 @@ exports.getOrg = function(request, reply) {
       opts.org = org;
 
       Customer(loggedInUser)
-        .getLicense(function(err, license) {
+        .fetch(request.loggedInUser.email, function(err, cust) {
           if (err) {
             request.logger.error(err);
             return reply.view('errors/internal', err);
           }
 
-          if (license.length) {
-            opts.org.customer_id = license[0].customer_id;
-          }
+          opts.org.customer_id = cust.stripe_customer_id;
 
           Customer(loggedInUser).getSubscriptions(function(err, subscriptions) {
             if (err) {

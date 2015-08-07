@@ -457,6 +457,24 @@ describe("Customer", function() {
       });
     });
 
+    it('returns an error if the user is already sponsored', function(done) {
+      var verification_key = 'e640f651-ef53-4560-86a6-34cae5a38e20';
+
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .post('/sponsorship/' + verification_key)
+        .reply(500, "duplicate key value violates unique constraint \"sponsorships_npm_user\"");
+
+      Customer.acceptSponsorship(verification_key, function(err, verifiedUser) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('user is already sponsored');
+        expect(err.statusCode).to.equal(403);
+        expect(verifiedUser).to.not.exist();
+        done();
+      });
+    });
+
     it('accepts a sponsorship with a valid verification key', function(done) {
       var verification_key = 'e640f651-ef53-4560-86a6-34cae5a38e15';
 

@@ -32,7 +32,7 @@ Customer.prototype.fetch = function(id, callback) {
     }
 
     if (resp.statusCode === 404) {
-      err = Error('customer not found: ' + self.name);
+      err = Error('Customer not found');
       err.statusCode = resp.statusCode;
       return callback(err);
     }

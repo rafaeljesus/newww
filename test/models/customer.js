@@ -115,6 +115,56 @@ describe("Customer", function() {
 
   });
 
+  describe("fetch(id)", function () {
+
+    it("makes an external request for /customer/{user}", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .get('/customer/316')
+        .reply(200, fixtures.customers.bill);
+
+      Customer.fetch(316, function(err, body) {
+        customerMock.done();
+        expect(err).to.be.null();
+        done();
+      });
+    });
+
+    it("returns an error in the callback if customer doesn't exist", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .get('/customer/999')
+        .reply(404);
+
+      Customer.fetch(999, function(err, body) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal("Customer not found");
+        expect(err.statusCode).to.equal(404);
+        done();
+      });
+    });
+
+    it("returns the response body in the callback", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .get('/customer/316')
+        .reply(200, fixtures.customers.bill);
+
+      Customer.fetch(316, function(err, body) {
+        customerMock.done();
+        expect(err).to.be.null();
+        expect(body).to.be.an.object();
+        expect(body.stripe_customer_id).to.equal("cus_6SOufuJcDjz2yx");
+        done();
+      });
+    });
+
+  });
+
   describe("updateBilling()", function() {
 
     describe("new customer", function() {

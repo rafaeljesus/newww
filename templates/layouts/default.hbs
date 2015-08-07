@@ -24,6 +24,15 @@
   <link rel="stylesheet" media="all" href="/static/css/index.css">
   <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="npm">
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700">
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <![endif]-->
+
+  {{#if devEnv}}
+  <script src="/static/js/index.js"></script>
+  {{else}}
+  <script src="/static/js/index.min.js"></script>
+  {{/if}}
 
 
 </head>
@@ -151,16 +160,8 @@
     </div>
 
   </footer>
-  {{#if devEnv}}<script defer src="/static/js/tota11y.min.js"></script>{{/if}}
-  {{#if devEnv}}
-  <script defer src="/static/js/index.js"></script>
-  {{else}}
-  <script defer src="/static/js/index.min.js"></script>
-  {{/if}}
+  {{#if devEnv}}<script defer async src="/static/js/tota11y.min.js"></script>{{/if}}
   <script defer src="/static/js/vendor.min.js"></script>
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
-  <![endif]-->
 </body>
 </html>
 

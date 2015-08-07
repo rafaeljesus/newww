@@ -286,6 +286,57 @@ describe("Customer", function() {
 
   });
 
+  describe("getLicense", function() {
+    it('returns an empty array if no customer with that name exists', function(done) {
+      var Customer = new CustomerModel('billybob');
+      var customerMock = nock(Customer.host)
+        .get('/customer/billybob/license')
+        .reply(200, []);
+
+      Customer.getLicense(function(err, license) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(license).to.be.array();
+        expect(license.length).to.equal(0);
+        done();
+      });
+    });
+
+    it('returns an array with the customer license info in it', function(done) {
+      var Customer = new CustomerModel('bob');
+      var customerMock = nock(Customer.host)
+        .get('/customer/bob/license')
+        .reply(200, [
+          {
+            "begins": "2015-06-14T18:19:53.082Z",
+            "canceled": null,
+            "created": "2015-06-19T18:19:51.456Z",
+            "customer_id": 999,
+            "ends": "2015-08-19T18:20:53.000Z",
+            "expired": false,
+            "id": 135,
+            "license_key": null,
+            "npm_org": "_private-modules-bob",
+            "npm_user": "bob",
+            "plan_id": 1,
+            "seats": 1,
+            "stripe_subscription_id": "sub_6SOulW19lULlyx",
+            "updated": "2015-07-19T19:47:41.707Z"
+          }
+        ]);
+
+      Customer.getLicense(function(err, license) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(license).to.be.array();
+        expect(license.length).to.equal(1);
+        expect(license[0].npm_user).to.equal("bob");
+        expect(license[0].customer_id).to.equal(999);
+        done();
+      });
+    });
+  });
+
   describe("getLicenseIdForOrg", function() {
     it('returns an error if there is no org with that name', function(done) {
       var Customer = new CustomerModel('bob');

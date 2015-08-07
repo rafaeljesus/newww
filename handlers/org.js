@@ -61,7 +61,9 @@ exports.addUserToOrg = function (request, reply) {
           request.customer.acceptSponsorship(extendedSponsorship.verification_key, function(err) {
             if (err) {
               request.logger.error(err);
-              return reply.view('errors/internal', err).code(err.statusCode);
+              if (err.statusCode !== 403) {
+                return reply.view('errors/internal', err).code(err.statusCode);
+              }
             }
             Org(loggedInUser)
               .get(orgName, function (err, org) {

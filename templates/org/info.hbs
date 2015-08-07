@@ -10,7 +10,7 @@
         <ul class="nav-3 clear" role="navigation">
           <li class="current"><a href="#org-info-tab-1">Overview</a></li>
           <li><a href="#org-info-tab-2">{{org.users.count}} Users</a></li>
-          <li><a href="#">Payment Information</a></li>
+          <li><button type="button" id="billing" data-stripe-id="{{org.customer_id}}">Payment Information</button></li>
         </ul>
       </div>
     </div>
@@ -153,11 +153,8 @@
       {{/if}}
 
     </div><!--/.tab-2-->
-
-    <div class="tab tab-3">
-      <h2>Payment Information</h2>
-    </div><!--/.tab-3-->
   </div><!--/tabs-->
 
 
 </div>
+<script src="https://static.accountdock.com/app.min.js"></script>

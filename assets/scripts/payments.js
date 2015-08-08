@@ -9,7 +9,7 @@ module.exports = function () {
     var amount;
 
     var handler = StripeCheckout.configure({
-      key: $('input[type=hidden]').data('key'),
+      key: $('input[type=hidden][data-key]').data('key'),
       image: '/static/images/n-64.png',
       token: function(token, args) {
         token.amount = amount;

@@ -47,8 +47,8 @@ describe("csp (content security policy)", function() {
     })
 
     describe("frameSrc", function() {
-      it("has three allowances", function(done) {
-        expect(csp.default.frameSrc.length).to.equal(3)
+      it("has five allowances", function(done) {
+        expect(csp.default.frameSrc.length).to.equal(5)
         done();
       })
 

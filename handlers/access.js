@@ -2,7 +2,7 @@ var omit = require("lodash").omit;
 
 module.exports = function(request, reply) {
 
-  var package;
+  var cpackage;
   var loggedInUser = request.loggedInUser;
   var Collaborator = require("../models/collaborator").new(request);
   var Package = require("../models/package").new(request);
@@ -13,62 +13,62 @@ module.exports = function(request, reply) {
   };
 
   var promise = Package.get(request.packageName)
-  .catch(function(err){
-    request.logger.error("unable to get package " + request.packageName);
-    request.logger.error(err);
+    .catch(function(err) {
+      request.logger.error("unable to get package " + request.packageName);
+      request.logger.error(err);
 
-    switch(err.statusCode) {
-      case 402:
-        reply.redirect('/settings/billing?package='+request.packageName);
-        break;
-      case 404:
-        reply.view('errors/not-found').code(404);
-        break;
-      default:
-        reply.view('errors/internal', context).code(500);
-    }
-    return promise.cancel();
-  })
-  .then(function(pkg){
-    package = omit(pkg, ['readme', 'versions']);
-    return Collaborator.list(package.name);
-  })
-  .then(function(collaborators) {
-    package.collaborators = collaborators;
+      switch (err.statusCode) {
+        case 402:
+          reply.redirect('/settings/billing?package=' + request.packageName);
+          break;
+        case 404:
+          reply.view('errors/not-found').code(404);
+          break;
+        default:
+          reply.view('errors/internal', context).code(500);
+      }
+      return promise.cancel();
+    })
+    .then(function(pkg) {
+      cpackage = omit(pkg, ['readme', 'versions']);
+      return Collaborator.list(cpackage.name);
+    })
+    .then(function(collaborators) {
+      cpackage.collaborators = collaborators;
 
-    if (loggedInUser && loggedInUser.name in package.collaborators) {
-      context.userHasReadAccessToPackage = true;
-      context.userHasWriteAccessToPackage = package.collaborators[loggedInUser.name].write;
-    }
+      if (loggedInUser && loggedInUser.name in cpackage.collaborators) {
+        context.userHasReadAccessToPackage = true;
+        context.userHasWriteAccessToPackage = cpackage.collaborators[loggedInUser.name].write;
+      }
 
-    if (package.private && !context.userHasReadAccessToPackage) {
-      return reply.view('errors/not-found').code(404);
-    }
+      if (cpackage.private && !context.userHasReadAccessToPackage) {
+        return reply.view('errors/not-found').code(404);
+      }
 
-    context.enablePermissionTogglers = Boolean(package.private) && context.userHasWriteAccessToPackage;
+      context.enablePermissionTogglers = Boolean(cpackage.private) && context.userHasWriteAccessToPackage;
 
-    context.package = package;
+      context.package = cpackage;
 
-    // Disallow unpaid users from toggling their public scoped packages to private
-    if (Boolean(package.scoped) && !Boolean(package.private) && context.userHasWriteAccessToPackage) {
-      context.paymentRequiredToTogglePrivacy = true;
-      request.customer.get(function(err, customer) {
-        if (err && err.statusCode !== 404) {
-          request.logger.error("error fetching customer data for user " + loggedInUser.name);
-          request.logger.error(err);
-          return reply.view('errors/internal', context).code(500);
-        } else {
-          if (customer) {
-            context.paymentRequiredToTogglePrivacy = false;
-            context.customer = customer;
+      // Disallow unpaid users from toggling their public scoped packages to private
+      if (Boolean(cpackage.scoped) && !Boolean(cpackage.private) && context.userHasWriteAccessToPackage) {
+        context.paymentRequiredToTogglePrivacy = true;
+        request.customer.get(function(err, customer) {
+          if (err && err.statusCode !== 404) {
+            request.logger.error("error fetching customer data for user " + loggedInUser.name);
+            request.logger.error(err);
+            return reply.view('errors/internal', context).code(500);
+          } else {
+            if (customer) {
+              context.paymentRequiredToTogglePrivacy = false;
+              context.customer = customer;
+            }
+            return reply.view('package/access', context);
           }
-          return reply.view('package/access', context);
-        }
-      });
-    } else {
-      return reply.view('package/access', context);
-    }
+        });
+      } else {
+        return reply.view('package/access', context);
+      }
 
-  });
+    });
 
 };

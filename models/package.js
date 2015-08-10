@@ -1,10 +1,10 @@
-var _        = require('lodash');
-var cache    = require('../lib/cache');
+var _ = require('lodash');
+var cache = require('../lib/cache');
 var decorate = require(__dirname + '/../presenters/package');
-var fmt      = require('util').format;
-var P        = require('bluebird');
-var Request  = require('../lib/external-request');
-var URL      = require('url');
+var fmt = require('util').format;
+var P = require('bluebird');
+var Request = require('../lib/external-request');
+var URL = require('url');
 
 var Package = module.exports = function(opts) {
   _.extend(this, {
@@ -29,7 +29,11 @@ Package.prototype.generatePackageOpts = function generatePackageOpts(name) {
     json: true
   };
 
-  if (this.bearer) { opts.headers = { bearer: this.bearer }; }
+  if (this.bearer) {
+    opts.headers = {
+      bearer: this.bearer
+    };
+  }
 
   return opts;
 };
@@ -38,9 +42,9 @@ Package.prototype.get = function(name) {
   var opts = this.generatePackageOpts(name);
 
   return cache.getP(opts)
-  .then(function(_package) {
-    return decorate(_package);
-  });
+    .then(function(_package) {
+      return decorate(_package);
+    });
 
 };
 
@@ -64,25 +68,34 @@ Package.prototype.update = function(name, body) {
     opts.body.private = (String(opts.body.private) === "true");
   }
 
-  if (this.bearer) { opts.headers = {bearer: this.bearer}; }
+  if (this.bearer) {
+    opts.headers = {
+      bearer: this.bearer
+    };
+  }
 
   return this.dropCache(name)
-  .then(function() {
-    return new P(function(resolve, reject) {
-      Request(opts, function(err, resp, body) {
-        if (err) { return reject(err); }
-        if (resp.statusCode > 399) {
-          err = Error('error updating package ' + name);
-          err.statusCode = resp.statusCode;
-          return reject(err);
-        }
-        return resolve(body);
+    .then(function() {
+      return new P(function(resolve, reject) {
+        Request(opts, function(err, resp, body) {
+          if (err) {
+            return reject(err);
+          }
+          if (resp.statusCode > 399) {
+            err = Error('error updating package ' + name);
+            err.statusCode = resp.statusCode;
+            return reject(err);
+          }
+          return resolve(body);
+        });
       });
+    })
+    .then(function(_package) {
+      return _package ? decorate(_package) : {
+        package: name,
+        updated: true
+      };
     });
-  })
-  .then(function(_package) {
-    return _package ? decorate(_package) : {package: name, updated: true};
-  });
 };
 
 Package.prototype.list = function(options, ttl) {
@@ -116,61 +129,73 @@ Package.prototype.count = function() {
   return cache.getP(opts);
 };
 
-Package.prototype.star = function (package) {
+Package.prototype.star = function(pkg) {
 
   var _this = this;
-  var url = fmt("%s/package/%s/star", _this.host, encodeURIComponent(package));
+  var url = fmt("%s/package/%s/star", _this.host, encodeURIComponent(pkg));
   var opts = {
     url: url,
     json: true,
   };
 
-  if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
+  if (_this.bearer) {
+    opts.headers = {
+      bearer: _this.bearer
+    };
+  }
 
-  return this.dropCache(package)
-  .then(function() {
-    return new P(function (resolve, reject) {
+  return this.dropCache(pkg)
+    .then(function() {
+      return new P(function(resolve, reject) {
 
-      Request.put(opts, function (err, resp, body) {
-        if (err) { return reject(err); }
-        if (resp.statusCode > 399) {
-          err = Error('error starring package ' + package);
-          err.statusCode = resp.statusCode;
-          return reject(err);
-        }
+        Request.put(opts, function(err, resp, body) {
+          if (err) {
+            return reject(err);
+          }
+          if (resp.statusCode > 399) {
+            err = Error('error starring package ' + pkg);
+            err.statusCode = resp.statusCode;
+            return reject(err);
+          }
 
-        return resolve(package + ' starred by ' + _this.bearer);
+          return resolve(pkg + ' starred by ' + _this.bearer);
+        });
       });
     });
-  });
 };
 
-Package.prototype.unstar = function (package) {
+Package.prototype.unstar = function(pkg) {
 
   var _this = this;
-  var url = fmt("%s/package/%s/star", _this.host, encodeURIComponent(package));
+  var url = fmt("%s/package/%s/star", _this.host, encodeURIComponent(pkg));
   var opts = {
     url: url,
     json: true,
   };
 
-  if (_this.bearer) { opts.headers = {bearer: _this.bearer}; }
+  if (_this.bearer) {
+    opts.headers = {
+      bearer: _this.bearer
+    };
+  }
 
-  return this.dropCache(package)
-  .then(function() {
-    return new P(function (resolve, reject) {
+  return this.dropCache(pkg)
+    .then(function() {
+      return new P(function(resolve, reject) {
 
-      Request.del(opts, function (err, resp, body) {
-        if (err) { return reject(err); }
+        Request.del(opts, function(err, resp, body) {
+          if (err) {
+            return reject(err);
+          }
 
-        if (resp.statusCode > 399) {
-          err = Error('error unstarring package ' + package);
-          err.statusCode = resp.statusCode;
-          return reject(err);
-        }
+          if (resp.statusCode > 399) {
+            err = Error('error unstarring package ' + pkg);
+            err.statusCode = resp.statusCode;
+            return reject(err);
+          }
 
-        return resolve(package + ' unstarred by ' + _this.bearer);
+          return resolve(pkg + ' unstarred by ' + _this.bearer);
+        });
       });
     });
-  });
 };

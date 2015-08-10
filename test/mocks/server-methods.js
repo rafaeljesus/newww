@@ -5,11 +5,11 @@ var fixtures = require('../fixtures.js');
 var Promise = require('bluebird');
 var assert = require('assert');
 
-module.exports = function (server) {
+module.exports = function(server) {
   var methods = {
 
     corp: {
-      getPage: function (name, next) {
+      getPage: function(name, next) {
         if (name === 'jobs') {
           return next(null, "<h1 id='jobs'>JOBS</h1>");
         }
@@ -17,7 +17,7 @@ module.exports = function (server) {
         return next(new Error('OMGBOOM'));
       },
 
-      getPolicy: function (name, next) {
+      getPolicy: function(name, next) {
         if (fixtures.policies[name]) {
           return next(null, fixtures.policies[name]);
         }
@@ -27,7 +27,7 @@ module.exports = function (server) {
     },
 
     downloads: {
-      getAllDownloads: function (next) {
+      getAllDownloads: function(next) {
         var d = {
           day: 0,
           week: 0,
@@ -37,25 +37,38 @@ module.exports = function (server) {
         return next(null, d);
       },
 
-      getAllDownloadsForPackage: function (name, next) {
+      getAllDownloadsForPackage: function(name, next) {
         var d = [
-                  { day: 32789, week: 268291, month: 1480446 },
-                  null,
-                  { msec: 3, error: null }
-                ];
+          {
+            day: 32789,
+            week: 268291,
+            month: 1480446
+          },
+          null,
+          {
+            msec: 3,
+            error: null
+          }
+        ];
 
         return next(null, d);
       },
 
-      getDownloadsForPackage: function (period, detail, package, next) {
-        return next(null, [{day: '2014-07-12', downloads: 0}, {day: '2014-07-13', downloads: 0}]);
+      getDownloadsForPackage: function(period, detail, pkg, next) {
+        return next(null, [{
+          day: '2014-07-12',
+          downloads: 0
+        }, {
+          day: '2014-07-13',
+          downloads: 0
+        }]);
       }
     },
 
     email: {
-      send: function (template, user, redis) {
+      send: function(template, user, redis) {
         assert(typeof redis === 'object', 'whoops need redis');
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
           if (user.email === 'lolbad@email') {
             return reject(new Error('no bueno yo'));
@@ -67,20 +80,20 @@ module.exports = function (server) {
     },
 
     npme: {
-      createCustomer: function (data, next) {
+      createCustomer: function(data, next) {
         return next(null, fixtures.enterprise.newUser);
       },
 
-      createLicense: function (licenseDetails, callback) {
+      createLicense: function(licenseDetails, callback) {
         return callback(null, fixtures.enterprise.goodLicense[0]);
       },
 
-      createTrial: function (customer, next) {
+      createTrial: function(customer, next) {
         return next(null, customer);
       },
 
-      getCustomer: function (email, next) {
-        var key = typeof(email) === 'string' ? email.split('@')[0] : email;
+      getCustomer: function(email, next) {
+        var key = typeof (email) === 'string' ? email.split('@')[0] : email;
 
         switch (key) {
           case 'exists':
@@ -109,7 +122,7 @@ module.exports = function (server) {
         }
       },
 
-      getLicense: function (productId, customerId, licenseId, next) {
+      getLicense: function(productId, customerId, licenseId, next) {
         var key = customerId.split('@')[0];
 
         switch (key) {
@@ -124,7 +137,7 @@ module.exports = function (server) {
         }
       },
 
-      getLicenses: function (productId, customerId, next) {
+      getLicenses: function(productId, customerId, next) {
         var key = customerId.split('@')[0];
 
         switch (key) {
@@ -139,7 +152,7 @@ module.exports = function (server) {
         }
       },
 
-      sendData: function (formID, data, next) {
+      sendData: function(formID, data, next) {
         if (data.email.indexOf('error') !== -1) {
           return next(new Error('ruh roh broken'));
         }
@@ -147,11 +160,11 @@ module.exports = function (server) {
         return next(null);
       },
 
-      updateCustomer: function (customerId, data, callback) {
+      updateCustomer: function(customerId, data, callback) {
         return callback(null);
       },
 
-      verifyTrial: function (verificationKey, next) {
+      verifyTrial: function(verificationKey, next) {
         switch (verificationKey) {
           case '12345':
           case '12ab34cd-a123-4b56-789c-1de2f3ab45cd':
@@ -179,6 +192,6 @@ module.exports = function (server) {
   return methods;
 };
 
-function passHash (auth) {
+function passHash(auth) {
   return crypto.pbkdf2Sync(auth.password, fixtures.users[auth.name].salt, fixtures.users[auth.name].iterations, 20).toString('hex');
 }

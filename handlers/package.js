@@ -1,5 +1,3 @@
-var package = module.exports = {};
-
 var _ = require('lodash');
 var P = require('bluebird');
 var validate = require('validate-npm-package-name');
@@ -8,12 +6,15 @@ var PackageModel = require("../models/package");
 
 var DEPENDENCY_TTL = 5 * 60; // 5 minutes
 
-package.show = function(request, reply) {
+exports.show = function(request, reply) {
   var name = request.packageName;
-  var context = {title: name};
+  var context = {
+    title: name
+  };
   var loggedInUser = request.loggedInUser;
   var Download = require("../models/download").new({
-    request: request, cache: require("../lib/cache")
+    request: request,
+    cache: require("../lib/cache")
   });
   var Package = PackageModel.new(request);
 
@@ -21,12 +22,15 @@ package.show = function(request, reply) {
 
   var actions = {
     package: Package.get(name),
-    dependents: Package.list({dependency: name, limit: 50}, DEPENDENCY_TTL),
+    dependents: Package.list({
+      dependency: name,
+      limit: 50
+    }, DEPENDENCY_TTL),
     downloads: Download.getAll(name),
   };
 
   P.props(actions)
-    .then(function (results) {
+    .then(function(results) {
       var pkg = results.package;
       pkg.dependents = results.dependents;
       pkg.downloads = results.downloads;
@@ -53,10 +57,10 @@ package.show = function(request, reply) {
       return reply.view('package/show', context);
 
     })
-    .catch(function(err){
+    .catch(function(err) {
       // unpaid collaborator
       if (err.statusCode === 402) {
-        reply.redirect('/settings/billing?package='+name);
+        reply.redirect('/settings/billing?package=' + name);
         return;
       }
 
@@ -96,12 +100,14 @@ package.show = function(request, reply) {
     });
 };
 
-package.update = function(request, reply) {
+exports.update = function(request, reply) {
   PackageModel.new(request).update(request.packageName, request.payload.package)
-    .then(function(package) {
-      return reply({package: package});
+    .then(function(pkg) {
+      return reply({
+        package: pkg
+      });
     })
-    .catch(function(err){
+    .catch(function(err) {
       request.logger.error(err);
       return reply(err);
     });

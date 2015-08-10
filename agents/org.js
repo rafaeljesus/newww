@@ -88,7 +88,7 @@ Org.prototype.get = function(name, callback) {
 
     org.info = results.org;
     org.users = results.users;
-    org.users.items = org.users.items.map(function(user) {
+    org.users.items = results.users.items.map(function(user) {
       user.avatar = avatar(user.email);
       return user;
     });

@@ -669,6 +669,11 @@ describe("subscribing to an org", function() {
         .reply(200, {
           "count": 1,
           "items": [fixtures.users.bob]
+        })
+        .get("/org/boomer/package")
+        .reply(200, {
+          "count": 1,
+          "items": [fixtures.packages.fake]
         });
 
       var customerMock = nock("https://license-api-example.com")

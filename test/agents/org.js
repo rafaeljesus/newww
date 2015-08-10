@@ -94,14 +94,17 @@ describe('Org', function() {
           'items': [fixtures.users.bigcoadmin]
         })
         .get('/org/' + name + '/package')
-        .reply(200, [fixtures.packages.fake]);
+        .reply(200, {
+          'count': 1,
+          'items': [fixtures.packages.fake]
+        });
 
       Org('betty').get(name, function(err, org) {
         orgMocks.done();
         expect(err).to.be.null();
         expect(org.users.items[0].name).to.equal('bob');
         expect(org.info.name).to.equal('bigco');
-        expect(org.packages[0].name).to.equal('fake');
+        expect(org.packages.items[0].name).to.equal('fake');
         expect(org.deleted).to.be.undefined();
         done();
       });

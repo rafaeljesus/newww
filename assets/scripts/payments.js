@@ -1,10 +1,10 @@
-module.exports = function () {
+module.exports = function() {
 
   if (typeof StripeCheckout === 'undefined') {
     return;
   }
 
-  $(function () {
+  $(function() {
 
     var amount;
 
@@ -22,20 +22,22 @@ module.exports = function () {
           },
           data: token,
           type: 'POST',
-          headers: {'x-csrf-token': $('input[name="crumb"]').val()}
+          headers: {
+            'x-csrf-token': $('input[name="crumb"]').val()
+          }
         })
-        .done(function (resp) {
-          $('section').hide()
-          $('h1:last').after('<h2 style="color: green;">Thank you for your payment! We\'ll get back to you soon.</h2>')
-        })
-        .error(function (resp) {
-          $('section').hide()
-          $('h1:last').after('<h2 style="color: red;">Something went wrong. Please contact us at <a href="mailto:whoshiring@npmjs.com">whoshiring@npmjs.com</a>.</h2>')
-        })
+          .done(function(resp) {
+            $('section').hide()
+            $('h1:last').after('<h2 style="color: green;">Thank you for your payment! We\'ll get back to you soon.</h2>')
+          })
+          .error(function(resp) {
+            $('section').hide()
+            $('h1:last').after('<h2 style="color: red;">Something went wrong. Please contact us at <a href="mailto:whoshiring@npmjs.com">whoshiring@npmjs.com</a>.</h2>')
+          })
       }
     });
 
-    $('#one-month').click(function (e) {
+    $('#one-month').click(function(e) {
       amount = 35000;
 
       handler.open({
@@ -46,7 +48,7 @@ module.exports = function () {
       e.preventDefault();
     });
 
-    $('#three-months').click(function (e) {
+    $('#three-months').click(function(e) {
       amount = 100000
 
       handler.open({

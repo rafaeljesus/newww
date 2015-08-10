@@ -1,6 +1,6 @@
 var validatePackageName = require('validate-npm-package-name');
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
 
   var route = request.params.p;
   var opts = { };

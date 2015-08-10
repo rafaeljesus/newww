@@ -36,8 +36,14 @@ var fixtures = {
     password: "12345"
   },
   packages: [
-    {name: "foo", description: "It's a foo!"},
-    {name: "bar", description: "It's a bar!"}
+    {
+      name: "foo",
+      description: "It's a foo!"
+    },
+    {
+      name: "bar",
+      description: "It's a bar!"
+    }
   ],
   stars: [
     'minimist',
@@ -45,7 +51,7 @@ var fixtures = {
   ]
 };
 
-User.prototype.confirmEmail = function (user, callback) {
+User.prototype.confirmEmail = function(user, callback) {
   return callback(null, user);
 };
 
@@ -76,9 +82,13 @@ User.prototype.get = function(name, options, callback) {
       break;
   }
 
-  if (options.stars) { res.stars = fixtures.stars; }
+  if (options.stars) {
+    res.stars = fixtures.stars;
+  }
 
-  if (options.packages) { res.packages = fixtures.packages; }
+  if (options.packages) {
+    res.packages = fixtures.packages;
+  }
 
   return callback(null, res);
 };
@@ -91,15 +101,15 @@ User.prototype.getPackages = function(name, callback) {
   return callback(null, fixtures.packages);
 };
 
-User.prototype.login = function (loginInfo, callback) {
+User.prototype.login = function(loginInfo, callback) {
 
   if (loginInfo.name === fixtures.usercli.name &&
-      loginInfo.password === fixtures.usercli.password) {
+    loginInfo.password === fixtures.usercli.password) {
     return callback(null, fixtures.usercli);
   }
 
   if (loginInfo.name !== fixtures.user.name ||
-      loginInfo.password !== fixtures.user.password) {
+    loginInfo.password !== fixtures.user.password) {
     var err = Error("password is incorrect for " + fixtures.user.name);
     err.statusCode = 401;
     return callback(err);
@@ -108,7 +118,7 @@ User.prototype.login = function (loginInfo, callback) {
   return callback(null, fixtures.user);
 };
 
-User.prototype.lookupEmail = function (email, callback) {
+User.prototype.lookupEmail = function(email, callback) {
   if (userValidate.email(email)) {
     var err = new Error('email is invalid');
     err.statusCode = 400;
@@ -133,10 +143,10 @@ User.prototype.lookupEmail = function (email, callback) {
   return callback(null, names);
 };
 
-User.prototype.save = function (user, callback) {
+User.prototype.save = function(user, callback) {
   return callback(null, fixtures.user);
 };
 
-User.prototype.signup = function (user, callback) {
+User.prototype.signup = function(user, callback) {
   return callback(null, fixtures.user);
 };

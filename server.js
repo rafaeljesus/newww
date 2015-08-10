@@ -1,9 +1,9 @@
 require("./lib/environment")();
 
-var Hapi      = require('hapi'),
-    replify   = require('replify'),
-    bole      = require('bole'),
-    TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
+var Hapi = require('hapi'),
+  replify = require('replify'),
+  bole = require('bole'),
+  TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
 
 var log = bole('server');
 bole.output({
@@ -53,7 +53,9 @@ if (process.env.NODE_ENV === 'dev') {
 server.connection(connection);
 
 server.views({
-  engines: {hbs: require('handlebars')},
+  engines: {
+    hbs: require('handlebars')
+  },
   relativeTo: __dirname,
   path: './templates',
   helpersPath: './templates/helpers',
@@ -70,13 +72,15 @@ var metrics = require('./adapters/metrics')();
 
 // configure http request cache
 require("./lib/cache").configure({
-    redis: process.env.REDIS_URL,
-    ttl: 500,
-    prefix: "cache:"
+  redis: process.env.REDIS_URL,
+  ttl: 500,
+  prefix: "cache:"
 });
 
-server.register(require('hapi-auth-cookie'), function (err) {
-  if (err) { throw err; }
+server.register(require('hapi-auth-cookie'), function(err) {
+  if (err) {
+    throw err;
+  }
 
   var cache = server.cache({
     expiresIn: TWO_WEEKS,
@@ -91,8 +95,8 @@ server.register(require('hapi-auth-cookie'), function (err) {
     redirectTo: '/login',
     cookie: process.env.SESSION_COOKIE,
     clearInvalid: true,
-    validateFunc: function (session, cb) {
-      cache.get(session.sid, function (err, item, cached) {
+    validateFunc: function(session, cb) {
+      cache.get(session.sid, function(err, item, cached) {
 
         if (err) {
           return cb(err, false);
@@ -114,15 +118,17 @@ server.register(require('hapi-auth-cookie'), function (err) {
       throw err;
     }
 
-    replify({ name: 'www-'+process.env.PORT }, server);
-    log.info('server repl socket at /tmp/rpl/www-'+process.env.PORT+'.sock');
+    replify({
+      name: 'www-' + process.env.PORT
+    }, server);
+    log.info('server repl socket at /tmp/rpl/www-' + process.env.PORT + '.sock');
 
     server.route(require('./routes/index'));
 
     server.start(function() {
       metrics.metric({
-        env:   process.env.NODE_ENV,
-        name:  'server.start',
+        env: process.env.NODE_ENV,
+        name: 'server.start',
         value: 1
       });
 

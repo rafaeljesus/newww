@@ -1,17 +1,17 @@
 var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    it = lab.test,
-    expect = Code.expect,
-    Hapi = require('hapi'),
-    moment = require('moment'),
-    npme = require('../../services/npme'),
-    nock = require('nock'),
-    _ = require('lodash'),
-    fixtures = require('../fixtures').enterprise;
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  before = lab.before,
+  after = lab.after,
+  it = lab.test,
+  expect = Code.expect,
+  Hapi = require('hapi'),
+  moment = require('moment'),
+  npme = require('../../services/npme'),
+  nock = require('nock'),
+  _ = require('lodash'),
+  fixtures = require('../fixtures').enterprise;
 
 process.env.NPME_PRODUCT_ID = 'some-product-id';
 
@@ -20,7 +20,7 @@ var dataIn = {
   seats: 5,
   stripeId: 'cust_12345',
   begins: moment(Date.now()).format(),
-  ends: moment(Date.now()).add(1,'years').format()
+  ends: moment(Date.now()).add(1, 'years').format()
 };
 
 var licenseData = _.extend({}, dataIn, {
@@ -34,30 +34,33 @@ delete licenseData.billingEmail;
 
 var server;
 
-before(function (done) {
+before(function(done) {
   process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
-  server.connection({ host: 'localhost', port: '9131' });
+  server.connection({
+    host: 'localhost',
+    port: '9131'
+  });
 
-  server.register(npme, function () {
+  server.register(npme, function() {
     server.start(done);
   });
 });
 
-after(function (done) {
+after(function(done) {
   delete process.env.LICENSE_API;
   done()
 });
 
-describe('creating a license in hubspot', function () {
-  it('returns a license when hubspot creates it', function (done) {
+describe('creating a license in hubspot', function() {
+  it('returns a license when hubspot creates it', function(done) {
     var mock = nock('https://billing.website.com')
-        .get('/customer/' + dataIn.billingEmail)
-        .reply(200, fixtures.existingUser)
-        .put('/license', licenseData)
-        .reply(200, fixtures.goodLicense);
+      .get('/customer/' + dataIn.billingEmail)
+      .reply(200, fixtures.existingUser)
+      .put('/license', licenseData)
+      .reply(200, fixtures.goodLicense);
 
-    server.methods.npme.createLicense(dataIn, function (err, license) {
+    server.methods.npme.createLicense(dataIn, function(err, license) {
       mock.done();
       expect(err).to.not.exist();
       expect(license).to.deep.equal(fixtures.goodLicense);
@@ -65,14 +68,14 @@ describe('creating a license in hubspot', function () {
     });
   });
 
-  it('returns an error when hubspot is not successful', function (done) {
+  it('returns an error when hubspot is not successful', function(done) {
     var mock = nock('https://billing.website.com')
-        .get('/customer/' + dataIn.billingEmail)
-        .reply(200, fixtures.existingUser)
-        .put('/license', licenseData)
-        .reply(400);
+      .get('/customer/' + dataIn.billingEmail)
+      .reply(200, fixtures.existingUser)
+      .put('/license', licenseData)
+      .reply(400);
 
-    server.methods.npme.createLicense(dataIn, function (err, license) {
+    server.methods.npme.createLicense(dataIn, function(err, license) {
       mock.done();
       expect(err).to.exist();
       expect(err.message).to.equal('unexpected status code from license API: 400');
@@ -81,12 +84,12 @@ describe('creating a license in hubspot', function () {
     });
   });
 
-  it('returns an error when a customer is not found', function (done) {
+  it('returns an error when a customer is not found', function(done) {
     var mock = nock('https://billing.website.com')
-        .get('/customer/' + dataIn.billingEmail)
-        .reply(400);
+      .get('/customer/' + dataIn.billingEmail)
+      .reply(400);
 
-    server.methods.npme.createLicense(dataIn, function (err, license) {
+    server.methods.npme.createLicense(dataIn, function(err, license) {
       mock.done();
       expect(err).to.exist();
       expect(err.message).to.equal('could not create license for unknown customer with email ' + dataIn.billingEmail);

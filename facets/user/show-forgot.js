@@ -1,9 +1,9 @@
-var crypto      = require('crypto'),
-    UserModel   = require('../../models/user'),
-    userValidate= require('npm-user-validate'),
-    utils       = require('../../lib/utils');
+var crypto = require('crypto'),
+  UserModel = require('../../models/user'),
+  userValidate = require('npm-user-validate'),
+  utils = require('../../lib/utils');
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
   var opts = { };
 
   if (request.method === 'post') {
@@ -18,20 +18,22 @@ module.exports = function (request, reply) {
 
     request.timing.page = 'password-recovery-form';
 
-    request.metrics.metric({name: 'password-recovery-form'});
+    request.metrics.metric({
+      name: 'password-recovery-form'
+    });
     return reply.view('user/password-recovery-form', opts);
   }
 };
 
 function processToken(request, reply) {
   var opts = {},
-      cache = request.server.app.cache._cache.connection.client;
+    cache = request.server.app.cache._cache.connection.client;
 
   var token = request.params.token,
-      hash = utils.sha(token),
-      pwKey = 'pwrecover_' + hash;
+    hash = utils.sha(token),
+    pwKey = 'pwrecover_' + hash;
 
-  cache.get(pwKey, function (err, value) {
+  cache.get(pwKey, function(err, value) {
     if (err) {
       request.logger.error('Error getting token from redis', pwKey);
       request.logger.error(err);
@@ -48,7 +50,7 @@ function processToken(request, reply) {
     }
 
     var name = cached.name,
-        verify = cached.token;
+      verify = cached.token;
 
     if (verify !== token) {
       request.logger.error('token in cache does not match user token; cached=' + cached.token + '; token=' + token);
@@ -57,19 +59,21 @@ function processToken(request, reply) {
     }
 
     var newPass = crypto.randomBytes(18).toString('base64'),
-        newAuth = {
-          name: name,
-          password: newPass,
-          resource: {
-            mustChangePass: 'true' // must be a string, as per user-acl
-          }
-        };
+      newAuth = {
+        name: name,
+        password: newPass,
+        resource: {
+          mustChangePass: 'true' // must be a string, as per user-acl
+        }
+      };
 
-    request.logger.warn('About to change password', { name: name });
+    request.logger.warn('About to change password', {
+      name: name
+    });
 
     var User = UserModel.new(request);
 
-    User.save(newAuth, function (err) {
+    User.save(newAuth, function(err) {
 
       if (err) {
         request.logger.error('Failed to set password for ' + newAuth.name);
@@ -79,9 +83,9 @@ function processToken(request, reply) {
       }
 
       // make sure we're getting the latest user object next time we need it
-      User.dropCache(name, function () {
+      User.dropCache(name, function() {
 
-        cache.del(pwKey, function (err) {
+        cache.del(pwKey, function(err) {
 
           if (err) {
             request.logger.warn('Unable to drop key ' + pwKey);
@@ -92,7 +96,9 @@ function processToken(request, reply) {
 
           request.timing.page = 'password-changed';
 
-          request.metrics.metric({ name: 'password-changed' });
+          request.metrics.metric({
+            name: 'password-changed'
+          });
           return reply.view('user/password-changed', opts);
         });
       });
@@ -114,7 +120,9 @@ function handle(request, reply) {
 
     request.timing.page = 'password-recovery-error';
 
-    request.metrics.metric({ name: 'password-recovery-error' });
+    request.metrics.metric({
+      name: 'password-recovery-error'
+    });
     return reply.view('user/password-recovery-form', opts).code(400);
   }
 
@@ -125,7 +133,9 @@ function handle(request, reply) {
 
     request.timing.page = 'password-recovery-error';
 
-    request.metrics.metric({ name: 'password-recovery-error' });
+    request.metrics.metric({
+      name: 'password-recovery-error'
+    });
     return reply.view('user/password-recovery-form', opts).code(400);
   }
 
@@ -137,16 +147,18 @@ function handle(request, reply) {
   }
 }
 
-function lookupUserByEmail (email, request, reply) {
+function lookupUserByEmail(email, request, reply) {
   var opts = { };
 
-   UserModel.new(request).lookupEmail(email, function (er, users) {
+  UserModel.new(request).lookupEmail(email, function(er, users) {
     if (er) {
       opts.error = er.message;
 
       request.timing.page = 'password-recovery-error';
 
-      request.metrics.metric({ name: 'password-recovery-error' });
+      request.metrics.metric({
+        name: 'password-recovery-error'
+      });
       return reply.view('user/password-recovery-form', opts).code(404);
     }
 
@@ -155,7 +167,9 @@ function lookupUserByEmail (email, request, reply) {
 
       request.timing.page = 'password-recovery-multiuser';
 
-      request.metrics.metric({ name: 'password-recovery-multiuser' });
+      request.metrics.metric({
+        name: 'password-recovery-multiuser'
+      });
       return reply.view('user/password-recovery-form', opts);
     }
 
@@ -166,15 +180,17 @@ function lookupUserByEmail (email, request, reply) {
 
     request.timing.page = 'emailLookup';
 
-    request.metrics.metric({ name: 'emailLookup' });
+    request.metrics.metric({
+      name: 'emailLookup'
+    });
     return lookupUserByUsername(users[0].name.trim(), request, reply);
   });
 }
 
-function lookupUserByUsername (name, request, reply) {
+function lookupUserByUsername(name, request, reply) {
   var opts = { };
 
-  UserModel.new(request).get(name, function (er, user) {
+  UserModel.new(request).get(name, function(er, user) {
     if (er) {
       if (er.message && String(er.message).match('404')) {
         opts.error = "Sorry, there's no npm user named " + name
@@ -182,7 +198,9 @@ function lookupUserByUsername (name, request, reply) {
         opts.error = er.message
       }
       request.timing.page = 'password-recovery-error';
-      request.metrics.metric({ name: 'password-recovery-error' });
+      request.metrics.metric({
+        name: 'password-recovery-error'
+      });
       return reply.view('user/password-recovery-form', opts).code(404);
     }
 
@@ -192,7 +210,9 @@ function lookupUserByUsername (name, request, reply) {
 
       request.timing.page = 'password-recovery-error';
 
-      request.metrics.metric({ name: 'password-recovery-error' });
+      request.metrics.metric({
+        name: 'password-recovery-error'
+      });
       return reply.view('user/password-recovery-form', opts).code(400);
     }
 
@@ -202,14 +222,21 @@ function lookupUserByUsername (name, request, reply) {
 
       request.timing.page = 'password-recovery-error';
 
-      request.metrics.metric({ name: 'password-recovery-error' });
+      request.metrics.metric({
+        name: 'password-recovery-error'
+      });
       return reply.view('user/password-recovery-form', opts).code(400);
     }
 
     request.timing.page = 'getUser';
 
-    request.metrics.metric({ name: 'getUser' });
-    return sendEmail(request, reply, {name: name, email: email});
+    request.metrics.metric({
+      name: 'getUser'
+    });
+    return sendEmail(request, reply, {
+      name: name,
+      email: email
+    });
   });
 }
 
@@ -220,16 +247,18 @@ function sendEmail(request, reply, data) {
   var emailIt = request.server.methods.email.send;
 
   emailIt('forgot-password', data, request.redis)
-    .catch(function (er) {
+    .catch(function(er) {
       request.logger.error('Unable to sent revert email to ' + data.email);
       request.logger.error(er);
       return reply.view('errors/internal', opts).code(500);
     })
-    .then(function () {
+    .then(function() {
       opts.sent = true;
 
       request.timing.page = 'sendForgotEmail';
-      request.metrics.metric({ name: 'sendForgotEmail' });
+      request.metrics.metric({
+        name: 'sendForgotEmail'
+      });
 
       return reply.view('user/password-recovery-form', opts);
     });

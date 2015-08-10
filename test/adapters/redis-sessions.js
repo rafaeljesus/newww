@@ -1,17 +1,17 @@
 var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    it = lab.test,
-    expect = Code.expect,
-    redis = require('redis'),
-    spawn = require('child_process').spawn,
-    redisSessions = require('../../adapters/redis-sessions'),
-    redisProcess;
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  before = lab.before,
+  after = lab.after,
+  it = lab.test,
+  expect = Code.expect,
+  redis = require('redis'),
+  spawn = require('child_process').spawn,
+  redisSessions = require('../../adapters/redis-sessions'),
+  redisProcess;
 
-before(function (done) {
+before(function(done) {
   redisProcess = spawn('redis-server');
   done();
 });
@@ -27,20 +27,20 @@ describe('redis-requiring session stuff', function() {
   var bobHash, aliceHash;
   var prefix = "hapi-cache:%7Csessions:";
 
-  before(function (done) {
+  before(function(done) {
     client = require("redis-url").connect();
     client.flushdb();
-    client.on("error", function (err) {
+    client.on("error", function(err) {
       console.log("Error " + err);
     });
     done();
   });
 
-  after('cleans up the db', function (done) {
+  after('cleans up the db', function(done) {
     client.flushdb(done);
   });
 
-  it('creates a random hash for each user', function (done) {
+  it('creates a random hash for each user', function(done) {
     bob1 = redisSessions.generateRandomUserHash('bob');
     bob2 = redisSessions.generateRandomUserHash('bob');
     alice1 = redisSessions.generateRandomUserHash('alice');
@@ -54,20 +54,20 @@ describe('redis-requiring session stuff', function() {
     done();
   });
 
-  it('adds some data', function (done) {
+  it('adds some data', function(done) {
     client.set(prefix + bob1, 'This is Bob on Firefox');
     client.set(prefix + bob2, 'This is Bob on Safari');
     client.set(prefix + alice1, 'This is Alice on Opera');
 
-    client.get(prefix + bob1, function (err, resp) {
+    client.get(prefix + bob1, function(err, resp) {
       expect(err).to.not.exist();
       expect(resp).to.equal('This is Bob on Firefox');
 
-      client.get(prefix + bob2, function (err, resp) {
+      client.get(prefix + bob2, function(err, resp) {
         expect(err).to.not.exist();
         expect(resp).to.equal('This is Bob on Safari');
 
-        client.get(prefix + alice1, function (err, resp) {
+        client.get(prefix + alice1, function(err, resp) {
           expect(err).to.not.exist();
           expect(resp).to.equal('This is Alice on Opera');
 
@@ -78,7 +78,7 @@ describe('redis-requiring session stuff', function() {
   });
 
   it('finds all existing keys with a certain prefix', function(done) {
-    redisSessions.getKeysWithPrefix('bob', function (err, keys) {
+    redisSessions.getKeysWithPrefix('bob', function(err, keys) {
       expect(err).to.not.exist();
       expect(keys).to.be.length(2);
       expect(keys[0]).to.include(bobHash);
@@ -90,10 +90,10 @@ describe('redis-requiring session stuff', function() {
   });
 
   it('removes all existing keys with a certain prefix', function(done) {
-    redisSessions.dropKeysWithPrefix('bob', function (err) {
+    redisSessions.dropKeysWithPrefix('bob', function(err) {
       expect(err).to.not.exist();
 
-      redisSessions.getKeysWithPrefix('', function (er, keys) {
+      redisSessions.getKeysWithPrefix('', function(er, keys) {
 
         expect(er).to.not.exist();
 

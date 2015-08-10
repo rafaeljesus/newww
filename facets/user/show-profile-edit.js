@@ -1,9 +1,9 @@
 var UserModel = require('../../models/user'),
-    presenter = require('../../presenters/user'),
-    Joi = require('joi'),
-    merge = require('lodash').merge;
+  presenter = require('../../presenters/user'),
+  Joi = require('joi'),
+  merge = require('lodash').merge;
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
   var loggedInUser = request.loggedInUser;
   var User = UserModel.new(request);
 
@@ -19,13 +19,13 @@ module.exports = function (request, reply) {
       freenode: Joi.string().allow('')
     });
 
-    Joi.validate(request.payload, editableUserProperties, function (err, userChanges) {
+    Joi.validate(request.payload, editableUserProperties, function(err, userChanges) {
       if (err) {
         opts.error = err;
         return reply.view('user/profile-edit', opts).code(400);
       }
 
-      User.get(loggedInUser.name, function (err, user) {
+      User.get(loggedInUser.name, function(err, user) {
 
         if (err) {
           request.logger.error('unable to get user ' + loggedInUser.name);
@@ -36,17 +36,19 @@ module.exports = function (request, reply) {
         merge(user.resource, userChanges);
         user = presenter(user);
 
-        User.save(user, function (err, data) {
+        User.save(user, function(err, data) {
           if (err) {
             request.logger.warn('unable to save profile; user=' + user.name);
             request.logger.warn(err);
             return reply.view('errors/internal', opts).code(500);
           }
 
-          User.dropCache(user.name, function () {
+          User.dropCache(user.name, function() {
 
             request.timing.page = 'saveProfile';
-            request.metrics.metric({ name: 'saveProfile' });
+            request.metrics.metric({
+              name: 'saveProfile'
+            });
             return reply.redirect('/profile');
           });
         });

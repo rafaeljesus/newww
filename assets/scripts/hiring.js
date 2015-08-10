@@ -13,8 +13,7 @@ var fetchCompanies = function() {
     return console.error("container must specify a template")
   }
 
-  var template = templates[container.data().template]
-
+  var template = templates[container.data().template];
   $.getJSON("https://partners.npmjs.com/hiring")
     .done(function(companies) {
 

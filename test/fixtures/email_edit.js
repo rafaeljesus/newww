@@ -1,7 +1,7 @@
 var bob = require('./users').bob,
-    newEmail = 'new@boom.me';
+  newEmail = 'new@boom.me';
 
-module.exports = function (cookieCrumb) {
+module.exports = function(cookieCrumb) {
   return {
     newEmail: {
       name: bob.name,

@@ -1,5 +1,5 @@
 var request = require('request'),
-    log = require('bole')('npme-get-customer');
+  log = require('bole')('npme-get-customer');
 
 module.exports = function(email, callback) {
 
@@ -8,7 +8,7 @@ module.exports = function(email, callback) {
   request.get({
     url: customerEndpoint + '/' + email,
     json: true
-  }, function (er, resp, body) {
+  }, function(er, resp, body) {
 
     if (resp.statusCode === 404) {
       return callback(null, null); // no error, but no customer either

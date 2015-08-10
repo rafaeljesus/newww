@@ -1,11 +1,11 @@
 var request = require('request'),
-    log = require('bole')('npme-get-license'),
-    getCustomer = require('./getCustomer');
+  log = require('bole')('npme-get-license'),
+  getCustomer = require('./getCustomer');
 
 module.exports = function(licenseDetails, callback) {
 
   // we need to get customer from billing email
-  getCustomer(licenseDetails.billingEmail, function(er,customer) {
+  getCustomer(licenseDetails.billingEmail, function(er, customer) {
 
     if (er || !customer) {
       log.error("No customer found with that email");
@@ -25,7 +25,7 @@ module.exports = function(licenseDetails, callback) {
         begins: licenseDetails.begins,
         ends: licenseDetails.ends
       }
-    }, function (er, resp, body) {
+    }, function(er, resp, body) {
 
       if (er) {
         log.error("License creation failed:");

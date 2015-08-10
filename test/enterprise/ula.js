@@ -1,31 +1,31 @@
 var generateCrumb = require("../handlers/crumb.js"),
-    Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    it = lab.test,
-    expect = Code.expect;
+  Code = require('code'),
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  before = lab.before,
+  after = lab.after,
+  it = lab.test,
+  expect = Code.expect;
 
 var server;
 
 
-before(function (done) {
-  require('../mocks/server')(function (obj) {
+before(function(done) {
+  require('../mocks/server')(function(obj) {
     server = obj;
     done();
   });
 });
 
-after(function (done) {
+after(function(done) {
   server.stop(done);
 });
 
-describe('Getting to the ULA page', function () {
-  it('creates a new customer when one doesn\'t exist', function (done) {
+describe('Getting to the ULA page', function() {
+  it('creates a new customer when one doesn\'t exist', function(done) {
 
-    generateCrumb(server, function (crumb){
+    generateCrumb(server, function(crumb) {
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -39,10 +39,12 @@ describe('Getting to the ULA page', function () {
           comments: 'teehee',
           crumb: crumb
         },
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
@@ -53,9 +55,9 @@ describe('Getting to the ULA page', function () {
     });
   });
 
-  it('re-renders signup page with errors if form input contains non-whitelisted properties', function (done) {
+  it('re-renders signup page with errors if form input contains non-whitelisted properties', function(done) {
 
-    generateCrumb(server, function (crumb){
+    generateCrumb(server, function(crumb) {
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -71,15 +73,17 @@ describe('Getting to the ULA page', function () {
           comments: 'teehee',
           crumb: crumb
         },
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(400);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/index');
         expect(source.context.errors).to.exist();
-        var names = source.context.errors.map(function(error){
+        var names = source.context.errors.map(function(error) {
           return error.path;
         });
         expect(names).to.include('malicious_intent');
@@ -90,9 +94,9 @@ describe('Getting to the ULA page', function () {
   });
 
 
-  it('re-renders signup page with errors if form input is invalid', function (done) {
+  it('re-renders signup page with errors if form input is invalid', function(done) {
 
-    generateCrumb(server, function (crumb){
+    generateCrumb(server, function(crumb) {
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -106,15 +110,17 @@ describe('Getting to the ULA page', function () {
           comments: "",
           crumb: crumb
         },
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(400);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/index');
         expect(source.context.errors).to.exist();
-        var names = source.context.errors.map(function(error){
+        var names = source.context.errors.map(function(error) {
           return error.path;
         });
         expect(names).to.not.include('comments'); // because they're optional
@@ -125,9 +131,9 @@ describe('Getting to the ULA page', function () {
     });
   });
 
-  it('gets the customer when they already exist', function (done) {
+  it('gets the customer when they already exist', function(done) {
 
-    generateCrumb(server, function (crumb){
+    generateCrumb(server, function(crumb) {
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -141,10 +147,12 @@ describe('Getting to the ULA page', function () {
           comments: 'teehee',
           crumb: crumb
         },
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
@@ -155,9 +163,9 @@ describe('Getting to the ULA page', function () {
     });
   });
 
-  it('renders an error when hubspot errors out when getting a customer', function (done) {
+  it('renders an error when hubspot errors out when getting a customer', function(done) {
 
-    generateCrumb(server, function (crumb){
+    generateCrumb(server, function(crumb) {
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -171,10 +179,12 @@ describe('Getting to the ULA page', function () {
           comments: 'teehee',
           crumb: crumb
         },
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(500);
         var source = resp.request.response.source;
         expect(source.template).to.equal('errors/internal');

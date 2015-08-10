@@ -8,11 +8,11 @@ var updateExpansion = function(event) {
     return window.location = "https://github.com/npm/npm-expansions"
   }
 
-  var expansion = expansions[Math.floor(Math.random()*expansions.length)]
+  var expansion = expansions[Math.floor(Math.random() * expansions.length)];
   $("#npm-expansions").text(expansion)
 }
 
-$(function(){
+$(function() {
   updateExpansion()
   $("#npm-expansions").on('click', updateExpansion)
 })

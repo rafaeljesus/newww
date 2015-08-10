@@ -1,9 +1,9 @@
 var _ = require('lodash');
 
-module.exports = function verifyEnterpriseTrial (request, reply) {
+module.exports = function verifyEnterpriseTrial(request, reply) {
   var verifyTrial = request.server.methods.npme.verifyTrial,
-      getCustomer = request.server.methods.npme.getCustomer,
-      getLicenses = request.server.methods.npme.getLicenses;
+    getCustomer = request.server.methods.npme.getCustomer,
+    getLicenses = request.server.methods.npme.getLicenses;
 
   var opts = { };
 
@@ -13,7 +13,7 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
     return;
   }
 
-  verifyTrial(request.query.v, function (err, trial) {
+  verifyTrial(request.query.v, function(err, trial) {
 
     if (err) {
       request.logger.error('Unable to verify the trial', request.query.v);
@@ -22,7 +22,7 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
       return;
     }
 
-    getCustomer(trial.customer_id, function (err, customer) {
+    getCustomer(trial.customer_id, function(err, customer) {
 
       if (err) {
         request.logger.error('Unable to get customer from hubspot', trial.customer_id);
@@ -31,7 +31,7 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
         return;
       }
 
-      getLicenses(process.env.NPME_PRODUCT_ID, trial.customer_id, function (err, licenses) {
+      getLicenses(process.env.NPME_PRODUCT_ID, trial.customer_id, function(err, licenses) {
 
         if (err) {
           request.logger.error('Unable to get licenses from hubspot for customer ' + trial.customer_id);
@@ -48,8 +48,8 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
         }
 
         var requirementsUrl = "https://docs.npmjs.com/enterprise/installation#requirements",
-            instructionsUrl = "https://docs.npmjs.com/enterprise/installation",
-            license = licenses[0];
+          instructionsUrl = "https://docs.npmjs.com/enterprise/installation",
+          license = licenses[0];
 
         var mail = {
           name: customer.name,
@@ -68,13 +68,13 @@ module.exports = function verifyEnterpriseTrial (request, reply) {
         var sendEmail = request.server.methods.email.send;
 
         sendEmail('enterprise-verification', mail, request.redis)
-          .catch(function (er) {
+          .catch(function(er) {
             request.logger.error('Unable to send license to email', opts.email);
             request.logger.error(er);
             reply.view('errors/internal', opts).code(500);
             return;
           })
-          .then(function () {
+          .then(function() {
             return reply.view('enterprise/complete', opts);
           });
       });

@@ -1,24 +1,24 @@
 var fixtures = require('../fixtures'),
-    nock = require('nock'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    it = lab.test,
-    after = lab.after,
-    before = lab.before,
-    expect = require('code').expect,
-    server;
+  nock = require('nock'),
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  it = lab.test,
+  after = lab.after,
+  before = lab.before,
+  expect = require('code').expect,
+  server;
 
-describe('browse handler', function () {
+describe('browse handler', function() {
 
-  before(function (done) {
-    require('../mocks/server')(function (obj) {
+  before(function(done) {
+    require('../mocks/server')(function(obj) {
       server = obj;
       done();
     });
   });
 
-  after(function (done) {
+  after(function(done) {
     server.stop(done);
   });
 
@@ -31,7 +31,7 @@ describe('browse handler', function () {
       url: "/browse/keyword/http",
     }
 
-    before(function(done){
+    before(function(done) {
       server.inject(opts, function(response) {
         resp = response
         mock.done()
@@ -67,7 +67,7 @@ describe('browse handler', function () {
       url: "/browse/depended",
     }
 
-    before(function(done){
+    before(function(done) {
       server.inject(opts, function(response) {
         resp = response
         mock.done()
@@ -103,7 +103,7 @@ describe('browse handler', function () {
       url: "/browse/depended/express",
     }
 
-    before(function(done){
+    before(function(done) {
       server.inject(opts, function(response) {
         resp = response
         mock.done()
@@ -139,7 +139,7 @@ describe('browse handler', function () {
       url: "/browse/star",
     }
 
-    before(function(done){
+    before(function(done) {
       server.inject(opts, function(response) {
         resp = response
         mock.done()
@@ -175,7 +175,7 @@ describe('browse handler', function () {
       url: "/browse/updated",
     }
 
-    before(function(done){
+    before(function(done) {
       server.inject(opts, function(response) {
         resp = response
         mock.done()
@@ -211,7 +211,7 @@ describe('browse handler', function () {
       url: "/browse/created",
     }
 
-    before(function(done){
+    before(function(done) {
       server.inject(opts, function(response) {
         resp = response
         mock.done()

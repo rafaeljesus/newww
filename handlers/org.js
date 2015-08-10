@@ -8,6 +8,12 @@ exports.getOrg = function(request, reply) {
     .get(request.params.org, function(err, org) {
       if (err) {
         request.logger.error(err);
+
+        if (err.statusCode === 404) {
+          return reply.view('errors/not-found', err);
+        } else {
+          return reply.view('errors/internal', err);
+        }
       }
       opts.org = org;
 

@@ -119,10 +119,9 @@ describe('getting an org', function() {
 
     server.inject(options, function(resp) {
       userMock.done();
-      licenseMock.done();
       orgMock.done();
       expect(resp.statusCode).to.equal(200);
-      expect(resp.request.response.source.template).to.equal('org/info');
+      expect(resp.request.response.source.template).to.equal('errors/not-found');
       expect(resp.request.response.source.context).to.not.include('sponsorships');
       done();
     });

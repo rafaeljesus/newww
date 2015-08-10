@@ -171,39 +171,8 @@ module.exports = function (server) {
     },
 
     user: {
-      delSession: function (request) {
-        return function (user, next) {
-          var sid = murmurhash.v3(user.name, 55).toString(16);
-
-          user.sid = sid;
-
-          request.server.app.cache.drop(sid, function (err) {
-            if (err) {
-              return next(Boom.internal('there was an error clearing the cache'));
-            }
-
-            request.auth.session.clear();
-            return next(null);
-          });
-        };
-      },
-
-      setSession: function (request) {
-        return function (user, next) {
-          var sid = murmurhash.v3(user.name, 55).toString(16);
-
-          user.sid = sid;
-
-          server.app.cache.set(sid, user, 0, function (err) {
-            if (err) {
-              return next(Boom.internal('there was an error setting the cache'));
-            }
-
-            request.auth.session.set({sid: sid});
-            return next(null);
-          });
-        };
-      }
+      delSession: require('../../services/user/methods/sessions').del,
+      setSession: require('../../services/user/methods/sessions').set
     }
   };
 

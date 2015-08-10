@@ -5,7 +5,7 @@ var Boom = require('boom'),
 module.exports = {
   set: function set (request) {
     return function (user, next) {
-      var timer = { start: Date.now() };
+      var start = Date.now();
 
       var data = {
         name: user.name,
@@ -20,10 +20,9 @@ module.exports = {
           return next(err);
         }
 
-        timer.end = Date.now();
         metrics.metric({
           name: 'latency.redis',
-          value: timer.end - timer.start,
+          value: Date.now() - start,
           action: 'setSession'
         });
 

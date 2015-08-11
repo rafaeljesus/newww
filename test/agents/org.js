@@ -1,30 +1,34 @@
 var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    // beforeEach = lab.beforeEach,
-    // before = lab.before,
-    // after = lab.after,
-    it = lab.test,
-    expect = Code.expect,
-    nock = require('nock'),
-    fixtures = require('../fixtures');
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  // beforeEach = lab.beforeEach,
+  // before = lab.before,
+  // after = lab.after,
+  it = lab.test,
+  expect = Code.expect,
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var Org = require('../../agents/org');
 
-describe('Org', function () {
-  it('throws if no bearer is passed', function (done) {
-    expect(function () { return Org(); }).to.throw("Must pass a bearer (loggedInUser) to Org agent");
+describe('Org', function() {
+  it('throws if no bearer is passed', function(done) {
+    expect(function() {
+      return Org();
+    }).to.throw("Must pass a bearer (loggedInUser) to Org agent");
     done();
   });
 
-  describe("create()", function () {
-    it("errors out if bearer token is not included", function (done) {
+  describe("create()", function() {
+    it("errors out if bearer token is not included", function(done) {
       var orgMock = nock('https://user-api-example.com')
-        .put('/org', {name: 'bigco'})
+        .put('/org', {
+          name: 'bigco'
+        })
         .reply(401);
 
-      Org('bob').create('bigco', function (err, org) {
+      Org('bob').create('bigco', function(err, org) {
         orgMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('no bearer token included in creation of bigco');
@@ -34,11 +38,15 @@ describe('Org', function () {
       });
     });
 
-    it("is successful if bearer token is included", function (done) {
+    it("is successful if bearer token is included", function(done) {
       var orgMock = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'bob'}
+        reqheaders: {
+          bearer: 'bob'
+        }
+      })
+        .put('/org', {
+          name: "bigco"
         })
-        .put('/org', {name: "bigco"})
         .reply(200, {
           "name": "bigco",
           "description": "",
@@ -48,7 +56,7 @@ describe('Org', function () {
           "deleted": null
         });
 
-      Org('bob').create("bigco", function (err, org) {
+      Org('bob').create("bigco", function(err, org) {
         orgMock.done();
         expect(err).to.not.exist();
         expect(org.name).to.equal("bigco");
@@ -58,23 +66,35 @@ describe('Org', function () {
     });
   });
 
-  describe('get()', function () {
-    it('throws if no name is passed', function (done) {
+  describe('get()', function() {
+    it('throws if no name is passed', function(done) {
 
-      expect(function () { return Org('betty').get(); }).to.throw("name must be a string");
+      expect(function() {
+        return Org('betty').get();
+      }).to.throw("name must be a string");
       done();
     });
 
-    it('makes requests to get information about and users in the org', function (done) {
+    it('makes requests to get information about and users in the org', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com')
         .get('/org/' + name)
-        .reply(200, {'name':'bigco','description':'','resource':{},'created':'2015-06-19T23:35:42.659Z','updated':'2015-06-19T23:35:42.659Z','deleted':null})
+        .reply(200, {
+          'name': 'bigco',
+          'description': '',
+          'resource': {},
+          'created': '2015-06-19T23:35:42.659Z',
+          'updated': '2015-06-19T23:35:42.659Z',
+          'deleted': null
+        })
         .get('/org/' + name + '/user')
-        .reply(200, {'count':1,'items':[fixtures.users.bigcoadmin]});
+        .reply(200, {
+          'count': 1,
+          'items': [fixtures.users.bigcoadmin]
+        });
 
-      Org('betty').get(name, function (err, org) {
+      Org('betty').get(name, function(err, org) {
         orgMocks.done();
         expect(err).to.be.null();
         expect(org.users[0].name).to.equal('bob');
@@ -84,7 +104,7 @@ describe('Org', function () {
       });
     });
 
-    it('returns a 404 and an empty org if org is not found', function (done) {
+    it('returns a 404 and an empty org if org is not found', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com')
@@ -93,7 +113,7 @@ describe('Org', function () {
         .get('/org/' + name + '/user')
         .reply(404, 'not found');
 
-      Org('betty').get(name, function (err, org) {
+      Org('betty').get(name, function(err, org) {
         orgMocks.done();
         expect(err.statusCode).to.equal(404);
         expect(err.message).to.equal('org not found');
@@ -103,8 +123,8 @@ describe('Org', function () {
     });
   });
 
-  describe('update()', function () {
-    it('returns an error if a non-org-member attempts to update an org', function (done) {
+  describe('update()', function() {
+    it('returns an error if a non-org-member attempts to update an org', function(done) {
       var name = 'bigco';
 
       var data = {
@@ -116,12 +136,14 @@ describe('Org', function () {
       };
 
       var orgMocks = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'betty'}
-        })
+        reqheaders: {
+          bearer: 'betty'
+        }
+      })
         .post('/org/' + name, data)
         .reply(401, "user not found in org");
 
-      Org('betty').update(data, function (err, org) {
+      Org('betty').update(data, function(err, org) {
         orgMocks.done();
         expect(err).to.exist();
         expect(err.message).to.equal('user is unauthorized to modify this organization');
@@ -131,7 +153,7 @@ describe('Org', function () {
       });
     });
 
-    it('returns an error if a non-super-admin tries to update the org', function (done) {
+    it('returns an error if a non-super-admin tries to update the org', function(done) {
       var name = 'bigco';
 
       var data = {
@@ -143,12 +165,14 @@ describe('Org', function () {
       };
 
       var orgMocks = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'betty'}
-        })
+        reqheaders: {
+          bearer: 'betty'
+        }
+      })
         .post('/org/' + name, data)
         .reply(401, "user must be admin to perform this operation");
 
-      Org('betty').update(data, function (err, org) {
+      Org('betty').update(data, function(err, org) {
         orgMocks.done();
         expect(err).to.exist();
         expect(err.message).to.equal('user is unauthorized to modify this organization');
@@ -158,7 +182,7 @@ describe('Org', function () {
       });
     });
 
-    it('returns an error if the org does not exist', function (done) {
+    it('returns an error if the org does not exist', function(done) {
       var name = 'bigco';
 
       var data = {
@@ -170,12 +194,14 @@ describe('Org', function () {
       };
 
       var orgMocks = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'betty'}
-        })
+        reqheaders: {
+          bearer: 'betty'
+        }
+      })
         .post('/org/' + name, data)
         .reply(404, "Org not found");
 
-      Org('betty').update(data, function (err, org) {
+      Org('betty').update(data, function(err, org) {
         orgMocks.done();
         expect(err).to.exist();
         expect(err.message).to.equal('org not found');
@@ -185,7 +211,7 @@ describe('Org', function () {
       });
     });
 
-    it('allows us to update description and human-readable name', function (done) {
+    it('allows us to update description and human-readable name', function(done) {
       var name = 'bigco';
 
       var data = {
@@ -197,8 +223,10 @@ describe('Org', function () {
       };
 
       var orgMocks = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'bob'}
-        })
+        reqheaders: {
+          bearer: 'bob'
+        }
+      })
         .post('/org/' + name, data)
         .reply(200, {
           name: "bigco",
@@ -211,7 +239,7 @@ describe('Org', function () {
           deleted: null
         });
 
-      Org('bob').update(data, function (err, org) {
+      Org('bob').update(data, function(err, org) {
         orgMocks.done();
         expect(err).to.be.null();
         expect(org.description).to.equal("bigco organization");
@@ -221,22 +249,26 @@ describe('Org', function () {
     });
   });
 
-  describe('delete()', function () {
-    it('throws if no name is passed', function (done) {
-      expect(function () { return Org('betty').delete(); }).to.throw('name must be a string');
+  describe('delete()', function() {
+    it('throws if no name is passed', function(done) {
+      expect(function() {
+        return Org('betty').delete();
+      }).to.throw('name must be a string');
       done();
     });
 
-    it('returns an error if a non-org-member tries to delete the org', function (done) {
+    it('returns an error if a non-org-member tries to delete the org', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'betty'}
-        })
+        reqheaders: {
+          bearer: 'betty'
+        }
+      })
         .delete('/org/' + name)
         .reply(401, 'user not found in org');
 
-      Org('betty').delete(name, function (err, resp) {
+      Org('betty').delete(name, function(err, resp) {
         orgMocks.done();
         expect(err.statusCode).to.equal(401);
         expect(err.message).to.equal('user is unauthorized to delete this organization');
@@ -245,16 +277,18 @@ describe('Org', function () {
       });
     });
 
-    it('returns an error if a non-super-admin tries to delete the org', function (done) {
+    it('returns an error if a non-super-admin tries to delete the org', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'betty'}
-        })
+        reqheaders: {
+          bearer: 'betty'
+        }
+      })
         .delete('/org/' + name)
         .reply(401, 'user must be admin to perform this operation');
 
-      Org('betty').delete(name, function (err, resp) {
+      Org('betty').delete(name, function(err, resp) {
         orgMocks.done();
         expect(err.statusCode).to.equal(401);
         expect(err.message).to.equal('user is unauthorized to delete this organization');
@@ -263,16 +297,18 @@ describe('Org', function () {
       });
     });
 
-    it('returns a 404 if the org is not found', function (done) {
+    it('returns a 404 if the org is not found', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'betty'}
-        })
+        reqheaders: {
+          bearer: 'betty'
+        }
+      })
         .delete('/org/' + name)
         .reply(404, 'Org not found');
 
-      Org('betty').delete(name, function (err, resp) {
+      Org('betty').delete(name, function(err, resp) {
         orgMocks.done();
         expect(err.statusCode).to.equal(404);
         expect(err.message).to.equal('org not found');
@@ -281,12 +317,14 @@ describe('Org', function () {
       });
     });
 
-    it('deletes the org if the bearer is the super-admin', function (done) {
+    it('deletes the org if the bearer is the super-admin', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com', {
-          reqheaders: {bearer: 'bob'}
-        })
+        reqheaders: {
+          bearer: 'bob'
+        }
+      })
         .delete('/org/' + name)
         .reply(200, {
           name: "bigco",
@@ -297,7 +335,7 @@ describe('Org', function () {
           deleted: "2015-07-10T19:59:08.395Z"
         });
 
-      Org('bob').delete(name, function (err, resp) {
+      Org('bob').delete(name, function(err, resp) {
         orgMocks.done();
         expect(err).to.be.null();
         expect(resp.deleted).to.be.a.string();
@@ -306,15 +344,18 @@ describe('Org', function () {
     });
   });
 
-  describe('get users', function () {
-    it('returns all the users of an org', function (done) {
+  describe('get users', function() {
+    it('returns all the users of an org', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com')
-        .get('/org/'+ name + '/user')
-        .reply(200, {"count":1,"items":[fixtures.users.bigcoadmin]});
+        .get('/org/' + name + '/user')
+        .reply(200, {
+          "count": 1,
+          "items": [fixtures.users.bigcoadmin]
+        });
 
-      Org('bob').getUsers(name, function (err, users) {
+      Org('bob').getUsers(name, function(err, users) {
         orgMocks.done();
         expect(err).to.be.null();
         expect(users.items).to.be.an.array();
@@ -324,14 +365,14 @@ describe('Org', function () {
       });
     });
 
-    it('returns no users if the org does not exist', function (done) {
+    it('returns no users if the org does not exist', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com')
-        .get('/org/'+ name + '/user')
+        .get('/org/' + name + '/user')
         .reply(404, 'Org not found');
 
-      Org('bob').getUsers(name, function (err, users) {
+      Org('bob').getUsers(name, function(err, users) {
         orgMocks.done();
         expect(err).to.exist();
         expect(err.message).to.equal('org not found');
@@ -342,8 +383,8 @@ describe('Org', function () {
     });
   });
 
-  describe('add user', function () {
-    it('gets an error if the bearer is not the super-admin', function (done) {
+  describe('add user', function() {
+    it('gets an error if the bearer is not the super-admin', function(done) {
       var name = 'bigco';
 
       var user = {
@@ -352,10 +393,10 @@ describe('Org', function () {
       };
 
       var orgMocks = nock('https://user-api-example.com')
-        .put('/org/'+ name + '/user', user)
+        .put('/org/' + name + '/user', user)
         .reply(401, "user must be admin to perform this operation");
 
-      Org('bob2').addUser(name, user, function (err, user) {
+      Org('bob2').addUser(name, user, function(err, user) {
         orgMocks.done();
         expect(err).to.exist();
         expect(err.message).to.equal("bearer is unauthorized to add this user to this organization");
@@ -365,7 +406,7 @@ describe('Org', function () {
       });
     });
 
-    it('gets an error if the org does not exist', function (done) {
+    it('gets an error if the org does not exist', function(done) {
       var name = 'bigco';
 
       var user = {
@@ -374,10 +415,10 @@ describe('Org', function () {
       };
 
       var orgMocks = nock('https://user-api-example.com')
-        .put('/org/'+ name + '/user', user)
+        .put('/org/' + name + '/user', user)
         .reply(404, "Org not found");
 
-      Org('bob').addUser(name, user, function (err, user) {
+      Org('bob').addUser(name, user, function(err, user) {
         orgMocks.done();
         expect(err).to.exist();
         expect(err.message).to.equal("org or user not found");
@@ -387,7 +428,7 @@ describe('Org', function () {
       });
     });
 
-    it('adds a user if the bearer is the super-admin', function (done) {
+    it('adds a user if the bearer is the super-admin', function(done) {
       var name = 'bigco';
 
       var user = {
@@ -396,7 +437,7 @@ describe('Org', function () {
       };
 
       var orgMocks = nock('https://user-api-example.com')
-        .put('/org/'+ name + '/user', user)
+        .put('/org/' + name + '/user', user)
         .reply(200, {
           "user_id": 1234,
           "org_id": 123456,
@@ -406,7 +447,7 @@ describe('Org', function () {
           "deleted": null
         });
 
-      Org('bob').addUser(name, user, function (err, user) {
+      Org('bob').addUser(name, user, function(err, user) {
         orgMocks.done();
         expect(err).to.be.null();
         expect(user).to.exist();
@@ -416,15 +457,15 @@ describe('Org', function () {
     });
   });
 
-  describe('get teams', function () {
-    it('returns all the teams of an org', function (done) {
+  describe('get teams', function() {
+    it('returns all the teams of an org', function(done) {
       var name = 'bigcoOrg';
 
       var orgMocks = nock('https://user-api-example.com')
-        .get('/org/'+ name + '/team')
+        .get('/org/' + name + '/team')
         .reply(200, fixtures.teams.bigcoOrg);
 
-      Org('bob').getTeams(name, function (err, teams) {
+      Org('bob').getTeams(name, function(err, teams) {
         orgMocks.done();
         expect(err).to.be.null();
         expect(teams.items).to.be.an.array();
@@ -434,14 +475,14 @@ describe('Org', function () {
       });
     });
 
-    it('returns no teams if the org does not exist', function (done) {
+    it('returns no teams if the org does not exist', function(done) {
       var name = 'bigcoOrg';
 
       var orgMocks = nock('https://user-api-example.com')
-        .get('/org/'+ name + '/team')
+        .get('/org/' + name + '/team')
         .reply(404, 'Org not found');
 
-      Org('bob').getTeams(name, function (err, teams) {
+      Org('bob').getTeams(name, function(err, teams) {
         orgMocks.done();
         expect(err).to.exist();
         expect(err.message).to.equal('org not found');

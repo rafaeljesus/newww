@@ -404,11 +404,17 @@ User.prototype.getOrgs = function(name, callback) {
       json: true
     };
 
-    if (self.bearer) { opts.headers = {bearer: self.bearer}; }
+    if (self.bearer) {
+      opts.headers = {
+        bearer: self.bearer
+      };
+    }
 
-    Request.get(opts, function(err, resp, body){
+    Request.get(opts, function(err, resp, body) {
 
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
 
       if (resp.statusCode > 399) {
         err = Error('error getting orgs for user ' + name);

@@ -12,19 +12,21 @@ var noKey = function() {
 var init = function() {
 
   // External stripe scripts are not loaded on all pages
-  if (typeof Stripe === "undefined") { return; }
+  if (typeof Stripe === "undefined") {
+    return;
+  }
 
-  $('#enable-private-modules').click(function (e) {
+  $('#enable-private-modules').click(function(e) {
     e.preventDefault();
     $('#info-private-modules').toggle();
   });
 
-  $('#enable-orgs').click(function (e) {
+  $('#enable-orgs').click(function(e) {
     e.preventDefault();
     $('#info-orgs').toggle();
   });
 
-  $('#add-billing-info').click(function (e) {
+  $('#add-billing-info').click(function(e) {
     e.preventDefault();
     $('#payment-form').toggle();
   });

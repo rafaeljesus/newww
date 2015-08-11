@@ -6,11 +6,11 @@ module.exports = function(request, reply) {
 
   User.new(request)
     .getOrgs(name)
-    .then(function (orgs) {
+    .then(function(orgs) {
       opts.orgs = orgs;
       return reply.view('org/index', opts);
     })
-    .catch(function (err) {
+    .catch(function(err) {
       return reply.view('errors/interal', opts);
     });
 

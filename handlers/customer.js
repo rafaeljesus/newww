@@ -136,7 +136,7 @@ customer.subscribe = function(request, reply) {
             }
 
             Org(request.loggedInUser.name)
-              .create(planInfo.npm_org, function (err, opts){
+              .create(planInfo.npm_org, function(err, opts) {
                 if (err) {
                   return reply.view('errors/internal', err);
                 }

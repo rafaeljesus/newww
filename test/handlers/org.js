@@ -1,31 +1,31 @@
 var generateCrumb = require("../handlers/crumb.js"),
-    Lab = require('lab'),
-    Code = require('code'),
-    nock = require('nock'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    it = lab.test,
-    expect = Code.expect,
-    server,
-    fixtures = require('../fixtures');
+  Lab = require('lab'),
+  Code = require('code'),
+  nock = require('nock'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  before = lab.before,
+  after = lab.after,
+  it = lab.test,
+  expect = Code.expect,
+  server,
+  fixtures = require('../fixtures');
 
-before(function (done) {
+before(function(done) {
   process.env.FEATURE_ORG_BILLING = 'true';
-  require('../mocks/server')(function (obj) {
+  require('../mocks/server')(function(obj) {
     server = obj;
     done();
   });
 });
 
-after(function (done) {
+after(function(done) {
   delete process.env.FEATURE_ORG_BILLING;
   server.stop(done);
 });
 
-describe('getting an org', function () {
-  it('does not include sponsorships if the org has not sponsored anyone', function (done) {
+describe('getting an org', function() {
+  it('does not include sponsorships if the org has not sponsored anyone', function(done) {
     var userMock = nock("https://user-api-example.com")
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
@@ -49,7 +49,7 @@ describe('getting an org', function () {
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       userMock.done();
       licenseMock.done();
       orgMock.done();
@@ -60,7 +60,7 @@ describe('getting an org', function () {
     });
   });
 
-  it('includes sponsorships if the org has sponsored someone', function (done) {
+  it('includes sponsorships if the org has sponsored someone', function(done) {
     var userMock = nock("https://user-api-example.com")
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
@@ -84,7 +84,7 @@ describe('getting an org', function () {
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       userMock.done();
       licenseMock.done();
       orgMock.done();
@@ -95,7 +95,7 @@ describe('getting an org', function () {
     });
   });
 
-  it('does not include sponsorships if the org does not exist', function (done) {
+  it('does not include sponsorships if the org does not exist', function(done) {
     var userMock = nock("https://user-api-example.com")
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
@@ -117,7 +117,7 @@ describe('getting an org', function () {
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       userMock.done();
       licenseMock.done();
       orgMock.done();
@@ -129,10 +129,10 @@ describe('getting an org', function () {
   });
 });
 
-describe('updating an org', function () {
-  describe('adding a user', function () {
-    it('renders an error if a user cannot be added to an org', function (done) {
-      generateCrumb(server, function (crumb) {
+describe('updating an org', function() {
+  describe('adding a user', function() {
+    it('renders an error if a user cannot be added to an org', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -163,7 +163,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           orgMock.done();
@@ -174,8 +174,8 @@ describe('updating an org', function () {
       });
     });
 
-    it('renders an error if the license of the org cannot be retrieved', function (done) {
-      generateCrumb(server, function (crumb) {
+    it('renders an error if the license of the org cannot be retrieved', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -215,7 +215,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           orgMock.done();
@@ -226,8 +226,8 @@ describe('updating an org', function () {
       });
     });
 
-    it('renders an eror if a sponsorship cannot be extended', function (done) {
-      generateCrumb(server, function (crumb) {
+    it('renders an eror if a sponsorship cannot be extended', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -237,7 +237,9 @@ describe('updating an org', function () {
           .reply(200, fixtures.customers.happy)
           .get("/customer/bob/stripe/subscription")
           .reply(200, fixtures.users.bobsubscriptions)
-          .put("/sponsorship/1", {"npm_user":"betty"})
+          .put("/sponsorship/1", {
+            "npm_user": "betty"
+          })
           .reply(404);
 
         var orgMock = nock("https://user-api-example.com")
@@ -269,7 +271,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           orgMock.done();
@@ -280,8 +282,8 @@ describe('updating an org', function () {
       });
     });
 
-    it('renders an error if a sponsorship cannot be accepted', function (done) {
-      generateCrumb(server, function (crumb) {
+    it('renders an error if a sponsorship cannot be accepted', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -291,7 +293,9 @@ describe('updating an org', function () {
           .reply(200, fixtures.customers.happy)
           .get("/customer/bob/stripe/subscription")
           .reply(200, fixtures.users.bobsubscriptions)
-          .put("/sponsorship/1", {"npm_user":"betty"})
+          .put("/sponsorship/1", {
+            "npm_user": "betty"
+          })
           .reply(200, {
             "created": "2015-08-05T20:55:54.759Z",
             "deleted": null,
@@ -334,7 +338,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           orgMock.done();
@@ -345,8 +349,8 @@ describe('updating an org', function () {
       });
     });
 
-    it('continues successfully if the user is already paid for', function (done) {
-      generateCrumb(server, function (crumb) {
+    it('continues successfully if the user is already paid for', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -356,7 +360,9 @@ describe('updating an org', function () {
           .reply(200, fixtures.customers.happy)
           .get("/customer/bob/stripe/subscription")
           .reply(200, fixtures.users.bobsubscriptions)
-          .put("/sponsorship/1", {"npm_user":"betty"})
+          .put("/sponsorship/1", {
+            "npm_user": "betty"
+          })
           .reply(200, {
             "created": "2015-08-05T20:55:54.759Z",
             "deleted": null,
@@ -403,7 +409,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           orgMock.done();
@@ -414,8 +420,8 @@ describe('updating an org', function () {
       });
     });
 
-    it('successfully adds the user to the org', function (done) {
-      generateCrumb(server, function (crumb) {
+    it('successfully adds the user to the org', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -425,7 +431,9 @@ describe('updating an org', function () {
           .reply(200, fixtures.customers.happy)
           .get("/customer/bob/stripe/subscription")
           .reply(200, fixtures.users.bobsubscriptions)
-          .put("/sponsorship/1", {"npm_user":"betty"})
+          .put("/sponsorship/1", {
+            "npm_user": "betty"
+          })
           .reply(200, {
             "created": "2015-08-05T20:55:54.759Z",
             "deleted": null,
@@ -481,7 +489,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           orgMock.done();
@@ -493,9 +501,9 @@ describe('updating an org', function () {
     });
   });
 
-  describe('removing a user', function () {
-    it('renders an error if the org license cannot be retrieved', function (done) {
-      generateCrumb(server, function (crumb) {
+  describe('removing a user', function() {
+    it('renders an error if the org license cannot be retrieved', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -521,7 +529,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           expect(resp.statusCode).to.equal(404);
@@ -531,8 +539,8 @@ describe('updating an org', function () {
       });
     });
 
-    it('renders an error if the sponsorship cannot be revoked', function (done) {
-      generateCrumb(server, function (crumb) {
+    it('renders an error if the sponsorship cannot be revoked', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -560,7 +568,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           expect(resp.statusCode).to.equal(404);
@@ -570,8 +578,8 @@ describe('updating an org', function () {
       });
     });
 
-    it('renders an error if the org is unable to remove the user', function (done) {
-      generateCrumb(server, function (crumb) {
+    it('renders an error if the org is unable to remove the user', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -612,7 +620,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           orgMock.done();
@@ -623,8 +631,8 @@ describe('updating an org', function () {
       });
     });
 
-    it('successfully deletes the user from the organization', function (done) {
-      generateCrumb(server, function (crumb) {
+    it('successfully deletes the user from the organization', function(done) {
+      generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
@@ -676,7 +684,7 @@ describe('updating an org', function () {
           }
         };
 
-        server.inject(options, function (resp) {
+        server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
           orgMock.done();
@@ -689,8 +697,8 @@ describe('updating an org', function () {
   });
 });
 
-describe('deleting an org', function () {
-  it('deletes the org if it exists', function (done) {
+describe('deleting an org', function() {
+  it('deletes the org if it exists', function(done) {
     var userMock = nock("https://user-api-example.com")
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
@@ -709,7 +717,7 @@ describe('deleting an org', function () {
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       userMock.done();
       licenseMock.done();
       orgMock.done();

@@ -1,7 +1,7 @@
 var _ = require('lodash');
 var async = require('async');
 var cache = require('../lib/cache');
-var decorate = require(__dirname + '/../presenters/user');
+var decorate = require('../presenters/user');
 var fmt = require('util').format;
 var LicenseAPI = require('./customer');
 var mailchimp = require('mailchimp-api');

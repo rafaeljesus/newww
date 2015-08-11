@@ -208,7 +208,7 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
 };
 
 Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
-  var url = this.host + '/sponsorship/' + verificationKey + '/accept';
+  var url = this.host + '/sponsorship/' + verificationKey;
   Request.post({
     url: url,
     json: true

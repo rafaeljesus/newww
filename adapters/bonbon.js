@@ -38,6 +38,8 @@ exports.register = function(server, options, next) {
       start: Date.now(),
     };
 
+    request.features.org_billing = request.auth && request.auth.credentials && request.features.org_billing;
+
     if (request.auth && request.auth.credentials && !request.path.match(/static\//)) {
       UserModel.new(request).get(request.auth.credentials.name, function(err, user) {
         if (err) {

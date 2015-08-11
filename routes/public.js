@@ -59,8 +59,8 @@ var publicRoutes = [
     path: "/org",
     method: "GET",
     handler: function(request, reply) {
-      if (process.env.FEATURE_ORG_BILLING) {
-        return require('../facets/user/show-orgs');
+      if (request.features.org_billing) {
+        return require('../facets/user/show-orgs')(request, reply);
       } else {
         return reply.redirect("http://info.npmjs.com/test-orgs").code(301);
       }

@@ -55,7 +55,7 @@ User.prototype.confirmEmail = function(user, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = Error('error verifying user ' + user.name);
+        err = new Error('error verifying user ' + user.name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -183,7 +183,7 @@ User.prototype.getPackages = function(name, page, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = Error('error getting packages for user ' + name);
+        err = new Error('error getting packages for user ' + name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -234,7 +234,7 @@ User.prototype.getStars = function(name, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = Error('error getting stars for user ' + name);
+        err = new Error('error getting stars for user ' + name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -262,13 +262,13 @@ User.prototype.login = function(loginInfo, callback) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('password is incorrect for ' + loginInfo.name);
+        err = new Error('password is incorrect for ' + loginInfo.name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
 
       if (resp.statusCode === 404) {
-        err = Error('user ' + loginInfo.name + ' not found');
+        err = new Error('user ' + loginInfo.name + ' not found');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -299,7 +299,7 @@ User.prototype.lookupEmail = function(email, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = Error('error looking up username(s) for ' + email);
+        err = new Error('error looking up username(s) for ' + email);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -324,7 +324,7 @@ User.prototype.save = function(user, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = Error('error updating profile for ' + user.name);
+        err = new Error('error updating profile for ' + user.name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -367,7 +367,7 @@ User.prototype.signup = function(user, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = Error('error creating user ' + user.name);
+        err = new Error('error creating user ' + user.name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }

@@ -1,6 +1,6 @@
 window.malarkey = require("malarkey");
 
-module.exports = function(){
+module.exports = function() {
   $(what_npm_is_for)
 }
 

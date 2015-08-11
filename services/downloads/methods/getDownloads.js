@@ -1,17 +1,17 @@
 var Hapi = require('hapi'),
-    request = require('request'),
-    log = require('bole')('downloads');
+  request = require('request'),
+  log = require('bole')('downloads');
 
-module.exports = function getDownloads (url) {
-  return function (period, detail, package, callback) {
+module.exports = function getDownloads(url) {
+  return function(period, detail, pkg, callback) {
 
     var opts = {
-      url:     url + detail + '/' + period + '/' + (package || ''),
-      json:    true,
+      url: url + detail + '/' + period + '/' + (pkg || ''),
+      json: true,
       timeout: 2000,
     };
 
-    request.get(opts, function (err, resp, body) {
+    request.get(opts, function(err, resp, body) {
 
       if (err) {
         log.warn(err);

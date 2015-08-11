@@ -1,9 +1,9 @@
 
 var Joi = require('joi'),
-    stripe = require('stripe')(process.env.STRIPE_SECRET_KEY),
-    VALID_CHARGE_AMOUNTS = [35000, 100000];
+  stripe = require('stripe')(process.env.STRIPE_SECRET_KEY),
+  VALID_CHARGE_AMOUNTS = [35000, 100000];
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
 
   var opts = {
     title: "Join the Who's Hiring Page",
@@ -29,7 +29,7 @@ module.exports = function (request, reply) {
     client_ip: Joi.string()
   });
 
-  Joi.validate(request.payload, schema, function (err, token) {
+  Joi.validate(request.payload, schema, function(err, token) {
     if (err) {
       request.logger.error('validation error');
       request.logger.error(err);
@@ -56,7 +56,7 @@ module.exports = function (request, reply) {
       }
 
       request.metrics.metric({
-        name:  'latency.stripe',
+        name: 'latency.stripe',
         value: Date.now() - stripeStart,
       });
 

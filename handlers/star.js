@@ -1,6 +1,6 @@
 var PackageModel = require('../models/package');
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
   var Package = PackageModel.new(request);
   var loggedInUser = request.loggedInUser;
 
@@ -15,18 +15,22 @@ module.exports = function (request, reply) {
   }
 
   var username = loggedInUser.name,
-      body = request.payload,
-      pkg = body.name,
-      starIt = !!body.isStarred.match(/true/i);
+    body = request.payload,
+    pkg = body.name,
+    starIt = !!body.isStarred.match(/true/i);
 
   if (starIt) {
     Package.star(pkg)
-      .then(function () {
+      .then(function() {
         request.timing.page = 'star';
-        request.metrics.metric({ name: 'star', package: pkg, value: 1 });
+        request.metrics.metric({
+          name: 'star',
+          package: pkg,
+          value: 1
+        });
         return reply(username + ' starred ' + pkg).code(200);
       })
-      .catch(function (err) {
+      .catch(function(err) {
         request.logger.error(username + ' was unable to star ' + pkg);
         request.logger.error(err);
         reply('not ok').code(500);
@@ -35,13 +39,17 @@ module.exports = function (request, reply) {
   } else {
 
     Package.unstar(pkg)
-      .then(function () {
+      .then(function() {
         request.timing.page = 'unstar';
-        request.metrics.metric({ name: 'unstar', package: pkg, value: 1 });
+        request.metrics.metric({
+          name: 'unstar',
+          package: pkg,
+          value: 1
+        });
 
         return reply(username + ' unstarred ' + pkg).code(200);
       })
-      .catch(function (err) {
+      .catch(function(err) {
         request.logger.error(username + ' was unable to unstar ' + pkg);
         request.logger.error(err);
         reply('not ok').code(500);

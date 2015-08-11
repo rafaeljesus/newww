@@ -3,7 +3,7 @@ var mailConfig = require('../../../config').user.mail,
   tokenFacilitator = require('token-facilitator'),
   path = require('path');
 
-module.exports = function (user, redis) {
+module.exports = function(user, redis) {
   var mailOpts = {
     email: user.email,
     name: user.name,
@@ -14,7 +14,9 @@ module.exports = function (user, redis) {
   var mm = new MustacheMailer({
     transport: require(mailConfig.mailTransportModule)(mailConfig.mailTransportSettings),
     templateDir: path.dirname(require.resolve('npm-email-templates/package.json')),
-    tokenFacilitator: new tokenFacilitator({redis: redis})
+    tokenFacilitator: new tokenFacilitator({
+      redis: redis
+    })
   });
 
   return mm.message('confirm-user-email')

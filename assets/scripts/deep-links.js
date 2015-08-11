@@ -6,12 +6,12 @@
 
 var hashchange = require('hashchange')
 
-module.exports = function () {
+module.exports = function() {
   $(deepLinks)
 }
 
-var deepLinks = function () {
-  hashchange.update(function (hash) {
+var deepLinks = function() {
+  hashchange.update(function(hash) {
     var prefix = 'user-content-'
 
     if (hash.indexOf(prefix) === 0) {
@@ -22,7 +22,7 @@ var deepLinks = function () {
     }
   })
 
-  $(document).ready(function () {
+  $(document).ready(function() {
     hashchange.update()
   })
 }

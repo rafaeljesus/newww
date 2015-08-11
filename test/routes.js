@@ -1,17 +1,17 @@
 var expect = require('code').expect,
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    it = lab.test,
-    routes = require("../routes/index");
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  it = lab.test,
+  routes = require("../routes/index");
 
-describe("routes", function () {
-  it("is an array", function (done) {
+describe("routes", function() {
+  it("is an array", function(done) {
     expect(routes).to.be.an.array();
     done();
   });
 
-  it("applies configuration to unauthenticated routes", function(done){
+  it("applies configuration to unauthenticated routes", function(done) {
     var homepage = routes.at("GET /");
     expect(homepage).to.be.an.object();
     expect(homepage.config.auth.mode).to.equal("try");
@@ -19,7 +19,7 @@ describe("routes", function () {
     done();
   });
 
-  it("applies configuration to ajax routes", function(done){
+  it("applies configuration to ajax routes", function(done) {
     var star = routes.at("POST /star");
     expect(star).to.be.an.object();
     expect(star.config.plugins.crumb.source).to.equal("payload");
@@ -27,7 +27,7 @@ describe("routes", function () {
     done();
   });
 
-  it("defines the same handler for /~ and /profile", function (done) {
+  it("defines the same handler for /~ and /profile", function(done) {
     var unix = routes.at("GET /~");
     var bore = routes.at("GET /profile");
     expect(unix).to.be.an.object();
@@ -37,7 +37,7 @@ describe("routes", function () {
     done();
   });
 
-  it("defines the same handler for scoped and global package pages", function (done) {
+  it("defines the same handler for scoped and global package pages", function(done) {
     var scopey = routes.at("GET /package/{scope}/{project}");
     var globey = routes.at("GET /package/{package}");
     expect(scopey).to.be.an.object();

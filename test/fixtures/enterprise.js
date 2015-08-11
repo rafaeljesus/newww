@@ -8,7 +8,8 @@ exports.existingUser = {
   numemployees: '1-25',
   created: '2014-11-22T00:54:53.864Z',
   updated: '2015-03-13T00:09:47.632Z',
-  deleted: null};
+  deleted: null
+};
 
 exports.newUser = {
   id: 23456,

@@ -1,20 +1,20 @@
 var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    it = lab.test,
-    expect = Code.expect,
-    present = require(__dirname + "/../../presenters/package"),
-    cache = require(__dirname + "/../../lib/cache"),
-    sinon = require('sinon');
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  it = lab.test,
+  expect = Code.expect,
+  present = require(__dirname + "/../../presenters/package"),
+  cache = require(__dirname + "/../../lib/cache"),
+  sinon = require('sinon');
 
-describe("name", function () {
+describe("name", function() {
 
-  it("creates `encodedName` for making user-acl requests", function (done) {
+  it("creates `encodedName` for making user-acl requests", function(done) {
     present({
       "name": "@acme/project",
       "version": "1.0.0"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.encodedName).to.equal("@acme%2Fproject");
       done();
     });
@@ -22,23 +22,23 @@ describe("name", function () {
 
 });
 
-describe("scope", function () {
+describe("scope", function() {
 
-  it("sets `scoped` to true for scoped pkgs", function (done) {
+  it("sets `scoped` to true for scoped pkgs", function(done) {
     present({
       "name": "@acme/project",
       "version": "1.0.0"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.scoped).to.be.true();
       done();
     });
   });
 
-  it("sets `scoped` to false for global pkgs", function (done) {
+  it("sets `scoped` to false for global pkgs", function(done) {
     present({
       "name": "project",
       "version": "1.0.0"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.scoped).to.be.false();
       done();
     });
@@ -46,9 +46,9 @@ describe("scope", function () {
 
 });
 
-describe("publisher", function () {
+describe("publisher", function() {
 
-  it("is in collaborators list if they are a collaborator", function (done) {
+  it("is in collaborators list if they are a collaborator", function(done) {
     present({
       "versions": ["0.1.0"],
       "name": "goodpkg",
@@ -65,14 +65,14 @@ describe("publisher", function () {
       "version": "0.1.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     })
-    // present(fixtures.packages.browserify)
-      .then(function (pkg) {
+      // present(fixtures.packages.browserify)
+      .then(function(pkg) {
         expect(pkg.lastPublisherIsACollaborator).to.be.true();
         done();
       });
   });
 
-  it("is not in the collaborators list if they are not a collaborator", function (done) {
+  it("is not in the collaborators list if they are not a collaborator", function(done) {
     present({
       "versions": ["0.1.0"],
       "name": "badpkg",
@@ -88,19 +88,19 @@ describe("publisher", function () {
       },
       "version": "0.1.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.lastPublisherIsACollaborator).to.be.false();
       done();
     });
   });
 });
 
-describe('description', function(){
+describe('description', function() {
 
   present({
     name: "haxxx",
     description: "bad <script>/xss</script> [hax](http://hax.com)"
-  }).then(function (pkg) {
+  }).then(function(pkg) {
     it("parses description as markdown and sanitizes it", function(done) {
       expect(pkg.description).to.equal("bad  <a href=\"http://hax.com\">hax</a>");
       done();
@@ -108,32 +108,32 @@ describe('description', function(){
   });
 });
 
-describe('installCommand', function(){
+describe('installCommand', function() {
 
-  it('is created', function (done) {
+  it('is created', function(done) {
     present({
       name: "foo"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.installCommand).to.equal("npm install foo");
       done();
     });
   });
 
-  it('respects preferGlobal', function (done) {
+  it('respects preferGlobal', function(done) {
     present({
       name: "wibble",
       preferGlobal: true
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.installCommand).to.equal("npm install -g wibble");
       done();
     });
   });
 
-  it('uses shorthand for packages with long names', function (done) {
+  it('uses shorthand for packages with long names', function(done) {
     present({
       name: "supercalifragilisticexpialidocious",
       preferGlobal: true
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.installCommand).to.equal("npm i -g supercalifragilisticexpialidocious");
       done();
     });
@@ -141,8 +141,8 @@ describe('installCommand', function(){
 
 });
 
-describe("avatar", function () {
-  it("is created for the publisher", function (done) {
+describe("avatar", function() {
+  it("is created for the publisher", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -158,7 +158,7 @@ describe("avatar", function () {
       },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.publisher.avatar).to.exist();
       expect(pkg.publisher.avatar).to.be.an.object();
       expect(pkg.publisher.avatar.small).to.exist();
@@ -168,7 +168,7 @@ describe("avatar", function () {
     });
   });
 
-  it("is created for collaborators", function (done) {
+  it("is created for collaborators", function(done) {
 
     present({
       "versions": ["1.3.0"],
@@ -190,8 +190,8 @@ describe("avatar", function () {
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     })
-    // present(fixtures.packages.browserify)
-      .then(function (pkg) {
+      // present(fixtures.packages.browserify)
+      .then(function(pkg) {
         var avatar = pkg.collaborators.hermione.avatar;
         expect(avatar).to.be.an.object();
         expect(avatar.small).to.exist();
@@ -202,15 +202,15 @@ describe("avatar", function () {
   });
 });
 
-describe("OSS license", function () {
-  it("is added to the pkg", function (done) {
+describe("OSS license", function() {
+  it("is added to the pkg", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
       "version": "1.3.0",
       "license": "MIT",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.license).to.be.an.object();
       expect(pkg.license.name).to.equal('MIT');
       expect(pkg.license.url).to.include('opensource.org');
@@ -219,8 +219,8 @@ describe("OSS license", function () {
   });
 });
 
-describe("different types of deps", function () {
-  it("should included dependents", function (done) {
+describe("different types of deps", function() {
+  it("should included dependents", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -241,7 +241,7 @@ describe("different types of deps", function () {
       },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
 
       expect(pkg.dependents).to.be.an.array();
       expect(pkg.dependents).to.have.length(2);
@@ -255,7 +255,7 @@ describe("different types of deps", function () {
     });
   });
 
-  it("should include dependencies", function (done) {
+  it("should include dependencies", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -276,7 +276,7 @@ describe("different types of deps", function () {
       },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
 
       expect(pkg.dependencies).to.exist();
       expect(pkg.dependencies).to.include('lodash');
@@ -285,7 +285,7 @@ describe("different types of deps", function () {
     });
   });
 
-  it("should include devDependencies", function (done) {
+  it("should include devDependencies", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -306,7 +306,7 @@ describe("different types of deps", function () {
       },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
 
       expect(pkg.devDependencies).to.exist();
       expect(pkg.devDependencies).to.include('async');
@@ -315,7 +315,7 @@ describe("different types of deps", function () {
     });
   });
 
-  it("should be included if they exist", function (done) {
+  it("should be included if they exist", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -325,7 +325,7 @@ describe("different types of deps", function () {
       },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.dependencies).to.not.exist();
       expect(pkg.devDependencies).to.not.exist();
       expect(pkg.dependents).to.not.exist();
@@ -334,8 +334,8 @@ describe("different types of deps", function () {
   });
 });
 
-describe("repo url", function () {
-  it("doesn't change if it's not a GH url", function (done) {
+describe("repo url", function() {
+  it("doesn't change if it's not a GH url", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -349,13 +349,13 @@ describe("repo url", function () {
       },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.repository.url).to.equal('http://website.com/ohai');
       done();
     });
   });
 
-  it("cleans up github URLs", function (done) {
+  it("cleans up github URLs", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -369,13 +369,13 @@ describe("repo url", function () {
       },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.repository.url).to.equal('https://github.com/someone/ohai');
       done();
     });
   });
 
-  it("converts git:// URLS to https so they can be linked to", function (done) {
+  it("converts git:// URLS to https so they can be linked to", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
@@ -389,7 +389,7 @@ describe("repo url", function () {
       },
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.repository.url).to.equal('https://github.com/someone/ohai');
       done();
     });
@@ -397,8 +397,8 @@ describe("repo url", function () {
 
 });
 
-describe("readme", function () {
-  it('gets processed if it is not cached yet', function (done) {
+describe("readme", function() {
+  it('gets processed if it is not cached yet', function(done) {
     sinon.spy(cache, 'setKey');
 
     present({
@@ -415,7 +415,7 @@ describe("readme", function () {
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z",
       "readme": "# heading\n\n> quote"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.readme).to.include("<h1 id=\"user-content-heading\"");
       expect(cache.setKey.called).to.be.true();
       expect(cache.setKey.calledWith('hello_readme')).to.be.true();
@@ -424,8 +424,8 @@ describe("readme", function () {
     });
   });
 
-  it('does not get processed if it is cached', function (done) {
-    sinon.stub(cache, 'getKey', function (key, cb) {
+  it('does not get processed if it is cached', function(done) {
+    sinon.stub(cache, 'getKey', function(key, cb) {
       cb(null, "<h1>boom</h1>");
     });
     sinon.spy(cache, 'setKey');
@@ -444,7 +444,7 @@ describe("readme", function () {
       "version": "1.3.0",
       "lastPublishedAt": "2013-06-11T09:36:32.285Z",
       "readme": "# heading\n\n> quote"
-    }).then(function (pkg) {
+    }).then(function(pkg) {
       expect(pkg.readme).to.equal("<h1>boom</h1>");
       expect(cache.setKey.called).to.be.false();
       cache.getKey.restore();

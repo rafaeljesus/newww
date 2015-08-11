@@ -1,10 +1,10 @@
 var log = require('bole')('email-send'),
-    MustacheMailer = require('mustache-mailer'),
-    tokenFacilitator = require('token-facilitator'),
-    path = require('path'),
-    _ = require('lodash');
+  MustacheMailer = require('mustache-mailer'),
+  tokenFacilitator = require('token-facilitator'),
+  path = require('path'),
+  _ = require('lodash');
 
-var send = module.exports = function send (template, data, redis) {
+var send = module.exports = function send(template, data, redis) {
 
   var mailOpts = _.extend({}, {
     from: "website@npmjs.com",
@@ -15,14 +15,16 @@ var send = module.exports = function send (template, data, redis) {
   var mm = new MustacheMailer({
     transport: send.mailConfig.mailTransportModule,
     templateDir: path.dirname(require.resolve('npm-email-templates/package.json')),
-    tokenFacilitator: new tokenFacilitator({redis: redis})
+    tokenFacilitator: new tokenFacilitator({
+      redis: redis
+    })
   });
 
   return mm.message(template)
     .then(function(msg) {
       return msg.sendMail(mailOpts);
     })
-    .catch(function (err) {
+    .catch(function(err) {
       log.error('unable to send email to ' + mailOpts.email);
       log.error(err);
       throw err;

@@ -1,44 +1,47 @@
 var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    it = lab.test,
-    expect = Code.expect;
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  before = lab.before,
+  after = lab.after,
+  it = lab.test,
+  expect = Code.expect;
 
 var Hapi = require('hapi'),
-    npme = require('../../services/npme'),
-    nock = require('nock'),
-    existingUser = require('../fixtures/enterprise').existingUser;
+  npme = require('../../services/npme'),
+  nock = require('nock'),
+  existingUser = require('../fixtures/enterprise').existingUser;
 
 var server;
 
-before(function (done) {
+before(function(done) {
   process.env.LICENSE_API = 'https://billing.website.com'
   server = new Hapi.Server();
-  server.connection({ host: 'localhost', port: '9133' });
+  server.connection({
+    host: 'localhost',
+    port: '9133'
+  });
 
-  server.register(npme, function () {
+  server.register(npme, function() {
     server.start(done);
   });
 });
 
-after(function (done) {
+after(function(done) {
   delete process.env.LICENSE_API;
   done();
 });
 
-describe('updating a customer via hubspot', function () {
-  it('returns the customer if it is successful', function (done) {
+describe('updating a customer via hubspot', function() {
+  it('returns the customer if it is successful', function(done) {
 
     var customerId = 12345;
 
     var mock = nock('https://billing.website.com')
-        .post('/customer/' + customerId, existingUser)
-        .reply(200, existingUser);
+      .post('/customer/' + customerId, existingUser)
+      .reply(200, existingUser);
 
-    server.methods.npme.updateCustomer(customerId, existingUser, function (err, customer) {
+    server.methods.npme.updateCustomer(customerId, existingUser, function(err, customer) {
       mock.done();
       expect(err).to.not.exist();
       expect(customer).to.be.an.object();
@@ -47,15 +50,15 @@ describe('updating a customer via hubspot', function () {
     });
   });
 
-  it('returns en error if something goes wrong at hubspot', function (done) {
+  it('returns en error if something goes wrong at hubspot', function(done) {
 
     var customerId = 12345;
 
     var mock = nock('https://billing.website.com')
-        .post('/customer/' + customerId, existingUser)
-        .reply(400);
+      .post('/customer/' + customerId, existingUser)
+      .reply(400);
 
-    server.methods.npme.updateCustomer(customerId, existingUser, function (err, customer) {
+    server.methods.npme.updateCustomer(customerId, existingUser, function(err, customer) {
       mock.done();
       expect(err).to.exist();
       expect(err.message).to.equal('unable to update customer ' + customerId);

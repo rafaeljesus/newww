@@ -5,7 +5,10 @@ module.exports = {
     console: true
   },
 
-  listen: { host: '0.0.0.0', port: 3333 },
+  listen: {
+    host: '0.0.0.0',
+    port: 3333
+  },
 
   outputs: [
     // {
@@ -17,6 +20,9 @@ module.exports = {
     //   password: 'password',
     //   database: 'database'
     // },
-    { type: 'log', name: 'numbat-1' }
+    {
+      type: 'log',
+      name: 'numbat-1'
+    }
   ]
 };

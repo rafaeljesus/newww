@@ -1,7 +1,7 @@
 var customer = module.exports = {};
 var utils = require('../lib/utils');
 
-customer.getBillingInfo = function (request, reply) {
+customer.getBillingInfo = function(request, reply) {
 
   var opts = {
     title: 'Billing',
@@ -57,16 +57,18 @@ customer.updateBillingInfo = function(request, reply) {
       email: billingInfo.email
     };
 
-    var planInfo = { plan: 'npm-paid-individual-user-7' };
+    var planInfo = {
+      plan: 'npm-paid-individual-user-7'
+    };
 
-    request.customer.createSubscription(planInfo, function (err, unused) {
+    request.customer.createSubscription(planInfo, function(err, unused) {
 
       if (err) {
         request.logger.error("unable to update subscription to " + planInfo.plan);
         request.logger.error(err);
       }
 
-      sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function (er) {
+      sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function(er) {
         if (er) {
           request.logger.error('unable to send billing email to HubSpot');
           request.logger.error(er);

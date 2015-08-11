@@ -67,7 +67,7 @@ describe('sending a contact email', function() {
 
     // first, forcibly mock the ticket.create method
     var Tickets = require("node-zendesk/lib/client/tickets.js").Tickets;
-    Tickets.prototype.create = function (data, callback) {
+    Tickets.prototype.create = function(data, callback) {
       expect(data.ticket.requester.name).to.equal('Boom');
       expect(data.ticket.requester.email).to.equal('boom@bam.com');
       expect(data.ticket.subject).to.equal('Hi!');

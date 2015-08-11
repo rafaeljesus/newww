@@ -1,21 +1,21 @@
 var generateCrumb = require("../handlers/crumb.js"),
-    Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    it = lab.test,
-    expect = Code.expect,
-    nock = require('nock'),
-    fixtures = require('../fixtures');
+  Code = require('code'),
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  before = lab.before,
+  after = lab.after,
+  it = lab.test,
+  expect = Code.expect,
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var server, packageMock, userMock, licenseMock,
-    pkg = 'fake',
-    scopedpkg = '@foo/fake',
-    user = fixtures.users.bob;
+  pkg = 'fake',
+  scopedpkg = '@foo/fake',
+  user = fixtures.users.bob;
 
-before(function (done) {
+before(function(done) {
   packageMock = nock("https://user-api-example.com")
     .put("/package/" + pkg + "/star")
     .reply(200)
@@ -34,39 +34,39 @@ before(function (done) {
     .get("/customer/bob/stripe").times(5)
     .reply(404);
 
-  require('../mocks/server')(function (obj) {
+  require('../mocks/server')(function(obj) {
     server = obj;
     done();
   });
 });
 
-after(function (done) {
+after(function(done) {
   packageMock.done();
   userMock.done();
   licenseMock.done();
   server.stop(done);
 });
 
-describe('Accessing the star page via GET', function () {
-  it('redirects to login if user is unauthorized', function (done) {
+describe('Accessing the star page via GET', function() {
+  it('redirects to login if user is unauthorized', function(done) {
     var opts = {
       url: '/star'
     };
 
-    server.inject(opts, function (resp) {
+    server.inject(opts, function(resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('/login');
       done();
     });
   });
 
-  it('goes to the userstar browse page for authorized users', function (done) {
+  it('goes to the userstar browse page for authorized users', function(done) {
     var opts = {
       url: '/star',
       credentials: user
     };
 
-    server.inject(opts, function (resp) {
+    server.inject(opts, function(resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('browse/userstar/' + user.name);
       done();
@@ -74,8 +74,8 @@ describe('Accessing the star page via GET', function () {
   });
 });
 
-describe('Accessing the star functionality via AJAX (POST)', function () {
-  it('should reject stars when CSRF data is missing', function (done) {
+describe('Accessing the star functionality via AJAX (POST)', function() {
+  it('should reject stars when CSRF data is missing', function(done) {
     var opts = {
       url: '/star',
       method: 'POST',
@@ -86,14 +86,14 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
       credentials: user
     };
 
-    server.inject(opts, function (resp) {
+    server.inject(opts, function(resp) {
       expect(resp.statusCode).to.equal(403);
       done();
     });
   });
 
-  it('should send a 403 if the user is not logged in', function (done) {
-    generateCrumb(server, function (crumb){
+  it('should send a 403 if the user is not logged in', function(done) {
+    generateCrumb(server, function(crumb) {
       var opts = {
         url: '/star',
         method: 'POST',
@@ -102,10 +102,12 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
           isStarred: 'true',
           crumb: crumb
         },
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(403);
         expect(resp.result).to.equal('user is not logged in');
         done();
@@ -113,9 +115,9 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
     });
   });
 
-  it('should star an unstarred package', function (done) {
+  it('should star an unstarred package', function(done) {
 
-    generateCrumb(server, function (crumb){
+    generateCrumb(server, function(crumb) {
       var opts = {
         url: '/star',
         method: 'POST',
@@ -125,10 +127,12 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
           crumb: crumb
         },
         credentials: user,
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' starred ' + pkg);
         done();
@@ -136,9 +140,9 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
     });
   });
 
-  it('should unstar an starred package', function (done) {
+  it('should unstar an starred package', function(done) {
 
-    generateCrumb(server, function (crumb){
+    generateCrumb(server, function(crumb) {
       var opts = {
         url: '/star',
         method: 'POST',
@@ -148,10 +152,12 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
           crumb: crumb
         },
         credentials: user,
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' unstarred ' + pkg);
         done();
@@ -159,8 +165,8 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
     });
   });
 
-  it('should star an unstarred scoped package', function (done) {
-    generateCrumb(server, function (crumb){
+  it('should star an unstarred scoped package', function(done) {
+    generateCrumb(server, function(crumb) {
       var opts = {
         url: '/star',
         method: 'POST',
@@ -170,10 +176,12 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
           crumb: crumb
         },
         credentials: user,
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' starred ' + scopedpkg);
         done();
@@ -181,8 +189,8 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
     });
   });
 
-  it('should unstar a starred scoped package', function (done) {
-    generateCrumb(server, function (crumb){
+  it('should unstar a starred scoped package', function(done) {
+    generateCrumb(server, function(crumb) {
       var opts = {
         url: '/star',
         method: 'POST',
@@ -192,10 +200,12 @@ describe('Accessing the star functionality via AJAX (POST)', function () {
           crumb: crumb
         },
         credentials: user,
-        headers: { cookie: 'crumb=' + crumb }
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
       };
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(200);
         expect(resp.result).to.equal(user.name + ' unstarred ' + scopedpkg);
         done();

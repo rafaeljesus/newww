@@ -1,20 +1,20 @@
 var _ = require('lodash'),
-    cache = require('../lib/cache'),
-    fmt = require('util').format,
-    gh = require('github-url-to-object'),
-    isUrl = require('is-url'),
-    marky = require('marky-markdown'),
-    metrics = require('../adapters/metrics')(),
-    normalizeLicenseData = require('normalize-license-data'),
-    P = require('bluebird'),
-    presentCollaborator = require("./collaborator"),
-    presentUser = require("./user"),
-    url = require('url');
+  cache = require('../lib/cache'),
+  fmt = require('util').format,
+  gh = require('github-url-to-object'),
+  isUrl = require('is-url'),
+  marky = require('marky-markdown'),
+  metrics = require('../adapters/metrics')(),
+  normalizeLicenseData = require('normalize-license-data'),
+  P = require('bluebird'),
+  presentCollaborator = require("./collaborator"),
+  presentUser = require("./user"),
+  url = require('url');
 
 var MINUTES = 60; // seconds
 var CACHE_TTL = 5 * MINUTES;
 
-module.exports = function (pkg) {
+module.exports = function(pkg) {
 
   delete pkg.maintainers;
 
@@ -22,7 +22,7 @@ module.exports = function (pkg) {
   pkg.encodedName = pkg.name.replace("/", "%2F");
 
   if (pkg.versions && pkg.versions.indexOf(pkg.version) === -1) {
-    return Error('invalid pkg: '+ pkg.name);
+    return Error('invalid pkg: ' + pkg.name);
   }
 
   pkg.license = normalizeLicenseData(pkg.license);
@@ -56,7 +56,7 @@ module.exports = function (pkg) {
     pkg.lastPublisherIsACollaborator;
 
   if (pkg.collaborators) {
-    Object.keys(pkg.collaborators).forEach(function(name){
+    Object.keys(pkg.collaborators).forEach(function(name) {
       var collaborator = pkg.collaborators[name];
       collaborator = presentCollaborator(collaborator);
     });
@@ -117,14 +117,14 @@ module.exports = function (pkg) {
   };
 
   return P.props(actions)
-  .then(function (results) {
-    pkg.readme = results.readme;
-    pkg.description = results.description;
-    return pkg;
-  });
+    .then(function(results) {
+      pkg.readme = results.readme;
+      pkg.description = results.description;
+      return pkg;
+    });
 };
 
-function processReadme (pkg) {
+function processReadme(pkg) {
   if (!_.isString(pkg.readme)) {
     return P.resolve('');
   }
@@ -132,7 +132,7 @@ function processReadme (pkg) {
   var cacheKey = pkg.name + '_readme';
 
   return new P(function(resolve, reject) {
-    cache.getKey(cacheKey, function (err, readme) {
+    cache.getKey(cacheKey, function(err, readme) {
       if (err) {
         return reject(err);
       }
@@ -148,7 +148,9 @@ function processReadme (pkg) {
         return resolve(readme);
       } else {
 
-        readme = marky(pkg.readme, {package: pkg}).html();
+        readme = marky(pkg.readme, {
+          package: pkg
+        }).html();
         cache.setKey(cacheKey, CACHE_TTL, readme);
 
         metrics.metric({
@@ -163,7 +165,7 @@ function processReadme (pkg) {
   });
 }
 
-function processDescription (pkg) {
+function processDescription(pkg) {
   if (typeof pkg.description !== "string") {
     return P.resolve('');
   }
@@ -171,9 +173,11 @@ function processDescription (pkg) {
   // Parse description as markdown
   var cacheKey = pkg.name + '_desc';
 
-  return new P(function (resolve, reject) {
-    cache.getKey(cacheKey, function (err, description) {
-      if (err) { return reject(err); }
+  return new P(function(resolve, reject) {
+    cache.getKey(cacheKey, function(err, description) {
+      if (err) {
+        return reject(err);
+      }
 
       if (description) {
         return resolve(description);
@@ -186,10 +190,12 @@ function processDescription (pkg) {
   });
 }
 
-function processDependents (items, urlRoot, name) {
-  if (!items.length) { return items; }
+function processDependents(items, urlRoot, name) {
+  if (!items.length) {
+    return items;
+  }
 
-  items = items.map(function (i) {
+  items = items.map(function(i) {
     return {
       name: i,
       url: '/package/' + i
@@ -200,7 +206,7 @@ function processDependents (items, urlRoot, name) {
   var MAX_SHOW = 20;
 
   if (l > MAX_SHOW) {
-    items = items.sort(function (a, b) {
+    items = items.sort(function(a, b) {
       return Math.random() * 2 - 1;
     }).slice(0, MAX_SHOW);
     items.push({
@@ -212,7 +218,7 @@ function processDependents (items, urlRoot, name) {
   return items;
 }
 
-function processDependencies (dependencies, max) {
+function processDependencies(dependencies, max) {
   var MAX_DEPS = max || 50;
   var deps = Object.keys(dependencies || {});
   var len = deps.length;

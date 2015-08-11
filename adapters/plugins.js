@@ -1,7 +1,11 @@
 module.exports = [
   {
     register: require('crumb'),
-    options: {cookieOptions: { isSecure: true }}
+    options: {
+      cookieOptions: {
+        isSecure: true
+      }
+    }
   },
   require('scooter'),
   {

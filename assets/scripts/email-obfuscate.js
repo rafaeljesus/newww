@@ -15,7 +15,7 @@ module.exports = function() {
       })
       .join("")
 
-    el.attr("href", "mailto:"+email)
+    el.attr("href", "mailto:" + email)
     el.text(email)
   })
 

@@ -1,7 +1,7 @@
 var request = require('request'),
-    log = require('bole')('npme-create-customer');
+  log = require('bole')('npme-create-customer');
 
-module.exports = function (customerId, data, callback) {
+module.exports = function(customerId, data, callback) {
 
   var customerEndpoint = process.env.LICENSE_API + '/customer/' + customerId;
 
@@ -10,7 +10,8 @@ module.exports = function (customerId, data, callback) {
     json: data
   }, function(er, resp, customer) {
 
-    if (er) throw er;
+    if (er)
+      throw er;
 
     if (resp.statusCode === 200) {
       return callback(null, customer);

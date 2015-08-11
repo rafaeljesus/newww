@@ -3,11 +3,11 @@ var relative = require('relative-date');
 
 module.exports = function() {
   $(formatDates)
-  setInterval(formatDates, 10*1000)
+  setInterval(formatDates, 10 * 1000)
 }
 
 var formatDates = function() {
-  $("[data-date]").each(function(i, el){
+  $("[data-date]").each(function(i, el) {
     var date = new Date($(this).data().date)
 
     if (!date.getYear()) {

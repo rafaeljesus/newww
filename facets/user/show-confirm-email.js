@@ -1,7 +1,7 @@
 var utils = require('../../lib/utils'),
-    UserModel = require('../../models/user');
+  UserModel = require('../../models/user');
 
-module.exports = function confirmEmail (request, reply) {
+module.exports = function confirmEmail(request, reply) {
   var opts = {};
 
   if (!request.params || !request.params.token) {
@@ -10,10 +10,10 @@ module.exports = function confirmEmail (request, reply) {
   }
 
   var token = request.params.token,
-      hash = utils.sha(token),
-      key = 'email_confirm_' + hash;
+    hash = utils.sha(token),
+    key = 'email_confirm_' + hash;
 
-  request.redis.get(key, function (err, value) {
+  request.redis.get(key, function(err, value) {
 
     if (err) {
       request.logger.error('Error getting token from redis: ', key);
@@ -41,7 +41,7 @@ module.exports = function confirmEmail (request, reply) {
 
     var User = UserModel.new(request);
 
-    User.get(name, function (err, user) {
+    User.get(name, function(err, user) {
 
       if (err) {
         request.logger.error('Failed to get user ' + name);
@@ -49,16 +49,16 @@ module.exports = function confirmEmail (request, reply) {
         return reply.view('errors/internal', opts).code(500);
       }
 
-      User.confirmEmail(user, function (err) {
+      User.confirmEmail(user, function(err) {
         if (err) {
           request.logger.error('Failed to confirm email for ' + name);
           request.logger.error(err);
           return reply.view('errors/internal', opts).code(500);
         }
 
-        User.dropCache(user.name, function () {
+        User.dropCache(user.name, function() {
 
-          request.redis.del(key, function (err) {
+          request.redis.del(key, function(err) {
 
             if (err) {
               request.logger.warn('Unable to drop confirm token ' + key);

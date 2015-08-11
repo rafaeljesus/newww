@@ -1,10 +1,12 @@
-module.exports = function logout (request, reply) {
+module.exports = function logout(request, reply) {
   var delSession = request.server.methods.user.delSession(request),
-      loggedInUser = request.loggedInUser;
+    loggedInUser = request.loggedInUser;
 
-  if (!loggedInUser) { return redirectToHome(); }
+  if (!loggedInUser) {
+    return redirectToHome();
+  }
 
-  delSession(loggedInUser, function (er) {
+  delSession(loggedInUser, function(er) {
     if (er) {
       request.logger.warn('unable to delete session for user=' + loggedInUser.name);
       request.logger.warn(er);
@@ -14,9 +16,11 @@ module.exports = function logout (request, reply) {
     redirectToHome();
   });
 
-  function redirectToHome () {
+  function redirectToHome() {
     request.timing.page = 'logout';
-    request.metrics.metric({ name: 'logout' });
+    request.metrics.metric({
+      name: 'logout'
+    });
 
     return reply.redirect('/');
   }

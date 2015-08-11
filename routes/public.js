@@ -56,10 +56,14 @@ var publicRoutes = [
       return reply.redirect("/private-modules").code(301);
     }
   }, {
-    path: "/orgs",
+    path: "/org",
     method: "GET",
     handler: function(request, reply) {
-      return reply.redirect("http://info.npmjs.com/test-orgs").code(301);
+      if (process.env.FEATURE_ORG_BILLING) {
+        return require('../facets/user/show-orgs');
+      } else {
+        return reply.redirect("http://info.npmjs.com/test-orgs").code(301);
+      }
     }
   }, {
     path: "/contact",
@@ -300,7 +304,7 @@ var publicRoutes = [
     handler: function(request, reply) {
       return reply.view('ui-docs/index').code(200);
     }
-  },{
+  }, {
     method: '*',
     path: '/doc/{p*}',
     handler: function(request, reply) {

@@ -95,26 +95,22 @@ module.exports = [
     path: "/package/{scope}/{project}",
     method: "POST",
     handler: require('../handlers/package').update
-  },{
-    path: "/org",
-    method: "GET",
-    handler: require('../facets/user/show-orgs')
-  },{
+  }, {
     path: "/org/{org}",
     method: "GET",
     handler: require('../handlers/org').getOrg
-  },{
+  }, {
     path: "/org/{org}",
     method: "POST",
     handler: require('../handlers/org').updateOrg
-  },{
+  }, {
     path: "/org/{org}",
     method: "DELETE",
     handler: require('../handlers/org').deleteOrg
-  },{
+  }, {
     path: "/org/create",
     method: "GET",
-    handler: function (request, reply) {
+    handler: function(request, reply) {
       return reply.view('org/create');
     }
   }

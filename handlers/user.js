@@ -21,10 +21,6 @@ exports.handleSignup = function signup(request, reply) {
     delSession = request.server.methods.user.delSession(request),
     sendEmail = request.server.methods.email.send;
 
-  var opts = {
-    errors: []
-  };
-
   var schema = Joi.object().keys({
     name: Joi.string().required(),
     password: Joi.string().required(),
@@ -42,6 +38,10 @@ exports.handleSignup = function signup(request, reply) {
   var UserModel = User.new(request);
 
   Joi.validate(data, schema, joiOptions, function(err, validatedUser) {
+    var opts = {
+      errors: []
+    };
+
     if (err) {
       opts.errors = err.details;
     }

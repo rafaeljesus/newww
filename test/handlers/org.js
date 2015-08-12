@@ -31,8 +31,8 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com:443")
-      .get("/customer/bob/stripe")
-      .reply(200, fixtures.customers.happy)
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe/subscription")
       .reply(200, fixtures.users.bobsubscriptions)
       .get("/sponsorship/1")
@@ -42,7 +42,12 @@ describe('getting an org', function() {
       .get('/org/bigco')
       .reply(200, fixtures.orgs.bigco)
       .get('/org/bigco/user')
-      .reply(200, fixtures.orgs.bigcoUsers);
+      .reply(200, fixtures.orgs.bigcoUsers)
+      .get('/org/bigco/package')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      });
 
     var options = {
       url: "/org/bigco",
@@ -66,8 +71,8 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe")
-      .reply(200, fixtures.customers.happy)
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe/subscription")
       .reply(200, fixtures.users.bobsubscriptions)
       .get("/sponsorship/1")
@@ -77,7 +82,12 @@ describe('getting an org', function() {
       .get('/org/bigco')
       .reply(200, fixtures.orgs.bigco)
       .get('/org/bigco/user')
-      .reply(200, fixtures.orgs.bigcoUsers);
+      .reply(200, fixtures.orgs.bigcoUsers)
+      .get('/org/bigco/package')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      });
 
     var options = {
       url: "/org/bigco",
@@ -100,16 +110,12 @@ describe('getting an org', function() {
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe")
-      .reply(200, fixtures.customers.happy)
-      .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.users.bobPrivateModules);
-
     var orgMock = nock("https://user-api-example.com")
       .get('/org/bigco')
       .reply(404)
       .get('/org/bigco/user')
+      .reply(404)
+      .get('/org/bigco/package')
       .reply(404);
 
     var options = {
@@ -119,10 +125,9 @@ describe('getting an org', function() {
 
     server.inject(options, function(resp) {
       userMock.done();
-      licenseMock.done();
       orgMock.done();
       expect(resp.statusCode).to.equal(200);
-      expect(resp.request.response.source.template).to.equal('org/info');
+      expect(resp.request.response.source.template).to.equal('errors/not-found');
       expect(resp.request.response.source.context).to.not.include('sponsorships');
       done();
     });
@@ -392,7 +397,9 @@ describe('updating an org', function() {
           .get("/org/bigco")
           .reply(200, fixtures.orgs.bigco)
           .get("/org/bigco/user")
-          .reply(200, fixtures.orgs.bigcoAddedUsers);
+          .reply(200, fixtures.orgs.bigcoAddedUsers)
+          .get("/org/bigco/package")
+          .reply(200, fixtures.packages.fake);
 
         var options = {
           url: "/org/bigco",
@@ -472,7 +479,9 @@ describe('updating an org', function() {
           .get("/org/bigco")
           .reply(200, fixtures.orgs.bigco)
           .get("/org/bigco/user")
-          .reply(200, fixtures.orgs.bigcoAddedUsers);
+          .reply(200, fixtures.orgs.bigcoAddedUsers)
+          .get("/org/bigco/package")
+          .reply(200, fixtures.packages.fake);
 
         var options = {
           url: "/org/bigco",

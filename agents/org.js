@@ -3,6 +3,7 @@ var assert = require('assert');
 var async = require('async');
 var Request = require('../lib/external-request');
 var USER_HOST = process.env.USER_API || "https://user-api-example.com";
+var avatar = require('../lib/avatar');
 
 var Org = module.exports = function(bearer) {
   assert(_.isString(bearer), "Must pass a bearer (loggedInUser) to Org agent");
@@ -48,6 +49,7 @@ Org.prototype.get = function(name, callback) {
 
   var orgUrl = USER_HOST + '/org/' + name;
   var userUrl = USER_HOST + '/org/' + name + '/user';
+  var packageUrl = USER_HOST + '/org/' + name + '/package';
 
   var makeRequest = function(url) {
     return function(cb) {
@@ -73,7 +75,8 @@ Org.prototype.get = function(name, callback) {
 
   var requests = {
     org: makeRequest(orgUrl),
-    users: makeRequest(userUrl)
+    users: makeRequest(userUrl),
+    packages: makeRequest(packageUrl)
   };
 
   async.parallel(requests, function(err, results) {
@@ -84,7 +87,12 @@ Org.prototype.get = function(name, callback) {
     var org = {};
 
     org.info = results.org;
-    org.users = results.users.items;
+    org.users = results.users;
+    org.users.items = results.users.items.map(function(user) {
+      user.avatar = avatar(user.email);
+      return user;
+    });
+    org.packages = results.packages;
 
     return callback(null, org);
   });

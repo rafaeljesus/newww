@@ -18,7 +18,36 @@ var Customer = module.exports = function(name, opts) {
   }, opts);
 };
 
-Customer.prototype.get = function(callback) {
+Customer.prototype.getById = function(id, callback) {
+  var self = this;
+  var url = this.host + '/customer/' + id;
+
+  Request.get({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+
+    if (err) {
+      return callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      err = Error('Customer not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode === 500) {
+      err = new Error(body);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.getStripeData = function(callback) {
   var self = this;
   var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
 
@@ -79,7 +108,7 @@ Customer.prototype.updateBilling = function(body, callback) {
     }
   }
 
-  this.get(function(err, customer) {
+  this.getStripeData(function(err, customer) {
 
     var cb = function(err, resp, body) {
       if (typeof body === 'string') {

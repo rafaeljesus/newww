@@ -66,7 +66,7 @@ describe("Customer", function() {
 
   });
 
-  describe("get()", function() {
+  describe("getStripeData()", function() {
 
     it("makes an external request for /customer/{user}", function(done) {
       var Customer = new CustomerModel('haxor');
@@ -75,7 +75,7 @@ describe("Customer", function() {
         .get('/customer/haxor/stripe')
         .reply(200, fixtures.customers.happy);
 
-      Customer.get(function(err, body) {
+      Customer.getStripeData(function(err, body) {
         customerMock.done();
         expect(err).to.be.null();
         done();
@@ -89,7 +89,7 @@ describe("Customer", function() {
         .get('/customer/zozo/stripe')
         .reply(200, fixtures.customers.happy);
 
-      Customer.get(function(err, body) {
+      Customer.getStripeData(function(err, body) {
         customerMock.done();
         expect(err).to.be.null();
         expect(body).to.be.an.object();
@@ -104,11 +104,61 @@ describe("Customer", function() {
         .get('/customer/foo/stripe')
         .reply(404);
 
-      Customer.get(function(err, body) {
+      Customer.getStripeData(function(err, body) {
         customerMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal("customer not found: foo");
         expect(err.statusCode).to.equal(404);
+        done();
+      });
+    });
+
+  });
+
+  describe("getById(id)", function() {
+
+    it("makes an external request for /customer/{user}", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .get('/customer/316')
+        .reply(200, fixtures.customers.bill);
+
+      Customer.getById(316, function(err, body) {
+        customerMock.done();
+        expect(err).to.be.null();
+        done();
+      });
+    });
+
+    it("returns an error in the callback if customer doesn't exist", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .get('/customer/999')
+        .reply(404);
+
+      Customer.getById(999, function(err, body) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal("Customer not found");
+        expect(err.statusCode).to.equal(404);
+        done();
+      });
+    });
+
+    it("returns the response body in the callback", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .get('/customer/316')
+        .reply(200, fixtures.customers.bill);
+
+      Customer.getById(316, function(err, body) {
+        customerMock.done();
+        expect(err).to.be.null();
+        expect(body).to.be.an.object();
+        expect(body.stripe_customer_id).to.equal("cus_6SOufuJcDjz2yx");
         done();
       });
     });

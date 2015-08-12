@@ -8,29 +8,44 @@ exports.getOrg = function(request, reply) {
     .get(request.params.org, function(err, org) {
       if (err) {
         request.logger.error(err);
+
+        if (err.statusCode === 404) {
+          return reply.view('errors/not-found', err);
+        } else {
+          return reply.view('errors/internal', err);
+        }
       }
       opts.org = org;
 
       Customer(loggedInUser)
-        .getSubscriptions(function(err, subscriptions) {
+        .getById(request.loggedInUser.email, function(err, cust) {
           if (err) {
             request.logger.error(err);
             return reply.view('errors/internal', err);
           }
 
-          var subscription = subscriptions.filter(function(subscription) {
-            return subscription.npm_org === request.params.org;
+          opts.org.customer_id = cust.stripe_customer_id;
+
+          Customer(loggedInUser).getSubscriptions(function(err, subscriptions) {
+            if (err) {
+              request.logger.error(err);
+              return reply.view('errors/internal', err);
+            }
+
+            var subscription = subscriptions.filter(function(subscription) {
+              return subscription.npm_org === request.params.org;
+            });
+            if (subscription.length) {
+              var licenseId = subscription[0].license_id;
+              Customer(loggedInUser)
+                .getAllSponsorships(licenseId, function(err, sponsorships) {
+                  opts.sponsorships = sponsorships;
+                  return reply.view('org/info', opts);
+                });
+            } else {
+              return reply.view('org/info', opts);
+            }
           });
-          if (subscription.length) {
-            var licenseId = subscription[0].license_id;
-            Customer(loggedInUser)
-              .getAllSponsorships(licenseId, function(err, sponsorships) {
-                opts.sponsorships = sponsorships;
-                return reply.view('org/info', opts);
-              });
-          } else {
-            return reply.view('org/info', opts);
-          }
         });
     });
 };

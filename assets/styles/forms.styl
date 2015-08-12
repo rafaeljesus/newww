@@ -274,11 +274,10 @@ input[type=text] + .description
  * Inspired by Lea Verou
  */
 
-input[type="checkbox"]:not(:checked),
-input[type="checkbox"]:checked  /* :checked here acting as a filter for older browsers */
+.switch-container input[type="checkbox"]:not(:checked),
+.switch-container input[type="checkbox"]:checked  /* :checked here acting as a filter for older browsers */
   position absolute
   opacity 0
-
 
 .switch-container label
   position relative
@@ -286,6 +285,9 @@ input[type="checkbox"]:checked  /* :checked here acting as a filter for older br
   margin 0 1em 1em 0
   text-shadow 0 1px 1px white
   width 12em
+
+.switch-container.pay-status label
+  width 9em
 
 
 input[type="checkbox"].switch + div
@@ -301,6 +303,7 @@ input[type="checkbox"].switch + div
   transition-duration .4s
   transition-property padding
   padding-left .2em
+  cursor pointer
 
 
 input[type="checkbox"].switch:checked + div

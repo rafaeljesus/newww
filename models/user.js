@@ -93,10 +93,10 @@ User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
 };
 
 User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
-  var licenseAPI = new LicenseAPI(name);
-  licenseAPI.get(function(err, customer) {
-    return callback(null, customer);
-  });
+  LicenseAPI(name)
+    .getStripeData(function(err, customer) {
+      return callback(null, customer);
+    });
 };
 
 User.prototype._get = function _get(name, callback) {

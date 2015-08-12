@@ -1,6 +1,7 @@
 <h1>Components</h1>
 <h2>Navigation</h2>
 <h3>Primary Navs</h3>
+
 <h4>Nav 3</h4>
 <div class="nav-3-container">
   <ul class="nav-3 clear" role="navigation">
@@ -9,6 +10,85 @@
     <li><a href="#">Settings</a></li>
   </ul>
 </div>
+
+<h4>Tabs</h4>
+<div class="tabs">
+  <div class="tab-nav-container">
+    <div class="nav-3-container">
+      <ul class="nav-3 clear" role="navigation">
+        <li class="current"><a href="#org-info-tab-1">1 Package</a></li>
+        <li><a href="#org-info-tab-2">1 Collaborator</a></li>
+        <li><a href="#">Payment Information</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="org-info-tab-1" class="tab tab-1">
+    <h2>Overview</h2>
+
+    <h3>1 Package</h3>
+    <table class="org-packages">
+      <thead>
+        <th>Package</th>
+        <th>Access</th>
+        <th>Action</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div>
+              <a href="/npm">NPM</a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div><!--/tab-1-->
+
+  <div id="org-info-tab-2" class="tab tab-2">
+    <h2>Paid Users</h2>
+    <table class="org-users">
+      <thead>
+        <th>Collaborators</th>
+        <th>Status</th>
+        <th>Action</th>
+      </thead>
+      <tbody>
+          <tr>
+            <td>
+              <div>
+                <span class="name">
+                  <a class="username" href="/~jlembeck">jlembeck</a>
+                  {{#if resource.fullname}}
+                  <span class="display-name">Jeff Lembeck</span>
+                  {{/if}}
+                </span><!--/.name-->
+              </div>
+            </td>
+            <td>
+              <div class="switch-container">
+                <label><span class="a11y-only">Paid Status</span>
+                <input class="switch" checked="checked" type="checkbox" value="paid">
+                <div class="switch"></div>
+                <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
+                <span class="switch-label checked-text" aria-hidden="true">paid</span>
+                </label>
+              </div>
+            </td>
+            <td>
+              <form method="POST" id="org-user-delete-1" action="/foo">
+                  <button type="submit" class="icon-x"><span class="a11y-only">Delete User</span></button>
+              </form>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+  </div><!--/.tab-2-->
+  <div class="tab tab-3">
+    <h2>Payment Information</h2>
+  </div><!--/.tab-3-->
+</div><!--/tabs-->
+
 <h3>Breadcrumbs</h3>
 <h4>Flow Logic</h4>
 <div class="nav-breadcrumb-flow-indicator-container">

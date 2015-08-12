@@ -331,7 +331,7 @@ User.prototype.save = function(user, callback) {
 User.prototype.signup = function(user, callback) {
   var self = this;
 
-  if (user.npmweekly === 'on') {
+  if (user.resource && user.resource.npmweekly === 'on') {
     var mc = this.getMailchimp();
     mc.lists.subscribe({
       id: 'e17fe5d778',

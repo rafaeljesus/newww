@@ -567,7 +567,9 @@ describe("User", function() {
             "password": "12345",
             "verify": "12345",
             "email": "boom@boom.com",
-            "npmweekly": "on"
+            "resource": {
+              "npmweekly": "on"
+            }
           })
           .reply(201);
 
@@ -577,7 +579,9 @@ describe("User", function() {
           password: '12345',
           verify: '12345',
           email: 'boom@boom.com',
-          npmweekly: "on"
+          resource: {
+            npmweekly: "on"
+          }
         }, function(er, user) {
           expect(er).to.not.exist();
           // userMock.done();

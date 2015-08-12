@@ -19,18 +19,21 @@ exports.showSignup = function signup(request, reply) {
   return reply.view('user/signup-form', opts);
 };
 
+var signupSchema = Joi.object().keys({
+  name: Joi.string().required(),
+  password: Joi.string().required(),
+  verify: Joi.string().required(),
+  email: Joi.string().email().required(),
+  resource: Joi.object().keys({
+    npmweekly: Joi.string(),
+    dripcampaigns: Joi.string().default('on')
+  })
+});
+
 exports.handleSignup = function signup(request, reply) {
   var setSession = request.server.methods.user.setSession(request),
     delSession = request.server.methods.user.delSession(request),
     sendEmail = request.server.methods.email.send;
-
-  var schema = Joi.object().keys({
-    name: Joi.string().required(),
-    password: Joi.string().required(),
-    verify: Joi.string().required(),
-    email: Joi.string().email().required(),
-    npmweekly: Joi.string()
-  });
 
   var joiOptions = {
     convert: false,
@@ -40,7 +43,7 @@ exports.handleSignup = function signup(request, reply) {
   var data = request.payload;
   var UserModel = User.new(request);
 
-  Joi.validate(data, schema, joiOptions, function(err, validatedUser) {
+  Joi.validate(data, signupSchema, joiOptions, function(err, validatedUser) {
     var opts = {
       errors: []
     };

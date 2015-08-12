@@ -66,7 +66,7 @@ describe("Customer", function() {
 
   });
 
-  describe("get()", function() {
+  describe("getStripeData()", function() {
 
     it("makes an external request for /customer/{user}", function(done) {
       var Customer = new CustomerModel('haxor');
@@ -75,7 +75,7 @@ describe("Customer", function() {
         .get('/customer/haxor/stripe')
         .reply(200, fixtures.customers.happy);
 
-      Customer.get(function(err, body) {
+      Customer.getStripeData(function(err, body) {
         customerMock.done();
         expect(err).to.be.null();
         done();
@@ -89,7 +89,7 @@ describe("Customer", function() {
         .get('/customer/zozo/stripe')
         .reply(200, fixtures.customers.happy);
 
-      Customer.get(function(err, body) {
+      Customer.getStripeData(function(err, body) {
         customerMock.done();
         expect(err).to.be.null();
         expect(body).to.be.an.object();
@@ -104,7 +104,7 @@ describe("Customer", function() {
         .get('/customer/foo/stripe')
         .reply(404);
 
-      Customer.get(function(err, body) {
+      Customer.getStripeData(function(err, body) {
         customerMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal("customer not found: foo");

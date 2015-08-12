@@ -47,7 +47,7 @@ Customer.prototype.getById = function(id, callback) {
   });
 };
 
-Customer.prototype.get = function(callback) {
+Customer.prototype.getStripeData = function(callback) {
   var self = this;
   var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
 
@@ -108,7 +108,7 @@ Customer.prototype.updateBilling = function(body, callback) {
     }
   }
 
-  this.get(function(err, customer) {
+  this.getStripeData(function(err, customer) {
 
     var cb = function(err, resp, body) {
       if (typeof body === 'string') {

@@ -20,7 +20,7 @@ customer.getBillingInfo = function(request, reply) {
     opts.package = request.query.package;
   }
 
-  request.customer.get(function(err, customer) {
+  request.customer.getStripeData(function(err, customer) {
 
     if (customer) {
       opts.customer = customer;

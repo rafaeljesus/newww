@@ -18,7 +18,7 @@ var Customer = module.exports = function(name, opts) {
   }, opts);
 };
 
-Customer.prototype.fetch = function(id, callback) {
+Customer.prototype.getById = function(id, callback) {
   var self = this;
   var url = this.host + '/customer/' + id;
 

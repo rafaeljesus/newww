@@ -18,7 +18,7 @@ exports.getOrg = function(request, reply) {
       opts.org = org;
 
       Customer(loggedInUser)
-        .fetch(request.loggedInUser.email, function(err, cust) {
+        .getById(request.loggedInUser.email, function(err, cust) {
           if (err) {
             request.logger.error(err);
             return reply.view('errors/internal', err);

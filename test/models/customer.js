@@ -115,7 +115,7 @@ describe("Customer", function() {
 
   });
 
-  describe("fetch(id)", function() {
+  describe("getById(id)", function() {
 
     it("makes an external request for /customer/{user}", function(done) {
       var Customer = new CustomerModel('bill');
@@ -124,7 +124,7 @@ describe("Customer", function() {
         .get('/customer/316')
         .reply(200, fixtures.customers.bill);
 
-      Customer.fetch(316, function(err, body) {
+      Customer.getById(316, function(err, body) {
         customerMock.done();
         expect(err).to.be.null();
         done();
@@ -138,7 +138,7 @@ describe("Customer", function() {
         .get('/customer/999')
         .reply(404);
 
-      Customer.fetch(999, function(err, body) {
+      Customer.getById(999, function(err, body) {
         customerMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal("Customer not found");
@@ -154,7 +154,7 @@ describe("Customer", function() {
         .get('/customer/316')
         .reply(200, fixtures.customers.bill);
 
-      Customer.fetch(316, function(err, body) {
+      Customer.getById(316, function(err, body) {
         customerMock.done();
         expect(err).to.be.null();
         expect(body).to.be.an.object();

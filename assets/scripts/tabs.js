@@ -1,7 +1,7 @@
 module.exports = function() {
   var className = ".tab";
 
-  var Tab = function (element, opts) {
+  var Tab = function(element, opts) {
     opts = opts || {};
 
     this.element = element;
@@ -14,7 +14,7 @@ module.exports = function() {
     this.init();
   };
 
-  Tab.prototype.init = function () {
+  Tab.prototype.init = function() {
     if (this.tabNav.parent("li").hasClass("current")) {
       this.open();
     } else {
@@ -22,26 +22,26 @@ module.exports = function() {
     }
   };
 
-  Tab.prototype.open = function () {
+  Tab.prototype.open = function() {
     this.$element.removeClass("hidden");
     this.$element.addClass("visible");
     this.isOpen = true;
 
-    $.each(this.siblings, function (idx, el) {
-      var tab = $(el).data( "tab" );
-      if(tab){
+    $.each(this.siblings, function(idx, el) {
+      var tab = $(el).data("tab");
+      if (tab) {
         tab.close();
       }
     });
   };
 
-  Tab.prototype.close = function () {
+  Tab.prototype.close = function() {
     this.$element.removeClass("visible");
     this.$element.addClass("hidden");
     this.isOpen = false;
   };
 
-  Tab.prototype.toggle = function () {
+  Tab.prototype.toggle = function() {
     if (this.isOpen) {
       this.close();
     } else {
@@ -51,10 +51,10 @@ module.exports = function() {
 
   $(function() {
     var tabs = $(className);
-    $.each( tabs, function (idx, el) {
+    $.each(tabs, function(idx, el) {
       var tab = new Tab(el);
 
-      tab.tabNav.on("click", function (e) {
+      tab.tabNav.on("click", function(e) {
         e.preventDefault();
         $(".tabs .current").removeClass("current");
         tab.tabNav.addClass("current");

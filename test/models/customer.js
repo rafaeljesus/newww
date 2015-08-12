@@ -115,7 +115,7 @@ describe("Customer", function() {
 
   });
 
-  describe("fetch(id)", function () {
+  describe("fetch(id)", function() {
 
     it("makes an external request for /customer/{user}", function(done) {
       var Customer = new CustomerModel('bill');

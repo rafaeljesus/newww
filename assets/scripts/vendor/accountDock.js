@@ -1,4 +1,4 @@
-$(function(){
+$(function() {
   if (AccountDock) {
     var billing = $("#billing");
     var customerId = billing.data("stripe-id");

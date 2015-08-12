@@ -44,7 +44,10 @@ describe('getting an org', function() {
       .get('/org/bigco/user')
       .reply(200, fixtures.orgs.bigcoUsers)
       .get('/org/bigco/package')
-      .reply(200, { count: 1, items: [fixtures.packages.fake] });
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      });
 
     var options = {
       url: "/org/bigco",
@@ -81,7 +84,10 @@ describe('getting an org', function() {
       .get('/org/bigco/user')
       .reply(200, fixtures.orgs.bigcoUsers)
       .get('/org/bigco/package')
-      .reply(200, { count: 1, items: [fixtures.packages.fake] });
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      });
 
     var options = {
       url: "/org/bigco",

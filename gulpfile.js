@@ -1,18 +1,17 @@
-var gulp = require('gulp'),
-    nib = require('nib'),
-    stylus = require('gulp-stylus'),
-    uglify = require('gulp-uglify'),
-    concat = require('gulp-concat'),
-    browserify = require('browserify'),
-    source = require('vinyl-source-stream'),
-    streamify = require('gulp-streamify'),
-    bistre = require('bistre'),
-    nodemon = require('gulp-nodemon'),
-    rename = require('gulp-rename'),
-    // imagemin = require('gulp-imagemin'),
-    jshint = require('gulp-jshint'),
-    pngcrush = require('imagemin-pngcrush'),
-    RevAll = require('gulp-rev-all');
+var gulp = require('gulp');
+var nib = require('nib');
+var stylus = require('gulp-stylus');
+var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var streamify = require('gulp-streamify');
+var bistre = require('bistre');
+var nodemon = require('gulp-nodemon');
+var rename = require('gulp-rename');
+var jshint = require('gulp-jshint');
+var pngcrush = require('imagemin-pngcrush');
+var RevAll = require('gulp-rev-all');
 
 var revAll = new RevAll();
 var paths = {
@@ -38,7 +37,7 @@ var paths = {
   ]
 };
 
-gulp.task('watch', ['dev-build'], function(){
+gulp.task('watch', ['dev-build'], function() {
   gulp.watch(paths.fonts, ['fonts']);
   gulp.watch(paths.styles, ['styles']);
   gulp.watch(paths.scripts.browserify, ['browserify']);
@@ -46,14 +45,16 @@ gulp.task('watch', ['dev-build'], function(){
   gulp.watch(paths.scripts.vendor, ['concat']);
 });
 
-gulp.task('styles', function () {
+gulp.task('styles', function() {
   return gulp.src('./assets/styles/index.styl')
-    .pipe(stylus({use: [nib()]}))
+    .pipe(stylus({
+      use: [nib()]
+    }))
     .pipe(gulp.dest('static/css/'));
 
 });
 
-gulp.task('browserify', function () {
+gulp.task('browserify', function() {
   return browserify("./assets/scripts/index.js")
     .bundle()
     .pipe(source('index.js'))
@@ -63,25 +64,25 @@ gulp.task('browserify', function () {
     .pipe(gulp.dest('static/js/'));
 });
 
-gulp.task('concat', function () {
+gulp.task('concat', function() {
   return gulp.src(paths.scripts.vendor)
     .pipe(uglify())
     .pipe(concat('vendor.min.js'))
     .pipe(gulp.dest('static/js/'))
 });
 
-gulp.task('tota11y', function () {
+gulp.task('tota11y', function() {
   return gulp
     .src(paths.scripts.tota11y)
     .pipe(gulp.dest('static/js/'));
 });
 
-gulp.task('fonts', function(){
+gulp.task('fonts', function() {
   return gulp.src(paths.fonts)
-  .pipe(gulp.dest('static/fonts'));
+    .pipe(gulp.dest('static/fonts'));
 })
 
-gulp.task('images', function(){
+gulp.task('images', function() {
   return gulp.src(paths.images)
     // .pipe(imagemin({
     //     progressive: true,
@@ -91,7 +92,7 @@ gulp.task('images', function(){
     .pipe(gulp.dest('static/images'));
 })
 
-gulp.task('misc', function(){
+gulp.task('misc', function() {
   return gulp.src(paths.misc)
     .pipe(gulp.dest('static/misc'));
 })
@@ -110,12 +111,16 @@ gulp.task('nodemon', ['dev-build'], function() {
     ],
     stdout: false,
   })
-    .on('readable', function () {
+    .on('readable', function() {
       this.stdout
-        .pipe(bistre({time: true}))
+        .pipe(bistre({
+          time: true
+        }))
         .pipe(process.stdout);
       this.stderr
-        .pipe(bistre({time: true}))
+        .pipe(bistre({
+          time: true
+        }))
         .pipe(process.stderr);
     });
 });
@@ -127,11 +132,11 @@ gulp.task('lint', function() {
 });
 
 gulp.task('rev', ['browserify', 'styles'], function() {
-    return gulp.src(['static/js/index.js', 'static/js/index.min.js', 'static/css/index.css'])
-        .pipe(revAll.revision())
-        .pipe(gulp.dest('static'))
-        .pipe(revAll.manifestFile())
-        .pipe(gulp.dest('static'));
+  return gulp.src(['static/js/index.js', 'static/js/index.min.js', 'static/css/index.css'])
+    .pipe(revAll.revision())
+    .pipe(gulp.dest('static'))
+    .pipe(revAll.manifestFile())
+    .pipe(gulp.dest('static'));
 });
 
 gulp.task('dev-build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat']);

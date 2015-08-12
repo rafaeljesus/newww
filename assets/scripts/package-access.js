@@ -28,12 +28,16 @@ var updateInputsAndHandlers = function() {
 
   // Reveal delete links
   if ($("#collaborators").data("enableDeletion")) {
-    $("form.remove-collaborator").css({visibility: "visible"});
+    $("form.remove-collaborator").css({
+      visibility: "visible"
+    });
   }
 
   // If there's only one collaborator, disallow removal or demotion
   if ($(".collaborator").length === 1) {
-    $("form.remove-collaborator").css({visibility: "hidden"});
+    $("form.remove-collaborator").css({
+      visibility: "hidden"
+    });
     $("input[type=radio][name='collaborator.permissions']")
       .attr('disabled', true);
   }
@@ -41,9 +45,9 @@ var updateInputsAndHandlers = function() {
   // Set default permissions for new collaborators based on package publicity
   // private: default is read-only
   // public: default is read-write
-  var private = $("#package-access-toggle").prop("checked");
+  var pkgIsPrivate = $("#package-access-toggle").prop("checked");
   $("#add-collaborator input[name='collaborator.permissions']")
-    .val(private ? "read" : "write");
+    .val(pkgIsPrivate ? "read" : "write");
 
   // Clear the 'add' input
   $("#add-collaborator input[name='collaborator.name']").val("");
@@ -52,7 +56,7 @@ var updateInputsAndHandlers = function() {
 var addCollaborator = function(e) {
   e.preventDefault();
   $.ajax(formToRequestObject($(this)))
-    .done(function(data){
+    .done(function(data) {
       if (data.collaborator) {
         $("tr.collaborator:last").after(template(data.collaborator));
         updateInputsAndHandlers();
@@ -97,7 +101,7 @@ var removeCollaborator = function(e) {
   $form.parents(".collaborator").remove();
 
   $.ajax(formToRequestObject($form))
-    .done(function(){
+    .done(function() {
       if (removingSelf) {
         window.location = $form.data('packageUrl') + "?removed-self-from-collaborators";
         return;
@@ -111,9 +115,9 @@ var togglePackageAccess = function(e) {
   e.preventDefault();
   var $checkbox = $(this);
   var $form = $checkbox.parents("form");
-  var private = $checkbox.prop("checked");
+  var pkgIsPrivate = $checkbox.prop("checked");
 
-  if (!private) {
+  if (!pkgIsPrivate) {
     var confirmation = "This will make your package world-readable";
     var $readOnlyInputs = $("[type=radio][name='collaborator.permissions'][value='read']:checked");
     if ($readOnlyInputs.length) {
@@ -130,9 +134,11 @@ var togglePackageAccess = function(e) {
   }
 
   var opts = formToRequestObject($form);
-  opts.data.package = {private: private};
+  opts.data.package = {
+    "private": pkgIsPrivate
+  };
 
-  $("#collaborators").data("enablePermissionTogglers", private);
+  $("#collaborators").data("enablePermissionTogglers", pkgIsPrivate);
 
   updateInputsAndHandlers();
   $.ajax(opts)
@@ -140,7 +146,7 @@ var togglePackageAccess = function(e) {
     .fail(errorHandler);
 };
 
- var errorHandler = function(xhr, status, error) {
-   console.error(xhr, status, error);
-   $("p.error").text(xhr.responseJSON.message || error).show();
- };
+var errorHandler = function(xhr, status, error) {
+  console.error(xhr, status, error);
+  $("p.error").text(xhr.responseJSON.message || error).show();
+};

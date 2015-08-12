@@ -1,13 +1,15 @@
 var path = require('path');
 var Hapi = require('hapi');
 
-module.exports = function (done) {
+module.exports = function(done) {
   var metrics = require('../../adapters/metrics')();
   var server = new Hapi.Server();
   server.connection();
 
   server.views({
-    engines: {hbs: require('handlebars')},
+    engines: {
+      hbs: require('handlebars')
+    },
     relativeTo: path.resolve(__dirname, "..", ".."),
     path: './templates',
     helpersPath: './templates/helpers',
@@ -20,12 +22,14 @@ module.exports = function (done) {
   server.gitHead = require("../../lib/git-head")()
   server.methods = require('./server-methods')(server);
 
-  server.register(require('hapi-auth-cookie'), function (err) {
-    if (err) { throw err; }
+  server.register(require('hapi-auth-cookie'), function(err) {
+    if (err) {
+      throw err;
+    }
 
     server.app.cache = server.cache({
       expiresIn: 30,
-      segment: '|sessions'                  // Adding a '|' prefix to keep the cache keys same as in hapi 7.x and older
+      segment: '|sessions' // Adding a '|' prefix to keep the cache keys same as in hapi 7.x and older
     });
 
     server.auth.strategy('session', 'cookie', 'required', {
@@ -34,14 +38,18 @@ module.exports = function (done) {
     });
 
     server.register([{
-        register: require('crumb'),
-        options: { cookieOptions: { isSecure: true } }
-      },
+      register: require('crumb'),
+      options: {
+        cookieOptions: {
+          isSecure: true
+        }
+      }
+    },
       require('../../adapters/bonbon')
-    ], function (err) {
+    ], function(err) {
       server.route(require('../../routes/index'));
 
-      server.start(function () {
+      server.start(function() {
         return done(server);
       });
     });

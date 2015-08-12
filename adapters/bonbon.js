@@ -1,12 +1,12 @@
-var bole              = require('bole'),
-    Boom              = require('boom'),
-    CustomerModel     = require('../models/customer'),
-    Hoek              = require('hoek'),
-    humans            = require('npm-humans'),
-    featureFlag       = require('../lib/feature-flags.js'),
-    toCommonLogFormat = require('hapi-common-log'),
-    url               = require('url'),
-    UserModel         = require('../models/user');
+var bole = require('bole'),
+  Boom = require('boom'),
+  CustomerModel = require('../models/customer'),
+  Hoek = require('hoek'),
+  humans = require('npm-humans'),
+  featureFlag = require('../lib/feature-flags.js'),
+  toCommonLogFormat = require('hapi-common-log'),
+  url = require('url'),
+  UserModel = require('../models/user');
 
 exports.register = function(server, options, next) {
 
@@ -17,8 +17,10 @@ exports.register = function(server, options, next) {
     // Add feature flags to request
     request.features = {};
     Object.keys(process.env)
-      .filter(function (key) { return key.match(/^feature_/i) })
-      .forEach(function (key) {
+      .filter(function(key) {
+        return key.match(/^feature_/i)
+      })
+      .forEach(function(key) {
         key = key.replace(/^feature_/i, "").toLowerCase();
         request.features[key] = featureFlag(key, request);
       });
@@ -38,7 +40,12 @@ exports.register = function(server, options, next) {
 
     if (request.auth && request.auth.credentials && !request.path.match(/static\//)) {
       UserModel.new(request).get(request.auth.credentials.name, function(err, user) {
-        if (err) { request.logger.warn(err); }
+        if (err) {
+          request.logger.warn(err);
+        }
+        if (user) {
+          user.sid = request.auth.credentials.sid;
+        }
         request.loggedInUser = user;
         request.customer = user && new CustomerModel(user.name);
         completePreHandler();
@@ -47,7 +54,7 @@ exports.register = function(server, options, next) {
       completePreHandler();
     }
 
-    function completePreHandler () {
+    function completePreHandler() {
 
       if (request.method !== "post") {
         return reply.continue();
@@ -89,7 +96,7 @@ exports.register = function(server, options, next) {
         request.response.source.context.user = request.loggedInUser;
         break;
       case "plain":
-        if (typeof(request.response.source) === "object") {
+        if (typeof (request.response.source) === "object") {
           request.response.source = Hoek.applyToDefaults(options, request.response.source);
         }
         break;
@@ -98,8 +105,8 @@ exports.register = function(server, options, next) {
     // Allow npm humans to view JSON context for any page
     // by adding a `?json` query parameter to the URL
     if ('json' in request.query &&
-        Hoek.reach(request, 'response.source.context') &&
-        (process.env.NODE_ENV === "dev" || Hoek.reach(request, "loggedInUser.name") in humans)
+      Hoek.reach(request, 'response.source.context') &&
+      (process.env.NODE_ENV === "dev" || Hoek.reach(request, "loggedInUser.name") in humans)
     ) {
       if (request.query.json.length > 1) {
         // deep reference: ?json=profile.packages
@@ -117,13 +124,15 @@ exports.register = function(server, options, next) {
 
     var latency = Date.now() - request.timing.start;
     metrics.metric({
-      name:  'latency.page',
+      name: 'latency.page',
       value: latency,
-      page:  request.timing.page,
+      page: request.timing.page,
     });
 
     // TODO log request info in as close to common log format as possible
-    request.logger.info(toCommonLogFormat(request, {ipHeader: 'fastly-client-ip'}), latency + 'ms');
+    request.logger.info(toCommonLogFormat(request, {
+      ipHeader: 'fastly-client-ip'
+    }), latency + 'ms');
 
     return reply.continue();
   });

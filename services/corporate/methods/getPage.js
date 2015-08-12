@@ -8,17 +8,17 @@ module.exports = {
   policy: getPage('policies')
 };
 
-function getPage (repo) {
+function getPage(repo) {
 
-  return function (name, next) {
+  return function(name, next) {
 
-    Joi.validate(name, Joi.string().regex(/^[a-zA-Z0-9-_]+$/), function (err, validName) {
+    Joi.validate(name, Joi.string().regex(/^[a-zA-Z0-9-_]+$/), function(err, validName) {
       if (err) {
         return next(err, null);
       }
 
       var org = "npm";
-      if (repo === "static-pages"){
+      if (repo === "static-pages") {
         var branch = (new Date() > new Date("2015-04-14T03:30:00-07:00")) ? "master" : "prerelease";
       } else {
         var branch = "master";
@@ -26,7 +26,7 @@ function getPage (repo) {
 
       var url = fmt('https://raw.githubusercontent.com/%s/%s/%s/%s.md', org, repo, branch, validName);
 
-      request(url, function (err, resp, content) {
+      request(url, function(err, resp, content) {
 
         if (content === "Not Found") {
           err = content;
@@ -34,7 +34,9 @@ function getPage (repo) {
         }
 
         if (typeof content === "string") {
-          content = marky(content, {sanitize: false}).html();
+          content = marky(content, {
+            sanitize: false
+          }).html();
         }
 
         return next(err, content);

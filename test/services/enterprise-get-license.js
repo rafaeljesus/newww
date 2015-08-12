@@ -1,27 +1,30 @@
 var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    it = lab.test,
-    expect = Code.expect,
-    Hapi = require('hapi'),
-    npme = require('../../services/npme'),
-    nock = require('nock'),
-    server;
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  before = lab.before,
+  after = lab.after,
+  it = lab.test,
+  expect = Code.expect,
+  Hapi = require('hapi'),
+  npme = require('../../services/npme'),
+  nock = require('nock'),
+  server;
 
-before(function (done) {
+before(function(done) {
   process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
-  server.connection({ host: 'localhost', port: '9132' });
+  server.connection({
+    host: 'localhost',
+    port: '9132'
+  });
 
-  server.register(npme, function () {
+  server.register(npme, function() {
     server.start(done);
   });
 });
 
-after(function (done) {
+after(function(done) {
   delete process.env.LICENSE_API;
   done()
 });
@@ -43,18 +46,18 @@ var license = {
   signature: 'some-long-string'
 };
 
-describe('getting a specific license from hubspot', function () {
-  it('returns the license if it is found', function (done) {
+describe('getting a specific license from hubspot', function() {
+  it('returns the license if it is found', function(done) {
 
     var productId = '12-34-56',
-        customerId = '12345',
-        licenseId = license.details.license_key;
+      customerId = '12345',
+      licenseId = license.details.license_key;
 
     var mock = nock('https://billing.website.com')
-        .get('/license/' + productId + '/' + customerId + '/' + licenseId)
-        .reply(200, license);
+      .get('/license/' + productId + '/' + customerId + '/' + licenseId)
+      .reply(200, license);
 
-    server.methods.npme.getLicense(productId, customerId, licenseId, function (err, license) {
+    server.methods.npme.getLicense(productId, customerId, licenseId, function(err, license) {
       mock.done();
       expect(err).to.not.exist();
       expect(license).to.be.an.object();
@@ -63,17 +66,17 @@ describe('getting a specific license from hubspot', function () {
     });
   });
 
-  it('returns nothing if not found', function (done) {
+  it('returns nothing if not found', function(done) {
 
     var productId = '12-34-56',
-        customerId = '12345',
-        licenseId = 'd89355a5-859b-43f4-8d8d-12b661403314';
+      customerId = '12345',
+      licenseId = 'd89355a5-859b-43f4-8d8d-12b661403314';
 
     var mock = nock('https://billing.website.com')
-        .get('/license/' + productId + '/' + customerId + '/' + licenseId)
-        .reply(404);
+      .get('/license/' + productId + '/' + customerId + '/' + licenseId)
+      .reply(404);
 
-    server.methods.npme.getLicense(productId, customerId, licenseId, function (err, license) {
+    server.methods.npme.getLicense(productId, customerId, licenseId, function(err, license) {
       mock.done();
       expect(err).to.be.null();
       expect(license).to.be.null();
@@ -81,17 +84,17 @@ describe('getting a specific license from hubspot', function () {
     });
   });
 
-  it('returns en error if something goes wrong at hubspot', function (done) {
+  it('returns en error if something goes wrong at hubspot', function(done) {
 
     var productId = '12-34-56',
-        customerId = '12345',
-        licenseId = license.details.license_key;
+      customerId = '12345',
+      licenseId = license.details.license_key;
 
     var mock = nock('https://billing.website.com')
-        .get('/license/' + productId + '/' + customerId + '/' + licenseId)
-        .reply(400);
+      .get('/license/' + productId + '/' + customerId + '/' + licenseId)
+      .reply(400);
 
-    server.methods.npme.getLicense(productId, customerId, licenseId, function (err, license) {
+    server.methods.npme.getLicense(productId, customerId, licenseId, function(err, license) {
       mock.done();
       expect(err).to.exist();
       expect(err.message).to.equal('unexpected status code fetching license; status=400; customer=' + customerId + ';license=' + licenseId);

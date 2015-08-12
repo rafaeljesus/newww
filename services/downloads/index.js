@@ -1,10 +1,10 @@
 var Hapi = require('hapi'),
-    request = require('request'),
-    SECOND = 1000;
+  request = require('request'),
+  SECOND = 1000;
 
 var timer = {};
 
-exports.register = function Downloads (server, options, next) {
+exports.register = function Downloads(server, options, next) {
 
   server.method('downloads.getDownloadsForPackage', require('./methods/getDownloads')(options.url), {
     cache: {

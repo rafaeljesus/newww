@@ -1,15 +1,15 @@
-module.exports = function () {
+module.exports = function() {
 
   if (typeof StripeCheckout === 'undefined') {
     return;
   }
 
-  $(function () {
+  $(function() {
 
     var amount, subType, quantity;
 
     var handler = StripeCheckout.configure({
-      key: $('input[type=hidden]').data('stripe-key'),
+      key: $('input[type=hidden][data-stripe-key]').data('stripe-key'),
       image: '/static/images/n-64.png',
       email: $('#billing-email').val(),
       token: function(token, args) {
@@ -26,21 +26,23 @@ module.exports = function () {
           },
           data: token,
           type: 'POST',
-          headers: {'x-csrf-token': $('input[name="crumb"]').val()}
+          headers: {
+            'x-csrf-token': $('input[name="crumb"]').val()
+          }
         })
-        .done(function (resp) {
-          document.location = '/enterprise/license-paid';
-        })
-        .error(function (resp) {
-          document.location = '/enterprise/license-error';
-        });
+          .done(function(resp) {
+            document.location = '/enterprise/license-paid';
+          })
+          .error(function(resp) {
+            document.location = '/enterprise/license-error';
+          });
       }
     });
 
-    $('#buy-starter-pack').click(function (e) {
+    $('#buy-starter-pack').click(function(e) {
       subType = parseInt($("input[name='starter-pack-plan']:checked").val());
       var description;
-      switch(subType) {
+      switch (subType) {
         case 1:
           description = "Starter Pack, billed monthly";
           amount = 2500;
@@ -64,7 +66,7 @@ module.exports = function () {
       e.preventDefault();
     });
 
-    $('#buy-multi-seat').click(function (e) {
+    $('#buy-multi-seat').click(function(e) {
       subType = 3;
       var seatString = $('#multi-seat-count').val();
       quantity = parseInt(seatString);

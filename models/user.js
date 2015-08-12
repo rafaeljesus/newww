@@ -32,10 +32,13 @@ var User = module.exports = function(opts) {
 
 User.new = function(request) {
   var bearer = request.loggedInUser && request.loggedInUser.name;
-  return new User({bearer: bearer, logger: request.logger});
+  return new User({
+    bearer: bearer,
+    logger: request.logger
+  });
 };
 
-User.prototype.confirmEmail = function (user, callback) {
+User.prototype.confirmEmail = function(user, callback) {
   var url = fmt('%s/user/%s/verify', this.host, user.name);
 
   return new P(function(resolve, reject) {
@@ -47,8 +50,10 @@ User.prototype.confirmEmail = function (user, callback) {
       }
     };
 
-    Request.post(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
+    Request.post(opts, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error verifying user ' + user.name);
         err.statusCode = resp.statusCode;
@@ -62,16 +67,18 @@ User.prototype.confirmEmail = function (user, callback) {
 User.prototype.login = function(loginInfo, callback) {
   var url = fmt('%s/user/%s/login', this.host, loginInfo.name);
 
-  return new P(function (resolve, reject) {
+  return new P(function(resolve, reject) {
     Request.post({
       url: url,
       json: true,
       body: {
         password: loginInfo.password
       }
-    }, function (err, resp, body) {
+    }, function(err, resp, body) {
 
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
 
       if (resp.statusCode === 401) {
         err = Error('password is incorrect for ' + loginInfo.name);
@@ -97,20 +104,21 @@ User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
   };
 };
 
-User.prototype.dropCache = function dropCache (name, callback) {
-    cache.dropKey(name, callback);
+User.prototype.dropCache = function dropCache(name, callback) {
+  cache.dropKey(name, callback);
 };
 
 
 User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
-  Request.get(this.generateUserACLOptions(name), function(err, response, body)
-  {
-    if (err) { return callback(err); }
+  Request.get(this.generateUserACLOptions(name), function(err, response, body) {
+    if (err) {
+      return callback(err);
+    }
 
     if (response.statusCode !== 200) {
-        var e = new Error('unexpected status code ' + response.statusCode);
-        e.statusCode = response.statusCode;
-        return callback(e);
+      var e = new Error('unexpected status code ' + response.statusCode);
+      e.statusCode = response.statusCode;
+      return callback(e);
     }
 
     callback(null, body);
@@ -119,7 +127,7 @@ User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
 
 User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
   var licenseAPI = new LicenseAPI(name);
-  licenseAPI.get(function (err, customer) {
+  licenseAPI.get(function(err, customer) {
     return callback(null, customer);
   });
 };
@@ -129,14 +137,18 @@ User.prototype._get = function _get(name, callback) {
   var user;
 
   cache.getKey(name, function(err, value) {
-    if (err) { return callback(err); }
+    if (err) {
+      return callback(err);
+    }
     if (value) {
       user = utils.safeJsonParse(value);
       return callback(null, user);
     }
 
     self.fetchData(name, function(err, user) {
-      if (err) { return callback(err); }
+      if (err) {
+        return callback(err);
+      }
       cache.setKey(name, cache.DEFAULT_TTL, JSON.stringify(user), function(err, result) {
         return callback(null, user);
       });
@@ -148,12 +160,18 @@ User.prototype.fetchData = function fetchData(name, callback) {
   var self = this;
 
   var actions = {
-    user: function(cb) { self.fetchFromUserACL(name, cb); },
-    customer: function(cb) { self.fetchCustomer(name, cb); },
+    user: function(cb) {
+      self.fetchFromUserACL(name, cb);
+    },
+    customer: function(cb) {
+      self.fetchCustomer(name, cb);
+    },
   };
 
   async.parallel(actions, function(err, results) {
-    if (err) { return callback(err); }
+    if (err) {
+      return callback(err);
+    }
 
     var user = decorate(results.user);
 
@@ -186,11 +204,17 @@ User.prototype.getPackages = function(name, page, callback) {
       json: true
     };
 
-    if (self.bearer) { opts.headers = {bearer: self.bearer}; }
+    if (self.bearer) {
+      opts.headers = {
+        bearer: self.bearer
+      };
+    }
 
-    Request.get(opts, function(err, resp, body){
+    Request.get(opts, function(err, resp, body) {
 
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error getting packages for user ' + name);
         err.statusCode = resp.statusCode;
@@ -202,7 +226,7 @@ User.prototype.getPackages = function(name, page, callback) {
       // (assets/scripts/fetch-packages.js) that needs this
       // functionality as well... thoughts?
       if (body.items) {
-        body.items = body.items.map(function (p) {
+        body.items = body.items.map(function(p) {
           if (p.access === 'restricted') {
             p.isPrivate = true;
           }
@@ -231,11 +255,17 @@ User.prototype.getStars = function(name, callback) {
       json: true
     };
 
-    if (self.bearer) { opts.headers = {bearer: self.bearer}; }
+    if (self.bearer) {
+      opts.headers = {
+        bearer: self.bearer
+      };
+    }
 
-    Request.get(opts, function(err, resp, body){
+    Request.get(opts, function(err, resp, body) {
 
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error getting stars for user ' + name);
         err.statusCode = resp.statusCode;
@@ -244,13 +274,13 @@ User.prototype.getStars = function(name, callback) {
       return resolve(body);
     });
   })
-  .nodeify(callback);
+    .nodeify(callback);
 };
 
 User.prototype.login = function(loginInfo, callback) {
   var url = fmt('%s/user/%s/login', this.host, loginInfo.name);
 
-  return new P(function (resolve, reject) {
+  return new P(function(resolve, reject) {
 
     Request.post({
       url: url,
@@ -258,9 +288,11 @@ User.prototype.login = function(loginInfo, callback) {
       body: {
         password: loginInfo.password
       }
-    }, function (err, resp, body) {
+    }, function(err, resp, body) {
 
-      if (err) { return reject(err); }
+      if (err) {
+        return reject(err);
+      }
 
       if (resp.statusCode === 401) {
         err = Error('password is incorrect for ' + loginInfo.name);
@@ -282,7 +314,7 @@ User.prototype.login = function(loginInfo, callback) {
 User.prototype.lookupEmail = function(email, callback) {
   var self = this;
 
-  return new P(function (resolve, reject) {
+  return new P(function(resolve, reject) {
     if (userValidate.email(email)) {
       var err = new Error('email is invalid');
       err.statusCode = 400;
@@ -292,8 +324,13 @@ User.prototype.lookupEmail = function(email, callback) {
 
     var url = self.host + '/user/' + email;
 
-    Request.get({url: url, json: true}, function (err, resp, body) {
-      if (err) { return reject(err); }
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error looking up username(s) for ' + email);
         err.statusCode = resp.statusCode;
@@ -305,18 +342,20 @@ User.prototype.lookupEmail = function(email, callback) {
   }).nodeify(callback);
 };
 
-User.prototype.save = function (user, callback) {
+User.prototype.save = function(user, callback) {
   var url = this.host + '/user/' + user.name;
 
-  return new P(function (resolve, reject) {
+  return new P(function(resolve, reject) {
     var opts = {
       url: url,
       json: true,
       body: user
     };
 
-    Request.post(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
+    Request.post(opts, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error updating profile for ' + user.name);
         err.statusCode = resp.statusCode;
@@ -327,12 +366,17 @@ User.prototype.save = function (user, callback) {
   }).nodeify(callback);
 };
 
-User.prototype.signup = function (user, callback) {
+User.prototype.signup = function(user, callback) {
   var self = this;
 
   if (user.npmweekly === 'on') {
     var mc = this.getMailchimp();
-    mc.lists.subscribe({id: 'e17fe5d778', email:{email:user.email}}, function() {
+    mc.lists.subscribe({
+      id: 'e17fe5d778',
+      email: {
+        email: user.email
+      }
+    }, function() {
       // do nothing on success
     }, function(error) {
       self.logger.error('Could not register user for npm Weekly: ' + user.email);
@@ -344,15 +388,17 @@ User.prototype.signup = function (user, callback) {
 
   var url = this.host + '/user';
 
-  return new P(function (resolve, reject) {
+  return new P(function(resolve, reject) {
     var opts = {
       url: url,
       body: user,
       json: true
     };
 
-    Request.put(opts, function (err, resp, body) {
-      if (err) { return reject(err); }
+    Request.put(opts, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = Error('error creating user ' + user.name);
         err.statusCode = resp.statusCode;
@@ -361,17 +407,17 @@ User.prototype.signup = function (user, callback) {
       return resolve(body);
     });
   })
-  .nodeify(callback);
+    .nodeify(callback);
 };
 
-User.prototype.getMailchimp = function getMailchimp () {
+User.prototype.getMailchimp = function getMailchimp() {
   if (!chimp) {
     chimp = new mailchimp.Mailchimp(process.env.MAILCHIMP_KEY);
   }
   return chimp;
 };
 
-User.prototype.verifyPassword = function (name, password, callback) {
+User.prototype.verifyPassword = function(name, password, callback) {
   var loginInfo = {
     name: name,
     password: password

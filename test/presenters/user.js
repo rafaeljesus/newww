@@ -1,61 +1,76 @@
 var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    it = lab.test,
-    expect = Code.expect,
-    present = require(__dirname + "/../../presenters/user"),
-    fixtures = require(__dirname + "/../fixtures.js");
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  it = lab.test,
+  expect = Code.expect,
+  present = require(__dirname + "/../../presenters/user"),
+  fixtures = require(__dirname + "/../fixtures.js");
 
-describe("email", function(){
+describe("email", function() {
 
   it("gets obfuscated", function(done) {
-    var user = present({email: "zeke@sikelianos.com"});
+    var user = present({
+      email: "zeke@sikelianos.com"
+    });
     expect(user.emailObfuscated).to.exist();
     done();
   });
 });
 
-describe("avatar", function(){
+describe("avatar", function() {
 
   it("is an object", function(done) {
-    var user = present({email: "zeke@sikelianos.com"});
+    var user = present({
+      email: "zeke@sikelianos.com"
+    });
     expect(user.avatar).to.be.an.object();
     done();
   });
 
   it("has a small version", function(done) {
-    var user = present({email: "zeke@sikelianos.com"});
+    var user = present({
+      email: "zeke@sikelianos.com"
+    });
     expect(user.avatar.small).to.exist();
     expect(user.avatar.small).to.not.include("size=100");
     done();
   });
 
   it("has a medium version", function(done) {
-    var user = present({email: "zeke@sikelianos.com"});
+    var user = present({
+      email: "zeke@sikelianos.com"
+    });
     expect(user.avatar.medium).to.exist();
     expect(user.avatar.medium).to.include("size=100");
     done();
   });
 
   it("has a large version", function(done) {
-    var user = present({email: "zeke@sikelianos.com"});
+    var user = present({
+      email: "zeke@sikelianos.com"
+    });
     expect(user.avatar.large).to.exist();
     expect(user.avatar.large).to.include("size=496");
     done();
   });
 });
 
-describe("resource", function () {
+describe("resource", function() {
 
-  it("is an object", function(done){
-    var user = present({name: "zeke", resource: {github: "zeke"}});
+  it("is an object", function(done) {
+    var user = present({
+      name: "zeke",
+      resource: {
+        github: "zeke"
+      }
+    });
     expect(user.resource).to.exist();
     expect(user.resource).to.be.an.object();
     done();
   });
 
-  it("discards pairs with empty key or values", function(done){
+  it("discards pairs with empty key or values", function(done) {
     var user = present({
       name: "mona",
       resource: {
@@ -73,9 +88,9 @@ describe("resource", function () {
     done();
   });
 
-  describe("homepage", function () {
+  describe("homepage", function() {
 
-    it("leaves fully-qualified URLs untouched", function(done){
+    it("leaves fully-qualified URLs untouched", function(done) {
       var user = present({
         name: "lisa",
         resource: {
@@ -86,7 +101,7 @@ describe("resource", function () {
       done();
     });
 
-    it("converts schemeless URLs into fully-qualified URLs", function(done){
+    it("converts schemeless URLs into fully-qualified URLs", function(done) {
       var user = present({
         name: "margaret",
         resource: {
@@ -97,7 +112,7 @@ describe("resource", function () {
       done();
     });
 
-    it("discards values that can't be turned into URLs", function(done){
+    it("discards values that can't be turned into URLs", function(done) {
       var user = present({
         name: "kate",
         resource: {
@@ -110,9 +125,9 @@ describe("resource", function () {
     });
   });
 
-  describe("github", function () {
+  describe("github", function() {
 
-    it("removes leading @ from username if present", function(done){
+    it("removes leading @ from username if present", function(done) {
       var user = present({
         name: "eleanor",
         resource: {
@@ -123,7 +138,7 @@ describe("resource", function () {
       done();
     });
 
-    it("extracts username if value is a URL", function(done){
+    it("extracts username if value is a URL", function(done) {
       var user = present({
         name: "suzan",
         resource: {
@@ -134,7 +149,7 @@ describe("resource", function () {
       done();
     });
 
-    it("extracts username if value is a schemeless URL", function(done){
+    it("extracts username if value is a schemeless URL", function(done) {
       var user = present({
         name: "jimbo",
         resource: {
@@ -145,7 +160,7 @@ describe("resource", function () {
       done();
     });
 
-    it("is discarded if value is an empty string", function(done){
+    it("is discarded if value is an empty string", function(done) {
       var user = present({
         name: "suzan",
         resource: {
@@ -159,8 +174,8 @@ describe("resource", function () {
     });
   });
 
-  describe("twitter", function () {
-    it("removes leading @ from username if present", function(done){
+  describe("twitter", function() {
+    it("removes leading @ from username if present", function(done) {
       var user = present({
         name: "eleanor",
         resource: {
@@ -171,7 +186,7 @@ describe("resource", function () {
       done();
     });
 
-    it("extracts username if value is a URL", function(done){
+    it("extracts username if value is a URL", function(done) {
       var user = present({
         name: "suzan",
         resource: {
@@ -182,7 +197,7 @@ describe("resource", function () {
       done();
     });
 
-    it("extracts username if value is a schemeless URL", function(done){
+    it("extracts username if value is a schemeless URL", function(done) {
       var user = present({
         name: "suzan",
         resource: {
@@ -194,8 +209,8 @@ describe("resource", function () {
     });
   });
 
-  describe("freenode", function () {
-    it("is present", function(done){
+  describe("freenode", function() {
+    it("is present", function(done) {
       var user = present({
         name: "eleanor",
         resource: {

@@ -5,7 +5,7 @@
 */
 
 module.exports = function() {
-  $(function(){
+  $(function() {
     if (typeof twttr === "object" && twttr.conversion && twttr.conversion.trackPid) {
       var pid = $("[data-twitter-pid]").data('twitterPid');
       if (pid) {

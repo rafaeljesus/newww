@@ -1,5 +1,5 @@
 
-exports.register = function npmE (server, options, next) {
+exports.register = function npmE(server, options, next) {
 
   server.method('npme.createCustomer', require('./methods/createCustomer'));
 

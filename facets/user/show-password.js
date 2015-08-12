@@ -1,7 +1,7 @@
 var redisSessions = require("../../adapters/redis-sessions");
 var UserModel = require('../../models/user');
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
   var setSession = request.server.methods.user.setSession(request);
   var User = UserModel.new(request);
 
@@ -17,25 +17,35 @@ module.exports = function (request, reply) {
   if (request.method === 'post') {
     var data = request.payload;
 
-    User.verifyPassword(loggedInUser.name, data.current, function (err, isCorrect) {
+    User.verifyPassword(loggedInUser.name, data.current, function(err, isCorrect) {
 
       if (!isCorrect) {
-        opts.error = {current: true};
+        opts.error = {
+          current: true
+        };
 
         request.timing.page = 'password-error';
-        request.metrics.metric({ name: 'password-error' });
+        request.metrics.metric({
+          name: 'password-error'
+        });
         return reply.view('user/password', opts).code(403);
       }
 
       if (data.new !== data.verify) {
-        opts.error = {verify: true};
+        opts.error = {
+          verify: true
+        };
 
         request.timing.page = 'password-error';
-        request.metrics.metric({ name: 'password-error' });
+        request.metrics.metric({
+          name: 'password-error'
+        });
         return reply.view('user/password', opts).code(403);
       }
 
-      request.logger.warn('Changing password', { name: loggedInUser.name });
+      request.logger.warn('Changing password', {
+        name: loggedInUser.name
+      });
 
       var newAuth = {
         name: loggedInUser.name,
@@ -45,17 +55,17 @@ module.exports = function (request, reply) {
         }
       };
 
-      User.save(newAuth, function (er, data) {
+      User.save(newAuth, function(er, data) {
         if (er) {
           request.logger.warn('Failed to change password; user=' + newAuth.name);
           request.logger.warn(er);
           return reply.view('errors/internal', opts).code(500);
         }
 
-        User.dropCache(loggedInUser.name, function () {
+        User.dropCache(loggedInUser.name, function() {
 
           // Log out all of this user's existing sessions across all devices
-          redisSessions.dropKeysWithPrefix(newAuth.name, function(err){
+          redisSessions.dropKeysWithPrefix(newAuth.name, function(err) {
             if (err) {
               // TODO do we want this error to bubble up to the user?
               request.logger.warn('Unable to drop all sessions; user=' + newAuth.name);
@@ -65,14 +75,14 @@ module.exports = function (request, reply) {
 
             request.logger.info("cleared all sessions; user=" + newAuth.name);
 
-            User.login(newAuth, function (er, user) {
+            User.login(newAuth, function(er, user) {
               if (er) {
                 request.logger.warn('Unable to log user in; user=' + newAuth.name);
                 request.logger.warn(er);
                 return reply.view('errors/internal', opts).code(500);
               }
 
-              setSession(user, function (err) {
+              setSession(user, function(err) {
                 if (err) {
                   // TODO consider the visibility of this error
                   request.logger.warn('Unable to set session; user=' + user.name);
@@ -81,7 +91,9 @@ module.exports = function (request, reply) {
                 }
 
                 request.timing.page = 'changePass';
-                request.metrics.metric({name: 'changePass'});
+                request.metrics.metric({
+                  name: 'changePass'
+                });
 
                 return reply.redirect('/profile');
               });

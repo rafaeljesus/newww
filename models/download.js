@@ -3,7 +3,7 @@ var _ = require('lodash');
 var fmt = require('util').format;
 var cache = require('../lib/cache');
 
-var Download = module.exports = function (opts) {
+var Download = module.exports = function(opts) {
   _.extend(this, {
     host: process.env.DOWNLOADS_API || "https://downloads-api-example.com",
     timeout: 2000,
@@ -63,9 +63,12 @@ Download.prototype.getSome = function(period, packageName) {
       timeout: _this.timeout,
     };
 
-    if (_this.bearer) opts.headers = {bearer: _this.bearer};
+    if (_this.bearer)
+      opts.headers = {
+        bearer: _this.bearer
+      };
 
-    cache.get(opts, function(err, body){
+    cache.get(opts, function(err, body) {
       return resolve(body || null);
     });
 

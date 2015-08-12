@@ -1,24 +1,29 @@
-var
-    async = require('async'),
-    makeDownloadFetchFunc = require('./getDownloads'),
-    metrics = require('../../../adapters/metrics')();
+var async = require('async'),
+  makeDownloadFetchFunc = require('./getDownloads'),
+  metrics = require('../../../adapters/metrics')();
 
-module.exports = function getAllDownloads (url) {
-  return function (package, next) {
+module.exports = function getAllDownloads(url) {
+  return function(pkg, next) {
     var start = Date.now();
 
-    if (typeof package === 'function') {
-      next = package;
-      package = null;
+    if (typeof pkg === 'function') {
+      next = pkg;
+      pkg = null;
     }
 
     var getDownloads = makeDownloadFetchFunc(url);
     var dls = {};
 
     var tasks = {
-      day:   function(cb) { getDownloads('last-day', 'point', package, cb); },
-      week:  function(cb) { getDownloads('last-week', 'point', package, cb); },
-      month: function(cb) { getDownloads('last-month', 'point', package, cb); },
+      day: function(cb) {
+        getDownloads('last-day', 'point', pkg, cb);
+      },
+      week: function(cb) {
+        getDownloads('last-week', 'point', pkg, cb);
+      },
+      month: function(cb) {
+        getDownloads('last-month', 'point', pkg, cb);
+      },
     };
 
     async.parallel(tasks, function(err, results) {
@@ -30,7 +35,7 @@ module.exports = function getAllDownloads (url) {
       metrics.metric({
         name: 'latency.downloads',
         value: Date.now() - start,
-        package: package
+        package: pkg
       });
 
       dls.day = results.day || 0;

@@ -1,9 +1,9 @@
 var userValidate = require('npm-user-validate'),
-    crypto = require('crypto'),
-    utils = require('../../lib/utils'),
-    UserModel = require('../../models/user');
+  crypto = require('crypto'),
+  utils = require('../../lib/utils'),
+  UserModel = require('../../models/user');
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
   var opts = { };
 
   if (request.method === 'get') {
@@ -23,34 +23,44 @@ module.exports = function (request, reply) {
 
       opts.title = 'Edit Profile';
 
-      request.metrics.metric({ name: 'email-edit' });
+      request.metrics.metric({
+        name: 'email-edit'
+      });
       return reply.view('user/email-edit', opts);
     }
   }
 
   if (request.method === 'post' || request.method === 'put') {
     var data = request.payload,
-        emailTo = data.email;
+      emailTo = data.email;
 
     if (!emailTo || userValidate.email(emailTo)) {
-      opts.error = {email: true};
+      opts.error = {
+        email: true
+      };
 
       request.timing.page = 'email-edit-error';
 
-      request.metrics.metric({ name: 'email-edit-error' });
+      request.metrics.metric({
+        name: 'email-edit-error'
+      });
       return reply.view('user/email-edit', opts).code(400);
     }
 
     var loggedInUser = request.loggedInUser;
 
     UserModel.new(request)
-      .verifyPassword(loggedInUser.name, data.password, function (err, isCorrect) {
+      .verifyPassword(loggedInUser.name, data.password, function(err, isCorrect) {
         if (!isCorrect) {
-          opts.error = {password: true};
+          opts.error = {
+            password: true
+          };
 
           request.timing.page = 'email-edit-error';
 
-          request.metrics.metric({ name: 'email-edit-error' });
+          request.metrics.metric({
+            name: 'email-edit-error'
+          });
           return reply.view('user/email-edit', opts).code(403);
         }
 
@@ -61,7 +71,7 @@ module.exports = function (request, reply) {
 
 // ======== functions ======
 
-function handle (request, reply, emailTo) {
+function handle(request, reply, emailTo) {
   var opts = { };
 
   var name = request.loggedInUser.name;
@@ -79,41 +89,43 @@ function handle (request, reply, emailTo) {
   // don't send the confmail until we know the revert mail was sent!
   data.email = data.changeEmailFrom;
   sendEmail('revert-email-change', data, request.redis)
-    .catch(function (er) {
+    .catch(function(er) {
       request.logger.error('Unable to send revert email to ' + data.changeEmailFrom);
       request.logger.error(er);
       reply.view('errors/internal', opts).code(500);
       return;
     })
-    .then(function () {
+    .then(function() {
       data.email = data.changeEmailTo;
       sendEmail('confirm-email-change', data, request.redis)
-        .catch(function (er) {
+        .catch(function(er) {
           request.logger.error('Unable to send confirmation email to ' + data.changeEmailTo);
           request.logger.error(er);
           reply.view('errors/internal', opts).code(500);
           return;
         })
-        .then(function () {
+        .then(function() {
           opts.submitted = true;
           request.timing.page = 'email-edit-send-emails';
-          request.metrics.metric({ name: 'email-edit-send-emails' });
+          request.metrics.metric({
+            name: 'email-edit-send-emails'
+          });
           return reply.view('user/email-edit', opts);
         });
     });
 }
 
-function confirmEmail (request, reply) {
+function confirmEmail(request, reply) {
   var User = UserModel.new(request);
 
   var opts = { },
-      loggedInUser = request.loggedInUser;
+    loggedInUser = request.loggedInUser;
 
   var token = request.params.token.split('/')[1],
-      confHash = utils.sha(token),
-      confKey = 'email_change_conf_' + confHash;
+    confHash = utils.sha(token),
+    confKey = 'email_change_conf_' + confHash;
 
-  request.redis.get(confKey, function (er, value) {
+  request.redis.get(confKey, function(er, value) {
 
     if (er) {
       request.logger.error('Unable to get token from Redis: ' + confKey);
@@ -139,7 +151,7 @@ function confirmEmail (request, reply) {
     }
 
     var emailTo = cached.changeEmailTo,
-        hash = cached.hash;
+      hash = cached.hash;
 
     if (hash !== confHash) {
       request.logger.error('these should be equal: hash=' + hash + '; confHash: ' + confHash);
@@ -147,7 +159,7 @@ function confirmEmail (request, reply) {
       return;
     }
 
-    request.redis.del(confKey, function (err) {
+    request.redis.del(confKey, function(err) {
 
       if (err) {
         request.logger.warn('Unable to drop key ' + confKey);
@@ -158,7 +170,7 @@ function confirmEmail (request, reply) {
         email: emailTo
       };
 
-      User.save(toSave, function (er) {
+      User.save(toSave, function(er) {
 
         if (er) {
           request.logger.error('Unable to change email for ' + loggedInUser.name + ' to ' + emailTo);
@@ -171,10 +183,12 @@ function confirmEmail (request, reply) {
         opts.confirmed = true;
 
         // drop the user in the cache to reflect the updated email address
-        User.dropCache(loggedInUser.name, function () {
+        User.dropCache(loggedInUser.name, function() {
 
           request.timing.page = 'confirmEmailChange';
-          request.metrics.metric({ name: 'confirmEmailChange' });
+          request.metrics.metric({
+            name: 'confirmEmailChange'
+          });
 
           opts.title = "Edit Profile";
 
@@ -185,17 +199,17 @@ function confirmEmail (request, reply) {
   });
 }
 
-function revertEmail (request, reply) {
+function revertEmail(request, reply) {
   var User = UserModel.new(request);
 
   var opts = { },
-      loggedInUser = request.loggedInUser;
+    loggedInUser = request.loggedInUser;
 
   var token = request.params.token.split('/')[1],
-      revHash = utils.sha(token),
-      revKey = 'email_change_rev_' + revHash;
+    revHash = utils.sha(token),
+    revKey = 'email_change_rev_' + revHash;
 
-  request.redis.get(revKey, function (er, value) {
+  request.redis.get(revKey, function(er, value) {
 
     if (er) {
       request.logger.error('Error getting revert token from redis: ', revKey);
@@ -221,9 +235,9 @@ function revertEmail (request, reply) {
     }
 
     var emailFrom = cached.changeEmailFrom,
-        confHash = utils.sha(cached.confToken),
-        confKey = 'email_change_conf_' + confHash,
-        hash = cached.hash;
+      confHash = utils.sha(cached.confToken),
+      confKey = 'email_change_conf_' + confHash,
+      hash = cached.hash;
 
     if (hash !== revHash) {
       request.logger.error('these should be equal: hash=' + hash + '; revHash: ' + revHash);
@@ -231,13 +245,13 @@ function revertEmail (request, reply) {
       return;
     }
 
-    request.redis.del(confKey, function (err) {
+    request.redis.del(confKey, function(err) {
 
       if (err) {
         request.logger.warn('Unable to drop key ' + confKey);
       }
 
-      request.redis.del(revKey, function (err) {
+      request.redis.del(revKey, function(err) {
 
         if (err) {
           request.logger.warn('Unable to drop key ' + revKey);
@@ -248,7 +262,7 @@ function revertEmail (request, reply) {
           email: emailFrom
         };
 
-        User.save(toSave, function (er) {
+        User.save(toSave, function(er) {
 
           if (er) {
             request.logger.error('Unable to revert email for ' + loggedInUser.name + ' to ' + emailFrom);
@@ -261,10 +275,12 @@ function revertEmail (request, reply) {
           opts.confirmed = false;
 
           // drop the user in the cache to reflect the updated email address
-          User.dropCache(loggedInUser.name, function () {
+          User.dropCache(loggedInUser.name, function() {
 
             request.timing.page = 'revertEmailChange';
-            request.metrics.metric({ name: 'revertEmailChange' });
+            request.metrics.metric({
+              name: 'revertEmailChange'
+            });
 
             opts.title = "Edit Profile";
 

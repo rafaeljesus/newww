@@ -19,12 +19,12 @@ browse.packagesByKeyword = function(request, reply) {
   }
 
   Package.new(request)
-  .list(options)
-  .then(function(result){
-    context.items = chunk(result.results, 3)
-    paginate(request, options, result, context)
-    return reply.view('browse/keyword', context);
-  })
+    .list(options)
+    .then(function(result) {
+      context.items = chunk(result.results, 3)
+      paginate(request, options, result, context)
+      return reply.view('browse/keyword', context);
+    })
 }
 
 browse.mostDependedUponPackages = function(request, reply) {
@@ -36,12 +36,12 @@ browse.mostDependedUponPackages = function(request, reply) {
   }
 
   Package.new(request)
-  .list(options)
-  .then(function(result){
-    context.items = chunk(result.results, 3)
-    paginate(request, options, result, context)
-    return reply.view('browse/depended', context);
-  })
+    .list(options)
+    .then(function(result) {
+      context.items = chunk(result.results, 3)
+      paginate(request, options, result, context)
+      return reply.view('browse/depended', context);
+    })
 }
 
 browse.packageDependents = function(request, reply) {
@@ -55,12 +55,12 @@ browse.packageDependents = function(request, reply) {
   }
 
   Package.new(request)
-  .list(options)
-  .then(function(result){
-    context.items = chunk(result.results, 3)
-    paginate(request, options, result, context)
-    return reply.view('browse/package-dependents', context);
-  })
+    .list(options)
+    .then(function(result) {
+      context.items = chunk(result.results, 3)
+      paginate(request, options, result, context)
+      return reply.view('browse/package-dependents', context);
+    })
 }
 
 browse.mostStarredPackages = function(request, reply) {
@@ -72,12 +72,12 @@ browse.mostStarredPackages = function(request, reply) {
   }
 
   Package.new(request)
-  .list(options)
-  .then(function(result){
-    context.items = chunk(result.results, 3)
-    paginate(request, options, result, context)
-    return reply.view('browse/starred', context);
-  })
+    .list(options)
+    .then(function(result) {
+      context.items = chunk(result.results, 3)
+      paginate(request, options, result, context)
+      return reply.view('browse/starred', context);
+    })
 }
 
 browse.recentlyUpdatedPackages = function(request, reply) {
@@ -89,12 +89,12 @@ browse.recentlyUpdatedPackages = function(request, reply) {
   }
 
   Package.new(request)
-  .list(options)
-  .then(function(result){
-    context.items = chunk(result.results, 3)
-    paginate(request, options, result, context)
-    return reply.view('browse/recently-updated', context);
-  })
+    .list(options)
+    .then(function(result) {
+      context.items = chunk(result.results, 3)
+      paginate(request, options, result, context)
+      return reply.view('browse/recently-updated', context);
+    })
 }
 
 browse.recentlyCreatedPackages = function(request, reply) {
@@ -106,12 +106,12 @@ browse.recentlyCreatedPackages = function(request, reply) {
   }
 
   Package.new(request)
-  .list(options)
-  .then(function(result){
-    context.items = chunk(result.results, 3)
-    paginate(request, options, result, context)
-    return reply.view('browse/recently-created', context);
-  })
+    .list(options)
+    .then(function(result) {
+      context.items = chunk(result.results, 3)
+      paginate(request, options, result, context)
+      return reply.view('browse/recently-created', context);
+    })
 }
 
 var paginate = function paginate(request, options, result, context) {
@@ -120,7 +120,7 @@ var paginate = function paginate(request, options, result, context) {
     // `url.query` is only used if `url.search` is absent. :[
     var url = omit(request.url, 'search')
     if (options.offset > 0) {
-      url.query.offset = Math.max(options.offset-options.count, 0)
+      url.query.offset = Math.max(options.offset - options.count, 0)
       context.pages.prev = URL.format(url)
     }
     if (result.hasMore) {

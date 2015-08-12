@@ -1,5 +1,5 @@
 var request = require('request'),
-    log = require('bole')('npme-verify-trial');
+  log = require('bole')('npme-verify-trial');
 
 module.exports = function(verificationKey, callback) {
 
@@ -9,7 +9,7 @@ module.exports = function(verificationKey, callback) {
   request.get({
     url: trialEndpoint + '/' + verificationKey,
     json: true
-  }, function (er, resp, trial) {
+  }, function(er, resp, trial) {
 
     if (resp.statusCode === 404) {
       log.error('unable to find verification key ' + verificationKey);
@@ -31,13 +31,13 @@ module.exports = function(verificationKey, callback) {
     request.put({
       url: trialEndpoint + '/' + trial.id + '/verification',
       json: true
-    }, function (er, resp, verifiedTrial) {
+    }, function(er, resp, verifiedTrial) {
 
       if (resp.statusCode === 200) {
         return callback(null, verifiedTrial);
       }
 
-      log.error('unexpected status code from hubspot; status=' + resp.statusCode+ '; trial=', trial);
+      log.error('unexpected status code from hubspot; status=' + resp.statusCode + '; trial=', trial);
       return callback(new Error('problem starting trial for ' + trial.id));
     });
   });

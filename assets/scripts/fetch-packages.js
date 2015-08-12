@@ -2,12 +2,12 @@
 var template = require("../templates/profile-package.hbs");
 
 module.exports = function() {
-  $(function(){
+  $(function() {
     var container = $(".collaborated-packages > .fetch-more-packages");
 
     var offset = 1;
 
-    $(".fetch-more-packages").click(function (e) {
+    $(".fetch-more-packages").click(function(e) {
       e.preventDefault();
       var text = $(".fetch-more-packages").text();
       $(".fetch-more-packages").text('loading...');
@@ -15,8 +15,10 @@ module.exports = function() {
       var name = $("h1").text();
 
       $.getJSON("/profile/" + name + "/packages?offset=" + offset)
-        .done(function (packages) {
-          var pkgs = template({packages: packages});
+        .done(function(packages) {
+          var pkgs = template({
+            packages: packages
+          });
           container.before(pkgs);
 
           if (packages.hasMore) {

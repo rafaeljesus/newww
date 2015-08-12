@@ -13,9 +13,15 @@ module.exports = function(request, reply) {
 
   var User = UserAPI.new(request);
   var actions = {
-    user:     function(cb) { User.get(name, cb); },
-    stars:    function(cb) { User.getStars(name, cb); },
-    packages: function(cb) { User.getPackages(name, cb); },
+    user: function(cb) {
+      User.get(name, cb);
+    },
+    stars: function(cb) {
+      User.getStars(name, cb);
+    },
+    packages: function(cb) {
+      User.getPackages(name, cb);
+    },
   };
 
   async.parallel(actions, function(err, results) {

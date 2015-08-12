@@ -2,9 +2,11 @@ var Joi = require('joi');
 var moment = require('moment');
 
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-var SUB_TYPE_MONTHLY = 1, SUB_TYPE_ANNUAL = 2, SUB_TYPE_MULTI_SEAT = 3;
+var SUB_TYPE_MONTHLY = 1,
+  SUB_TYPE_ANNUAL = 2,
+  SUB_TYPE_MULTI_SEAT = 3;
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
 
   var createLicense = request.server.methods.npme.createLicense;
   var getCustomer = request.server.methods.npme.getCustomer;
@@ -22,12 +24,12 @@ module.exports = function (request, reply) {
     email: Joi.string().regex(/^.+@.+\..+$/), // email default accepts "boom@boom", which is kinda no bueno atm
     verification_allowed: Joi.string(),
     amount: Joi.number(),
-    subType: Joi.number().valid([1,2,3]),
+    subType: Joi.number().valid([1, 2, 3]),
     quantity: Joi.number(),
     customerId: Joi.number()
   });
 
-  Joi.validate(request.payload, schema, function (err, token) {
+  Joi.validate(request.payload, schema, function(err, token) {
 
     if (err) {
       request.logger.error('validation error');
@@ -60,7 +62,7 @@ module.exports = function (request, reply) {
 
       // pick a plan based on their selection
       var stripePlan, stripeQuantity, stripeDescription, licenseSeats;
-      switch(token.subType) {
+      switch (token.subType) {
         case SUB_TYPE_MONTHLY:
           stripePlan = "enterprise-starter-pack";
           stripeDescription = "npm Enterprise Starter Pack";
@@ -112,9 +114,11 @@ module.exports = function (request, reply) {
         request.timing.page = 'enterprise-license-paymentProcessed';
 
         // license purchased! We need to update the customer record with their stripe customer ID
-        updateCustomer(customer.id, { stripe_customer_id: stripeCustomer.id }, function(er) {
+        updateCustomer(customer.id, {
+          stripe_customer_id: stripeCustomer.id
+        }, function(er) {
 
-          if(er) {
+          if (er) {
             request.logger.error('customer update error; id=' + customer.id);
             request.logger.error(er);
             reply('customer update error').code(500);
@@ -129,11 +133,11 @@ module.exports = function (request, reply) {
             billingEmail: token.email,
             seats: licenseSeats,
             stripeId: subscriptionId, // Danger! But we just created this customer, so only 1 subscription
-            begins: moment(Date.now()).format(),              // starts now
-            ends: moment(Date.now()).add(1,'years').format(),   // ends a year from now (webhooks will refresh)
+            begins: moment(Date.now()).format(), // starts now
+            ends: moment(Date.now()).add(1, 'years').format(), // ends a year from now (webhooks will refresh)
           };
 
-          createLicense(licenseDetails, function(err,license) {
+          createLicense(licenseDetails, function(err, license) {
 
             if (err) {
               request.logger.error('license creation error; email=' + token.email + ';seats=' + licenseSeats);
@@ -162,12 +166,12 @@ module.exports = function (request, reply) {
             };
 
             sendEmail('enterprise-send-license', data, request.redis)
-              .catch(function (er) {
+              .catch(function(er) {
                 request.logger.error('Unable to send license to email', customer.email);
                 request.logger.error(er);
                 return reply('unable to send license email').code(500);
               })
-              .then(function () {
+              .then(function() {
                 return reply('License purchase successful').code(200);
               });
 

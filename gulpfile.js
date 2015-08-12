@@ -51,7 +51,6 @@ gulp.task('styles', function() {
       use: [nib()]
     }))
     .pipe(gulp.dest('static/css/'));
-
 });
 
 gulp.task('browserify', function() {

@@ -1,5 +1,5 @@
 
-exports.register = function email (server, options, next) {
+exports.register = function email(server, options, next) {
 
   server.method('email.send', require('./methods/send'));
 

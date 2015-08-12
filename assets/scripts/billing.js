@@ -17,7 +17,7 @@ var init = function() {
 
   try {
     stripePublicKey = $("#payment-form").data('stripePublicKey');
-  } catch(e) {
+  } catch (e) {
     return noKey();
   }
 

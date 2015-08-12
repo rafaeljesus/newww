@@ -23,7 +23,7 @@ star.onChange = function() {
 
   // Gather data from the form inputs
   // jQuery gotcha: If checkbox is unchecked, it won't be included in this array.
-  star.form.serializeArray().forEach(function(input){
+  star.form.serializeArray().forEach(function(input) {
     data[input.name] = input.value;
   })
 
@@ -34,20 +34,22 @@ star.onChange = function() {
     url: '/star',
     data: data,
     type: 'POST',
-    headers: {'x-csrf-token': data.crumb}
+    headers: {
+      'x-csrf-token': data.crumb
+    }
   })
     .done(star.onDone)
     .error(star.onError)
 }
 
-star.onDone = function (data) {
+star.onDone = function(data) {
   // console.log(data)
 }
 
-star.onError = function (xhr, status, error) {
+star.onError = function(xhr, status, error) {
   // Redirect to login page if we got a 403
   if (xhr && xhr.status && Number(xhr.status) === 403) {
-    window.location = "/login?done="+location.pathname+"#star"
+    window.location = "/login?done=" + location.pathname + "#star"
     return
   }
 }

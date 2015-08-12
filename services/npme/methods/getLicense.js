@@ -1,14 +1,14 @@
 var request = require('request'),
-    log = require('bole')('npme-get-license');
+  log = require('bole')('npme-get-license');
 
-module.exports = function (productId, customerEmailOrId, licenseId, callback) {
+module.exports = function(productId, customerEmailOrId, licenseId, callback) {
 
   var licenseEndpoint = process.env.LICENSE_API + '/license';
 
   request.get({
     url: licenseEndpoint + '/' + productId + '/' + customerEmailOrId + '/' + licenseId,
     json: true
-  }, function (er, resp, body) {
+  }, function(er, resp, body) {
 
     if (resp.statusCode === 404) {
       return callback(null, null); // no error, but no license either

@@ -1,5 +1,5 @@
 module.exports = function() {
-  $(function(){
+  $(function() {
     var ready = new Date() > new Date("2015-04-14T03:30:00-07:00")
     var disabled = localStorage.getItem('disable-private-modules-banner') || $('#user-info a').data('is-paid')
 
@@ -12,9 +12,9 @@ module.exports = function() {
       return
     }
 
-    $('#notification-banner').show()
+    $('#notification-banner').removeClass("hidden")
 
-    $('#notification-banner a').click(function (e) {
+    $('#notification-banner a').click(function(e) {
       localStorage.setItem('disable-private-modules-banner', true)
 
       if ($(this).hasClass("banner-close")) {

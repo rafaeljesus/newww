@@ -29,22 +29,12 @@
   <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="npm">
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700">
 
-  {{#if devEnv}}
-  <script defer src="/static/js/index.js"></script>
-  {{else}}
-  <script defer src="/static/{{m "js/index.js"}}"></script>
-  {{/if}}
-  <script defer src="/static/js/vendor.min.js"></script>
-  <!--[if lt IE 9]>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
-  <![endif]-->
-
 </head>
 
 <body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
   <meta itemprop="url" content="https://www.npmjs.com/">
 
-  <div id="notification-banner" style="display:none">
+  <div id="notification-banner" class="hidden">
     <div class="container">
       <hgroup>
         <a href="/private-modules"
@@ -60,6 +50,7 @@
         data-event-name="private-modules-banner-signup">sign up</a>
       <a class="button button-subtle banner-close" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks">no thanks</a>
     </div>
+    <a class="button banner-close button-banner-close icon-x" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks"><span class="a11y-only">close</span></a>
   </div>
 
   <nav>
@@ -88,7 +79,7 @@
           </a>
           <ul>
             <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
-            <li class="logout"><a href="/logout" class="subdued">log out</a></li>
+            <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
           </ul>
         {{else}}
           <a href="/login"><img src="/static/images/wombat-avatar-small.png" /></a>
@@ -164,6 +155,15 @@
 
   </footer>
   {{#if devEnv}}<script defer src="/static/js/tota11y.min.js"></script>{{/if}}
+  {{#if devEnv}}
+  <script defer src="/static/js/index.js"></script>
+  {{else}}
+  <script defer src="/static/js/index.min.js"></script>
+  {{/if}}
+  <script defer src="/static/js/vendor.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <![endif]-->
 </body>
 </html>
 

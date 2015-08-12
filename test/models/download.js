@@ -1,16 +1,16 @@
 var Code = require('code'),
-    Lab = require('lab'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    beforeEach = lab.beforeEach,
-    afterEach = lab.afterEach,
-    it = lab.test,
-    expect = Code.expect,
-    nock = require("nock"),
-    fixtures = require("../fixtures"),
-    Download;
+  Lab = require('lab'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  beforeEach = lab.beforeEach,
+  afterEach = lab.afterEach,
+  it = lab.test,
+  expect = Code.expect,
+  nock = require("nock"),
+  fixtures = require("../fixtures"),
+  Download;
 
-beforeEach(function (done) {
+beforeEach(function(done) {
   Download = new (require("../../models/download"))({
     host: "https://fake-download.com",
     timeout: 50,
@@ -18,12 +18,12 @@ beforeEach(function (done) {
   done();
 });
 
-afterEach(function (done) {
+afterEach(function(done) {
   Download = null;
   done();
 });
 
-describe("Download", function(){
+describe("Download", function() {
 
   describe("initialization", function() {
     it("defaults to process.env.DOWNLOADS_API as host", function(done) {
@@ -64,7 +64,7 @@ describe("Download", function(){
 
       });
 
-      it("swallows errors and returns null when the request fails", function(done){
+      it("swallows errors and returns null when the request fails", function(done) {
         var mock = nock(Download.host)
           .get('/point/last-day/request')
           .reply(400);
@@ -79,7 +79,7 @@ describe("Download", function(){
 
     })
 
-    describe("when package is not specified", function(){
+    describe("when package is not specified", function() {
 
       it("gets daily counts for all packages", function(done) {
         var mock = nock(Download.host)
@@ -101,7 +101,7 @@ describe("Download", function(){
 
       });
 
-      it("returns null if request duration exceeds specified timeout", function(done){
+      it("returns null if request duration exceeds specified timeout", function(done) {
 
         Download = new (require("../../models/download"))({
           host: "https://fake-download.com",
@@ -136,10 +136,10 @@ describe("Download", function(){
           expect(result).to.exist();
           expect(result.downloads).to.equal(200);
         })
-        .catch(function(err){
+        .catch(function(err) {
           expect(err).to.be.null();
         })
-        .then(function(){
+        .then(function() {
           mock.done();
           done();
         });
@@ -155,10 +155,10 @@ describe("Download", function(){
           expect(result).to.exist();
           expect(result.downloads).to.equal(249027204);
         })
-        .catch(function(err){
+        .catch(function(err) {
           expect(err).to.be.null();
         })
-        .then(function(){
+        .then(function() {
           mock.done();
           done();
         });
@@ -174,14 +174,14 @@ describe("Download", function(){
         .reply(200, fixtures.downloads.request.month);
 
       Download.getMonthly("request")
-        .then(function(result){
+        .then(function(result) {
           expect(result).to.exist();
           expect(result.downloads).to.equal(500);
         })
-        .catch(function(err){
+        .catch(function(err) {
           expect(err).to.be.null();
         })
-        .then(function(){
+        .then(function() {
           mock.done();
           done();
         });
@@ -198,10 +198,10 @@ describe("Download", function(){
           expect(result).to.exist();
           expect(result.downloads).to.equal(1028113165);
         })
-        .catch(function(err){
+        .catch(function(err) {
           expect(err).to.be.null();
         })
-        .then(function(){
+        .then(function() {
           mock.done();
           done();
         });
@@ -211,7 +211,7 @@ describe("Download", function(){
 
   describe("getAll()", function() {
 
-    it("gets daily, weekly, and monthly downloads for a specific package", function(done){
+    it("gets daily, weekly, and monthly downloads for a specific package", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-day/request')
         .reply(200, fixtures.downloads.request.day)
@@ -233,7 +233,7 @@ describe("Download", function(){
 
     });
 
-    it("gets daily, weekly, and monthly downloads for all packages", function(done){
+    it("gets daily, weekly, and monthly downloads for all packages", function(done) {
       var mock = nock(Download.host)
         .get('/point/last-day')
         .reply(200, fixtures.downloads.all.day)

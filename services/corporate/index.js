@@ -1,7 +1,7 @@
 var SECOND = 1000;
 var MINUTE = 60 * SECOND;
 
-exports.register = function (server, options, next) {
+exports.register = function(server, options, next) {
 
   server.method('corp.getPage', require('./methods/getPage').static, {
     cache: {

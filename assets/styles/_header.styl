@@ -335,13 +335,38 @@ nav
       img
         display none
 
-  a
+  a,
+  button[type=submit]
     &.subdued
       color greigh4
       font-size 14px
+      font-family inherit
+      border 0
+      -webkit-user-select text
+      -moz-user-select text
+      cursor pointer
+      margin 0
+      padding 0
+      background transparent
+      width auto
+      height auto
+      line-height inherit
+      border-radius unset
+      text-align right
+      clear none
+      display inline
+      letter-spacing inherit
+      -moz-appearance none
+      appearance none
+      vertical-align baseline
+      white-space normal
+      outline none
+
+      &:hover
+        text-decoration underline !important
 
 #notification-banner
-  padding 70px 10px
+  padding 40px 10px
   color background-color
   font-size 14px
   font-weight 600
@@ -353,9 +378,7 @@ nav
 
   img
     display inline-block
-    max-width 200px
-    @media only screen and (max-width: mobileMaxWidth)
-      max-width 140px
+    max-width 140px
 
   hgroup
     display block
@@ -376,6 +399,15 @@ nav
     background-color darken(npmred, 10%)
     display inline-block
 
-    &.button-subtle
+    &.button-subtle,
+    &.button-banner-close
       background none
-      color rgba(background-color, 0.3)
+
+    &.button-banner-close
+      position absolute
+      top 1em
+      right 0
+
+@media (max-width: mobileMaxWidth)
+  #notification-banner
+    display none

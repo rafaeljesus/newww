@@ -17,7 +17,7 @@ module.exports = function(request, reply) {
     trial: Joi.string().guid().optional()
   });
 
-  Joi.validate(request.query, schema, function (err, data) {
+  Joi.validate(request.query, schema, function(err, data) {
     // bail if validation fails
     if (err) {
       request.logger.error("Email/license validation failed on license options page; ");
@@ -28,7 +28,7 @@ module.exports = function(request, reply) {
 
     if (data.license) {
       // get license details from /license/[productkey]/[email]/[licensekey]
-      getLicense(process.env.NPME_PRODUCT_ID, data.email, data.license, function(err,license) {
+      getLicense(process.env.NPME_PRODUCT_ID, data.email, data.license, function(err, license) {
         // fail on error
         if (err) {
           request.logger.error("API error fetching license " + data.license + " for email " + data.email);
@@ -63,7 +63,9 @@ module.exports = function(request, reply) {
     } else {
       // have neither license nor trial info
       request.logger.error("Neither license nor trial provided for email " + data.email);
-      if (err) { request.logger.error(err); }
+      if (err) {
+        request.logger.error(err);
+      }
       opts.msg = "You need a license key or a trial ID.";
       return reply.view('enterprise/invalid-license', opts).code(400);
     }
@@ -91,8 +93,8 @@ module.exports = function(request, reply) {
 
       // show option to buy licenses
       opts = {
-        billingEmail: customer.email,   // must supply both customer ID and email
-        customerId: customer.id,        // as two factors to identify customer on next page
+        billingEmail: customer.email, // must supply both customer ID and email
+        customerId: customer.id, // as two factors to identify customer on next page
         stripeKey: process.env.STRIPE_PUBLIC_KEY
       };
 

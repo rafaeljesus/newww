@@ -1,12 +1,12 @@
 var request = require('request'),
-    log = require('bole')('npme-create-trial'),
-    trial_length = 30,
-    trial_seats = 50;
+  log = require('bole')('npme-create-trial'),
+  trial_length = 30,
+  trial_seats = 50;
 
-module.exports = function (customer, callback) {
+module.exports = function(customer, callback) {
 
   var trialEndpoint = process.env.LICENSE_API + '/trial',
-      productId = process.env.NPME_PRODUCT_ID;
+    productId = process.env.NPME_PRODUCT_ID;
 
   // check if they already have a trial; 1 per customer
   request.get({
@@ -32,12 +32,12 @@ module.exports = function (customer, callback) {
   });
 };
 
-function createNewTrial (customer, callback) {
+function createNewTrial(customer, callback) {
 
   var trialEndpoint = process.env.LICENSE_API + '/trial',
-      productId = process.env.NPME_PRODUCT_ID,
-      trialLength = trial_length,
-      trialSeats = trial_seats;
+    productId = process.env.NPME_PRODUCT_ID,
+    trialLength = trial_length,
+    trialSeats = trial_seats;
 
   request.put({
     url: trialEndpoint,
@@ -47,7 +47,7 @@ function createNewTrial (customer, callback) {
       length: trialLength,
       seats: trialSeats
     }
-  }, function (err, resp, trial) {
+  }, function(err, resp, trial) {
 
     if (resp.statusCode === 200) {
       return callback(null, trial);

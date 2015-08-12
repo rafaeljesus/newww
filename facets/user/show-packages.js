@@ -6,10 +6,10 @@ module.exports = function(request, reply) {
 
   User.new(request)
     .getPackages(name, offset)
-    .then(function (packages) {
+    .then(function(packages) {
       return reply(packages).code(200);
     })
-    .catch(function (err) {
+    .catch(function(err) {
       request.logger.error(err);
       return reply('error getting packages').code(500);
     });

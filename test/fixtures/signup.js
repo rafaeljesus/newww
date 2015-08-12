@@ -1,4 +1,4 @@
-module.exports = function (cookieCrumb) {
+module.exports = function(cookieCrumb) {
   return {
     incomplete: {
       name: 'fakeusercli',

@@ -32,12 +32,12 @@ module.exports = function showSendContact(request, reply) {
   var sendEmail = request.server.methods.email.send;
 
   sendEmail('contact-support', mail, request.redis)
-    .catch(function (er) {
+    .catch(function(er) {
       request.logger.error('unable to send verification email');
       request.logger.error(er);
       return reply.view('errors/internal', opts).code(500);
     })
-    .then(function () {
+    .then(function() {
       opts.sent = true;
       return reply.view('company/contact', opts);
     });
@@ -57,12 +57,14 @@ function createZendeskTicket(data, request, reply) {
     }
   };
 
-  zdClient.tickets.create(ticket, function (er, statusCode, result) {
+  zdClient.tickets.create(ticket, function(er, statusCode, result) {
     if (er || statusCode !== 201) {
       request.logger.error('unable to post ticket to zendesk');
       request.logger.error(er);
       return reply.view('errors/internal', {}).code(500);
     }
-    return reply.view('company/contact', { sent: true }).code(200);
+    return reply.view('company/contact', {
+      sent: true
+    }).code(200);
   });
 }

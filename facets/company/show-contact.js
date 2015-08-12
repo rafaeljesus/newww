@@ -1,11 +1,14 @@
 var gravatar = require('gravatar').url,
-    humans = require('npm-humans'),
-    _ = require('lodash');
+  humans = require('npm-humans'),
+  _ = require('lodash');
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
 
-  humans = _.each(humans, function (m) {
-    return m.avatar = gravatar(m.email, {s:100, d:'retro'}, true);
+  humans = _.each(humans, function(m) {
+    return m.avatar = gravatar(m.email, {
+      s: 100,
+      d: 'retro'
+    }, true);
   });
 
   var opts = {

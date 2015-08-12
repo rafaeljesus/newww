@@ -1,14 +1,16 @@
 var elasticsearch = require('elasticsearch'),
-    merge = require('lodash').merge,
-    perPage = 20;
+  merge = require('lodash').merge,
+  perPage = 20;
 
-var client = new elasticsearch.Client({ host: process.env.ELASTICSEARCH_URL });
+var client = new elasticsearch.Client({
+  host: process.env.ELASTICSEARCH_URL
+});
 
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
 
   // Redirect /search/foo to /search/?foo
   if (request.params && request.params.q) {
-    return reply.redirect('/search?q='+request.params.q);
+    return reply.redirect('/search?q=' + request.params.q);
   }
 
   if (!request.query || !request.query.q) {
@@ -17,11 +19,11 @@ module.exports = function (request, reply) {
 
   var page = Math.abs(parseInt(request.query.page, 10)) || 1;
   var searchQuery = {
-    fields : ['name', 'keywords','description','author','version', 'stars', 'dlScore', 'dlDay', 'dlWeek', 'readme'],
+    fields: ['name', 'keywords', 'description', 'author', 'version', 'stars', 'dlScore', 'dlDay', 'dlWeek', 'readme'],
     body: {
       from: (page - 1) * perPage,
-      size : perPage,
-      "query" : {
+      size: perPage,
+      "query": {
         "dis_max": {
           "tie_breaker": 0.9,
           "boost": 1.2,
@@ -39,17 +41,31 @@ module.exports = function (request, reply) {
             {
               "bool": {
                 "should": [
-                  { "match": {
-                    "name" : {
-                      "query" : request.query.q,
-                      "type" : "phrase",
-                      "operator" : "and",
-                      boost: 20
-                    }}
+                  {
+                    "match": {
+                      "name": {
+                        "query": request.query.q,
+                        "type": "phrase",
+                        "operator": "and",
+                        boost: 20
+                      }
+                    }
                   },
-                  {"match_phrase": {"keywords": request.query.q} },
-                  {"match_phrase": {"description": request.query.q} },
-                  {"match_phrase": {"readme": request.query.q} }
+                  {
+                    "match_phrase": {
+                      "keywords": request.query.q
+                    }
+                  },
+                  {
+                    "match_phrase": {
+                      "description": request.query.q
+                    }
+                  },
+                  {
+                    "match_phrase": {
+                      "readme": request.query.q
+                    }
+                  }
                 ],
                 "minimum_should_match": 1,
                 "boost": 30
@@ -62,7 +78,7 @@ module.exports = function (request, reply) {
   };
 
   var start = Date.now();
-  client.search(searchQuery, function (error, response) {
+  client.search(searchQuery, function(error, response) {
     request.metrics.metric({
       name: 'latency.elasticsearch',
       value: Date.now() - start,

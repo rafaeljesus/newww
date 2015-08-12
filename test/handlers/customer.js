@@ -1,32 +1,32 @@
 var generateCrumb = require("../handlers/crumb.js"),
-    Lab = require('lab'),
-    Code = require('code'),
-    nock = require('nock'),
-    cheerio = require('cheerio'),
-    lab = exports.lab = Lab.script(),
-    describe = lab.experiment,
-    before = lab.before,
-    after = lab.after,
-    beforeEach = lab.beforeEach,
-    it = lab.test,
-    expect = Code.expect,
-    server,
-    fixtures = require('../fixtures');
+  Lab = require('lab'),
+  Code = require('code'),
+  nock = require('nock'),
+  cheerio = require('cheerio'),
+  lab = exports.lab = Lab.script(),
+  describe = lab.experiment,
+  before = lab.before,
+  after = lab.after,
+  beforeEach = lab.beforeEach,
+  it = lab.test,
+  expect = Code.expect,
+  server,
+  fixtures = require('../fixtures');
 
-before(function (done) {
-  require('../mocks/server')(function (obj) {
+before(function(done) {
+  require('../mocks/server')(function(obj) {
     server = obj;
     done();
   });
 });
 
-after(function (done) {
+after(function(done) {
   server.stop(done);
 });
 
-describe('GET /settings/billing', function () {
+describe('GET /settings/billing', function() {
   var userMock, licenseMock;
-  before(function (done) {
+  before(function(done) {
     userMock = nock("https://user-api-example.com")
       .get("/user/bob").times(7)
       .reply(200, fixtures.users.bob);
@@ -40,33 +40,33 @@ describe('GET /settings/billing', function () {
     done();
   });
 
-  after(function (done) {
+  after(function(done) {
     userMock.done();
     licenseMock.done();
     done();
   });
 
-  it('redirects to login page if not logged in', function (done) {
+  it('redirects to login page if not logged in', function(done) {
     var options = {
       method: "get",
       url: "/settings/billing"
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('login');
       done();
     });
   });
 
-  it('displays cancellation notice if `canceled` query param is present', function (done) {
+  it('displays cancellation notice if `canceled` query param is present', function(done) {
 
     var options = {
       method: "get",
       url: "/settings/billing?canceled=1",
       credentials: fixtures.users.bob
     };
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       expect(resp.request.response.source.context.canceled).to.be.true();
       var $ = cheerio.load(resp.result);
       expect($(".cancellation-notice").text()).to.include('cancelled your private npm');
@@ -74,7 +74,7 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  it('displays update notice if `updated` query param is present', function (done) {
+  it('displays update notice if `updated` query param is present', function(done) {
 
     var options = {
       method: "get",
@@ -82,7 +82,7 @@ describe('GET /settings/billing', function () {
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       expect(resp.request.response.source.context.updated).to.be.true();
       var $ = cheerio.load(resp.result);
       expect($(".update-notice").text()).to.include('successfully updated');
@@ -90,7 +90,7 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  it("renders a twitter tracking snippet for 'private modules purchase'", function (done) {
+  it("renders a twitter tracking snippet for 'private modules purchase'", function(done) {
 
     var options = {
       method: "get",
@@ -98,7 +98,7 @@ describe('GET /settings/billing', function () {
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       var $ = cheerio.load(resp.result);
       expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xyy']").length).to.equal(1);
       expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xyy']").length).to.equal(1);
@@ -106,7 +106,7 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  it("renders a twitter tracking snippet for 'private modules billing signup page'", function (done) {
+  it("renders a twitter tracking snippet for 'private modules billing signup page'", function(done) {
 
     var options = {
       method: "get",
@@ -114,7 +114,7 @@ describe('GET /settings/billing', function () {
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       var $ = cheerio.load(resp.result);
       expect($("script[src='//platform.twitter.com/oct.js'][data-twitter-pid='l5xz2']").length).to.equal(1);
       expect($("noscript img[src^='//t.co/i/adsct?txn_id=l5xz2']").length).to.equal(1);
@@ -122,14 +122,14 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  it('does not render notices by default', function (done) {
+  it('does not render notices by default', function(done) {
     var options = {
       method: "get",
       url: "/settings/billing",
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       expect(resp.request.response.source.context.canceled).to.be.false();
       expect(resp.request.response.source.context.updated).to.be.false();
       expect(resp.result).to.not.include('cancellation-notice');
@@ -138,14 +138,14 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  it('renders billing form if user is logged in', function (done) {
+  it('renders billing form if user is logged in', function(done) {
     var options = {
       method: "get",
       url: "/settings/billing",
       credentials: fixtures.users.bob
     };
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('user/billing');
       expect(resp.result).to.include('id="payment-form"');
@@ -153,7 +153,7 @@ describe('GET /settings/billing', function () {
     });
   });
 
-  it('injects stripe public key and stripe script into page', function (done) {
+  it('injects stripe public key and stripe script into page', function(done) {
     var options = {
       method: "get",
       url: "/settings/billing",
@@ -163,7 +163,7 @@ describe('GET /settings/billing', function () {
     var oldStripeKey = process.env.STRIPE_PUBLIC_KEY;
     process.env.STRIPE_PUBLIC_KEY = "I am a zebra";
 
-    server.inject(options, function (resp) {
+    server.inject(options, function(resp) {
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('user/billing');
       expect(resp.result).to.include('https://js.stripe.com/v2/');
@@ -179,7 +179,7 @@ describe('GET /settings/billing', function () {
     var resp;
     var $;
 
-    before(function(done){
+    before(function(done) {
       userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
@@ -196,7 +196,7 @@ describe('GET /settings/billing', function () {
         credentials: fixtures.users.bob
       };
 
-      server.inject(options, function (response) {
+      server.inject(options, function(response) {
         resp = response;
         $ = cheerio.load(resp.result);
         userMock.done();
@@ -206,7 +206,7 @@ describe('GET /settings/billing', function () {
 
     });
 
-    it("adds billing data to view context", function(done){
+    it("adds billing data to view context", function(done) {
       var customer = resp.request.response.source.context.customer;
       expect(customer).to.exist();
       expect(customer).to.exist();
@@ -226,7 +226,7 @@ describe('GET /settings/billing', function () {
       done();
     });
 
-    it("displays a submit button with update verbiage", function(done){
+    it("displays a submit button with update verbiage", function(done) {
       expect($("#payment-form input[type=submit]").attr("value")).to.equal("update billing info");
       done();
     });
@@ -263,7 +263,7 @@ describe('GET /settings/billing', function () {
     var resp;
     var $;
 
-    before(function(done){
+    before(function(done) {
       var options = {
         method: "get",
         url: "/settings/billing",
@@ -280,7 +280,7 @@ describe('GET /settings/billing', function () {
         .get("/customer/diana_delinquent/stripe/subscription").times(2)
         .reply(200, []);
 
-      server.inject(options, function (response) {
+      server.inject(options, function(response) {
         resp = response;
         $ = cheerio.load(resp.result);
         userMock.done();
@@ -289,7 +289,7 @@ describe('GET /settings/billing', function () {
       });
     });
 
-    it("has an expired license and past_due status", function(done){
+    it("has an expired license and past_due status", function(done) {
       // console.log('==BOOM==', resp.request.response.source.context)
       expect(resp.request.response.source.context.customer.status).to.equal("past_due");
       expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
@@ -304,13 +304,13 @@ describe('GET /settings/billing', function () {
 
   });
 
-  describe("unpaid user", function(){
+  describe("unpaid user", function() {
     var userMock;
     var licenseMock;
     var resp;
     var $;
 
-    beforeEach(function(done){
+    beforeEach(function(done) {
       var options = {
         method: "get",
         url: "/settings/billing",
@@ -329,7 +329,7 @@ describe('GET /settings/billing', function () {
         .get("/customer/norbert_newbie/stripe")
         .reply(404);
 
-      server.inject(options, function (response) {
+      server.inject(options, function(response) {
         resp = response;
         $ = cheerio.load(resp.result);
         userMock.done();
@@ -347,7 +347,7 @@ describe('GET /settings/billing', function () {
       done();
     });
 
-    it("displays a submit button with creation verbiage", function(done){
+    it("displays a submit button with creation verbiage", function(done) {
       expect($("#payment-form input[type=submit]").attr("value")).to.equal("sign me up");
       done();
     });
@@ -360,11 +360,11 @@ describe('GET /settings/billing', function () {
 
   });
 
-  describe("user with unverified email", function(){
+  describe("user with unverified email", function() {
     var resp;
     var $;
 
-    beforeEach(function(done){
+    beforeEach(function(done) {
       var options = {
         url: "/settings/billing",
         credentials: fixtures.users.uncle_unverified
@@ -378,7 +378,7 @@ describe('GET /settings/billing', function () {
         .get("/customer/uncle_unverified/stripe").times(2)
         .reply(404);
 
-      server.inject(options, function (response) {
+      server.inject(options, function(response) {
         resp = response;
         $ = cheerio.load(resp.result);
         userMock.done();
@@ -401,7 +401,7 @@ describe('GET /settings/billing', function () {
 
 });
 
-describe('POST /settings/billing', function () {
+describe('POST /settings/billing', function() {
   var options;
 
   before(function(done) {
@@ -412,8 +412,8 @@ describe('POST /settings/billing', function () {
     done();
   });
 
-  it('redirects to login page if not logged in', function (done) {
-    server.inject(options, function (resp) {
+  it('redirects to login page if not logged in', function(done) {
+    server.inject(options, function(resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('login');
       done();
@@ -422,9 +422,9 @@ describe('POST /settings/billing', function () {
 
   describe("existing paid user", function() {
 
-    it('sends updated billing info to the billing API', function (done) {
+    it('sends updated billing info to the billing API', function(done) {
 
-      generateCrumb(server, function (crumb){
+      generateCrumb(server, function(crumb) {
         var opts = {
           url: '/settings/billing',
           method: 'POST',
@@ -433,7 +433,9 @@ describe('POST /settings/billing', function () {
             stripeToken: 'tok_1234567890',
             crumb: crumb
           },
-          headers: { cookie: 'crumb=' + crumb }
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
         };
 
         var userMock = nock("https://user-api-example.com")
@@ -445,12 +447,14 @@ describe('POST /settings/billing', function () {
           .reply(200, fixtures.customers.happy)
           .get("/customer/bob/stripe/subscription").times(2)
           .reply(200, fixtures.customers.bob_subscriptions)
-          .put("/customer/bob/stripe/subscription",  {"plan":"npm-paid-individual-user-7"})
+          .put("/customer/bob/stripe/subscription", {
+            "plan": "npm-paid-individual-user-7"
+          })
           .reply(200)
           .post("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy);
 
-        server.inject(opts, function (resp) {
+        server.inject(opts, function(resp) {
           userMock.done();
           licenseMock.done();
           expect(resp.statusCode).to.equal(302);
@@ -461,9 +465,9 @@ describe('POST /settings/billing', function () {
 
     });
 
-    it('bubbles billing issues up to the user', function (done) {
+    it('bubbles billing issues up to the user', function(done) {
 
-      generateCrumb(server, function (crumb){
+      generateCrumb(server, function(crumb) {
         var opts = {
           url: '/settings/billing',
           method: 'POST',
@@ -472,7 +476,9 @@ describe('POST /settings/billing', function () {
             stripeToken: 'tok_1234567890',
             crumb: crumb
           },
-          headers: { cookie: 'crumb=' + crumb }
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
         };
 
         var userMock = nock("https://user-api-example.com")
@@ -487,7 +493,7 @@ describe('POST /settings/billing', function () {
           .post("/customer/bob/stripe")
           .reply(200, "Your card's security code is incorrect.");
 
-        server.inject(opts, function (resp) {
+        server.inject(opts, function(resp) {
           userMock.done();
           licenseMock.done();
           expect(resp.statusCode).to.equal(200);
@@ -505,8 +511,8 @@ describe('POST /settings/billing', function () {
 
   describe("new paid user", function() {
 
-    it('forces coupon code to be lowercase', function (done) {
-      generateCrumb(server, function (crumb){
+    it('forces coupon code to be lowercase', function(done) {
+      generateCrumb(server, function(crumb) {
         var opts = {
           url: '/settings/billing',
           method: 'POST',
@@ -516,7 +522,9 @@ describe('POST /settings/billing', function () {
             coupon: 'LALALAcoupon',
             crumb: crumb
           },
-          headers: { cookie: 'crumb=' + crumb }
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
         };
 
         var userMock = nock("https://user-api-example.com")
@@ -526,7 +534,9 @@ describe('POST /settings/billing', function () {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe").times(2)
           .reply(404)
-          .put("/customer/bob/stripe/subscription",  {"plan":"npm-paid-individual-user-7"})
+          .put("/customer/bob/stripe/subscription", {
+            "plan": "npm-paid-individual-user-7"
+          })
           .reply(200)
           .put("/customer/stripe")
           .reply(200, fixtures.customers.happy);
@@ -534,12 +544,12 @@ describe('POST /settings/billing', function () {
         var Customer = require('../../models/customer');
         var oldUpdate = Customer.update;
 
-        Customer.update = function (billingInfo, cb) {
+        Customer.update = function(billingInfo, cb) {
           expect(billingInfo.coupon).to.equal(opts.payload.coupon.toLowerCase());
           return cb(null);
         };
 
-        server.inject(opts, function (resp) {
+        server.inject(opts, function(resp) {
           userMock.done();
           licenseMock.done();
           expect(resp.statusCode).to.equal(302);
@@ -550,9 +560,9 @@ describe('POST /settings/billing', function () {
       });
     });
 
-    it('sends new billing info to the billing API', function (done) {
+    it('sends new billing info to the billing API', function(done) {
 
-      generateCrumb(server, function (crumb){
+      generateCrumb(server, function(crumb) {
         var opts = {
           url: '/settings/billing',
           method: 'POST',
@@ -561,7 +571,9 @@ describe('POST /settings/billing', function () {
             stripeToken: 'tok_1234567890',
             crumb: crumb
           },
-          headers: { cookie: 'crumb=' + crumb }
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
         };
 
         var userMock = nock("https://user-api-example.com")
@@ -573,12 +585,18 @@ describe('POST /settings/billing', function () {
           .reply(200, fixtures.customers.happy)
           .get("/customer/bob/stripe/subscription").times(2)
           .reply(200, fixtures.customers.bob_subscriptions)
-          .put("/customer/bob/stripe/subscription",  {"plan":"npm-paid-individual-user-7"})
+          .put("/customer/bob/stripe/subscription", {
+            "plan": "npm-paid-individual-user-7"
+          })
           .reply(200)
-          .post("/customer/bob/stripe", {"name":"bob","email":"bob@boom.me","card":"tok_1234567890"})
+          .post("/customer/bob/stripe", {
+            "name": "bob",
+            "email": "bob@boom.me",
+            "card": "tok_1234567890"
+          })
           .reply(200);
 
-        server.inject(opts, function (resp) {
+        server.inject(opts, function(resp) {
           userMock.done();
           licenseMock.done();
           expect(resp.statusCode).to.equal(302);
@@ -595,7 +613,7 @@ describe('POST /settings/billing', function () {
 });
 
 
-describe('POST /settings/billing/cancel', function () {
+describe('POST /settings/billing/cancel', function() {
   var options;
 
   before(function(done) {
@@ -606,24 +624,26 @@ describe('POST /settings/billing/cancel', function () {
     done();
   });
 
-  it('redirects to login page if not logged in', function (done) {
-    server.inject(options, function (resp) {
+  it('redirects to login page if not logged in', function(done) {
+    server.inject(options, function(resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('login');
       done();
     });
   });
 
-  it('deletes the customer record', function (done) {
+  it('deletes the customer record', function(done) {
 
-    generateCrumb(server, function (crumb){
+    generateCrumb(server, function(crumb) {
       var opts = {
         method: 'post',
         url: '/settings/billing/cancel',
         payload: {
           crumb: crumb
         },
-        headers: { cookie: 'crumb=' + crumb },
+        headers: {
+          cookie: 'crumb=' + crumb
+        },
         credentials: fixtures.users.bob
       };
 
@@ -639,7 +659,7 @@ describe('POST /settings/billing/cancel', function () {
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
 
-      server.inject(opts, function (resp) {
+      server.inject(opts, function(resp) {
         licenseMock.done();
         userMock.done();
         expect(resp.statusCode).to.equal(302);

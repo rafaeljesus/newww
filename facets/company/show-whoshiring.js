@@ -1,4 +1,4 @@
-module.exports = function (request, reply) {
+module.exports = function(request, reply) {
   var opts = { };
 
   request.timing.page = 'whoshiring';

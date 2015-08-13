@@ -167,9 +167,7 @@ var publicRoutes = [
   }, {
     path: "/package/{package}/tutorial",
     method: "GET",
-    handler: function(request, reply){
-      reply.view('package/tutorial');
-    }
+    handler: require('../handlers/tutorial')
   }, {
     paths: [
       "/package/{package}/collaborators",

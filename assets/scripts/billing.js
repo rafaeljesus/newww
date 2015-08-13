@@ -1,19 +1,35 @@
-var dataEl;
 var stripePublicKey;
 
 module.exports = function() {
   // When the DOM is ready...
-  $(init)
-}
+  $(init);
+};
 
 var noKey = function() {
   console.error("No element found with data-stripe-public-key attribute");
-}
+};
 
 var init = function() {
 
   // External stripe scripts are not loaded on all pages
-  if (typeof Stripe === "undefined") return;
+  if (typeof Stripe === "undefined") {
+    return;
+  }
+
+  $('#enable-private-modules').click(function(e) {
+    e.preventDefault();
+    $('#info-private-modules').toggle();
+  });
+
+  $('#enable-orgs').click(function(e) {
+    e.preventDefault();
+    $('#info-orgs').toggle();
+  });
+
+  $('#add-billing-info').click(function(e) {
+    e.preventDefault();
+    $('#payment-form').toggle();
+  });
 
   try {
     stripePublicKey = $("#payment-form").data('stripePublicKey');
@@ -28,7 +44,7 @@ var init = function() {
   Stripe.setPublishableKey(stripePublicKey);
 
   $('#payment-form').submit(onSubmit);
-}
+};
 
 var onSubmit = function(e) {
   var $form = $('#payment-form');
@@ -46,7 +62,7 @@ var onSubmit = function(e) {
 
   // Prevent the form from submitting
   return false;
-}
+};
 
 var stripeResponseHandler = function(status, response) {
   var $form = $('#payment-form');
@@ -64,4 +80,4 @@ var stripeResponseHandler = function(status, response) {
 
   // Auto-submit the form
   $form.get(0).submit();
-}
+};

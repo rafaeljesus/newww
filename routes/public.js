@@ -56,10 +56,14 @@ var publicRoutes = [
       return reply.redirect("/private-modules").code(301);
     }
   }, {
-    path: "/orgs",
+    path: "/org",
     method: "GET",
     handler: function(request, reply) {
-      return reply.redirect("http://info.npmjs.com/test-orgs").code(301);
+      if (request.features.org_billing) {
+        return reply.view("org/index");
+      } else {
+        return reply.redirect("http://info.npmjs.com/test-orgs").code(301);
+      }
     }
   }, {
     path: "/contact",
@@ -173,6 +177,15 @@ var publicRoutes = [
       return reply.redirect(fmt("/~%s#packages", request.params.user)).code(301);
     }
   }, {
+    // redirect plural forms to singular
+    paths: [
+      "/orgs",
+    ],
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/org").code(301);
+    }
+  }, {
     path: "/browse/userstar/{user}",
     method: "GET",
     handler: function(request, reply) {
@@ -284,6 +297,12 @@ var publicRoutes = [
       plugins: {
         crumb: false
       }
+    }
+  }, {
+    method: '*',
+    path: '/ui-docs',
+    handler: function(request, reply) {
+      return reply.view('ui-docs/index').code(200);
     }
   }, {
     method: '*',

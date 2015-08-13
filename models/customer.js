@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var assert = require('assert');
+var moment = require('moment');
 var Request = require('../lib/external-request');
 
 var Customer = module.exports = function(name, opts) {
@@ -17,10 +18,38 @@ var Customer = module.exports = function(name, opts) {
   }, opts);
 };
 
-Customer.prototype.get = function(callback) {
+Customer.prototype.getById = function(id, callback) {
+  var self = this;
+  var url = this.host + '/customer/' + id;
+
+  Request.get({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+
+    if (err) {
+      return callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      err = Error('Customer not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode === 500) {
+      err = new Error(body);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.getStripeData = function(callback) {
   var self = this;
   var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
-  var subscriptionsUrl = this.host + '/customer/' + self.name + '/stripe/subscription';
 
   Request.get({
     url: stripeUrl,
@@ -37,31 +66,33 @@ Customer.prototype.get = function(callback) {
       return callback(err);
     }
 
-    Request.get({
-      url: subscriptionsUrl,
-      json: true
-    }, function(err, resp, subscriptions) {
-      if (err) {
-        return callback(err);
-      }
+    return callback(null, stripeData);
+  });
+};
 
-      if (resp.statusCode === 404) {
-        err = Error('subscriptions for customer ' + self.name + ' not found');
-        err.statusCode = resp.statusCode;
-        return callback(err);
-      }
+Customer.prototype.getSubscriptions = function(callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe/subscription';
 
-      if (subscriptions && _.isArray(subscriptions)) {
-        subscriptions.forEach(function(s) {
-          // Coerce integer in seconds into date
-          if (s.npm_org.match(/private-modules/)) {
-            stripeData.next_billing_date = new Date(s.current_period_end * 1000);
-          }
-        });
-      }
+  Request.get({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
 
-      return callback(null, stripeData);
+    if (err) {
+      return callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      return callback(null, []);
+    }
+
+    body.forEach(function(subscription) {
+      // does this seem right?
+      subscription.next_billing_date = moment.unix(subscription.current_period_end);
+      subscription.privateModules = !!subscription.npm_org.match(/_private-modules/);
     });
+
+    return callback(null, body);
   });
 };
 
@@ -77,7 +108,7 @@ Customer.prototype.updateBilling = function(body, callback) {
     }
   }
 
-  this.get(function(err, customer) {
+  this.getStripeData(function(err, customer) {
 
     var cb = function(err, resp, body) {
       if (typeof body === 'string') {
@@ -115,6 +146,16 @@ Customer.prototype.updateBilling = function(body, callback) {
   });
 };
 
+Customer.prototype.del = function(callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe';
+  Request.del({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    return err ? callback(err) : callback(null, body);
+  });
+};
+
 Customer.prototype.createSubscription = function(planInfo, callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription';
   Request.put({
@@ -126,12 +167,120 @@ Customer.prototype.createSubscription = function(planInfo, callback) {
   });
 };
 
-Customer.prototype.del = function(callback) {
-  var url = this.host + '/customer/' + this.name + '/stripe';
+Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
+  this.getSubscriptions(function(err, subscriptions) {
+    if (err) {
+      return callback(err);
+    }
+
+    var org = _.find(subscriptions, function(subscription) {
+      return orgName === subscription.npm_org;
+    });
+
+    if (!org) {
+      err = new Error('No org with that name exists');
+      return callback(err);
+    }
+
+    if (!org.license_id) {
+      err = new Error('That org does not have a license_id');
+      return callback(err);
+    }
+
+    return callback(null, org.license_id);
+  });
+};
+
+// should this go into the org agent instead?
+Customer.prototype.getAllSponsorships = function(licenseId, callback) {
+  var url = this.host + '/sponsorship/' + licenseId;
+  Request.get({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    if (err) {
+      return callback(err);
+    }
+
+    if (resp.statusCode === 500) {
+      err = new Error();
+      err.statusCode = resp.statusCode;
+      err.message = body;
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
+  var url = this.host + '/sponsorship/' + licenseId;
+  Request.put({
+    url: url,
+    json: true,
+    body: {
+      npm_user: name
+    }
+  }, function(err, resp, body) {
+    if (err) {
+      return callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      err = Error('License not found: ' + licenseId);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
+  var url = this.host + '/sponsorship/' + verificationKey;
+  Request.post({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    if (err) {
+      return callback(err);
+    }
+
+    if (resp.statusCode === 500) {
+      err = Error('user is already sponsored');
+      err.statusCode = 403;
+      return callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      err = Error('verification key not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
+  });
+};
+
+Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
+  var url = this.host + '/sponsorship/' + licenseId + '/' + npmUser;
+
   Request.del({
     url: url,
     json: true
   }, function(err, resp, body) {
-    return err ? callback(err) : callback(null, body);
+    if (err) {
+      callback(err);
+    }
+
+    if (resp.statusCode === 404) {
+      err = Error('user or licenseId not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
   });
 };
+
+Customer.prototype.declineSponsorship = Customer.prototype.revokeSponsorship = Customer.prototype.removeSponsorship;

@@ -1,0 +1,162 @@
+
+.nav-3,
+.nav-3 li,
+.nav-breadcrumb-flow-indicator,
+.nav-breadcrumb-flow-indicator li
+  list-style none
+  margin 0
+  padding 0
+
+.nav-breadcrumb-flow-indicator-container
+  text-align center
+
+
+.nav-breadcrumb-flow-indicator
+  position relative
+  display inline-block
+  color table-border-grey
+  font-size .75em
+  font-weight bold
+  letter-spacing 0
+
+.nav-breadcrumb-flow-indicator:after
+  content "\0020"
+  border-top 2px solid #cfcfcf
+  display block
+  position absolute
+  top 1.15em
+  margin-left 10%
+  padding-right 80%
+
+.nav-breadcrumb-flow-indicator li
+  display inline-block
+  text-transform uppercase
+  width 32%
+
+.nav-breadcrumb-flow-indicator li:first-child
+  padding-right 3em
+  float left
+
+.nav-breadcrumb-flow-indicator li:last-child
+  padding-left 3em
+  float right
+
+.nav-breadcrumb-flow-indicator li:before
+  content "\2022"
+  color #cfcfcf
+  font-size 2.8em
+  display block
+  z-index 5
+  position relative
+  margin 0 43%
+  background-color #fff
+
+.nav-breadcrumb-flow-indicator .done:before
+  color black
+
+.nav-breadcrumb-flow-indicator .current
+  color black
+
+.nav-breadcrumb-flow-indicator .current:before
+  color #cb3837
+
+@media (min-width 28.125em)
+  .nav-breadcrumb-flow-indicator li
+    width auto
+
+  .nav-breadcrumb-flow-indicator li:first-child
+    padding-right 4em
+
+  .nav-breadcrumb-flow-indicator li:last-child
+    padding-left 4em
+
+
+@media (min-width 29.625em)
+  .nav-breadcrumb-flow-indicator li:first-child
+    padding-right 5em
+
+  .nav-breadcrumb-flow-indicator li:last-child
+    padding-left 5em
+
+
+@media (min-width 31.125em)
+  .nav-breadcrumb-flow-indicator li:first-child
+    padding-right 6em
+
+  .nav-breadcrumb-flow-indicator li:last-child
+    padding-left 6em
+
+
+@media (min-width 32.625em)
+  .nav-breadcrumb-flow-indicator li:first-child
+    padding-right 7em
+
+  .nav-breadcrumb-flow-indicator li:last-child
+    padding-left 7em
+
+
+@media (min-width 34.125em)
+  .nav-breadcrumb-flow-indicator li:first-child
+    padding-right 8em
+
+  .nav-breadcrumb-flow-indicator li:last-child
+    padding-left 8em
+
+
+@media (min-width 37.75em)
+  .nav-breadcrumb-flow-indicator li:first-child
+    padding-right 9em
+
+  .nav-breadcrumb-flow-indicator li:last-child
+    padding-left 9em
+
+.nav-3-container
+  border-bottom 1px solid table-border-grey
+  margin-left -40px
+  padding-left 40px
+  margin-right -40px
+  padding-right 40px
+
+.nav-3 li
+  float: left
+  color table-border-grey
+  width 200px
+  text-align center
+  position relative
+  border-right-width 1px
+  border-right-style solid
+  -webkit-border-image -webkit-linear-gradient(bottom, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
+  -moz-border-image -moz-linear-gradient(bottom, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
+  -o-border-image -o-linear-gradient(bottom, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
+  border-image linear-gradient(to top, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
+  &:first-child
+    border-left-width 1px
+    border-left-style solid
+
+
+.nav-3 button,
+.nav-3 a
+  color inherit
+  font inherit
+  -moz-appearance none
+  appearance none
+  background-color transparent
+  text-decoration none
+  cursor: pointer
+
+  &:hover
+    text-decoration none
+
+.nav-3 button
+  border: 0px none
+
+.nav-3 .current
+  color #000
+  &:after
+    content "\0020"
+    position absolute
+    bottom 0
+    height 2px
+    width 100%
+    background-color #cb3837
+    display block

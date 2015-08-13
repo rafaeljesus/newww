@@ -1,4 +1,5 @@
 var customer = module.exports = {};
+var Org = require('../agents/org');
 var utils = require('../lib/utils');
 
 customer.getBillingInfo = function(request, reply) {
@@ -7,7 +8,10 @@ customer.getBillingInfo = function(request, reply) {
     title: 'Billing',
     updated: ('updated' in request.query),
     canceled: ('canceled' in request.query),
-    stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+    stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+    features: {
+      orgs: request.features.org_billing
+    }
   };
 
   // Display a message to unpaid collaborators about the
@@ -16,12 +20,23 @@ customer.getBillingInfo = function(request, reply) {
     opts.package = request.query.package;
   }
 
-  request.customer.get(function(err, customer) {
+  request.customer.getStripeData(function(err, customer) {
 
     if (customer) {
       opts.customer = customer;
     }
-    return reply.view('user/billing', opts);
+
+    request.customer.getSubscriptions(function(err, subscriptions) {
+      if (err) {
+        request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
+        request.logger.error(err);
+        subscriptions = [];
+      }
+
+      opts.subscriptions = subscriptions;
+
+      return reply.view('user/billing', opts);
+    });
   });
 };
 
@@ -57,25 +72,13 @@ customer.updateBillingInfo = function(request, reply) {
       email: billingInfo.email
     };
 
-    var planInfo = {
-      plan: 'npm-paid-individual-user-7'
-    };
-
-    request.customer.createSubscription(planInfo, function(err, unused) {
-
-      if (err) {
-        request.logger.error("unable to update subscription to " + planInfo.plan);
-        request.logger.error(err);
+    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function(er) {
+      if (er) {
+        request.logger.error('unable to send billing email to HubSpot');
+        request.logger.error(er);
       }
 
-      sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function(er) {
-        if (er) {
-          request.logger.error('unable to send billing email to HubSpot');
-          request.logger.error(er);
-        }
-
-        return reply.redirect('/settings/billing?updated=1');
-      });
+      return reply.redirect('/settings/billing?updated=1');
     });
   });
 
@@ -92,3 +95,78 @@ customer.deleteBillingInfo = function(request, reply) {
     return reply.redirect('/settings/billing?canceled=1');
   });
 };
+
+var plans = {
+  private_modules: 'npm-paid-individual-user-7',
+  orgs: 'npm-paid-org-7'
+};
+
+customer.subscribe = function(request, reply) {
+  var planType = request.payload.planType;
+
+  var planInfo = {
+    plan: plans[planType]
+  };
+
+  if (planType === 'orgs') {
+    planInfo.npm_org = request.payload.orgName;
+  }
+
+  if (request.features.org_billing) {
+    var opts = {};
+
+    Org(request.loggedInUser.name)
+      .get(planInfo.npm_org, function(err, users) {
+        if (users) {
+          opts.errors = [];
+          opts.errors.push(new Error("Error: Org already exists."));
+          return reply.view('user/billing', opts);
+        }
+
+        if (err.statusCode === 404) {
+          // org doesn't yet exist
+          request.customer.createSubscription(planInfo, function(err, subscriptions) {
+            if (err) {
+              request.logger.error("unable to update subscription to " + planInfo.plan);
+              request.logger.error(err);
+            }
+
+            if (typeof subscriptions === 'string') {
+              request.logger.info("created subscription: ", planInfo);
+            }
+
+            Org(request.loggedInUser.name)
+              .create(planInfo.npm_org, function(err, opts) {
+                if (err) {
+                  return reply.view('errors/internal', err);
+                }
+
+                return reply.redirect('/settings/billing', opts);
+              });
+
+          });
+        } else {
+          // do actual error handling here
+          opts.errors = [];
+          opts.errors.push(new Error(err));
+          request.logger.error(err);
+          return reply.view('user/billing', opts);
+        }
+      });
+  } else {
+    request.customer.createSubscription(planInfo, function(err, subscriptions) {
+      if (err) {
+        request.logger.error("unable to update subscription to " + planInfo.plan);
+        request.logger.error(err);
+      }
+
+      if (typeof subscriptions === 'string') {
+        request.logger.info("created subscription: ", planInfo);
+      }
+
+      return reply.redirect('/settings/billing');
+    });
+  }
+
+};
+

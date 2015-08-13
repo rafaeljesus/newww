@@ -16,7 +16,7 @@ var RevAll = require('gulp-rev-all');
 var revAll = new RevAll();
 var paths = {
   fonts: ['./assets/fonts/*'],
-  styles: ['./assets/styles/*.styl'],
+  styles: ['./assets/styles/**/*.styl'],
   images: ['./assets/images/**/*'],
   misc: ['./assets/misc/*'],
   scripts: {

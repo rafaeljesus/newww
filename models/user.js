@@ -64,39 +64,6 @@ User.prototype.confirmEmail = function(user, callback) {
   }).nodeify(callback);
 };
 
-User.prototype.login = function(loginInfo, callback) {
-  var url = fmt('%s/user/%s/login', this.host, loginInfo.name);
-
-  return new P(function(resolve, reject) {
-    Request.post({
-      url: url,
-      json: true,
-      body: {
-        password: loginInfo.password
-      }
-    }, function(err, resp, body) {
-
-      if (err) {
-        return reject(err);
-      }
-
-      if (resp.statusCode === 401) {
-        err = Error('password is incorrect for ' + loginInfo.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      if (resp.statusCode === 404) {
-        err = Error('user ' + loginInfo.name + ' not found');
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-
-      return resolve(body);
-    });
-  }).nodeify(callback);
-};
-
 User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
   return {
     url: fmt('%s/user/%s', this.host, name),
@@ -126,10 +93,10 @@ User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
 };
 
 User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
-  var licenseAPI = new LicenseAPI(name);
-  licenseAPI.get(function(err, customer) {
-    return callback(null, customer);
-  });
+  LicenseAPI(name)
+    .getStripeData(function(err, customer) {
+      return callback(null, customer);
+    });
 };
 
 User.prototype._get = function _get(name, callback) {
@@ -424,4 +391,38 @@ User.prototype.verifyPassword = function(name, password, callback) {
   };
 
   return this.login(loginInfo, callback);
+};
+
+User.prototype.getOrgs = function(name, callback) {
+  var self = this;
+  var url = fmt('%s/user/%s/org', this.host, name);
+
+  return new P(function(resolve, reject) {
+
+    var opts = {
+      url: url,
+      json: true
+    };
+
+    if (self.bearer) {
+      opts.headers = {
+        bearer: self.bearer
+      };
+    }
+
+    Request.get(opts, function(err, resp, body) {
+
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode > 399) {
+        err = Error('error getting orgs for user ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return resolve(body);
+    });
+  }).nodeify(callback);
 };

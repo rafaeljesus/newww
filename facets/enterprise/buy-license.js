@@ -99,6 +99,7 @@ module.exports = function(request, reply) {
       }, function(err, stripeCustomer) {
 
         if (err) {
+          console.log(err)
           request.logger.error('internal stripe error; plan=' + stripePlan + ';quantity=' + stripeQuantity + '; email=' + token.email);
           request.logger.error(err);
           reply('internal stripe error').code(500);

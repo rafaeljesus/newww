@@ -9,6 +9,10 @@ label
     color npmred
     font-size 14px
 
+  input[type=radio] + &
+    display inline-block
+    vertical-align middle
+
 textarea
   normal-font()
   font-size 16px
@@ -106,7 +110,7 @@ input[type=file]
   padding-left 8px
   &.example
     &:before
-      content: "Example: "
+      content "Example: "
 
 form p
   margin 25px 0 0
@@ -239,3 +243,101 @@ label.wrapping-hidden-radio
     font-weight normal
     border-radius 3px
     padding 1px 8px 3px 8px
+
+fieldset
+  legend
+    font-weight 600
+    margin-bottom 1em
+  ul,
+  ul li
+    list-style none
+    margin 0
+
+.inline-input-set
+  > div
+    display inline-block
+
+    &:first-child
+      margin-right 20px
+
+  .large
+    width 300px
+
+  .small
+    width 62px
+
+input[type=text] + .description
+  margin-top -1.5em
+
+/**
+ * Switch-style checkboxes.
+ * Inspired by Lea Verou
+ */
+
+.switch-container input[type="checkbox"]:not(:checked),
+.switch-container input[type="checkbox"]:checked  /* :checked here acting as a filter for older browsers */
+  position absolute
+  opacity 0
+
+.switch-container label
+  position relative
+  display inline-block
+  margin 0 1em 1em 0
+  text-shadow 0 1px 1px white
+  width 12em
+
+.switch-container.pay-status label
+  width 9em
+
+
+input[type="checkbox"].switch + div
+  width 2.125em
+  height .875em
+  border 1px solid #f2f3f2
+  border-radius 999px
+  margin 0 auto
+  background #fff
+  background-origin border-box
+  background-clip border-box
+  overflow hidden
+  transition-duration .4s
+  transition-property padding
+  padding-left .2em
+  cursor pointer
+
+
+input[type="checkbox"].switch:checked + div
+  padding-left 1.2em
+
+
+input[type="checkbox"].switch + div:before
+  content ''
+  display block
+  width .7em
+  height .7em
+  margin 1px 0
+  border-radius inherit
+  background #212121
+
+
+input[type="checkbox"].switch:checked + div:before
+  background #c93a3c
+
+
+input[type="checkbox"].switch:active + div:before
+  background-color #aaa
+
+.switch-label
+  margin-top -1.25em
+  &.unchecked-text
+    float left
+  &.checked-text
+    float right
+
+.checked-text
+  font-weight normal
+
+input[type="checkbox"].switch:checked ~ .unchecked-text
+  font-weight normal
+input[type="checkbox"].switch:checked ~ .checked-text
+  font-weight bold

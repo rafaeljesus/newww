@@ -60,7 +60,7 @@ var publicRoutes = [
     method: "GET",
     handler: function(request, reply) {
       if (request.features.org_billing) {
-        return require('../facets/user/show-orgs')(request, reply);
+        return reply.view("org/index");
       } else {
         return reply.redirect("http://info.npmjs.com/test-orgs").code(301);
       }

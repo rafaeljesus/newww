@@ -168,9 +168,7 @@ describe('GET /~bob for logged-in bob', function() {
 
     var licenseMock = nock('https://license-api-example.com')
       .get('/customer/bob/stripe').twice()
-      .reply(200, customers.bob)
-      .get('/customer/bob/stripe/subscription').twice()
-      .reply(200, customers.bob_subscriptions);
+      .reply(200, customers.bob);
 
     server.inject({
       url: '/~bob',

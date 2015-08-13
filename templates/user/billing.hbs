@@ -3,7 +3,11 @@
 <div class="container narrow">
 
   <hgroup>
-    <h1>your billing info</h1>
+    {{#if features.org_billing}}
+      <h1>your subscription info</h1>
+    {{else}}
+      <h1>your billing info</h1>
+    {{/if}}
   </hgroup>
 
   {{> email-verify-nag}}
@@ -45,47 +49,78 @@
     </p>
   {{/if}}
 
-  {{#if customer}}
+  {{#if features.org_billing}}
+    <h2>subscriptions</h2>
+    {{#if subscriptions}}
+      <table class="ruled subscriptions">
+        <tbody>
+          <tr>
+            <th>Subscription Type</th>
+            <th>Name</th>
+            <th>Next Billing Date</th>
+            <th>Monthly Fee</th>
+          </tr>
+          {{#each subscriptions}}
+            <tr>
+            {{#if privateModules}}
+              <td>Private Modules</td>
+              <td>{{npm_user}}</td>
+            {{else}}
+                <td>Organization</td>
+                <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
+            {{/if}}
+              <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+                {{next_billing_date}}
+              </td>
+              <td>{{amount}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    {{else}}
+      <p>You do not have any subscriptions</p>
+    {{/if}}
 
-    <table class="ruled key-value card-info">
-      <tbody>
-        <tr>
-          <td>Card Type</td>
-          <td class="card-brand">{{customer.card.brand}}</td>
-        </tr>
-        <tr>
-          <td>Last 4 Digits</td>
-          <td class="card-last4">{{customer.card.last4}}</td>
-        </tr>
-        <tr>
-          <td>Expiration</td>
-          <td>
-            <span class="card-exp-month">{{month-name customer.card.exp_month}}</span>
-            <span class="card-exp-year">{{customer.card.exp_year}}</td></span>
-        </tr>
-        <tr>
-          <td>Next billing date</td>
-          <td data-date="{{customer.next_billing_date}}" data-date-format="%B %e %Y">
-            {{customer.next_billing_date}}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <p>
-      You can also
-      <a href="#" id="update-subscription-toggler">update payment info</a>
-      or
-      <a href="#" id="cancel-subscription-toggler">stop paying us</a>.
-    </p>
-
-  {{else}}
-    <p>
-      A paid account costs just <strong>$7 a month</strong> per user, and allows you to create
-      and share an unlimited number of modules. The only limit is
-      <a href="http://www.zombo.com/" target="_blank">yourself</a>.
-    </p>
+    <h2>billing</h2>
   {{/if}}
+
+  <div>
+    {{#if customer}}
+
+      <table class="ruled key-value card-info">
+        <tbody>
+          <tr>
+            <td>Card Type</td>
+            <td class="card-brand">{{customer.card.brand}}</td>
+          </tr>
+          <tr>
+            <td>Last 4 Digits</td>
+            <td class="card-last4">{{customer.card.last4}}</td>
+          </tr>
+          <tr>
+            <td>Expiration</td>
+            <td>
+              <span class="card-exp-month">{{month-name customer.card.exp_month}}</span>
+              <span class="card-exp-year">{{customer.card.exp_year}}</td></span>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        You can also
+        <a href="#" id="update-subscription-toggler">update payment info</a>
+        or
+        <a href="#" id="cancel-subscription-toggler">stop paying us</a>.
+      </p>
+
+    {{else}}
+      <p>
+        A paid account costs just <strong>$7 a month</strong> per user, and allows you to create
+        and share an unlimited number of modules. The only limit is
+        <a href="http://www.zombo.com/" target="_blank">yourself</a>.
+      </p>
+    {{/if}}
+  </div>
 
   {{> errors}}
 
@@ -93,8 +128,7 @@
 
     <p class="error billing-error" style="display:none;"></p>
 
-    <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
-
+    <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" style="display:none;">
       <label for="card-number">Card Number</label>
       <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
 
@@ -111,7 +145,7 @@
       <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon" />
 
       {{> form_security}}
-      <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}sign me up{{/if}}">
+      <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}save my billing info{{/if}}">
 
     </form>
   {{/if}}
@@ -140,6 +174,29 @@
       {{> form_security}}
       <input type="submit" value="Cancel my private npm subscription">
     </form>
+  {{/if}}
+
+  {{#if features.org_billing}}
+    <h2>private modules</h2>
+  {{/if}}
+
+  {{#if features.org_billing}}
+    <h2>orgs and teams</h2>
+
+    <div>
+      <p>
+        To enable private modules in your organization, orgs cost just <strong>$6 a
+        month</strong> per user, and allows you to create and share an unlimited
+        number of modules. Plans start with 2 users. Dee dee
+        <a href="http://www.hamsterdance.org/hamsterdance/" target="_blank">doo doo doo doo doo</a>.
+      </p>
+
+      {{#if customer}}
+        <a class="button full-width" href="/org/create">create my organization</a>
+      {{else}}
+        <p>To sign up for orgs and teams, you need to update your billing information.</p>
+      {{/if}}
+    </div>
   {{/if}}
 
 </div>

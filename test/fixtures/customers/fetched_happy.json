@@ -1,0 +1,13 @@
+{
+  "address": null,
+  "created": "2015-06-19T18:19:50.722Z",
+  "deleted": null,
+  "email": "bob@boom.me",
+  "email_verified": null,
+  "id": 30,
+  "name": "bob",
+  "npm_user": "bob",
+  "phone": null,
+  "stripe_customer_id": "cus_6SOufuJcDjz2yx",
+  "updated": "2015-06-19T18:19:50.722Z"
+}

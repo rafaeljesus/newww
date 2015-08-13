@@ -54,3 +54,51 @@
 
   input[type=text]
     width 60%
+
+
+.marketing-banner-container
+  background banner-back-blue
+  margin -50px -20px 0
+  padding 40px 20px 20px
+
+.marketing-banner
+  max-width 1180px
+  margin 0 auto
+
+  .img-container
+    display none
+    float right
+    width 45%
+    max-width 601px
+
+
+.org-banner-info
+  float left
+  margin-right 20px
+
+  h1
+    font-size 46px
+
+  h3
+    font-size 28px
+    color npmred
+    font-weight 300
+
+  .description
+    color #485165
+    font-size 13px
+    line-height 2.15
+    margin-bottom 1em
+
+  .button
+    display inline-block
+
+@media (min-width: mobileMaxWidth + 1)
+
+  .marketing-banner
+    .org-banner-info
+      width 50%
+      max-width 417px
+
+    .img-container
+      display block

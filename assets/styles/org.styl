@@ -121,6 +121,52 @@
 .org-marketing-feature-list span
   color black
 
+.org-marketing-pricing .intro-text
+  text-align: center;
+
+.org-marketing-pricing ul
+  margin: 65px auto 0;
+  text-align center
+  width 75%
+
+.org-marketing-pricing li
+  display inline-block
+  vertical-align middle
+  width 33%
+  margin-left -4px
+
+  &:first-child
+    margin-left 0
+
+.org-marketing-pricing .img-container
+  height 140px
+  position relative
+  margin-bottom 1em
+
+  img
+    position absolute
+    top 50%
+    left 50%
+    -webkit-transform translate(-50%, -50%)
+    transform translate(-50%, -50%)
+    margin-right -50%
+
+.org-pricing .org-plan
+  font-size 16px
+  font-weight 600
+
+.org-pricing .org-price .price
+  color npmred
+  font-size 31px
+  display block
+  font-weight 600
+
+.org-pricing .org-price .frequency
+  font-size 14px
+  font-weight 300
+
+
+
 @media (min-width: mobileMaxWidth + 1)
 
   .marketing-banner

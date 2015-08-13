@@ -14,15 +14,15 @@ module.exports = [
   }, {
     path: "/profile-edit",
     method: "GET",
-    handler: require('../facets/user/show-profile-edit')
+    handler: require('../handlers/user').showProfileEdit
   }, {
     path: "/profile-edit",
     method: "PUT",
-    handler: require('../facets/user/show-profile-edit')
+    handler: require('../handlers/user').handleProfileEdit
   }, {
     path: "/profile-edit",
     method: "POST",
-    handler: require('../facets/user/show-profile-edit')
+    handler: require('../handlers/user').handleProfileEdit
   }, {
     path: "/resend-email-confirmation",
     method: "GET",

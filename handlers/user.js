@@ -1,6 +1,9 @@
 var User = require('../models/user'),
   Joi = require('joi'),
-  userValidate = require('npm-user-validate');
+  presenter = require('../presenters/user'),
+  userValidate = require('npm-user-validate'),
+  merge = require('lodash').merge;
+
 
 exports.showSignup = function signup(request, reply) {
 
@@ -139,4 +142,69 @@ exports.handleSignup = function signup(request, reply) {
       });
     });
   });
+};
+
+
+exports.handleProfileEdit = function(request, reply) {
+  var loggedInUser = request.loggedInUser;
+  var UserModel = User.new(request);
+
+  var opts = { };
+
+  var editableUserProperties = Joi.object().keys({
+    fullname: Joi.string().allow(''),
+    homepage: Joi.string().allow(''),
+    github: Joi.string().allow(''),
+    twitter: Joi.string().allow(''),
+    freenode: Joi.string().allow('')
+  });
+
+  Joi.validate(request.payload, editableUserProperties, function(err, userChanges) {
+    if (err) {
+      opts.error = err;
+      return reply.view('user/profile-edit', opts).code(400);
+    }
+
+    UserModel.get(loggedInUser.name, function(err, user) {
+
+      if (err) {
+        request.logger.error('unable to get user ' + loggedInUser.name);
+        request.logger.error(err);
+        return reply.view('errors/user-not-found', opts).code(404);
+      }
+
+      merge(user.resource, userChanges);
+      user = presenter(user);
+
+      UserModel.save(user, function(err, data) {
+        if (err) {
+          request.logger.warn('unable to save profile; user=' + user.name);
+          request.logger.warn(err);
+          return reply.view('errors/internal', opts).code(500);
+        }
+
+        UserModel.dropCache(user.name, function() {
+
+          request.timing.page = 'saveProfile';
+          request.metrics.metric({
+            name: 'saveProfile'
+          });
+          return reply.redirect('/profile');
+        });
+      });
+    });
+  });
+};
+
+
+exports.showProfileEdit = function(request, reply) {
+  request.timing.page = 'profile-edit';
+
+  var opts = {
+    title: 'Edit Profile',
+    showEmailSentNotice: request.query['verification-email-sent'] === 'true',
+    showWelcomeMessage: request.query['new-user'] === 'true'
+  };
+
+  return reply.view('user/profile-edit', opts);
 };

@@ -46,6 +46,10 @@
       <input type="text" id="freenode" name="freenode" value="{{resource.freenode}}" autocorrect="off" autocapitalize="off">
       <p class="help-text example">wombat</p>
 
+      <label for="npmweekly">
+      <input type="checkbox" id="npmweekly" name="npmweekly" value="on" {{#if resource.npmweekly}}checked{{/if}}>
+        subscribe to the npm weekly</label>
+
     {{/with}}
 
     {{> form_security}}

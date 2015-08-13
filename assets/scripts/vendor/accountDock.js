@@ -1,5 +1,5 @@
 $(function() {
-  if (typeof AccountDock !== "undefined") {
+  if (typeof AccountDock === "undefined") {
     return;
   }
 

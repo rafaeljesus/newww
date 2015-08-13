@@ -56,33 +56,25 @@
     width 60%
 
 
-.marketing-banner-container
-  background banner-back-blue
-  margin -50px -20px 0
-  padding 40px 20px 20px
-
-.marketing-banner
-  max-width 1180px
-  margin 0 auto
-
-  .img-container
-    display none
-    float right
-    width 45%
-    max-width 601px
-
-
-.org-banner-info
-  float left
-  margin-right 20px
-
+.org-marketing-page
   h1
     font-size 46px
+
+  h2
+    font-size 42px
+    font-weight 300
+    line-height 1.238
 
   h3
     font-size 28px
     color npmred
     font-weight 300
+    line-height 1.286
+  h4
+    color npmred
+    font-size 18px
+    line-height 1.3333
+    margin-bottom 15px
 
   .description
     color #485165
@@ -93,6 +85,42 @@
   .button
     display inline-block
 
+.marketing-banner-container
+  background banner-back-blue
+  margin -50px -20px 0
+  padding 40px 20px 20px
+
+.marketing-banner
+  max-width 1180px
+  margin 0 auto
+
+.marketing-banner .img-container
+  display none
+  float right
+  width 45%
+  max-width 601px
+
+.org-banner-info
+  float left
+  margin-right 20px
+
+.org-marketing-description
+  font-size 16px
+  color #212121
+  font-weight 300
+  line-height 1.75
+
+.org-marketing-feature-list li
+  color #A5B3AA
+  font-weight 300
+  margin-top 20px
+
+  &:first-child
+    margin-top 0
+
+.org-marketing-feature-list span
+  color black
+
 @media (min-width: mobileMaxWidth + 1)
 
   .marketing-banner
@@ -102,3 +130,9 @@
 
     .img-container
       display block
+
+  .org-marketing-main
+    h2
+      margin -95px 0 25px
+      padding-bottom 25px
+      border-bottom 1px solid #eaeaea

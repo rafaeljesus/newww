@@ -9,5 +9,7 @@ $(function() {
     key: 'ad_acco_9fef40229188e8c0',
     customer: customerId
   });
-  billing.on('click', handler.open);
+  billing.on('click', function() {
+    handler.open();
+  });
 });

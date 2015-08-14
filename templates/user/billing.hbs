@@ -128,7 +128,7 @@
 
     <p class="error billing-error" style="display:none;"></p>
 
-    <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" style="display:none;">
+    <form method="POST" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
       <label for="card-number">Card Number</label>
       <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
 

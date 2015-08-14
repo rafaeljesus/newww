@@ -78,6 +78,12 @@ var sanitizers = {
     }
 
     return input.replace("@", "");
-  }
+  },
 
+  npmweekly: alwaysIncludeAsIs,
+  dripcampaigns: alwaysIncludeAsIs
+}
+
+function alwaysIncludeAsIs(input) {
+    return input;
 }

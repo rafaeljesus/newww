@@ -159,8 +159,11 @@ exports.handleProfileEdit = function(request, reply) {
     homepage: Joi.string().allow(''),
     github: Joi.string().allow(''),
     twitter: Joi.string().allow(''),
-    freenode: Joi.string().allow('')
+    freenode: Joi.string().allow(''),
+    dripcampaigns: Joi.string().allow('on').allow('soft').allow('').default(''),
+    npmweekly: Joi.string().allow('on').allow('soft').allow('').default('')
   });
+
 
   Joi.validate(request.payload, editableUserProperties, function(err, userChanges) {
     if (err) {

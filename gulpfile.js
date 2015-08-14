@@ -131,7 +131,7 @@ gulp.task('lint', function() {
 });
 
 gulp.task('rev', ['browserify', 'styles'], function() {
-  return gulp.src(['static/js/index.js', 'static/js/index.min.js', 'static/css/index.css'])
+  return gulp.src(['static/js/index.js', 'static/js/index.min.js', 'static/css/index.css', 'static/js/vendor.min.js'])
     .pipe(revAll.revision())
     .pipe(gulp.dest('static'))
     .pipe(revAll.manifestFile())

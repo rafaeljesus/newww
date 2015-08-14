@@ -1,4 +1,4 @@
-module.exports = function() {
+(function($) {
 
   if (typeof StripeCheckout === 'undefined') {
     return;
@@ -37,7 +37,8 @@ module.exports = function() {
       }
     });
 
-    $('#one-month').click(function(e) {
+    $('#one-month').on("click", function(e) {
+      e.preventDefault();
       amount = 35000;
 
       handler.open({
@@ -45,7 +46,6 @@ module.exports = function() {
         description: "Pay $350 for 1 month of advertising",
         amount: amount
       });
-      e.preventDefault();
     });
 
     $('#three-months').click(function(e) {
@@ -61,4 +61,4 @@ module.exports = function() {
 
 
   })
-}
+}(jQuery));

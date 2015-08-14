@@ -21,7 +21,11 @@
   {{> touch-icons}}
 
   <link rel="canonical" href="{{canonicalURL}}">
+  {{#if devEnv}}
   <link rel="stylesheet" media="all" href="/static/css/index.css">
+  {{else}}
+  <link rel="stylesheet" media="all" href="/static/{{m "css/index.css"}}">
+  {{/if}}
   <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="npm">
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700">
   <!--[if lt IE 9]>
@@ -31,9 +35,8 @@
   {{#if devEnv}}
   <script src="/static/js/index.js"></script>
   {{else}}
-  <script src="/static/js/index.min.js"></script>
+  <script src="/static/{{m "js/index.min.js"}}"></script>
   {{/if}}
-
 
 </head>
 

@@ -109,6 +109,7 @@
     "gulp-jshint": "^1.9.0",
     "gulp-nodemon": "^1.0.2",
     "gulp-rename": "^1.2.0",
+    "gulp-rev-all": "^0.8.21",
     "gulp-streamify": "0.0.5",
     "gulp-stylus": "^1.0.0",
     "gulp-uglify": "^0.3.0",

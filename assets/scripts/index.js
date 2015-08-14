@@ -4,7 +4,6 @@ require("./crumb")();
 require("./hiring");
 require("./npm-expansions");
 require("./email-obfuscate")();
-require("./payments")();
 require("./pretty-numbers")();
 require("./private-npm-beta")();
 require('./deep-links')();

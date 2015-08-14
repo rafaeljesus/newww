@@ -1,4 +1,4 @@
-module.exports = function() {
+(function($) {
 
   if (typeof StripeCheckout === 'undefined') {
     return;
@@ -61,4 +61,4 @@ module.exports = function() {
 
 
   })
-}
+}(jQuery));

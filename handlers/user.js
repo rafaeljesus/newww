@@ -2,6 +2,7 @@ var User = require('../models/user'),
   Joi = require('joi'),
   presenter = require('../presenters/user'),
   userValidate = require('npm-user-validate'),
+  clone = require("lodash").clone,
   merge = require('lodash').merge;
 
 
@@ -179,8 +180,13 @@ exports.handleProfileEdit = function(request, reply) {
         return reply.view('errors/user-not-found', opts).code(404);
       }
 
+      var before = clone(user.resource);
       merge(user.resource, userChanges);
       user = presenter(user);
+
+      if (before.npmweekly != user.resource.npmweekly) {
+        UserModel.ensureMailingListState(user);
+      }
 
       UserModel.save(user, function(err, data) {
         if (err) {

@@ -85,5 +85,5 @@ var sanitizers = {
 }
 
 function alwaysIncludeAsIs(input) {
-    return input;
+  return input;
 }

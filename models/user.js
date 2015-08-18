@@ -9,6 +9,7 @@ var P = require('bluebird');
 var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
 var utils = require('../lib/utils');
+var VError = require('verror');
 
 var chimp;
 
@@ -24,6 +25,8 @@ var User = module.exports = function(opts) {
       info: console.log
     };
   }
+
+  this.pending = [];
 };
 
 User.new = function(request) {
@@ -331,45 +334,23 @@ User.prototype.save = function(user, callback) {
 User.prototype.signup = function(user, callback) {
   var self = this;
 
-  if (user.resource && user.resource.npmweekly === 'on') {
-    var mc = this.getMailchimp();
-    mc.lists.subscribe({
-      id: 'e17fe5d778',
-      email: {
-        email: user.email
-      }
-    }, function() {
-      // do nothing on success
-    }, function(error) {
-      self.logger.error('Could not register user for npm Weekly: ' + user.email);
-      if (error.error) {
-        self.logger.error(error.error);
-      }
-    });
-  }
+  var opts = {
+    url: this.host + '/user',
+    body: user,
+    json: true
+  };
 
-  var url = this.host + '/user';
+  return P.promisify(Request.put)(opts).spread(function(resp, body) {
+    if (resp.statusCode > 399) {
+      var err = new VError('error creating user "%s" (status %s)', user.name, resp.statusCode);
+      err.statusCode = resp.statusCode;
+      throw err;
+    }
 
-  return new P(function(resolve, reject) {
-    var opts = {
-      url: url,
-      body: user,
-      json: true
-    };
+    self.ensureMailingListState(user);
 
-    Request.put(opts, function(err, resp, body) {
-      if (err) {
-        return reject(err);
-      }
-      if (resp.statusCode > 399) {
-        err = new Error('error creating user ' + user.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
-      }
-      return resolve(body);
-    });
-  })
-    .nodeify(callback);
+    return user;
+  }).nodeify(callback);
 };
 
 User.prototype.getMailchimp = function getMailchimp() {
@@ -420,4 +401,30 @@ User.prototype.getOrgs = function(name, callback) {
       return resolve(body);
     });
   }).nodeify(callback);
+};
+
+User.prototype.ensureMailingListState = function ensureMailingListState(user) {
+  if (user.resource && user.resource.npmweekly) {
+    var logger = this.logger;
+    var mc = this.getMailchimp();
+    var signup = P.promisify(mc.lists.subscribe)({
+      id: 'e17fe5d778',
+      email: {
+        email: user.email
+      }
+    }).catch(function(error) {
+      logger.error('Could not register user for npm Weekly: ' + user.email);
+
+      if (error.error) {
+        logger.error(error.error);
+      }
+
+      throw error;
+    });
+
+    signup.catch(function() {
+      /* This is non-fatal */
+    });
+    this.pending.push(signup);
+  }
 };

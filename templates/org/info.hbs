@@ -110,7 +110,7 @@
               <td>
                 <div class="switch-container pay-status">
                   <label><span class="a11y-only">Paid Status</span>
-                  <input class="switch" checked="checked" type="checkbox" value="paid">
+                    <input class="switch"{{#if isPaid}} checked="checked"{{/if}} type="checkbox" value="paid">
                   <div class="switch"></div>
                   <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
                   <span class="switch-label checked-text" aria-hidden="true">paid</span>

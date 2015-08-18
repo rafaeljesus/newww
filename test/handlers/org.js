@@ -60,7 +60,7 @@ describe('getting an org', function() {
       orgMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('org/info');
-      expect(resp.request.response.source.context).to.not.include('sponsorships');
+      expect(resp.request.response.source.context.sponsorships.length).to.equal(0);
       done();
     });
   });

@@ -39,10 +39,22 @@ exports.getOrg = function(request, reply) {
             var subscription = subscriptions.filter(function(subscription) {
               return subscription.npm_org === request.params.org;
             });
+
             if (subscription.length) {
               var licenseId = subscription[0].license_id;
               Customer(loggedInUser)
                 .getAllSponsorships(licenseId, function(err, sponsorships) {
+                  sponsorships = sponsorships || [];
+                  var sponsoredUsers = sponsorships.map(function(sponsorship) {
+                    return sponsorship.npm_user;
+                  });
+
+                  org.users.items = org.users.items.map(function(user) {
+                    user.isPaid = subscription[0].npm_user === user.name || sponsoredUsers.indexOf(user.name) > -1;
+                    return user;
+                  });
+
+
                   opts.sponsorships = sponsorships;
                   return reply.view('org/info', opts);
                 });

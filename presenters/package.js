@@ -80,6 +80,14 @@ module.exports = function(pkg) {
     delete pkg.homepage;
   }
 
+  if (pkg.repository && pkg.repository.url && !isUrl(pkg.repository.url)) {
+    delete pkg.repository;
+  }
+
+  if (pkg.bugs && pkg.bugs.url && !isUrl(pkg.bugs.url)) {
+    delete pkg.bugs;
+  }
+
   // homepage: discard if github repo URL
   if (pkg.homepage && url.parse(pkg.homepage).hostname.match(/^(www\.)?github\.com/i)) {
     delete pkg.homepage;

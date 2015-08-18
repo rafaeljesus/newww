@@ -72,13 +72,20 @@ customer.updateBillingInfo = function(request, reply) {
       email: billingInfo.email
     };
 
-    sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function(er) {
-      if (er) {
-        request.logger.error('unable to send billing email to HubSpot');
-        request.logger.error(er);
+    request.customer.createSubscription(planInfo, function(err, unused) {
+      if (err) {
+        request.logger.error("unable to update subscription to " + planInfo.plan);
+        request.logger.error(err);
       }
 
-      return reply.redirect('/settings/billing?updated=1');
+      sendToHubspot(process.env.HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, data, function(er) {
+        if (er) {
+          request.logger.error('unable to send billing email to HubSpot');
+          request.logger.error(er);
+        }
+
+        return reply.redirect('/settings/billing?updated=1');
+      });
     });
   });
 

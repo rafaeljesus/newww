@@ -129,15 +129,18 @@ describe("User", function() {
         .get('/customer/bob/stripe')
         .reply(404);
 
-      User.get(fixtures.users.bob.name, function(err, body) {
-        userMock.done();
-        licenseMock.done();
-        expect(err).to.be.null();
-        expect(body).to.exist();
-        expect(body.name).to.equal("bob");
-        expect(body.email).to.exist();
-        expect(body.isPaid).to.be.false();
-        done();
+      User.dropCache(fixtures.users.bob.name, function(err) {
+        expect(err).to.not.exist();
+        User.get(fixtures.users.bob.name, function(err, body) {
+          userMock.done();
+          licenseMock.done();
+          expect(err).to.be.null();
+          expect(body).to.exist();
+          expect(body.name).to.equal("bob");
+          expect(body.email).to.exist();
+          expect(body.isPaid).to.be.false();
+          done();
+        });
       });
     });
 
@@ -166,8 +169,7 @@ describe("User", function() {
         // .get('/customer/bob/stripe/subscription')
         // .reply(200, fixtures.customers.bob_subscriptions);
 
-      User.dropCache(fixtures.users.bob.name, function() {
-
+      User.dropCache(fixtures.users.bob.name, function(err) {
         User.get(fixtures.users.bob.name, function(err, body) {
           expect(err).to.be.null();
           expect(body.name).to.equal("bob");
@@ -200,21 +202,25 @@ describe("User", function() {
     });
 
     it("does not require a bearer token", function(done) {
-      var userMock = nock(User.host, {
-        reqheaders: {}
-      })
-        .get('/user/hermione')
-        .reply(200);
-      var licenseMock = nock('https://license-api-example.com')
-        .get('/customer/hermione/stripe')
-        .reply(404);
+      User.dropCache('hermione', function(err) {
+        expect(err).to.not.exist();
 
-      User.get('hermione', function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.exist();
-        userMock.done();
-        licenseMock.done();
-        done();
+        var userMock = nock(User.host, {
+          reqheaders: {}
+        })
+          .get('/user/hermione')
+          .reply(200);
+        var licenseMock = nock('https://license-api-example.com')
+          .get('/customer/hermione/stripe')
+          .reply(404);
+
+        User.get('hermione', function(err, body) {
+          expect(err).to.be.null();
+          expect(body).to.exist();
+          userMock.done();
+          licenseMock.done();
+          done();
+        });
       });
     });
   });

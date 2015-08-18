@@ -579,6 +579,7 @@ describe("User", function() {
           email: 'boom@boom.com',
           npmweekly: "on"
         }, function(er, user) {
+          expect(er).to.not.exist();
           // userMock.done();
           expect(spy.calledWith(params)).to.be.true();
           done();

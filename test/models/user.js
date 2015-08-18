@@ -569,7 +569,7 @@ describe("User", function() {
             "email": "boom@boom.com",
             "npmweekly": "on"
           })
-          .reply(404);
+          .reply(201);
 
         spy.reset();
         User.signup({

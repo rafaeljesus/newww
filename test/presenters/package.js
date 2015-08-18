@@ -335,6 +335,26 @@ describe("different types of deps", function() {
 });
 
 describe("repo url", function() {
+  it("is removed if the url is not a url at all", function(done) {
+    present({
+      "versions": ["1.3.0"],
+      "name": "hello",
+      "repository": {
+        "type": "git",
+        "url": "javascript:alert(1)"
+      },
+      "publisher": {
+        "name": "ohai",
+        "email": "ohai@email.com"
+      },
+      "version": "1.3.0",
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
+    }).then(function(pkg) {
+      expect(pkg.repository).to.not.exist();
+      done();
+    });
+  });
+
   it("doesn't change if it's not a GH url", function(done) {
     present({
       "versions": ["1.3.0"],
@@ -395,6 +415,28 @@ describe("repo url", function() {
     });
   });
 
+});
+
+describe("bugs url", function() {
+  it("is removed if it is not a real url", function(done) {
+    present({
+      "versions": ["1.3.0"],
+      "name": "hello",
+      "bugs": {
+        "type": "git",
+        "url": "javascript:alert(1)"
+      },
+      "publisher": {
+        "name": "ohai",
+        "email": "ohai@email.com"
+      },
+      "version": "1.3.0",
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
+    }).then(function(pkg) {
+      expect(pkg.bugs).to.not.exist();
+      done();
+    });
+  });
 });
 
 describe("readme", function() {

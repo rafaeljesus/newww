@@ -183,7 +183,7 @@ User.prototype.getPackages = function(name, page, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = new Error('error getting packages for user ' + name);
+        var err = new Error('error getting packages for user ' + name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -234,7 +234,7 @@ User.prototype.getStars = function(name, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = new Error('error getting stars for user ' + name);
+        var err = new Error('error getting stars for user ' + name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -262,13 +262,13 @@ User.prototype.login = function(loginInfo, callback) {
       }
 
       if (resp.statusCode === 401) {
-        err = new Error('password is incorrect for ' + loginInfo.name);
+        var err = new Error('password is incorrect for ' + loginInfo.name);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
 
       if (resp.statusCode === 404) {
-        err = new Error('user ' + loginInfo.name + ' not found');
+        var err = new Error('user ' + loginInfo.name + ' not found');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

@@ -36,6 +36,7 @@
     "cheerio": "^0.17.0",
     "chunk": "0.0.2",
     "crumb": "^4.0.3",
+    "debuglog": "^1.0.1",
     "elasticsearch": "^5.0.0",
     "github-url-to-object": "^1.5.0",
     "gravatar": "^1.2.0",

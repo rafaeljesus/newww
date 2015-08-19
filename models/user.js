@@ -24,10 +24,6 @@ var User = module.exports = function(opts) {
       info: console.log
     };
   }
-
-  this.get = P.promisify(this._get);
-
-  return this;
 };
 
 User.new = function(request) {
@@ -99,16 +95,15 @@ User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
     });
 };
 
-User.prototype._get = function _get(name, callback) {
+User.prototype.get = P.promisify(function get(name, callback) {
   var self = this;
-  var user;
 
   cache.getKey(name, function(err, value) {
     if (err) {
       return callback(err);
     }
     if (value) {
-      user = utils.safeJsonParse(value);
+      var user = utils.safeJsonParse(value);
       return callback(null, user);
     }
 
@@ -121,7 +116,7 @@ User.prototype._get = function _get(name, callback) {
       });
     });
   });
-};
+});
 
 User.prototype.fetchData = function fetchData(name, callback) {
   var self = this;

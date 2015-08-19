@@ -395,6 +395,23 @@ describe("repo url", function() {
     });
   });
 
+  it("cleans up shorthands", function(done) {
+    present({
+      "versions": ["1.3.0"],
+      "name": "hello",
+      "repository": "github:someone/ohai",
+      "publisher": {
+        "name": "ohai",
+        "email": "ohai@email.com"
+      },
+      "version": "1.3.0",
+      "lastPublishedAt": "2013-06-11T09:36:32.285Z"
+    }).then(function(pkg) {
+      expect(pkg.repository.url).to.equal('https://github.com/someone/ohai');
+      done();
+    });
+  });
+
   it("converts git:// URLS to https so they can be linked to", function(done) {
     present({
       "versions": ["1.3.0"],

@@ -2,19 +2,20 @@ var _ = require('lodash'),
   cache = require('../lib/cache'),
   fmt = require('util').format,
   gh = require('github-url-to-object'),
-  isUrl = require('is-url'),
   marky = require('marky-markdown'),
   metrics = require('../adapters/metrics')(),
   normalizeLicenseData = require('normalize-license-data'),
   P = require('bluebird'),
   presentCollaborator = require("./collaborator"),
   presentUser = require("./user"),
+  npd = require('normalize-package-data'),
   url = require('url');
 
 var MINUTES = 60; // seconds
 var CACHE_TTL = 5 * MINUTES;
 
 module.exports = function(pkg) {
+  npd(pkg);
 
   delete pkg.maintainers;
 
@@ -76,15 +77,15 @@ module.exports = function(pkg) {
   }
 
   // homepage: disallow non-URLs
-  if (pkg.homepage && !isUrl(pkg.homepage)) {
+  if (pkg.homepage && !isAcceptableHomepageURL(pkg.homepage)) {
     delete pkg.homepage;
   }
 
-  if (pkg.repository && pkg.repository.url && !isUrl(pkg.repository.url)) {
+  if (pkg.repository && pkg.repository.url && !isAcceptableRepoURL(pkg.repository.url)) {
     delete pkg.repository;
   }
 
-  if (pkg.bugs && pkg.bugs.url && !isUrl(pkg.bugs.url)) {
+  if (pkg.bugs && pkg.bugs.url && !isAcceptableHomepageURL(pkg.bugs.url)) {
     delete pkg.bugs;
   }
 
@@ -238,4 +239,14 @@ function processDependencies(dependencies, max) {
     });
   }
   return deps;
+}
+
+function isAcceptableHomepageURL(u) {
+  var p = url.parse(u);
+  return Boolean(~['http:', 'https:'].indexOf(p.protocol));
+}
+
+function isAcceptableRepoURL(u) {
+  var p = url.parse(u);
+  return Boolean(~['http:', 'https:', 'git+https:', 'git:', 'git+ssh:', 'svn:', 'svn+ssh:', 'svn+https:', 'svn+http:', 'hg:'].indexOf(p.protocol));
 }

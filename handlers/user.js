@@ -57,6 +57,10 @@ exports.handleSignup = function signup(request, reply) {
     });
 
     UserModel.get(validatedUser.name, function(err, userExists) {
+      if (err && err.statusCode != 404) {
+        request.logger.warn('Unable to get user to validate');
+        return reply.view('errors/internal', opts).code(403);
+      }
       if (userExists) {
         opts.errors.push({
           message: new Error("username already exists").message
@@ -135,5 +139,4 @@ exports.handleSignup = function signup(request, reply) {
       });
     });
   });
-
 };

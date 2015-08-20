@@ -112,7 +112,6 @@ customer.subscribe = function(request, reply) {
     plan: plans[planType]
   };
 
-
   if (request.features.org_billing && planType === 'orgs') {
     planInfo.npm_org = request.payload.orgName;
     var opts = {};
@@ -167,7 +166,7 @@ customer.subscribe = function(request, reply) {
           request.logger.info("created subscription: ", planInfo);
         }
 
-        return reply.redirect('/settings/billing');
+        return reply.redirect('/settings/billing?updated=1');
       });
     });
 

@@ -250,11 +250,11 @@ var publicRoutes = [
   }, {
     path: "/signup",
     method: "GET",
-    handler: require('../facets/user/show-signup')
+    handler: require('../handlers/user').showSignup
   }, {
     path: "/signup",
     method: "POST",
-    handler: require('../facets/user/show-signup')
+    handler: require('../handlers/user').handleSignup
   }, {
     path: "/confirm-email/{token?}",
     method: "GET",

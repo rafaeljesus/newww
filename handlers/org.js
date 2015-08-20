@@ -192,20 +192,7 @@ exports.updateUserPayStatus = function(request, reply) {
       return reply.view('errors/internal', err).code(404);
     }
 
-    if (!payForUser) {
-      request.customer.revokeSponsorship(username, licenseId, function(err) {
-
-        if (err) {
-          request.logger.error('issue revoking sponsorship for user ', username);
-          request.logger.error(err);
-          // TODO: make better error page here
-          return reply.view('errors/internal', err).code(err.statusCode);
-        }
-
-        return exports.getOrg(request, reply);
-
-      });
-    } else {
+    if (payForUser) {
       request.customer.extendSponsorship(licenseId, username, function(err, extendedSponsorship) {
         if (err) {
           request.logger.error(err);
@@ -222,8 +209,19 @@ exports.updateUserPayStatus = function(request, reply) {
           return exports.getOrg(request, reply);
         });
       });
-    }
+    } else {
+      request.customer.revokeSponsorship(username, licenseId, function(err) {
 
+        if (err) {
+          request.logger.error('issue revoking sponsorship for user ', username);
+          request.logger.error(err);
+          // TODO: make better error page here
+          return reply.view('errors/internal', err).code(err.statusCode);
+        }
+
+        return exports.getOrg(request, reply);
+      });
+    }
   });
 };
 

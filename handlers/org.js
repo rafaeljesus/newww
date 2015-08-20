@@ -167,6 +167,48 @@ exports.removeUserFromOrg = function(request, reply) {
   });
 };
 
+exports.updateUserPayStatus = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/');
+  }
+
+  var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var payForUser = !!request.payload.payStatus;
+  var username = request.payload.username
+
+  var opts = {};
+
+  if (!payForUser) {
+    request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
+
+      if (err) {
+        request.logger.error('could not get license ID for ' + orgName);
+        request.logger.error(err);
+        // TODO: make better error page here
+        return reply.view('errors/internal', err).code(404);
+      }
+
+      request.customer.revokeSponsorship(username, licenseId, function(err) {
+
+        if (err) {
+          request.logger.error('issue revoking sponsorship for user ', username);
+          request.logger.error(err);
+          // TODO: make better error page here
+          return reply.view('errors/internal', err).code(err.statusCode);
+        }
+
+        return exports.getOrg(request, reply);
+
+      });
+    });
+  } else {
+    return exports.getOrg(request, reply);
+  }
+
+
+};
+
 exports.updateOrg = function(request, reply) {
   if (!request.features.org_billing) {
     return reply.redirect('/');
@@ -176,6 +218,8 @@ exports.updateOrg = function(request, reply) {
     exports.addUserToOrg(request, reply);
   } else if (request.payload.updateType === "deleteUser") {
     exports.removeUserFromOrg(request, reply);
+  } else if (request.payload.updateType === "updatePayStatus") {
+    exports.updateUserPayStatus(request, reply);
   }
 };
 

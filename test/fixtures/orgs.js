@@ -61,7 +61,8 @@ exports.bigcoAddedUsers = {
       created: '2014-11-21T20:05:05.423Z',
       updated: '2015-01-24T00:08:41.269Z',
       deleted: null,
-      role: "team-admin"
+      role: "team-admin",
+      isPaid: true
     },
     {
       "created": "2015-08-05T15:26:46.970Z",
@@ -75,7 +76,8 @@ exports.bigcoAddedUsers = {
       "resource": {},
       "role": "developer",
       "updated": "2015-08-05T15:26:46.970Z",
-      "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829"
+      "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+      "isPaid": true
     }
   ]
 };

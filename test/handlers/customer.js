@@ -838,61 +838,6 @@ describe("subscribing to an org", function() {
       });
     });
   });
-
-  // it("allows a super-user to pay for an organization that exists but is not yet paid for", function(done) {
-  //   generateCrumb(server, function(crumb) {
-  //     var opts = {
-  //       url: '/settings/billing/subscribe',
-  //       method: 'POST',
-  //       credentials: fixtures.users.bob,
-  //       payload: {
-  //         planType: 'orgs',
-  //         orgName: 'boomer',
-  //         crumb: crumb
-  //       },
-  //       headers: {
-  //         cookie: 'crumb=' + crumb
-  //       }
-  //     };
-
-  //     var userMock = nock("https://user-api-example.com")
-  //       .get("/user/bob")
-  //       .reply(200, fixtures.users.bob)
-  //       .get("/org/boomer")
-  //       .reply(200, {
-  //         "name": "boomer",
-  //         "description": "",
-  //         "resource": {},
-  //         "created": "2015-07-10T20:29:37.816Z",
-  //         "updated": "2015-07-10T21:07:16.799Z",
-  //         "deleted": null
-  //       })
-  //       .get("/org/boomer/user")
-  //       .reply(200, {
-  //         "count": 1,
-  //         "items": [fixtures.users.bob]
-  //       })
-  //       .get("/org/boomer/package")
-  //       .reply(404, "not found");
-
-  //     var customerMock = nock("https://license-api-example.com")
-  //       .get("/customer/bob/stripe")
-  //       .reply(200, fixtures.customers.happy)
-  //       .put("/customer/bob/stripe/subscription", {
-  //         plan: "npm-paid-org-7",
-  //         npm_org: "boomer"
-  //       })
-  //       .reply(200);
-
-//     server.inject(opts, function(resp) {
-//       userMock.done();
-//       customerMock.done();
-//       expect(resp.statusCode).to.equal(302);
-//       expect(resp.headers.location).to.match(/\/settings\/billing/);
-//       done();
-//     });
-//   });
-// });
 });
 
 

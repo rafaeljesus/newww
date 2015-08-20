@@ -181,8 +181,6 @@ exports.updateUserPayStatus = function(request, reply) {
   var payForUser = !!request.payload.payStatus;
   var username = request.payload.username
 
-  var opts = {};
-
   request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
 
     if (err) {

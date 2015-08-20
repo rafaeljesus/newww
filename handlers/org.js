@@ -183,16 +183,16 @@ exports.updateUserPayStatus = function(request, reply) {
 
   var opts = {};
 
-  if (!payForUser) {
-    request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
+  request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
 
-      if (err) {
-        request.logger.error('could not get license ID for ' + orgName);
-        request.logger.error(err);
-        // TODO: make better error page here
-        return reply.view('errors/internal', err).code(404);
-      }
+    if (err) {
+      request.logger.error('could not get license ID for ' + orgName);
+      request.logger.error(err);
+      // TODO: make better error page here
+      return reply.view('errors/internal', err).code(404);
+    }
 
+    if (!payForUser) {
       request.customer.revokeSponsorship(username, licenseId, function(err) {
 
         if (err) {
@@ -205,13 +205,7 @@ exports.updateUserPayStatus = function(request, reply) {
         return exports.getOrg(request, reply);
 
       });
-    });
-  } else {
-    request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
-      if (err) {
-        request.logger.error(err);
-        return reply.view('errors/internal', err).code(404);
-      }
+    } else {
       request.customer.extendSponsorship(licenseId, username, function(err, extendedSponsorship) {
         if (err) {
           request.logger.error(err);
@@ -228,10 +222,9 @@ exports.updateUserPayStatus = function(request, reply) {
           return exports.getOrg(request, reply);
         });
       });
-    });
-  }
+    }
 
-
+  });
 };
 
 exports.updateOrg = function(request, reply) {

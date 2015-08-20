@@ -706,7 +706,7 @@ describe('updating an org', function() {
   });
 
   describe('updating paid status of user', function() {
-    it('renders the org info page', function(done) {
+    it('adds paid for status when prompted', function(done) {
       generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
@@ -716,15 +716,47 @@ describe('updating an org', function() {
           .get("/org/bigco")
           .reply(200, fixtures.orgs.bigco)
           .get("/org/bigco/user")
-          .reply(200, fixtures.orgs.bigcoAddedUsers)
+          .reply(200, fixtures.orgs.bigcoAddedUsersNotPaid)
           .get("/org/bigco/package")
           .reply(200, fixtures.packages.fake);
 
         var licenseMock = nock("https://license-api-example.com:443")
           .get("/customer/bob@boom.me")
           .reply(200, fixtures.customers.fetched_happy)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions);
+          .get("/customer/bob/stripe/subscription").times(2)
+          .reply(200, fixtures.users.bobsubscriptions)
+          .put("/sponsorship/1", {
+            "npm_user": "betty"
+          })
+          .reply(200, {
+            "id": 15,
+            "npm_user": "betty",
+            "created": "2015-08-05T20:55:54.759Z",
+            "updated": "2015-08-05T20:55:54.759Z",
+            "deleted": null,
+            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+            "verified": null
+          })
+          .post("/sponsorship/f56dffef-b136-429a-97dc-57a6ef035829")
+          .reply(200, {
+            "id": 15,
+            "npm_user": "betty",
+            "created": "2015-08-05T20:55:54.759Z",
+            "updated": "2015-08-05T20:55:54.759Z",
+            "deleted": null,
+            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+            "verified": true
+          })
+          .get("/sponsorship/1")
+          .reply(200, [{
+            "id": 15,
+            "npm_user": "betty",
+            "created": "2015-08-05T20:55:54.759Z",
+            "updated": "2015-08-05T20:55:54.759Z",
+            "deleted": null,
+            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+            "verified": true
+          }]);
 
         var options = {
           url: "/org/bigco",
@@ -748,6 +780,10 @@ describe('updating an org', function() {
           licenseMock.done();
           expect(resp.statusCode).to.equal(200);
           expect(resp.request.response.source.template).to.equal('org/info');
+          var betty = resp.request.response.source.context.org.users.items.filter(function(user) {
+            return user.name === 'betty';
+          })[0];
+          expect(betty.isPaid).to.equal(true);
           done();
         });
       });
@@ -782,7 +818,9 @@ describe('updating an org', function() {
             "updated": "2015-08-05T20:55:54.759Z",
             "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
             "verified": null
-          });
+          })
+          .get("/sponsorship/1")
+          .reply(404);
 
         var options = {
           url: "/org/bigco",
@@ -811,7 +849,6 @@ describe('updating an org', function() {
         });
       });
     });
-
   });
 });
 

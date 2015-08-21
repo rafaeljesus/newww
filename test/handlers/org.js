@@ -361,9 +361,9 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
+          .get("/customer/bob@boom.me")
+          .reply(200, fixtures.customers.fetched_happy)
+          .get("/customer/bob/stripe/subscription").times(2)
           .reply(200, fixtures.users.bobsubscriptions)
           .put("/sponsorship/1", {
             "npm_user": "betty"
@@ -379,7 +379,9 @@ describe('updating an org', function() {
             "verified": null
           })
           .post("/sponsorship/f56dffef-b136-429a-97dc-57a6ef035829")
-          .reply(500, "duplicate key value violates unique constraint \"sponsorships_npm_user\"");
+          .reply(500, "duplicate key value violates unique constraint \"sponsorships_npm_user\"")
+          .get("/sponsorship/1")
+          .reply(200, fixtures.orgs.bigcoSponsorships);
 
         var orgMock = nock("https://user-api-example.com")
           .put('/org/bigco/user', {
@@ -434,9 +436,9 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
+          .get("/customer/bob@boom.me")
+          .reply(200, fixtures.customers.fetched_happy)
+          .get("/customer/bob/stripe/subscription").times(2)
           .reply(200, fixtures.users.bobsubscriptions)
           .put("/sponsorship/1", {
             "npm_user": "betty"
@@ -461,7 +463,9 @@ describe('updating an org', function() {
             "updated": "2015-08-05T20:59:41.538Z",
             "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
             "verified": true
-          });
+          })
+          .get("/sponsorship/1")
+          .reply(200, fixtures.orgs.bigcoSponsorships);
 
         var orgMock = nock("https://user-api-example.com")
           .put('/org/bigco/user', {

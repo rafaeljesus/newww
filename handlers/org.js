@@ -106,15 +106,7 @@ exports.addUserToOrg = function(request, reply) {
                 return reply.view('errors/internal', err).code(err.statusCode);
               }
             }
-            Org(loggedInUser)
-              .get(orgName, function(err, org) {
-                if (err) {
-                  request.logger.error(err);
-                  return reply.view('errors/internal', err);
-                }
-                opts.org = org;
-                return reply.view('org/info', opts);
-              });
+            return exports.getOrg(request, reply);
           });
         });
       });

@@ -39,10 +39,26 @@ exports.getOrg = function(request, reply) {
             var subscription = subscriptions.filter(function(subscription) {
               return subscription.npm_org === request.params.org;
             });
+
             if (subscription.length) {
               var licenseId = subscription[0].license_id;
               Customer(loggedInUser)
                 .getAllSponsorships(licenseId, function(err, sponsorships) {
+                  if (err) {
+                    request.logger.error(err);
+                    return reply.view('errors/internal', err);
+                  }
+                  sponsorships = sponsorships || [];
+                  var sponsoredUsers = sponsorships.map(function(sponsorship) {
+                    return sponsorship.npm_user;
+                  });
+
+                  org.users.items = org.users.items.map(function(user) {
+                    user.isPaid = subscription[0].npm_user === user.name || sponsoredUsers.indexOf(user.name) > -1;
+                    return user;
+                  });
+
+
                   opts.sponsorships = sponsorships;
                   return reply.view('org/info', opts);
                 });
@@ -90,15 +106,7 @@ exports.addUserToOrg = function(request, reply) {
                 return reply.view('errors/internal', err).code(err.statusCode);
               }
             }
-            Org(loggedInUser)
-              .get(orgName, function(err, org) {
-                if (err) {
-                  request.logger.error(err);
-                  return reply.view('errors/internal', err);
-                }
-                opts.org = org;
-                return reply.view('org/info', opts);
-              });
+            return exports.getOrg(request, reply);
           });
         });
       });
@@ -142,16 +150,64 @@ exports.removeUserFromOrg = function(request, reply) {
             request.logger.error(err);
             return reply.view('errors/internal', err).code(err.statusCode);
           }
-          Org(loggedInUser)
-            .get(orgName, function(err, org) {
-              if (err) {
-                request.logger.error(err);
-              }
-              opts.org = org;
-              return reply.view('org/info', opts);
-            });
+          return exports.getOrg(request, reply);
         });
     });
+  });
+};
+
+exports.updateUserPayStatus = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/');
+  }
+
+  var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var payForUser = !!request.payload.payStatus;
+  var username = request.payload.username
+
+  request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
+
+    if (err) {
+      request.logger.error('could not get license ID for ' + orgName);
+      request.logger.error(err);
+      // TODO: make better error page here
+      return reply.view('errors/internal', err).code(404);
+    }
+
+    if (payForUser) {
+      request.customer.extendSponsorship(licenseId, username, function(err, extendedSponsorship) {
+        if (err) {
+          if (err.message.indexOf("duplicate key value violates unique constraint") > -1) {
+            return exports.getOrg(request, reply);
+          }
+          request.logger.error(err);
+          return reply.view('errors/internal', err).code(err.statusCode);
+        }
+        request.customer.acceptSponsorship(extendedSponsorship.verification_key, function(err) {
+          if (err) {
+            request.logger.error(err);
+            if (err.statusCode !== 403) {
+              return reply.view('errors/internal', err).code(err.statusCode);
+            }
+          }
+
+          return exports.getOrg(request, reply);
+        });
+      });
+    } else {
+      request.customer.revokeSponsorship(username, licenseId, function(err) {
+
+        if (err) {
+          request.logger.error('issue revoking sponsorship for user ', username);
+          request.logger.error(err);
+          // TODO: make better error page here
+          return reply.view('errors/internal', err).code(err.statusCode);
+        }
+
+        return exports.getOrg(request, reply);
+      });
+    }
   });
 };
 
@@ -164,6 +220,8 @@ exports.updateOrg = function(request, reply) {
     exports.addUserToOrg(request, reply);
   } else if (request.payload.updateType === "deleteUser") {
     exports.removeUserFromOrg(request, reply);
+  } else if (request.payload.updateType === "updatePayStatus") {
+    exports.updateUserPayStatus(request, reply);
   }
 };
 

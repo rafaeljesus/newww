@@ -60,7 +60,7 @@ describe('getting an org', function() {
       orgMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('org/info');
-      expect(resp.request.response.source.context).to.not.include('sponsorships');
+      expect(resp.request.response.source.context.sponsorships.length).to.equal(0);
       done();
     });
   });
@@ -361,9 +361,9 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
+          .get("/customer/bob@boom.me")
+          .reply(200, fixtures.customers.fetched_happy)
+          .get("/customer/bob/stripe/subscription").times(2)
           .reply(200, fixtures.users.bobsubscriptions)
           .put("/sponsorship/1", {
             "npm_user": "betty"
@@ -379,7 +379,9 @@ describe('updating an org', function() {
             "verified": null
           })
           .post("/sponsorship/f56dffef-b136-429a-97dc-57a6ef035829")
-          .reply(500, "duplicate key value violates unique constraint \"sponsorships_npm_user\"");
+          .reply(500, "duplicate key value violates unique constraint \"sponsorships_npm_user\"")
+          .get("/sponsorship/1")
+          .reply(200, fixtures.orgs.bigcoSponsorships);
 
         var orgMock = nock("https://user-api-example.com")
           .put('/org/bigco/user', {
@@ -434,9 +436,9 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
+          .get("/customer/bob@boom.me")
+          .reply(200, fixtures.customers.fetched_happy)
+          .get("/customer/bob/stripe/subscription").times(2)
           .reply(200, fixtures.users.bobsubscriptions)
           .put("/sponsorship/1", {
             "npm_user": "betty"
@@ -461,7 +463,9 @@ describe('updating an org', function() {
             "updated": "2015-08-05T20:59:41.538Z",
             "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
             "verified": true
-          });
+          })
+          .get("/sponsorship/1")
+          .reply(200, fixtures.orgs.bigcoSponsorships);
 
         var orgMock = nock("https://user-api-example.com")
           .put('/org/bigco/user', {
@@ -647,9 +651,9 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
+          .get("/customer/bob@boom.me")
+          .reply(200, fixtures.customers.fetched_happy)
+          .get("/customer/bob/stripe/subscription").times(2)
           .reply(200, fixtures.users.bobsubscriptions)
           .delete("/sponsorship/1/betty")
           .reply(200, {
@@ -661,7 +665,9 @@ describe('updating an org', function() {
             "updated": "2015-08-05T20:55:54.759Z",
             "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
             "verified": null
-          });
+          })
+          .get("/sponsorship/1")
+          .reply(200, fixtures.orgs.bigcoSponsorships);
 
         var orgMock = nock("https://user-api-example.com")
           .delete('/org/bigco/user/betty')
@@ -676,7 +682,12 @@ describe('updating an org', function() {
           .get("/org/bigco")
           .reply(200, fixtures.orgs.bigco)
           .get("/org/bigco/user")
-          .reply(200, fixtures.orgs.bigcoAddedUsers);
+          .reply(200, fixtures.orgs.bigcoAddedUsers)
+          .get('/org/bigco/package')
+          .reply(200, {
+            count: 1,
+            items: [fixtures.packages.fake]
+          });
 
         var options = {
           url: "/org/bigco",
@@ -699,6 +710,152 @@ describe('updating an org', function() {
           orgMock.done();
           expect(resp.statusCode).to.equal(200);
           expect(resp.request.response.source.template).to.equal('org/info');
+          done();
+        });
+      });
+    });
+  });
+
+  describe('updating paid status of user', function() {
+    it('adds paid for status when prompted', function(done) {
+      generateCrumb(server, function(crumb) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var orgMock = nock("https://user-api-example.com")
+          .get("/org/bigco")
+          .reply(200, fixtures.orgs.bigco)
+          .get("/org/bigco/user")
+          .reply(200, fixtures.orgs.bigcoAddedUsersNotPaid)
+          .get("/org/bigco/package")
+          .reply(200, fixtures.packages.fake);
+
+        var licenseMock = nock("https://license-api-example.com:443")
+          .get("/customer/bob@boom.me")
+          .reply(200, fixtures.customers.fetched_happy)
+          .get("/customer/bob/stripe/subscription").times(2)
+          .reply(200, fixtures.users.bobsubscriptions)
+          .put("/sponsorship/1", {
+            "npm_user": "betty"
+          })
+          .reply(200, {
+            "id": 15,
+            "npm_user": "betty",
+            "created": "2015-08-05T20:55:54.759Z",
+            "updated": "2015-08-05T20:55:54.759Z",
+            "deleted": null,
+            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+            "verified": null
+          })
+          .post("/sponsorship/f56dffef-b136-429a-97dc-57a6ef035829")
+          .reply(200, {
+            "id": 15,
+            "npm_user": "betty",
+            "created": "2015-08-05T20:55:54.759Z",
+            "updated": "2015-08-05T20:55:54.759Z",
+            "deleted": null,
+            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+            "verified": true
+          })
+          .get("/sponsorship/1")
+          .reply(200, [{
+            "id": 15,
+            "npm_user": "betty",
+            "created": "2015-08-05T20:55:54.759Z",
+            "updated": "2015-08-05T20:55:54.759Z",
+            "deleted": null,
+            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+            "verified": true
+          }]);
+
+        var options = {
+          url: "/org/bigco",
+          method: "post",
+          credentials: fixtures.users.bob,
+          payload: {
+            username: 'betty',
+            payStatus: 'on',
+            updateType: 'updatePayStatus',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          licenseMock.done();
+          expect(resp.statusCode).to.equal(200);
+          expect(resp.request.response.source.template).to.equal('org/info');
+          var betty = resp.request.response.source.context.org.users.items.filter(function(user) {
+            return user.name === 'betty';
+          })[0];
+          expect(betty.isPaid).to.equal(true);
+          done();
+        });
+      });
+    });
+
+    it('removes paid for status when prompted', function(done) {
+      generateCrumb(server, function(crumb) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var orgMock = nock("https://user-api-example.com")
+          .get("/org/bigco")
+          .reply(200, fixtures.orgs.bigco)
+          .get("/org/bigco/user")
+          .reply(200, fixtures.orgs.bigcoAddedUsers)
+          .get("/org/bigco/package")
+          .reply(200, fixtures.packages.fake);
+
+        var licenseMock = nock("https://license-api-example.com")
+          .get("/customer/bob@boom.me")
+          .reply(200, fixtures.customers.fetched_happy)
+          .get("/customer/bob/stripe/subscription").times(2)
+          .reply(200, fixtures.users.bobsubscriptions)
+          .delete("/sponsorship/1/betty")
+          .reply(200, {
+            "created": "2015-08-05T20:55:54.759Z",
+            "deleted": "2015-08-05T15:30:46.970Z",
+            "id": 15,
+            "license_id": 1,
+            "npm_user": "betty",
+            "updated": "2015-08-05T20:55:54.759Z",
+            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+            "verified": null
+          })
+          .get("/sponsorship/1")
+          .reply(404);
+
+        var options = {
+          url: "/org/bigco",
+          method: "post",
+          credentials: fixtures.users.bob,
+          payload: {
+            username: 'betty',
+            updateType: 'updatePayStatus',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          licenseMock.done();
+          var betty = resp.request.response.source.context.org.users.items.filter(function(user) {
+            return user.name === 'betty';
+          })[0];
+          expect(resp.statusCode).to.equal(200);
+          expect(betty.isPaid).to.equal(false);
           done();
         });
       });

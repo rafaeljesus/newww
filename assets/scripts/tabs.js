@@ -69,7 +69,7 @@ module.exports = function() {
 
     if ($(".tabs .current").attr("href") !== location.hash) {
       var tab = $(location.hash).data('tab');
-      tab.open();
+      tab && tab.open();
     }
 
     $(window).on("hashchange", function(e) {

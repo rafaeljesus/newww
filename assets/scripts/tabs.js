@@ -26,6 +26,8 @@ module.exports = function() {
     this.$element.removeClass("hidden");
     this.$element.addClass("visible");
     this.isOpen = true;
+    $(".tabs .current").removeClass("current");
+    this.tabNav.addClass("current");
 
     $.each(this.siblings, function(idx, el) {
       var tab = $(el).data("tab");
@@ -50,17 +52,33 @@ module.exports = function() {
   };
 
   $(function() {
+    $(window)[0].scrollTo(0, 0);
+
+
     var tabs = $(className);
     $.each(tabs, function(idx, el) {
       var tab = new Tab(el);
 
       tab.tabNav.on("click", function(e) {
         e.preventDefault();
-        $(".tabs .current").removeClass("current");
-        tab.tabNav.addClass("current");
+        location.hash = $(this).attr('href');
+        $(window)[0].scrollTo(0, 0);
         tab.open();
       });
     });
+
+    if ($(".tabs .current").attr("href") !== location.hash) {
+      var tab = $(location.hash).data('tab');
+      tab.open();
+    }
+
+    $(window).on("hashchange", function(e) {
+      if ($(".tabs .current").attr("href") !== location.hash) {
+        var tab = $(location.hash).data('tab');
+        tab.open();
+      }
+    });
+
   });
 
 

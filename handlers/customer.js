@@ -40,7 +40,7 @@ customer.getBillingInfo = function(request, reply) {
   });
 };
 
-customer.updateBillingInfo = function(request, reply) {
+customer.updateBillingInfo = function(request, reply, callback) {
   var sendToHubspot = request.server.methods.npme.sendData;
 
   var coupon = request.payload.coupon;
@@ -78,6 +78,10 @@ customer.updateBillingInfo = function(request, reply) {
         request.logger.error(er);
       }
 
+      if (callback) {
+        return callback(er);
+      }
+
       return reply.redirect('/settings/billing?updated=1');
     });
   });
@@ -108,11 +112,12 @@ customer.subscribe = function(request, reply) {
     plan: plans[planType]
   };
 
-  if (planType === 'orgs') {
-    planInfo.npm_org = request.payload.orgName;
+  if (planType === 'orgs' && !request.features.org_billing) {
+    return reply.redirect('/settings/billing');
   }
 
-  if (request.features.org_billing) {
+  if (request.features.org_billing && planType === 'orgs') {
+    planInfo.npm_org = request.payload.orgName;
     var opts = {};
 
     Org(request.loggedInUser.name)
@@ -154,18 +159,21 @@ customer.subscribe = function(request, reply) {
         }
       });
   } else {
-    request.customer.createSubscription(planInfo, function(err, subscriptions) {
-      if (err) {
-        request.logger.error("unable to update subscription to " + planInfo.plan);
-        request.logger.error(err);
-      }
+    customer.updateBillingInfo(request, reply, function(err) {
+      request.customer.createSubscription(planInfo, function(err, subscriptions) {
+        if (err) {
+          request.logger.error("unable to update subscription to " + planInfo.plan);
+          request.logger.error(err);
+        }
 
-      if (typeof subscriptions === 'string') {
-        request.logger.info("created subscription: ", planInfo);
-      }
+        if (typeof subscriptions === 'string') {
+          request.logger.info("created subscription: ", planInfo);
+        }
 
-      return reply.redirect('/settings/billing');
+        return reply.redirect('/settings/billing?updated=1');
+      });
     });
+
   }
 
 };

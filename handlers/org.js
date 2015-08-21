@@ -150,14 +150,7 @@ exports.removeUserFromOrg = function(request, reply) {
             request.logger.error(err);
             return reply.view('errors/internal', err).code(err.statusCode);
           }
-          Org(loggedInUser)
-            .get(orgName, function(err, org) {
-              if (err) {
-                request.logger.error(err);
-              }
-              opts.org = org;
-              return reply.view('org/info', opts);
-            });
+          return exports.getOrg(request, reply);
         });
     });
   });
@@ -185,6 +178,9 @@ exports.updateUserPayStatus = function(request, reply) {
     if (payForUser) {
       request.customer.extendSponsorship(licenseId, username, function(err, extendedSponsorship) {
         if (err) {
+          if (err.statusCode === 500) {
+            return exports.getOrg(request, reply);
+          }
           request.logger.error(err);
           return reply.view('errors/internal', err).code(err.statusCode);
         }

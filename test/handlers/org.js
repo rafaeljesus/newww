@@ -651,9 +651,9 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
+          .get("/customer/bob@boom.me")
+          .reply(200, fixtures.customers.fetched_happy)
+          .get("/customer/bob/stripe/subscription").times(2)
           .reply(200, fixtures.users.bobsubscriptions)
           .delete("/sponsorship/1/betty")
           .reply(200, {
@@ -665,7 +665,9 @@ describe('updating an org', function() {
             "updated": "2015-08-05T20:55:54.759Z",
             "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
             "verified": null
-          });
+          })
+          .get("/sponsorship/1")
+          .reply(200, fixtures.orgs.bigcoSponsorships);
 
         var orgMock = nock("https://user-api-example.com")
           .delete('/org/bigco/user/betty')
@@ -680,7 +682,12 @@ describe('updating an org', function() {
           .get("/org/bigco")
           .reply(200, fixtures.orgs.bigco)
           .get("/org/bigco/user")
-          .reply(200, fixtures.orgs.bigcoAddedUsers);
+          .reply(200, fixtures.orgs.bigcoAddedUsers)
+          .get('/org/bigco/package')
+          .reply(200, {
+            count: 1,
+            items: [fixtures.packages.fake]
+          });
 
         var options = {
           url: "/org/bigco",

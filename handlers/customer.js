@@ -79,7 +79,7 @@ customer.updateBillingInfo = function(request, reply, callback) {
       }
 
       if (callback) {
-        return callback(err);
+        return callback(er);
       }
 
       return reply.redirect('/settings/billing?updated=1');
@@ -111,6 +111,10 @@ customer.subscribe = function(request, reply) {
   var planInfo = {
     plan: plans[planType]
   };
+
+  if (planType === 'orgs' && !request.features.org_billing) {
+    return reply.redirect('/settings/billing');
+  }
 
   if (request.features.org_billing && planType === 'orgs') {
     planInfo.npm_org = request.payload.orgName;

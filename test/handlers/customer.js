@@ -723,11 +723,95 @@ describe('subscribing to private modules', function() {
       });
 
     });
+
+    it('works even when the orgs feature is disabled', function(done) {
+      generateCrumb(server, function(crumb) {
+        var opts = {
+          url: '/settings/billing/subscribe',
+          method: 'POST',
+          credentials: fixtures.users.bob,
+          payload: {
+            stripeToken: 'tok_1234567890',
+            planType: 'private_modules',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var licenseMock = nock("https://license-api-example.com")
+          .get("/customer/bob/stripe").times(2)
+          .reply(200, fixtures.customers.bob)
+          .put("/customer/bob/stripe/subscription", {
+            "plan": "npm-paid-individual-user-7"
+          })
+          .reply(200, fixtures.customers.bob_subscriptions)
+          .post("/customer/bob/stripe", {
+            "name": "bob",
+            "email": "bob@boom.me",
+            "card": "tok_1234567890"
+          })
+          .reply(200);
+
+        delete process.env.FEATURE_ORG_BILLING;
+
+        server.inject(opts, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
+          process.env.FEATURE_ORG_BILLING = 'true';
+          done();
+        });
+      });
+    });
   });
 
 });
 
 describe("subscribing to an org", function() {
+  it("doesn't work at all if the feature is not enabled", function(done) {
+    generateCrumb(server, function(crumb) {
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgName: 'boomer',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var customerMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe")
+        .reply(200, fixtures.customers.happy);
+
+      delete process.env.FEATURE_ORG_BILLING;
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.headers.location).to.match(/\/settings\/billing/);
+        process.env.FEATURE_ORG_BILLING = 'true';
+        done();
+      });
+    });
+  });
+
   it("creates and charges for a paid organization that does not yet exist", function(done) {
     generateCrumb(server, function(crumb) {
       var opts = {

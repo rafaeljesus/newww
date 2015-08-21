@@ -178,7 +178,7 @@ exports.updateUserPayStatus = function(request, reply) {
     if (payForUser) {
       request.customer.extendSponsorship(licenseId, username, function(err, extendedSponsorship) {
         if (err) {
-          if (err.statusCode === 500) {
+          if (err.message.indexOf("duplicate key value violates unique constraint") > -1) {
             return exports.getOrg(request, reply);
           }
           request.logger.error(err);

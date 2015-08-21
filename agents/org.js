@@ -47,6 +47,7 @@ Org.prototype.create = function(name, callback) {
 Org.prototype.get = function(name, callback) {
   assert(_.isString(name), "name must be a string");
 
+  var self = this;
   var orgUrl = USER_HOST + '/org/' + name;
   var userUrl = USER_HOST + '/org/' + name + '/user';
   var packageUrl = USER_HOST + '/org/' + name + '/package';
@@ -56,7 +57,10 @@ Org.prototype.get = function(name, callback) {
 
       Request({
         url: url,
-        json: true
+        json: true,
+        headers: {
+          bearer: self.bearer
+        }
       }, function(err, resp, body) {
         if (err) {
           return cb(err);

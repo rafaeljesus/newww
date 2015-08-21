@@ -18,6 +18,35 @@
     <div id="org-info-tab-1" class="tab tab-1">
       <h2>Overview</h2>
 
+      <h3>{{org.packages.count}} Packages</h3>
+      {{#if org.packages.count}}
+      <table class="org-table org-packages">
+        <thead>
+          <tr>
+            <th>Packages</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each org.packages.items}}
+          <tr>
+            <td>
+              <div>
+                {{#if private}}
+                  <i class="icon-lock"></i>
+                {{!-- {{else}}
+                  <i class="icon-public"></i> --}}
+                {{/if}}
+                <span class="name">
+                  <a class="packagename" href="/package/{{name}}">{{name}}</a>
+                </span><!--/.name-->
+              </div>
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+
       <h3>{{org.users.count}} Users</h3>
       {{#if org.users.items}}
       <table class="org-table org-users">

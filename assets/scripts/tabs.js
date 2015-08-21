@@ -61,9 +61,9 @@ module.exports = function() {
 
       tab.tabNav.on("click", function(e) {
         e.preventDefault();
+        tab.open();
         location.hash = $(this).attr('href');
         $(window)[0].scrollTo(0, 0);
-        tab.open();
       });
     });
 

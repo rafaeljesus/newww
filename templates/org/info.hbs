@@ -8,14 +8,14 @@
     <div class="tab-nav-container">
       <div class="nav-3-container">
         <ul class="nav-3 clear" role="navigation">
-          <li class="current"><a href="#org-info-tab-1">Overview</a></li>
-          <li><a href="#org-info-tab-2">{{org.users.count}} Users</a></li>
+          <li class="current"><a href="#overview">Overview</a></li>
+          <li><a href="#paid-users">{{org.users.count}} Users</a></li>
           <li><button type="button" id="billing" data-stripe-id="{{org.customer_id}}">Payment Information</button></li>
         </ul>
       </div>
     </div>
 
-    <div id="org-info-tab-1" class="tab tab-1">
+    <div id="overview" class="tab tab-1">
       <h2>Overview</h2>
 
       <h3>{{org.packages.count}} Packages</h3>
@@ -109,7 +109,7 @@
 
     </div><!--/tab-1-->
 
-    <div id="org-info-tab-2" class="tab tab-2">
+    <div id="paid-users" class="tab tab-2">
       <h2>Paid Users</h2>
       {{#if org.users.items}}
       <table class="org-table org-users">

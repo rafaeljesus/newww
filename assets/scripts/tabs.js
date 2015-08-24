@@ -26,6 +26,8 @@ module.exports = function() {
     this.$element.removeClass("hidden");
     this.$element.addClass("visible");
     this.isOpen = true;
+    $(".tabs .current").removeClass("current");
+    this.tabNav.addClass("current");
 
     $.each(this.siblings, function(idx, el) {
       var tab = $(el).data("tab");
@@ -49,18 +51,47 @@ module.exports = function() {
     }
   };
 
+  var openLinkedTab = function() {
+    if ($(".tabs .current").attr("href") !== location.hash) {
+      var tab = $(location.hash).data('tab');
+      tab && tab.open();
+    }
+  };
+
+  var updateFormActions = function() {
+    $.each($("form"), function(idx, el) {
+      var form = $(el);
+      var action = form.attr("action");
+      action = action + location.hash;
+      form.attr("action", action);
+    });
+  };
+
   $(function() {
+    $(window)[0].scrollTo(0, 0);
+
+
     var tabs = $(className);
     $.each(tabs, function(idx, el) {
       var tab = new Tab(el);
 
       tab.tabNav.on("click", function(e) {
         e.preventDefault();
-        $(".tabs .current").removeClass("current");
-        tab.tabNav.addClass("current");
         tab.open();
+        location.hash = $(this).attr('href');
+        $(window)[0].scrollTo(0, 0);
       });
     });
+
+
+    openLinkedTab();
+    updateFormActions();
+
+    $(window).on("hashchange", function(e) {
+      openLinkedTab();
+      updateFormActions();
+    });
+
   });
 
 

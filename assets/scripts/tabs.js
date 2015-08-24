@@ -51,6 +51,22 @@ module.exports = function() {
     }
   };
 
+  var openLinkedTab = function() {
+    if ($(".tabs .current").attr("href") !== location.hash) {
+      var tab = $(location.hash).data('tab');
+      tab && tab.open();
+    }
+  };
+
+  var updateFormActions = function() {
+    $.each($("form"), function(idx, el) {
+      var form = $(el);
+      var action = form.attr("action");
+      action = action + location.hash;
+      form.attr("action", action);
+    });
+  };
+
   $(function() {
     $(window)[0].scrollTo(0, 0);
 
@@ -67,16 +83,13 @@ module.exports = function() {
       });
     });
 
-    if ($(".tabs .current").attr("href") !== location.hash) {
-      var tab = $(location.hash).data('tab');
-      tab && tab.open();
-    }
+
+    openLinkedTab();
+    updateFormActions();
 
     $(window).on("hashchange", function(e) {
-      if ($(".tabs .current").attr("href") !== location.hash) {
-        var tab = $(location.hash).data('tab');
-        tab.open();
-      }
+      openLinkedTab();
+      updateFormActions();
     });
 
   });

@@ -21,5 +21,6 @@ module.exports = [
     options: {
       lang: "en_US"
     }
-  }
+  },
+  require('hapi-stateless-notifications')
 ];

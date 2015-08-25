@@ -144,6 +144,7 @@
   vertical-align middle
   width 33%
   margin-left -4px
+  height 400px
 
   &:first-child
     margin-left 0
@@ -161,9 +162,17 @@
     transform translate(-50%, -50%)
     margin-right -50%
 
+.org-pricing
+  position relative
+  height 100%
+
 .org-pricing .org-plan
   font-size 16px
   font-weight 600
+
+.org-price
+  padding-top 10px
+  padding-bottom 5px
 
 .org-pricing .org-price .price
   color npmred
@@ -171,11 +180,28 @@
   display block
   font-weight 600
 
+  &:before
+    content '$'
+    vertical-align super
+    font-size 50%
+
 .org-pricing .org-price .frequency
   font-size 14px
   font-weight 300
 
+.org-pricing .org-sign-up-button-container
+  position absolute
+  top 50%
+  left 50%
+  transform translate(-50%, -50%)
+  margin-right -50%
 
+.org-details
+  span
+    display inline-block
+
+  .includes
+    font-weight 600
 
 @media (min-width: mobileMaxWidth + 1)
 

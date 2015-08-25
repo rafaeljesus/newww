@@ -201,7 +201,14 @@ exports.handleProfileEdit = function(request, reply) {
           request.metrics.metric({
             name: 'saveProfile'
           });
-          return reply.redirect('/profile');
+
+          request.saveNotifications(UserModel.pending).then(function(token) {
+            if (token) {
+              return reply.redirect('/profile?notice=' + token);
+            } else {
+              return reply.redirect('/profile');
+            }
+          }).catch(reply);
         });
       });
     });

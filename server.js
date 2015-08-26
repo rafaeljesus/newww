@@ -68,7 +68,10 @@ server.stamp = require("./lib/stamp")();
 server.gitHead = require("./lib/git-head")();
 
 // configure metrics as a side effect
-var metrics = require('./adapters/metrics')();
+var metricsEmitter = require('./adapters/metrics');
+var metrics = metricsEmitter();
+// make another emitter to keep new behavior isolated from existing stats for now.
+require('numbat-process')(metricsEmitter("newww"))
 
 // configure http request cache
 require("./lib/cache").configure({

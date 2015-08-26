@@ -49,7 +49,9 @@ exports.getOrg = function(request, reply) {
                     return reply.view('errors/internal', err);
                   }
                   sponsorships = sponsorships || [];
-                  var sponsoredUsers = sponsorships.map(function(sponsorship) {
+                  var sponsoredUsers = sponsorships.filter(function(sponsorship) {
+                    return sponsorship.verified;
+                  }).map(function(sponsorship) {
                     return sponsorship.npm_user;
                   });
 
@@ -57,7 +59,6 @@ exports.getOrg = function(request, reply) {
                     user.isPaid = subscription[0].npm_user === user.name || sponsoredUsers.indexOf(user.name) > -1;
                     return user;
                   });
-
 
                   opts.sponsorships = sponsorships;
                   return reply.view('org/info', opts);

@@ -33,9 +33,39 @@ customer.getBillingInfo = function(request, reply) {
         subscriptions = [];
       }
 
-      opts.subscriptions = subscriptions;
+      request.customer.getLicensesFromSubscriptions(subscriptions, function(err, licenses) {
 
-      return reply.view('user/billing', opts);
+        var subs = subscriptions.map(function(sub) {
+          sub.license = licenses.filter(function(license) {
+            return license.id === sub.license_id;
+          })[0];
+          return sub;
+        });
+
+        var privateModules = [],
+          orgs = [];
+
+        subs.forEach(function(sub) {
+          sub.cost = (sub.amount / 100) * sub.quantity;
+          if (sub.privateModules) {
+            privateModules.push(sub);
+          } else {
+            orgs.push(sub);
+          }
+        });
+
+
+        opts.totalCost = subs.map(function(sub) {
+          return sub.cost;
+        }).reduce(function(prev, curr) {
+          return prev + curr;
+        });
+
+        opts.privateModules = privateModules;
+        opts.orgs = orgs;
+
+        return reply.view('user/billing', opts);
+      });
     });
   });
 };

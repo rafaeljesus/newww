@@ -50,29 +50,53 @@
   {{/if}}
 
   {{#if features.org_billing}}
-    <h2>subscriptions</h2>
-    {{#if subscriptions}}
+    {{#if privateModules}}
+    <table class="ruled subscriptions">
+      <thead>
+        <tr>
+          <th>Personal Plan</th>
+          <th>Next Billing Date</th>
+          <th>Monthly Fee</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Private Modules Plan <span>This plan is paid by you.</span></td>
+          <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+            {{next_billing_date}}
+          </td>
+          <td>{{cost}}</td>
+        </tr>
+      </tbody>
+    </table>
+    {{/if}}
+    {{#if orgs}}
       <table class="ruled subscriptions">
         <tbody>
           <tr>
-            <th>Subscription Type</th>
-            <th>Name</th>
+            <th>Organizations</th>
+            <th>Paid Users</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
+            <th>Delete</th>
           </tr>
-          {{#each subscriptions}}
+          {{#each orgs}}
             <tr>
-            {{#if privateModules}}
-              <td>Private Modules</td>
-              <td>{{npm_user}}</td>
-            {{else}}
-                <td>Organization</td>
-                <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
-            {{/if}}
+              <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
+              <td>{{quantity}}</td>
               <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
                 {{next_billing_date}}
               </td>
-              <td>{{amount}}</td>
+              <td>{{cost}}</td>
+              <td>
+                <form method="POST" id="org-delete-{{@index}}" action="/org/{{npm_org}}">
+                  {{#with ../../this}}
+                  {{> form_security }}
+                  {{/with}}
+                    <input type="hidden" name="updateType" value="deleteOrg" />
+                    <button type="submit" class="icon-x"><span class="a11y-only">Delete Org {{npm_org}}</span></button>
+                </form>
+              </td>
             </tr>
           {{/each}}
         </tbody>

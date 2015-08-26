@@ -191,6 +191,29 @@ Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
   });
 };
 
+Customer.prototype.getLicensesFromSubscriptions = function(subscriptions, callback) {
+  if (!Array.isArray(subscriptions)) {
+    subscriptions = [subscriptions];
+  }
+
+  var licenseIds = subscriptions.map(function(sub) {
+    return sub.license_id;
+  });
+
+  var url = this.host + '/license/' + licenseIds.join(',');
+
+  Request.get({
+    url: url,
+    json: true
+  }, function(err, resp, licenses) {
+    if (err) {
+      return callback(err);
+    }
+
+    return callback(null, licenses);
+  });
+};
+
 // should this go into the org agent instead?
 Customer.prototype.getAllSponsorships = function(licenseId, callback) {
   var url = this.host + '/sponsorship/' + licenseId;

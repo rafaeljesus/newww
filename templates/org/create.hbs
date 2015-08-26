@@ -52,6 +52,9 @@
       </section>
       <section>
         <h2>Billing information</h2>
+        {{#if user.customer}}
+        <p>We will use the<a href="/settings/billing">billing information</a>we already have for you</p>
+        {{else}}
         <div class="inline-input-set">
           <div class="email large">
             <label for="billing-email">billing email</label>
@@ -83,6 +86,7 @@
               <input required="required" type="text" minlength="4" maxlength="4" name="billing-year" placeholder="YYYY" />
             </div><!--/.year-->
           </div><!--/.inline-input-set-->
+          {{/if}}
         </fieldset>
       </section>
 

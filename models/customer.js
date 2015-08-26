@@ -167,6 +167,16 @@ Customer.prototype.createSubscription = function(planInfo, callback) {
   });
 };
 
+Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe/subscription/' + subscriptionId;
+  Request.del({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    callback(err, body);
+  });
+};
+
 Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
   this.getSubscriptions(function(err, subscriptions) {
     if (err) {

@@ -223,6 +223,8 @@ exports.updateOrg = function(request, reply) {
     exports.removeUserFromOrg(request, reply);
   } else if (request.payload.updateType === "updatePayStatus") {
     exports.updateUserPayStatus(request, reply);
+  } else if (request.payload.updateType === "deleteOrg") {
+    exports.deleteOrg(request, reply);
   }
 };
 
@@ -231,14 +233,40 @@ exports.deleteOrg = function(request, reply) {
     return reply.redirect('/');
   }
 
+  var orgToDelete = request.params.org;
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
-  Org(loggedInUser)
-    .delete(request.params.org, function(err) {
+  request.customer.getSubscriptions(function(err, subscriptions) {
+    if (err) {
+      return replay.view('error/internal', err);
+    }
+    var subscription = subscriptions.filter(function(sub) {
+      return orgToDelete === sub.npm_org;
+    });
+
+    if (subscription.length) {
+      subscription = subscription[0];
+    } else {
+      request.logger.error("Org not in subscriptions");
+      return reply.redirect('/settings/billing');
+    }
+
+    request.customer.cancelSubscription(subscription.id, function(err, sub) {
       if (err) {
         request.logger.error(err);
+        return reply.view('error/internal', err);
       }
 
-      return reply.redirect('/org');
+      Org(loggedInUser)
+        .delete(orgToDelete, function(err) {
+          if (err) {
+            request.logger.error(err);
+          }
+
+          return reply.redirect('/settings/billing');
+        });
     });
+  });
+
+
 };

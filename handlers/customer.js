@@ -146,7 +146,7 @@ customer.subscribe = function(request, reply) {
                   return reply.view('errors/internal', err);
                 }
 
-                return reply.redirect('/settings/billing', opts);
+                return reply.redirect('/org/' + planInfo.npm_org, opts);
               });
 
           });

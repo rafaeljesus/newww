@@ -10,7 +10,10 @@ var metrics = module.exports = function constructEmitter(app) {
     uri: process.env.METRICS_URL || 'udp://localhost:3333',
     node: os.hostname(),
     app:app, // optional.
-    port:(process.env.PORT||'0')
   });
+
+  // add port field to defaults to distinguish between multiple workers
+  emitter.defaults.port = (process.env.PORT||'0')
+
   return emitter;
 };

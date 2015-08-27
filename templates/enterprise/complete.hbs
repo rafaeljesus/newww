@@ -9,18 +9,28 @@
     <a href="{{requirementsUrl}}">installation requirements</a>, then
     simply run:</p>
 
-  <pre><code class="lang-bash">npm install npme</code></pre>
+  <pre><code class="lang-bash">sudo npm install npme -g</code></pre>
 
-  <p>When prompted, provide the following information:</p>
+  <p>Once installation is complete visit
+    https://your-server-address:8800 and bypass the security warning. You will
+    be presented with a management UI which allows you to configure your npmE appliance.
+  </p>
+
+  <p>During the configuration process you will be prompted for your email and license key:</p>
 
   <pre><code>Billing email: {{email}}
 License key: {{license_key}}</code></pre>
 
-  <p>The installation process will ask you questions about your local
-    environment. For help with supplying the correct values, please refer to the
+  <p>The management console allows you to fetch updates, perform backups,
+    and configure your npmE appliance.
+    For help with configuring npmE, please refer to the
     <a href="{{instructionsUrl}}">npm Enterprise documentation</a>. If you
     have any trouble, you can also always contact
     <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>.</p>
+
+  <p>Once you've configured everything, npmE will be up and running on
+    https://your-server-address:8080.
+  </p>
 
   <p>A copy of your license key and these instructions has been emailed to
   {{email}}.</p>

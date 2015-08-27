@@ -109,6 +109,9 @@
   </header>
 
   <div class="container content">
+    {{#each notices}}
+      <div class="notice">{{{ this }}}</div>
+    {{/each}}
     {{{ content }}}
   </div>
 

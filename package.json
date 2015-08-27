@@ -45,6 +45,7 @@
     "hapi": "^8.4.0",
     "hapi-auth-cookie": "2.0.0",
     "hapi-common-log": "^1.1.0",
+    "hapi-stateless-notifications": "^1.1.0",
     "hashchange": "^1.0.0",
     "hbsfy": "^2.2.1",
     "hoek": "^2.13.0",

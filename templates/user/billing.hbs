@@ -84,10 +84,19 @@
             <tr>
               <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
               <td>{{quantity}}</td>
+              {{#if license.canceled}}
+              <td>--</td>
+              {{else}}
               <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
                 {{next_billing_date}}
               </td>
+              {{/if}}
               <td>{{cost}}</td>
+              {{#if license.canceled}}
+              <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+                Last date - {{next_billing_date}}
+              </td>
+              {{else}}
               <td>
                 <form method="POST" id="org-delete-{{@index}}" action="/org/{{npm_org}}">
                   {{#with ../../this}}
@@ -97,6 +106,7 @@
                     <button type="submit" class="icon-x"><span class="a11y-only">Delete Org {{npm_org}}</span></button>
                 </form>
               </td>
+              {{/if}}
             </tr>
           {{/each}}
         </tbody>

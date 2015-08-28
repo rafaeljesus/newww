@@ -257,14 +257,7 @@ exports.deleteOrg = function(request, reply) {
         return reply.view('error/internal', err);
       }
 
-      Org(loggedInUser)
-        .delete(orgToDelete, function(err) {
-          if (err) {
-            request.logger.error(err);
-          }
-
-          return reply.redirect('/settings/billing');
-        });
+      return reply.redirect('/settings/billing');
     });
   });
 

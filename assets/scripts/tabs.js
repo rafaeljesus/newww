@@ -59,12 +59,11 @@ module.exports = function() {
   };
 
   var updateFormActions = function() {
-    $.each($("form"), function(idx, el) {
-      var form = $(el);
-      var action = form.attr("action");
-      action = action + location.hash;
-      form.attr("action", action);
-    });
+    var forms = document.querySelectorAll("form");
+    for (var i = 0, l = forms.length; i < l; i++) {
+      var form = forms[i];
+      form.action = form.action + location.hash;
+    }
   };
 
   $(function() {

@@ -1,6 +1,8 @@
 var customer = module.exports = {};
+var Joi = require('joi');
 var Org = require('../agents/org');
 var utils = require('../lib/utils');
+var validate = require('validate-npm-package-name');
 
 customer.getBillingInfo = function(request, reply) {
 
@@ -105,76 +107,100 @@ var plans = {
   orgs: 'npm-paid-org-7'
 };
 
+var subscriptionSchema = {
+  planType: Joi.string().valid(Object.keys(plans)).required(),
+  stripeToken: Joi.string(),
+  coupon: Joi.string().optional(),
+  orgName: Joi.string().when('planType', {
+    is: 'orgs',
+    then: Joi.required()
+  })
+};
+
 customer.subscribe = function(request, reply) {
-  var planType = request.payload.planType;
+  Joi.validate(request.payload, subscriptionSchema, function(err, planData) {
+    if (err) {
+      return reply(err);
+    }
 
-  var planInfo = {
-    plan: plans[planType]
-  };
+    var planType = planData.planType;
+    var planInfo = {
+      plan: plans[planType]
+    };
 
-  if (planType === 'orgs' && !request.features.org_billing) {
-    return reply.redirect('/settings/billing');
-  }
+    if (planType === 'orgs' && !request.features.org_billing) {
+      return reply.redirect('/settings/billing');
+    }
 
-  if (request.features.org_billing && planType === 'orgs') {
-    planInfo.npm_org = request.payload.orgName;
-    var opts = {};
+    if (request.features.org_billing && planType === 'orgs') {
+      planInfo.npm_org = planData.orgName;
 
-    Org(request.loggedInUser.name)
-      .get(planInfo.npm_org, function(err, users) {
-        if (users) {
-          opts.errors = [];
-          opts.errors.push(new Error("Error: Org already exists."));
-          return reply.view('user/billing', opts);
+      // check if the org name works as a package name
+      var valid = validate('@' + planInfo.npm_org + '/foo');
+
+      if (!valid.errors) {
+        // now check if the org name works on its own
+        valid = validate(planInfo.npm_org);
+      }
+
+      if (valid.errors) {
+        return reply.view('org/create', {
+          notices: valid.errors
+        });
+      }
+
+      Org(request.loggedInUser.name)
+        .get(planInfo.npm_org).then(function() {
+        var err = new Error("Org already exists");
+        err.isUserError = true;
+        throw err;
+      }).catch(function(err) {
+        if (err.statusCode !== 404) {
+          throw err;
         }
 
-        if (err.statusCode === 404) {
-          // org doesn't yet exist
-          request.customer.createSubscription(planInfo, function(err, subscriptions) {
-            if (err) {
-              request.logger.error("unable to update subscription to " + planInfo.plan);
-              request.logger.error(err);
-            }
-
+        // org doesn't yet exist
+        return request.customer.createSubscription(planInfo)
+          .then(function(subscriptions) {
             if (typeof subscriptions === 'string') {
               request.logger.info("created subscription: ", planInfo);
             }
+          }).then(function() {
+          return Org(request.loggedInUser.name)
+            .create(planInfo.npm_org);
+        });
 
-            Org(request.loggedInUser.name)
-              .create(planInfo.npm_org, function(err, opts) {
-                if (err) {
-                  return reply.view('errors/internal', err);
-                }
+      }).then(function() {
+        return reply.redirect('/org/' + planInfo.npm_org);
 
-                return reply.redirect('/org/' + planInfo.npm_org, opts);
-              });
+      }).catch(function(err) {
+        request.logger.error(err);
 
+        if (err.isUserError) {
+          return reply.view('org/create', {
+            notices: [err]
           });
         } else {
-          // do actual error handling here
-          opts.errors = [];
-          opts.errors.push(new Error(err));
-          request.logger.error(err);
-          return reply.view('user/billing', opts);
+          return reply.view('errors/internal', err).code(500);
         }
       });
-  } else {
-    customer.updateBillingInfo(request, reply, function(err) {
-      request.customer.createSubscription(planInfo, function(err, subscriptions) {
-        if (err) {
-          request.logger.error("unable to update subscription to " + planInfo.plan);
-          request.logger.error(err);
-        }
+    } else {
+      customer.updateBillingInfo(request, reply, function(err) {
+        request.customer.createSubscription(planInfo, function(err, subscriptions) {
+          if (err) {
+            request.logger.error("unable to update subscription to " + planInfo.plan);
+            request.logger.error(err);
+          }
 
-        if (typeof subscriptions === 'string') {
-          request.logger.info("created subscription: ", planInfo);
-        }
+          if (typeof subscriptions === 'string') {
+            request.logger.info("created subscription: ", planInfo);
+          }
 
-        return reply.redirect('/settings/billing?updated=1');
+          return reply.redirect('/settings/billing?updated=1');
+        });
       });
-    });
 
-  }
-
+    }
+  });
 };
 

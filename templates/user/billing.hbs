@@ -86,7 +86,7 @@
             <tr>
               <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
               <td>{{quantity}}</td>
-              {{#if license.canceled}}
+              {{#if cancel_at_period_end}}
               <td>--</td>
               {{else}}
               <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
@@ -94,7 +94,7 @@
               </td>
               {{/if}}
               <td>{{cost}}</td>
-              {{#if license.canceled}}
+              {{#if cancel_at_period_end}}
               <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
                 Last date - {{next_billing_date}}
               </td>

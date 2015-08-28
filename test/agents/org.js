@@ -124,7 +124,7 @@ describe('Org', function() {
       Org('betty').get(name, function(err, org) {
         orgMocks.done();
         expect(err.statusCode).to.equal(404);
-        expect(err.message).to.equal('org not found');
+        expect(err.message).to.equal('not found');
         expect(org).to.not.exist();
         done();
       });

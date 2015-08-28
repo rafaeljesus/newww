@@ -70,7 +70,7 @@ Org.prototype.get = function(name, callback) {
         }
 
         if (resp.statusCode >= 400) {
-          err = new Error(resp.statusMessage);
+          err = new Error(body);
           err.statusCode = resp.statusCode;
           return reject(err);
         }

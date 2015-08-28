@@ -1,4 +1,7 @@
 module.exports = function() {
+  if (!("querySelectorAll" in document)) {
+    return;
+  }
   var className = ".tab";
 
   var Tab = function(element, opts) {

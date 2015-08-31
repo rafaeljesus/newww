@@ -111,16 +111,23 @@ var subscriptionSchema = {
   planType: Joi.string().valid(Object.keys(plans)).required(),
   stripeToken: Joi.string(),
   coupon: Joi.string().optional(),
-  orgName: Joi.string().when('planType', {
+  fullname: Joi.string().optional().allow(''),
+  orgNamespace: Joi.string().when('planType', {
     is: 'orgs',
     then: Joi.required()
-  })
+  }),
+  "paid-org-type": Joi.string().optional()
 };
 
 customer.subscribe = function(request, reply) {
   Joi.validate(request.payload, subscriptionSchema, function(err, planData) {
     if (err) {
-      return reply(err);
+      var notices = err.details.map(function(e) {
+        return e.message;
+      });
+      return reply.view('org/create', {
+        notices: notices
+      });
     }
 
     var planType = planData.planType;
@@ -131,9 +138,8 @@ customer.subscribe = function(request, reply) {
     if (planType === 'orgs' && !request.features.org_billing) {
       return reply.redirect('/settings/billing');
     }
-
     if (request.features.org_billing && planType === 'orgs') {
-      planInfo.npm_org = planData.orgName;
+      planInfo.npm_org = planData.orgNamespace;
 
       // check if the org name works as a package name
       var valid = validate('@' + planInfo.npm_org + '/foo');

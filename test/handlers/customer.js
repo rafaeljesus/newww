@@ -783,7 +783,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgName: 'boomer',
+          orgNamespace: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -820,7 +820,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgName: 'boomer',
+          orgNamespace: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -872,7 +872,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgName: 'boomer',
+          orgNamespace: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -931,7 +931,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgName: '',
+          orgNamespace: '',
           crumb: crumb
         },
         headers: {
@@ -950,7 +950,10 @@ describe("subscribing to an org", function() {
       server.inject(opts, function(resp) {
         userMock.done();
         customerMock.done();
-        expect(resp.statusCode).to.equal(500);
+        expect(resp.statusCode).to.equal(200);
+        var context = resp.request.response.source.context;
+        expect(context.notices).to.be.an.array();
+        expect(context.notices[0]).to.equal('orgNamespace is not allowed to be empty');
         done();
       });
     });
@@ -964,7 +967,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgName: '_kaBOOM',
+          orgNamespace: '_kaBOOM',
           crumb: crumb
         },
         headers: {

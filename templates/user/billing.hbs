@@ -64,7 +64,7 @@
 
     <div id="overview" class="tab tab-1">
       {{#if privateModules}}
-      <table class="ruled subscriptions">
+      <table class="subscriptions">
         <thead>
           <tr>
             <th>Personal Plan</th>
@@ -86,8 +86,8 @@
       </table>
       {{/if}}
       {{#if orgs}}
-      <table class="ruled subscriptions">
-        <tbody>
+      <table class="subscriptions">
+        <thead>
           <tr>
             <th>Organizations</th>
             <th>Paid Users</th>
@@ -95,6 +95,8 @@
             <th>Monthly Fee</th>
             <th>Delete</th>
           </tr>
+        </thead>
+        <tbody>
           {{#each orgs}}
             <tr>
               <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>

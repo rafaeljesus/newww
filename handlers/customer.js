@@ -19,22 +19,50 @@ customer.getBillingInfo = function(request, reply) {
     opts.package = request.query.package;
   }
 
-  request.customer.getStripeData(function(err, customer) {
+  request.customer.getById(request.loggedInUser.email, function(err, cust) {
 
-    if (customer) {
-      opts.customer = customer;
-    }
+    request.customer.getStripeData(function(err, customer) {
 
-    request.customer.getSubscriptions(function(err, subscriptions) {
-      if (err) {
-        request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
-        request.logger.error(err);
-        subscriptions = [];
+      if (customer) {
+        opts.customer = customer;
+        opts.customer.customer_id = cust && cust.stripe_customer_id;
       }
 
-      opts.subscriptions = subscriptions;
+      request.customer.getSubscriptions(function(err, subscriptions) {
+        if (err) {
+          request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
+          request.logger.error(err);
+          subscriptions = [];
+        }
+        var subs = subscriptions.filter(function(sub) {
+          return sub.status === "active";
+        });
 
-      return reply.view('user/billing', opts);
+        var privateModules = [],
+          orgs = [];
+
+        subs.forEach(function(sub) {
+          sub.cost = (sub.amount / 100) * sub.quantity;
+          if (sub.privateModules) {
+            privateModules.push(sub);
+          } else {
+            orgs.push(sub);
+          }
+        });
+
+
+        opts.totalCost = subs.map(function(sub) {
+          return sub.cost;
+        }).reduce(function(prev, curr) {
+          return prev + curr;
+        }, 0);
+
+        opts.privateModules = privateModules;
+        opts.orgs = orgs;
+
+        return reply.view('user/billing', opts);
+
+      });
     });
   });
 };

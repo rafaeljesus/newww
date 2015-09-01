@@ -1,10 +1,10 @@
 {{> profile-secondary-nav}}
 
-<div class="container narrow">
+<div class="container">
 
   <hgroup>
     {{#if features.org_billing}}
-      <h1>your subscription info</h1>
+      <h1>Subscriptions</h1>
     {{else}}
       <h1>your billing info</h1>
     {{/if}}
@@ -50,156 +50,104 @@
   {{/if}}
 
   {{#if features.org_billing}}
-    <h2>subscriptions</h2>
-    {{#if subscriptions}}
-      <table class="ruled subscriptions">
-        <tbody>
+  <div class="tabs">
+
+    <div class="tab-nav-container">
+      <div class="nav-2-container">
+        <ul class="nav-2 clear" role="navigation">
+          <li class="current"><a href="#overview">Overview</a></li>
+          <li><a href="#payment-information">Payment Information</a></li>
+          {{#if customer.customer_id}}
+          <li><button type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</button></li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
+
+    <div id="overview" class="tab tab-1">
+      {{#if privateModules}}
+      <table class="subscriptions">
+        <thead>
           <tr>
-            <th>Subscription Type</th>
-            <th>Name</th>
+            <th>Personal Plan</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
           </tr>
-          {{#each subscriptions}}
+        </thead>
+        <tbody>
+          {{#each privateModules}}
+          <tr>
+            <td>Private Modules Plan <span>This plan is paid by you.</span></td>
+            <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+              {{next_billing_date}}
+            </td>
+            <td>{{cost}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{/if}}
+      {{#if orgs}}
+      <table class="subscriptions">
+        <thead>
+          <tr>
+            <th>Organizations</th>
+            <th>Paid Users</th>
+            <th>Next Billing Date</th>
+            <th>Monthly Fee</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each orgs}}
             <tr>
-            {{#if privateModules}}
-              <td>Private Modules</td>
-              <td>{{npm_user}}</td>
-            {{else}}
-                <td>Organization</td>
-                <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
-            {{/if}}
+              <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
+              <td>{{quantity}}</td>
+              {{#if cancel_at_period_end}}
+              <td>--</td>
+              {{else}}
               <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
                 {{next_billing_date}}
               </td>
-              <td>{{amount}}</td>
+              {{/if}}
+              <td>{{cost}}</td>
+              {{#if cancel_at_period_end}}
+              <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+                Last date - {{next_billing_date}}
+              </td>
+              {{else}}
+              <td>
+                <form method="POST" id="org-delete-{{@index}}" action="/org/{{npm_org}}">
+                  {{#with ../../this}}
+                  {{> form_security }}
+                  {{/with}}
+                    <input type="hidden" name="updateType" value="deleteOrg" />
+                    <button type="submit" class="icon-x"><span class="a11y-only">Delete Org {{npm_org}}</span></button>
+                </form>
+              </td>
+              {{/if}}
             </tr>
           {{/each}}
         </tbody>
       </table>
-    {{else}}
-      <p>You do not have any subscriptions</p>
-    {{/if}}
-
-    <h2>billing</h2>
-  {{/if}}
-
-  <div>
-    {{#if customer}}
-
-      <table class="ruled key-value card-info">
-        <tbody>
-          <tr>
-            <td>Card Type</td>
-            <td class="card-brand">{{customer.card.brand}}</td>
-          </tr>
-          <tr>
-            <td>Last 4 Digits</td>
-            <td class="card-last4">{{customer.card.last4}}</td>
-          </tr>
-          <tr>
-            <td>Expiration</td>
-            <td>
-              <span class="card-exp-month">{{month-name customer.card.exp_month}}</span>
-              <span class="card-exp-year">{{customer.card.exp_year}}</td></span>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        You can also
-        <a href="#" id="update-subscription-toggler">update payment info</a>
-        or
-        <a href="#" id="cancel-subscription-toggler">stop paying us</a>.
-      </p>
-
-    {{else}}
-      <p>
-        A paid account costs just <strong>$7 a month</strong> per user, and allows you to create
-        and share an unlimited number of modules. The only limit is
-        <a href="http://www.zombo.com/" target="_blank">yourself</a>.
-      </p>
-    {{/if}}
-  </div>
-
-  {{> errors}}
-
-  {{#if user.email_verified}}
-
-    <p class="error billing-error" style="display:none;"></p>
-
-    <form method="POST" action="/settings/billing{{#unless customer}}/subscribe{{/unless}}" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
-      <label for="card-number">Card Number</label>
-      <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
-
-      <label for="card-cvc">Card security code</label>
-      <input required="required" type="text" size="4" data-stripe="cvc" placeholder="123" class="cvc" id="card-cvc" />
-
-      <label for="card-exp-month">Expiration Month</label>
-      <input required="required" type="text" size="2" data-stripe="exp-month" placeholder="MM" id="card-exp-month" />
-
-      <label for="card-exp-year">Expiration Year</label>
-      <input required="required" type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
-
-      <label for="coupon">Coupon Code</label>
-      <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon" />
-
-      {{> form_security}}
-      <input type="hidden" name="planType" value="private_modules">
-      <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}save my billing info{{/if}}">
-
-    </form>
-  {{/if}}
-
-  {{#if customer}}
-    <form id="cancel-subscription" action="/settings/billing/cancel" method="post" style="display:none">
-
-      <p class="notice">
-        Cancelling your private npm subscription is not so scary. It will have the following effects:
-      </p>
-
-      <ul>
-        <li>
-          Your private subscription will remain active until
-          <strong data-date="{{customer.next_billing_date}}" data-date-format="%B %e %Y">
-            {{customer.next_billing_date}}
-          </strong>
-        </li>
-        <li>Your regular npm account will still exist.</li>
-        <li>You can still access and publish to the public registry in all its glory.</li>
-        <li>You will NOT have access to any private modules.</li>
-        <li>Any private modules you've created will still be accessible to any paying users you've shared them with.</li>
-        <li>Should you decide to resume your paid subscription, your private modules will still exist.</li>
-      </ul>
-
-      {{> form_security}}
-      <input type="submit" value="Cancel my private npm subscription">
-    </form>
-  {{/if}}
-
-  {{#if features.org_billing}}
-    <h2>private modules</h2>
-  {{/if}}
-
-  {{#if features.org_billing}}
-    <h2>orgs and teams</h2>
-
-    <div>
-      <p>
-        To enable private modules in your organization, orgs cost just <strong>$6 a
-        month</strong> per user, and allows you to create and share an unlimited
-        number of modules. Plans start with 2 users. Dee dee
-        <a href="http://www.hamsterdance.org/hamsterdance/" target="_blank">doo doo doo doo doo</a>.
-      </p>
-
-      {{#if customer}}
-        <a class="button full-width" href="/org/create">create my organization</a>
       {{else}}
-        <p>To sign up for orgs and teams, you need to update your billing information.</p>
+      <p>You do not have any subscriptions</p>
       {{/if}}
+    </div><!--/.tab-1-->
+
+    <div id="payment-information" class="tab tab-2">
+      {{> billing-info}}
+    </div><!--/.tab-2-->
+  </div><!--/.tabs-->
+  {{else}}
+    <div class="container narrow">
+      {{> billing-info}}
     </div>
-  {{/if}}
+    {{/if}}
+
+
 
 </div>
 
 <script src="https://js.stripe.com/v2/"></script>
+<script src="https://static.accountdock.com/app.min.js"></script>

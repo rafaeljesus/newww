@@ -177,6 +177,21 @@ Customer.prototype.createSubscription = function(planInfo, callback) {
   }).nodeify(callback);
 };
 
+Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe/subscription/' + subscriptionId;
+  Request.del({
+    url: url,
+    json: true
+  }, function(err, resp, body) {
+    if (resp.statusCode === 404) {
+      err = new Error('License not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+    return callback(null, body);
+  });
+};
+
 Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
   this.getSubscriptions(function(err, subscriptions) {
     if (err) {

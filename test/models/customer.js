@@ -640,4 +640,77 @@ describe("Customer", function() {
       });
     });
   });
+
+  describe("cancelSubscription(subscriptionId)", function() {
+
+    it("makes an external request for /customer/{user}/stripe/subscription/{subscriptionId}", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .delete('/customer/bill/stripe/subscription/sub_123456')
+        .reply(200, {
+          id: 'sub_12346',
+          current_period_end: 1436995358,
+          current_period_start: 1434403358,
+          quantity: 2,
+          status: 'active',
+          interval: 'month',
+          amount: 1200,
+          license_id: 1,
+          npm_org: 'bigco',
+          npm_user: 'bob',
+          product_id: '1031405a-70b7-4a3f-b552-8609d9e1428e'
+        });
+
+      Customer.cancelSubscription("sub_123456", function(err, body) {
+        customerMock.done();
+        expect(err).to.be.null();
+        done();
+      });
+    });
+
+    it("returns an error in the callback if sub doesn't exist", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .delete('/customer/bill/stripe/subscription/sub_2')
+        .reply(404);
+
+      Customer.cancelSubscription("sub_2", function(err, body) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal("License not found");
+        expect(err.statusCode).to.equal(404);
+        done();
+      });
+    });
+
+    it("returns the response body in the callback", function(done) {
+      var Customer = new CustomerModel('bill');
+
+      var customerMock = nock(Customer.host)
+        .delete('/customer/bill/stripe/subscription/sub_123456')
+        .reply(200, {
+          id: 'sub_12346',
+          current_period_end: 1436995358,
+          current_period_start: 1434403358,
+          quantity: 2,
+          status: 'active',
+          interval: 'month',
+          amount: 1200,
+          license_id: 1,
+          npm_org: 'bigco',
+          npm_user: 'bob',
+          product_id: '1031405a-70b7-4a3f-b552-8609d9e1428e'
+        });
+
+      Customer.cancelSubscription('sub_123456', function(err, body) {
+        customerMock.done();
+        expect(err).to.be.null();
+        expect(body.npm_user).to.equal('bob');
+        done();
+      });
+    });
+
+  });
 });

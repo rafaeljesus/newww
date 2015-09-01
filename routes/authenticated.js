@@ -104,10 +104,6 @@ module.exports = [
     method: "POST",
     handler: require('../handlers/org').updateOrg
   }, {
-    path: "/org/{org}",
-    method: "DELETE",
-    handler: require('../handlers/org').deleteOrg
-  }, {
     path: "/org/create",
     method: "GET",
     handler: function(request, reply) {

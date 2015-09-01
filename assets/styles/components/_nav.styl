@@ -1,4 +1,6 @@
 
+.nav-2,
+.nav-2 li,
 .nav-3,
 .nav-3 li,
 .nav-breadcrumb-flow-indicator,
@@ -110,19 +112,39 @@
   .nav-breadcrumb-flow-indicator li:last-child
     padding-left 9em
 
-.nav-3-container
-  border-bottom 1px solid table-border-grey
-  margin-left -40px
-  padding-left 40px
-  margin-right -40px
-  padding-right 40px
+  .nav-2-container,
+  .nav-3-container
+    border-bottom-width 1px
+    border-bottom-style solid
+    margin-left -40px
+    padding-left 40px
+    margin-right -40px
+    padding-right 40px
 
+  .nav-2-container
+    border-bottom-color black
+    border-top 1px solid table-border-grey
+
+  .nav-3-container
+    border-bottom-color table-border-grey
+
+.nav-2 li,
 .nav-3 li
   float: left
   color table-border-grey
-  width 200px
   text-align center
   position relative
+
+.nav-2 li
+  margin-left 50px
+  padding-top 20px
+  padding-bottom 20px
+
+  &:first-child
+    margin-left 0
+
+.nav-3 li
+  width 200px
   border-right-width 1px
   border-right-style solid
   -webkit-border-image -webkit-linear-gradient(bottom, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
@@ -134,6 +156,8 @@
     border-left-style solid
 
 
+.nav-2 button,
+.nav-2 a,
 .nav-3 button,
 .nav-3 a
   color inherit
@@ -147,9 +171,11 @@
   &:hover
     text-decoration none
 
+.nav-2 button,
 .nav-3 button
   border: 0px none
 
+.nav-2 .current,
 .nav-3 .current
   color #000
   &:after

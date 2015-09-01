@@ -856,35 +856,50 @@ describe('updating an org', function() {
   });
 });
 
-/**
 describe('deleting an org', function() {
-  it('deletes the org if it exists', function(done) {
-    var userMock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, fixtures.users.bob);
+  it('unsubscribes from an org when it is asked to be deleted', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe")
-      .reply(200, fixtures.customers.happy);
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription")
+        .reply(200, fixtures.users.bobsubscriptions)
+        .delete("/customer/bob/stripe/subscription/sub_abcd")
+        .reply(200, {
+          "id": "sub_abcd",
+          "current_period_end": 1439766874,
+          "current_period_start": 1437088474,
+          "quantity": 2,
+          "status": "active",
+          "interval": "month",
+          "amount": 700,
+          "license_id": 1,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
+        });
 
-    var orgMock = nock("https://user-api-example.com")
-      .delete('/org/bigco')
-      .reply(200, fixtures.orgs.bigcoDeleted);
+      var options = {
+        url: "/org/bigco",
+        method: "POST",
+        payload: {
+          updateType: "deleteOrg",
+          crumb: crumb,
+        },
+        credentials: fixtures.users.bob,
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
 
-    var options = {
-      url: "/org/bigco",
-      method: "DELETE",
-      credentials: fixtures.users.bob
-    };
-
-    server.inject(options, function(resp) {
-      userMock.done();
-      licenseMock.done();
-      orgMock.done();
-      expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.include('/org');
-      done();
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
     });
   });
 });
-*/

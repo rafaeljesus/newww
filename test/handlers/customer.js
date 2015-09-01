@@ -701,12 +701,12 @@ describe('subscribing to private modules', function() {
 
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe").times(2)
-          .reply(200, fixtures.customers.bob)
+          .reply(404)
           .put("/customer/bob/stripe/subscription", {
             "plan": "npm-paid-individual-user-7"
           })
           .reply(200, fixtures.customers.bob_subscriptions)
-          .post("/customer/bob/stripe", {
+          .put("/customer/stripe", {
             "name": "bob",
             "email": "bob@boom.me",
             "card": "tok_1234567890"
@@ -746,12 +746,12 @@ describe('subscribing to private modules', function() {
 
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe").times(2)
-          .reply(200, fixtures.customers.bob)
+          .reply(404)
           .put("/customer/bob/stripe/subscription", {
             "plan": "npm-paid-individual-user-7"
           })
           .reply(200, fixtures.customers.bob_subscriptions)
-          .post("/customer/bob/stripe", {
+          .put("/customer/stripe", {
             "name": "bob",
             "email": "bob@boom.me",
             "card": "tok_1234567890"

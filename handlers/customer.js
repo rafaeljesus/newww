@@ -109,7 +109,7 @@ var subscriptionSchema = {
   stripeToken: Joi.string(),
   coupon: Joi.string().optional(),
   fullname: Joi.string().optional().allow(''),
-  orgNamespace: Joi.string().when('planType', {
+  orgScope: Joi.string().when('planType', {
     is: 'orgs',
     then: Joi.required()
   }),
@@ -149,7 +149,7 @@ customer.subscribe = function(request, reply) {
 
     function subscribe() {
       if (request.features.org_billing && planType === 'orgs') {
-        planInfo.npm_org = planData.orgNamespace;
+        planInfo.npm_org = planData.orgScope;
 
         // check if the org name works as a package name
         var valid = validate('@' + planInfo.npm_org + '/foo');

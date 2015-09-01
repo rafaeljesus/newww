@@ -783,7 +783,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgNamespace: 'boomer',
+          orgScope: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -820,7 +820,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgNamespace: 'boomer',
+          orgScope: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -872,7 +872,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgNamespace: 'boomer',
+          orgScope: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -931,7 +931,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgNamespace: '',
+          orgScope: '',
           crumb: crumb
         },
         headers: {
@@ -953,7 +953,7 @@ describe("subscribing to an org", function() {
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
         expect(context.notices).to.be.an.array();
-        expect(context.notices[0]).to.equal('orgNamespace is not allowed to be empty');
+        expect(context.notices[0]).to.equal('orgScope is not allowed to be empty');
         done();
       });
     });
@@ -967,7 +967,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgNamespace: '_kaBOOM',
+          orgScope: '_kaBOOM',
           crumb: crumb
         },
         headers: {

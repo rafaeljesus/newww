@@ -4,6 +4,7 @@ var async = require('async');
 var Request = require('../lib/external-request');
 var USER_HOST = process.env.USER_API || "https://user-api-example.com";
 var avatar = require('../lib/avatar');
+var P = require('bluebird');
 
 var Org = module.exports = function(bearer) {
   assert(_.isString(bearer), "Must pass a bearer (loggedInUser) to Org agent");
@@ -29,19 +30,21 @@ Org.prototype.create = function(name, callback) {
     },
   };
 
-  Request.put(opts, function(err, resp, body) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.put(opts, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 401) {
-      err = Error('no bearer token included in creation of ' + name);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 401) {
+        err = Error('no bearer token included in creation of ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Org.prototype.get = function(name, callback) {
@@ -53,7 +56,7 @@ Org.prototype.get = function(name, callback) {
   var packageUrl = USER_HOST + '/org/' + name + '/package';
 
   var makeRequest = function(url) {
-    return function(cb) {
+    return new P(function(accept, reject) {
 
       Request({
         url: url,
@@ -63,43 +66,39 @@ Org.prototype.get = function(name, callback) {
         }
       }, function(err, resp, body) {
         if (err) {
-          return cb(err);
+          return reject(err);
         }
 
-        if (resp.statusCode === 404) {
-          err = Error('org not found');
+        if (resp.statusCode >= 400) {
+          err = new Error(body);
           err.statusCode = resp.statusCode;
-          return cb(err);
+          return reject(err);
         }
 
-        return cb(null, body);
+        return accept(body);
       });
-    };
+    });
   };
 
-  var requests = {
-    org: makeRequest(orgUrl),
-    users: makeRequest(userUrl),
-    packages: makeRequest(packageUrl)
-  };
+  var requests = [
+    makeRequest(orgUrl),
+    makeRequest(userUrl),
+    makeRequest(packageUrl)
+  ];
 
-  async.parallel(requests, function(err, results) {
-    if (err) {
-      return callback(err);
-    }
+  return P.all(requests).spread(function(org, users, pkg) {
+    var ret = {};
 
-    var org = {};
-
-    org.info = results.org;
-    org.users = results.users;
-    org.users.items = results.users.items.map(function(user) {
+    ret.info = org;
+    ret.users = users;
+    ret.users.items = users.items.map(function(user) {
       user.avatar = avatar(user.email);
       return user;
     });
-    org.packages = results.packages;
+    ret.packages = pkg;
 
-    return callback(null, org);
-  });
+    return ret;
+  }).nodeify(callback);
 };
 
 Org.prototype.update = function(data, callback) {

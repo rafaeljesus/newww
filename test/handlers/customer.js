@@ -701,12 +701,12 @@ describe('subscribing to private modules', function() {
 
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe").times(2)
-          .reply(200, fixtures.customers.bob)
+          .reply(404)
           .put("/customer/bob/stripe/subscription", {
             "plan": "npm-paid-individual-user-7"
           })
           .reply(200, fixtures.customers.bob_subscriptions)
-          .post("/customer/bob/stripe", {
+          .put("/customer/stripe", {
             "name": "bob",
             "email": "bob@boom.me",
             "card": "tok_1234567890"
@@ -746,12 +746,12 @@ describe('subscribing to private modules', function() {
 
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe").times(2)
-          .reply(200, fixtures.customers.bob)
+          .reply(404)
           .put("/customer/bob/stripe/subscription", {
             "plan": "npm-paid-individual-user-7"
           })
           .reply(200, fixtures.customers.bob_subscriptions)
-          .post("/customer/bob/stripe", {
+          .put("/customer/stripe", {
             "name": "bob",
             "email": "bob@boom.me",
             "card": "tok_1234567890"
@@ -783,7 +783,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgName: 'boomer',
+          orgScope: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -820,7 +820,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgName: 'boomer',
+          orgScope: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -858,7 +858,7 @@ describe("subscribing to an org", function() {
         orgMock.done();
         customerMock.done();
         expect(resp.statusCode).to.equal(302);
-        expect(resp.headers.location).to.match(/\/settings\/billing/);
+        expect(resp.headers.location).to.match(/\/org\/boomer/);
         done();
       });
     });
@@ -872,7 +872,7 @@ describe("subscribing to an org", function() {
         credentials: fixtures.users.bob,
         payload: {
           planType: 'orgs',
-          orgName: 'boomer',
+          orgScope: 'boomer',
           crumb: crumb
         },
         headers: {
@@ -914,10 +914,82 @@ describe("subscribing to an org", function() {
         orgMock.done();
         customerMock.done();
         expect(resp.statusCode).to.equal(200);
-        expect(resp.request.response.source.template).to.equal('user/billing');
+        expect(resp.request.response.source.template).to.equal('org/create');
         var $ = cheerio.load(resp.result);
-        expect($('.errors li')[0].children.length).to.equal(1);
-        expect($('.errors li')[0].children[0].data).to.equal("Error: Org already exists.");
+        expect($('.notice')[0].children.length).to.equal(1);
+        expect($('.notice')[0].children[0].data).to.equal("Error: Org already exists");
+        done();
+      });
+    });
+  });
+
+  it("returns an error if the organization is missing a name", function(done) {
+    generateCrumb(server, function(crumb) {
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgScope: '',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var customerMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe")
+        .reply(200, fixtures.customers.happy);
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(200);
+        var context = resp.request.response.source.context;
+        expect(context.notices).to.be.an.array();
+        expect(context.notices[0]).to.equal('orgScope is not allowed to be empty');
+        done();
+      });
+    });
+  });
+
+  it("returns an error if the organization name is invalid", function(done) {
+    generateCrumb(server, function(crumb) {
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgScope: '_kaBOOM',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var customerMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe")
+        .reply(200, fixtures.customers.happy);
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(200);
+        var context = resp.request.response.source.context;
+        expect(context.notices).to.be.an.array();
+        expect(context.notices[0]).to.equal('name cannot start with an underscore');
         done();
       });
     });

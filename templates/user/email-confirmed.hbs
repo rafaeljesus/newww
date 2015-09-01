@@ -12,6 +12,9 @@
   <p>
     Now that you've cleared that up, you might want to
     <a href="/settings/billing" data-event-trigger="click" data-event-name="post-confirmation-signup">sign up for private modules</a>,
+    {{#if features.org_billing}}
+      <a href="/orgs/create">create an organization</a>,
+    {{/if}}
     <a href="/profile-edit">update your profile</a>,
     or learn how to
     <a href="https://docs.npmjs.com/">get started with npm</a>.

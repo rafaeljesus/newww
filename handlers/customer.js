@@ -26,7 +26,7 @@ customer.getBillingInfo = function(request, reply) {
 
       if (customer) {
         opts.customer = customer;
-        opts.customer.customer_id = cust.stripe_customer_id;
+        opts.customer.customer_id = cust && cust.stripe_customer_id;
       }
 
       request.customer.getSubscriptions(function(err, subscriptions) {

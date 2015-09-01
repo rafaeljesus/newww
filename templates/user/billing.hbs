@@ -57,7 +57,9 @@
         <ul class="nav-2 clear" role="navigation">
           <li class="current"><a href="#overview">Overview</a></li>
           <li><a href="#payment-information">Payment Information</a></li>
+          {{#if customer.customer_id}}
           <li><button type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</button></li>
+          {{/if}}
         </ul>
       </div>
     </div>

@@ -140,10 +140,6 @@ describe('updating an org', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
-        var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy);
-
         var orgMock = nock("https://user-api-example.com")
           .put('/org/bigco/user', {
             user: 'betty',
@@ -168,7 +164,6 @@ describe('updating an org', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
-          licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(401);
           expect(resp.request.response.source.template).to.equal('errors/internal');

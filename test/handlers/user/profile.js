@@ -142,15 +142,6 @@ describe('GET /~bob for logged-in bob', function() {
     done();
   });
 
-  it("renders a link to change password page", function(done) {
-    expect($(".profile-edit-links a[href='/password']").length).to.equal(1);
-    done();
-  });
-
-  it("renders a link to change gravatar", function(done) {
-    expect($(".profile-edit-links a[href='http://gravatar.com/emails/']").length).to.equal(1);
-    done();
-  });
 
   it("renders a little lock icon next to private packages", function(done) {
     expect($(".icon-lock ~ a").text()).to.equal("@bob/shhh");

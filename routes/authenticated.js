@@ -107,7 +107,9 @@ module.exports = [
     path: "/org/create",
     method: "GET",
     handler: function(request, reply) {
-      return reply.view('org/create');
+      return reply.view('org/create', {
+        stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+      });
     }
   }
 ];

@@ -2,6 +2,8 @@ var _ = require('lodash');
 var assert = require('assert');
 var moment = require('moment');
 var Request = require('../lib/external-request');
+var P = require('bluebird');
+var VError = require('verror');
 
 var Customer = module.exports = function(name, opts) {
 
@@ -158,13 +160,21 @@ Customer.prototype.del = function(callback) {
 
 Customer.prototype.createSubscription = function(planInfo, callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription';
-  Request.put({
-    url: url,
-    json: true,
-    body: planInfo
-  }, function(err, resp, body) {
-    callback(err, body);
-  });
+  return new P(function(accept, reject) {
+    Request.put({
+      url: url,
+      json: true,
+      body: planInfo
+    }, function(err, resp, body) {
+      if (err) {
+        reject(new VError(err, 'unable to update subscription to %j', planInfo.plan));
+      } else if (resp.statusCode >= 400) {
+        reject(new VError(new VError('unexpected status code: %d', resp.statusCode), 'unable to update subscription to %j', planInfo.plan));
+      } else {
+        accept(body);
+      }
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.cancelSubscription = function(subscriptionId, callback) {

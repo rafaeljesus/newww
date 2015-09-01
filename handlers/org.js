@@ -29,7 +29,7 @@ exports.getOrg = function(request, reply) {
 
         if (!subscription.length) {
           request.logger.error("Customer is not subscribed to this org");
-          return reply.redirect("/org");
+          return reply.view('errors/not-found', err).code(404);
         }
 
         var licenseId = subscription[0].license_id;

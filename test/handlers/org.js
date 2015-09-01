@@ -105,30 +105,28 @@ describe('getting an org', function() {
     });
   });
 
-  it('does not include sponsorships if the org does not exist', function(done) {
+  it('does not show org if org is not subscribed to', function(done) {
     var userMock = nock("https://user-api-example.com")
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
 
-    var orgMock = nock("https://user-api-example.com")
-      .get('/org/bigco')
-      .reply(404)
-      .get('/org/bigco/user')
-      .reply(404)
-      .get('/org/bigco/package')
-      .reply(404);
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
+      .get("/customer/bob/stripe/subscription")
+      .reply(200, fixtures.users.bobsubscriptions);
+
 
     var options = {
-      url: "/org/bigco",
+      url: "/org/bigconotthere",
       credentials: fixtures.users.bob
     };
 
     server.inject(options, function(resp) {
       userMock.done();
-      orgMock.done();
-      expect(resp.statusCode).to.equal(200);
+      licenseMock.done();
+      expect(resp.statusCode).to.equal(404);
       expect(resp.request.response.source.template).to.equal('errors/not-found');
-      expect(resp.request.response.source.context).to.not.include('sponsorships');
       done();
     });
   });

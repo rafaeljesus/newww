@@ -183,7 +183,12 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
     url: url,
     json: true
   }, function(err, resp, body) {
-    callback(err, body);
+    if (resp.statusCode === 404) {
+      err = new Error('License not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+    return callback(null, body);
   });
 };
 

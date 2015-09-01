@@ -10,10 +10,7 @@ customer.getBillingInfo = function(request, reply) {
     title: 'Billing',
     updated: ('updated' in request.query),
     canceled: ('canceled' in request.query),
-    stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-    features: {
-      orgs: request.features.org_billing
-    }
+    stripePublicKey: process.env.STRIPE_PUBLIC_KEY
   };
 
   // Display a message to unpaid collaborators about the
@@ -116,7 +113,11 @@ var subscriptionSchema = {
     is: 'orgs',
     then: Joi.required()
   }),
-  "paid-org-type": Joi.string().optional()
+  "paid-org-type": Joi.string().optional(),
+  "card-number": Joi.string().optional(),
+  "card-cvc": Joi.string().optional(),
+  "card-exp-month": Joi.string().optional(),
+  "card-exp-year": Joi.string().optional()
 };
 
 customer.subscribe = function(request, reply) {
@@ -126,6 +127,7 @@ customer.subscribe = function(request, reply) {
         return e.message;
       });
       return reply.view('org/create', {
+        stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
         notices: notices
       });
     }
@@ -138,60 +140,69 @@ customer.subscribe = function(request, reply) {
     if (planType === 'orgs' && !request.features.org_billing) {
       return reply.redirect('/settings/billing');
     }
-    if (request.features.org_billing && planType === 'orgs') {
-      planInfo.npm_org = planData.orgNamespace;
 
-      // check if the org name works as a package name
-      var valid = validate('@' + planInfo.npm_org + '/foo');
-
-      if (!valid.errors) {
-        // now check if the org name works on its own
-        valid = validate(planInfo.npm_org);
-      }
-
-      if (valid.errors) {
-        return reply.view('org/create', {
-          notices: valid.errors
-        });
-      }
-
-      Org(request.loggedInUser.name)
-        .get(planInfo.npm_org).then(function() {
-        var err = new Error("Org already exists");
-        err.isUserError = true;
-        throw err;
-      }).catch(function(err) {
-        if (err.statusCode !== 404) {
-          throw err;
-        }
-
-        // org doesn't yet exist
-        return request.customer.createSubscription(planInfo)
-          .then(function(subscriptions) {
-            if (typeof subscriptions === 'string') {
-              request.logger.info("created subscription: ", planInfo);
-            }
-          }).then(function() {
-          return Org(request.loggedInUser.name)
-            .create(planInfo.npm_org);
-        });
-
-      }).then(function() {
-        return reply.redirect('/org/' + planInfo.npm_org);
-
-      }).catch(function(err) {
-        request.logger.error(err);
-
-        if (err.isUserError) {
-          return reply.view('org/create', {
-            notices: [err]
-          });
-        } else {
-          return reply.view('errors/internal', err).code(500);
-        }
-      });
+    if (request.loggedInUser.customer) {
+      subscribe();
     } else {
-      customer.updateBillingInfo(request, reply, function(err) {
+      customer.updateBillingInfo(request, reply, subscribe);
+    }
+
+    function subscribe() {
+      if (request.features.org_billing && planType === 'orgs') {
+        planInfo.npm_org = planData.orgNamespace;
+
+        // check if the org name works as a package name
+        var valid = validate('@' + planInfo.npm_org + '/foo');
+
+        if (!valid.errors) {
+          // now check if the org name works on its own
+          valid = validate(planInfo.npm_org);
+        }
+
+        if (valid.errors) {
+          return reply.view('org/create', {
+            stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+            notices: valid.errors
+          });
+        }
+
+        Org(request.loggedInUser.name)
+          .get(planInfo.npm_org).then(function() {
+          var err = new Error("Org already exists");
+          err.isUserError = true;
+          throw err;
+        }).catch(function(err) {
+          if (err.statusCode !== 404) {
+            throw err;
+          }
+
+          // org doesn't yet exist
+          return request.customer.createSubscription(planInfo)
+            .then(function(subscriptions) {
+              if (typeof subscriptions === 'string') {
+                request.logger.info("created subscription: ", planInfo);
+              }
+            }).then(function() {
+            return Org(request.loggedInUser.name)
+              .create(planInfo.npm_org);
+          });
+
+        }).then(function() {
+          return reply.redirect('/org/' + planInfo.npm_org);
+
+        }).catch(function(err) {
+          request.logger.error(err);
+
+          if (err.isUserError) {
+            return reply.view('org/create', {
+              stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+              notices: [err]
+            });
+          } else {
+            return reply.view('errors/internal', err).code(500);
+          }
+        });
+      } else {
         request.customer.createSubscription(planInfo, function(err, subscriptions) {
           if (err) {
             request.logger.error("unable to update subscription to " + planInfo.plan);
@@ -204,9 +215,10 @@ customer.subscribe = function(request, reply) {
 
           return reply.redirect('/settings/billing?updated=1');
         });
-      });
 
+      }
     }
+
   });
 };
 

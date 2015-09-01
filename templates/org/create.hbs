@@ -14,7 +14,7 @@
 
     {{else}}
 
-      <form method="POST" id="org-form" action="/settings/billing/subscribe">
+      <form method="POST" id="payment-form" action="/settings/billing/subscribe" data-stripe-public-key="{{stripePublicKey}}">
         <section>
           <label for="fullname">organization name</label>
           <input required="required" type="text" id="fullname" name="fullname" placeholder="My Organization" />
@@ -62,13 +62,13 @@
           {{else}}
             <div class="inline-input-set">
               <div class="card-number large">
-                <label for="billing-card-num">card #</label>
-                <input required="required" type="text" name="billing-card-num" id="billing-card-num" />
+                <label for="card-number">card #</label>
+                <input required="required" type="text" name="card-number" id="card-number" />
               </div>
 
               <div class="cvv small">
-                <label for="billing-cvv">cvv</label>
-                <input required="required" type="text" name="billing-cvv" id="billing-cvv" />
+                <label for="card-cvc">cvv</label>
+                <input required="required" type="text" name="card-cvc" id="card-cvc" />
               </div><!--/.cvv-->
             </div><!--/.inline-input-set-->
 
@@ -76,12 +76,12 @@
               <legend>expiration date</legend>
               <div class="inline-input-set">
                 <div class="month small">
-                  <label for="billing-month"><span class="a11y-only">Month</span></label>
-                  <input required="required" type="text" minlength="2" maxlength="2" name="billing-month" placeholder="MM" />
+                  <label for="card-exp-month"><span class="a11y-only">Month</span></label>
+                  <input id="card-exp-month" required="required" type="text" minlength="2" maxlength="2" name="card-exp-month" placeholder="MM" />
                 </div><!--/.month-->
                 <div class="year small">
-                  <label for="billing-year"><span class="a11y-only">Year</span></label>
-                  <input required="required" type="text" minlength="4" maxlength="4" name="billing-year" placeholder="YYYY" />
+                  <label for="card-exp-year"><span class="a11y-only">Year</span></label>
+                  <input id="card-exp-year" required="required" type="text" minlength="4" maxlength="4" name="card-exp-year" placeholder="YYYY" />
                 </div><!--/.year-->
               </div><!--/.inline-input-set-->
             {{/if}}
@@ -109,3 +109,5 @@
     </div><!--/.inset-->
   </div><!--/.sidebar-->
 </div><!--/.main-->
+
+<script src="https://js.stripe.com/v2/"></script>

@@ -57,7 +57,7 @@
         <ul class="nav-2 clear" role="navigation">
           <li class="current"><a href="#overview">Overview</a></li>
           <li><a href="#payment-information">Payment Information</a></li>
-          <li><a href="#billing">Payment History</a></li>
+          <li><button type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</button></li>
         </ul>
       </div>
     </div>
@@ -231,3 +231,4 @@
 </div>
 
 <script src="https://js.stripe.com/v2/"></script>
+<script src="https://static.accountdock.com/app.min.js"></script>

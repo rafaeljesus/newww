@@ -35,6 +35,12 @@ customer.getBillingInfo = function(request, reply) {
 
       request.customer.getLicensesFromSubscriptions(subscriptions, function(err, licenses) {
 
+        if (err) {
+          opts.errors = [];
+          opts.errors.push(new Error(err));
+          return reply.view('user/billing', opts);
+        }
+
         var subs = subscriptions.map(function(sub) {
           sub.license = licenses.filter(function(license) {
             return license.id === sub.license_id;
@@ -59,7 +65,7 @@ customer.getBillingInfo = function(request, reply) {
           return sub.cost;
         }).reduce(function(prev, curr) {
           return prev + curr;
-        });
+        }, 0);
 
         opts.privateModules = privateModules;
         opts.orgs = orgs;

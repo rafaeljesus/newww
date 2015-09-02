@@ -26,28 +26,6 @@ describe("package access", function() {
     server.stop(done);
   });
 
-  describe('features.feature_page disabled', function() {
-
-    it("returns a 404 for global packages", function(done) {
-      server.inject({
-        url: "/package/browserify/access"
-      }, function(resp) {
-        expect(resp.statusCode).to.equal(404);
-        done();
-      });
-    });
-
-    it("returns a 404 for scoped packages", function(done) {
-      server.inject({
-        url: "/package/@wrigley_the_writer/scoped_public/access'"
-      }, function(resp) {
-        expect(resp.statusCode).to.equal(404);
-        done();
-      });
-    });
-
-  });
-
   describe('global package', function() {
 
     var $;

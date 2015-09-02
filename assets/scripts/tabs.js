@@ -61,11 +61,14 @@ module.exports = function() {
     }
   };
 
+  var parser = document.createElement("a");
+
   var updateFormActions = function() {
     var forms = document.querySelectorAll("form");
     for (var i = 0, l = forms.length; i < l; i++) {
       var form = forms[i];
-      form.action = form.action + location.hash;
+      parser.href = form.action;
+      form.action = parser.pathname + location.hash;
     }
   };
 

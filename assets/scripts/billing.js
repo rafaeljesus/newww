@@ -48,6 +48,11 @@ var init = function() {
 
 var onSubmit = function(e) {
   var $form = $('#payment-form');
+
+  if (!$form.find('#card-number').length) {
+    return true;
+  }
+
   var formData = {
     number: $('#card-number').val(),
     cvc: $('#card-cvc').val(),

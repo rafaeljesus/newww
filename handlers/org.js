@@ -1,5 +1,6 @@
 var Org = require('../agents/org');
 var Customer = require('../models/customer');
+var Promise = require('bluebird');
 
 exports.getOrg = function(request, reply) {
   if (!request.features.org_billing) {
@@ -88,8 +89,14 @@ exports.addUserToOrg = function(request, reply) {
   Org(loggedInUser)
     .addUser(orgName, user, function(err, addedUser) {
       if (err) {
-        request.logger.error(err);
-        return reply.view('errors/internal', err).code(err.statusCode);
+        return request.saveNotifications([
+          Promise.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/' + orgName;
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        });
       }
       request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
         if (err) {

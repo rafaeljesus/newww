@@ -56,6 +56,20 @@ var publicRoutes = [
       return reply.redirect("/private-modules").code(301);
     }
   }, {
+    // redirect plural forms to singular
+    paths: [
+      "/orgs",
+    ],
+    method: "GET",
+    handler: function(request, reply) {
+
+      if (request.query.hasOwnProperty('join-beta')) {
+        return reply.redirect("/org?join-beta").code(301);
+      }
+
+      return reply.redirect("/org").code(301);
+    }
+  }, {
     path: "/org",
     method: "GET",
     handler: function(request, reply) {
@@ -180,15 +194,6 @@ var publicRoutes = [
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect(fmt("/~%s#packages", request.params.user)).code(301);
-    }
-  }, {
-    // redirect plural forms to singular
-    paths: [
-      "/orgs",
-    ],
-    method: "GET",
-    handler: function(request, reply) {
-      return reply.redirect("/org").code(301);
     }
   }, {
     path: "/browse/userstar/{user}",

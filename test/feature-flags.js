@@ -43,10 +43,24 @@ var requests = {
       }
     }
   },
+  nomatch: {
+    auth: {
+      credentials: {
+        name: 'match-things'
+      }
+    }
+  },
   rockbot: {
     auth: {
       credentials: {
         name: 'rockbot'
+      }
+    }
+  },
+  rockbotnomatch: {
+    auth: {
+      credentials: {
+        name: 'rockbot-12345'
       }
     }
   },
@@ -168,6 +182,16 @@ describe('feature flags', function() {
 
     it('returns true for regex matches', function(done) {
       expect(feature('unicorn_page', requests.match)).to.be.true()
+      done()
+    })
+
+    it('returns false for regex mis-matches', function(done) {
+      expect(feature('unicorn_page', requests.nomatch)).to.be.false()
+      done()
+    })
+
+    it('returns false for usernames that are potentially regex matches for list entries', function(done) {
+      expect(feature('unicorn_page', requests.rockbotnomatch)).to.be.false()
       done()
     })
 

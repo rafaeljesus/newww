@@ -12,7 +12,8 @@ var generateCrumb = require("../handlers/crumb.js"),
   fixtures = require('../fixtures');
 
 before(function(done) {
-  process.env.FEATURE_ORG_BILLING = 'true';
+  process.env.FEATURE_ORG_BILLING = 'bob';
+  require('../../lib/feature-flags').calculate('org_billing');
   require('../mocks/server')(function(obj) {
     server = obj;
     done();
@@ -22,6 +23,68 @@ before(function(done) {
 after(function(done) {
   delete process.env.FEATURE_ORG_BILLING;
   server.stop(done);
+});
+
+describe('getting to the org marketing page', function() {
+  it('takes you to the test-orgs signup if you are not logged in or invited to the beta', function(done) {
+    var options = {
+      url: "/org"
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.headers.location).to.include('/test-orgs');
+      done();
+    });
+  });
+
+  it('takes you to the test-orgs signup if you are logged in but not whitelisted for the beta', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bcoe")
+      .reply(200, fixtures.users.bcoe);
+
+    var options = {
+      url: "/org",
+      credentials: fixtures.users.bcoe
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.headers.location).to.include('/test-orgs');
+      done();
+    });
+  });
+
+  it('takes you to the login page (with redirect to the org marketing page) if you are not logged in but have been invited to the beta', function(done) {
+    var options = {
+      url: "/org?join-beta"
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.headers.location).to.equal('/login?done=%2Forg');
+      done();
+    });
+  });
+
+  it('takes you to the marketing page if you are logged in and whitelisted for the beta', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var options = {
+      url: "/org?join-beta",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      expect(resp.statusCode).to.equal(200);
+      expect(resp.request.response.source.template).to.equal('org/index');
+      done();
+    });
+  });
 });
 
 describe('getting an org', function() {

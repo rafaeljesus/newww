@@ -3,7 +3,7 @@ var Customer = require('../models/customer');
 
 exports.getOrg = function(request, reply) {
   if (!request.features.org_billing) {
-    return reply.redirect('/');
+    return reply.redirect('/org');
   }
 
   var opts = {};
@@ -72,7 +72,7 @@ exports.getOrg = function(request, reply) {
 
 exports.addUserToOrg = function(request, reply) {
   if (!request.features.org_billing) {
-    return reply.redirect('/');
+    return reply.redirect('/org');
   }
 
   var orgName = request.params.org;
@@ -115,7 +115,7 @@ exports.addUserToOrg = function(request, reply) {
 
 exports.removeUserFromOrg = function(request, reply) {
   if (!request.features.org_billing) {
-    return reply.redirect('/');
+    return reply.redirect('/org');
   }
 
   var orgName = request.params.org;
@@ -158,7 +158,7 @@ exports.removeUserFromOrg = function(request, reply) {
 
 exports.updateUserPayStatus = function(request, reply) {
   if (!request.features.org_billing) {
-    return reply.redirect('/');
+    return reply.redirect('/org');
   }
 
   var orgName = request.params.org;
@@ -213,7 +213,7 @@ exports.updateUserPayStatus = function(request, reply) {
 
 exports.updateOrg = function(request, reply) {
   if (!request.features.org_billing) {
-    return reply.redirect('/');
+    return reply.redirect('/org');
   }
 
   if (request.payload.updateType === "addUser") {
@@ -227,7 +227,7 @@ exports.updateOrg = function(request, reply) {
 
 exports.deleteOrg = function(request, reply) {
   if (!request.features.org_billing) {
-    return reply.redirect('/');
+    return reply.redirect('/org');
   }
 
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;

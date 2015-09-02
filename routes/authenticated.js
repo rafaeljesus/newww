@@ -107,6 +107,10 @@ module.exports = [
     path: "/org/create",
     method: "GET",
     handler: function(request, reply) {
+      if (!request.features.org_billing) {
+        return reply.redirect('/org');
+      }
+
       return reply.view('org/create', {
         stripePublicKey: process.env.STRIPE_PUBLIC_KEY
       });

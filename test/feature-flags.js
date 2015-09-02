@@ -36,10 +36,17 @@ var requests = {
       }
     }
   },
-  zeke: {
+  match: {
     auth: {
       credentials: {
-        name: 'zeke'
+        name: 'match-12345'
+      }
+    }
+  },
+  nomatch: {
+    auth: {
+      credentials: {
+        name: 'match-things'
       }
     }
   },
@@ -47,6 +54,13 @@ var requests = {
     auth: {
       credentials: {
         name: 'rockbot'
+      }
+    }
+  },
+  rockbotnomatch: {
+    auth: {
+      credentials: {
+        name: 'rockbot-12345'
       }
     }
   },
@@ -147,7 +161,7 @@ describe('feature flags', function() {
   describe('whitelisted groups', function() {
 
     beforeEach(function(done) {
-      process.env.FEATURE_UNICORN_PAGE = 'group:npm-humans, group:friends,cat,somebody-else'
+      process.env.FEATURE_UNICORN_PAGE = 'group:npm-humans, group:friends,cat,somebody-else, regex:match-\\d+'
       done()
     })
 
@@ -163,6 +177,21 @@ describe('feature flags', function() {
 
     it('returns true for one-off users', function(done) {
       expect(feature('unicorn_page', requests.cat)).to.be.true()
+      done()
+    })
+
+    it('returns true for regex matches', function(done) {
+      expect(feature('unicorn_page', requests.match)).to.be.true()
+      done()
+    })
+
+    it('returns false for regex mis-matches', function(done) {
+      expect(feature('unicorn_page', requests.nomatch)).to.be.false()
+      done()
+    })
+
+    it('returns false for usernames that are potentially regex matches for list entries', function(done) {
+      expect(feature('unicorn_page', requests.rockbotnomatch)).to.be.false()
       done()
     })
 

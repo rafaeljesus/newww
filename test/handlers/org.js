@@ -11,10 +11,14 @@ var generateCrumb = require("../handlers/crumb.js"),
   server,
   fixtures = require('../fixtures');
 
+var requireInject = require('require-inject');
+
 before(function(done) {
   process.env.FEATURE_ORG_BILLING = 'bob';
   require('../../lib/feature-flags').calculate('org_billing');
-  require('../mocks/server')(function(obj) {
+  requireInject.installGlobally('../mocks/server', {
+    redis: require('redis-mock')
+  })(function(obj) {
     server = obj;
     done();
   });
@@ -197,7 +201,7 @@ describe('getting an org', function() {
 
 describe('updating an org', function() {
   describe('adding a user', function() {
-    it('renders an error if a user cannot be added to an org', function(done) {
+    it('renders a redirect if a user cannot be added to an org', function(done) {
       generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
@@ -228,8 +232,7 @@ describe('updating an org', function() {
         server.inject(options, function(resp) {
           userMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(401);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
+          expect(resp.statusCode).to.equal(302);
           done();
         });
       });

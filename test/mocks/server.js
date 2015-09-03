@@ -2,6 +2,7 @@ var path = require('path');
 var Hapi = require('hapi');
 
 module.exports = function(done) {
+
   var metrics = require('../../adapters/metrics')();
   var server = new Hapi.Server();
   server.connection();
@@ -45,7 +46,9 @@ module.exports = function(done) {
         }
       }
     },
-      require('../../adapters/bonbon')
+      require('../../adapters/bonbon'),
+      hackishMockRedis,
+      require('hapi-stateless-notifications')
     ], function(err) {
       server.route(require('../../routes/index'));
 
@@ -54,4 +57,17 @@ module.exports = function(done) {
       });
     });
   });
+};
+
+function hackishMockRedis(server, options, next) {
+  server.ext('onPreHandler', function(request, reply) {
+    request.redis = require('redis-mock').createClient();
+    reply.continue();
+  });
+
+  next();
+}
+
+hackishMockRedis.attributes = {
+  name: "hackishMockRedis"
 };

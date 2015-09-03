@@ -127,6 +127,7 @@
     "replicate": "^0.2.0",
     "require-inject": "^1.2.0",
     "sinon": "^1.10.3",
+    "token-facilitator": "^2.2.0",
     "touch": "0.0.3",
     "vinyl-source-stream": "^0.1.1"
   }

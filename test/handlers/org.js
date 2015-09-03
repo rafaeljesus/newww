@@ -11,10 +11,22 @@ var generateCrumb = require("../handlers/crumb.js"),
   server,
   fixtures = require('../fixtures');
 
+var URL = require('url');
+var qs = require('qs');
+
+
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+var client = redisMock.createClient();
+
+var TokenFacilitator = require('token-facilitator');
+
 before(function(done) {
   process.env.FEATURE_ORG_BILLING = 'bob';
   require('../../lib/feature-flags').calculate('org_billing');
-  require('../mocks/server')(function(obj) {
+  requireInject.installGlobally('../mocks/server', {
+    redis: redisMock
+  })(function(obj) {
     server = obj;
     done();
   });
@@ -221,7 +233,7 @@ describe('getting an org', function() {
 
 describe('updating an org', function() {
   describe('adding a user', function() {
-    it('renders an error if a user cannot be added to an org', function(done) {
+    it('renders a redirect if a user cannot be added to an org', function(done) {
       generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
@@ -232,7 +244,7 @@ describe('updating an org', function() {
             user: 'betty',
             role: 'developer'
           })
-          .reply(401);
+          .reply(404);
 
         var options = {
           url: "/org/bigco",
@@ -252,9 +264,24 @@ describe('updating an org', function() {
         server.inject(options, function(resp) {
           userMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(401);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
-          done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('org or user not found');
+            done();
+          });
         });
       });
     });

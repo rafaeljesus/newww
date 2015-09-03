@@ -12,7 +12,7 @@
     "prepublish": "gulp build",
     "repl": "rc /tmp/repl/www-15443.sock",
     "start": "node server.js",
-    "test": "lab --verbose --colors --ignore '$$bole,__grim__' --assert code --timeout 5000"
+    "test": "lab --verbose --colors --ignore '$$bole,__grim__,flushdb,end' --assert code --timeout 5000"
   },
   "author": "npm, Inc. <support@npmjs.com>",
   "license": "ISC",
@@ -123,8 +123,12 @@
     "nock": "^1.9.0",
     "nodemailer-mock-transport": "^1.1.0",
     "once": "^1.3.0",
+    "qs": "^5.0.0",
+    "redis-mock": "^0.4.9",
     "replicate": "^0.2.0",
+    "require-inject": "^1.2.0",
     "sinon": "^1.10.3",
+    "token-facilitator": "^2.2.0",
     "touch": "0.0.3",
     "vinyl-source-stream": "^0.1.1"
   }

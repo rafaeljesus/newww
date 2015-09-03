@@ -1,6 +1,7 @@
 var customer = module.exports = {};
 var Joi = require('joi');
 var Org = require('../agents/org');
+var P = require('bluebird');
 var utils = require('../lib/utils');
 var validate = require('validate-npm-package-name');
 
@@ -151,13 +152,27 @@ var subscriptionSchema = {
 customer.subscribe = function(request, reply) {
   Joi.validate(request.payload, subscriptionSchema, function(err, planData) {
     if (err) {
-      var notices = err.details.map(function(e) {
-        return e.message;
-      });
-      return reply.view('org/create', {
-        stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-        notices: notices
-      });
+      var notices;
+
+      if (planData.planType === 'orgs') {
+        notices = err.details.map(function(e) {
+          return e.message;
+        });
+
+        return reply.view('org/create', {
+          stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+          notices: notices
+        });
+      } else {
+        notices = err.details.map(function(e) {
+          return P.reject(e.message);
+        });
+
+        return request.saveNotifications(notices).then(function(token) {
+          return reply.redirect('/settings/billing' + (token ? '?notice=' + token : ''));
+        });
+      }
+
     }
 
     var planType = planData.planType;
@@ -240,7 +255,6 @@ customer.subscribe = function(request, reply) {
           if (typeof subscriptions === 'string') {
             request.logger.info("created subscription: ", planInfo);
           }
-
           return reply.redirect('/settings/billing?updated=1');
         });
 

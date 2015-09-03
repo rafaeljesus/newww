@@ -46,7 +46,9 @@ before(function(done) {
     .get('/customer/mikeal/stripe')
     .reply(200, {})
     .get('/customer/seldo/stripe').times(4)
-    .reply(200, {});
+    .reply(200, {})
+    .get('/customer/bob/stripe/subscription').times(2)
+    .reply(404);
 
   done();
 });

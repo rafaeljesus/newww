@@ -8,8 +8,9 @@ var Code = require('code'),
   expect = Code.expect,
   nock = require("nock"),
   cheerio = require("cheerio"),
-  users = require('../../fixtures').users,
-  customers = require('../../fixtures').customers;
+  fixtures = require('../../fixtures'),
+  users = fixtures.users,
+  customers = fixtures.customers;
 
 var server;
 
@@ -96,6 +97,10 @@ describe('GET /~bob for a user other than bob', function() {
     done();
   });
 
+  it("does not show any organizations", function(done) {
+    expect($("ul.organizations > li").length).to.equal(0);
+    done();
+  });
 });
 
 describe('GET /~bob for logged-in bob', function() {
@@ -114,7 +119,9 @@ describe('GET /~bob for logged-in bob', function() {
 
     var licenseMock = nock('https://license-api-example.com')
       .get('/customer/bob/stripe').twice()
-      .reply(404);
+      .reply(404)
+      .get('/customer/bob/stripe/subscription')
+      .reply(200, fixtures.orgs.bobsorgs);
 
     server.inject({
       url: '/~bob',
@@ -148,6 +155,13 @@ describe('GET /~bob for logged-in bob', function() {
     done();
   });
 
+  it("shows bob's organizations, since he is whitelisted", function(done) {
+    expect($("ul.organizations > li").length).to.equal(1);
+    expect($($("ul.organizations > li").get(0)).text().trim()).to.equal("@bigco");
+    done();
+  });
+
+
   it("shows a different billing page link for paid users", function(done) {
     var userMock = nock("https://user-api-example.com")
       .get('/user/bob').twice()
@@ -159,7 +173,9 @@ describe('GET /~bob for logged-in bob', function() {
 
     var licenseMock = nock('https://license-api-example.com')
       .get('/customer/bob/stripe').twice()
-      .reply(200, customers.bob);
+      .reply(200, customers.bob)
+      .get('/customer/bob/stripe/subscription')
+      .reply(404);
 
     server.inject({
       url: '/~bob',
@@ -174,6 +190,7 @@ describe('GET /~bob for logged-in bob', function() {
       expect($(".profile-edit-links a[href='/settings/billing']").length).to.equal(1);
       expect($(".profile-edit-links a[href='/settings/billing']").text()).to.equal("manage billing");
       expect($('#user-info a').data('is-paid')).to.be.true();
+      expect($("ul.organizations > li").length).to.equal(0);
       done();
     });
   });

@@ -133,3 +133,34 @@ exports.bigcoSponsorships = [
     "deleted": null
   }
 ]
+
+exports.bobsorgs = [
+  {
+    "amount": 700,
+    "cancel_at_period_end": false,
+    "current_period_end": 1441391148,
+    "current_period_start": 1438712748,
+    "id": "sub_12346",
+    "interval": "month",
+    "license_id": 17,
+    "npm_org": "bigco",
+    "npm_user": "bob",
+    "product_id": "fb340726-bbcd-4053-9d51-c73498d9b218",
+    "quantity": 2,
+    "status": "active"
+  },
+  {
+    "amount": 700,
+    "cancel_at_period_end": false,
+    "current_period_end": 1442441358,
+    "current_period_start": 1439762958,
+    "id": "sub_12345",
+    "interval": "month",
+    "license_id": 145,
+    "npm_org": "_private-modules-bob",
+    "npm_user": "bob",
+    "product_id": "52051d69-f3fe-46fc-919a-1ef1407ef247",
+    "quantity": 1,
+    "status": "active"
+  }
+];

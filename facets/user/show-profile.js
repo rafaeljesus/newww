@@ -22,6 +22,29 @@ module.exports = function(request, reply) {
     packages: function(cb) {
       User.getPackages(name, cb);
     },
+    orgs: function(cb) {
+      if (!loggedInUser || name !== loggedInUser.name) {
+        return cb();
+      }
+
+      request.customer.getSubscriptions(function(err, subscriptions) {
+        // ignore any errors here
+
+        var subs = subscriptions.filter(function(sub) {
+          return sub.status === "active";
+        });
+
+        var orgs = [];
+
+        subs.forEach(function(sub) {
+          if (!sub.privateModules) {
+            orgs.push(sub);
+          }
+        });
+
+        return cb(null, orgs);
+      });
+    }
   };
 
   async.parallel(actions, function(err, results) {
@@ -39,6 +62,7 @@ module.exports = function(request, reply) {
     opts.profile.stars = results.stars;
     opts.profile.packages = results.packages;
     opts.profile.isSelf = loggedInUser && name === loggedInUser.name;
+    opts.profile.orgs = results.orgs;
 
     return reply.view('user/profile', opts);
   });

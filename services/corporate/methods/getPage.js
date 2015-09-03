@@ -1,6 +1,6 @@
 var request = require('request');
 var Joi = require('joi');
-var marky = require('marky-markdown');
+var marky = require('@soldair/marky-markdown');
 var fmt = require('util').format;
 
 module.exports = {

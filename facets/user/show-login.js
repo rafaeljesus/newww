@@ -5,7 +5,7 @@ var Boom = require('boom'),
   avatar = require("../../lib/avatar"),
   User = require('../../models/user'),
   tips = require('npm-tips'),
-  marky = require('marky-markdown');
+  marky = require('@soldair/marky-markdown');
 
 var lockoutInterval = 60; // seconds
 var maxAttemptsBeforeLockout = 5;

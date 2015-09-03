@@ -126,7 +126,13 @@ server.register(require('hapi-auth-cookie'), function(err) {
     }, server);
     log.info('server repl socket at /tmp/rpl/www-' + process.env.PORT + '.sock');
 
-    server.route(require('./routes/index'));
+    try {
+      server.route(require('./routes/index'));
+    } catch (e) {
+      process.nextTick(function() {
+        throw e;
+      });
+    }
 
     server.start(function() {
       metrics.metric({

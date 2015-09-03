@@ -50,7 +50,13 @@ module.exports = function(done) {
       hackishMockRedis,
       require('hapi-stateless-notifications')
     ], function(err) {
-      server.route(require('../../routes/index'));
+      try {
+        server.route(require('../../routes/index'));
+      } catch (e) {
+        process.nextTick(function() {
+          throw e;
+        });
+      }
 
       server.start(function() {
         return done(server);

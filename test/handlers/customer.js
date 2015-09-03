@@ -678,6 +678,47 @@ describe('subscribing to private modules', function() {
       });
     });
 
+    it('allows empty coupon code', function(done) {
+      generateCrumb(server, function(crumb) {
+        var opts = {
+          url: '/settings/billing/subscribe',
+          method: 'POST',
+          credentials: fixtures.users.bob,
+          payload: {
+            stripeToken: 'tok_1234567890',
+            coupon: '',
+            planType: 'private_modules',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var licenseMock = nock("https://license-api-example.com")
+          .get("/customer/bob/stripe").times(2)
+          .reply(404)
+          .put("/customer/stripe")
+          .reply(200, fixtures.customers.bob)
+          .put("/customer/bob/stripe/subscription", {
+            "plan": "npm-paid-individual-user-7"
+          })
+          .reply(200, fixtures.customers.bob_subscriptions);
+
+        server.inject(opts, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
+          done();
+        });
+      });
+    });
+
     it('sends new billing info to the billing API', function(done) {
 
       generateCrumb(server, function(crumb) {

@@ -135,7 +135,7 @@ var plans = {
 var subscriptionSchema = {
   planType: Joi.string().valid(Object.keys(plans)).required(),
   stripeToken: Joi.string(),
-  coupon: Joi.string().optional(),
+  coupon: Joi.string().optional().allow(''),
   fullname: Joi.string().optional().allow(''),
   orgScope: Joi.string().when('planType', {
     is: 'orgs',

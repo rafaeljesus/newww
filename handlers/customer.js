@@ -185,16 +185,16 @@ customer.subscribe = function(request, reply) {
     }
 
     if (request.loggedInUser.customer) {
-      subscribe();
+      return subscribe();
     } else {
-      customer.updateBillingInfo(request, reply, subscribe);
+      return customer.updateBillingInfo(request, reply, subscribe);
     }
 
     function subscribe() {
       if (request.features.org_billing && planType === 'orgs') {
         return subscribeToOrg();
       } else {
-        request.customer.createSubscription(planInfo, function(err, subscriptions) {
+        return request.customer.createSubscription(planInfo, function(err, subscriptions) {
           if (err) {
             request.logger.error("unable to update subscription to " + planInfo.plan);
             request.logger.error(err);
@@ -237,19 +237,21 @@ customer.subscribe = function(request, reply) {
         }
 
         // org doesn't yet exist
-        return request.customer.createSubscription(planInfo)
-          .then(function(subscriptions) {
-            if (typeof subscriptions === 'string') {
-              request.logger.info("created subscription: ", planInfo);
-            }
-          }).then(function() {
-          return Org(request.loggedInUser.name)
-            .create(planInfo.npm_org);
-        });
-
-      }).then(function() {
-        return reply.redirect('/org/' + planInfo.npm_org);
-
+        return Org(request.loggedInUser.name)
+          .create(planInfo.npm_org)
+          .then(function() {
+            return request.customer.createSubscription(planInfo)
+              .then(function(subscription) {
+                if (typeof subscription === 'string') {
+                  request.logger.info("created subscription: ", planInfo);
+                }
+                return request.customer.extendSponsorship(subscription.license_id, request.loggedInUser.name);
+              }).then(function(extendedSponsorship) {
+              return request.customer.acceptSponsorship(extendedSponsorship.verification_key);
+            }).then(function() {
+              return reply.redirect('/org/' + planInfo.npm_org);
+            });
+          });
       }).catch(function(err) {
         request.logger.error(err);
 
@@ -263,7 +265,6 @@ customer.subscribe = function(request, reply) {
         }
       });
     }
-
   });
 };
 

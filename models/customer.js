@@ -195,27 +195,30 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
 };
 
 Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
-  this.getSubscriptions(function(err, subscriptions) {
-    if (err) {
-      return callback(err);
-    }
+  var self = this;
+  return new P(function(accept, reject) {
+    self.getSubscriptions(function(err, subscriptions) {
+      if (err) {
+        return reject(err);
+      }
 
-    var org = _.find(subscriptions, function(subscription) {
-      return orgName === subscription.npm_org;
-    });
+      var org = _.find(subscriptions, function(subscription) {
+        return orgName === subscription.npm_org;
+      });
 
-    if (!org) {
-      err = new Error('No org with that name exists');
-      return callback(err);
-    }
+      if (!org) {
+        err = new Error('No org with that name exists');
+        return reject(err);
+      }
 
-    if (!org.license_id) {
-      err = new Error('That org does not have a license_id');
-      return callback(err);
-    }
+      if (!org.license_id) {
+        err = new Error('That org does not have a license_id');
+        return reject(err);
+      }
 
-    return callback(null, org.license_id);
-  });
+      return accept(org.license_id);
+    }.bind(this));
+  }).nodeify(callback);
 };
 
 // should this go into the org agent instead?

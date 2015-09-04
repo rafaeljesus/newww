@@ -2,6 +2,10 @@ module.exports = function() {
 
   $(function() {
 
+    if (typeof StripeCheckout === 'undefined') {
+      return;
+    }
+
     var amount, subType, quantity;
 
     var handler = StripeCheckout.configure({

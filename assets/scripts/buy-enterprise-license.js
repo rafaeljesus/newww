@@ -1,9 +1,5 @@
 module.exports = function() {
 
-  if (typeof StripeCheckout === 'undefined') {
-    return;
-  }
-
   $(function() {
 
     var amount, subType, quantity;

@@ -95,7 +95,7 @@
     "stripe": "^2.9.0",
     "stylus": "^0.45.1",
     "tipsy-browserify": "^1.0.0",
-    "token-facilitator": "^2.1.1",
+    "token-facilitator": "^2.2.0",
     "truncate": "^1.0.4",
     "validate-npm-package-name": "^2.2.0",
     "verror": "^1.6.0"
@@ -127,7 +127,6 @@
     "replicate": "^0.2.0",
     "require-inject": "^1.2.0",
     "sinon": "^1.10.3",
-    "token-facilitator": "^2.2.0",
     "touch": "0.0.3",
     "vinyl-source-stream": "^0.1.1"
   }

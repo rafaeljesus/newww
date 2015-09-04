@@ -3,6 +3,7 @@ var User = require('../models/user'),
   presenter = require('../presenters/user'),
   userValidate = require('npm-user-validate'),
   merge = require('lodash').merge;
+var feature = require('../lib/feature-flags');
 
 
 exports.showSignup = function signup(request, reply) {
@@ -96,6 +97,22 @@ exports.handleSignup = function signup(request, reply) {
           }
 
           request.logger.info('created new user ' + user.name);
+
+          var almostARequest = {
+            auth: {
+              credentials: {
+                name: user.name
+              }
+            }
+          };
+          if (feature('bypass_email_verify', almostARequest)) {
+            UserModel.confirmEmail(user).then(function() {
+              request.logger.info('Bypassed email verification');
+            }).catch(function(err) {
+              // This is for test purposes, don't let it block the main use cases.
+              request.logger.error(err);
+            });
+          }
 
           setSession(user, function(err) {
 

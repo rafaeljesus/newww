@@ -74,30 +74,32 @@ Customer.prototype.getStripeData = function(callback) {
 Customer.prototype.getSubscriptions = function(callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription';
 
-  Request.get({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
+  return new P(function(accept, reject) {
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
 
-    if (err) {
-      return callback(err);
-    }
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      return callback(null, []);
-    }
+      if (resp.statusCode === 404) {
+        return accept([]);
+      }
 
-    var subs = body.filter(function(subscription) {
-      return subscription.product_id && subscription.npm_org;
+      var subs = body.filter(function(subscription) {
+        return subscription.product_id && subscription.npm_org;
+      });
+
+      subs.forEach(function(subscription) {
+        subscription.next_billing_date = moment.unix(subscription.current_period_end);
+        subscription.privateModules = !!subscription.npm_org.match(/_private-modules/);
+      });
+
+      return accept(subs);
     });
-
-    subs.forEach(function(subscription) {
-      subscription.next_billing_date = moment.unix(subscription.current_period_end);
-      subscription.privateModules = !!subscription.npm_org.match(/_private-modules/);
-    });
-
-    return callback(null, subs);
-  });
+  }).nodeify(callback);
 };
 
 Customer.prototype.updateBilling = function(body, callback) {

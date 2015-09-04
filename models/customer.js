@@ -276,28 +276,30 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
 
 Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
   var url = this.host + '/sponsorship/' + verificationKey;
-  Request.post({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.post({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 500) {
-      err = Error('user is already sponsored');
-      err.statusCode = 403;
-      return callback(err);
-    }
+      if (resp.statusCode === 500) {
+        err = Error('user is already sponsored');
+        err.statusCode = 403;
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('verification key not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('verification key not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {

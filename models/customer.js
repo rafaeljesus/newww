@@ -38,8 +38,9 @@ Customer.prototype.getById = function(id, callback) {
       return callback(err);
     }
 
-    if (resp.statusCode === 500) {
-      err = new Error(body);
+
+    if (resp.statusCode >= 400) {
+      err = Error(body);
       err.statusCode = resp.statusCode;
       return callback(err);
     }
@@ -233,10 +234,13 @@ Customer.prototype.getAllSponsorships = function(licenseId, callback) {
       return callback(err);
     }
 
-    if (resp.statusCode === 500) {
-      err = new Error();
+    if (resp.statusCode === 404) {
+      return callback(null, []);
+    }
+
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
       err.statusCode = resp.statusCode;
-      err.message = body;
       return callback(err);
     }
 
@@ -264,8 +268,8 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
         return reject(err);
       }
 
-      if (resp.statusCode === 500) {
-        err = new Error(body);
+      if (resp.statusCode >= 400) {
+        err = Error(body);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -294,6 +298,12 @@ Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
 
       if (resp.statusCode === 404) {
         err = Error('verification key not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = Error(body);
         err.statusCode = resp.statusCode;
         return reject(err);
       }

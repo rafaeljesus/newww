@@ -197,9 +197,8 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
 };
 
 Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
-  var self = this;
   return new P(function(accept, reject) {
-    self.getSubscriptions(function(err, subscriptions) {
+    this.getSubscriptions(function(err, subscriptions) {
       if (err) {
         return reject(err);
       }
@@ -219,8 +218,8 @@ Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
       }
 
       return accept(org.license_id);
-    }.bind(this));
-  }).nodeify(callback);
+    });
+  }.bind(this)).nodeify(callback);
 };
 
 // should this go into the org agent instead?

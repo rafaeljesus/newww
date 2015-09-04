@@ -109,6 +109,7 @@ describe('GET /~bob for logged-in bob', function() {
   var context;
 
   before(function(done) {
+    process.env.FEATURE_ORG_BILLING = 'bob';
     var userMock = nock("https://user-api-example.com")
       .get('/user/bob').twice()
       .reply(200, users.bob)
@@ -135,6 +136,11 @@ describe('GET /~bob for logged-in bob', function() {
       expect(resp.statusCode).to.equal(200);
       done();
     });
+  });
+
+  after(function(done) {
+    delete process.env.FEATURE_ORG_BILLING;
+    done();
   });
 
   it("renders a link to billing page", function(done) {

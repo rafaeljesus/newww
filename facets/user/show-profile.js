@@ -34,12 +34,8 @@ module.exports = function(request, reply) {
           return sub.status === "active";
         });
 
-        var orgs = [];
-
-        subs.forEach(function(sub) {
-          if (!sub.privateModules) {
-            orgs.push(sub);
-          }
+        var orgs = subs.filter(function(sub) {
+          return request.features.org_billing && !sub.privateModules;
         });
 
         return cb(null, orgs);

@@ -83,7 +83,7 @@ describe('GET /settings/billing', function() {
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.customers.bob_subscriptions);
+      .reply(200, fixtures.customers.subscriptions.bob);
 
     var options = {
       method: "get",
@@ -111,7 +111,7 @@ describe('GET /settings/billing', function() {
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.customers.bob_subscriptions);
+      .reply(200, fixtures.customers.subscriptions.bob);
 
     var options = {
       method: "get",
@@ -138,7 +138,7 @@ describe('GET /settings/billing', function() {
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.customers.bob_subscriptions);
+      .reply(200, fixtures.customers.subscriptions.bob);
 
     var options = {
       method: "get",
@@ -167,7 +167,7 @@ describe('GET /settings/billing', function() {
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.customers.bob_subscriptions);
+      .reply(200, fixtures.customers.subscriptions.bob);
 
     var options = {
       method: "get",
@@ -196,7 +196,7 @@ describe('GET /settings/billing', function() {
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.customers.bob_subscriptions);
+      .reply(200, fixtures.customers.subscriptions.bob);
 
     var options = {
       method: "get",
@@ -224,7 +224,7 @@ describe('GET /settings/billing', function() {
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.customers.bob_subscriptions);
+      .reply(200, fixtures.customers.subscriptions.bob);
 
     var options = {
       method: "get",
@@ -253,7 +253,7 @@ describe('GET /settings/billing', function() {
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.customers.bob_subscriptions);
+      .reply(200, fixtures.customers.subscriptions.bob);
 
     var options = {
       method: "get",
@@ -281,7 +281,7 @@ describe('GET /settings/billing', function() {
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
-      .reply(200, fixtures.customers.bob_subscriptions);
+      .reply(200, fixtures.customers.subscriptions.bob);
 
     var options = {
       method: "get",
@@ -320,7 +320,7 @@ describe('GET /settings/billing', function() {
         .get("/customer/bob/stripe").times(2)
         .reply(200, fixtures.customers.bob)
         .get("/customer/bob/stripe/subscription")
-        .reply(200, fixtures.customers.bob_subscriptions);
+        .reply(200, fixtures.customers.subscriptions.bob);
 
       var options = {
         method: "get",
@@ -457,7 +457,7 @@ describe('GET /settings/billing', function() {
         .get("/customer/norbert_newbie/stripe")
         .reply(200, fixtures.customers.happy)
         .get("/customer/norbert_newbie/stripe/subscription")
-        .reply(200, fixtures.customers.bob_subscriptions)
+        .reply(200, fixtures.customers.subscriptions.bob)
         .get("/customer/norbert_newbie/stripe")
         .reply(404);
 
@@ -662,7 +662,7 @@ describe('subscribing to private modules', function() {
           .put("/customer/bob/stripe/subscription", {
             "plan": "npm-paid-individual-user-7"
           })
-          .reply(200, fixtures.customers.bob_subscriptions);
+          .reply(200, fixtures.customers.subscriptions.bob);
 
         var Customer = require('../../models/customer');
         var oldUpdate = Customer.update;
@@ -712,7 +712,7 @@ describe('subscribing to private modules', function() {
           .put("/customer/bob/stripe/subscription", {
             "plan": "npm-paid-individual-user-7"
           })
-          .reply(200, fixtures.customers.bob_subscriptions);
+          .reply(200, fixtures.customers.subscriptions.bob);
 
         server.inject(opts, function(resp) {
           userMock.done();
@@ -780,7 +780,7 @@ describe('subscribing to private modules', function() {
           .put("/customer/bob/stripe/subscription", {
             "plan": "npm-paid-individual-user-7"
           })
-          .reply(200, fixtures.customers.bob_subscriptions)
+          .reply(200, fixtures.customers.subscriptions.bob)
           .put("/customer/stripe", {
             "name": "bob",
             "email": "bob@boom.me",
@@ -825,7 +825,7 @@ describe('subscribing to private modules', function() {
           .put("/customer/bob/stripe/subscription", {
             "plan": "npm-paid-individual-user-7"
           })
-          .reply(200, fixtures.customers.bob_subscriptions)
+          .reply(200, fixtures.customers.subscriptions.bob)
           .put("/customer/stripe", {
             "name": "bob",
             "email": "bob@boom.me",

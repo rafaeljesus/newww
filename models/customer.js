@@ -21,7 +21,6 @@ var Customer = module.exports = function(name, opts) {
 };
 
 Customer.prototype.getById = function(id, callback) {
-  var self = this;
   var url = this.host + '/customer/' + id;
 
   Request.get({
@@ -88,13 +87,16 @@ Customer.prototype.getSubscriptions = function(callback) {
       return callback(null, []);
     }
 
-    body.forEach(function(subscription) {
-      // does this seem right?
+    var subs = body.filter(function(subscription) {
+      return subscription.product_id && subscription.npm_org;
+    });
+
+    subs.forEach(function(subscription) {
       subscription.next_billing_date = moment.unix(subscription.current_period_end);
       subscription.privateModules = !!subscription.npm_org.match(/_private-modules/);
     });
 
-    return callback(null, body);
+    return callback(null, subs);
   });
 };
 

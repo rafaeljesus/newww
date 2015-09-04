@@ -115,6 +115,62 @@ describe("Customer", function() {
 
   });
 
+  describe("getSubscriptions()", function() {
+    it('returns an empty array if no subscriptions are found', function(done) {
+      var Customer = new CustomerModel('bob');
+
+      var customerMock = nock(Customer.host)
+        .get('/customer/bob/stripe/subscription')
+        .reply(404);
+
+      Customer.getSubscriptions(function(err, subs) {
+        customerMock.done();
+        expect(err).to.be.null();
+        expect(subs).to.be.an.array();
+        expect(subs).to.be.empty();
+        done();
+      });
+    });
+
+    describe('returns a cleaned up version of subscription data', function(done) {
+      var subscriptions;
+
+      before(function(done) {
+        var Customer = new CustomerModel('bob');
+
+        var customerMock = nock(Customer.host)
+          .get('/customer/bob/stripe/subscription')
+          .reply(200, fixtures.customers.subscriptions.faultyBob);
+
+        Customer.getSubscriptions(function(err, subs) {
+          customerMock.done();
+          expect(err).to.be.null();
+          expect(subs).to.be.an.array();
+          subscriptions = subs;
+          done();
+        });
+      });
+
+      it('filters out bad data', function(done) {
+        expect(subscriptions).to.be.length(1);
+        expect(subscriptions[0]).to.include('npm_org');
+        expect(subscriptions[0].product_id).to.not.be.null();
+        done();
+      });
+
+      it('includes next billing date in each subscription', function(done) {
+        expect(subscriptions[0].next_billing_date).to.exist();
+        done();
+      });
+
+      it('identifies private modules subscriptions', function(done) {
+        expect(subscriptions[0].privateModules).to.be.true();
+        done();
+      });
+
+    });
+  });
+
   describe("getById(id)", function() {
 
     it("makes an external request for /customer/{user}", function(done) {

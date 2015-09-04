@@ -192,59 +192,7 @@ customer.subscribe = function(request, reply) {
 
     function subscribe() {
       if (request.features.org_billing && planType === 'orgs') {
-        planInfo.npm_org = planData.orgScope;
-
-        // check if the org name works as a package name
-        var valid = validate('@' + planInfo.npm_org + '/foo');
-
-        if (!valid.errors) {
-          // now check if the org name works on its own
-          valid = validate(planInfo.npm_org);
-        }
-
-        if (valid.errors) {
-          return reply.view('org/create', {
-            stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-            notices: valid.errors
-          });
-        }
-
-        Org(request.loggedInUser.name)
-          .get(planInfo.npm_org).then(function() {
-          var err = new Error("Org already exists");
-          err.isUserError = true;
-          throw err;
-        }).catch(function(err) {
-          if (err.statusCode !== 404) {
-            throw err;
-          }
-
-          // org doesn't yet exist
-          return request.customer.createSubscription(planInfo)
-            .then(function(subscriptions) {
-              if (typeof subscriptions === 'string') {
-                request.logger.info("created subscription: ", planInfo);
-              }
-            }).then(function() {
-            return Org(request.loggedInUser.name)
-              .create(planInfo.npm_org);
-          });
-
-        }).then(function() {
-          return reply.redirect('/org/' + planInfo.npm_org);
-
-        }).catch(function(err) {
-          request.logger.error(err);
-
-          if (err.isUserError) {
-            return reply.view('org/create', {
-              stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-              notices: [err]
-            });
-          } else {
-            return reply.view('errors/internal', err).code(500);
-          }
-        });
+        return subscribeToOrg();
       } else {
         request.customer.createSubscription(planInfo, function(err, subscriptions) {
           if (err) {
@@ -257,8 +205,63 @@ customer.subscribe = function(request, reply) {
           }
           return reply.redirect('/settings/billing?updated=1');
         });
-
       }
+    }
+
+    function subscribeToOrg() {
+      planInfo.npm_org = planData.orgScope;
+
+      // check if the org name works as a package name
+      var valid = validate('@' + planInfo.npm_org + '/foo');
+
+      if (!valid.errors) {
+        // now check if the org name works on its own
+        valid = validate(planInfo.npm_org);
+      }
+
+      if (valid.errors) {
+        return reply.view('org/create', {
+          stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+          notices: valid.errors
+        });
+      }
+
+      Org(request.loggedInUser.name)
+        .get(planInfo.npm_org).then(function() {
+        var err = new Error("Org already exists");
+        err.isUserError = true;
+        throw err;
+      }).catch(function(err) {
+        if (err.statusCode !== 404) {
+          throw err;
+        }
+
+        // org doesn't yet exist
+        return request.customer.createSubscription(planInfo)
+          .then(function(subscriptions) {
+            if (typeof subscriptions === 'string') {
+              request.logger.info("created subscription: ", planInfo);
+            }
+          }).then(function() {
+          return Org(request.loggedInUser.name)
+            .create(planInfo.npm_org);
+        });
+
+      }).then(function() {
+        return reply.redirect('/org/' + planInfo.npm_org);
+
+      }).catch(function(err) {
+        request.logger.error(err);
+
+        if (err.isUserError) {
+          return reply.view('org/create', {
+            stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+            notices: [err]
+          });
+        } else {
+          return reply.view('errors/internal', err).code(500);
+        }
+      });
     }
 
   });

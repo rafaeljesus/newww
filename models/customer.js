@@ -245,31 +245,33 @@ Customer.prototype.getAllSponsorships = function(licenseId, callback) {
 
 Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
   var url = this.host + '/sponsorship/' + licenseId;
-  Request.put({
-    url: url,
-    json: true,
-    body: {
-      npm_user: name
-    }
-  }, function(err, resp, body) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.put({
+      url: url,
+      json: true,
+      body: {
+        npm_user: name
+      }
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = new Error('License not found: ' + licenseId);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = new Error('License not found: ' + licenseId);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode === 500) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 500) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.acceptSponsorship = function(verificationKey, callback) {

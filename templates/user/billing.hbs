@@ -1,6 +1,6 @@
 {{> profile-secondary-nav}}
 
-<div class="container">
+<div class="container{{#unless features.org_billing}} narrow{{/unless}}">
 
   <hgroup>
     {{#if features.org_billing}}

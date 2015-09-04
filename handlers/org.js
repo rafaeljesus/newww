@@ -58,7 +58,7 @@ exports.getOrg = function(request, reply) {
             }
 
             org.users.items = org.users.items.map(function(user) {
-              user.isPaid = subscription[0].npm_user === user.name || sponsoredUsers.indexOf(user.name) > -1;
+              user.isPaid = sponsoredUsers.indexOf(user.name) > -1;
               return user;
             });
 

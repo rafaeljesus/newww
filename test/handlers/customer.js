@@ -926,7 +926,44 @@ describe("subscribing to an org", function() {
           plan: "npm-paid-org-7",
           npm_org: "boomer"
         })
-        .reply(200);
+        .reply(200, {
+          "id": "foo",
+          "license_id": 2,
+          "current_period_end": 0,
+          "current_period_start": 0,
+          "quantity": 2,
+          "status": "active",
+          "interval": "month",
+          "amount": 700,
+          "npm_org": "boomer",
+          "npm_user": "bob",
+          "product_id": "npm-paid-org-7"
+        })
+        .put("/sponsorship/2", {
+          "npm_user": "bob"
+        })
+        .reply(200, {
+          "created": "2015-08-05T20:55:54.759Z",
+          "deleted": null,
+          "id": 15,
+          "license_id": 2,
+          "npm_user": "bob",
+          "updated": "2015-08-05T20:55:54.759Z",
+          "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+          "verified": null
+        })
+        .post("/sponsorship/f56dffef-b136-429a-97dc-57a6ef035829")
+        .reply(200, {
+          "created": "2015-08-05T20:59:32.707Z",
+          "deleted": null,
+          "id": 15,
+          "license_id": 2,
+          "npm_user": "bob",
+          "updated": "2015-08-05T20:59:41.538Z",
+          "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+          "verified": true
+        });
+
 
       server.inject(opts, function(resp) {
         userMock.done();

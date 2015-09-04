@@ -38,8 +38,9 @@ Customer.prototype.getById = function(id, callback) {
       return callback(err);
     }
 
-    if (resp.statusCode === 500) {
-      err = new Error(body);
+
+    if (resp.statusCode >= 400) {
+      err = Error(body);
       err.statusCode = resp.statusCode;
       return callback(err);
     }
@@ -74,30 +75,32 @@ Customer.prototype.getStripeData = function(callback) {
 Customer.prototype.getSubscriptions = function(callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription';
 
-  Request.get({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
+  return new P(function(accept, reject) {
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
 
-    if (err) {
-      return callback(err);
-    }
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      return callback(null, []);
-    }
+      if (resp.statusCode === 404) {
+        return accept([]);
+      }
 
-    var subs = body.filter(function(subscription) {
-      return subscription.product_id && subscription.npm_org;
+      var subs = body.filter(function(subscription) {
+        return subscription.product_id && subscription.npm_org;
+      });
+
+      subs.forEach(function(subscription) {
+        subscription.next_billing_date = moment.unix(subscription.current_period_end);
+        subscription.privateModules = !!subscription.npm_org.match(/_private-modules/);
+      });
+
+      return accept(subs);
     });
-
-    subs.forEach(function(subscription) {
-      subscription.next_billing_date = moment.unix(subscription.current_period_end);
-      subscription.privateModules = !!subscription.npm_org.match(/_private-modules/);
-    });
-
-    return callback(null, subs);
-  });
+  }).nodeify(callback);
 };
 
 Customer.prototype.updateBilling = function(body, callback) {
@@ -195,27 +198,29 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
 };
 
 Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
-  this.getSubscriptions(function(err, subscriptions) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    this.getSubscriptions(function(err, subscriptions) {
+      if (err) {
+        return reject(err);
+      }
 
-    var org = _.find(subscriptions, function(subscription) {
-      return orgName === subscription.npm_org;
+      var org = _.find(subscriptions, function(subscription) {
+        return orgName === subscription.npm_org;
+      });
+
+      if (!org) {
+        err = new Error('No org with that name exists');
+        return reject(err);
+      }
+
+      if (!org.license_id) {
+        err = new Error('That org does not have a license_id');
+        return reject(err);
+      }
+
+      return accept(org.license_id);
     });
-
-    if (!org) {
-      err = new Error('No org with that name exists');
-      return callback(err);
-    }
-
-    if (!org.license_id) {
-      err = new Error('That org does not have a license_id');
-      return callback(err);
-    }
-
-    return callback(null, org.license_id);
-  });
+  }.bind(this)).nodeify(callback);
 };
 
 // should this go into the org agent instead?
@@ -229,37 +234,11 @@ Customer.prototype.getAllSponsorships = function(licenseId, callback) {
       return callback(err);
     }
 
-    if (resp.statusCode === 500) {
-      err = new Error();
-      err.statusCode = resp.statusCode;
-      err.message = body;
-      return callback(err);
-    }
-
-    return callback(null, body);
-  });
-};
-
-Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
-  var url = this.host + '/sponsorship/' + licenseId;
-  Request.put({
-    url: url,
-    json: true,
-    body: {
-      npm_user: name
-    }
-  }, function(err, resp, body) {
-    if (err) {
-      return callback(err);
-    }
-
     if (resp.statusCode === 404) {
-      err = new Error('License not found: ' + licenseId);
-      err.statusCode = resp.statusCode;
-      return callback(err);
+      return callback(null, []);
     }
 
-    if (resp.statusCode === 500) {
+    if (resp.statusCode >= 400) {
       err = new Error(body);
       err.statusCode = resp.statusCode;
       return callback(err);
@@ -269,30 +248,69 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
   });
 };
 
+Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
+  var url = this.host + '/sponsorship/' + licenseId;
+  return new P(function(accept, reject) {
+    Request.put({
+      url: url,
+      json: true,
+      body: {
+        npm_user: name
+      }
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = new Error('License not found: ' + licenseId);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  }).nodeify(callback);
+};
+
 Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
   var url = this.host + '/sponsorship/' + verificationKey;
-  Request.post({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.post({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 500) {
-      err = Error('user is already sponsored');
-      err.statusCode = 403;
-      return callback(err);
-    }
+      if (resp.statusCode === 500) {
+        err = Error('user is already sponsored');
+        err.statusCode = 403;
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('verification key not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('verification key not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      if (resp.statusCode >= 400) {
+        err = Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {

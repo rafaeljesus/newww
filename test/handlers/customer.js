@@ -13,9 +13,14 @@ var generateCrumb = require("../handlers/crumb.js"),
   server,
   fixtures = require('../fixtures');
 
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+
 before(function(done) {
   process.env.FEATURE_ORG_BILLING = 'true';
-  require('../mocks/server')(function(obj) {
+  requireInject.installGlobally('../mocks/server', {
+    redis: redisMock
+  })(function(obj) {
     server = obj;
     done();
   });
@@ -673,6 +678,76 @@ describe('subscribing to private modules', function() {
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           Customer.update = oldUpdate;
+          done();
+        });
+      });
+    });
+
+    it('allows empty coupon code', function(done) {
+      generateCrumb(server, function(crumb) {
+        var opts = {
+          url: '/settings/billing/subscribe',
+          method: 'POST',
+          credentials: fixtures.users.bob,
+          payload: {
+            stripeToken: 'tok_1234567890',
+            coupon: '',
+            planType: 'private_modules',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var licenseMock = nock("https://license-api-example.com")
+          .get("/customer/bob/stripe").times(2)
+          .reply(404)
+          .put("/customer/stripe")
+          .reply(200, fixtures.customers.bob)
+          .put("/customer/bob/stripe/subscription", {
+            "plan": "npm-paid-individual-user-7"
+          })
+          .reply(200, fixtures.customers.bob_subscriptions);
+
+        server.inject(opts, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
+          done();
+        });
+      });
+    });
+
+    it('sends joi errors from private modules back to the billing page', function(done) {
+      generateCrumb(server, function(crumb) {
+        var opts = {
+          url: '/settings/billing/subscribe',
+          method: 'POST',
+          credentials: fixtures.users.bob,
+          payload: {
+            planType: 'private_modules',
+            foo: 'bar',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        server.inject(opts, function(resp) {
+          userMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.match(/\/settings\/billing\?notice=.+/);
           done();
         });
       });

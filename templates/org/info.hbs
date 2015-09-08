@@ -9,7 +9,7 @@
       <div class="nav-3-container">
         <ul class="nav-3 clear" role="navigation">
           <li class="current"><a href="#overview">Overview</a></li>
-          <li><a href="#paid-users">{{org.users.count}} Users</a></li>
+          <li><a href="#paid-users">{{pluralize org.users.count "User" true}}</a></li>
           <li><button type="button" id="billing" data-stripe-id="{{org.customer_id}}">Payment Information</button></li>
         </ul>
       </div>
@@ -18,7 +18,7 @@
     <div id="overview" class="tab tab-1">
       <h2>Overview</h2>
 
-      <h3>{{org.packages.count}} Packages</h3>
+      <h3>{{pluralize org.packages.count "Package" true}}</h3>
       {{#if org.packages.count}}
       <table class="org-table org-packages">
         <thead>
@@ -47,7 +47,7 @@
       </table>
       {{/if}}
 
-      <h3>{{org.users.count}} Users</h3>
+      <h3>{{pluralize org.users.count "User" true}}</h3>
       {{#if org.users.items}}
       <table class="org-table org-users">
         <thead>
@@ -167,7 +167,7 @@
             </tr>
           {{/each}}
           <tr>
-            <td colspan=2>
+            <td colspan=3>
               <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
                 <label for="name"><span class="a11y-only">Username</span></label>
                 <input required="required" type="text" id="username" name="username" placeholder="Invite a Member"/>

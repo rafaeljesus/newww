@@ -569,7 +569,7 @@ describe("Customer", function() {
       var Customer = new CustomerModel('bob');
       var customerMock = nock(Customer.host)
         .post('/sponsorship/' + verification_key)
-        .reply(500, "duplicate key value violates unique constraint \"sponsorships_npm_user\"");
+        .reply(409, "duplicate key value violates unique constraint \"sponsorships_npm_user\"");
 
       Customer.acceptSponsorship(verification_key, function(err, verifiedUser) {
         customerMock.done();

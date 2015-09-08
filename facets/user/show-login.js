@@ -100,20 +100,13 @@ module.exports = function login(request, reply) {
                 return reply.redirect('/password');
               }
 
-              var donePath = '/~' + user.name;
-
-              if (request.query.done) {
-                // Make sure that we don't ever leave this domain after login
-                // resolve against a fqdn, and take the resulting pathname
-                var done = url.resolveObject('https://example.com/login', request.query.done.replace(/\\/g, '/'));
-                donePath = done.pathname;
-              }
+              var donePath = getDonePath(user);
 
               request.timing.page = 'login-complete';
               request.metrics.metric({
                 name: 'login-complete'
               });
-              // console.log("Sending logged-in user to " + donePath)
+              // request.logger.warn("Sending logged-in user to " + donePath)
               return reply.redirect(donePath);
             });
           });
@@ -129,6 +122,22 @@ module.exports = function login(request, reply) {
       name: 'login'
     });
     opts.tip = marky(tips()).html();
+    opts.donePath = getDonePath();
     return reply.view('user/login', opts).code(opts.error ? 400 : 200);
+  }
+
+  function getDonePath(user) {
+    var donePath = request.query.done || (request.payload && request.payload.done);
+
+    if (donePath) {
+      // Make sure that we don't ever leave this domain after login
+      // resolve against a fqdn, and take the resulting pathname
+      var done = url.resolveObject('https://example.com/login', donePath.replace(/\\/g, '/'));
+      return done.pathname + (done.search || "");
+    } else if (user) {
+      return '/~' + user.name;
+    } else {
+      return '';
+    }
   }
 };

@@ -486,7 +486,7 @@ describe('updating an org', function() {
             "verified": null
           })
           .post("/sponsorship/f56dffef-b136-429a-97dc-57a6ef035829")
-          .reply(500, "duplicate key value violates unique constraint \"sponsorships_npm_user\"")
+          .reply(409, "duplicate key value violates unique constraint \"sponsorships_npm_user\"")
           .get("/sponsorship/1")
           .reply(200, fixtures.orgs.bigcoSponsorships);
 

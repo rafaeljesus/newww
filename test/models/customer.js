@@ -563,7 +563,7 @@ describe("Customer", function() {
       });
     });
 
-    it('returns an error if the user is already sponsored', function(done) {
+    it('does not return an error if the user is already sponsored', function(done) {
       var verification_key = 'e640f651-ef53-4560-86a6-34cae5a38e20';
 
       var Customer = new CustomerModel('bob');
@@ -573,10 +573,7 @@ describe("Customer", function() {
 
       Customer.acceptSponsorship(verification_key, function(err, verifiedUser) {
         customerMock.done();
-        expect(err).to.exist();
-        expect(err.message).to.equal('user is already sponsored');
-        expect(err.statusCode).to.equal(403);
-        expect(verifiedUser).to.not.exist();
+        expect(err).to.be.null();
         done();
       });
     });

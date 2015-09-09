@@ -293,7 +293,7 @@ Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
       if (resp.statusCode === 409 || resp.statusCode === 500) {
         err = Error('user is already sponsored');
         err.statusCode = 403;
-        return reject(err);
+        return accept(err);
       }
 
       if (resp.statusCode === 404) {

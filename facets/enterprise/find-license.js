@@ -8,7 +8,7 @@ module.exports = function(request, reply) {
     getLicense = request.server.methods.npme.getLicense;
 
   var opts = {
-    title: 'npm Enterprise'
+    title: 'npm On-Site'
   };
 
   if (request.method === 'get') {

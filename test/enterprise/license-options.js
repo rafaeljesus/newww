@@ -35,7 +35,7 @@ describe('Getting to the enterprise license purchase page', function() {
       var source = resp.request.response.source;
       expect(source.template).to.equal('enterprise/invalid-license');
       expect(source.context.msg).to.equal('The email or license key appears to be invalid.');
-      expect(source.context.title).to.equal('npm Enterprise');
+      expect(source.context.title).to.equal('npm On-Site');
       done();
     });
   });
@@ -142,4 +142,3 @@ describe('Getting to the enterprise license purchase page', function() {
     });
   });
 });
-

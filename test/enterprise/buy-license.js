@@ -55,7 +55,7 @@ var stripeCustomer = {
   created: 1426198433,
   id: 'cus_123abc',
   livemode: false,
-  description: 'exists@boom.com npm Enterprise Starter Pack',
+  description: 'exists@boom.com npm On-Site Starter Pack',
   email: 'exists@boom.com',
   delinquent: false,
   metadata: {},
@@ -199,7 +199,7 @@ describe('Posting to the enterprise license purchase page', function() {
           plan: 'enterprise-starter-pack',
           quantity: 1,
           email: 'exists@boom.com',
-          description: 'exists@boom.com npm Enterprise Starter Pack'
+          description: 'exists@boom.com npm On-Site Starter Pack'
         })
         .reply(200, stripeCustomer);
 
@@ -237,7 +237,7 @@ describe('Posting to the enterprise license purchase page', function() {
           plan: 'enterprise-starter-pack-annual',
           quantity: 1,
           email: 'exists@boom.com',
-          description: 'exists@boom.com npm Enterprise Starter Pack (annual)'
+          description: 'exists@boom.com npm On-Site Starter Pack (annual)'
         })
         .reply(200, stripeCustomer);
 
@@ -276,7 +276,7 @@ describe('Posting to the enterprise license purchase page', function() {
           plan: 'enterprise-multi-seat',
           quantity: 20,
           email: 'exists@boom.com',
-          description: 'exists@boom.com npm Enterprise multi-seat license'
+          description: 'exists@boom.com npm On-Site multi-seat license'
         })
         .reply(200, stripeCustomer);
 

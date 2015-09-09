@@ -35,7 +35,7 @@ describe('Getting to the enterprise license page', function() {
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.template).to.equal('enterprise/find-license');
-      expect(source.context.title).to.equal('npm Enterprise');
+      expect(source.context.title).to.equal('npm On-Site');
       done();
     });
   });

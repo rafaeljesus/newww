@@ -1,6 +1,6 @@
 module.exports = function npmE(request, reply) {
   var opts = {
-    title: "npm Enterprise"
+    title: "npm On-Site"
   };
 
   request.timing.page = 'enterprise';

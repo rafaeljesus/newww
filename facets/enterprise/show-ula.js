@@ -89,7 +89,7 @@ function showClickThroughAgreement(reply, customer) {
   // we use both email and ID so people can't just guess an ID to get a license
 
   var opts = {
-    title: "Get started with npm Enterprise",
+    title: "Get started with npm On-Site",
     customer_id: customer.id,
     customer_email: customer.email
   };

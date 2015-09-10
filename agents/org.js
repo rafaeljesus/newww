@@ -42,6 +42,12 @@ Org.prototype.create = function(name, callback) {
         return reject(err);
       }
 
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
       return accept(body);
     });
   }).nodeify(callback);
@@ -132,6 +138,12 @@ Org.prototype.update = function(data, callback) {
       return callback(err);
     }
 
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
     return callback(null, body);
   });
 };
@@ -160,6 +172,12 @@ Org.prototype.delete = function(name, callback) {
 
     if (resp.statusCode === 404) {
       err = Error('org not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
       err.statusCode = resp.statusCode;
       return callback(err);
     }
@@ -198,6 +216,12 @@ Org.prototype.addUser = function(name, user, callback) {
       return callback(err);
     }
 
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
     return callback(null, user);
   });
 };
@@ -217,6 +241,12 @@ Org.prototype.getUsers = function(name, callback) {
 
     if (resp.statusCode === 404) {
       err = Error('org not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
       err.statusCode = resp.statusCode;
       return callback(err);
     }
@@ -242,6 +272,12 @@ Org.prototype.getTeams = function(name, callback) {
 
     if (resp.statusCode === 404) {
       err = Error('org not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
       err.statusCode = resp.statusCode;
       return callback(err);
     }
@@ -272,6 +308,13 @@ Org.prototype.removeUser = function(name, userId, callback) {
       err.statusCode = resp.statusCode;
       return callback(err);
     }
+
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
 
     return callback(null, removedUser);
   });

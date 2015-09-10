@@ -137,22 +137,7 @@
                 </div>
               </td>
               <td>
-                <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../org.info.name}}">
-                <div class="switch-container pay-status">
-                  <label><span class="a11y-only">Paid Status</span>
-                    <input class="switch"{{#if isPaid}} checked="checked"{{/if}} type="checkbox" name="payStatus">
-                  <div class="switch"></div>
-                  <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
-                  <span class="switch-label checked-text" aria-hidden="true">paid</span>
-                  </label>
-                </div>
-                  {{#with ../this}}
-                  {{> form_security }}
-                  {{/with}}
-                    <input type="hidden" name="username" value="{{name}}" />
-                    <input type="hidden" name="updateType" value="updatePayStatus" />
-                    <button type="submit"><span>Save Changes</span></button>
-                </form>
+                <span>{{#if isPaid}}Paid by you{{else}}Self-paid{{/if}}</span>
               </td>
               <td>
                 <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">

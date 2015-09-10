@@ -251,6 +251,10 @@ customer.subscribe = function(request, reply) {
             }).then(function() {
               return reply.redirect('/org/' + planInfo.npm_org);
             });
+          })
+          .catch(function(err) {
+            request.logger.error(err);
+            throw err;
           });
       }).catch(function(err) {
         request.logger.error(err);

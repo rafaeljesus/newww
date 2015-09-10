@@ -912,12 +912,17 @@ describe("subscribing to an org", function() {
         .reply(404, "not found")
         .get("/org/boomer/user")
         .reply(404, "not found")
+        .get("/org/boomer/package")
+        .reply(404, "not found")
         .put("/org", {
           name: "boomer"
         })
-        .reply(404, "not found")
-        .get("/org/boomer/package")
-        .reply(404, "not found");
+        .reply(200, {
+          "name": "boomer",
+          "created": "2015-08-05T20:55:54.759Z",
+          "updated": "2015-08-05T20:55:54.759Z",
+          "deleted": null,
+        });
 
       var customerMock = nock("https://license-api-example.com")
         .get("/customer/bob/stripe")

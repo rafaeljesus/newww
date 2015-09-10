@@ -68,6 +68,12 @@ Customer.prototype.getStripeData = function(callback) {
       return callback(err);
     }
 
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
     return callback(null, stripeData);
   });
 };
@@ -87,6 +93,12 @@ Customer.prototype.getSubscriptions = function(callback) {
 
       if (resp.statusCode === 404) {
         return accept([]);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
       }
 
       var subs = body.filter(function(subscription) {
@@ -159,7 +171,17 @@ Customer.prototype.del = function(callback) {
     url: url,
     json: true
   }, function(err, resp, body) {
-    return err ? callback(err) : callback(null, body);
+    if (err) {
+      return callback(err);
+    }
+
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    return callback(null, body);
   });
 };
 
@@ -193,6 +215,13 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
       err.statusCode = resp.statusCode;
       return callback(err);
     }
+
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
     return callback(null, body);
   });
 };
@@ -326,6 +355,12 @@ Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
 
     if (resp.statusCode === 404) {
       err = Error('user or licenseId not found');
+      err.statusCode = resp.statusCode;
+      return callback(err);
+    }
+
+    if (resp.statusCode >= 400) {
+      err = new Error(body);
       err.statusCode = resp.statusCode;
       return callback(err);
     }

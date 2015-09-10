@@ -19,7 +19,7 @@
   {{#if paymentRequiredToTogglePrivacy}}
     <p class="notice pay-to-restrict-access">
       To restrict access to this package, you'll need to
-      <a href="/settings/billing">sign up for private modules</a>.
+      <a href="/settings/billing{{#if features.org_billing}}#payment-information{{/if}}">sign up for private modules</a>.
     </p>
   {{else}}
     {{#if package.scoped}}

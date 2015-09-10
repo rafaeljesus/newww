@@ -44,7 +44,15 @@ describe('GET /package/foo/collaborators', function() {
 
     var licenseMock = nock("https://license-api-example.com")
       .get('/customer/bob/stripe')
-      .reply(400);
+      .reply(200, {
+        "email": "bob@boom.me",
+        "card": {
+          "brand": "visa",
+          "last4": "4242",
+          "exp_month": 8,
+          "exp_year": 2018
+        }
+      });
 
     server.inject(options, function(resp) {
       userMock.done();
@@ -121,7 +129,15 @@ describe('POST /package/zing/collaborators/wrigley_the_writer', function() {
 
     var licenseMock = nock("https://license-api-example.com")
       .get('/customer/bob/stripe')
-      .reply(400);
+      .reply(200, {
+        "email": "bob@boom.me",
+        "card": {
+          "brand": "visa",
+          "last4": "4242",
+          "exp_month": 8,
+          "exp_year": 2018
+        }
+      });
 
     server.inject(options, function(resp) {
       userMock.done();

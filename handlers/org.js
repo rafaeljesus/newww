@@ -17,7 +17,7 @@ exports.getOrg = function(request, reply) {
     }
 
     Org(loggedInUser)
-      .getUsers(request.params.org, function(err, users) {
+      .get(request.params.org, function(err, org) {
         if (err) {
           request.logger.error(err);
 
@@ -27,33 +27,16 @@ exports.getOrg = function(request, reply) {
             return reply.view('errors/internal', err);
           }
         }
-        users = users || {};
-        users.items = users.items || [];
 
-        users.items = users.items.map(function(user) {
+        opts.org = org;
+        opts.org.users.items = org.users.items.map(function(user) {
           user.sponsoredByOrg = user.sponsored === 'by-org';
           return user;
         });
-
-        Org(loggedInUser)
-          .get(request.params.org, function(err, org) {
-            if (err) {
-              request.logger.error(err);
-
-              if (err.statusCode === 404) {
-                return reply.view('errors/not-found', err);
-              } else {
-                return reply.view('errors/internal', err);
-              }
-            }
-
-            opts.org = org;
-            opts.org.users = users;
-            opts.org.customer_id = cust.stripe_customer_id;
-            return reply.view('org/info', opts);
-          });
-
+        opts.org.customer_id = cust.stripe_customer_id;
+        return reply.view('org/info', opts);
       });
+
   });
 };
 

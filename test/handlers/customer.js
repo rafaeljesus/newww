@@ -1141,9 +1141,7 @@ describe("subscribing to an org", function() {
         .put("/org", {
           name: "bob"
         })
-        .reply(409, {
-          message: "that scope name is already in use"
-        });
+        .reply(409, "that scope name is already in use");
 
       var customerMock = nock("https://license-api-example.com")
         .get("/customer/bob/stripe")

@@ -43,7 +43,7 @@ Org.prototype.create = function(name, callback) {
       }
 
       if (resp.statusCode >= 400) {
-        err = new Error(body.message);
+        err = new Error(body);
         err.statusCode = resp.statusCode;
         return reject(err);
       }

@@ -137,7 +137,14 @@
                 </div>
               </td>
               <td>
-                <span>{{#if isPaid}}Paid by you{{else}}Self-paid{{/if}}</span>
+                {{#if sponsoredByOrg}}<span>Paid by you</span>
+                {{else}}
+                  {{#if sponsored}}
+                  <span>Self-paid</span>
+                  {{else}}
+                  <span>Unpaid</span>
+                  {{/if}}
+                {{/if}}
               </td>
               <td>
                 <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">

@@ -16,33 +16,23 @@ exports.getOrg = function(request, reply) {
       return reply.view('errors/internal', err);
     }
 
-
-    request.customer.getSubscriptions(function(err, subscriptions) {
-      if (err) {
-        request.logger.error(err);
-        return reply.view('errors/internal', err);
-      }
-
-      var subscription = subscriptions.filter(function(subscription) {
-        return subscription.npm_org === request.params.org;
-      });
-
-      if (!subscription.length) {
-        request.logger.error("Customer is not subscribed to this org");
-        return reply.view('errors/not-found', err).code(404);
-      }
-
-      var licenseId = subscription[0].license_id;
-      request.customer.getAllSponsorships(licenseId, function(err, sponsorships) {
+    Org(loggedInUser)
+      .getUsers(request.params.org, function(err, users) {
         if (err) {
           request.logger.error(err);
-          return reply.view('errors/internal', err);
+
+          if (err.statusCode === 404) {
+            return reply.view('errors/not-found', err);
+          } else {
+            return reply.view('errors/internal', err);
+          }
         }
-        sponsorships = sponsorships || [];
-        var sponsoredUsers = sponsorships.filter(function(sponsorship) {
-          return sponsorship.verified;
-        }).map(function(sponsorship) {
-          return sponsorship.npm_user;
+        users = users || {};
+        users.items = users.items || [];
+
+        users.items = users.items.map(function(user) {
+          user.sponsoredByOrg = user.sponsored === 'by-org';
+          return user;
         });
 
         Org(loggedInUser)
@@ -57,19 +47,13 @@ exports.getOrg = function(request, reply) {
               }
             }
 
-            org.users.items = org.users.items.map(function(user) {
-              user.isPaid = sponsoredUsers.indexOf(user.name) > -1;
-              return user;
-            });
-
             opts.org = org;
+            opts.org.users = users;
             opts.org.customer_id = cust.stripe_customer_id;
-            opts.sponsorships = sponsorships;
             return reply.view('org/info', opts);
           });
-      });
 
-    });
+      });
   });
 };
 

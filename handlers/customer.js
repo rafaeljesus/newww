@@ -264,6 +264,11 @@ customer.subscribe = function(request, reply) {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             notices: [err]
           });
+        } else if (err.statusCode === 409 && err.message) {
+          return reply.view('org/create', {
+            stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+            notices: [err]
+          });
         } else {
           return reply.view('errors/internal', err).code(500);
         }

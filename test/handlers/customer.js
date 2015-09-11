@@ -969,7 +969,6 @@ describe("subscribing to an org", function() {
           "verified": true
         });
 
-
       server.inject(opts, function(resp) {
         userMock.done();
         orgMock.done();
@@ -1107,6 +1106,54 @@ describe("subscribing to an org", function() {
         var context = resp.request.response.source.context;
         expect(context.notices).to.be.an.array();
         expect(context.notices[0]).to.equal('name cannot start with an underscore');
+        done();
+      });
+    });
+  });
+
+  it("returns an error if there is a scope collision", function(done) {
+    generateCrumb(server, function(crumb) {
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgScope: 'bob',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bob")
+        .reply(404, "not found")
+        .get("/org/bob/user")
+        .reply(404, "not found")
+        .get("/org/bob/package")
+        .reply(404, "not found")
+        .put("/org", {
+          name: "bob"
+        })
+        .reply(409, "that scope name is already in use");
+
+      var customerMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe")
+        .reply(200, fixtures.customers.happy);
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(200);
+        var context = resp.request.response.source.context;
+        expect(context.notices).to.be.an.array();
+        expect(context.notices[0].message).to.equal('that scope name is already in use');
         done();
       });
     });

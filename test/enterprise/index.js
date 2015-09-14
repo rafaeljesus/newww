@@ -21,10 +21,10 @@ after(function(done) {
   server.stop(done);
 });
 
-describe('Getting to the enterprise page', function() {
+describe('Getting to the onsite page', function() {
   it('gets there, no problem', function(done) {
     var opts = {
-      url: '/enterprise'
+      url: '/onsite'
     };
 
     server.inject(opts, function(resp) {

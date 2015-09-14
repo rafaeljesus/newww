@@ -7,7 +7,7 @@ module.exports = function(request, reply) {
     verifyTrial = request.server.methods.npme.verifyTrial;
 
   var opts = {
-    title: 'npm Enterprise'
+    title: 'npm On-Site'
   };
 
   // get email & license key from parameters

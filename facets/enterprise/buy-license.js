@@ -65,19 +65,19 @@ module.exports = function(request, reply) {
       switch (token.subType) {
         case SUB_TYPE_MONTHLY:
           stripePlan = "enterprise-starter-pack";
-          stripeDescription = "npm Enterprise Starter Pack";
+          stripeDescription = "npm On-Site Starter Pack";
           licenseSeats = 5;
           stripeQuantity = 1;
           break;
         case SUB_TYPE_ANNUAL:
           stripePlan = "enterprise-starter-pack-annual";
-          stripeDescription = "npm Enterprise Starter Pack (annual)";
+          stripeDescription = "npm On-Site Starter Pack (annual)";
           licenseSeats = 5;
           stripeQuantity = 1;
           break;
         case SUB_TYPE_MULTI_SEAT:
           stripePlan = "enterprise-multi-seat";
-          stripeDescription = "npm Enterprise multi-seat license";
+          stripeDescription = "npm On-Site multi-seat license";
           licenseSeats = token.quantity;
           stripeQuantity = licenseSeats;
           break;

@@ -137,14 +137,36 @@
                 </div>
               </td>
               <td>
-                {{#if sponsoredByOrg}}<span>Paid by you</span>
-                {{else}}
-                  {{#if sponsored}}
-                  <span>Self-paid</span>
+                <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../org.info.name}}">
+                <div class="switch-container pay-status">
+                  <label><span class="a11y-only">Paid Status</span>
+                  {{#if sponsoredByOrg}}
+                    <input class="switch" checked="checked" type="checkbox" name="payStatus">
                   {{else}}
-                  <span>Unpaid</span>
+                    {{#if sponsored}}
+                      <input class="switch" checked="checked" disabled="disabled" type="checkbox" name="payStatus">
+                    {{else}}
+                      <input class="switch" type="checkbox" name="payStatus">
+                    {{/if}}
                   {{/if}}
-                {{/if}}
+                  <div class="switch"></div>
+                  <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
+                  <span class="switch-label checked-text" aria-hidden="true">paid</span>
+                  </label>
+                </div>
+                  {{#with ../this}}
+                  {{> form_security }}
+                  {{/with}}
+                    <input type="hidden" name="username" value="{{name}}" />
+                    <input type="hidden" name="updateType" value="updatePayStatus" />
+                    {{#if sponsoredByOrg}}
+                      <button type="submit"><span>Save Changes</span></button>
+                    {{else}}
+                      {{#unless sponsored}}
+                        <button type="submit"><span>Save Changes</span></button>
+                      {{/unless}}
+                    {{/if}}
+                </form>
               </td>
               <td>
                 <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">

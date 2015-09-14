@@ -116,6 +116,12 @@ var publicRoutes = [
   }, {
     path: "/enterprise",
     method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/onsite").code(301);
+    }
+  }, {
+    path: "/onsite",
+    method: "GET",
     handler: require('../facets/enterprise/show-index')
   }, {
     path: "/enterprise-start-signup",

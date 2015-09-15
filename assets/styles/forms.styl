@@ -316,12 +316,14 @@ input[type="checkbox"].switch + div:before
   height .7em
   margin 1px 0
   border-radius inherit
-  background #212121
+  background text-color
 
 
 input[type="checkbox"].switch:checked + div:before
-  background #c93a3c
+  background npmred
 
+input[type="checkbox"][disabled].switch:checked + div:before
+  background-color #aaa
 
 input[type="checkbox"].switch:active + div:before
   background-color #aaa

@@ -233,7 +233,10 @@ Org.prototype.getUsers = function(name, callback) {
 
   Request.get({
     url: url,
-    json: true
+    json: true,
+    headers: {
+      bearer: this.bearer
+    },
   }, function(err, resp, users) {
     if (err) {
       callback(err);

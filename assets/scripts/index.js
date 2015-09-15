@@ -1,5 +1,6 @@
 window.$ = window.jQuery = require("jquery");
 
+require("./js-check")();
 require("./crumb")();
 require("./hiring");
 require("./npm-expansions");

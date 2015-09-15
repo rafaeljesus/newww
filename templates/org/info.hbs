@@ -137,7 +137,7 @@
                 </div>
               </td>
               <td>
-                <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../org.info.name}}">
+                <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../org.info.name}}" class="edit-pay-status">
                 <div class="switch-container pay-status">
                   <label><span class="a11y-only">Paid Status</span>
                   {{#if sponsoredByOrg}}
@@ -160,10 +160,10 @@
                     <input type="hidden" name="username" value="{{name}}" />
                     <input type="hidden" name="updateType" value="updatePayStatus" />
                     {{#if sponsoredByOrg}}
-                      <button type="submit"><span>Save Changes</span></button>
+                      <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
                     {{else}}
                       {{#unless sponsored}}
-                        <button type="submit"><span>Save Changes</span></button>
+                        <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
                       {{/unless}}
                     {{/if}}
                 </form>

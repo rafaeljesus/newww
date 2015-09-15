@@ -22,6 +22,7 @@ require("./buy-enterprise-license")();
 require("./twitter-tracking")();
 require("./fetch-packages")();
 require("./tabs")();
+require("./switch-submission")();
 
 window.github = require("./github")();
 window.star = require("./star")();

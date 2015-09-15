@@ -22,7 +22,7 @@ exports.getOrg = function(request, reply) {
           request.logger.error(err);
 
           if (err.statusCode === 404) {
-            return reply.view('errors/not-found', err);
+            return reply.view('errors/not-found', err).code(404);
           } else {
             return reply.view('errors/internal', err);
           }

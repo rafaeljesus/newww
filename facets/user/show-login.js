@@ -15,7 +15,7 @@ module.exports = function login(request, reply) {
 
   if (request.auth.isAuthenticated) {
     request.timing.page = 'login-redirect-to-home';
-    return reply().redirect('/~' + request.loggedInUser.name);
+    return reply().redirect(getDonePath(request.loggedInUser));
   }
 
   var opts = { };

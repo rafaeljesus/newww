@@ -33,7 +33,9 @@ exports.show = function(request, reply) {
     .then(function(results) {
       var pkg = results.package;
       pkg.dependents = results.dependents;
-      pkg.downloads = results.downloads;
+      if (pkg.name[0] != '@') {
+        pkg.downloads = results.downloads;
+      }
 
       if (pkg && pkg.time && pkg.time.unpublished) {
         request.logger.info('package is unpublished: ' + name);
@@ -52,6 +54,8 @@ exports.show = function(request, reply) {
       pkg.isCollaboratedOnByUser = Boolean(loggedInUser)
         && (typeof pkg.collaborators === "object")
         && (loggedInUser.name in pkg.collaborators);
+
+      pkg.hasStats = pkg.downloads || (pkg.bugs && pkg.bugs.url) || (pkg.pull_requests && pkg.pull_requests.url);
 
       context.package = pkg;
       return reply.view('package/show', context);

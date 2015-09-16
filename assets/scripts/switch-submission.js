@@ -8,6 +8,7 @@ module.exports = function() {
       var checkbox = $(this);
       var checked = checkbox.prop("checked");
       var form = checkbox.closest("form");
+      checkbox.attr("disabled", "disabled");
 
       $.ajax(formToRequestObject(form))
         .done(function(data) {})
@@ -17,8 +18,10 @@ module.exports = function() {
           } else {
             checkbox.attr("checked", "checked");
           }
+        })
+        .always(function() {
+          checkbox.removeAttr("disabled");
         });
     });
   });
-
 };

@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "@soldair/marky-markdown": "^6.0.0",
     "accept-language-parser": "^1.0.2",
     "async": "^0.9.0",
     "blankie": "^1.1.0",
@@ -42,13 +43,14 @@
     "gravatar": "^1.2.0",
     "handlebars": "^2.0.0",
     "handlebars-helper-pluralize": "^1.0.3",
-    "hapi": "^8.4.0",
+    "hapi": "^9.0.0",
     "hapi-auth-cookie": "2.0.0",
     "hapi-common-log": "^1.1.0",
     "hapi-stateless-notifications": "^1.1.0",
     "hashchange": "^1.0.0",
     "hbsfy": "^2.2.1",
     "hoek": "^2.13.0",
+    "inert": "^3.0.1",
     "is-url": "^1.2.0",
     "joi": "^5.1.0",
     "jquery": "^2.1.4",
@@ -56,7 +58,6 @@
     "lodash": "^3.8.0",
     "mailchimp-api": "^2.0.7",
     "malarkey": "^1.2.0",
-    "@soldair/marky-markdown": "^6.0.0",
     "moment": "^2.10.2",
     "moment-tokens": "^1.0.0",
     "month": "^1.0.0",
@@ -98,7 +99,8 @@
     "token-facilitator": "^2.2.0",
     "truncate": "^1.0.4",
     "validate-npm-package-name": "^2.2.0",
-    "verror": "^1.6.0"
+    "verror": "^1.6.0",
+    "vision": "^3.0.0"
   },
   "devDependencies": {
     "bistre": "^1.0.0",

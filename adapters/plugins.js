@@ -8,6 +8,8 @@ module.exports = [
     }
   },
   require('scooter'),
+  require('inert'),
+  require('vision'),
   {
     register: require('blankie'),
     options: require('../lib/csp').default

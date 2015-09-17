@@ -7,18 +7,6 @@ module.exports = function(done) {
   var server = new Hapi.Server();
   server.connection();
 
-  server.views({
-    engines: {
-      hbs: require('handlebars')
-    },
-    relativeTo: path.resolve(__dirname, "..", ".."),
-    path: './templates',
-    helpersPath: './templates/helpers',
-    layoutPath: './templates/layouts',
-    partialsPath: './templates/partials',
-    layout: 'default'
-  });
-
   server.stamp = require("../../lib/stamp")()
   server.gitHead = require("../../lib/git-head")()
   server.methods = require('./server-methods')(server);
@@ -38,18 +26,37 @@ module.exports = function(done) {
       redirectTo: '/login'
     });
 
-    server.register([{
-      register: require('crumb'),
-      options: {
-        cookieOptions: {
-          isSecure: true
+    server.register([
+      {
+        register: require('crumb'),
+        options: {
+          cookieOptions: {
+            isSecure: true
+          }
         }
-      }
-    },
+      },
+      require('inert'),
+      require('vision'),
       require('../../adapters/bonbon'),
       hackishMockRedis,
       require('hapi-stateless-notifications')
     ], function(err) {
+      if (err) {
+        throw err;
+      }
+
+      server.views({
+        engines: {
+          hbs: require('handlebars')
+        },
+        relativeTo: path.resolve(__dirname, "..", ".."),
+        path: './templates',
+        helpersPath: './templates/helpers',
+        layoutPath: './templates/layouts',
+        partialsPath: './templates/partials',
+        layout: 'default'
+      });
+
       try {
         server.route(require('../../routes/index'));
       } catch (e) {

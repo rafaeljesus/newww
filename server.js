@@ -1,9 +1,7 @@
 require("./lib/environment")();
 
-var Hapi = require('hapi'),
-  replify = require('replify'),
-  bole = require('bole'),
-  TWO_WEEKS = 14 * 24 * 60 * 60 * 1000;
+var replify = require('replify');
+var bole = require('bole');
 
 var log = bole('server');
 bole.output({
@@ -11,31 +9,12 @@ bole.output({
   stream: process.stdout
 });
 
-var redisConfig = require("redis-url")
-  .parse(process.env.REDIS_URL);
+// configure metrics as a side effect
+var metricsEmitter = require('./adapters/metrics');
+var metrics = metricsEmitter();
+// make another emitter to keep new behavior isolated from existing stats for now.
+require('numbat-process')(metricsEmitter("newww"))
 
-var server = new Hapi.Server({
-  cache: {
-    engine: require('catbox-redis'),
-    host: redisConfig.hostname,
-    port: redisConfig.port,
-    password: redisConfig.password,
-  },
-  connections: {
-    router: {
-      stripTrailingSlash: true
-    },
-    routes: {
-      security: {
-        hsts: {
-          maxAge: 1000 * 60 * 60 * 24 * 30,
-          includeSubdomains: true
-        },
-        xframe: true
-      }
-    }
-  }
-});
 
 var connection = {
   host: process.env.HOST || "localhost",
@@ -50,98 +29,26 @@ if (process.env.NODE_ENV === 'dev') {
   };
 }
 
-server.connection(connection);
+require('./lib/startup.js')({
+  connection: connection
+}).then(function(server) {
+  replify({
+    name: 'www-' + process.env.PORT
+  }, server);
 
-server.stamp = require("./lib/stamp")();
-server.gitHead = require("./lib/git-head")();
+  log.info('server repl socket at /tmp/rpl/www-' + process.env.PORT + '.sock');
 
-// configure metrics as a side effect
-var metricsEmitter = require('./adapters/metrics');
-var metrics = metricsEmitter();
-// make another emitter to keep new behavior isolated from existing stats for now.
-require('numbat-process')(metricsEmitter("newww"))
+  metrics.metric({
+    env: process.env.NODE_ENV,
+    name: 'server.start',
+    value: 1
+  });
 
-// configure http request cache
-require("./lib/cache").configure({
-  redis: process.env.REDIS_URL,
-  ttl: 500,
-  prefix: "cache:"
-});
-
-server.register(require('hapi-auth-cookie'), function(err) {
-  if (err) {
+  log.info('Hapi server started @ ' + server.info.uri);
+}).catch(function(err) {
+  // actually, if there's something wrong with plugin loading,
+  // DO NOT PASS GO, DO NOT COLLECT $200. Throw the error.
+  process.nextTick(function() {
     throw err;
-  }
-
-  var cache = server.cache({
-    expiresIn: TWO_WEEKS,
-    segment: '|sessions'
-  });
-
-  server.app.cache = cache;
-
-  server.auth.strategy('session', 'cookie', 'required', {
-    password: process.env.SESSION_PASSWORD,
-    appendNext: 'done',
-    redirectTo: '/login',
-    cookie: process.env.SESSION_COOKIE,
-    clearInvalid: true,
-    validateFunc: function(session, cb) {
-      cache.get(session.sid, function(err, item, cached) {
-
-        if (err) {
-          return cb(err, false);
-        }
-        if (!cached) {
-          return cb(null, false);
-        }
-
-        return cb(null, true, item);
-      });
-    }
-  });
-
-  var plugins = require('./adapters/plugins');
-  server.register(plugins, function(err) {
-    if (err) {
-      // actually, if there's something wrong with plugin loading,
-      // DO NOT PASS GO, DO NOT COLLECT $200. Throw the error.
-      throw err;
-    }
-
-    replify({
-      name: 'www-' + process.env.PORT
-    }, server);
-    log.info('server repl socket at /tmp/rpl/www-' + process.env.PORT + '.sock');
-
-    server.views({
-      engines: {
-        hbs: require('handlebars')
-      },
-      relativeTo: __dirname,
-      path: './templates',
-      helpersPath: './templates/helpers',
-      layoutPath: './templates/layouts',
-      partialsPath: './templates/partials',
-      layout: 'default'
-    });
-
-    try {
-      server.route(require('./routes/index'));
-    } catch (e) {
-      process.nextTick(function() {
-        throw e;
-      });
-    }
-
-    server.start(function() {
-      metrics.metric({
-        env: process.env.NODE_ENV,
-        name: 'server.start',
-        value: 1
-      });
-
-      log.info('Hapi server started @ ' + server.info.uri);
-    });
   });
 });

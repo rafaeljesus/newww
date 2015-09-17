@@ -10,7 +10,8 @@ exports.register = function Downloads(server, options, next) {
     cache: {
       staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
       staleIn: 60 * 60 * SECOND, // refresh after an hour
-      segment: '##packagedownloads'
+      segment: '##packagedownloads',
+      generateTimeout: false,
     }
   });
 
@@ -18,7 +19,8 @@ exports.register = function Downloads(server, options, next) {
     cache: {
       staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
       staleIn: 60 * 60 * SECOND, // refresh after an hour
-      segment: '##packagedownloadsall'
+      segment: '##packagedownloadsall',
+      generateTimeout: false,
     }
   });
 
@@ -26,7 +28,8 @@ exports.register = function Downloads(server, options, next) {
     cache: {
       staleTimeout: 1 * SECOND, // don't wait more than a second for fresh data
       staleIn: 60 * 60 * SECOND, // refresh after an hour
-      segment: '##alldownloads'
+      segment: '##alldownloads',
+      generateTimeout: false,
     }
   });
 

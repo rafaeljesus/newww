@@ -6,14 +6,16 @@ exports.register = function(server, options, next) {
   server.method('corp.getPage', require('./methods/getPage').static, {
     cache: {
       expiresIn: 5 * MINUTE,
-      segment: '##staticpage'
+      segment: '##staticpage',
+      generateTimeout: false,
     }
   });
 
   server.method('corp.getPolicy', require('./methods/getPage').policy, {
     cache: {
       expiresIn: 5 * MINUTE,
-      segment: '##staticpolicy'
+      segment: '##staticpolicy',
+      generateTimeout: false,
     }
   });
 

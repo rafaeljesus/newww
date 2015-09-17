@@ -52,18 +52,6 @@ if (process.env.NODE_ENV === 'dev') {
 
 server.connection(connection);
 
-server.views({
-  engines: {
-    hbs: require('handlebars')
-  },
-  relativeTo: __dirname,
-  path: './templates',
-  helpersPath: './templates/helpers',
-  layoutPath: './templates/layouts',
-  partialsPath: './templates/partials',
-  layout: 'default'
-});
-
 server.stamp = require("./lib/stamp")();
 server.gitHead = require("./lib/git-head")();
 
@@ -125,6 +113,18 @@ server.register(require('hapi-auth-cookie'), function(err) {
       name: 'www-' + process.env.PORT
     }, server);
     log.info('server repl socket at /tmp/rpl/www-' + process.env.PORT + '.sock');
+
+    server.views({
+      engines: {
+        hbs: require('handlebars')
+      },
+      relativeTo: __dirname,
+      path: './templates',
+      helpersPath: './templates/helpers',
+      layoutPath: './templates/layouts',
+      partialsPath: './templates/partials',
+      layout: 'default'
+    });
 
     try {
       server.route(require('./routes/index'));

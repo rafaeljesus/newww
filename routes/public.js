@@ -2,6 +2,7 @@ var fmt = require('util').format;
 var fs = require('fs');
 var _ = require('lodash');
 var async = require('async');
+var validate = require('validate-npm-package-name');
 
 var unathenticatedRouteConfig = {
   config: {
@@ -179,11 +180,12 @@ var publicRoutes = [
     ],
     method: "GET",
     handler: function(request, reply) {
-      if (request.params.scope) {
-        return reply.redirect("/package/" + request.params.scope + "/" + request.params.project).code(301);
-      } else {
-        return reply.redirect("/package/" + request.params.package).code(301);
+      var fullPackageName = request.params.package || (request.params.scope + '/' + request.params.project);
+      if (!validate(fullPackageName).validForOldPackages) {
+        return reply.view("errors/not-found").code(404);
       }
+
+      return reply.redirect("/package/" + fullPackageName).code(301);
     }
   }, {
     paths: [

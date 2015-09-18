@@ -56,24 +56,44 @@ describe('redirects for legacy routes', function() {
     });
   });
 
-  it('sends /packages/{package} to /package/{package}', function(done) {
+  it('sends invalid package name to 404', function(done) {
     var options = {
-      url: '/packages/{package}'
+      url: '/packages/%E0%B4%8Aset-cookie:%20foo=bar'
     };
     server.inject(options, function(resp) {
-      expect(resp.statusCode).to.equal(301);
-      expect(resp.headers.location).to.equal("/package/{package}");
+      expect(resp.statusCode).to.equal(404);
       done();
     });
   });
 
-  it('sends /packages/{scope}/{project} to /package/{scope}/{project}', function(done) {
+  it('sends invalid package name with scope to 404', function(done) {
     var options = {
-      url: '/packages/{scope}/{project}'
+      url: '/packages/@badguy/%E0%B4%8Aset-cookie:%20foo=bar'
+    };
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(404);
+      done();
+    });
+  });
+
+  it('sends /packages/test-package-name to /package/test-package-name', function(done) {
+    var options = {
+      url: '/packages/test-package-name'
     };
     server.inject(options, function(resp) {
       expect(resp.statusCode).to.equal(301);
-      expect(resp.headers.location).to.equal("/package/{scope}/{project}");
+      expect(resp.headers.location).to.equal("/package/test-package-name");
+      done();
+    });
+  });
+
+  it('sends /packages/@test-scope/test-package-name to /package/@test-scope/test-package-name', function(done) {
+    var options = {
+      url: '/packages/@test-scope/test-package-name'
+    };
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.equal("/package/@test-scope/test-package-name");
       done();
     });
   });

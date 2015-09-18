@@ -124,7 +124,7 @@
           {{#each org.users.items}}
             <tr>
               <td>
-                <div>
+                <div class="collapsible-wrapper">
                   <span class="circle-avatar">
                     <img src="{{avatar.small}}" />
                   </span>
@@ -137,6 +137,7 @@
                 </div>
               </td>
               <td>
+                <div class="collapsible-wrapper">
                 <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../org.info.name}}" class="edit-pay-status">
                 <div class="switch-container pay-status">
                   <label><span class="a11y-only">Paid Status</span>
@@ -167,16 +168,19 @@
                       {{/unless}}
                     {{/if}}
                 </form>
+                </div>
               </td>
               <td>
+                <div class="collapsible-wrapper">
                 <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">
                   {{#with ../this}}
                   {{> form_security }}
                   {{/with}}
                     <input type="hidden" name="username" value="{{name}}" />
                     <input type="hidden" name="updateType" value="deleteUser" />
-                    <button type="submit" class="icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
+                    <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
                 </form>
+                </div>
               </td>
             </tr>
           {{/each}}

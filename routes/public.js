@@ -185,11 +185,7 @@ var publicRoutes = [
         return reply.view("errors/not-found").code(404);
       }
 
-      if (request.params.scope) {
-        return reply.redirect("/package/" + request.params.scope + "/" + request.params.project).code(301);
-      } else {
-        return reply.redirect("/package/" + request.params.package).code(301);
-      }
+      return reply.redirect("/package/" + fullPackageName).code(301);
     }
   }, {
     paths: [

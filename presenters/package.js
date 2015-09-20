@@ -22,10 +22,6 @@ module.exports = function(pkg) {
   pkg.scoped = pkg.name.charAt(0) === "@";
   pkg.encodedName = pkg.name.replace("/", "%2F");
 
-  if (pkg.versions && pkg.versions.indexOf(pkg.version) === -1) {
-    return Error('invalid pkg: ' + pkg.name);
-  }
-
   pkg.license = normalizeLicenseData(pkg.license);
   if (!pkg.license) {
     delete pkg.license;

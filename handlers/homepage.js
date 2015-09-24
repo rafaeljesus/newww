@@ -25,14 +25,15 @@ module.exports = function(request, reply) {
     totalPackages: Package.count(),
   };
 
-  P.props(actions)
-    .then(function(results) {
-      context.modified = results.modified;
-      context.dependents = results.dependents;
-      context.downloads = results.downloads;
-      context.totalPackages = results.totalPackages;
+  P.props(actions).then(function(results) {
+    context.modified = results.modified;
+    context.dependents = results.dependents;
+    context.downloads = results.downloads;
+    context.totalPackages = results.totalPackages;
 
-      reply.view('homepage', context);
-    });
-
+    reply.view('homepage', context);
+  }).catch(function(err) {
+    request.logger.error(err);
+    reply.view('error/internal', err);
+  });
 };

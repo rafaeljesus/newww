@@ -43,24 +43,26 @@
 <body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
   <meta itemprop="url" content="https://www.npmjs.com/">
 
-  <div id="notification-banner" class="hidden">
-    <div class="container">
-      <hgroup>
-        <a href="/private-modules"
+  {{#unless features.npmo}}
+    <div id="notification-banner" class="hidden">
+      <div class="container">
+        <hgroup>
+          <a href="/private-modules"
+            data-event-trigger="click"
+            data-event-name="private-modules-banner-signup-via-wombat">
+            <img src="/static/images/wombat-by-night.svg" alt="night wombat">
+          </a>
+          <h2>private npm is here.</h2>
+          <h3>publish unlimited private modules for just $7/month</h3>
+        </hgroup>
+        <a class="button" href="/private-modules"
           data-event-trigger="click"
-          data-event-name="private-modules-banner-signup-via-wombat">
-          <img src="/static/images/wombat-by-night.svg" alt="night wombat">
-        </a>
-        <h2>private npm is here.</h2>
-        <h3>publish unlimited private modules for just $7/month</h3>
-      </hgroup>
-      <a class="button" href="/private-modules"
-        data-event-trigger="click"
-        data-event-name="private-modules-banner-signup">sign up</a>
-      <a class="button button-subtle banner-close" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks">no thanks</a>
+          data-event-name="private-modules-banner-signup">sign up</a>
+        <a class="button button-subtle banner-close" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks">no thanks</a>
+      </div>
+      <a class="button banner-close button-banner-close icon-x" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks"><span class="a11y-only">close</span></a>
     </div>
-    <a class="button banner-close button-banner-close icon-x" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks"><span class="a11y-only">close</span></a>
-  </div>
+  {{/unless}}
 
   <nav>
     <div class="container">

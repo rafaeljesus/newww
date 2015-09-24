@@ -22,7 +22,10 @@ module.exports = function(request, reply) {
       sort: "dependents"
     }, DEPENDENTS_TTL),
     downloads: Download.getAll(),
-    totalPackages: Package.count(),
+    totalPackages: Package.count().catch(function(err) {
+      request.logger.error(err);
+      return null;
+    }),
   };
 
   P.props(actions).then(function(results) {

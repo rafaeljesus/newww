@@ -52,6 +52,7 @@ var publicRoutes = [
     handler: require('../handlers/homepage')
   }, {
     path: "/private-npm",
+    feature: '!npmo',
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect("/private-modules").code(301);
@@ -61,6 +62,7 @@ var publicRoutes = [
     paths: [
       "/orgs",
     ],
+    feature: '!npmo',
     method: "GET",
     handler: function(request, reply) {
 
@@ -72,6 +74,7 @@ var publicRoutes = [
     }
   }, {
     path: "/org",
+    feature: '!npmo',
     method: "GET",
     handler: function(request, reply) {
       if (request.features.org_billing) {
@@ -84,41 +87,50 @@ var publicRoutes = [
     }
   }, {
     path: "/contact",
+    feature: '!npmo',
     method: "GET",
     handler: require('../facets/company/show-contact')
   }, {
     path: "/send-contact",
+    feature: '!npmo',
     method: "POST",
     handler: require('../facets/company/show-send-contact')
   }, {
     path: "/support",
+    feature: '!npmo',
     method: "GET",
     handler: require('../facets/company/show-contact')
   }, {
     path: "/policies/{policy?}",
+    feature: '!npmo',
     method: "GET",
     handler: require('../facets/company/show-policy')
   }, {
     path: "/whoshiring",
+    feature: '!npmo',
     method: "GET",
     handler: require('../facets/company/show-whoshiring')
   }, {
     path: "/joinwhoshiring",
+    feature: '!npmo',
     method: "GET",
     handler: require('../facets/company/show-whoshiring-payments')
   }, {
     path: "/joinwhoshiring",
+    feature: '!npmo',
     method: "POST",
     handler: require('../facets/company/show-whoshiring-payments'),
     config: ajaxy
   }, {
     path: "/enterprise",
+    feature: '!npmo',
     method: "GET",
     handler: function(request, reply) {
       return reply.redirect("/onsite").code(301);
     }
   }, {
     path: "/onsite",
+    feature: '!npmo',
     method: "GET",
     handler: require('../facets/enterprise/show-index')
   }, {
@@ -277,22 +289,27 @@ var publicRoutes = [
   }, {
     path: "/login",
     method: "GET",
+    feature: '!npmo',
     handler: require('../facets/user/show-login')
   }, {
     path: "/login",
     method: "POST",
+    feature: '!npmo',
     handler: require('../facets/user/show-login')
   }, {
     path: "/logout",
     method: "POST",
+    feature: '!npmo',
     handler: require('../facets/user/show-logout')
   }, {
     path: "/forgot/{token?}",
     method: "GET",
+    feature: '!npmo',
     handler: require('../facets/user/show-forgot')
   }, {
     path: "/forgot/{token?}",
     method: "POST",
+    feature: '!npmo',
     handler: require('../facets/user/show-forgot')
   }, {
     path: "/_monitor/ping",
@@ -334,6 +351,7 @@ var publicRoutes = [
     }
   }, {
     method: '*',
+    feature: '!npmo',
     path: '/private-modules',
     handler: function(request, reply) {
       var route = request.path.substr(1, request.path.length);

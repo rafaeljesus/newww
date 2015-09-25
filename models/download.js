@@ -1,7 +1,7 @@
-var Promise = require('bluebird');
+var P = require('bluebird');
 var _ = require('lodash');
 var fmt = require('util').format;
-var cache = require('../lib/cache');
+var cache = P.promisifyAll(require('../lib/cache'));
 
 var Download = module.exports = function(opts) {
   _.extend(this, {
@@ -32,12 +32,10 @@ Download.prototype.getMonthly = function(packageName) {
 };
 
 Download.prototype.getAll = function(packageName) {
-  var _this = this;
-
-  return Promise.all([
-    _this.getDaily(packageName),
-    _this.getWeekly(packageName),
-    _this.getMonthly(packageName),
+  return P.all([
+    this.getDaily(packageName),
+    this.getWeekly(packageName),
+    this.getMonthly(packageName),
   ]).then(function(result) {
     return {
       day: result[0],
@@ -48,29 +46,26 @@ Download.prototype.getAll = function(packageName) {
 };
 
 Download.prototype.getSome = function(period, packageName) {
-  var _this = this;
 
   var url = fmt("%s/point/last-%s", this.host, period);
   if (packageName) {
     url += "/" + packageName;
   }
 
-  return new Promise(function(resolve, reject) {
-    var opts = {
-      method: "GET",
-      url: url,
-      json: true,
-      timeout: _this.timeout,
+  var opts = {
+    method: "GET",
+    url: url,
+    json: true,
+    timeout: this.timeout,
+  };
+
+  if (this.bearer) {
+    opts.headers = {
+      bearer: this.bearer
     };
+  }
 
-    if (_this.bearer)
-      opts.headers = {
-        bearer: _this.bearer
-      };
-
-    cache.get(opts, function(err, body) {
-      return resolve(body || null);
-    });
-
+  return cache.getAsync(opts).catch(function() {
+    return null;
   });
 };

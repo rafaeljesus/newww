@@ -116,7 +116,15 @@ Package.prototype.list = function(options, ttl) {
     ttl: ttl || 500 // seconds
   };
 
-  return cache.getP(opts);
+  return cache.getP(opts).then(function upgradeRRResponse(result) {
+    if (Array.isArray(result)) {
+      return {
+        results: result
+      };
+    } else {
+      return result;
+    }
+  });
 };
 
 Package.prototype.count = function() {

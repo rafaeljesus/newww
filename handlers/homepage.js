@@ -39,6 +39,6 @@ module.exports = function(request, reply) {
     reply.view('homepage', context);
   }).catch(function(err) {
     request.logger.error(err);
-    reply.view('error/internal', err);
+    reply.view('errors/internal', err);
   });
 };

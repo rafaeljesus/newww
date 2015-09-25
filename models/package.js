@@ -1,9 +1,9 @@
 var _ = require('lodash');
 var cache = require('../lib/cache');
-var decorate = require(__dirname + '/../presenters/package');
+var decorate = require('../presenters/package');
 var fmt = require('util').format;
 var P = require('bluebird');
-var Request = require('../lib/external-request');
+var request = require('../lib/external-request');
 var URL = require('url');
 
 var Package = module.exports = function(opts) {
@@ -77,12 +77,12 @@ Package.prototype.update = function(name, body) {
   return this.dropCache(name)
     .then(function() {
       return new P(function(resolve, reject) {
-        Request(opts, function(err, resp, body) {
+        request(opts, function(err, resp, body) {
           if (err) {
             return reject(err);
           }
           if (resp.statusCode > 399) {
-            err = Error('error updating package ' + name);
+            err = new Error('error updating package ' + name);
             err.statusCode = resp.statusCode;
             return reject(err);
           }
@@ -148,12 +148,12 @@ Package.prototype.star = function(pkg) {
     .then(function() {
       return new P(function(resolve, reject) {
 
-        Request.put(opts, function(err, resp, body) {
+        request.put(opts, function(err, resp) {
           if (err) {
             return reject(err);
           }
           if (resp.statusCode > 399) {
-            err = Error('error starring package ' + pkg);
+            err = new Error('error starring package ' + pkg);
             err.statusCode = resp.statusCode;
             return reject(err);
           }
@@ -183,13 +183,13 @@ Package.prototype.unstar = function(pkg) {
     .then(function() {
       return new P(function(resolve, reject) {
 
-        Request.del(opts, function(err, resp, body) {
+        request.del(opts, function(err, resp) {
           if (err) {
             return reject(err);
           }
 
           if (resp.statusCode > 399) {
-            err = Error('error unstarring package ' + pkg);
+            err = new Error('error unstarring package ' + pkg);
             err.statusCode = resp.statusCode;
             return reject(err);
           }

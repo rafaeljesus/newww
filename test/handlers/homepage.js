@@ -31,9 +31,9 @@ describe('GET / for an anonymous user', function() {
 
   before(function(done) {
     var packageMock = nock("https://user-api-example.com")
-      .get('/package?sort=dependents')
+      .get('/package?sort=dependents&count=12')
       .reply(200, fixtures.aggregates.most_depended_upon_packages)
-      .get('/package?sort=modified')
+      .get('/package?sort=modified&count=12')
       .reply(200, fixtures.aggregates.recently_updated_packages)
       .get('/package/-/count')
       .reply(200, 12345);
@@ -103,9 +103,9 @@ describe('GET / for a logged-in user', function() {
       .get('/customer/mikeal/stripe')
       .reply(404);
     var packageMock = nock("https://user-api-example.com")
-      .get('/package?sort=dependents')
+      .get('/package?sort=dependents&count=12')
       .reply(200, fixtures.aggregates.most_depended_upon_packages)
-      .get('/package?sort=modified')
+      .get('/package?sort=modified&count=12')
       .reply(200, fixtures.aggregates.recently_updated_packages)
       .get('/package/-/count')
       .reply(200, 12345);

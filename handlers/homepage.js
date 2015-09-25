@@ -16,10 +16,12 @@ module.exports = function(request, reply) {
 
   var actions = {
     modified: Package.list({
-      sort: "modified"
+      sort: "modified",
+      count: 12
     }, MODIFIED_TTL),
     dependents: Package.list({
-      sort: "dependents"
+      sort: "dependents",
+      count: 12
     }, DEPENDENTS_TTL),
     downloads: Download.getAll(),
     totalPackages: Package.count().catch(function(err) {

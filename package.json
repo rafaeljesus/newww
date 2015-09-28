@@ -71,7 +71,7 @@
     "normalize-license-data": "^1.0.1",
     "normalize-package-data": "^2.3.1",
     "npm-email-templates": "^1.9.2",
-    "npm-expansions": "^2.2.0",
+    "npm-expansions": "^2.2.1",
     "npm-explicit-installs": "^2.0.0",
     "npm-humans": "2.10.4",
     "npm-package-arg": "^3.1.1",

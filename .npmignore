@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+.env
+.env.dev
+.idea
+dump.rdb
+erl_crash.dump
+npm-debug.log
+numbat.log
+numbat-config.js
+config.admin.js
+test/coverage.html
+*.swp

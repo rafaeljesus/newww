@@ -43,35 +43,41 @@
 <body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
   <meta itemprop="url" content="https://www.npmjs.com/">
 
-  <div id="notification-banner" class="hidden">
-    <div class="container">
-      <hgroup>
-        <a href="/private-modules"
+  {{#unless features.npmo}}
+    <div id="notification-banner" class="hidden">
+      <div class="container">
+        <hgroup>
+          <a href="/private-modules"
+            data-event-trigger="click"
+            data-event-name="private-modules-banner-signup-via-wombat">
+            <img src="/static/images/wombat-by-night.svg" alt="night wombat">
+          </a>
+          <h2>private npm is here.</h2>
+          <h3>publish unlimited private modules for just $7/month</h3>
+        </hgroup>
+        <a class="button" href="/private-modules"
           data-event-trigger="click"
-          data-event-name="private-modules-banner-signup-via-wombat">
-          <img src="/static/images/wombat-by-night.svg" alt="night wombat">
-        </a>
-        <h2>private npm is here.</h2>
-        <h3>publish unlimited private modules for just $7/month</h3>
-      </hgroup>
-      <a class="button" href="/private-modules"
-        data-event-trigger="click"
-        data-event-name="private-modules-banner-signup">sign up</a>
-      <a class="button button-subtle banner-close" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks">no thanks</a>
+          data-event-name="private-modules-banner-signup">sign up</a>
+        <a class="button button-subtle banner-close" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks">no thanks</a>
+      </div>
+      <a class="button banner-close button-banner-close icon-x" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks"><span class="a11y-only">close</span></a>
     </div>
-    <a class="button banner-close button-banner-close icon-x" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks"><span class="a11y-only">close</span></a>
-  </div>
+  {{/unless}}
 
   <nav>
     <div class="container">
       <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
-      <a href="/private-modules" data-event-trigger="click" data-event-name="private-modules-nav-link">npm private modules</a>
-      <a href="/enterprise">npm for the Enterprise</a>
+      {{#unless features.npmo}}
+        <a href="/private-modules" data-event-trigger="click" data-event-name="private-modules-nav-link">npm private modules</a>
+        <a href="/enterprise">npm for the Enterprise</a>
+      {{/unless}}
       <a href="https://docs.npmjs.com">documentation</a>
-      <a href="http://blog.npmjs.org/">blog</a>
-      <a href="/npm-weekly">npm weekly</a>
-      <a href="/jobs">jobs</a>
-      <a href="/support">support</a>
+      {{#unless features.npmo}}
+        <a href="http://blog.npmjs.org/">blog</a>
+        <a href="/npm-weekly">npm weekly</a>
+        <a href="/jobs">jobs</a>
+        <a href="/support">support</a>
+      {{/unless}}
     </div>
   </nav>
 
@@ -79,25 +85,27 @@
     <div class="container">
       <a href="/" id="npm-logo"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
 
-      <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
-        {{#if user}}
-          <a data-user-name="{{user.name}}"
-             data-is-paid="{{#if user.isPaid}}true{{/if}}"
-             href="/~{{user.name}}">
-            <img src="{{user.avatar.small}}" />
-          </a>
-          <ul>
-            <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
-            <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
-          </ul>
-        {{else}}
-          <a href="/login"><img src="/static/images/wombat-avatar-small.png" /></a>
-          <ul class="single">
-            <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
-          </ul>
+      {{#unless features.npmo}}
+        <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
+            {{#if user}}
+            <a data-user-name="{{user.name}}"
+                data-is-paid="{{#if user.isPaid}}true{{/if}}"
+                href="/~{{user.name}}">
+                <img src="{{user.avatar.small}}" />
+            </a>
+            <ul>
+                <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
+                <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
+            </ul>
+            {{else}}
+            <a href="/login"><img src="/static/images/wombat-avatar-small.png" /></a>
+            <ul class="single">
+                <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
+            </ul>
 
-        {{/if}}
-      </div>
+            {{/if}}
+        </div>
+      {{/unless}}
 
       <form id="npm-search" action="/search" method="get" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
         <meta itemprop="target" content="https://www.npmjs.com/search?q={q}">
@@ -119,47 +127,49 @@
 
   <footer>
 
-    <div class="container">
+    {{#unless features.npmo}}
+      <div class="container">
 
-      <ul class="columnar">
-        <li>
-          <h3>You Need Help</h3>
-          <ul class="links">
-            <li><a href="https://docs.npmjs.com">Documentation</a></li>
-            <li><a href="/support">Support / Contact Us</a></li>
-            <li><a href="http://status.npmjs.org/">Registry Status</a></li>
-            <li><a href="https://github.com/npm/newww/issues">Website Issues</a></li>
-            <li><a href="https://github.com/npm/npm/issues">CLI Issues</a></li>
-            <li><a href="/security">Security</a></li>
-          </ul>
-        </li>
+        <ul class="columnar">
+          <li>
+            <h3>You Need Help</h3>
+            <ul class="links">
+              <li><a href="https://docs.npmjs.com">Documentation</a></li>
+              <li><a href="/support">Support / Contact Us</a></li>
+              <li><a href="http://status.npmjs.org/">Registry Status</a></li>
+              <li><a href="https://github.com/npm/newww/issues">Website Issues</a></li>
+              <li><a href="https://github.com/npm/npm/issues">CLI Issues</a></li>
+              <li><a href="/security">Security</a></li>
+            </ul>
+          </li>
 
-        <li>
-          <h3>About npm</h3>
-          <ul class="links">
-            <li><a href="/about">About npm, Inc</a></li>
-            <li><a href="/jobs">Jobs</a></li>
-            <li><a href="/private-modules">npm private modules</a></li>
-            <li><a href="http://blog.npmjs.org">Blog</a></li>
-            <li><a href="https://twitter.com/npmjs">Twitter</a></li>
-            <li><a href="https://github.com/npm">GitHub</a></li>
-          </ul>
-        </li>
+          <li>
+            <h3>About npm</h3>
+            <ul class="links">
+              <li><a href="/about">About npm, Inc</a></li>
+              <li><a href="/jobs">Jobs</a></li>
+              <li><a href="/private-modules">npm private modules</a></li>
+              <li><a href="http://blog.npmjs.org">Blog</a></li>
+              <li><a href="https://twitter.com/npmjs">Twitter</a></li>
+              <li><a href="https://github.com/npm">GitHub</a></li>
+            </ul>
+          </li>
 
-        <li>
-          <h3>Legal Stuff</h3>
-          <ul class="links">
-            <li><a href="/policies/conduct">Code of Conduct</a></li>
-            <li><a href="/policies/disputes">Package Name Disputes</a></li>
-            <li><a href="/policies/npm-license">npm License</a></li>
-            <li><a href="/policies/privacy">Privacy Policy</a></li>
-            <li><a href="/policies/receiving-reports">Reporting Abuse</a></li>
-            <li><a href="/policies/">Other policies</a></li>
-          </ul>
-        </li>
-      </ul>
+          <li>
+            <h3>Legal Stuff</h3>
+            <ul class="links">
+              <li><a href="/policies/conduct">Code of Conduct</a></li>
+              <li><a href="/policies/disputes">Package Name Disputes</a></li>
+              <li><a href="/policies/npm-license">npm License</a></li>
+              <li><a href="/policies/privacy">Privacy Policy</a></li>
+              <li><a href="/policies/receiving-reports">Reporting Abuse</a></li>
+              <li><a href="/policies/">Other policies</a></li>
+            </ul>
+          </li>
+        </ul>
 
-    </div>
+      </div>
+    {{/unless}}
 
     <div class="container centered">
       <a href="/" id="npm-loves-you">

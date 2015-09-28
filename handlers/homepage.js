@@ -16,23 +16,29 @@ module.exports = function(request, reply) {
 
   var actions = {
     modified: Package.list({
-      sort: "modified"
+      sort: "modified",
+      count: 12
     }, MODIFIED_TTL),
     dependents: Package.list({
-      sort: "dependents"
+      sort: "dependents",
+      count: 12
     }, DEPENDENTS_TTL),
     downloads: Download.getAll(),
-    totalPackages: Package.count(),
+    totalPackages: Package.count().catch(function(err) {
+      request.logger.error(err);
+      return null;
+    }),
   };
 
-  P.props(actions)
-    .then(function(results) {
-      context.modified = results.modified;
-      context.dependents = results.dependents;
-      context.downloads = results.downloads;
-      context.totalPackages = results.totalPackages;
+  P.props(actions).then(function(results) {
+    context.modified = results.modified;
+    context.dependents = results.dependents;
+    context.downloads = results.downloads;
+    context.totalPackages = results.totalPackages;
 
-      reply.view('homepage', context);
-    });
-
+    reply.view('homepage', context);
+  }).catch(function(err) {
+    request.logger.error(err);
+    reply.view('errors/internal', err);
+  });
 };

@@ -213,7 +213,7 @@ exports.deleteOrg = function(request, reply) {
 
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
-      return replay.view('error/internal', err);
+      return replay.view('errors/internal', err);
     }
     var subscription = subscriptions.filter(function(sub) {
       return orgToDelete === sub.npm_org;
@@ -229,7 +229,7 @@ exports.deleteOrg = function(request, reply) {
     request.customer.cancelSubscription(subscription.id, function(err, sub) {
       if (err) {
         request.logger.error(err);
-        return reply.view('error/internal', err);
+        return reply.view('errors/internal', err);
       }
 
       return exports.getOrg(request, reply);

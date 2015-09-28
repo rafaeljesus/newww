@@ -88,10 +88,12 @@
     </p>
   </li>
 
-  <li>
-    <h3><a href="/whoshiring">get a job</a></h3>
-    <div class="hiring-container" data-template="vanilla"></div>
-  </li>
+  {{#unless features.npmo}}
+    <li>
+      <h3><a href="/whoshiring">get a job</a></h3>
+      <div class="hiring-container" data-template="vanilla"></div>
+    </li>
+  {{/unless}}
 </ul>
 
 <script type="application/ld+json">

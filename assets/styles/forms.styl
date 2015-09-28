@@ -268,6 +268,7 @@ fieldset
 input[type=text] + .description
   margin-top -1.5em
 
+
 /**
  * Switch-style checkboxes.
  * Inspired by Lea Verou
@@ -322,7 +323,8 @@ input[type="checkbox"].switch + div:before
 input[type="checkbox"].switch:checked + div:before
   background npmred
 
-input[type="checkbox"][disabled].switch:checked + div:before
+input[type="checkbox"].inactive.switch + div:before,
+input[type="checkbox"][disabled].switch + div:before
   background-color #aaa
 
 input[type="checkbox"].switch:active + div:before
@@ -342,3 +344,6 @@ input[type="checkbox"].switch:checked ~ .unchecked-text
   font-weight normal
 input[type="checkbox"].switch:checked ~ .checked-text
   font-weight bold
+
+.js .edit-pay-status-save
+  display none

@@ -1,5 +1,6 @@
 window.$ = window.jQuery = require("jquery");
 
+require("./js-check")();
 require("./crumb")();
 require("./hiring");
 require("./npm-expansions");
@@ -21,6 +22,7 @@ require("./buy-enterprise-license")();
 require("./twitter-tracking")();
 require("./fetch-packages")();
 require("./tabs")();
+require("./switch-submission")();
 
 window.github = require("./github")();
 window.star = require("./star")();

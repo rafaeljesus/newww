@@ -214,7 +214,7 @@ describe("Package", function() {
 
     it("returns an error in the callback if the request failed", function(done) {
       var mock = nock(Package.host)
-        .get('/package')
+        .get('/package?')
         .reply(404);
 
       Package.list()

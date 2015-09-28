@@ -4,7 +4,7 @@ var decorate = require('../presenters/package');
 var fmt = require('util').format;
 var P = require('bluebird');
 var request = require('../lib/external-request');
-var URL = require('url');
+var qs = require('qs');
 
 var Package = module.exports = function(opts) {
   _.extend(this, {
@@ -99,19 +99,10 @@ Package.prototype.update = function(name, body) {
 };
 
 Package.prototype.list = function(options, ttl) {
-  var urlBits = {
-    protocol: "https",
-    host: URL.parse(this.host).hostname,
-    pathname: "/package",
-    query: options,
-  };
-
-  if (process.env.REMOTE_DEV) {
-    urlBits.protocol = "http";
-  }
+  var url = fmt("%s/package?%s", this.host, qs.stringify(options));
 
   var opts = {
-    url: URL.format(urlBits),
+    url: url,
     json: true,
     ttl: ttl || 500 // seconds
   };

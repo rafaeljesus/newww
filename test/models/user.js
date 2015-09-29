@@ -657,11 +657,33 @@ describe("User", function() {
   });
 
   describe("user to org", function() {
-    it("takes a user id, a new user id, and a callback", function(done) {
+    it("returns an org with the same username", function(done) {
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+        bearer: "npmjs"
+      });
+
+      var postOpts = {
+        new_username: "npmjs-admin"
+      };
+
+      var orgObj = {
+        name: "npmjs",
+        description: "",
+        resource: {},
+        created: "2015-06-19T23:35:42.659Z",
+        updated: "2015-06-19T23:35:42.659Z",
+        deleted: null
+      };
+
+      var userMock = nock(User.host)
+        .post('/user/npmjs/to-org', postOpts)
+        .reply(200, orgObj);
+
       User.toOrg("npmjs", "npmjs-admin", function(err, data) {
+        userMock.done();
         expect(err).to.be.null();
-        expect(data.user).to.equal("npmjs");
-        expect(data.newuser).to.equal("npmjs-admin");
+        expect(data.name).to.equal("npmjs");
         done();
       });
     });

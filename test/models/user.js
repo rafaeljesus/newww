@@ -657,6 +657,52 @@ describe("User", function() {
   });
 
   describe("user to org", function() {
+
+    it("needs bearer", function(done) {
+      User = new (require("../../models/user"))({
+        host: "https://user.com"
+      });
+
+      var postOpts = {
+        new_username: "npmjs-admin"
+      };
+
+      var userMock = nock(User.host)
+        .post('/user/npmjs/to-org', postOpts)
+        .reply(400);
+
+      User.toOrg("npmjs", "npmjs-admin", function(err, data) {
+        userMock.done();
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(err.message).to.equal("you need authentication to give ownership of the new org to another existing user");
+        done();
+      });
+    });
+
+    it("cannot have org name that already exists", function(done) {
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+        bearer: "npmjs"
+      });
+
+      var postOpts = {
+        new_username: "bigco"
+      };
+
+      var userMock = nock(User.host)
+        .post('/user/npmjs/to-org', postOpts)
+        .reply(409);
+
+      User.toOrg("npmjs", "bigco", function(err, data) {
+        userMock.done();
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(409);
+        expect(err.message).to.equal("a user or org already exists with the username you're trying to create as an owner");
+        done();
+      });
+    });
+
     it("returns an org with the same username", function(done) {
       User = new (require("../../models/user"))({
         host: "https://user.com",

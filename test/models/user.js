@@ -655,4 +655,15 @@ describe("User", function() {
       });
     });
   });
+
+  describe("user to org", function() {
+    it("takes a user id, a new user id, and a callback", function(done) {
+      User.toOrg("npmjs", "npmjs-admin", function(err, data) {
+        expect(err).to.be.null();
+        expect(data.user).to.equal("npmjs");
+        expect(data.newuser).to.equal("npmjs-admin");
+        done();
+      });
+    });
+  });
 });

@@ -426,3 +426,19 @@ User.prototype.getOrgs = function(name, callback) {
     });
   }).nodeify(callback);
 };
+
+User.prototype.toOrg = function(name, newUsername, callback) {
+
+  var url = fmt('%s/user/%s/to-org', this.host, name);
+
+  return new P(function(resolve, reject) {
+    try {
+      var data = {};
+      data.user = name;
+      data.newuser = newUsername;
+      return resolve(data);
+    } catch (e) {
+      return reject(e);
+    }
+  }).nodeify(callback);
+};

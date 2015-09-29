@@ -431,14 +431,33 @@ User.prototype.toOrg = function(name, newUsername, callback) {
 
   var url = fmt('%s/user/%s/to-org', this.host, name);
 
-  return new P(function(resolve, reject) {
-    try {
-      var data = {};
-      data.user = name;
-      data.newuser = newUsername;
-      return resolve(data);
-    } catch (e) {
-      return reject(e);
+  var opts = {
+    url: url,
+    json: true,
+    body: {
+      new_username: newUsername
     }
+  };
+
+  if (this.bearer) {
+    opts.headers = {
+      bearer: this.bearer
+    };
+  }
+
+  return new P(function(resolve, reject) {
+
+    Request.post(opts, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+      if (resp.statusCode > 399) {
+        err = new Error('error renaming user ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+
   }).nodeify(callback);
 };

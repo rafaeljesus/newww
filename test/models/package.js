@@ -220,17 +220,22 @@ describe("Package", function() {
       Package.list()
         .then(function(result) {
           expect(result).to.not.exist();
-        })
-        .catch(function(err) {
+        }, function(err) {
           expect(err).to.exist();
           expect(err.message).to.match(/unexpected status code/);
           expect(err.statusCode).to.equal(404);
         })
+        .catch(function(err) {
+          mock.done();
+          throw err;
+        })
         .then(function() {
           mock.done();
           done();
+        })
+        .catch(function(err) {
+          done(err);
         });
-
     });
 
     it("turns options into query parameters", function(done) {

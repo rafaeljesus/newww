@@ -451,6 +451,19 @@ User.prototype.toOrg = function(name, newUsername, callback) {
       if (err) {
         return reject(err);
       }
+
+      if (resp.statusCode === 400) {
+        err = new Error("you need authentication to give ownership of the new org to another existing user");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 409) {
+        err = new Error("a user or org already exists with the username you're trying to create as an owner");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
       if (resp.statusCode > 399) {
         err = new Error('error renaming user ' + name);
         err.statusCode = resp.statusCode;

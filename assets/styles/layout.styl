@@ -169,31 +169,29 @@ ul.columnar
       @extend .red-on-hover
       font-weight 400
 
-
 .package-widget-with-logo
+  padding-left:60px;
 
   .package-logo
-    display block
-    text-align center
-    height packageWidgetLogoHeight
-    line-height packageWidgetLogoHeight
+    margin-left:-60px;
+    margin-bottom:-50px;
+    width:50px;
+    height:50px;
+    position:relative;
+    display:block;
+    overflow:hidden;
+    vertical-align:middle;
+    text-align:center;
+
     img
-      display inline-block
-      max-width 80%
-      max-height 100%
-      vertical-align middle
+      max-width: 50px;
+      max-height: 50px;
 
   .package-details
-    margin-top 20px
-    h3,p
-      text-align center
-
-  a.name
-    &:before
-      content none
-
-  p
-    padding-left 0
+    a.name:before
+      display:none;
+    p
+      padding-left:0;
 
 .box
   margin 0

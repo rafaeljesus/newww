@@ -42,6 +42,12 @@ Org.prototype.create = function(name, callback) {
         return reject(err);
       }
 
+      if (resp.statusCode === 409) {
+        err = Error('The provided organization @scope name is already in use by your username');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
       if (resp.statusCode >= 400) {
         err = new Error(body);
         err.statusCode = resp.statusCode;

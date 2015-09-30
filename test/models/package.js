@@ -112,12 +112,13 @@ describe("Package", function() {
         .then(function(pkg) {
           expect(pkg).to.exist();
         })
-        .catch(function(err) {
-          expect(pkg).to.exist();
-        })
         .then(function() {
           mock.done();
           done();
+        })
+        .catch(function(err) {
+          mock.done();
+          done(err);
         });
 
     });
@@ -159,6 +160,7 @@ describe("Package", function() {
 
       Package.get('@zeke/ord')
         .then(function(pkg) {
+          expect(pkg).to.exist();
           mock.done();
           done();
         });

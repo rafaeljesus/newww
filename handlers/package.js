@@ -3,6 +3,7 @@ var P = require('bluebird');
 var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
 var PackageModel = require("../models/package");
+var feature = require('../lib/feature-flags');
 
 var DEPENDENCY_TTL = 5 * 60; // 5 minutes
 
@@ -20,14 +21,15 @@ exports.show = function(request, reply) {
 
   request.logger.info('get package: ' + name);
 
-  var actions = {
-    package: Package.get(name),
-    dependents: Package.list({
-      dependency: name,
-      limit: 50
-    }, DEPENDENCY_TTL),
-    downloads: Download.getAll(name),
-  };
+  var actions = {};
+  actions.package = Package.get(name);
+  actions.dependents = Package.list({
+    dependency: name,
+    limit: 50
+  }, DEPENDENCY_TTL);
+  if (!feature('npmo')) {
+    actions.downloads = Download.getAll(name);
+  }
 
   P.props(actions)
     .then(function(results) {

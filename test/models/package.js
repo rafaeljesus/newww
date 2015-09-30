@@ -12,7 +12,7 @@ var Code = require('code'),
 
 beforeEach(function(done) {
   Package = new (require("../../models/package"))({
-    host: "https://package.com"
+    host: "https://package.com:8443"
   });
   done();
 });
@@ -34,7 +34,7 @@ describe("Package", function() {
     });
 
     it("accepts a custom host", function(done) {
-      expect(Package.host).to.equal('https://package.com');
+      expect(Package.host).to.equal('https://package.com:8443');
       done();
     });
   });
@@ -125,7 +125,7 @@ describe("Package", function() {
     it("includes the bearer token if user is logged in when loading the package page", function(done) {
 
       Package = new (require("../../models/package"))({
-        host: "https://package.com",
+        host: "https://package.com:8443",
         bearer: "rockbot"
       });
 
@@ -153,7 +153,7 @@ describe("Package", function() {
     });
 
     it("encodes the slash in scoped package names", function(done) {
-      var mock = nock("https://package.com")
+      var mock = nock(Package.host)
         .get('/package/@zeke%2Ford')
         .reply(200, fixtures.packages.browserify);
 
@@ -214,23 +214,28 @@ describe("Package", function() {
 
     it("returns an error in the callback if the request failed", function(done) {
       var mock = nock(Package.host)
-        .get('/package')
+        .get('/package?')
         .reply(404);
 
       Package.list()
         .then(function(result) {
           expect(result).to.not.exist();
-        })
-        .catch(function(err) {
+        }, function(err) {
           expect(err).to.exist();
           expect(err.message).to.match(/unexpected status code/);
           expect(err.statusCode).to.equal(404);
         })
+        .catch(function(err) {
+          mock.done();
+          throw err;
+        })
         .then(function() {
           mock.done();
           done();
+        })
+        .catch(function(err) {
+          done(err);
         });
-
     });
 
     it("turns options into query parameters", function(done) {

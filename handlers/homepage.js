@@ -1,5 +1,7 @@
 var P = require('bluebird');
 
+var feature = require('../lib/feature-flags.js');
+
 var MINUTE = 60; // seconds
 var MODIFIED_TTL = 1 * MINUTE;
 var DEPENDENTS_TTL = 30 * MINUTE;
@@ -14,21 +16,24 @@ module.exports = function(request, reply) {
     explicit: require("npm-explicit-installs")
   };
 
-  var actions = {
-    modified: Package.list({
-      sort: "modified",
-      count: 12
-    }, MODIFIED_TTL),
-    dependents: Package.list({
-      sort: "dependents",
-      count: 12
-    }, DEPENDENTS_TTL),
-    downloads: Download.getAll(),
-    totalPackages: Package.count().catch(function(err) {
+  var actions = {};
+
+  actions.modified = Package.list({
+    sort: "modified",
+    count: 12
+  }, MODIFIED_TTL);
+  actions.dependents = Package.list({
+    sort: "dependents",
+    count: 12
+  }, DEPENDENTS_TTL);
+
+  if (!feature('npmo')) {
+    actions.downloads = Download.getAll();
+    actions.totalPackages = Package.count().catch(function(err) {
       request.logger.error(err);
       return null;
-    }),
-  };
+    });
+  }
 
   P.props(actions).then(function(results) {
     context.modified = results.modified;

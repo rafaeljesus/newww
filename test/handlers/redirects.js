@@ -56,6 +56,51 @@ describe('redirects for legacy routes', function() {
     });
   });
 
+  it('sends /browse/author/{user} to package page for user', function(done) {
+    var options = {
+      url: '/browse/author/bob'
+    };
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.equal("/~bob#packages");
+      done();
+    });
+  });
+
+  it('sends invalid username to 404 for /browse/author/{user}', function(done) {
+    var options = {
+      url: '/browse/author/%E0%B4%8Aset-cookie:%20foo=bar'
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(404);
+      done();
+    });
+  });
+
+  it('sends /browse/userstar/{user} to starred page for user', function(done) {
+    var options = {
+      url: '/browse/userstar/bob'
+    };
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.equal("/~bob#starred");
+      done();
+    });
+  });
+
+  it('sends invalid username to 404 for /browse/userstar/{user}', function(done) {
+    var options = {
+      url: '/browse/userstar/%E0%B4%8Aset-cookie:%20foo=bar'
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(404);
+      done();
+    });
+  });
+
+
   it('sends invalid package name to 404', function(done) {
     var options = {
       url: '/packages/%E0%B4%8Aset-cookie:%20foo=bar'

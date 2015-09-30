@@ -5,6 +5,7 @@ var fmt = require('util').format;
 var P = require('bluebird');
 var request = require('../lib/external-request');
 var qs = require('qs');
+var VError = require('verror');
 
 var Package = module.exports = function(opts) {
   _.extend(this, {
@@ -41,10 +42,7 @@ Package.prototype.generatePackageOpts = function generatePackageOpts(name) {
 Package.prototype.get = function(name) {
   var opts = this.generatePackageOpts(name);
 
-  return cache.getP(opts)
-    .then(function(_package) {
-      return decorate(_package);
-    });
+  return cache.getP(opts).then(maybeUpgradeRRPackageData).tap(assertPackageIsWellFormed).then(decorate);
 
 };
 
@@ -198,3 +196,17 @@ Package.prototype.unstar = function(pkg) {
       });
     });
 };
+
+function maybeUpgradeRRPackageData(pkg) {
+  if (Object.keys(pkg).length == 1) {
+    return pkg[Object.keys(pkg)[0]];
+  } else {
+    return pkg;
+  }
+}
+
+function assertPackageIsWellFormed(pkg) {
+  if (!pkg || !pkg.name) {
+    throw new VError("Package is not well formed: %j", pkg);
+  }
+}

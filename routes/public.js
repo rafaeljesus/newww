@@ -2,7 +2,8 @@ var fmt = require('util').format;
 var fs = require('fs');
 var _ = require('lodash');
 var async = require('async');
-var validate = require('validate-npm-package-name');
+var validatePackageName = require('validate-npm-package-name');
+var invalidUserName = require('npm-user-validate').username;
 
 var unathenticatedRouteConfig = {
   config: {
@@ -193,7 +194,7 @@ var publicRoutes = [
     method: "GET",
     handler: function(request, reply) {
       var fullPackageName = request.params.package || (request.params.scope + '/' + request.params.project);
-      if (!validate(fullPackageName).validForOldPackages) {
+      if (!validatePackageName(fullPackageName).validForOldPackages) {
         return reply.view("errors/not-found").code(404);
       }
 
@@ -210,12 +211,18 @@ var publicRoutes = [
     path: "/browse/author/{user}",
     method: "GET",
     handler: function(request, reply) {
+      if (invalidUserName(request.params.user)) {
+        return reply.view("errors/not-found").code(404);
+      }
       return reply.redirect(fmt("/~%s#packages", request.params.user)).code(301);
     }
   }, {
     path: "/browse/userstar/{user}",
     method: "GET",
     handler: function(request, reply) {
+      if (invalidUserName(request.params.user)) {
+        return reply.view("errors/not-found").code(404);
+      }
       return reply.redirect(fmt("/~%s#starred", request.params.user)).code(301);
     }
   }, {

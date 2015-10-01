@@ -115,5 +115,9 @@ module.exports = [
         stripePublicKey: process.env.STRIPE_PUBLIC_KEY
       });
     }
+  }, {
+    path: "/org/create/step-2",
+    method: "POST",
+    handler: require('../handlers/org').validateOrgCreation
   }
 ];

@@ -11,7 +11,7 @@
 
   <p>
     Now that you've cleared that up, you might want to
-    <a href="/settings/billing" data-event-trigger="click" data-event-name="post-confirmation-signup">sign up for private modules</a>,
+    <a href="/settings/billing{{#if features.org_billing}}#payment-information{{/if}}" data-event-trigger="click" data-event-name="post-confirmation-signup">sign up for private modules</a>,
     {{#if features.org_billing}}
       <a href="/org/create">create an organization</a>,
     {{/if}}

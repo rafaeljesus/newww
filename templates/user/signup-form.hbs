@@ -7,7 +7,7 @@
 
   {{> errors}}
 
-  <form action="" method="post">
+  <form action="/signup" method="post">
     <label for="name">{{t "user.signup.form.username"}}</label>
     <input type="text" id="name" name="name" autocorrect="off" autocapitalize="off" value="{{userInput.name}}" />
     <p class="help-text">{{t "user.signup.form.nameHelp"}}</p>

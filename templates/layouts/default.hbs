@@ -83,7 +83,13 @@
 
   <header>
     <div class="container">
-      <a href="/" id="npm-logo"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
+      <div id='npm-logo'>
+        <a href="/"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
+
+        {{#if env.NPMO_COBRAND}}
+          <span class="cobrand">{{env.NPMO_COBRAND}}</span>
+        {{/if}}
+      </div>
 
       {{#unless features.npmo}}
         <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>

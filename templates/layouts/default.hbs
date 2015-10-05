@@ -64,22 +64,20 @@
     </div>
   {{/unless}}
 
-  <nav>
-    <div class="container">
-      <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
-      {{#unless features.npmo}}
+  {{#unless features.npmo}}
+    <nav>
+      <div class="container">
+        <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
         <a href="/private-modules" data-event-trigger="click" data-event-name="private-modules-nav-link">npm private modules</a>
         <a href="/enterprise">npm for the Enterprise</a>
-      {{/unless}}
-      <a href="https://docs.npmjs.com">documentation</a>
-      {{#unless features.npmo}}
+        <a href="https://docs.npmjs.com">documentation</a>
         <a href="http://blog.npmjs.org/">blog</a>
         <a href="/npm-weekly">npm weekly</a>
         <a href="/jobs">jobs</a>
         <a href="/support">support</a>
-      {{/unless}}
-    </div>
-  </nav>
+      </div>
+    </nav>
+  {{/unless}}
 
   <header>
     <div class="container">

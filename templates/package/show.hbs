@@ -216,7 +216,9 @@
     }
   </script>
 
-  <div class="hiring-container" data-template="sidebar"></div>
+  {{#unless ../features.npmo}}
+    <div class="hiring-container" data-template="sidebar"></div>
+  {{/unless}}
 
 </div>
 

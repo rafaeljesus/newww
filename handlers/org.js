@@ -253,6 +253,22 @@ exports.validateOrgCreation = function(request, reply) {
   var username = request.loggedInUser.name;
 
   Joi.validate(request.payload, orgSubscriptionSchema, function(err, planData) {
+    var reportScopeInUseError = function(opts) {
+      opts = opts || {};
+      opts.msg = opts.msg || 'The provided org\'s @scope name is already in use';
+      opts.inUseByMe = opts.inUseByMe || false;
+
+      var err = new Error(opts.msg);
+
+      return reply.view('org/create', {
+        inUseError: true,
+        inUseByMe: opts.inUseByMe,
+        scopeName: planData.orgScope,
+        fullName: planData.fullname,
+        notices: [err.message]
+      });
+    };
+
     if (err) {
       var notices = err.details.map(function(e) {
         return e.message;
@@ -263,34 +279,34 @@ exports.validateOrgCreation = function(request, reply) {
       });
     } else {
       if (orgScope === username) {
-        var err = new Error('The provided org\'s @scope name is already in use by your username');
-
-        return reply.view('org/create', {
-          inUseError: true,
-          scopeName: planData.orgScope,
-          fullName: planData.fullname,
-          notices: [err.message]
+        return reportScopeInUseError({
+          inUseByMe: true,
+          msg: 'The provided org\'s @scope name is already in use by your username'
         });
       }
 
       Org(request.loggedInUser)
         .get(orgScope)
-        .then(function(org) {
-          var err = new Error('The provided org\'s @scope name is already in use');
-
-          return reply.view('org/create', {
-            inUseError: true,
-            scopeName: planData.orgScope,
-            fullName: planData.fullname,
-            notices: [err.message]
-          });
-        })
+        .then(reportScopeInUseError)
         .catch(function(err) {
           if (err.statusCode === 404) {
-            User.new(request)
-              .fetchFromUserAcl(username, function(err, user) {});
-          }
-          if (err.statusCode > 400) {
+            return User.new(request)
+              .fetchFromUserAcl(username)
+              .then(reportScopeInUseError)
+              .catch(function(err) {
+                if (err.statusCode === 404) {
+                  return reply.view('org/billing', {
+                    scopeName: planData.orgScope,
+                    fullName: planData.fullname
+                  });
+                } else {
+                  response.logger.error(err);
+                  return reply.view('errors/internal', err);
+                }
+              });
+          } else {
+            response.logger.error(err);
+            return reply.view('errors/internal', err);
           }
         });
     }

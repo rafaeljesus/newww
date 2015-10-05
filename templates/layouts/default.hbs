@@ -114,7 +114,7 @@
       {{/unless}}
 
       <form id="npm-search" action="/search" method="get" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
-        <meta itemprop="target" content="https://www.npmjs.com/search?q={q}">
+        <meta itemprop="target" content="{{env.CANONICAL_HOST}}/search?q={q}">
         <div id="site-search-container">
           {{#if features.npmo}}
             <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find on-site packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />

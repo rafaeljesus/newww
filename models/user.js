@@ -77,19 +77,21 @@ User.prototype.dropCache = function dropCache(name, callback) {
 
 
 User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
-  Request.get(this.generateUserACLOptions(name), function(err, response, body) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(resolve, reject) {
+    Request.get(this.generateUserACLOptions(name), function(err, response, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (response.statusCode !== 200) {
-      var e = new Error('unexpected status code ' + response.statusCode);
-      e.statusCode = response.statusCode;
-      return callback(e);
-    }
+      if (response.statusCode !== 200) {
+        var e = new Error('unexpected status code ' + response.statusCode);
+        e.statusCode = response.statusCode;
+        return reject(e);
+      }
 
-    callback(null, body);
-  });
+      return resolve(body);
+    });
+  }.bind(this)).nodeify(callback);
 };
 
 User.prototype.fetchCustomer = function fetchCustomer(name, callback) {

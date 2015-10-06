@@ -268,8 +268,8 @@ customer.subscribe = function(request, reply) {
           return reply.view('org/create', {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             inUseError: true,
-            scopeName: planData.orgScope,
-            fullName: planData.fullname,
+            orgScope: planData.orgScope,
+            fullname: planData.fullname,
             notices: [err]
           });
         } else {

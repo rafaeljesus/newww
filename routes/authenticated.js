@@ -1,3 +1,4 @@
+var invalidUserName = require('npm-user-validate').username;
 module.exports = [
   {
     // shortcut for viewing your own stars
@@ -119,5 +120,21 @@ module.exports = [
     path: "/org/create/step-2",
     method: "POST",
     handler: require('../handlers/org').validateOrgCreation
+  }, {
+    path: "/org/transfer-user-name",
+    method: "GET",
+    handler: function(request, reply) {
+      if (!request.features.org_billing) {
+        return reply.redirect('/org');
+      }
+      if (invalidUserName(request.query.orgScope)) {
+        var err = new Error("Org Scope must be a valid entry");
+        return reply.view("errors/internal", err);
+      }
+      return reply.view('org/transfer', {
+        fullname: request.query.fullname,
+        orgScope: request.query.orgScope
+      });
+    }
   }
 ];

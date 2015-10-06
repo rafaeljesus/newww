@@ -113,6 +113,22 @@ describe("Customer", function() {
       });
     });
 
+    it("returns an error if a bad request is sent", function(done) {
+      var Customer = new CustomerModel('ഊ');
+
+      var customerMock = nock(Customer.host)
+        .get('/customer/ഊ/stripe')
+        .reply(400, 'bad request');
+
+      Customer.getStripeData(function(err, body) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal("bad request");
+        expect(err.statusCode).to.equal(400);
+        done();
+      });
+    });
+
   });
 
   describe("getSubscriptions()", function() {

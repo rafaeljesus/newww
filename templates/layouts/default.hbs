@@ -123,6 +123,14 @@
         <input type="submit" id="site-search-submit" />
       </form>
 
+        <nav>
+          <ul class="links">
+            <li><a href="https://docs.npmjs.com">documentation</a></li>
+            <li><a href="/support">Support / Contact Us</a></li>
+          </ul>
+        </nav>
+
+
     </div>
   </header>
 
@@ -135,8 +143,9 @@
 
   <footer>
 
-    {{#unless features.npmo}}
-      <div class="container">
+    <div class="container">
+
+      {{#unless features.npmo}}
 
         <ul class="columnar">
           <li>
@@ -176,8 +185,19 @@
           </li>
         </ul>
 
-      </div>
-    {{/unless}}
+      {{else}}
+
+        <div class="cobrand-footer">
+          <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
+
+          <span>
+            &copy; 2015 npm, Inc. All Rights Reserved.
+          </span>
+        </div>
+
+      {{/unless}}
+
+    </div>
 
     <div class="container centered">
       <a href="/" id="npm-loves-you">

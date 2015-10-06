@@ -264,8 +264,8 @@ exports.validateOrgCreation = function(request, reply) {
       return reply.view('org/create', {
         inUseError: true,
         inUseByMe: opts.inUseByMe,
-        scopeName: planData.orgScope,
-        fullName: planData.fullname,
+        orgScope: planData.orgScope,
+        fullname: planData.fullname,
         notices: [err.message]
       });
     };
@@ -297,8 +297,8 @@ exports.validateOrgCreation = function(request, reply) {
               .catch(function(err) {
                 if (err.statusCode === 404) {
                   return reply.view('org/billing', {
-                    scopeName: planData.orgScope,
-                    fullName: planData.fullname
+                    orgScope: planData.orgScope,
+                    fullname: planData.fullname
                   });
                 } else {
                   response.logger.error(err);

@@ -1,3 +1,10 @@
+<div class="nav-breadcrumb-flow-indicator-container">
+  <ul class="nav-breadcrumb-flow-indicator">
+    <li class="done">Create Account</li>
+    <li class="current">Create Org</li>
+    <li>Invite Members</li>
+  </ul>
+</div>
 {{#if user.email_verified}}
   <form method="POST" id="payment-form" action="/settings/billing/subscribe" data-stripe-public-key="{{stripePublicKey}}">
     <section>
@@ -6,8 +13,8 @@
         <span class="included">$14/month for 2 included users</span>
         <span class="additional">$7/month for additional users</span>
       </p>
-      <input type="hidden" name="fullname" value="{{fullName}}"/>
-      <input type="hidden" name="orgScope" value="{{scopeName}}"/>
+      <input type="hidden" name="fullname" value="{{fullname}}"/>
+      <input type="hidden" name="orgScope" value="{{orgScope}}"/>
       {{#if user.customer}}
         <p>We will use the <a href="/settings/billing">billing information</a> we already have for you :-)</p>
       {{else}}

@@ -69,7 +69,7 @@ Customer.prototype.getStripeData = function(callback) {
     }
 
     if (resp.statusCode >= 400) {
-      err = new Error(body);
+      err = new Error(stripeData);
       err.statusCode = resp.statusCode;
       return callback(err);
     }

@@ -1,5 +1,6 @@
 var Org = require('../agents/org');
 var Customer = require('../models/customer');
+var User = require('../models/user');
 var Promise = require('bluebird');
 var Joi = require('joi');
 
@@ -250,7 +251,7 @@ exports.validateOrgCreation = function(request, reply) {
     return reply.redirect('/org');
   }
 
-  var username = request.loggedInUser.name;
+  var loggedInUser = request.loggedInUser.name;
 
   Joi.validate(request.payload, orgSubscriptionSchema, function(err, planData) {
     var reportScopeInUseError = function(opts) {
@@ -278,20 +279,20 @@ exports.validateOrgCreation = function(request, reply) {
         notices: notices
       });
     } else {
-      if (orgScope === username) {
+      if (planData.orgScope === loggedInUser) {
         return reportScopeInUseError({
           inUseByMe: true,
           msg: 'The provided org\'s @scope name is already in use by your username'
         });
       }
 
-      Org(request.loggedInUser)
-        .get(orgScope)
+      Org(loggedInUser)
+        .get(planData.orgScope)
         .then(reportScopeInUseError)
         .catch(function(err) {
           if (err.statusCode === 404) {
             return User.new(request)
-              .fetchFromUserAcl(username)
+              .fetchFromUserACL(planData.orgScope)
               .then(reportScopeInUseError)
               .catch(function(err) {
                 if (err.statusCode === 404) {

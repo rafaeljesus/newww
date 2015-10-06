@@ -238,6 +238,159 @@ describe('getting an org', function() {
   });
 });
 
+describe('creating an org', function() {
+  it('returns an error if the org scope name is in use by another org', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(200, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(200, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(200, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create/step-2",
+        method: "post",
+        credentials: fixtures.users.bob,
+        payload: {
+          crumb: crumb,
+          orgScope: 'bigco',
+          fullname: "Bob's big co"
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.request.response.source.template).to.equal('org/create');
+        expect(resp.request.response.source.context.notices.length).to.equal(1);
+        expect(resp.request.response.source.context.notices[0]).to.equal('The provided org\'s @scope name is already in use');
+        done();
+      });
+    });
+
+  });
+
+  it('returns an error if the org scope name is in use by somebody else\'s name', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob)
+        .get("/user/bigco")
+        .reply(200, fixtures.users.bigco);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(404, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(404, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(404, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create/step-2",
+        method: "post",
+        credentials: fixtures.users.bob,
+        payload: {
+          crumb: crumb,
+          orgScope: 'bigco',
+          fullname: "Bob's big co"
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.request.response.source.template).to.equal('org/create');
+        expect(resp.request.response.source.context.notices.length).to.equal(1);
+        expect(resp.request.response.source.context.notices[0]).to.equal('The provided org\'s @scope name is already in use');
+        done();
+      });
+    });
+  });
+
+  it('returns an error if the org scope name is in use by the current user\'s name', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create/step-2",
+        method: "post",
+        credentials: fixtures.users.bob,
+        payload: {
+          crumb: crumb,
+          orgScope: 'bob',
+          fullname: "Bob's big co"
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.request.response.source.template).to.equal('org/create');
+        expect(resp.request.response.source.context.notices.length).to.equal(1);
+        expect(resp.request.response.source.context.notices[0]).to.equal('The provided org\'s @scope name is already in use by your username');
+        done();
+      });
+    });
+  });
+
+  it('validates that an org is available when its name is not taken by a current user or org', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob)
+        .get("/user/bigco")
+        .reply(404, fixtures.users.bigco);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(404, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(404, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(404, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create/step-2",
+        method: "post",
+        credentials: fixtures.users.bob,
+        payload: {
+          crumb: crumb,
+          orgScope: 'bigco',
+          fullname: "Bob's big co"
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.request.response.source.template).to.equal('org/billing');
+        expect(resp.request.response.source.context.notices).to.not.exist();
+        done();
+      });
+    });
+  });
+});
+
 describe('updating an org', function() {
   describe('adding a user', function() {
     it('renders a redirect if a user cannot be added to an org', function(done) {

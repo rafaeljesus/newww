@@ -10,7 +10,7 @@ var Code = require('code'),
   nock = require("nock"),
   fixtures = require('../fixtures');
 
-var CustomerModel = require("../../models/customer");
+var CustomerModel = require("../../agents/customer");
 
 var LICENSE_API_OLD;
 before(function(done) {

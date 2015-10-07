@@ -664,7 +664,7 @@ describe('subscribing to private modules', function() {
           })
           .reply(200, fixtures.customers.subscriptions.bob);
 
-        var Customer = require('../../models/customer');
+        var Customer = require('../../agents/customer');
         var oldUpdate = Customer.update;
 
         Customer.update = function(billingInfo, cb) {

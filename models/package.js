@@ -5,28 +5,23 @@ var fmt = require('util').format;
 var P = require('bluebird');
 var request = require('../lib/external-request');
 var qs = require('qs');
+var USER_API = process.env.USER_API || "https://user-api-example.com";
 var VError = require('verror');
 
-var Package = module.exports = function(opts) {
-  _.extend(this, {
-    host: process.env.USER_API || "https://user-api-example.com",
-    bearer: false
-  }, opts);
+var Package = module.exports = function(loggedInUser) {
+
+  if (!(this instanceof Package)) {
+    return new Package(loggedInUser);
+  }
+
+  this.bearer = loggedInUser && loggedInUser.name;
 
   return this;
 };
 
-Package.new = function(request) {
-  var opts = {
-    bearer: request.loggedInUser && request.loggedInUser.name
-  };
-
-  return new Package(opts);
-};
-
 Package.prototype.generatePackageOpts = function generatePackageOpts(name) {
   var opts = {
-    url: fmt("%s/package/%s", this.host, name.replace("/", "%2F")),
+    url: fmt("%s/package/%s", USER_API, name.replace("/", "%2F")),
     json: true
   };
 
@@ -52,7 +47,7 @@ Package.prototype.dropCache = function dropCache(name) {
 
 Package.prototype.update = function(name, body) {
 
-  var url = fmt("%s/package/%s", this.host, name.replace("/", "%2F"));
+  var url = fmt("%s/package/%s", USER_API, name.replace("/", "%2F"));
   var opts = {
     method: "POST",
     url: url,
@@ -97,7 +92,7 @@ Package.prototype.update = function(name, body) {
 };
 
 Package.prototype.list = function(options, ttl) {
-  var url = fmt("%s/package?%s", this.host, qs.stringify(options));
+  var url = fmt("%s/package?%s", USER_API, qs.stringify(options));
 
   var opts = {
     url: url,
@@ -117,7 +112,7 @@ Package.prototype.list = function(options, ttl) {
 };
 
 Package.prototype.count = function() {
-  var url = fmt("%s/package/-/count", this.host);
+  var url = fmt("%s/package/-/count", USER_API);
   var opts = {
     url: url,
     json: true
@@ -128,16 +123,16 @@ Package.prototype.count = function() {
 
 Package.prototype.star = function(pkg) {
 
-  var _this = this;
-  var url = fmt("%s/package/%s/star", _this.host, encodeURIComponent(pkg));
+  var self = this;
+  var url = fmt("%s/package/%s/star", USER_API, encodeURIComponent(pkg));
   var opts = {
     url: url,
     json: true,
   };
 
-  if (_this.bearer) {
+  if (self.bearer) {
     opts.headers = {
-      bearer: _this.bearer
+      bearer: self.bearer
     };
   }
 
@@ -155,7 +150,7 @@ Package.prototype.star = function(pkg) {
             return reject(err);
           }
 
-          return resolve(pkg + ' starred by ' + _this.bearer);
+          return resolve(pkg + ' starred by ' + self.bearer);
         });
       });
     });
@@ -163,16 +158,16 @@ Package.prototype.star = function(pkg) {
 
 Package.prototype.unstar = function(pkg) {
 
-  var _this = this;
-  var url = fmt("%s/package/%s/star", _this.host, encodeURIComponent(pkg));
+  var self = this;
+  var url = fmt("%s/package/%s/star", USER_API, encodeURIComponent(pkg));
   var opts = {
     url: url,
     json: true,
   };
 
-  if (_this.bearer) {
+  if (self.bearer) {
     opts.headers = {
-      bearer: _this.bearer
+      bearer: self.bearer
     };
   }
 
@@ -191,7 +186,7 @@ Package.prototype.unstar = function(pkg) {
             return reject(err);
           }
 
-          return resolve(pkg + ' unstarred by ' + _this.bearer);
+          return resolve(pkg + ' unstarred by ' + self.bearer);
         });
       });
     });

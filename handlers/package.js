@@ -17,7 +17,7 @@ exports.show = function(request, reply) {
     request: request,
     cache: require("../lib/cache")
   });
-  var Package = PackageModel.new(request);
+  var Package = PackageModel(request.loggedInUser);
 
   request.logger.info('get package: ' + name);
 
@@ -107,7 +107,8 @@ exports.show = function(request, reply) {
 };
 
 exports.update = function(request, reply) {
-  PackageModel.new(request).update(request.packageName, request.payload.package)
+  PackageModel(request.loggedInUser)
+    .update(request.packageName, request.payload.package)
     .then(function(pkg) {
       return reply({
         package: pkg

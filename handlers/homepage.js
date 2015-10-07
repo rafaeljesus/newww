@@ -1,13 +1,14 @@
 var P = require('bluebird');
 
 var feature = require('../lib/feature-flags.js');
+var PackageModel = require('../models/package');
 
 var MINUTE = 60; // seconds
 var MODIFIED_TTL = 1 * MINUTE;
 var DEPENDENTS_TTL = 30 * MINUTE;
 
 module.exports = function(request, reply) {
-  var Package = require("../models/package").new(request);
+  var Package = new PackageModel(request.loggedInUser);
   var Download = require("../models/download").new({
     request: request,
     cache: require("../lib/cache")

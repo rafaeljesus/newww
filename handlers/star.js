@@ -1,7 +1,6 @@
-var PackageModel = require('../models/package');
+var Package = require('../models/package');
 
 module.exports = function(request, reply) {
-  var Package = PackageModel.new(request);
   var loggedInUser = request.loggedInUser;
 
   if (request.method === 'get') {
@@ -20,7 +19,8 @@ module.exports = function(request, reply) {
     starIt = !!body.isStarred.match(/true/i);
 
   if (starIt) {
-    Package.star(pkg)
+    Package(request.loggedInUser)
+      .star(pkg)
       .then(function() {
         request.timing.page = 'star';
         request.metrics.metric({
@@ -38,7 +38,8 @@ module.exports = function(request, reply) {
       });
   } else {
 
-    Package.unstar(pkg)
+    Package(request.loggedInUser)
+      .unstar(pkg)
       .then(function() {
         request.timing.page = 'unstar';
         request.metrics.metric({

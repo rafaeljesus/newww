@@ -1,6 +1,5 @@
 var _ = require('lodash');
 var assert = require('assert');
-var async = require('async');
 var Request = require('../lib/external-request');
 var USER_HOST = process.env.USER_API || "https://user-api-example.com";
 var avatar = require('../lib/avatar');

@@ -4,53 +4,40 @@ var Code = require('code'),
   describe = lab.experiment,
   beforeEach = lab.beforeEach,
   before = lab.before,
-  after = lab.after,
   it = lab.test,
   expect = Code.expect,
   nock = require("nock"),
   fixtures = require('../fixtures');
 
-var CustomerModel = require("../../agents/customer");
-
-var LICENSE_API_OLD;
-before(function(done) {
-  LICENSE_API_OLD = process.env.LICENSE_API;
-  process.env.LICENSE_API = "https://customer.com";
-  done();
-});
-
-after(function(done) {
-  process.env.LICENSE_API = LICENSE_API_OLD;
-  done();
-});
+var CustomerAgent = require("../../agents/customer");
 
 describe("Customer", function() {
 
   describe("initialization", function() {
     it("throws if a name is not passed", function(done) {
       expect(function() {
-        return new CustomerModel()
+        return new CustomerAgent()
       }).to.throw("Must pass a name to Customer model");
       done();
     });
 
     it("throws if a name is not passed but options are", function(done) {
       expect(function() {
-        return new CustomerModel({
+        return new CustomerAgent({
           host: "https://boom.com"
         })
       }).to.throw("Must pass a name to Customer model");
       done();
     });
 
-    it("defaults to process.env.LICENSE_API as host", function(done) {
-      expect(new CustomerModel('bob').host).to.equal('https://customer.com');
+    it("defaults to 'https://license-api-example.com' as host", function(done) {
+      expect(new CustomerAgent('bob').host).to.equal('https://license-api-example.com');
       done();
     });
 
     it("accepts a custom host", function(done) {
       var url = "https://billing-envy.com";
-      var Customer = new CustomerModel('boom', {
+      var Customer = new CustomerAgent('boom', {
         host: url,
       });
 
@@ -59,8 +46,8 @@ describe("Customer", function() {
     });
 
     it("doesn't break if we forget the `new` keyword", function(done) {
-      var Customer = CustomerModel('bob');
-      expect(Customer.host).to.equal('https://customer.com');
+      var Customer = CustomerAgent('bob');
+      expect(Customer.host).to.equal('https://license-api-example.com');
       done();
     });
 
@@ -69,7 +56,7 @@ describe("Customer", function() {
   describe("getStripeData()", function() {
 
     it("makes an external request for /customer/{user}", function(done) {
-      var Customer = new CustomerModel('haxor');
+      var Customer = new CustomerAgent('haxor');
 
       var customerMock = nock(Customer.host)
         .get('/customer/haxor/stripe')
@@ -83,7 +70,7 @@ describe("Customer", function() {
     });
 
     it("returns the response body in the callback", function(done) {
-      var Customer = new CustomerModel('zozo');
+      var Customer = new CustomerAgent('zozo');
 
       var customerMock = nock(Customer.host)
         .get('/customer/zozo/stripe')
@@ -98,7 +85,7 @@ describe("Customer", function() {
     });
 
     it("returns an error in the callback if customer doesn't exist", function(done) {
-      var Customer = new CustomerModel('foo');
+      var Customer = new CustomerAgent('foo');
 
       var customerMock = nock(Customer.host)
         .get('/customer/foo/stripe')
@@ -114,7 +101,7 @@ describe("Customer", function() {
     });
 
     it("returns an error if a bad request is sent", function(done) {
-      var Customer = new CustomerModel('ഊ');
+      var Customer = new CustomerAgent('ഊ');
 
       var customerMock = nock(Customer.host)
         .get('/customer/ഊ/stripe')
@@ -133,7 +120,7 @@ describe("Customer", function() {
 
   describe("getSubscriptions()", function() {
     it('returns an empty array if no subscriptions are found', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
 
       var customerMock = nock(Customer.host)
         .get('/customer/bob/stripe/subscription')
@@ -152,7 +139,7 @@ describe("Customer", function() {
       var subscriptions;
 
       before(function(done) {
-        var Customer = new CustomerModel('bob');
+        var Customer = new CustomerAgent('bob');
 
         var customerMock = nock(Customer.host)
           .get('/customer/bob/stripe/subscription')
@@ -190,7 +177,7 @@ describe("Customer", function() {
   describe("getById(id)", function() {
 
     it("makes an external request for /customer/{user}", function(done) {
-      var Customer = new CustomerModel('bill');
+      var Customer = new CustomerAgent('bill');
 
       var customerMock = nock(Customer.host)
         .get('/customer/316')
@@ -204,7 +191,7 @@ describe("Customer", function() {
     });
 
     it("returns an error in the callback if customer doesn't exist", function(done) {
-      var Customer = new CustomerModel('bill');
+      var Customer = new CustomerAgent('bill');
 
       var customerMock = nock(Customer.host)
         .get('/customer/999')
@@ -220,7 +207,7 @@ describe("Customer", function() {
     });
 
     it("returns the response body in the callback", function(done) {
-      var Customer = new CustomerModel('bill');
+      var Customer = new CustomerAgent('bill');
 
       var customerMock = nock(Customer.host)
         .get('/customer/316')
@@ -244,7 +231,7 @@ describe("Customer", function() {
       var Customer;
 
       beforeEach(function(done) {
-        Customer = new CustomerModel('bob');
+        Customer = new CustomerAgent('bob');
 
         billingInfo = {
           name: "bob",
@@ -331,7 +318,7 @@ describe("Customer", function() {
 
   describe("del()", function() {
     it("cancels a user's subscription", function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var createCustomerMock = nock(Customer.host)
         .delete('/customer/bob/stripe')
         .reply(200, 'customer deleted');
@@ -347,7 +334,7 @@ describe("Customer", function() {
 
   describe("createSubscription()", function() {
     it("signs a user up for private modules", function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var planInfo = {
         plan: 'npm-paid-individual-user-7'
       }
@@ -378,7 +365,7 @@ describe("Customer", function() {
     });
 
     it("signs a user up for an org", function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var planInfo = {
         plan: 'npm-paid-org-7'
       }
@@ -410,7 +397,7 @@ describe("Customer", function() {
 
   describe("getLicenseIdForOrg", function() {
     it('returns an error if there is no org with that name', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .get('/customer/bob/stripe/subscription')
         .reply(404);
@@ -425,7 +412,7 @@ describe("Customer", function() {
     });
 
     it('returns an error if the org does not have a license id', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .get('/customer/bob/stripe/subscription')
         .reply(200, [
@@ -453,7 +440,7 @@ describe("Customer", function() {
     });
 
     it('gets the license id for an org', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .get('/customer/bob/stripe/subscription')
         .reply(200, fixtures.users.bobsubscriptions);
@@ -470,7 +457,7 @@ describe("Customer", function() {
   describe("getAllSponsorships", function() {
     //TODO: handle error cases
     it('has error when string is passed for licenseId', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .get('/sponsorship/asdbadbb')
         .reply(500, "invalid input syntax for integer: \"asdbadbb\"");
@@ -485,7 +472,7 @@ describe("Customer", function() {
     });
 
     it('gets all sponsorships for an organization', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .get('/sponsorship/123')
         .reply(200, [
@@ -514,7 +501,7 @@ describe("Customer", function() {
 
   describe("extendSponsorship", function() {
     it("throws an error if licenseId doesn't exist", function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .put('/sponsorship/11111', {
           npm_user: "boomer"
@@ -532,7 +519,7 @@ describe("Customer", function() {
     });
 
     it("creates a sponsorship for a user", function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .put('/sponsorship/123', {
           npm_user: "boomer"
@@ -565,7 +552,7 @@ describe("Customer", function() {
     it('returns an error if the verification key is invalid', function(done) {
       var verification_key = '4aboom';
 
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .post('/sponsorship/' + verification_key)
         .reply(404);
@@ -582,7 +569,7 @@ describe("Customer", function() {
     it('does not return an error if the user is already sponsored', function(done) {
       var verification_key = 'e640f651-ef53-4560-86a6-34cae5a38e20';
 
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .post('/sponsorship/' + verification_key)
         .reply(409, "duplicate key value violates unique constraint \"sponsorships_npm_user\"");
@@ -597,7 +584,7 @@ describe("Customer", function() {
     it('accepts a sponsorship with a valid verification key', function(done) {
       var verification_key = 'e640f651-ef53-4560-86a6-34cae5a38e15';
 
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .post('/sponsorship/' + verification_key)
         .reply(200, {
@@ -623,7 +610,7 @@ describe("Customer", function() {
 
   describe('removeSponsorship', function() {
     it('returns an error if the user is not found', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .delete('/sponsorship/20/notfound')
         .reply(404);
@@ -638,7 +625,7 @@ describe("Customer", function() {
     });
 
     it('removes the sponsorship for a valid user', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .delete('/sponsorship/20/boomer')
         .reply(200, {
@@ -662,7 +649,7 @@ describe("Customer", function() {
     });
 
     it('is an alias for declineSponsorship', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .delete('/sponsorship/20/boomer')
         .reply(200, {
@@ -686,7 +673,7 @@ describe("Customer", function() {
     });
 
     it('is an alias for revokeSponsorship', function(done) {
-      var Customer = new CustomerModel('bob');
+      var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .delete('/sponsorship/20/boomer')
         .reply(200, {
@@ -713,7 +700,7 @@ describe("Customer", function() {
   describe("cancelSubscription(subscriptionId)", function() {
 
     it("makes an external request for /customer/{user}/stripe/subscription/{subscriptionId}", function(done) {
-      var Customer = new CustomerModel('bill');
+      var Customer = new CustomerAgent('bill');
 
       var customerMock = nock(Customer.host)
         .delete('/customer/bill/stripe/subscription/sub_123456')
@@ -739,7 +726,7 @@ describe("Customer", function() {
     });
 
     it("returns an error in the callback if sub doesn't exist", function(done) {
-      var Customer = new CustomerModel('bill');
+      var Customer = new CustomerAgent('bill');
 
       var customerMock = nock(Customer.host)
         .delete('/customer/bill/stripe/subscription/sub_2')
@@ -755,7 +742,7 @@ describe("Customer", function() {
     });
 
     it("returns the response body in the callback", function(done) {
-      var Customer = new CustomerModel('bill');
+      var Customer = new CustomerAgent('bill');
 
       var customerMock = nock(Customer.host)
         .delete('/customer/bill/stripe/subscription/sub_123456')

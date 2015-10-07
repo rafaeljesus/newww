@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var assert = require('assert');
+var LICENSE_API = process.env.LICENSE_API || "https://license-api-example.com";
 var moment = require('moment');
 var Request = require('../lib/external-request');
 var P = require('bluebird');
@@ -15,7 +16,7 @@ var Customer = module.exports = function(name, opts) {
   }
 
   _.extend(this, {
-    host: process.env.LICENSE_API || "https://license-api-example.com",
+    host: LICENSE_API,
     name: name,
   }, opts);
 };

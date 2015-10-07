@@ -467,7 +467,7 @@ User.prototype.toOrg = function(name, newUsername, callback) {
       }
 
       if (resp.statusCode > 399) {
-        err = new Error('error renaming user ' + name);
+        err = new Error('error renaming user ' + name + ": " + body);
         err.statusCode = resp.statusCode;
         return reject(err);
       }

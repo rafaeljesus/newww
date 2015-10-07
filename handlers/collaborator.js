@@ -1,4 +1,4 @@
-var Collaborator = require("../models/collaborator");
+var Collaborator = require("../agents/collaborator");
 var decorate = require("../presenters/collaborator");
 
 var collaborator = module.exports = {};

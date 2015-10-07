@@ -1,6 +1,6 @@
 var omit = require("lodash").omit;
 var Collaborator = require("../agents/collaborator");
-var Package = require("../models/package");
+var Package = require("../agents/package");
 
 module.exports = function(request, reply) {
 

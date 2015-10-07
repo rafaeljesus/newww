@@ -1,4 +1,4 @@
-var Package = require('../models/package');
+var Package = require('../agents/package');
 var omit = require('lodash').omit;
 var chunk = require('chunk');
 var URL = require('url');

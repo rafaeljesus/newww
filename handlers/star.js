@@ -1,4 +1,4 @@
-var Package = require('../models/package');
+var Package = require('../agents/package');
 
 module.exports = function(request, reply) {
   var loggedInUser = request.loggedInUser;

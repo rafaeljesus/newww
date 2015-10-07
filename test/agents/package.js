@@ -8,7 +8,7 @@ var Code = require('code'),
   expect = Code.expect,
   nock = require("nock"),
   fixtures = require("../fixtures"),
-  Package = require("../../models/package");
+  Package = require("../../agents/package");
 
 describe("Package", function() {
 

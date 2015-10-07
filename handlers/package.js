@@ -2,7 +2,7 @@ var _ = require('lodash');
 var P = require('bluebird');
 var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
-var PackageModel = require("../models/package");
+var PackageAgent = require("../agents/package");
 var feature = require('../lib/feature-flags');
 
 var DEPENDENCY_TTL = 5 * 60; // 5 minutes
@@ -17,7 +17,7 @@ exports.show = function(request, reply) {
     request: request,
     cache: require("../lib/cache")
   });
-  var Package = PackageModel(request.loggedInUser);
+  var Package = PackageAgent(request.loggedInUser);
 
   request.logger.info('get package: ' + name);
 
@@ -107,7 +107,7 @@ exports.show = function(request, reply) {
 };
 
 exports.update = function(request, reply) {
-  PackageModel(request.loggedInUser)
+  PackageAgent(request.loggedInUser)
     .update(request.packageName, request.payload.package)
     .then(function(pkg) {
       return reply({

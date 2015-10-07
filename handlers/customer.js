@@ -1,6 +1,7 @@
 var customer = module.exports = {};
 var Joi = require('joi');
 var Org = require('../agents/org');
+var User = require('../models/user');
 var P = require('bluebird');
 var utils = require('../lib/utils');
 var validate = require('validate-npm-package-name');
@@ -142,6 +143,7 @@ var subscriptionSchema = {
     is: 'orgs',
     then: Joi.required()
   }),
+  "new-user": Joi.string().optional(),
   "paid-org-type": Joi.string().optional(),
   "card-number": Joi.string().optional(),
   "card-cvc": Joi.string().optional(),
@@ -150,6 +152,8 @@ var subscriptionSchema = {
 };
 
 customer.subscribe = function(request, reply) {
+  var loggedInUser = request.loggedInUser.name;
+
   Joi.validate(request.payload, subscriptionSchema, function(err, planData) {
     if (err) {
       var notices;
@@ -210,6 +214,7 @@ customer.subscribe = function(request, reply) {
 
     function subscribeToOrg() {
       planInfo.npm_org = planData.orgScope;
+      var newUser = planData['new-user'];
 
       // check if the org name works as a package name
       var valid = validate('@' + planInfo.npm_org + '/foo');
@@ -226,7 +231,8 @@ customer.subscribe = function(request, reply) {
         });
       }
 
-      Org(request.loggedInUser.name)
+
+      Org(loggedInUser)
         .get(planInfo.npm_org).then(function() {
         var err = new Error("Org already exists");
         err.isUserError = true;
@@ -236,9 +242,22 @@ customer.subscribe = function(request, reply) {
           throw err;
         }
 
-        // org doesn't yet exist
-        return Org(request.loggedInUser.name)
-          .create(planInfo.npm_org)
+        // org doesn't yet exist, transfer user then create org
+        var start = newUser ? User.new(request).toOrg(loggedInUser, newUser) : P.resolve(null);
+
+        return start.then(function(newUserData) {
+          var setSession = P.promisify(request.server.methods.user.setSession(request));
+          var user = newUserData ? newUser : loggedInUser;
+
+          if (newUserData) {
+            return setSession({
+              name: user
+            })
+          } else {
+            return Org(user)
+              .create(planInfo.npm_org);
+          }
+        })
           .then(function() {
             return request.customer.createSubscription(planInfo)
               .then(function(subscription) {

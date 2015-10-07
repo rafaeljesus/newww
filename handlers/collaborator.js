@@ -1,14 +1,14 @@
-var Collaborator = require("../models/collaborator")
-var decorate = require("../presenters/collaborator")
+var Collaborator = require("../models/collaborator");
+var decorate = require("../presenters/collaborator");
 
 var collaborator = module.exports = {};
 
 collaborator.list = function(request, reply) {
-  Collaborator.new(request)
+  Collaborator(request.loggedInUser && request.loggedInUser.name)
     .list(request.packageName, function(err, collaborators) {
       if (err) {
         request.logger.error(err);
-        return reply(err)
+        return reply(err);
       }
       return reply({
         collaborators: collaborators
@@ -17,7 +17,7 @@ collaborator.list = function(request, reply) {
 };
 
 collaborator.add = function(request, reply) {
-  Collaborator.new(request)
+  Collaborator(request.loggedInUser && request.loggedInUser.name)
     .add(request.packageName, request.payload.collaborator, function(err, collab) {
 
       if (err) {
@@ -26,9 +26,9 @@ collaborator.add = function(request, reply) {
           return reply({
             statusCode: 404,
             message: "user not found: " + request.payload.collaborator.name
-          }).code(404)
+          }).code(404);
         } else {
-          return reply(err)
+          return reply(err);
         }
       }
 
@@ -39,11 +39,11 @@ collaborator.add = function(request, reply) {
 };
 
 collaborator.update = function(request, reply) {
-  Collaborator.new(request)
+  Collaborator(request.loggedInUser && request.loggedInUser.name)
     .update(request.packageName, request.payload.collaborator, function(err, collaborator) {
       if (err) {
         request.logger.error(err);
-        return reply(err)
+        return reply(err);
       }
       return reply({
         collaborator: decorate(collaborator, request.packageName)
@@ -52,12 +52,12 @@ collaborator.update = function(request, reply) {
 };
 
 collaborator.del = function(request, reply) {
-  Collaborator.new(request)
+  Collaborator(request.loggedInUser && request.loggedInUser.name)
     .del(request.packageName, request.params.username, function(err, result) {
       if (err) {
         request.logger.error(err);
-        return reply(err)
+        return reply(err);
       }
-      return reply(result)
+      return reply(result);
     });
 };

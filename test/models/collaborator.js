@@ -1,47 +1,27 @@
+var USER_HOST = "https://user-api-example.com";
+
 var Code = require('code'),
   Lab = require('lab'),
   lab = exports.lab = Lab.script(),
   describe = lab.experiment,
-  beforeEach = lab.beforeEach,
-  afterEach = lab.afterEach,
   it = lab.test,
   expect = Code.expect,
   nock = require("nock"),
-  Collaborator,
+  Collaborator = require("../../models/collaborator"),
   fixtures = require("../fixtures.js");
 
 var ralph = fixtures.collaborators.ralph_the_reader;
 
-beforeEach(function(done) {
-  Collaborator = new (require("../../models/collaborator"))({
-    host: "https://collaborator.com"
-  });
-  done();
-});
-
-afterEach(function(done) {
-  Collaborator = null;
-  done();
-});
-
 describe("Collaborator", function() {
-
-  describe("initialization", function() {
-
-    it("accepts a custom host", function(done) {
-      expect(Collaborator.host).to.equal('https://collaborator.com');
-      done();
-    });
-  });
 
   describe("list", function() {
 
     it("returns a collaborators object with usernames as keys", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .get('/package/foo/collaborators')
         .reply(200, fixtures.collaborators);
 
-      Collaborator.list("foo", function(err, collaborators) {
+      Collaborator().list("foo", function(err, collaborators) {
         mock.done();
         expect(err).to.be.null();
         expect(collaborators.ralph_the_reader).to.be.an.object();
@@ -52,11 +32,11 @@ describe("Collaborator", function() {
     });
 
     it("decorates each collaborator with an avatar", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .get('/package/bajj/collaborators')
         .reply(200, fixtures.collaborators);
 
-      Collaborator.list("bajj", function(err, collaborators) {
+      Collaborator().list("bajj", function(err, collaborators) {
         mock.done();
         expect(err).to.be.null();
         expect(collaborators.ralph_the_reader.avatar.small).to.be.a.string();
@@ -67,11 +47,11 @@ describe("Collaborator", function() {
     });
 
     it("calls back with an error if package is not found", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .get('/package/ghost/collaborators')
         .reply(404);
 
-      Collaborator.list("ghost", function(err, collaborators) {
+      Collaborator().list("ghost", function(err, collaborators) {
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);
@@ -87,11 +67,11 @@ describe("Collaborator", function() {
   describe("add", function() {
 
     it("adds a collaborator to the package", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .put('/package/skribble/collaborators', ralph)
         .reply(200, ralph);
 
-      Collaborator.add("skribble", ralph, function(err, collaborator) {
+      Collaborator().add("skribble", ralph, function(err, collaborator) {
         mock.done();
         expect(err).to.be.null();
         expect(collaborator.name).to.equal(ralph.name);
@@ -101,11 +81,11 @@ describe("Collaborator", function() {
     });
 
     it("calls back with an error if something goes wrong", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .put('/package/squawk/collaborators', ralph)
         .reply(404);
 
-      Collaborator.add("squawk", ralph, function(err, collaborator) {
+      Collaborator().add("squawk", ralph, function(err, collaborator) {
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);
@@ -121,11 +101,11 @@ describe("Collaborator", function() {
   describe("update", function() {
 
     it("updates a collaborator's access level on a package", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .post('/package/plunk/collaborators/ralph_the_reader', ralph)
         .reply(200, ralph);
 
-      Collaborator.update("plunk", ralph, function(err, collaborator) {
+      Collaborator().update("plunk", ralph, function(err, collaborator) {
         mock.done();
         expect(err).to.be.null();
         expect(collaborator.name).to.equal(ralph.name);
@@ -135,11 +115,11 @@ describe("Collaborator", function() {
     });
 
     it("calls back with an error if something goes wrong", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .post('/package/moomoo/collaborators/ralph_the_reader', ralph)
         .reply(404);
 
-      Collaborator.update("moomoo", ralph, function(err, collaborator) {
+      Collaborator().update("moomoo", ralph, function(err, collaborator) {
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);
@@ -156,11 +136,11 @@ describe("Collaborator", function() {
   describe("del", function() {
 
     it("deletes a collaborator from a package", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .delete('/package/grizzle/collaborators/ralph_the_reader')
         .reply(200, ralph);
 
-      Collaborator.del("grizzle", "ralph_the_reader", function(err, result) {
+      Collaborator().del("grizzle", "ralph_the_reader", function(err, result) {
         mock.done();
         expect(err).to.be.null();
         expect(result.package).to.equal('grizzle');
@@ -171,11 +151,11 @@ describe("Collaborator", function() {
     });
 
     it("calls back with an error if something goes wrong", function(done) {
-      var mock = nock(Collaborator.host)
+      var mock = nock(USER_HOST)
         .delete('/package/snarfblatt/collaborators/ralph_the_reader')
         .reply(404);
 
-      Collaborator.del("snarfblatt", "ralph_the_reader", function(err, collaborator) {
+      Collaborator().del("snarfblatt", "ralph_the_reader", function(err, collaborator) {
         mock.done();
         expect(err).to.be.an.object();
         expect(err.statusCode).to.equal(404);

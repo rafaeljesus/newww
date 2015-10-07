@@ -14,7 +14,7 @@
 
     {{else}}
 
-      <form method="POST" id="payment-form" action="/org/create/step-2">
+      <form method="GET" id="payment-form" action="/org/create-validation">
         <section>
           <label for="fullname">Org name</label>
           <input required="required" type="text" id="fullname" name="fullname" placeholder="My Org" {{#if fullname}} value="{{fullname}}"{{/if}}/>
@@ -31,7 +31,6 @@
           {{/if}}
 
         </section>
-        {{> form_security}}
         <input type="submit" value="continue"{{#if inUseError}} disabled="disabled"{{/if}} />
         <a class="btn" href="/settings/billing">cancel</a>
       </form>
@@ -52,4 +51,3 @@
   </div><!--/.sidebar-->
 </div><!--/.main-->
 
-<script src="https://js.stripe.com/v2/"></script>

@@ -9,17 +9,17 @@
   <div class="content-column">
     <h1>Transfer your username</h1>
 
-      <form method="POST" id="payment-form" action="/org/create/step-2">
+      <form method="GET" id="payment-form" action="/org/create/billing">
         <section>
-          <label for="new-username">Your new username:</label>
-          <input required="required" type="text" id="new-username" name="new-username"/>
+          <label for="new-user">Your new username:</label>
+          <input required="required" type="text" id="new-user" name="new-user"/>
           <p class="description">must be lowercase and composed of URL-safe characters</p>
 
         {{> form_security}}
         <input type="hidden" name="fullname" value="{{fullname}}"/>
         <input type="hidden" name="orgScope" value="{{orgScope}}"/>
         <button type="submit">save &amp; continue</button>
-        <a class="btn" href="/settings/billing">go back</a>
+        <a class="btn" href="/org/create">go back</a>
         </section>
       </form>
   </div>

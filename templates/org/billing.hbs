@@ -15,6 +15,9 @@
       </p>
       <input type="hidden" name="fullname" value="{{fullname}}"/>
       <input type="hidden" name="orgScope" value="{{orgScope}}"/>
+      {{#if newUser}}
+      <input type="hidden" name="new-user" value="{{newUser}}"/>
+      {{/if}}
       {{#if user.customer}}
         <p>We will use the <a href="/settings/billing">billing information</a> we already have for you :-)</p>
       {{else}}
@@ -55,3 +58,4 @@
 {{else}}
   {{> email-verify-nag}}
 {{/if}}
+<script src="https://js.stripe.com/v2/"></script>

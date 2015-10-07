@@ -112,13 +112,19 @@ module.exports = [
         return reply.redirect('/org');
       }
 
+      var query = request.query || {};
+
       return reply.view('org/create', {
-        stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+        stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+        inUseError: query.inUseError,
+        inUseByMe: query.inUseByMe,
+        orgScope: query.orgScope,
+        fullname: query.fullname
       });
     }
   }, {
-    path: "/org/create/step-2",
-    method: "POST",
+    path: "/org/create-validation",
+    method: "GET",
     handler: require('../handlers/org').validateOrgCreation
   }, {
     path: "/org/transfer-user-name",
@@ -135,6 +141,25 @@ module.exports = [
         fullname: request.query.fullname,
         orgScope: request.query.orgScope
       });
+    }
+  }, {
+    path: "/org/create/billing",
+    method: "GET",
+    handler: function(request, reply) {
+      if (!request.features.org_billing) {
+        return reply.redirect('/org');
+      }
+
+      return reply.view('org/billing', {
+        fullname: request.query.fullname,
+        orgScope: request.query.orgScope,
+        newUser: request.query['new-user'],
+        stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+
+      });
+
+
+
     }
   }
 ];

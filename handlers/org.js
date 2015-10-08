@@ -238,7 +238,7 @@ exports.deleteOrg = function(request, reply) {
         return reply.view('errors/internal', err);
       }
 
-      return exports.getOrg(request, reply);
+      return reply.redirect('/settings/billing');
     });
   });
 

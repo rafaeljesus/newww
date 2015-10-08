@@ -2,6 +2,7 @@ var customer = module.exports = {};
 var Joi = require('joi');
 var Org = require('../agents/org');
 var User = require('../models/user');
+var Customer = require('../models/customer');
 var P = require('bluebird');
 var utils = require('../lib/utils');
 var validate = require('validate-npm-package-name');
@@ -247,26 +248,27 @@ customer.subscribe = function(request, reply) {
 
         return start.then(function(newUserData) {
           var setSession = P.promisify(request.server.methods.user.setSession(request));
-          var user = newUserData ? newUser : loggedInUser;
+          loggedInUser = newUserData ? newUser : loggedInUser;
 
           if (newUserData) {
+            request.logger.info("setting session to: " + loggedInUser);
             return setSession({
-              name: user
+              name: loggedInUser
             })
           } else {
-            return Org(user)
+            return Org(loggedInUser)
               .create(planInfo.npm_org);
           }
         })
           .then(function() {
-            return request.customer.createSubscription(planInfo)
+            return Customer(loggedInUser).createSubscription(planInfo)
               .then(function(subscription) {
                 if (typeof subscription === 'string') {
                   request.logger.info("created subscription: ", planInfo);
                 }
-                return request.customer.extendSponsorship(subscription.license_id, request.loggedInUser.name);
+                return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
               }).then(function(extendedSponsorship) {
-              return request.customer.acceptSponsorship(extendedSponsorship.verification_key);
+              return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
             }).then(function() {
               return reply.redirect('/org/' + planInfo.npm_org);
             });

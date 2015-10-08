@@ -239,7 +239,7 @@ describe('getting an org', function() {
 });
 
 describe('creating an org', function() {
-  it('returns an error if the org scope name is in use by another org', function(done) {
+  it('redirects back to org/create if the org scope name is in use by another org', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -254,32 +254,23 @@ describe('creating an org', function() {
         .reply(200, fixtures.packages.fake);
 
       var options = {
-        url: "/org/create/step-2",
-        method: "post",
-        credentials: fixtures.users.bob,
-        payload: {
-          crumb: crumb,
-          orgScope: 'bigco',
-          fullname: "Bob's big co"
-        },
-        headers: {
-          cookie: 'crumb=' + crumb
-        }
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
       };
 
       server.inject(options, function(resp) {
         userMock.done();
         orgMock.done();
-        expect(resp.request.response.source.template).to.equal('org/create');
-        expect(resp.request.response.source.context.notices.length).to.equal(1);
-        expect(resp.request.response.source.context.notices[0]).to.equal('The provided org\'s @scope name is already in use');
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
         done();
       });
     });
 
   });
 
-  it('returns an error if the org scope name is in use by somebody else\'s name', function(done) {
+  it('redirects back to org/create if the org scope name is in use by somebody else\'s name', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -296,55 +287,37 @@ describe('creating an org', function() {
         .reply(404, fixtures.packages.fake);
 
       var options = {
-        url: "/org/create/step-2",
-        method: "post",
-        credentials: fixtures.users.bob,
-        payload: {
-          crumb: crumb,
-          orgScope: 'bigco',
-          fullname: "Bob's big co"
-        },
-        headers: {
-          cookie: 'crumb=' + crumb
-        }
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
       };
 
       server.inject(options, function(resp) {
         userMock.done();
         orgMock.done();
-        expect(resp.request.response.source.template).to.equal('org/create');
-        expect(resp.request.response.source.context.notices.length).to.equal(1);
-        expect(resp.request.response.source.context.notices[0]).to.equal('The provided org\'s @scope name is already in use');
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
         done();
       });
     });
   });
 
-  it('returns an error if the org scope name is in use by the current user\'s name', function(done) {
+  it('redirects back to org/create if the org scope name is in use by the current user\'s name', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
 
       var options = {
-        url: "/org/create/step-2",
-        method: "post",
-        credentials: fixtures.users.bob,
-        payload: {
-          crumb: crumb,
-          orgScope: 'bob',
-          fullname: "Bob's big co"
-        },
-        headers: {
-          cookie: 'crumb=' + crumb
-        }
+        url: "/org/create-validation?orgScope=bob&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
       };
 
       server.inject(options, function(resp) {
         userMock.done();
-        expect(resp.request.response.source.template).to.equal('org/create');
-        expect(resp.request.response.source.context.notices.length).to.equal(1);
-        expect(resp.request.response.source.context.notices[0]).to.equal('The provided org\'s @scope name is already in use by your username');
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
         done();
       });
     });
@@ -367,24 +340,16 @@ describe('creating an org', function() {
         .reply(404, fixtures.packages.fake);
 
       var options = {
-        url: "/org/create/step-2",
-        method: "post",
-        credentials: fixtures.users.bob,
-        payload: {
-          crumb: crumb,
-          orgScope: 'bigco',
-          fullname: "Bob's big co"
-        },
-        headers: {
-          cookie: 'crumb=' + crumb
-        }
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
       };
 
       server.inject(options, function(resp) {
         userMock.done();
         orgMock.done();
-        expect(resp.request.response.source.template).to.equal('org/billing');
-        expect(resp.request.response.source.context.notices).to.not.exist();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create\/billing/);
         done();
       });
     });
@@ -1113,7 +1078,7 @@ describe('updating an org', function() {
 });
 
 describe('deleting an org', function() {
-  it('unsubscribes from an org when it is asked to be deleted', function(done) {
+  it('redirects to billing page when an org is to be deleted', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -1153,7 +1118,7 @@ describe('deleting an org', function() {
       server.inject(options, function(resp) {
         userMock.done();
         licenseMock.done();
-        expect(resp.statusCode).to.equal(200);
+        expect(resp.statusCode).to.equal(302);
         done();
       });
     });

@@ -1153,7 +1153,7 @@ describe("subscribing to an org", function() {
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
         expect(context.notices).to.be.an.array();
-        expect(context.notices[0].message).to.equal('that scope name is already in use');
+        expect(context.notices[0].message).to.equal("The provided Org's @scope name is already in use");
         done();
       });
     });

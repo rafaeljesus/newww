@@ -80,58 +80,57 @@
   {{/unless}}
 
   <header>
-    <div class="container">
-      <div id='npm-logo'>
-        <a href="/"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
+    <div id='npm-logo'>
+      <a href="/"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
 
-        {{#if env.NPMO_COBRAND}}
-          <span class="cobrand">{{env.NPMO_COBRAND}}</span>
+      {{#if env.NPMO_COBRAND}}
+        <span class="cobrand">{{env.NPMO_COBRAND}}</span>
+      {{/if}}
+    </div>
+
+    {{#if features.npmo}}
+
+      <nav>
+        <a href="https://docs.npmjs.com">docs</a>
+        <a href="/support">support</a>
+      </nav>
+
+    {{else}}
+
+      <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
+        {{#if user}}
+          <a data-user-name="{{user.name}}"
+              data-is-paid="{{#if user.isPaid}}true{{/if}}"
+              href="/~{{user.name}}">
+              <img alt="" src="{{user.avatar.small}}" />
+          </a>
+          <ul>
+              <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
+              <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
+          </ul>
+        {{else}}
+          <a href="/login"><img alt="" src="/static/images/wombat-avatar-small.png" /></a>
+          <ul class="single">
+              <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
+          </ul>
+
         {{/if}}
       </div>
 
-      {{#unless features.npmo}}
-        <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
-          {{#if user}}
-            <a data-user-name="{{user.name}}"
-                data-is-paid="{{#if user.isPaid}}true{{/if}}"
-                href="/~{{user.name}}">
-                <img alt="" src="{{user.avatar.small}}" />
-            </a>
-            <ul>
-                <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
-                <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
-            </ul>
-          {{else}}
-            <a href="/login"><img alt="" src="/static/images/wombat-avatar-small.png" /></a>
-            <ul class="single">
-                <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
-            </ul>
+    {{/if}}
 
-          {{/if}}
-        </div>
-      {{/unless}}
+    <form id="npm-search" action="/search" method="get" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
+      <meta itemprop="target" content="{{env.CANONICAL_HOST}}/search?q={q}">
+      <div id="site-search-container">
+        {{#if features.npmo}}
+          <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find on-site packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
+        {{else}}
+          <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
+        {{/if}}
+      </div>
+      <input type="submit" id="site-search-submit" />
+    </form>
 
-      <form id="npm-search" action="/search" method="get" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
-        <meta itemprop="target" content="{{env.CANONICAL_HOST}}/search?q={q}">
-        <div id="site-search-container">
-          {{#if features.npmo}}
-            <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find on-site packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
-          {{else}}
-            <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
-          {{/if}}
-        </div>
-        <input type="submit" id="site-search-submit" />
-      </form>
-
-        <nav>
-          <ul class="links">
-            <li><a href="https://docs.npmjs.com">documentation</a></li>
-            <li><a href="/support">Support / Contact Us</a></li>
-          </ul>
-        </nav>
-
-
-    </div>
   </header>
 
   <div class="container content">

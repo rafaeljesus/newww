@@ -1,7 +1,34 @@
 body>header
-  padding 28px 0 20px
+  padding 14px 20px 10px
   border-bottom 1px solid lightgrey
   background greigh6
+  display -webkit-flex
+  display flex
+  -webkit-align-items center
+  align-items center
+  text-align center
+
+  @media only screen and (max-width: mobileMaxWidth)
+    display block
+    text-align left
+
+  >*
+    flex-grow 0
+
+  #npm-search
+    flex-grow 1
+
+  >nav
+    order 3
+    display block
+    height 47px
+    font-weight bold
+    padding 10px 14px 14px
+    @media only screen and (max-width: mobileMaxWidth)
+      display inline-block
+
+    a+a
+      margin-left 1em
 
 body>nav
   height 38px
@@ -170,9 +197,7 @@ body>nav
       color greigh2
 
 #npm-logo
-  float left
-  margin-right 7%
-
+  padding 10px 14px 14px
   img
     vertical-align middle
     width 125px
@@ -189,26 +214,31 @@ body>nav
     padding 0 0.5em
 
   @media only screen and (max-width: mobileMaxWidth)
+
+    display inline-block
     margin 0
     img
       width 80px
 
 #npm-search
-  float left
   position relative
-  width 53%
   height 47px
   padding 0
-  margin 0
+  margin 10px 1em 14px
   border 1px solid greigh5
   border-radius 2px
   background background-color
+  text-align left
   &:hover
     border 1px solid greigh4
 
-  @media only screen and (max-width: mobileMaxWidth)
+  @media only screen and (max-width: smallScreenMaxWidth)
     margin-top 20px
     width 100%
+    float none
+    clear both
+    box-sizing border-box
+
 
 #site-search-container
   margin: 7px 80px 0 7px
@@ -275,13 +305,7 @@ body>nav
   border-color greigh5
 
 #user-info
-  position absolute
-  top 0
-  right 20px
-  float none
-  clear both
-  width 50%
-
+  order 3
   img
     float right
     display block
@@ -304,9 +328,9 @@ body>nav
         vertical-align top
 
   @media only screen and (max-width: mobileMaxWidth)
-    width auto
-    margin-top 0
-    margin-right 0
+
+    display inline-block
+
     ul
       li
         display block

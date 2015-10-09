@@ -210,6 +210,7 @@ var publicRoutes = [
   }, {
     path: "/browse/author/{user}",
     method: "GET",
+    feature: "!npmo",
     handler: function(request, reply) {
       if (invalidUserName(request.params.user)) {
         return reply.view("errors/not-found").code(404);
@@ -219,6 +220,7 @@ var publicRoutes = [
   }, {
     path: "/browse/userstar/{user}",
     method: "GET",
+    feature: "!npmo",
     handler: function(request, reply) {
       if (invalidUserName(request.params.user)) {
         return reply.view("errors/not-found").code(404);
@@ -276,22 +278,27 @@ var publicRoutes = [
       "/~/{name}"
     ],
     method: "GET",
+    feature: "!npmo",
     handler: require('../facets/user/show-profile')
   }, {
     path: "/profile/{name}/packages",
     method: "GET",
+    feature: "!npmo",
     handler: require('../facets/user/show-packages')
   }, {
     path: "/signup",
     method: "GET",
+    feature: "!npmo",
     handler: require('../handlers/user').showSignup
   }, {
     path: "/signup",
     method: "POST",
+    feature: "!npmo",
     handler: require('../handlers/user').handleSignup
   }, {
     path: "/confirm-email/{token?}",
     method: "GET",
+    feature: "!npmo",
     handler: require('../facets/user/show-confirm-email')
   }, {
     path: "/login",

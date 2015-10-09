@@ -31,7 +31,7 @@
           {{/if}}
 
         </section>
-        <input type="submit" value="continue"{{#if inUseError}} disabled="disabled"{{/if}} />
+        <input type="submit" value="continue"{{#if inUseError}} data-in-use-error="true"{{/if}} />
         <a class="btn" href="/settings/billing">cancel</a>
       </form>
     {{/unless}}

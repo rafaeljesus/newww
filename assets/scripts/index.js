@@ -23,6 +23,7 @@ require("./twitter-tracking")();
 require("./fetch-packages")();
 require("./tabs")();
 require("./switch-submission")();
+require("./org-in-use-error")();
 
 window.github = require("./github")();
 window.star = require("./star")();

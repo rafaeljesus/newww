@@ -77,6 +77,7 @@ exports.register = function(server, options, next) {
       stamp: request.server.stamp,
       features: request.features,
       devEnv: (process.env.NODE_ENV === 'dev'),
+      env: process.env,
     };
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {

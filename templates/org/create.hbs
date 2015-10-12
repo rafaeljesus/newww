@@ -21,7 +21,7 @@
           <p class="description">A human-readable name for your org, can include spaces &amp; punctuation.</p>
 
           <label for="orgScope">Org <a href="https://docs.npmjs.com/misc/scope" target="_blank">@scope</a></label>
-          <input required="required" type="text" id="orgScope" name="orgScope" placeholder="my-org"{{#if orgScope}} value="{{orgScope}}"{{/if}} />
+          <input data-validate="org-scope" autocomplete="off" required="required" type="text" id="orgScope" name="orgScope" placeholder="my-org"{{#if orgScope}} value="{{orgScope}}"{{/if}} />
           <p class="description">Your scope becomes part of your package names and <strong class="fake-strong">cannot</strong> be changed.</p>
 
           {{#if inUseByMe}}

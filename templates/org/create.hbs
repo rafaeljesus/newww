@@ -14,7 +14,7 @@
 
     {{else}}
 
-      <form method="GET" id="payment-form" action="/org/create-validation">
+      <form{{#if inUseError}} class="error-state"{{/if}} method="GET" id="payment-form" action="/org/create-validation">
         <section>
           <label for="fullname">Org name</label>
           <input required="required" type="text" id="fullname" name="fullname" placeholder="My Org" {{#if fullname}} value="{{fullname}}"{{/if}}/>
@@ -32,7 +32,7 @@
 
         </section>
         <button class="button org-create-submit-btn" type="submit" {{#if inUseError}} data-in-use-error="true"{{/if}}>continue &raquo;</button>
-        <a class="btn" href="/settings/billing">cancel</a>
+        <a href="/settings/billing">cancel</a>
       </form>
     {{/unless}}
   </div>

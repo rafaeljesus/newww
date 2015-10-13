@@ -15,7 +15,7 @@ describe('Scope', function() {
         .get('/scope/bigco')
         .reply(404);
 
-      Scope('bob').get('bigco', function(err, scope) {
+      Scope().get('bigco', function(err, scope) {
         scopeMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('scope not found');
@@ -39,7 +39,7 @@ describe('Scope', function() {
           }
       );
 
-      Scope('bob').get('bigco', function(err, scope) {
+      Scope().get('bigco', function(err, scope) {
         scopeMock.done();
         expect(err).to.not.exist();
         expect(scope).to.exist();

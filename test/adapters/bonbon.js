@@ -160,6 +160,37 @@ describe("bonbon", function() {
       });
     });
 
+    it('gives users with `feature_org_billing` in their resource object access to orgs', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get('/user/bob')
+        .reply(200, fixtures.users.bigcoadmin);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+
+      var options = {
+        url: '/~boborg',
+        credentials: fixtures.users.bigcoadmin
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        var context = resp.request.response.source.context;
+        expect(context.features).to.deep.equal({
+          stealth: false,
+          alpha: false,
+          beta: true,
+          common: true,
+          org_billing: true
+        });
+        done();
+      });
+    });
+
   });
 
   it('allows logged-in npm employees to request the view context with a `json` query param', function(done) {

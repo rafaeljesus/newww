@@ -45,6 +45,15 @@ exports.register = function(server, options, next) {
         }
         if (user) {
           user.sid = request.auth.credentials.sid;
+          Object.keys(user.resource || [])
+            .filter(function(key) {
+              return key.match(/^feature_/i)
+            })
+            .forEach(function(key) {
+              if (user.resource[key] === 't') {
+                request.features[key.replace(/^feature_/i, "").toLowerCase()] = true;
+              }
+            });
         }
         request.loggedInUser = user;
         request.customer = user && new CustomerModel(user.name);

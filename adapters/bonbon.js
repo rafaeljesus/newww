@@ -45,7 +45,7 @@ exports.register = function(server, options, next) {
         }
         if (user) {
           user.sid = request.auth.credentials.sid;
-          Object.keys(user.resource || [])
+          Object.keys(user.resource || {})
             .filter(function(key) {
               return key.match(/^feature_/i)
             })

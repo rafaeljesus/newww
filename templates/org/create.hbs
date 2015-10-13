@@ -31,7 +31,7 @@
           {{/if}}
 
         </section>
-        <input type="submit" value="continue"{{#if inUseError}} data-in-use-error="true"{{/if}} />
+        <button class="button org-create-submit-btn" type="submit" {{#if inUseError}} data-in-use-error="true"{{/if}}>continue &raquo;</button>
         <a class="btn" href="/settings/billing">cancel</a>
       </form>
     {{/unless}}

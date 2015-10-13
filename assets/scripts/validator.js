@@ -2,7 +2,7 @@ module.exports = function() {
 
   $.fn.setupValidation = function() {
     var userName = $("[data-user-name]").data("user-name");
-    var $continueBtn = $('input[value="continue"]');
+    var $continueBtn = $('.org-create-submit-btn');
 
     if ($continueBtn.data('inUseError')) {
       $continueBtn.attr('disabled', 'disabled');

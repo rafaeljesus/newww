@@ -48,7 +48,6 @@
       {{/if}}
 
       <h3>{{pluralize org.users.count "User" true}}</h3>
-      {{#if org.users.items}}
       <table class="org-table org-users">
         <thead>
           <tr>
@@ -83,6 +82,8 @@
               </form>
             </td>
           </tr>
+        {{else}}
+          <tr><td colspan=2><em>There are no users in this Org.</em></td></tr>
         {{/each}}
           <tr>
             <td colspan=2>
@@ -105,13 +106,11 @@
           </tr>
         </tbody>
       </table>
-      {{/if}}
 
     </div><!--/tab-1-->
 
     <div id="paid-users" class="tab tab-2">
       <h2>Paid Users</h2>
-      {{#if org.users.items}}
       <table class="org-table org-users org-edit-user-table">
         <thead>
           <tr>
@@ -183,6 +182,8 @@
                 </div>
               </td>
             </tr>
+          {{else}}
+            <tr><td colspan=2><em>There are no users in this Org.</em></td></tr>
           {{/each}}
           <tr>
             <td colspan=3>
@@ -205,7 +206,6 @@
           </tr>
         </tbody>
       </table>
-      {{/if}}
 
     </div><!--/.tab-2-->
   </div><!--/tabs-->

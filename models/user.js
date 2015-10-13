@@ -368,6 +368,11 @@ User.prototype.signup = function(user, callback) {
       if (err) {
         return reject(err);
       }
+      if (resp.statusCode === 409) {
+        err = new Error("The username you're trying to create already exists.");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = new Error('error creating user ' + user.name);
         err.statusCode = resp.statusCode;

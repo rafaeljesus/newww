@@ -2,7 +2,8 @@ var User = require('../models/user'),
   Joi = require('joi'),
   presenter = require('../presenters/user'),
   userValidate = require('npm-user-validate'),
-  merge = require('lodash').merge;
+  merge = require('lodash').merge,
+  Scope = require('../agents/scope');
 var feature = require('../lib/feature-flags');
 
 
@@ -60,7 +61,7 @@ exports.handleSignup = function signup(request, reply) {
       message: userValidate.username(validatedUser.name).message
     });
 
-    UserModel.get(validatedUser.name, function(err, userExists) {
+    Scope().get(validatedUser.name, function(err, userExists) {
       if (err && err.statusCode != 404) {
         request.logger.warn('Unable to get user to validate');
         return reply.view('errors/internal', opts).code(403);

@@ -14,17 +14,6 @@ exports.register = function(server, options, next) {
 
   server.ext('onPreHandler', function(request, reply) {
 
-    // Add feature flags to request
-    request.features = {};
-    Object.keys(process.env)
-      .filter(function(key) {
-        return key.match(/^feature_/i)
-      })
-      .forEach(function(key) {
-        key = key.replace(/^feature_/i, "").toLowerCase();
-        request.features[key] = featureFlag(key, request);
-      });
-
     // Generate `request.packageName` for global and scoped package requests
     if (request.params.package || request.params.scope) {
       request.packageName = request.params.package ||
@@ -45,15 +34,6 @@ exports.register = function(server, options, next) {
         }
         if (user) {
           user.sid = request.auth.credentials.sid;
-          Object.keys(user.resource || {})
-            .filter(function(key) {
-              return key.match(/^feature_/i)
-            })
-            .forEach(function(key) {
-              if (user.resource[key] === 't') {
-                request.features[key.replace(/^feature_/i, "").toLowerCase()] = true;
-              }
-            });
         }
         request.loggedInUser = user;
         request.customer = user && new CustomerModel(user.name);
@@ -64,6 +44,9 @@ exports.register = function(server, options, next) {
     }
 
     function completePreHandler() {
+
+      // Add feature flags to request
+      request.features = featureFlag.getFeatures(request);
 
       if (request.method !== "post") {
         return reply.continue();

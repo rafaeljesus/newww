@@ -6,9 +6,9 @@
   </ul>
 </div>
 {{#if user.email_verified}}
+  <h1>Billing information</h1>
   <form method="POST" id="payment-form" action="/settings/billing/subscribe" data-stripe-public-key="{{stripePublicKey}}">
     <section>
-      <h2>Billing information</h2>
       <p class="description">
         <span class="included">$14/month for 2 included users</span>
         <span class="additional">$7/month for additional users</span>
@@ -38,7 +38,7 @@
           <div class="inline-input-set">
             <div class="month small">
               <label for="card-exp-month"><span class="a11y-only">Month</span></label>
-              <input id="card-exp-month" required="required" type="text" minlength="2" maxlength="2" name="card-exp-month" placeholder="MM" />
+              <input id="card-exp-month" required="required" type="text" minlength="1" maxlength="2" name="card-exp-month" placeholder="MM" />
             </div><!--/.month-->
             <div class="year small">
               <label for="card-exp-year"><span class="a11y-only">Year</span></label>

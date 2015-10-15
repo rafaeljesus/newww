@@ -208,7 +208,15 @@ customer.subscribe = function(request, reply) {
           if (typeof subscriptions === 'string') {
             request.logger.info("created subscription: ", planInfo);
           }
-          return reply.redirect('/settings/billing?updated=1');
+
+          User.new(request).dropCache(request.loggedInUser.name, function(err) {
+            if (err) {
+              request.logger.error(err);
+              return reply.view('errors/internal', err);
+            }
+            return reply.redirect('/settings/billing?updated=1');
+          });
+
         });
       }
     }
@@ -266,12 +274,22 @@ customer.subscribe = function(request, reply) {
         })
           .then(function() {
             return Customer(loggedInUser).createSubscription(planInfo)
-              .then(function(subscription) {
+              .tap(function(subscription) {
                 if (typeof subscription === 'string') {
                   request.logger.info("created subscription: ", planInfo);
                 }
-                return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
-              }).then(function(extendedSponsorship) {
+                return new P(function(accept, reject) {
+                  User.new(request).dropCache(loggedInUser, function(err) {
+                    if (err) {
+                      request.logger.error(err);
+                      return reject(err);
+                    }
+                    return accept();
+                  });
+                });
+              }).then(function(subscription) {
+              return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
+            }).then(function(extendedSponsorship) {
               return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
             }).then(function() {
               return reply.redirect('/org/' + planInfo.npm_org);

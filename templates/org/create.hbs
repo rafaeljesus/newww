@@ -6,10 +6,9 @@
   </ul>
 </div>
 <div class="main right-well-fixed clear">
+  {{#if user.email_verified}}
+  <h1>Create an Org</h1>
   <div class="content-column">
-    <h1>Create an Org</h1>
-
-    {{#if user.email_verified}}
       <form{{#if inUseError}} class="error-state"{{/if}} method="GET" id="create-org-form" action="/org/create-validation">
         <section>
           <label for="fullname">Org name</label>
@@ -31,9 +30,6 @@
         <a href="/settings/billing">cancel</a>
       </form>
 
-    {{else}}
-      {{> email-verify-nag}}
-    {{/if}}
   </div>
   <div class="sidebar">
     <div class="inset bottom-img">
@@ -48,5 +44,8 @@
       <span class="wombat-construction"></span>
     </div><!--/.inset-->
   </div><!--/.sidebar-->
+    {{else}}
+      {{> email-verify-nag}}
+    {{/if}}
 </div><!--/.main-->
 

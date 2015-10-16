@@ -6,8 +6,9 @@
   </ul>
 </div>
 <div class="main right-well-fixed clear">
+  {{#if user.email_verified}}
+  <h1>Transfer your username</h1>
   <div class="content-column">
-    <h1>Transfer your username</h1>
 
       <form method="GET" id="transfer-username-form" action="/org/create/billing">
         <section>
@@ -35,4 +36,7 @@
       </ul>
     </div><!--/.inset-->
   </div><!--/.sidebar-->
+    {{else}}
+      {{> email-verify-nag}}
+    {{/if}}
 </div><!--/.main-->

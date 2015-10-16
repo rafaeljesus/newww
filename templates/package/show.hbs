@@ -171,6 +171,15 @@
     </ul>
   {{/if}}
 
+  {{#unless scoped}}
+    {{#unless private}}
+      <h3>Try it out</h3>
+      <ul class="box">
+        <li class="tonicdev"><a href="https://tonicdev.com/npm/{{name}}" target="_blank">Test {{name}} in your browser.</a></li>
+      </ul>
+    {{/unless}}
+  {{/unless}}
+
   <h3>Keywords</h3>
   <p class="list-of-links">
     {{#if keywords}}

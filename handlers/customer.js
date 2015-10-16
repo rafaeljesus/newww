@@ -6,6 +6,7 @@ var Customer = require('../models/customer');
 var P = require('bluebird');
 var utils = require('../lib/utils');
 var validate = require('validate-npm-package-name');
+var invalidUserName = require('npm-user-validate').username;
 
 customer.getBillingInfo = function(request, reply) {
 
@@ -224,6 +225,20 @@ customer.subscribe = function(request, reply) {
     function subscribeToOrg() {
       planInfo.npm_org = planData.orgScope;
       var newUser = planData['new-user'];
+
+      if (newUser && invalidUserName(newUser)) {
+        var err = new Error("User name must be valid");
+        request.logger.error(err);
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/transfer-user-name';
+          var param = token ? "?notice=" + token : "";
+          param = param + "&orgScope=" + request.query.orgScope;
+          url = url + param;
+          return reply.redirect(url);
+        });
+      }
 
       // check if the org name works as a package name
       var valid = validate('@' + planInfo.npm_org + '/foo');

@@ -203,7 +203,8 @@ exports.bigcoadmin = {
     github: 'bob',
     twitter: 'twob',
     homepage: 'http://boom.me',
-    freenode: 'bobob'
+    freenode: 'bobob',
+    "feature_org_billing": 't'
   },
   created: '2014-11-21T20:05:05.423Z',
   updated: '2015-01-24T00:08:41.269Z',

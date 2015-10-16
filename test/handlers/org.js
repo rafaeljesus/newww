@@ -238,6 +238,124 @@ describe('getting an org', function() {
   });
 });
 
+describe('creating an org', function() {
+  it('redirects back to org/create if the org scope name is in use by another org', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(200, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(200, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(200, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+
+  });
+
+  it('redirects back to org/create if the org scope name is in use by somebody else\'s name', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob)
+        .get("/user/bigco")
+        .reply(200, fixtures.users.bigco);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(404, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(404, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(404, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+  });
+
+  it('redirects back to org/create if the org scope name is in use by the current user\'s name', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create-validation?orgScope=bob&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+  });
+
+  it('validates that an org is available when its name is not taken by a current user or org', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob)
+        .get("/user/bigco")
+        .reply(404, fixtures.users.bigco);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(404, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(404, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(404, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create\/billing/);
+        done();
+      });
+    });
+  });
+});
+
 describe('updating an org', function() {
   describe('adding a user', function() {
     it('renders a redirect if a user cannot be added to an org', function(done) {
@@ -960,7 +1078,7 @@ describe('updating an org', function() {
 });
 
 describe('deleting an org', function() {
-  it('unsubscribes from an org when it is asked to be deleted', function(done) {
+  it('redirects to billing page when an org is to be deleted', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -1000,7 +1118,7 @@ describe('deleting an org', function() {
       server.inject(options, function(resp) {
         userMock.done();
         licenseMock.done();
-        expect(resp.statusCode).to.equal(200);
+        expect(resp.statusCode).to.equal(302);
         done();
       });
     });

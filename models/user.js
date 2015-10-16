@@ -77,19 +77,21 @@ User.prototype.dropCache = function dropCache(name, callback) {
 
 
 User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
-  Request.get(this.generateUserACLOptions(name), function(err, response, body) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(resolve, reject) {
+    Request.get(this.generateUserACLOptions(name), function(err, response, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (response.statusCode !== 200) {
-      var e = new Error('unexpected status code ' + response.statusCode);
-      e.statusCode = response.statusCode;
-      return callback(e);
-    }
+      if (response.statusCode !== 200) {
+        var e = new Error('unexpected status code ' + response.statusCode);
+        e.statusCode = response.statusCode;
+        return reject(e);
+      }
 
-    callback(null, body);
-  });
+      return resolve(body);
+    });
+  }.bind(this)).nodeify(callback);
 };
 
 User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
@@ -366,6 +368,11 @@ User.prototype.signup = function(user, callback) {
       if (err) {
         return reject(err);
       }
+      if (resp.statusCode === 409) {
+        err = new Error("The username you're trying to create already exists.");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
       if (resp.statusCode > 399) {
         err = new Error('error creating user ' + user.name);
         err.statusCode = resp.statusCode;
@@ -424,5 +431,53 @@ User.prototype.getOrgs = function(name, callback) {
 
       return resolve(body);
     });
+  }).nodeify(callback);
+};
+
+User.prototype.toOrg = function(name, newUsername, callback) {
+
+  var url = fmt('%s/user/%s/to-org', this.host, name);
+
+  var opts = {
+    url: url,
+    json: true,
+    body: {
+      new_username: newUsername
+    }
+  };
+
+  if (this.bearer) {
+    opts.headers = {
+      bearer: this.bearer
+    };
+  }
+
+  return new P(function(resolve, reject) {
+
+    Request.post(opts, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 400) {
+        err = new Error("you need authentication to give ownership of the new org to another existing user");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 409) {
+        err = new Error("a user or org already exists with the username you're trying to create as an owner");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode > 399) {
+        err = new Error('error renaming user ' + name + ": " + body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+      return resolve(body);
+    });
+
   }).nodeify(callback);
 };

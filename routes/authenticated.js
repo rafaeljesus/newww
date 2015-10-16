@@ -1,3 +1,4 @@
+var invalidUserName = require('npm-user-validate').username;
 module.exports = [
   {
     // shortcut for viewing your own stars
@@ -111,9 +112,54 @@ module.exports = [
         return reply.redirect('/org');
       }
 
+      var query = request.query || {};
+
       return reply.view('org/create', {
-        stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+        stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+        inUseError: query.inUseError,
+        inUseByMe: query.inUseByMe,
+        orgScope: query.orgScope,
+        fullname: query.fullname
       });
+    }
+  }, {
+    path: "/org/create-validation",
+    method: "GET",
+    handler: require('../handlers/org').validateOrgCreation
+  }, {
+    path: "/org/transfer-user-name",
+    method: "GET",
+    handler: function(request, reply) {
+      if (!request.features.org_billing) {
+        return reply.redirect('/org');
+      }
+      if (invalidUserName(request.query.orgScope)) {
+        var err = new Error("Org Scope must be a valid entry");
+        return reply.view("errors/internal", err);
+      }
+      return reply.view('org/transfer', {
+        fullname: request.query.fullname,
+        orgScope: request.query.orgScope
+      });
+    }
+  }, {
+    path: "/org/create/billing",
+    method: "GET",
+    handler: function(request, reply) {
+      if (!request.features.org_billing) {
+        return reply.redirect('/org');
+      }
+
+      return reply.view('org/billing', {
+        fullname: request.query.fullname,
+        orgScope: request.query.orgScope,
+        newUser: request.query['new-user'],
+        stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+
+      });
+
+
+
     }
   }
 ];

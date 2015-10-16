@@ -74,16 +74,11 @@ describe('Signing up a new user', function() {
   it('renders an error if the username already exists', function(done) {
 
     var mock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, fixtures.users.bob);
-
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe")
-      .reply(404);
+      .get("/scope/bob")
+      .reply(200, fixtures.scopes.bob);
 
     server.inject(postSignup(forms.alreadyExists), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -97,16 +92,12 @@ describe('Signing up a new user', function() {
   it('fails validation with incomplete form fields', function(done) {
 
     var mock = nock("https://user-api-example.com")
-      .get("/user/fakeusercli")
+      .get("/scope/fakeusercli")
       .reply(404);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/fakeusercli/stripe")
-      .reply(404);
 
     server.inject(postSignup(forms.incomplete), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -119,16 +110,11 @@ describe('Signing up a new user', function() {
 
   it('fails validation with a bad email address', function(done) {
     var mock = nock("https://user-api-example.com")
-      .get("/user/fakeusercli")
-      .reply(404);
-
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/fakeusercli/stripe")
+      .get("/scope/fakeusercli")
       .reply(404);
 
     server.inject(postSignup(forms.badEmail), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -141,16 +127,12 @@ describe('Signing up a new user', function() {
 
   it('fails validation with a bad username (dot)', function(done) {
     var mock = nock("https://user-api-example.com")
-      .get("/user/.fakeusercli")
+      .get("/scope/.fakeusercli")
       .reply(404);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/.fakeusercli/stripe")
-      .reply(404);
 
     server.inject(postSignup(forms.badUsernameDot), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -163,16 +145,12 @@ describe('Signing up a new user', function() {
 
   it('fails validation with a bad username (uppercase)', function(done) {
     var mock = nock("https://user-api-example.com")
-      .get("/user/FAkeusercli")
+      .get("/scope/FAkeusercli")
       .reply(404);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/FAkeusercli/stripe")
-      .reply(404);
 
     server.inject(postSignup(forms.badUsernameCaps), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -185,16 +163,12 @@ describe('Signing up a new user', function() {
 
   it('fails validation with a bad username (encodeURI)', function(done) {
     var mock = nock("https://user-api-example.com")
-      .get("/user/blärgh")
+      .get("/scope/blärgh")
       .reply(404);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/blärgh/stripe")
-      .reply(404);
 
     server.inject(postSignup(forms.badUsernameEncodeURI), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -207,16 +181,12 @@ describe('Signing up a new user', function() {
 
   it('fails validation with non-matching passwords', function(done) {
     var mock = nock("https://user-api-example.com")
-      .get("/user/fakeusercli")
+      .get("/scope/fakeusercli")
       .reply(404);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/fakeusercli/stripe")
-      .reply(404);
 
     server.inject(postSignup(forms.invalidPassMatch), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/signup-form');
@@ -230,7 +200,7 @@ describe('Signing up a new user', function() {
   it('passes validation with a valid form', function(done) {
 
     var mock = nock("https://user-api-example.com")
-      .get("/user/newuser")
+      .get("/scope/newuser")
       .reply(404)
       .put("/user", {
         name: 'newuser',
@@ -240,13 +210,9 @@ describe('Signing up a new user', function() {
       })
       .reply(200, fixtures.users.mikeal);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/newuser/stripe")
-      .reply(404);
 
     server.inject(postSignup(forms.good), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
       done();
@@ -256,7 +222,7 @@ describe('Signing up a new user', function() {
   it('passes validation with an umlaut in the password', function(done) {
 
     var mock = nock("https://user-api-example.com")
-      .get("/user/newuser")
+      .get("/scope/newuser")
       .reply(404)
       .put("/user", {
         name: 'newuser',
@@ -266,13 +232,9 @@ describe('Signing up a new user', function() {
       })
       .reply(200, fixtures.users.mikeal);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/newuser/stripe")
-      .reply(404);
 
     server.inject(postSignup(forms.goodPassWithUmlaut), function(resp) {
       mock.done();
-      licenseMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
       done();

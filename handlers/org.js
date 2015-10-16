@@ -1,6 +1,9 @@
 var Org = require('../agents/org');
 var Customer = require('../models/customer');
+var User = require('../models/user');
 var Promise = require('bluebird');
+var Joi = require('joi');
+var invalidUserName = require('npm-user-validate').username;
 
 exports.getOrg = function(request, reply) {
   if (!request.features.org_billing) {
@@ -13,6 +16,9 @@ exports.getOrg = function(request, reply) {
   request.customer.getById(request.loggedInUser.email, function(err, cust) {
     if (err) {
       request.logger.error(err);
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      }
       return reply.view('errors/internal', err);
     }
 
@@ -232,9 +238,102 @@ exports.deleteOrg = function(request, reply) {
         return reply.view('errors/internal', err);
       }
 
-      return exports.getOrg(request, reply);
+      return reply.redirect('/settings/billing');
     });
   });
 
 
+};
+
+var orgSubscriptionSchema = {
+  fullname: Joi.string().optional().allow(''),
+  orgScope: Joi.string().required()
+};
+
+exports.validateOrgCreation = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  var loggedInUser = request.loggedInUser.name;
+
+  Joi.validate(request.query, orgSubscriptionSchema, function(err, planData) {
+    var reportScopeInUseError = function(opts) {
+      opts = opts || {};
+      opts.msg = opts.msg || 'The provided org\'s @scope name is already in use';
+      opts.inUseByMe = opts.inUseByMe || false;
+
+      var err = new Error(opts.msg);
+
+      return request.saveNotifications([
+        Promise.reject(err.message)
+      ]).then(function(token) {
+        var url = '/org/create';
+        var param = token ? "?notice=" + token : "";
+        param += "&inUseError=true";
+        param += opts.inUseByMe ? "&inUseByMe=" + !!opts.inUseByMe : "";
+        param += planData.orgScope ? "&orgScope=" + planData.orgScope : "";
+        param += planData.fullname ? "&fullname=" + planData.fullname : "";
+
+        url = url + param;
+        return reply.redirect(url);
+      });
+    };
+
+    if (err) {
+      return request.saveNotifications([
+        Promise.reject(err.message)
+      ]).then(function(token) {
+        var url = '/org/create';
+        var param = token ? "?notice=" + token : "";
+
+        url = url + param;
+        return reply.redirect(url);
+      });
+
+    } else {
+      if (invalidUserName(planData.orgScope)) {
+        var err = new Error("Org Scope must be valid name");
+        return request.saveNotifications([
+          Promise.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/create';
+          var param = token ? "?notice=" + token : "";
+
+          url = url + param;
+          return reply.redirect(url);
+        });
+      }
+
+      if (planData.orgScope === loggedInUser) {
+        return reportScopeInUseError({
+          inUseByMe: true,
+          msg: 'The provided org\'s @scope name is already in use by your username'
+        });
+      }
+
+      Org(loggedInUser)
+        .get(planData.orgScope)
+        .then(reportScopeInUseError)
+        .catch(function(err) {
+          if (err.statusCode === 404) {
+            return User.new(request)
+              .fetchFromUserACL(planData.orgScope)
+              .then(reportScopeInUseError)
+              .catch(function(err) {
+                if (err.statusCode === 404) {
+                  var url = '/org/create/billing?orgScope=' + planData.orgScope + '&fullname=' + planData.fullname;
+                  return reply.redirect(url);
+                } else {
+                  response.logger.error(err);
+                  return reply.view('errors/internal', err);
+                }
+              });
+          } else {
+            response.logger.error(err);
+            return reply.view('errors/internal', err);
+          }
+        });
+    }
+  });
 };

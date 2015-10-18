@@ -25,6 +25,9 @@
       "hbsfy"
     ]
   },
+  "engines" : { 
+    "node" : ">=0.10 <4" 
+  },
   "dependencies": {
     "@soldair/marky-markdown": "^6.0.0",
     "accept-language-parser": "^1.0.2",

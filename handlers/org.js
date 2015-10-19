@@ -69,6 +69,8 @@ exports.addUserToOrg = function(request, reply) {
           var param = token ? "?notice=" + token : "";
           url = url + param;
           return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
         });
       }
       request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
@@ -277,6 +279,8 @@ exports.validateOrgCreation = function(request, reply) {
 
         url = url + param;
         return reply.redirect(url);
+      }).catch(function(err) {
+        request.logger.error(err);
       });
     };
 
@@ -289,6 +293,8 @@ exports.validateOrgCreation = function(request, reply) {
 
         url = url + param;
         return reply.redirect(url);
+      }).catch(function(err) {
+        request.logger.error(err);
       });
 
     } else {
@@ -302,6 +308,8 @@ exports.validateOrgCreation = function(request, reply) {
 
           url = url + param;
           return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
         });
       }
 
@@ -315,6 +323,8 @@ exports.validateOrgCreation = function(request, reply) {
 
           url = url + param;
           return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
         });
       }
 
@@ -370,6 +380,8 @@ exports.getOrgCreationBillingPage = function(request, reply) {
       var param = token ? "?notice=" + token : "";
       url = url + param;
       return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
     });
   }
 
@@ -384,6 +396,8 @@ exports.getOrgCreationBillingPage = function(request, reply) {
       param = param + "&orgScope=" + orgScope;
       url = url + param;
       return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
     });
   }
 
@@ -398,6 +412,8 @@ exports.getOrgCreationBillingPage = function(request, reply) {
 
       url = url + param;
       return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
     });
   };
 
@@ -454,6 +470,8 @@ exports.getTransferPage = function(request, reply) {
       var param = token ? "?notice=" + token : "";
       url = url + param;
       return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
     });
   }
   return reply.view('org/transfer', {

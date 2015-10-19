@@ -176,6 +176,8 @@ customer.subscribe = function(request, reply) {
 
         return request.saveNotifications(notices).then(function(token) {
           return reply.redirect('/settings/billing' + (token ? '?notice=' + token : ''));
+        }).catch(function(err) {
+          request.logger.error(err);
         });
       }
 
@@ -237,6 +239,8 @@ customer.subscribe = function(request, reply) {
           param = param + "&orgScope=" + request.query.orgScope;
           url = url + param;
           return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
         });
       }
 

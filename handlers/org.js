@@ -387,14 +387,9 @@ exports.getOrgCreationBillingPage = function(request, reply) {
     });
   }
 
-  var reportScopeInUseError = function(opts) {
-    opts = opts || {};
-    opts.msg = opts.msg || 'The provided username\'s @scope name is already in use';
-
-    var err = new Error(opts.msg);
-
+  var reportScopeInUseError = function() {
     return request.saveNotifications([
-      Promise.reject(err.message)
+      Promise.reject('The provided username\'s @scope name is already in use')
     ]).then(function(token) {
       var url = '/org/transfer-user-name';
       var param = token ? "?notice=" + token : "";

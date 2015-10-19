@@ -6,7 +6,11 @@
     {{#if features.org_billing}}
       <h1>Subscriptions</h1>
     {{else}}
+      {{#if customer}}
       <h1>your billing info</h1>
+      {{else}}
+      <h1>sign up for private modules</h1>
+      {{/if}}
     {{/if}}
   </hgroup>
 
@@ -56,7 +60,11 @@
       <div class="nav-2-container">
         <ul class="nav-2 clear" role="navigation">
           <li class="current"><a href="#overview">Overview</a></li>
+          {{#if customer}}
           <li><a href="#payment-information">Payment Information</a></li>
+          {{else}}
+          <li><a href="#payment-information">Sign up for private modules</a></li>
+          {{/if}}
           {{#if customer.customer_id}}
           <li><button type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</button></li>
           {{/if}}

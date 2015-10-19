@@ -74,7 +74,7 @@
       {{#if isPaid}}
         <li><a href="/settings/billing">manage billing</a></li>
       {{else}}
-        <li><a href="/settings/billing">sign up for private modules</a></li>
+      <li><a href="/settings/billing{{#if ../../../features.org_billing}}#payment-information{{/if}}">sign up for private modules</a></li>
       {{/if}}
       {{#if ../../features.org_billing}}
         <li><a href="/org/create">create an organization</a></li>

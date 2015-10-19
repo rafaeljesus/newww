@@ -4,28 +4,29 @@ body>header
   background greigh6
   display -webkit-flex
   display flex
+  flex-flow row wrap
+  -webkit-flex-flow row wrap
   -webkit-align-items center
   align-items center
   text-align center
 
   @media only screen and (max-width: mobileMaxWidth)
-    display block
     text-align left
 
   >*
-    flex-grow 0
-
-  #npm-search
-    flex-grow 1
+    flex 0 0 auto;
 
   >nav
     order 3
-    display block
     height 47px
     font-weight bold
     padding 10px 14px 14px
+
     @media only screen and (max-width: mobileMaxWidth)
-      display inline-block
+      order 1
+      flex 1 1 50%
+      text-align right
+      padding-right 0
 
     a+a
       margin-left 1em
@@ -197,7 +198,7 @@ body>nav
       color greigh2
 
 #npm-logo
-  padding 10px 14px 14px
+  order 1
   img
     vertical-align middle
     width 125px
@@ -215,8 +216,8 @@ body>nav
 
   @media only screen and (max-width: mobileMaxWidth)
 
-    display inline-block
-    margin 0
+    flex 1 1 50%
+    padding 0
     img
       width 80px
 
@@ -224,7 +225,7 @@ body>nav
   position relative
   height 47px
   padding 0
-  margin 10px 1em 14px
+  margin 0 1em
   border 1px solid greigh5
   border-radius 2px
   background background-color
@@ -232,13 +233,13 @@ body>nav
   &:hover
     border 1px solid greigh4
 
-  @media only screen and (max-width: smallScreenMaxWidth)
-    margin-top 20px
-    width 100%
-    float none
-    clear both
-    box-sizing border-box
+  flex 1 0 auto;
+  order 2
 
+  @media only screen and (max-width: mobileMaxWidth)
+    order 3
+    flex 1 0 100%
+    margin 0
 
 #site-search-container
   margin: 7px 80px 0 7px
@@ -328,18 +329,11 @@ body>nav
         vertical-align top
 
   @media only screen and (max-width: mobileMaxWidth)
+    flex 1 1 50%
+    order 2
 
-    display inline-block
-
-    ul
-      li
-        display block
-        float left
-        padding-left 10px
-        &.logout
-          display none
-      &.single li
-        line-height avatarSizeNavMobile
+    ul.single li
+      line-height avatarSizeNavMobile
     img
       width avatarSizeNavMobile
 

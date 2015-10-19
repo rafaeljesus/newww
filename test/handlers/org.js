@@ -323,6 +323,27 @@ describe('creating an org', function() {
     });
   });
 
+  it('redirects back to org/create if the org scope name is not valid', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create-validation?orgScope=afdo@;;;383&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+  });
+
   it('validates that an org is available when its name is not taken by a current user or org', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
@@ -350,6 +371,109 @@ describe('creating an org', function() {
         orgMock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.request.response.headers.location).to.match(/org\/create\/billing/);
+        done();
+      });
+    });
+  });
+});
+
+describe('transferring username to org', function() {
+  it('does not allow access to transfer page without valid input', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/transfer-user-name?fullname=Bob's big co&orgScope=adsjo@ffoo;;",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+  });
+
+  it('allows transfer page access with valid input', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/transfer-user-name?fullname=Bob's big co&orgScope=bob",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  it('allows org create billing page access with valid input and no new user', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  it('allows org create billing page access with valid input and new user', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool&new-user=bigco",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  it('responds in an invalid manner for ', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool&new-user=bigco",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(200);
         done();
       });
     });

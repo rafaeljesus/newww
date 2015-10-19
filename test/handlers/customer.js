@@ -1111,6 +1111,40 @@ describe("subscribing to an org", function() {
     });
   });
 
+  it("redirects if it has a new user name and it is invalid", function(done) {
+    generateCrumb(server, function(crumb) {
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgScope: 'test-org-9999',
+          "new-user": 'aosdfa@@@ll;',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var customerMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe")
+        .reply(200, fixtures.customers.happy);
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(302);
+        done();
+      });
+    });
+  });
+
   it("returns an error if there is a scope collision", function(done) {
     generateCrumb(server, function(crumb) {
       var opts = {

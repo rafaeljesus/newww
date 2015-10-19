@@ -69,6 +69,8 @@ exports.addUserToOrg = function(request, reply) {
           var param = token ? "?notice=" + token : "";
           url = url + param;
           return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
         });
       }
       request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
@@ -277,6 +279,8 @@ exports.validateOrgCreation = function(request, reply) {
 
         url = url + param;
         return reply.redirect(url);
+      }).catch(function(err) {
+        request.logger.error(err);
       });
     };
 
@@ -289,6 +293,8 @@ exports.validateOrgCreation = function(request, reply) {
 
         url = url + param;
         return reply.redirect(url);
+      }).catch(function(err) {
+        request.logger.error(err);
       });
 
     } else {
@@ -302,6 +308,23 @@ exports.validateOrgCreation = function(request, reply) {
 
           url = url + param;
           return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
+        });
+      }
+
+      if (invalidUserName(planData.orgScope)) {
+        var err = new Error("Org Scope must be valid name");
+        return request.saveNotifications([
+          Promise.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/create';
+          var param = token ? "?notice=" + token : "";
+
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
         });
       }
 
@@ -335,5 +358,124 @@ exports.validateOrgCreation = function(request, reply) {
           }
         });
     }
+  });
+};
+
+exports.getOrgCreationBillingPage = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+  var loggedInUser = request.loggedInUser.name;
+
+  var newUser = request.query['new-user'];
+  var orgScope = request.query.orgScope;
+
+  if (invalidUserName(orgScope)) {
+    var err = new Error("Org Scope must be a valid entry");
+    request.logger.error(err);
+    return request.saveNotifications([
+      Promise.reject(err.message)
+    ]).then(function(token) {
+      var url = '/org/create';
+      var param = token ? "?notice=" + token : "";
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+
+  if (newUser && invalidUserName(newUser)) {
+    var err = new Error("User name must be valid");
+    request.logger.error(err);
+    return request.saveNotifications([
+      Promise.reject(err.message)
+    ]).then(function(token) {
+      var url = '/org/transfer-user-name';
+      var param = token ? "?notice=" + token : "";
+      param = param + "&orgScope=" + orgScope;
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+
+  var reportScopeInUseError = function() {
+    return request.saveNotifications([
+      Promise.reject('The provided username\'s @scope name is already in use')
+    ]).then(function(token) {
+      var url = '/org/transfer-user-name';
+      var param = token ? "?notice=" + token : "";
+      param += planData.orgScope ? "&orgScope=" + planData.orgScope : "";
+      param += planData.fullname ? "&fullname=" + planData.fullname : "";
+
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  };
+
+  if (newUser) {
+    Org(loggedInUser)
+      .get(newUser)
+      .then(reportScopeInUseError)
+      .catch(function(err) {
+        if (err.statusCode === 404) {
+          return User.new(request)
+            .fetchFromUserACL(newUser)
+            .then(reportScopeInUseError)
+            .catch(function(err) {
+              if (err.statusCode === 404) {
+                return reply.view('org/billing', {
+                  fullname: request.query.fullname,
+                  orgScope: orgScope,
+                  newUser: newUser,
+                  stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+                });
+              } else {
+                response.logger.error(err);
+                return reply.view('errors/internal', err);
+              }
+            });
+        } else {
+          response.logger.error(err);
+          return reply.view('errors/internal', err);
+        }
+      });
+  } else {
+    return reply.view('org/billing', {
+      fullname: request.query.fullname,
+      orgScope: orgScope,
+      stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+    });
+  }
+
+
+};
+
+exports.getTransferPage = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  if (invalidUserName(request.query.orgScope)) {
+    var err = new Error("Org Scope must be a valid entry");
+    request.logger.error(err);
+    return request.saveNotifications([
+      Promise.reject(err.message)
+    ]).then(function(token) {
+      var url = '/org/create';
+      var param = token ? "?notice=" + token : "";
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+  return reply.view('org/transfer', {
+    fullname: request.query.fullname,
+    orgScope: request.query.orgScope
   });
 };

@@ -6,8 +6,9 @@
   </ul>
 </div>
 <div class="main right-well-fixed clear">
+  {{#if user.email_verified}}
+  <h1>Transfer your username</h1>
   <div class="content-column">
-    <h1>Transfer your username</h1>
 
       <form method="GET" id="transfer-username-form" action="/org/create/billing">
         <section>
@@ -18,7 +19,7 @@
         {{> form_security}}
         <input type="hidden" name="fullname" value="{{fullname}}"/>
         <input type="hidden" name="orgScope" value="{{orgScope}}"/>
-        <button class="button" type="submit">save &amp; continue &raquo;</button>
+        <button class="button org-submit-btn" type="submit">save &amp; continue &raquo;</button>
         <a href="/org/create">&laquo; go back</a>
         </section>
       </form>
@@ -35,4 +36,7 @@
       </ul>
     </div><!--/.inset-->
   </div><!--/.sidebar-->
+    {{else}}
+      {{> email-verify-nag}}
+    {{/if}}
 </div><!--/.main-->

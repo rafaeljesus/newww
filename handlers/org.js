@@ -418,6 +418,9 @@ exports.getOrgCreationBillingPage = function(request, reply) {
                   newUser: newUser,
                   stripePublicKey: process.env.STRIPE_PUBLIC_KEY
                 });
+              } else {
+                response.logger.error(err);
+                return reply.view('errors/internal', err);
               }
             });
         } else {

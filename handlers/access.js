@@ -1,18 +1,19 @@
 var omit = require("lodash").omit;
 var Collaborator = require("../agents/collaborator");
+var Package = require("../agents/package");
 
 module.exports = function(request, reply) {
 
   var cpackage;
   var loggedInUser = request.loggedInUser;
-  var Package = require("../models/package").new(request);
   var context = {
     title: request.packageName + ": access",
     userHasReadAccessToPackage: false,
     userHasWriteAccessToPackage: false,
   };
 
-  var promise = Package.get(request.packageName)
+  var promise = Package(request.loggedInUser)
+    .get(request.packageName)
     .catch(function(err) {
       request.logger.error("unable to get package " + request.packageName);
       request.logger.error(err);

@@ -1,52 +1,25 @@
+var USER_API = "https://user-api-example.com";
+
 var Code = require('code'),
   Lab = require('lab'),
   lab = exports.lab = Lab.script(),
   describe = lab.experiment,
-  beforeEach = lab.beforeEach,
-  afterEach = lab.afterEach,
   it = lab.test,
   expect = Code.expect,
   nock = require("nock"),
   fixtures = require("../fixtures"),
-  Package;
-
-beforeEach(function(done) {
-  Package = new (require("../../models/package"))({
-    host: "https://package.com:8443"
-  });
-  done();
-});
-
-afterEach(function(done) {
-  Package = null;
-  done();
-});
+  Package = require("../../agents/package");
 
 describe("Package", function() {
-
-  describe("initialization", function() {
-    it("defaults to process.env.USER_API as host", function(done) {
-      var USER_API_OLD = process.env.USER_API;
-      process.env.USER_API = "https://envy.com/";
-      expect(new (require("../../models/package"))().host).to.equal('https://envy.com/');
-      process.env.USER_API = USER_API_OLD;
-      done();
-    });
-
-    it("accepts a custom host", function(done) {
-      expect(Package.host).to.equal('https://package.com:8443');
-      done();
-    });
-  });
 
   describe("get()", function() {
 
     it("makes an external request for /package/{package}", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .get('/package/orientdb')
         .reply(200, fixtures.packages.orientdb);
 
-      Package.get("orientdb")
+      Package().get("orientdb")
         .then(function(pkg) {
           expect(pkg).to.exist();
         })
@@ -61,11 +34,11 @@ describe("Package", function() {
     });
 
     it("returns the response body", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .get('/package/orientdb')
         .reply(200, fixtures.packages.orientdb);
 
-      Package.get("orientdb")
+      Package().get("orientdb")
         .then(function(pkg) {
           expect(pkg.name).to.equal("orientdb");
           expect(pkg.versions).to.exist();
@@ -81,11 +54,11 @@ describe("Package", function() {
     });
 
     it("returns an error in the callback if the request failed", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .get('/package/foo')
         .reply(404);
 
-      Package.get('foo')
+      Package().get('foo')
         .then(function(pkg) {
           expect(pkg).to.not.exist();
         })
@@ -102,13 +75,13 @@ describe("Package", function() {
     });
 
     it("does not require a bearer token", function(done) {
-      var mock = nock(Package.host, {
+      var mock = nock(USER_API, {
         reqheaders: {}
       })
         .get('/package/dogbreath')
         .reply(200, fixtures.packages.orientdb);
 
-      Package.get('dogbreath')
+      Package().get('dogbreath')
         .then(function(pkg) {
           expect(pkg).to.exist();
         })
@@ -125,12 +98,7 @@ describe("Package", function() {
 
     it("includes the bearer token if user is logged in when loading the package page", function(done) {
 
-      Package = new (require("../../models/package"))({
-        host: "https://package.com:8443",
-        bearer: "rockbot"
-      });
-
-      var mock = nock(Package.host, {
+      var mock = nock(USER_API, {
         reqheaders: {
           bearer: 'rockbot'
         }
@@ -138,7 +106,9 @@ describe("Package", function() {
         .get('/package/orientdb')
         .reply(200, fixtures.packages.orientdb);
 
-      Package.get('orientdb')
+      Package({
+        name: "rockbot"
+      }).get('orientdb')
         .then(function(pkg) {
           expect(pkg.name).to.equal('orientdb');
           expect(pkg.version).to.equal('1.3.0');
@@ -154,11 +124,11 @@ describe("Package", function() {
     });
 
     it("encodes the slash in scoped package names", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .get('/package/@zeke%2Ford')
         .reply(200, fixtures.packages.browserify);
 
-      Package.get('@zeke/ord')
+      Package().get('@zeke/ord')
         .then(function(pkg) {
           expect(pkg).to.exist();
           mock.done();
@@ -171,13 +141,13 @@ describe("Package", function() {
   describe("update()", function() {
 
     it("makes an external request and gets back a results object", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .post('/package/@wrigley_the_writer%2Fscoped_private', {
           private: true
         })
         .reply(200, fixtures.packages.wrigley_scoped_private);
 
-      Package.update("@wrigley_the_writer/scoped_private", {
+      Package().update("@wrigley_the_writer/scoped_private", {
         private: true
       })
         .then(function(result) {
@@ -192,11 +162,11 @@ describe("Package", function() {
   describe("list()", function() {
 
     it("makes an external request and gets back a results object", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .get('/package?sort=dependents')
         .reply(200, fixtures.aggregates.most_depended_upon_packages);
 
-      Package.list({
+      Package().list({
         sort: "dependents"
       })
         .then(function(result) {
@@ -215,11 +185,11 @@ describe("Package", function() {
     });
 
     it("returns an error in the callback if the request failed", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .get('/package?')
         .reply(404);
 
-      Package.list()
+      Package().list()
         .then(function(result) {
           expect(result).to.not.exist();
         }, function(err) {
@@ -241,7 +211,7 @@ describe("Package", function() {
     });
 
     it("turns options into query parameters", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .get('/package?sort=modified&count=1&offset=2')
         .reply(200, fixtures.aggregates.recently_updated_packages);
 
@@ -251,7 +221,7 @@ describe("Package", function() {
         offset: 2
       };
 
-      Package.list(options)
+      Package().list(options)
         .then(function() {
           mock.done();
           done();
@@ -260,7 +230,7 @@ describe("Package", function() {
 
     describe("filtering", function() {
       it("allows results to be filtered by various properties", function(done) {
-        var mock = nock(Package.host)
+        var mock = nock(USER_API)
           .get('/package?author=zeke')
           .reply(200);
 
@@ -268,7 +238,7 @@ describe("Package", function() {
           author: "zeke"
         };
 
-        Package.list(options)
+        Package().list(options)
           .then(function() {
             mock.done();
             done();
@@ -291,7 +261,7 @@ describe("Package", function() {
           author: "zeke"
         };
 
-        Package.list(options)
+        Package().list(options)
           .then(function() {
             expect(stub.called).to.be.true();
             var args = stub.args[0][0];
@@ -315,7 +285,7 @@ describe("Package", function() {
 
         var TTL = 60;
 
-        Package.list(options, TTL)
+        Package().list(options, TTL)
           .then(function() {
             expect(stub.called).to.be.true();
             var args = stub.args[0][0];
@@ -335,7 +305,7 @@ describe("Package", function() {
 
         var TTL = 60;
 
-        Package.list(TTL)
+        Package().list(TTL)
           .then(function() {
             expect(stub.called).to.be.true();
             var args = stub.args[0][0];
@@ -350,11 +320,11 @@ describe("Package", function() {
   describe("count()", function() {
 
     it("makes an external request and gets back a number", function(done) {
-      var mock = nock(Package.host)
+      var mock = nock(USER_API)
         .get('/package/-/count')
         .reply(200, 12345);
 
-      Package.count()
+      Package().count()
         .then(function(result) {
           expect(result).to.equal(12345);
           mock.done();

@@ -1,8 +1,6 @@
 
-.nav-2,
-.nav-2 li,
-.nav-3,
-.nav-3 li,
+.nav,
+.nav > li,
 .nav-breadcrumb-flow-indicator,
 .nav-breadcrumb-flow-indicator li
   list-style none
@@ -93,8 +91,7 @@
   .nav-breadcrumb-flow-indicator li
     padding-left 9em
 
-  .nav-2-container,
-  .nav-3-container
+  .nav-container
     border-bottom-width 1px
     border-bottom-style solid
     margin-left -40px
@@ -109,8 +106,10 @@
   .nav-3-container
     border-bottom-color table-border-grey
 
-.nav-2 li,
-.nav-3 li
+  .nav-4-container
+    border-bottom-color #c6c6c6
+
+.nav > li
   float: left
   color table-border-grey
   text-align center
@@ -137,11 +136,23 @@
     border-left-width 1px
     border-left-style solid
 
+.nav-4 li
+  background #f8f8f8
+  width 150px
+  height 40px
+  padding .5em 0
+  margin-left 5px
+  border-top 1px solid #979797
+  border-left 1px solid #979797
+  border-right 1px solid #979797
+  border-top-left-radius 2px
+  border-top-right-radius 2px
 
-.nav-2 button,
-.nav-2 a,
-.nav-3 button,
-.nav-3 a
+  &:first-child
+    margin-left 0
+
+.nav button,
+.nav a
   color inherit
   font inherit
   -moz-appearance none
@@ -153,18 +164,32 @@
   &:hover
     text-decoration none
 
-.nav-2 button,
-.nav-3 button
+.nav button
   border: 0px none
 
-.nav-2 .current,
-.nav-3 .current
-  color #000
+.nav .current
+  color black
   &:after
     content "\0020"
     position absolute
     bottom 0
     height 2px
     width 100%
-    background-color #cb3837
+    background-color npmred
     display block
+
+.nav-4 .current
+  background transparent
+  border-top none
+  border-left-color greigh5
+  border-right-color greigh5
+
+  &:after
+    bottom auto
+    top 0
+    left -0.7px
+    width 101.1%
+    height 4px
+    border 1px solid npmred
+    border-top-left-radius 2px
+    border-top-right-radius 2px

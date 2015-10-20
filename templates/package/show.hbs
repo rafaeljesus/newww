@@ -46,10 +46,17 @@
 
     {{#if publisher}}
       <li class="last-publisher">
-        <a href="/~{{publisher.name}}">
-          <img src="{{publisher.avatar.medium}}" alt="{{publisher.name}}" />
-          <span>{{publisher.name}}</span>
-        </a>
+        {{#unless ../../features.npmo}}
+          <a href="/~{{publisher.name}}">
+            <img src="{{publisher.avatar.medium}}" alt="{{publisher.name}}" />
+            <span>{{publisher.name}}</span>
+          </a>
+        {{else}}
+          <span>
+            <img src="{{publisher.avatar.medium}}" alt="{{publisher.name}}" />
+            <strong>{{publisher.name}}</strong>
+          </span>
+        {{/unless}}
         {{#if lastPublishedAt}}
           published
           <span data-date="{{lastPublishedAt}}" data-date-format="relative">
@@ -102,17 +109,25 @@
     <ul class="humans collaborators">
       {{#each collaborators}}
         <li>
-          <a href="/~{{name}}" rel="tipsy" title="{{name}}">
-            {{#if avatar.medium}}<img src="{{avatar.medium}}" alt="{{name}}">{{/if}}
-          </a>
+          {{#unless ../../../features.npmo}}
+            <a href="/~{{name}}" rel="tipsy" title="{{name}}">
+                {{#if avatar.medium}}<img src="{{avatar.medium}}" alt="{{name}}">{{/if}}
+            </a>
+          {{else}}
+            <span rel="tipsy" title="{{name}}">
+                {{#if avatar.medium}}<img src="{{avatar.medium}}" alt="{{name}}">{{/if}}
+            </span>
+          {{/unless}}
         </li>
       {{/each}}
 
-      {{#if isCollaboratedOnByUser}}
-        <li>
-          <a class="add" title="add a collaborator" href="/package/{{name}}/access">+</a>
-        </li>
-      {{/if}}
+      {{#unless ../../features.npmo}}
+        {{#if isCollaboratedOnByUser}}
+          <li>
+            <a class="add" title="add a collaborator" href="/package/{{name}}/access">+</a>
+          </li>
+        {{/if}}
+      {{/unless}}
 
     </ul>
   {{/if}}
@@ -156,6 +171,15 @@
     </ul>
   {{/if}}
 
+  {{#unless scoped}}
+    {{#unless private}}
+      <h3>Try it out</h3>
+      <ul class="box">
+        <li class="tonicdev"><a href="https://tonicdev.com/npm/{{name}}" target="_blank">Test {{name}} in your browser.</a></li>
+      </ul>
+    {{/unless}}
+  {{/unless}}
+
   <h3>Keywords</h3>
   <p class="list-of-links">
     {{#if keywords}}
@@ -195,7 +219,7 @@
           <a href="/package/{{name}}">{{name}}</a>{{else}}
           <a href="/package/{{name}}">{{name}}</a>,
         {{/if}}{{/each}}{{#if dependents.hasMore}},
-        <a href="/browse/depended/{{../../name}}">and {{numMoreDependents}} more</a>
+        <a href="/browse/depended/{{../../name}}">and more</a>
       {{/if}}
     </p>
   {{/if}}

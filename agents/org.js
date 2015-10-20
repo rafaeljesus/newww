@@ -1,6 +1,5 @@
 var _ = require('lodash');
 var assert = require('assert');
-var async = require('async');
 var Request = require('../lib/external-request');
 var USER_HOST = process.env.USER_API || "https://user-api-example.com";
 var avatar = require('../lib/avatar');
@@ -38,6 +37,12 @@ Org.prototype.create = function(name, callback) {
 
       if (resp.statusCode === 401) {
         err = Error('no bearer token included in creation of ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 409) {
+        err = new Error('The provided Org\'s @scope name is already in use');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

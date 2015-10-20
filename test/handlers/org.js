@@ -236,6 +236,315 @@ describe('getting an org', function() {
       done();
     });
   });
+
+  it('does not pass currentUserIsAdmin attribute if current user is not an admin', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get('/org/notbobsorg')
+      .reply(200, fixtures.orgs.notBobsOrg)
+      .get('/org/notbobsorg/user')
+      .reply(200, fixtures.orgs.notBobsOrgUsers)
+      .get('/org/notbobsorg/package')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      });
+
+    var options = {
+      url: "/org/notbobsorg",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      licenseMock.done();
+      orgMock.done();
+      expect(resp.request.response.source.context.currentUserIsAdmin).to.equal(false);
+      done();
+    });
+  });
+  it('passes currentUserIsAdmin attribute if current user is admin', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get('/org/bigco')
+      .reply(200, fixtures.orgs.bigco)
+      .get('/org/bigco/user')
+      .reply(200, fixtures.orgs.bigcoAddedUsers)
+      .get('/org/bigco/package')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      });
+
+    var options = {
+      url: "/org/bigco",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      licenseMock.done();
+      orgMock.done();
+      expect(resp.request.response.source.context.currentUserIsAdmin).to.equal(true);
+      done();
+    });
+  });
+});
+
+describe('creating an org', function() {
+  it('redirects back to org/create if the org scope name is in use by another org', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(200, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(200, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(200, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+
+  });
+
+  it('redirects back to org/create if the org scope name is in use by somebody else\'s name', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob)
+        .get("/user/bigco")
+        .reply(200, fixtures.users.bigco);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(404, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(404, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(404, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+  });
+
+  it('redirects back to org/create if the org scope name is in use by the current user\'s name', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create-validation?orgScope=bob&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+  });
+
+  it('redirects back to org/create if the org scope name is not valid', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create-validation?orgScope=afdo@;;;383&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+  });
+
+  it('validates that an org is available when its name is not taken by a current user or org', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob)
+        .get("/user/bigco")
+        .reply(404, fixtures.users.bigco);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(404, fixtures.orgs.bigco)
+        .get("/org/bigco/user")
+        .reply(404, fixtures.orgs.bigcoAddedUsers)
+        .get("/org/bigco/package")
+        .reply(404, fixtures.packages.fake);
+
+      var options = {
+        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create\/billing/);
+        done();
+      });
+    });
+  });
+});
+
+describe('transferring username to org', function() {
+  it('does not allow access to transfer page without valid input', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/transfer-user-name?fullname=Bob's big co&orgScope=adsjo@ffoo;;",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.match(/org\/create/);
+        done();
+      });
+    });
+  });
+
+  it('allows transfer page access with valid input', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/transfer-user-name?fullname=Bob's big co&orgScope=bob",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  it('allows org create billing page access with valid input and no new user', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  it('allows org create billing page access with valid input and new user', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool&new-user=bigco",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
+
+  it('responds in an invalid manner for ', function(done) {
+    generateCrumb(server, function(crumb) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool&new-user=bigco",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(200);
+        done();
+      });
+    });
+  });
 });
 
 describe('updating an org', function() {
@@ -960,7 +1269,7 @@ describe('updating an org', function() {
 });
 
 describe('deleting an org', function() {
-  it('unsubscribes from an org when it is asked to be deleted', function(done) {
+  it('redirects to billing page when an org is to be deleted', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -1000,7 +1309,7 @@ describe('deleting an org', function() {
       server.inject(options, function(resp) {
         userMock.done();
         licenseMock.done();
-        expect(resp.statusCode).to.equal(200);
+        expect(resp.statusCode).to.equal(302);
         done();
       });
     });

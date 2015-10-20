@@ -1,0 +1,42 @@
+<div class="nav-breadcrumb-flow-indicator-container">
+  <ul class="nav-breadcrumb-flow-indicator">
+    <li class="done">Create Account</li>
+    <li class="current">Create Org</li>
+    <li>Invite Members</li>
+  </ul>
+</div>
+<div class="main right-well-fixed clear">
+  {{#if user.email_verified}}
+  <h1>Transfer your username</h1>
+  <div class="content-column">
+
+      <form method="GET" id="transfer-username-form" action="/org/create/billing">
+        <section>
+          <label for="new-user">Your new username:</label>
+          <input required="required" type="text" id="new-user" name="new-user"/>
+          <p class="description">must be lowercase and composed of URL-safe characters</p>
+
+        {{> form_security}}
+        <input type="hidden" name="fullname" value="{{fullname}}"/>
+        <input type="hidden" name="orgScope" value="{{orgScope}}"/>
+        <button class="button org-submit-btn" type="submit">save &amp; continue &raquo;</button>
+        <a href="/org/create">&laquo; go back</a>
+        </section>
+      </form>
+  </div>
+  <div class="sidebar">
+    <div class="inset bottom-img">
+      <h3>Transferring your username</h3>
+      <ul>
+        <li><span>No one will be able to log in as @{{orgScope}} anymore, as it will be an org scope, it has no password</span></li>
+        <li><span>All Orgs have a dedicated namespace, unlimited teams, and publicly the packages belonging to @{{orgScope}} the user will now belong to @{{orgScope}} the org
+        package hosting.</span></li>
+        <li><span>Your new username will have your existing email and password credentials</span></li>
+        <li><span>This cannot be undone</span></li>
+      </ul>
+    </div><!--/.inset-->
+  </div><!--/.sidebar-->
+    {{else}}
+      {{> email-verify-nag}}
+    {{/if}}
+</div><!--/.main-->

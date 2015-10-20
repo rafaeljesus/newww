@@ -15,6 +15,23 @@ exports.bob = {
   deleted: null
 };
 
+exports.bigco = {
+  name: 'bigco',
+  email: 'bigco@boom.me',
+  email_verified: true,
+  verification_key: '12345',
+  resource: {
+    fullname: "Bob Henderson",
+    github: 'bigco',
+    twitter: 'twcob',
+    homepage: 'http://bigco.boom.me',
+    freenode: 'bigcocgib'
+  },
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
 exports.bcoe = {
   "name": "bcoe",
   "email": "ben@npmjs.com",
@@ -203,7 +220,8 @@ exports.bigcoadmin = {
     github: 'bob',
     twitter: 'twob',
     homepage: 'http://boom.me',
-    freenode: 'bobob'
+    freenode: 'bobob',
+    "feature_org_billing": 't'
   },
   created: '2014-11-21T20:05:05.423Z',
   updated: '2015-01-24T00:08:41.269Z',

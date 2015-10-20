@@ -102,7 +102,7 @@ module.exports = function(request, reply) {
       totalResults: response.hits.total,
       singleResult: response.hits.total === 1,
       prevPage: page > 1 ? page - 1 : null,
-      nextPage: response.hits.total >= (perPage * page) ? page + 1 : null
+      nextPage: response.hits.total > (perPage * page) ? page + 1 : null
     });
 
     if (opts.prevPage || opts.nextPage) {

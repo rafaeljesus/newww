@@ -1,3 +1,4 @@
+var invalidUserName = require('npm-user-validate').username;
 module.exports = [
   {
     // shortcut for viewing your own stars
@@ -111,9 +112,28 @@ module.exports = [
         return reply.redirect('/org');
       }
 
+      var query = request.query || {};
+
       return reply.view('org/create', {
-        stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+        stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+        inUseError: query.inUseError,
+        inUseByMe: query.inUseByMe,
+        orgScope: query.orgScope,
+        fullname: query.fullname
       });
     }
+  }, {
+    path: "/org/create-validation",
+    method: "GET",
+    handler: require('../handlers/org').validateOrgCreation
+  }, {
+    path: "/org/transfer-user-name",
+    method: "GET",
+    handler: require('../handlers/org').getTransferPage
+
+  }, {
+    path: "/org/create/billing",
+    method: "GET",
+    handler: require('../handlers/org').getOrgCreationBillingPage
   }
 ];

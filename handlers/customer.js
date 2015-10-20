@@ -1,9 +1,12 @@
 var customer = module.exports = {};
 var Joi = require('joi');
 var Org = require('../agents/org');
+var User = require('../models/user');
+var Customer = require('../agents/customer');
 var P = require('bluebird');
 var utils = require('../lib/utils');
 var validate = require('validate-npm-package-name');
+var invalidUserName = require('npm-user-validate').username;
 
 customer.getBillingInfo = function(request, reply) {
 
@@ -142,6 +145,7 @@ var subscriptionSchema = {
     is: 'orgs',
     then: Joi.required()
   }),
+  "new-user": Joi.string().optional(),
   "paid-org-type": Joi.string().optional(),
   "card-number": Joi.string().optional(),
   "card-cvc": Joi.string().optional(),
@@ -150,6 +154,8 @@ var subscriptionSchema = {
 };
 
 customer.subscribe = function(request, reply) {
+  var loggedInUser = request.loggedInUser.name;
+
   Joi.validate(request.payload, subscriptionSchema, function(err, planData) {
     if (err) {
       var notices;
@@ -170,6 +176,8 @@ customer.subscribe = function(request, reply) {
 
         return request.saveNotifications(notices).then(function(token) {
           return reply.redirect('/settings/billing' + (token ? '?notice=' + token : ''));
+        }).catch(function(err) {
+          request.logger.error(err);
         });
       }
 
@@ -203,13 +211,38 @@ customer.subscribe = function(request, reply) {
           if (typeof subscriptions === 'string') {
             request.logger.info("created subscription: ", planInfo);
           }
-          return reply.redirect('/settings/billing?updated=1');
+
+          User.new(request).dropCache(request.loggedInUser.name, function(err) {
+            if (err) {
+              request.logger.error(err);
+              return reply.view('errors/internal', err);
+            }
+            return reply.redirect('/settings/billing?updated=1');
+          });
+
         });
       }
     }
 
     function subscribeToOrg() {
       planInfo.npm_org = planData.orgScope;
+      var newUser = planData['new-user'];
+
+      if (newUser && invalidUserName(newUser)) {
+        var err = new Error("User name must be valid");
+        request.logger.error(err);
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/transfer-user-name';
+          var param = token ? "?notice=" + token : "";
+          param = param + "&orgScope=" + request.query.orgScope;
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
+        });
+      }
 
       // check if the org name works as a package name
       var valid = validate('@' + planInfo.npm_org + '/foo');
@@ -226,7 +259,8 @@ customer.subscribe = function(request, reply) {
         });
       }
 
-      Org(request.loggedInUser.name)
+
+      Org(loggedInUser)
         .get(planInfo.npm_org).then(function() {
         var err = new Error("Org already exists");
         err.isUserError = true;
@@ -236,18 +270,46 @@ customer.subscribe = function(request, reply) {
           throw err;
         }
 
-        // org doesn't yet exist
-        return Org(request.loggedInUser.name)
-          .create(planInfo.npm_org)
+        // org doesn't yet exist, transfer user then create org
+        var start = newUser ? User.new(request).toOrg(loggedInUser, newUser) : P.resolve(null);
+
+        return start.then(function(newUserData) {
+          var setSession = P.promisify(request.server.methods.user.setSession(request));
+          var delSession = P.promisify(request.server.methods.user.delSession(request));
+          loggedInUser = newUserData ? newUser : loggedInUser;
+
+          if (newUserData) {
+            return delSession(request.loggedInUser)
+              .then(function() {
+                request.logger.info("setting session to: " + loggedInUser);
+                return setSession({
+                  name: loggedInUser
+                });
+              })
+          } else {
+            return Org(loggedInUser)
+              .create(planInfo.npm_org);
+          }
+        })
           .then(function() {
-            return request.customer.createSubscription(planInfo)
-              .then(function(subscription) {
+            return Customer(loggedInUser).createSubscription(planInfo)
+              .tap(function(subscription) {
                 if (typeof subscription === 'string') {
                   request.logger.info("created subscription: ", planInfo);
                 }
-                return request.customer.extendSponsorship(subscription.license_id, request.loggedInUser.name);
-              }).then(function(extendedSponsorship) {
-              return request.customer.acceptSponsorship(extendedSponsorship.verification_key);
+                return new P(function(accept, reject) {
+                  User.new(request).dropCache(loggedInUser, function(err) {
+                    if (err) {
+                      request.logger.error(err);
+                      return reject(err);
+                    }
+                    return accept();
+                  });
+                });
+              }).then(function(subscription) {
+              return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
+            }).then(function(extendedSponsorship) {
+              return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
             }).then(function() {
               return reply.redirect('/org/' + planInfo.npm_org);
             });
@@ -267,6 +329,9 @@ customer.subscribe = function(request, reply) {
         } else if (err.statusCode === 409 && err.message) {
           return reply.view('org/create', {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+            inUseError: true,
+            orgScope: planData.orgScope,
+            fullname: planData.fullname,
             notices: [err]
           });
         } else {

@@ -10,7 +10,10 @@
         <ul class="nav-3 clear" role="navigation">
           <li class="current"><a href="#overview">Overview</a></li>
           <li><a href="#paid-users">{{pluralize org.users.count "User" true}}</a></li>
+
+          {{#if currentUserIsAdmin}}
           <li><button type="button" id="billing" data-stripe-id="{{org.customer_id}}">Payment Information</button></li>
+          {{/if}}
         </ul>
       </div>
     </div>
@@ -48,12 +51,13 @@
       {{/if}}
 
       <h3>{{pluralize org.users.count "User" true}}</h3>
-      {{#if org.users.items}}
       <table class="org-table org-users">
         <thead>
           <tr>
             <th>Collaborators</th>
+            {{#if ../currentUserIsAdmin}}
             <th>Action</th>
+            {{/if}}
           </tr>
         </thead>
         <tbody>
@@ -72,6 +76,7 @@
                 </span><!--/.name-->
               </div>
             </td>
+            {{#if ../currentUserIsAdmin}}
             <td>
               <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../org.info.name}}">
                 {{#with ../this}}
@@ -82,8 +87,12 @@
                   <button type="submit" class="icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
               </form>
             </td>
+            {{/if}}
           </tr>
+        {{else}}
+          <tr><td colspan=2><em>There are no users in this Org.</em></td></tr>
         {{/each}}
+          {{#if currentUserIsAdmin}}
           <tr>
             <td colspan=2>
               <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
@@ -103,21 +112,22 @@
               </form>
             </td>
           </tr>
+          {{/if}}
         </tbody>
       </table>
-      {{/if}}
 
     </div><!--/tab-1-->
 
     <div id="paid-users" class="tab tab-2">
       <h2>Paid Users</h2>
-      {{#if org.users.items}}
       <table class="org-table org-users org-edit-user-table">
         <thead>
           <tr>
             <th>Collaborators</th>
+            {{#if currentUserIsAdmin}}
             <th>Status</th>
             <th>Action</th>
+            {{/if}}
           </tr>
         </thead>
         <tbody>
@@ -136,6 +146,7 @@
                   </span><!--/.name-->
                 </div>
               </td>
+            {{#if ../currentUserIsAdmin}}
               <td>
                 <div class="collapsible-wrapper">
                 <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../org.info.name}}" class="edit-pay-status">
@@ -182,8 +193,12 @@
                 </form>
                 </div>
               </td>
+              {{/if}}
             </tr>
+          {{else}}
+            <tr><td colspan=2><em>There are no users in this Org.</em></td></tr>
           {{/each}}
+          {{#if currentUserIsAdmin}}
           <tr>
             <td colspan=3>
               <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
@@ -203,9 +218,9 @@
               </form>
             </td>
           </tr>
+          {{/if}}
         </tbody>
       </table>
-      {{/if}}
 
     </div><!--/.tab-2-->
   </div><!--/tabs-->

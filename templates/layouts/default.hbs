@@ -64,58 +64,73 @@
     </div>
   {{/unless}}
 
-  <nav>
-    <div class="container">
-      <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
-      {{#unless features.npmo}}
+  {{#unless features.npmo}}
+    <nav>
+      <div class="container">
+        <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
         <a href="/private-modules" data-event-trigger="click" data-event-name="private-modules-nav-link">npm private modules</a>
-        <a href="/enterprise">npm for the Enterprise</a>
-      {{/unless}}
-      <a href="https://docs.npmjs.com">documentation</a>
-      {{#unless features.npmo}}
+        <a href="/enterprise">npm On-Site</a>
+        <a href="https://docs.npmjs.com">documentation</a>
         <a href="http://blog.npmjs.org/">blog</a>
         <a href="/npm-weekly">npm weekly</a>
         <a href="/jobs">jobs</a>
         <a href="/support">support</a>
-      {{/unless}}
-    </div>
-  </nav>
+      </div>
+    </nav>
+  {{/unless}}
 
   <header>
-    <div class="container">
-      <a href="/" id="npm-logo"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
+    <div id='npm-logo'>
+      <a href="/"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
 
-      {{#unless features.npmo}}
-        <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
-            {{#if user}}
-            <a data-user-name="{{user.name}}"
-                data-is-paid="{{#if user.isPaid}}true{{/if}}"
-                href="/~{{user.name}}">
-                <img src="{{user.avatar.small}}" />
-            </a>
-            <ul>
-                <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
-                <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
-            </ul>
-            {{else}}
-            <a href="/login"><img src="/static/images/wombat-avatar-small.png" /></a>
-            <ul class="single">
-                <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
-            </ul>
-
-            {{/if}}
-        </div>
-      {{/unless}}
-
-      <form id="npm-search" action="/search" method="get" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
-        <meta itemprop="target" content="https://www.npmjs.com/search?q={q}">
-        <div id="site-search-container">
-            <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
-        </div>
-        <input type="submit" id="site-search-submit" />
-      </form>
-
+      {{#if env.NPMO_COBRAND}}
+        <span class="cobrand">{{env.NPMO_COBRAND}}</span>
+      {{/if}}
     </div>
+
+    {{#if features.npmo}}
+
+      <nav>
+        <a href="https://docs.npmjs.com">docs</a>
+        <a href="/support">support</a>
+      </nav>
+
+    {{else}}
+
+      <div id="user-info" class={{#if user}}"logged-in"{{else}}"anonymous"{{/if}}>
+        {{#if user}}
+          <a data-user-name="{{user.name}}"
+              data-is-paid="{{#if user.isPaid}}true{{/if}}"
+              href="/~{{user.name}}">
+              <img alt="" src="{{user.avatar.small}}" />
+          </a>
+          <ul>
+              <li class="username"><a href="/~{{user.name}}">{{user.name}}</a></li>
+              <li class="logout"><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="subdued">log out</button></form></li>
+          </ul>
+        {{else}}
+          <a href="/login"><img alt="" src="/static/images/wombat-avatar-small.png" /></a>
+          <ul class="single">
+              <li><a href="/signup">sign up</a> or <a href="/login">log in</a></li>
+          </ul>
+
+        {{/if}}
+      </div>
+
+    {{/if}}
+
+    <form id="npm-search" action="/search" method="get" itemprop="potentialAction" itemscope itemtype="http://schema.org/SearchAction">
+      <meta itemprop="target" content="{{env.CANONICAL_HOST}}/search?q={q}">
+      <div id="site-search-container">
+        {{#if features.npmo}}
+          <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find on-site packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
+        {{else}}
+          <input name="q" value="{{q}}" type="search" id="site-search" placeholder="find packages" tabindex="1" autocorrect="off" autocapitalize="off" itemprop="query-input" />
+        {{/if}}
+      </div>
+      <input type="submit" id="site-search-submit" />
+    </form>
+
   </header>
 
   <div class="container content">
@@ -127,8 +142,9 @@
 
   <footer>
 
-    {{#unless features.npmo}}
-      <div class="container">
+    <div class="container">
+
+      {{#unless features.npmo}}
 
         <ul class="columnar">
           <li>
@@ -168,8 +184,19 @@
           </li>
         </ul>
 
-      </div>
-    {{/unless}}
+      {{else}}
+
+        <div class="cobrand-footer">
+          <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
+
+          <span>
+            &copy; 2015 npm, Inc. All Rights Reserved.
+          </span>
+        </div>
+
+      {{/unless}}
+
+    </div>
 
     <div class="container centered">
       <a href="/" id="npm-loves-you">

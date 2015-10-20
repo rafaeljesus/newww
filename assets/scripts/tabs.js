@@ -18,7 +18,7 @@ module.exports = function() {
   };
 
   Tab.prototype.init = function() {
-    if (this.tabNav.parent("li").hasClass("current")) {
+    if (this.tabNav.closest("li").hasClass("current")) {
       this.open();
     } else {
       this.close();
@@ -30,7 +30,7 @@ module.exports = function() {
     this.$element.addClass("visible");
     this.isOpen = true;
     $(".tabs .current").removeClass("current");
-    this.tabNav.addClass("current");
+    this.tabNav.closest("li").addClass("current");
 
     $.each(this.siblings, function(idx, el) {
       var tab = $(el).data("tab");

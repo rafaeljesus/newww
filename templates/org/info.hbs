@@ -6,13 +6,12 @@
 
   <div class="tabs">
     <div class="tab-nav-container">
-      <div class="nav-3-container">
-        <ul class="nav-3 clear" role="navigation">
-          <li class="current"><a href="#overview">Overview</a></li>
-          <li><a href="#paid-users">{{pluralize org.users.count "User" true}}</a></li>
-
+      <div class="nav-container nav-4-container">
+        <ul class="nav nav-4 clear" role="navigation">
+          <li class="current"><a href="#overview">overview</a></li>
+          <li><a href="#paid-users">{{pluralize org.users.count "member" true}}</a></li>
           {{#if currentUserIsAdmin}}
-          <li><button type="button" id="billing" data-stripe-id="{{org.customer_id}}">Payment Information</button></li>
+          <li><button type="button" id="billing" data-stripe-id="{{org.customer_id}}">payment info</button></li>
           {{/if}}
         </ul>
       </div>

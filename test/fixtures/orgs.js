@@ -133,7 +133,7 @@ exports.bigcoSponsorships = [
     "updated": "2015-07-29T14:11:41.967Z",
     "deleted": null
   }
-]
+];
 
 exports.bobsorgs = [
   {
@@ -165,3 +165,37 @@ exports.bobsorgs = [
     "status": "active"
   }
 ];
+
+exports.notBobsOrg = {
+  "name": "bligco",
+  "description": "bligco organization",
+  "resource": {
+    "fullname": "BligCo Enterprises"
+  },
+  "created": "2015-07-10T20:29:37.816Z",
+  "updated": "2015-07-10T21:07:16.799Z",
+  "deleted": null
+};
+exports.notBobsOrgUsers = {
+  "count": 1,
+  "items": [
+    {
+      name: 'bill',
+      email: 'bill@boom.me',
+      email_verified: true,
+      verification_key: '12345',
+      resource: {
+        fullname: "Bill Henderson",
+        github: 'bill',
+        twitter: 'twill',
+        homepage: 'http://bilm.me',
+        freenode: 'billib'
+      },
+      created: '2014-11-21T20:05:05.423Z',
+      updated: '2015-01-24T00:08:41.269Z',
+      deleted: null,
+      role: "team-admin",
+      sponsoredByOrg: false
+    }
+  ]
+};

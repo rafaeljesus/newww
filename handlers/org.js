@@ -39,6 +39,14 @@ exports.getOrg = function(request, reply) {
           user.sponsoredByOrg = user.sponsored === 'by-org';
           return user;
         });
+
+        var admins = org.users.items.filter(function(user) {
+          return user.role && user.role.match(/admin/);
+        });
+
+        opts.currentUserIsAdmin = admins.some(function(admin) {
+          return admin.name === loggedInUser;
+        });
         opts.org.customer_id = cust.stripe_customer_id;
         return reply.view('org/info', opts);
       });

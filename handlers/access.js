@@ -1,10 +1,10 @@
 var omit = require("lodash").omit;
+var Collaborator = require("../agents/collaborator");
 
 module.exports = function(request, reply) {
 
   var cpackage;
   var loggedInUser = request.loggedInUser;
-  var Collaborator = require("../models/collaborator").new(request);
   var Package = require("../models/package").new(request);
   var context = {
     title: request.packageName + ": access",
@@ -31,7 +31,7 @@ module.exports = function(request, reply) {
     })
     .then(function(pkg) {
       cpackage = omit(pkg, ['readme', 'versions']);
-      return Collaborator.list(cpackage.name);
+      return Collaborator(loggedInUser && loggedInUser.name).list(cpackage.name);
     })
     .then(function(collaborators) {
       cpackage.collaborators = collaborators;

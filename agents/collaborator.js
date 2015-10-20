@@ -1,39 +1,32 @@
-var Request = require('../lib/external-request');
-var Promise = require('bluebird');
-var _ = require('lodash');
-var fmt = require('util').format;
 var decorate = require(__dirname + '/../presenters/collaborator');
+var fmt = require('util').format;
+var P = require('bluebird');
+var Request = require('../lib/external-request');
+var USER_HOST = process.env.USER_API || "https://user-api-example.com";
 
-var Collaborator = module.exports = function(opts) {
-  _.extend(this, {
-    host: process.env.USER_API || "https://user-api-example.com",
-    bearer: false
-  }, opts);
+var Collaborator = module.exports = function(bearer) {
+  if (!(this instanceof Collaborator)) {
+    return new Collaborator(bearer);
+  }
 
+  this.bearer = bearer;
   return this;
 };
 
-Collaborator.new = function(request) {
-  var bearer = request.loggedInUser && request.loggedInUser.name;
-  return new Collaborator({
-    bearer: bearer
-  });
-};
-
 Collaborator.prototype.list = function(pkg, callback) {
-  var _this = this;
-  var url = fmt("%s/package/%s/collaborators", this.host, pkg.replace("/", "%2F"));
+  var self = this;
+  var url = fmt("%s/package/%s/collaborators", USER_HOST, pkg.replace("/", "%2F"));
 
-  return new Promise(function(resolve, reject) {
+  return new P(function(resolve, reject) {
     var opts = {
       method: "GET",
       url: url,
       json: true,
     };
 
-    if (_this.bearer) {
+    if (self.bearer) {
       opts.headers = {
-        bearer: _this.bearer
+        bearer: self.bearer
       };
     }
 
@@ -58,10 +51,10 @@ Collaborator.prototype.list = function(pkg, callback) {
 };
 
 Collaborator.prototype.add = function(pkg, collaborator, callback) {
-  var _this = this;
-  var url = fmt("%s/package/%s/collaborators", this.host, pkg.replace("/", "%2F"));
+  var self = this;
+  var url = fmt("%s/package/%s/collaborators", USER_HOST, pkg.replace("/", "%2F"));
 
-  return new Promise(function(resolve, reject) {
+  return new P(function(resolve, reject) {
     var opts = {
       method: "PUT",
       url: url,
@@ -69,9 +62,9 @@ Collaborator.prototype.add = function(pkg, collaborator, callback) {
       body: collaborator
     };
 
-    if (_this.bearer) {
+    if (self.bearer) {
       opts.headers = {
-        bearer: _this.bearer
+        bearer: self.bearer
       };
     }
 
@@ -91,8 +84,8 @@ Collaborator.prototype.add = function(pkg, collaborator, callback) {
 
 
 Collaborator.prototype.update = function(pkg, collaborator, callback) {
-  var _this = this;
-  var url = fmt("%s/package/%s/collaborators/%s", this.host, pkg.replace("/", "%2F"), collaborator.name);
+  var self = this;
+  var url = fmt("%s/package/%s/collaborators/%s", USER_HOST, pkg.replace("/", "%2F"), collaborator.name);
 
   var opts = {
     method: "POST",
@@ -101,13 +94,13 @@ Collaborator.prototype.update = function(pkg, collaborator, callback) {
     body: collaborator,
   };
 
-  if (_this.bearer) {
+  if (self.bearer) {
     opts.headers = {
-      bearer: _this.bearer
+      bearer: self.bearer
     };
   }
 
-  return new Promise(function(resolve, reject) {
+  return new P(function(resolve, reject) {
     Request(opts, function(err, resp, body) {
       if (err) {
         return reject(err);
@@ -123,10 +116,10 @@ Collaborator.prototype.update = function(pkg, collaborator, callback) {
 };
 
 Collaborator.prototype.del = function(pkg, collaboratorName, callback) {
-  var _this = this;
-  var url = fmt("%s/package/%s/collaborators/%s", this.host, pkg.replace("/", "%2F"), collaboratorName);
+  var self = this;
+  var url = fmt("%s/package/%s/collaborators/%s", USER_HOST, pkg.replace("/", "%2F"), collaboratorName);
 
-  return new Promise(function(resolve, reject) {
+  return new P(function(resolve, reject) {
 
     var opts = {
       method: "DELETE",
@@ -134,9 +127,9 @@ Collaborator.prototype.del = function(pkg, collaboratorName, callback) {
       json: true,
     };
 
-    if (_this.bearer) {
+    if (self.bearer) {
       opts.headers = {
-        bearer: _this.bearer
+        bearer: self.bearer
       };
     }
 

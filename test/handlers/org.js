@@ -236,6 +236,73 @@ describe('getting an org', function() {
       done();
     });
   });
+
+  it('does not pass currentUserIsAdmin attribute if current user is not an admin', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get('/org/notbobsorg')
+      .reply(200, fixtures.orgs.notBobsOrg)
+      .get('/org/notbobsorg/user')
+      .reply(200, fixtures.orgs.notBobsOrgUsers)
+      .get('/org/notbobsorg/package')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      });
+
+    var options = {
+      url: "/org/notbobsorg",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      licenseMock.done();
+      orgMock.done();
+      expect(resp.request.response.source.context.currentUserIsAdmin).to.equal(false);
+      done();
+    });
+  });
+  it('passes currentUserIsAdmin attribute if current user is admin', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get('/org/bigco')
+      .reply(200, fixtures.orgs.bigco)
+      .get('/org/bigco/user')
+      .reply(200, fixtures.orgs.bigcoAddedUsers)
+      .get('/org/bigco/package')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      });
+
+    var options = {
+      url: "/org/bigco",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      licenseMock.done();
+      orgMock.done();
+      expect(resp.request.response.source.context.currentUserIsAdmin).to.equal(true);
+      done();
+    });
+  });
 });
 
 describe('creating an org', function() {

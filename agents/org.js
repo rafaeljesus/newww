@@ -21,8 +21,8 @@ Org.prototype.create = function(opts, callback) {
   var url = USER_HOST + '/org';
   var resource = {};
 
-  if (opts.fullname) {
-    resource.human_name = opts.fullname;
+  if (opts.human_name) {
+    resource.human_name = opts.human_name;
   }
 
   var data = {

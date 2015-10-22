@@ -305,7 +305,7 @@ describe('getting an org', function() {
     });
   });
 
-  it('passes fullname attribute if human_name is set', function(done) {
+  it('passes human_name attribute if human_name is set', function(done) {
     var userMock = nock("https://user-api-example.com")
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
@@ -335,12 +335,12 @@ describe('getting an org', function() {
       licenseMock.done();
       orgMock.done();
       expect(resp.request.response.source.context.org.info.name).to.equal("bigco");
-      expect(resp.request.response.source.context.org.info.fullname).to.equal("BigCo Enterprises");
+      expect(resp.request.response.source.context.org.info.human_name).to.equal("BigCo Enterprises");
       done();
     });
   });
 
-  it('passes fullname attribute as scope name if human_name is not set', function(done) {
+  it('passes human_name attribute as scope name if human_name is not set', function(done) {
     var userMock = nock("https://user-api-example.com")
       .get("/user/bob")
       .reply(200, fixtures.users.bob);
@@ -377,7 +377,7 @@ describe('getting an org', function() {
       licenseMock.done();
       orgMock.done();
       expect(resp.request.response.source.context.org.info.name).to.equal("bigco");
-      expect(resp.request.response.source.context.org.info.fullname).to.equal("bigco");
+      expect(resp.request.response.source.context.org.info.human_name).to.equal("bigco");
       done();
     });
   });
@@ -400,7 +400,7 @@ describe('creating an org', function() {
         .reply(200, fixtures.packages.fake);
 
       var options = {
-        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        url: "/org/create-validation?orgScope=bigco&human_name=Bob's big co",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -433,7 +433,7 @@ describe('creating an org', function() {
         .reply(404, fixtures.packages.fake);
 
       var options = {
-        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        url: "/org/create-validation?orgScope=bigco&human_name=Bob's big co",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -455,7 +455,7 @@ describe('creating an org', function() {
         .reply(200, fixtures.users.bob);
 
       var options = {
-        url: "/org/create-validation?orgScope=bob&fullname=Bob's big co",
+        url: "/org/create-validation?orgScope=bob&human_name=Bob's big co",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -476,7 +476,7 @@ describe('creating an org', function() {
         .reply(200, fixtures.users.bob);
 
       var options = {
-        url: "/org/create-validation?orgScope=afdo@;;;383&fullname=Bob's big co",
+        url: "/org/create-validation?orgScope=afdo@;;;383&human_name=Bob's big co",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -507,7 +507,7 @@ describe('creating an org', function() {
         .reply(404, fixtures.packages.fake);
 
       var options = {
-        url: "/org/create-validation?orgScope=bigco&fullname=Bob's big co",
+        url: "/org/create-validation?orgScope=bigco&human_name=Bob's big co",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -531,7 +531,7 @@ describe('transferring username to org', function() {
         .reply(200, fixtures.users.bob);
 
       var options = {
-        url: "/org/transfer-user-name?fullname=Bob's big co&orgScope=adsjo@ffoo;;",
+        url: "/org/transfer-user-name?human_name=Bob's big co&orgScope=adsjo@ffoo;;",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -552,7 +552,7 @@ describe('transferring username to org', function() {
         .reply(200, fixtures.users.bob);
 
       var options = {
-        url: "/org/transfer-user-name?fullname=Bob's big co&orgScope=bob",
+        url: "/org/transfer-user-name?human_name=Bob's big co&orgScope=bob",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -572,7 +572,7 @@ describe('transferring username to org', function() {
         .reply(200, fixtures.users.bob);
 
       var options = {
-        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool",
+        url: "/org/create/billing?orgScope=org-915001&human_name=Bob%27s%20Org%20Is%20Cool",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -592,7 +592,7 @@ describe('transferring username to org', function() {
         .reply(200, fixtures.users.bob);
 
       var options = {
-        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool&new-user=bigco",
+        url: "/org/create/billing?orgScope=org-915001&human_name=Bob%27s%20Org%20Is%20Cool&new-user=bigco",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -612,7 +612,7 @@ describe('transferring username to org', function() {
         .reply(200, fixtures.users.bob);
 
       var options = {
-        url: "/org/create/billing?orgScope=org-915001&fullname=Bob%27s%20Org%20Is%20Cool&new-user=bigco",
+        url: "/org/create/billing?orgScope=org-915001&human_name=Bob%27s%20Org%20Is%20Cool&new-user=bigco",
         method: "GET",
         credentials: fixtures.users.bob
       };

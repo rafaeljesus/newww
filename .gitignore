@@ -5,6 +5,7 @@ node_modules/
 .idea
 dump.rdb
 erl_crash.dump
+newrelic_agent.log
 npm-debug.log
 numbat.log
 numbat-config.js

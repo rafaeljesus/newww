@@ -225,7 +225,6 @@ customer.subscribe = function(request, reply) {
     }
 
     function subscribeToOrg() {
-      planInfo.npm_org = planData.orgScope;
 
       var newUser = planData['new-user'];
 
@@ -246,11 +245,11 @@ customer.subscribe = function(request, reply) {
       }
 
       // check if the org name works as a package name
-      var valid = validate('@' + planInfo.npm_org + '/foo');
+      var valid = validate('@' + planData.orgScope + '/foo');
 
       if (!valid.errors) {
         // now check if the org name works on its own
-        valid = validate(planInfo.npm_org);
+        valid = validate(planData.orgScope);
       }
 
       if (valid.errors) {
@@ -262,7 +261,7 @@ customer.subscribe = function(request, reply) {
 
 
       Org(loggedInUser)
-        .get(planInfo.npm_org).then(function() {
+        .get(planData.orgScope).then(function() {
         var err = new Error("Org already exists");
         err.isUserError = true;
         throw err;
@@ -290,11 +289,12 @@ customer.subscribe = function(request, reply) {
           } else {
             return Org(loggedInUser)
               .create({
-                scope: planInfo.npm_org,
+                scope: planData.orgScope,
                 fullname: planData.fullname
               });
           }
         }).then(function() {
+          planInfo.npm_org = planData.orgScope;
           return Customer(loggedInUser).createSubscription(planInfo)
             .tap(function(subscription) {
               if (typeof subscription === 'string') {
@@ -314,7 +314,7 @@ customer.subscribe = function(request, reply) {
           }).then(function(extendedSponsorship) {
             return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
           }).then(function() {
-            return reply.redirect('/org/' + planInfo.npm_org);
+            return reply.redirect('/org/' + planData.orgScope);
           });
         })
           .catch(function(err) {

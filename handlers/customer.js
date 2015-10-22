@@ -140,7 +140,7 @@ var subscriptionSchema = {
   planType: Joi.string().valid(Object.keys(plans)).required(),
   stripeToken: Joi.string(),
   coupon: Joi.string().optional().allow(''),
-  human_name: Joi.string().optional().allow(''),
+  "human-name": Joi.string().optional().allow(''),
   orgScope: Joi.string().when('planType', {
     is: 'orgs',
     then: Joi.required()
@@ -290,7 +290,7 @@ customer.subscribe = function(request, reply) {
             return Org(loggedInUser)
               .create({
                 scope: planData.orgScope,
-                human_name: planData.human_name
+                humanName: planData["human-name"]
               });
           }
         }).then(function() {
@@ -334,7 +334,7 @@ customer.subscribe = function(request, reply) {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             inUseError: true,
             orgScope: planData.orgScope,
-            human_name: planData.human_name,
+            humanName: planData["human-name"],
             notices: [err]
           });
         } else {

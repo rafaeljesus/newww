@@ -33,7 +33,7 @@ describe('Org', function() {
 
       Org('bob').create({
         scope: 'bigco',
-        human_name: "Bob's Big Co"
+        humanName: "Bob's Big Co"
       }, function(err, org) {
         orgMock.done();
         expect(err).to.exist();
@@ -69,7 +69,7 @@ describe('Org', function() {
 
       Org('bob').create({
         scope: "bigco",
-        human_name: "Bob's Big Co"
+        humanName: "Bob's Big Co"
       }, function(err, org) {
         orgMock.done();
         expect(err).to.not.exist();

@@ -11,8 +11,8 @@
   <div class="content-column">
       <form{{#if inUseError}} class="error-state"{{/if}} method="GET" id="create-org-form" action="/org/create-validation">
         <section>
-          <label for="human_name">Org name</label>
-          <input required="required" type="text" id="human_name" name="human_name" placeholder="My Org" {{#if human_name}} value="{{human_name}}"{{/if}}/>
+          <label for="human-name">Org name</label>
+          <input required="required" type="text" id="human-name" name="human-name" placeholder="My Org" {{#if humanName}} value="{{humanName}}"{{/if}}/>
           <p class="description">A human-readable name for your org, can include spaces &amp; punctuation.</p>
 
           <label for="orgScope">Org <a href="https://docs.npmjs.com/misc/scope" target="_blank">@scope</a></label>
@@ -21,7 +21,7 @@
 
           {{#if inUseByMe}}
           <div class="hint-block">
-            <a href="/org/transfer-user-name?orgScope={{orgScope}}&human_name={{human_name}}">transfer @{{orgScope}} to become your organization's scope?</a>
+            <a href="/org/transfer-user-name?orgScope={{orgScope}}&human-name={{humanName}}">transfer @{{orgScope}} to become your organization's scope?</a>
           </div>
           {{/if}}
 

@@ -15,19 +15,21 @@ var Org = module.exports = function(bearer) {
   this.bearer = bearer;
 };
 
-Org.prototype.create = function(scope, fullname, callback) {
+Org.prototype.create = function(opts, callback) {
+  opts = opts || {};
+
   var url = USER_HOST + '/org';
   var resource = {};
 
-  if (fullname) {
-    resource.human_name = fullname;
+  if (opts.fullname) {
+    resource.human_name = opts.fullname;
   }
 
-  var opts = {
+  var data = {
     url: url,
     json: true,
     body: {
-      name: scope,
+      name: opts.scope,
       resource: resource
     },
     headers: {
@@ -36,13 +38,13 @@ Org.prototype.create = function(scope, fullname, callback) {
   };
 
   return new P(function(accept, reject) {
-    Request.put(opts, function(err, resp, body) {
+    Request.put(data, function(err, resp, body) {
       if (err) {
         return reject(err);
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included in creation of ' + scope);
+        err = Error('no bearer token included in creation of ' + opts.scope);
         err.statusCode = resp.statusCode;
         return reject(err);
       }

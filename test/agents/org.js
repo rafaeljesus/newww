@@ -31,7 +31,10 @@ describe('Org', function() {
         })
         .reply(401);
 
-      Org('bob').create('bigco', "Bob's Big Co", function(err, org) {
+      Org('bob').create({
+        scope: 'bigco',
+        fullname: "Bob's Big Co"
+      }, function(err, org) {
         orgMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('no bearer token included in creation of bigco');
@@ -64,7 +67,10 @@ describe('Org', function() {
           "deleted": null
         });
 
-      Org('bob').create("bigco", "Bob's Big Co", function(err, org) {
+      Org('bob').create({
+        scope: "bigco",
+        fullname: "Bob's Big Co"
+      }, function(err, org) {
         orgMock.done();
         expect(err).to.not.exist();
         expect(org.name).to.equal("bigco");

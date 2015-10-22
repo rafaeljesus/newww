@@ -289,7 +289,10 @@ customer.subscribe = function(request, reply) {
               })
           } else {
             return Org(loggedInUser)
-              .create(planInfo.npm_org, planData.fullname);
+              .create({
+                scope: planInfo.npm_org,
+                fullname: planData.fullname
+              });
           }
         }).then(function() {
           return Customer(loggedInUser).createSubscription(planInfo)

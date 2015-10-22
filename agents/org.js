@@ -15,14 +15,20 @@ var Org = module.exports = function(bearer) {
   this.bearer = bearer;
 };
 
-Org.prototype.create = function(name, callback) {
+Org.prototype.create = function(scope, fullname, callback) {
   var url = USER_HOST + '/org';
+  var resource = {};
+
+  if (fullname) {
+    resource.human_name = fullname;
+  }
 
   var opts = {
     url: url,
     json: true,
     body: {
-      name: name
+      name: scope,
+      resource: resource
     },
     headers: {
       bearer: this.bearer
@@ -36,7 +42,7 @@ Org.prototype.create = function(name, callback) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included in creation of ' + name);
+        err = Error('no bearer token included in creation of ' + scope);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -126,7 +132,7 @@ Org.prototype.update = function(data, callback) {
     }
   };
 
-  Request.post(opts, function(err, resp, body) {
+  Request.post(opts, function(err, resp, org) {
     if (err) {
       callback(err);
     }
@@ -149,7 +155,7 @@ Org.prototype.update = function(data, callback) {
       return callback(err);
     }
 
-    return callback(null, body);
+    return callback(null, org);
   });
 };
 

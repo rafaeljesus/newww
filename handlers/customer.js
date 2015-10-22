@@ -226,6 +226,7 @@ customer.subscribe = function(request, reply) {
 
     function subscribeToOrg() {
       planInfo.npm_org = planData.orgScope;
+
       var newUser = planData['new-user'];
 
       if (newUser && invalidUserName(newUser)) {
@@ -288,32 +289,31 @@ customer.subscribe = function(request, reply) {
               })
           } else {
             return Org(loggedInUser)
-              .create(planInfo.npm_org);
+              .create(planInfo.npm_org, planData.fullname);
           }
-        })
-          .then(function() {
-            return Customer(loggedInUser).createSubscription(planInfo)
-              .tap(function(subscription) {
-                if (typeof subscription === 'string') {
-                  request.logger.info("created subscription: ", planInfo);
-                }
-                return new P(function(accept, reject) {
-                  User.new(request).dropCache(loggedInUser, function(err) {
-                    if (err) {
-                      request.logger.error(err);
-                      return reject(err);
-                    }
-                    return accept();
-                  });
+        }).then(function() {
+          return Customer(loggedInUser).createSubscription(planInfo)
+            .tap(function(subscription) {
+              if (typeof subscription === 'string') {
+                request.logger.info("created subscription: ", planInfo);
+              }
+              return new P(function(accept, reject) {
+                User.new(request).dropCache(loggedInUser, function(err) {
+                  if (err) {
+                    request.logger.error(err);
+                    return reject(err);
+                  }
+                  return accept();
                 });
-              }).then(function(subscription) {
-              return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
-            }).then(function(extendedSponsorship) {
-              return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
-            }).then(function() {
-              return reply.redirect('/org/' + planInfo.npm_org);
-            });
-          })
+              });
+            }).then(function(subscription) {
+            return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
+          }).then(function(extendedSponsorship) {
+            return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
+          }).then(function() {
+            return reply.redirect('/org/' + planInfo.npm_org);
+          });
+        })
           .catch(function(err) {
             request.logger.error(err);
             throw err;

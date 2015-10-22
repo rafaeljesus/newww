@@ -915,13 +915,15 @@ describe("subscribing to an org", function() {
         .get("/org/boomer/package")
         .reply(404, "not found")
         .put("/org", {
-          name: "boomer"
+          name: "boomer",
+          resource: {}
         })
         .reply(200, {
           "name": "boomer",
           "created": "2015-08-05T20:55:54.759Z",
           "updated": "2015-08-05T20:55:54.759Z",
           "deleted": null,
+          "resource": {}
         });
 
       var customerMock = nock("https://license-api-example.com")
@@ -1173,7 +1175,8 @@ describe("subscribing to an org", function() {
         .get("/org/bob/package")
         .reply(404, "not found")
         .put("/org", {
-          name: "bob"
+          name: "bob",
+          resource: {}
         })
         .reply(409, "that scope name is already in use");
 

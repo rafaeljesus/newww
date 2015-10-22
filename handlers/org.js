@@ -33,6 +33,20 @@ exports.getOrg = function(request, reply) {
           }
         }
 
+        org = org || {};
+        org.info = org.info || {};
+        var fullname = "";
+
+        if (org.info.human_name) {
+          fullname = org.info.human_name;
+        } else if (org.info.resource && org.info.resource.human_name) {
+          fullname = org.info.resource.human_name;
+        } else {
+          fullname = org.info.name;
+        }
+
+        org.info.fullname = fullname;
+
         opts.org = org;
         opts.org.users.items = org.users.items.map(function(user) {
           user.sponsoredByOrg = user.sponsored === 'by-org';

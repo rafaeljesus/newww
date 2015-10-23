@@ -142,5 +142,19 @@ module.exports = [
     path: "/org/create/billing",
     method: "GET",
     handler: require('../handlers/org').getOrgCreationBillingPage
+  }, {
+    path: "/org/{org}/team/create",
+    method: "GET",
+    handler: require('../handlers/team').getTeamCreationPage
+  }, {
+    path: "/org/{org}/team",
+    method: "POST",
+    handler: function(request, reply) {
+      if (!request.features.org_billing) {
+        return reply.redirect('/org');
+      }
+      request.logger.info(request.payload);
+      return reply.view('org/add-team');
+    }
   }
 ];

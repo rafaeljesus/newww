@@ -42,6 +42,23 @@ exports.bcoe = {
   "deleted": null
 };
 
+exports.betty = {
+  name: 'betty',
+  email: 'betty@somewhere.com',
+  email_verified: true,
+  verification_key: '12333345',
+  resource: {
+    fullname: "Betty Doe",
+    github: 'betty',
+    twitter: 'twetty',
+    homepage: 'http://somewhere.com',
+    freenode: 'bettytteb'
+  },
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
 exports.ralph_the_reader = {
   name: 'ralph_the_reader',
   email: 'ralph@reader.com',

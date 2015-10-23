@@ -1,0 +1,31 @@
+<div class="main">
+  {{#if user.email_verified}}
+  <h1>Create a Team</h1>
+  <div>
+    <form method="POST" id="create-team-form" action="/org/{{org}}/team">
+        <section>
+          <label for="team-name">Team name</label>
+          <input required="required" type="text" id="team-name" name="team-name" placeholder="My Team" />
+
+          <label for="description">description</label>
+          <input type="text" id="description" name="description" />
+        </section>
+        <section>
+          <fieldset>
+          <legend>invite some members</legend>
+          <input type="text" name="member" />
+          <input type="text" name="member" />
+          </fieldset>
+        </section>
+
+        {{> form_security}}
+        <button class="button" type="submit">Make it so</button>
+        <a href="/org/{{org}}">cancel</a>
+
+      </form>
+
+  </div>
+  {{else}}
+    {{> email-verify-nag}}
+  {{/if}}
+</div><!--/.main-->

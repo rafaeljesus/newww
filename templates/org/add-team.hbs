@@ -5,7 +5,8 @@
     <form method="POST" id="create-team-form" action="/org/{{org}}/team">
         <section>
           <label for="team-name">Team name</label>
-          <input required="required" type="text" id="team-name" name="team-name" placeholder="My Team" />
+          <input required="required" type="text" id="team-name" name="team-name" placeholder="developers" />
+          <p class="description">Your team name <strong class="fake-strong">must</strong> be lower case and have no spaces or punctuation.</p>
 
           <label for="description">description</label>
           <input type="text" id="description" name="description" />

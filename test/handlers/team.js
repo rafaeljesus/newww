@@ -142,4 +142,6 @@ describe('team', function() {
 
     });
   });
+
+  describe('adding a team to an org', function() {});
 });

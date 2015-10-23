@@ -149,12 +149,6 @@ module.exports = [
   }, {
     path: "/org/{org}/team",
     method: "POST",
-    handler: function(request, reply) {
-      if (!request.features.org_billing) {
-        return reply.redirect('/org');
-      }
-      request.logger.info(request.payload);
-      return reply.view('org/add-team');
-    }
+    handler: require('../handlers/team').addTeamToOrg
   }
 ];

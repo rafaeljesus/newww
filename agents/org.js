@@ -349,7 +349,8 @@ Org.prototype.addTeam = function(opts, callback) {
     json: true,
     body: {
       scope: opts.orgScope,
-      name: opts.teamName
+      name: opts.teamName,
+      description: opts.description
     },
     headers: {
       bearer: this.bearer

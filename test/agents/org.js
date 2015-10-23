@@ -518,4 +518,98 @@ describe('Org', function() {
       });
     });
   });
+
+  describe('adding a team', function() {
+    it('throws and error if there is no bearer token', function(done) {
+      var orgMock = nock('https://user-api-example.com')
+        .put('/org/bigco/team', {
+          scope: 'bigco',
+          name: 'bobteam'
+        })
+        .reply(401);
+
+      Org('bob').addTeam({
+        orgScope: 'bigco',
+        teamName: "bobteam"
+      }, function(err, team) {
+        orgMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('no bearer token included in adding of team bobteam');
+        expect(err.statusCode).to.equal(401);
+        expect(team).to.be.undefined();
+        done();
+      });
+    });
+
+    it('throws an error if the org is not found', function(done) {
+      var orgMock = nock('https://user-api-example.com')
+        .put('/org/bigco/team', {
+          scope: 'bigco',
+          name: 'bobteam'
+        })
+        .reply(404);
+
+      Org('bob').addTeam({
+        orgScope: 'bigco',
+        teamName: "bobteam"
+      }, function(err, team) {
+        orgMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('Org not found');
+        expect(err.statusCode).to.equal(404);
+        expect(team).to.be.undefined();
+        done();
+      });
+
+    });
+
+    it('throws an error if the team already exists', function(done) {
+      var orgMock = nock('https://user-api-example.com')
+        .put('/org/bigco/team', {
+          scope: 'bigco',
+          name: 'bobteam'
+        })
+        .reply(409);
+
+      Org('bob').addTeam({
+        orgScope: 'bigco',
+        teamName: "bobteam"
+      }, function(err, team) {
+        orgMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('The provided Team\'s name is already in use for this Org');
+        expect(err.statusCode).to.equal(409);
+        expect(team).to.be.undefined();
+        done();
+      });
+
+    });
+
+    it('returns team data when properly added', function(done) {
+      var orgMock = nock('https://user-api-example.com')
+        .put('/org/bigco/team', {
+          scope: 'bigco',
+          name: 'bobteam'
+        })
+        .reply(200, {
+          "name": "bobteam",
+          "scope_id": "bigco",
+          "created": "2015-06-19T23:35:42.659Z",
+          "updated": "2015-06-19T23:35:42.659Z",
+          "deleted": null
+        });
+
+      Org('bob').addTeam({
+        orgScope: 'bigco',
+        teamName: "bobteam"
+      }, function(err, team) {
+        orgMock.done();
+        expect(err).to.not.exist();
+        expect(team).to.not.be.undefined();
+        expect(team.name).to.equal("bobteam");
+        expect(team.scope_id).to.equal("bigco");
+        done();
+      });
+    });
+  });
 });

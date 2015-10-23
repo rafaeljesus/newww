@@ -337,5 +337,56 @@ Org.prototype.removeUser = function(name, userId, callback) {
 
     });
   }).nodeify(callback);
+};
 
+Org.prototype.addTeam = function(opts, callback) {
+  opts = opts || {};
+
+  var url = USER_HOST + '/org/' + opts.orgScope + '/team';
+
+  var data = {
+    url: url,
+    json: true,
+    body: {
+      scope: opts.orgScope,
+      name: opts.teamName
+    },
+    headers: {
+      bearer: this.bearer
+    }
+  };
+
+  return new P(function(accept, reject) {
+    Request.put(data, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = Error('no bearer token included in adding of team ' + opts.teamName);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('Org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 409) {
+        err = new Error('The provided Team\'s name is already in use for this Org');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  }).nodeify(callback);
 };

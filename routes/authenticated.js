@@ -119,7 +119,7 @@ module.exports = [
         inUseError: query.inUseError,
         inUseByMe: query.inUseByMe,
         orgScope: query.orgScope,
-        fullname: query.fullname
+        humanName: query['human-name']
       });
     }
   }, {

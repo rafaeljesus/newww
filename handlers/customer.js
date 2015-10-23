@@ -140,7 +140,7 @@ var subscriptionSchema = {
   planType: Joi.string().valid(Object.keys(plans)).required(),
   stripeToken: Joi.string(),
   coupon: Joi.string().optional().allow(''),
-  fullname: Joi.string().optional().allow(''),
+  "human-name": Joi.string().optional().allow(''),
   orgScope: Joi.string().when('planType', {
     is: 'orgs',
     then: Joi.required()
@@ -225,7 +225,7 @@ customer.subscribe = function(request, reply) {
     }
 
     function subscribeToOrg() {
-      planInfo.npm_org = planData.orgScope;
+
       var newUser = planData['new-user'];
 
       if (newUser && invalidUserName(newUser)) {
@@ -245,11 +245,11 @@ customer.subscribe = function(request, reply) {
       }
 
       // check if the org name works as a package name
-      var valid = validate('@' + planInfo.npm_org + '/foo');
+      var valid = validate('@' + planData.orgScope + '/foo');
 
       if (!valid.errors) {
         // now check if the org name works on its own
-        valid = validate(planInfo.npm_org);
+        valid = validate(planData.orgScope);
       }
 
       if (valid.errors) {
@@ -261,7 +261,7 @@ customer.subscribe = function(request, reply) {
 
 
       Org(loggedInUser)
-        .get(planInfo.npm_org).then(function() {
+        .get(planData.orgScope).then(function() {
         var err = new Error("Org already exists");
         err.isUserError = true;
         throw err;
@@ -288,32 +288,35 @@ customer.subscribe = function(request, reply) {
               })
           } else {
             return Org(loggedInUser)
-              .create(planInfo.npm_org);
+              .create({
+                scope: planData.orgScope,
+                humanName: planData["human-name"]
+              });
           }
-        })
-          .then(function() {
-            return Customer(loggedInUser).createSubscription(planInfo)
-              .tap(function(subscription) {
-                if (typeof subscription === 'string') {
-                  request.logger.info("created subscription: ", planInfo);
-                }
-                return new P(function(accept, reject) {
-                  User.new(request).dropCache(loggedInUser, function(err) {
-                    if (err) {
-                      request.logger.error(err);
-                      return reject(err);
-                    }
-                    return accept();
-                  });
+        }).then(function() {
+          planInfo.npm_org = planData.orgScope;
+          return Customer(loggedInUser).createSubscription(planInfo)
+            .tap(function(subscription) {
+              if (typeof subscription === 'string') {
+                request.logger.info("created subscription: ", planInfo);
+              }
+              return new P(function(accept, reject) {
+                User.new(request).dropCache(loggedInUser, function(err) {
+                  if (err) {
+                    request.logger.error(err);
+                    return reject(err);
+                  }
+                  return accept();
                 });
-              }).then(function(subscription) {
-              return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
-            }).then(function(extendedSponsorship) {
-              return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
-            }).then(function() {
-              return reply.redirect('/org/' + planInfo.npm_org);
-            });
-          })
+              });
+            }).then(function(subscription) {
+            return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
+          }).then(function(extendedSponsorship) {
+            return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
+          }).then(function() {
+            return reply.redirect('/org/' + planData.orgScope);
+          });
+        })
           .catch(function(err) {
             request.logger.error(err);
             throw err;
@@ -331,7 +334,7 @@ customer.subscribe = function(request, reply) {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             inUseError: true,
             orgScope: planData.orgScope,
-            fullname: planData.fullname,
+            humanName: planData["human-name"],
             notices: [err]
           });
         } else {

@@ -2,7 +2,7 @@ exports.bigco = {
   "name": "bigco",
   "description": "bigco organization",
   "resource": {
-    "fullname": "BigCo Enterprises"
+    "human_name": "BigCo Enterprises"
   },
   "created": "2015-07-10T20:29:37.816Z",
   "updated": "2015-07-10T21:07:16.799Z",
@@ -13,7 +13,7 @@ exports.bigcoDeleted = {
   "name": "bigco",
   "description": "bigco organization",
   "resource": {
-    "fullname": "BigCo Enterprises"
+    "human_name": "BigCo Enterprises"
   },
   "created": "2015-07-10T20:29:37.816Z",
   "updated": "2015-07-10T21:07:16.799Z",
@@ -170,7 +170,7 @@ exports.notBobsOrg = {
   "name": "bligco",
   "description": "bligco organization",
   "resource": {
-    "fullname": "BligCo Enterprises"
+    "human_name": "BligCo Enterprises"
   },
   "created": "2015-07-10T20:29:37.816Z",
   "updated": "2015-07-10T21:07:16.799Z",

@@ -33,6 +33,15 @@ exports.getOrg = function(request, reply) {
           }
         }
 
+        org = org || {};
+        org.info = org.info || {};
+
+        if (org.info.resource && org.info.resource.human_name) {
+          org.info.human_name = org.info.resource.human_name;
+        } else {
+          org.info.human_name = org.info.name;
+        }
+
         opts.org = org;
         opts.org.users.items = org.users.items.map(function(user) {
           user.sponsoredByOrg = user.sponsored === 'by-org';
@@ -255,7 +264,7 @@ exports.deleteOrg = function(request, reply) {
 };
 
 var orgSubscriptionSchema = {
-  fullname: Joi.string().optional().allow(''),
+  "human-name": Joi.string().optional().allow(''),
   orgScope: Joi.string().required()
 };
 
@@ -282,7 +291,7 @@ exports.validateOrgCreation = function(request, reply) {
         param += "&inUseError=true";
         param += opts.inUseByMe ? "&inUseByMe=" + !!opts.inUseByMe : "";
         param += planData.orgScope ? "&orgScope=" + planData.orgScope : "";
-        param += planData.fullname ? "&fullname=" + planData.fullname : "";
+        param += planData["human-name"] ? "&human-name=" + planData["human-name"] : "";
 
         url = url + param;
         return reply.redirect(url);
@@ -352,7 +361,7 @@ exports.validateOrgCreation = function(request, reply) {
               .then(reportScopeInUseError)
               .catch(function(err) {
                 if (err.statusCode === 404) {
-                  var url = '/org/create/billing?orgScope=' + planData.orgScope + '&fullname=' + planData.fullname;
+                  var url = '/org/create/billing?orgScope=' + planData.orgScope + '&human-name=' + planData["human-name"];
                   return reply.redirect(url);
                 } else {
                   response.logger.error(err);
@@ -415,7 +424,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
       var url = '/org/transfer-user-name';
       var param = token ? "?notice=" + token : "";
       param += planData.orgScope ? "&orgScope=" + planData.orgScope : "";
-      param += planData.fullname ? "&fullname=" + planData.fullname : "";
+      param += planData["human-name"] ? "&human-name=" + planData["human-name"] : "";
 
       url = url + param;
       return reply.redirect(url);
@@ -436,7 +445,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
             .catch(function(err) {
               if (err.statusCode === 404) {
                 return reply.view('org/billing', {
-                  fullname: request.query.fullname,
+                  humanName: request.query["human-name"],
                   orgScope: orgScope,
                   newUser: newUser,
                   stripePublicKey: process.env.STRIPE_PUBLIC_KEY
@@ -453,7 +462,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
       });
   } else {
     return reply.view('org/billing', {
-      fullname: request.query.fullname,
+      humanName: request.query["human-name"],
       orgScope: orgScope,
       stripePublicKey: process.env.STRIPE_PUBLIC_KEY
     });
@@ -482,7 +491,7 @@ exports.getTransferPage = function(request, reply) {
     });
   }
   return reply.view('org/transfer', {
-    fullname: request.query.fullname,
+    humanName: request.query["human-name"],
     orgScope: request.query.orgScope
   });
 };

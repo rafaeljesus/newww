@@ -24,11 +24,17 @@ describe('Org', function() {
     it("errors out if bearer token is not included", function(done) {
       var orgMock = nock('https://user-api-example.com')
         .put('/org', {
-          name: 'bigco'
+          name: 'bigco',
+          resource: {
+            "human_name": "Bob's Big Co"
+          }
         })
         .reply(401);
 
-      Org('bob').create('bigco', function(err, org) {
+      Org('bob').create({
+        scope: 'bigco',
+        humanName: "Bob's Big Co"
+      }, function(err, org) {
         orgMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('no bearer token included in creation of bigco');
@@ -45,18 +51,26 @@ describe('Org', function() {
         }
       })
         .put('/org', {
-          name: "bigco"
+          name: "bigco",
+          resource: {
+            "human_name": "Bob's Big Co"
+          }
         })
         .reply(200, {
           "name": "bigco",
           "description": "",
-          "resource": {},
+          "resource": {
+            "human_name": "Bob's Big Co"
+          },
           "created": "2015-06-19T23:35:42.659Z",
           "updated": "2015-06-19T23:35:42.659Z",
           "deleted": null
         });
 
-      Org('bob').create("bigco", function(err, org) {
+      Org('bob').create({
+        scope: "bigco",
+        humanName: "Bob's Big Co"
+      }, function(err, org) {
         orgMock.done();
         expect(err).to.not.exist();
         expect(org.name).to.equal("bigco");
@@ -83,7 +97,9 @@ describe('Org', function() {
         .reply(200, {
           'name': 'bigco',
           'description': '',
-          'resource': {},
+          'resource': {
+            "human_name": "Bob's Big Co"
+          },
           'created': '2015-06-19T23:35:42.659Z',
           'updated': '2015-06-19T23:35:42.659Z',
           'deleted': null
@@ -104,6 +120,7 @@ describe('Org', function() {
         expect(err).to.be.null();
         expect(org.users.items[0].name).to.equal('bob');
         expect(org.info.name).to.equal('bigco');
+        expect(org.info.resource.human_name).to.equal("Bob's Big Co");
         expect(org.packages.items[0].name).to.equal('fake');
         expect(org.deleted).to.be.undefined();
         done();
@@ -139,7 +156,7 @@ describe('Org', function() {
         name: 'bigco',
         description: 'bigco organization',
         resource: {
-          fullname: 'BigCo Enterprises'
+          human_name: 'BigCo Enterprises'
         }
       };
 
@@ -168,7 +185,7 @@ describe('Org', function() {
         name: 'bigco',
         description: 'bigco organization',
         resource: {
-          fullname: 'BigCo Enterprises'
+          human_name: 'BigCo Enterprises'
         }
       };
 
@@ -197,7 +214,7 @@ describe('Org', function() {
         name: 'bigco',
         description: 'bigco organization',
         resource: {
-          fullname: 'BigCo Enterprises'
+          human_name: 'BigCo Enterprises'
         }
       };
 
@@ -226,7 +243,7 @@ describe('Org', function() {
         name: 'bigco',
         description: 'bigco organization',
         resource: {
-          fullname: 'BigCo Enterprises'
+          human_name: 'BigCo Enterprises'
         }
       };
 
@@ -240,7 +257,7 @@ describe('Org', function() {
           name: "bigco",
           description: "bigco organization",
           resource: {
-            fullname: "BigCo Enterprises"
+            human_name: "BigCo Enterprises"
           },
           created: "2015-06-19T23:35:42.659Z",
           updated: "2015-07-10T19:59:08.395Z",
@@ -250,8 +267,9 @@ describe('Org', function() {
       Org('bob').update(data, function(err, org) {
         orgMocks.done();
         expect(err).to.be.null();
+        expect(org.name).to.equal("bigco");
         expect(org.description).to.equal("bigco organization");
-        expect(org.resource.fullname).to.equal("BigCo Enterprises");
+        expect(org.resource.human_name).to.equal("BigCo Enterprises");
         done();
       });
     });

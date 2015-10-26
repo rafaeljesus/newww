@@ -734,4 +734,104 @@ describe("User", function() {
       });
     });
   });
+
+  describe('cli tokens', function() {
+    it('gets tokens from the user-acl', function(done) {
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+      });
+
+      var userMock = nock("https://user.com")
+        .get("/user/bob/tokens")
+        .reply(200, fixtures.users.bobTokens);
+
+      User.getCliTokens("bob")
+        .catch(function(err) {
+          expect(err).to.be.null();
+        })
+        .then(function(data) {
+          expect(data).to.be.an.array();
+          expect(data[0]).to.include('token');
+        })
+        .finally(function() {
+          userMock.done();
+          done();
+        });
+    });
+
+    it('returns an error if there is one while getting tokens', function(done) {
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+      });
+
+      var userMock = nock("https://user.com")
+        .get("/user/bob/tokens")
+        .reply(404);
+
+      User.getCliTokens("bob")
+        .catch(function(err) {
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(404);
+          expect(err.message).to.equal('error getting cli tokens for user bob');
+        })
+        .then(function(data) {
+          expect(data).to.be.undefined();
+        })
+        .finally(function() {
+          userMock.done();
+          done();
+        });
+    });
+
+    it('logs out specific tokens', function(done) {
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+      });
+
+      var token = fixtures.users.bobTokens[0].token;
+
+      var userMock = nock("https://user.com")
+        .post("/user/-/logout", {
+          'auth_token': token
+        })
+        .reply(200);
+
+      User.logoutCliToken(token)
+        .catch(function(err) {
+          expect(err).to.not.exist();
+        })
+        .then(function() {
+          userMock.done();
+          done();
+        });
+    });
+
+    it('returns an error if unable to log out a specific token', function(done) {
+      User = new (require("../../models/user"))({
+        host: "https://user.com",
+      });
+
+      var token = fixtures.users.bobTokens[0].token;
+
+      var userMock = nock("https://user.com")
+        .post("/user/-/logout", {
+          'auth_token': token
+        })
+        .reply(404);
+
+      User.logoutCliToken(token)
+        .catch(function(err) {
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(404);
+          expect(err.message).to.equal('error logging token out; token=' + token);
+        })
+        .then(function(body) {
+          expect(body).to.be.undefined();
+        })
+        .finally(function() {
+          userMock.done();
+          done();
+        });
+    });
+  });
 });

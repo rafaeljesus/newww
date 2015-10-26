@@ -275,3 +275,27 @@ exports.bobPrivateModules = [
 ];
 
 exports.packages = require("./user_packages")
+
+exports.bobTokens = [
+  {
+    "created": "2015-03-20T20:27:21.258Z",
+    "deleted": null,
+    "token": "93891b45-ab16-4b9e-9ac3-239613bdaba6",
+    "updated": "2015-03-20T20:27:21.258Z",
+    "user_id": 1
+  },
+  {
+    "created": "2015-05-20T20:18:45.877Z",
+    "deleted": null,
+    "token": "0c375256-df48-41a5-87b0-ec996a0c27b5",
+    "updated": "2015-05-20T20:18:45.877Z",
+    "user_id": 1
+  },
+  {
+    "created": "2015-05-26T18:29:58.808Z",
+    "deleted": null,
+    "token": "1dd3b917-f3d0-4506-84f2-b134489b8633",
+    "updated": "2015-05-26T18:29:58.808Z",
+    "user_id": 1
+  }
+]

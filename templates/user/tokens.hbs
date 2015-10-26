@@ -1,0 +1,49 @@
+{{> profile-secondary-nav}}
+
+<div class="container">
+
+  <hgroup>
+    <h1>Authentication Tokens</h1>
+  </hgroup>
+
+  <p class="notice">
+    When you log into npm via the Command Line Interface (CLI), we create a unique, one-time identifier that we give to your computer, which is stored in your <a href="https://docs.npmjs.com/files/npmrc">.npmrc</a> file. The token gives your CLI the ability to do things like publish and unpublish packages, and manage owners and teams. You can share tokens with, for example, CI systems to allow them to download and publish your packages.</p>
+
+  <p class="notice">
+    If you're not using a token any more, or the token got posted somewhere publicly where somebody unauthorized can use it, you should revoke that token. You can do that below. Once you've done so, anywhere that was using the token will need to get a new one, for instance by running `npm login` again.
+  </p>
+
+  <table class="subscriptions">
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Created</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each tokens}}
+        <tr>
+          <td>{{token}}</td>
+          <td data-date="{{created}}" data-date-format="%B %e %Y">
+            {{created}}
+          </td>
+          <td>
+            <form method="POST" id="token-delete-{{@index}}" action="/settings/token/{{token}}">
+              {{#with ../this}}
+              {{> form_security }}
+              {{/with}}
+              <input type="hidden" name="updateType" value="deleteToken" />
+              <button type="submit" class="icon-x"><span class="a11y-only">Delete Token {{token}}</span></button>
+            </form>
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td colspan=2>You are not logged in to any cli sessions.<td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+</div>

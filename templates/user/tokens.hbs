@@ -3,11 +3,14 @@
 <div class="container">
 
   <hgroup>
-    <h1>Authenticated Tokens</h1>
+    <h1>Authentication Tokens</h1>
   </hgroup>
 
   <p class="notice">
-    When you log into npm via the Command Line Interface (CLI), an authentication token is created in your <a href="https://docs.npmjs.com/files/npmrc">.npmrc</a> file. This authentication token is used in lieu of a username/password combination, thus enabling anyone with access to that token the ability to be your user and do things such as publish and unpublish packages. When you delete a token, your username is immediately logged out from the instance using the .npmrc with that token, and you will have to run `npm login` again.
+    When you log into npm via the Command Line Interface (CLI), we create a unique, one-time identifier that we give to your computer, which is stored in your <a href="https://docs.npmjs.com/files/npmrc">.npmrc</a> file. The token gives your CLI the ability to do things like publish and unpublish packages, and manage owners and teams. You can share tokens with, e.g. CI systems to allow them to download and publish your packages.</p>
+      
+  <p class="notice">
+    If you're not using a token any more, or the token got posted somewhere publicly where somebody unauthorized can use it, you should revoke that token. You can do that below. Once you've done so, anywhere that was using the token will need to get a new one, for instance by running `npm login` again.
   </p>
 
   <table class="subscriptions">

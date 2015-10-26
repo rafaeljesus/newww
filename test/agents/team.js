@@ -18,7 +18,7 @@ describe('Team', function() {
   });
 
   describe('addUsers', function() {
-    it('returns and error if bearer token is incorrect', function(done) {
+    it('returns an error if bearer token is incorrect', function(done) {
       var teamMock = nock('https://user-api-example.com')
         .put('/team/bigco/bigteam/user', {
           user: 'littlebob'
@@ -36,6 +36,44 @@ describe('Team', function() {
         done();
       });
     });
-  });
 
+    it('returns an error if org or team is not found', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .put('/team/bigco/bigteam/user', {
+          user: 'littlebob'
+        })
+        .reply(404);
+
+      Team('bob').addUsers({
+        teamName: 'bigteam',
+        orgScope: 'bigco',
+        users: ['littlebob']
+      }, function(err, body) {
+        teamMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('Team or Org not found');
+        done();
+      });
+    });
+
+    it('returns an error if user is already on team', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .put('/team/bigco/bigteam/user', {
+          user: 'littlebob'
+        })
+        .reply(409);
+
+      Team('bob').addUsers({
+        teamName: 'bigteam',
+        orgScope: 'bigco',
+        users: ['littlebob']
+      }, function(err, body) {
+        teamMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('The provided User is already on this Team');
+        done();
+      });
+    });
+
+  });
 });

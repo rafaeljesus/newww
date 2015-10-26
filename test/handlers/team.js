@@ -9,10 +9,14 @@ var generateCrumb = require("../handlers/crumb.js"),
   it = lab.test,
   expect = Code.expect,
   server,
-  fixtures = require('../fixtures');
+  fixtures = require('../fixtures'),
+  URL = require('url'),
+  qs = require('qs');
 
 var requireInject = require('require-inject');
 var redisMock = require('redis-mock');
+var TokenFacilitator = require('token-facilitator');
+var client = redisMock.createClient();
 
 before(function(done) {
   process.env.FEATURE_ORG_BILLING = 'bob,betty';
@@ -143,5 +147,169 @@ describe('team', function() {
     });
   });
 
-  describe('adding a team to an org', function() {});
+  describe('adding a team to an org', function() {
+    it('renders an error on invalid orgname', function(done) {
+      generateCrumb(server, function(crumb) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+
+
+        var options = {
+          url: "/org/big@@@@@co/team",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('Invalid Org Name.');
+            done();
+          });
+        });
+      });
+    });
+    it('renders an error on invalid team name', function(done) {
+      generateCrumb(server, function(crumb) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+
+
+        var options = {
+          url: "/org/bigco/team",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "team-name": "bigco@@@team",
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('Invalid Team Name.');
+            done();
+          });
+        });
+      });
+    });
+    it('renders an error on org missing', function(done) {
+      generateCrumb(server, function(crumb) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var orgMock = nock("https://user-api-example.com")
+          .get('/org/bigco')
+          .reply(404)
+          .get('/org/bigco/user')
+          .reply(404)
+          .get('/org/bigco/package')
+          .reply(404);
+
+
+
+        var options = {
+          url: "/org/bigco/team",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "team-name": "bigcoteam",
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(404);
+          expect(resp.request.response.source.template).to.equal('errors/not-found');
+          done();
+        });
+      });
+    });
+    it('renders an error on 500+ error', function(done) {
+      generateCrumb(server, function(crumb) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var orgMock = nock("https://user-api-example.com")
+          .get('/org/bigco')
+          .reply(500)
+          .get('/org/bigco/user')
+          .reply(500)
+          .get('/org/bigco/package')
+          .reply(500);
+
+
+
+        var options = {
+          url: "/org/bigco/team",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "team-name": "bigcoteam",
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(200);
+          expect(resp.request.response.source.template).to.equal('errors/internal');
+          done();
+        });
+      });
+    });
+  });
 });

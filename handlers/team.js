@@ -1,5 +1,6 @@
 var P = require('bluebird');
 var Org = require('../agents/org');
+var Team = require('../agents/team');
 var invalidUserName = require('npm-user-validate').username;
 
 exports.getTeamCreationPage = function(request, reply) {
@@ -67,7 +68,7 @@ exports.addTeamToOrg = function(request, reply) {
 
   if (invalidUserName(orgName)) {
     return request.saveNotifications([
-      P.reject("Invalid Team Name.")
+      P.reject("Invalid Org Name.")
     ]).then(function(token) {
       var url = '/org';
       var param = token ? "?notice=" + token : "";
@@ -95,29 +96,29 @@ exports.addTeamToOrg = function(request, reply) {
 
   Org(loggedInUser)
     .get(orgName)
-    .catch(function(err) {
-      request.logger.error(err);
-
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
-      } else {
-        return reply.view('errors/internal', err);
-      }
-    })
-    .then(function(org) {
+    .then(function() {
       return Org(loggedInUser)
         .addTeam({
           scope: orgName,
           teamName: teamName,
           description: description
-        })
+        });
+    })
+    .then(function() {
+      // add members
+      return Team(loggedInUser)
+        .addUsers(members);
+    })
+    .then(function() {
+      return reply.view('team/show');
     })
     .catch(function(err) {
       request.logger.error(err);
-
-      if (err.statusCode === 401) {
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      } else if (err.statusCode < 500) {
         return request.saveNotifications([
-          P.reject("You do not have access to that")
+          P.reject(err.message)
         ]).then(function(token) {
           var url = '/org';
           var param = token ? "?notice=" + token : "";
@@ -127,25 +128,9 @@ exports.addTeamToOrg = function(request, reply) {
           request.logger.log(err);
           return reply.view('errors/internal', err);
         });
-      } else if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
-      } else if (err.statusCode === 409) {
-        return request.saveNotifications([
-          P.reject(err.message)
-        ]).then(function(token) {
-          var url = '/org/' + orgName + "/team/create";
-          var param = token ? "?notice=" + token : "";
-          url = url + param;
-          return reply.redirect(url);
-        }).catch(function(err) {
-          request.logger.log(err);
-          return reply.view('errors/internal', err);
-        });
       } else {
         return reply.view('errors/internal', err);
       }
-    })
-    .then(function(team) {});
+    });
 
-  return reply.view('team/info');
 };

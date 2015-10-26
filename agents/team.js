@@ -50,7 +50,7 @@ Team.prototype._addUser = function(opts, callback) {
       }
 
       if (resp.statusCode === 409) {
-        err = new Error('The provided User\'s is already on this Team');
+        err = new Error('The provided User is already on this Team');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

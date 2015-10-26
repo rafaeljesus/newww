@@ -1,4 +1,3 @@
-var invalidUserName = require('npm-user-validate').username;
 module.exports = [
   {
     // shortcut for viewing your own stars
@@ -48,11 +47,11 @@ module.exports = [
     method: "GET",
     handler: require('../facets/user/show-email-edit')
   }, {
-    path: "/security",
+    path: "/settings/tokens",
     method: "GET",
     handler: require('../handlers/user').getCliTokens
   }, {
-    path: "/token/{token}",
+    path: "/settings/token/{token}",
     method: "POST",
     handler: require('../handlers/user').handleCliToken
   }, {

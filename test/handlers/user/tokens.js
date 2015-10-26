@@ -23,12 +23,12 @@ after(function(done) {
   server.stop(done);
 });
 
-describe('Security', function() {
+describe('Tokens', function() {
 
   describe('getting to the page with cli tokens', function() {
     it('redirects an unauthorized user to the login page', function(done) {
       var options = {
-        url: '/security'
+        url: '/settings/tokens'
       };
 
       server.inject(options, function(resp) {
@@ -50,7 +50,7 @@ describe('Security', function() {
         .reply(404);
 
       var options = {
-        url: '/security',
+        url: '/settings/tokens',
         credentials: users.bob
       };
 
@@ -60,7 +60,7 @@ describe('Security', function() {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.context.tokens).to.deep.equal(users.bobTokens);
-        expect(source.template).to.equal('user/security');
+        expect(source.template).to.equal('user/tokens');
         done();
       });
     });
@@ -77,7 +77,7 @@ describe('Security', function() {
         .reply(404);
 
       var options = {
-        url: '/security',
+        url: '/settings/tokens',
         credentials: users.bob
       };
 
@@ -87,7 +87,7 @@ describe('Security', function() {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.context.tokens).to.deep.equal([]);
-        expect(source.template).to.equal('user/security');
+        expect(source.template).to.equal('user/tokens');
         done();
       });
     });
@@ -112,7 +112,7 @@ describe('Security', function() {
       generateCrumb(server, function(crumb) {
 
         var options = {
-          url: '/token/' + token,
+          url: '/settings/token/' + token,
           method: 'POST',
           credentials: users.bob,
           payload: {
@@ -128,7 +128,7 @@ describe('Security', function() {
           userMock.done();
           licenseMock.done();
           expect(resp.statusCode).to.equal(302);
-          expect(resp.headers.location).to.include('security');
+          expect(resp.headers.location).to.include('settings/tokens');
           done();
         });
       });
@@ -152,7 +152,7 @@ describe('Security', function() {
       generateCrumb(server, function(crumb) {
 
         var options = {
-          url: '/token/' + token,
+          url: '/settings/token/' + token,
           method: 'POST',
           credentials: users.bob,
           payload: {
@@ -168,7 +168,7 @@ describe('Security', function() {
           userMock.done();
           licenseMock.done();
           expect(resp.statusCode).to.equal(302);
-          expect(resp.headers.location).to.include('security?notice=');
+          expect(resp.headers.location).to.include('settings/tokens?notice=');
           done();
         });
       });

@@ -244,7 +244,7 @@ exports.getCliTokens = function(request, reply) {
       opts.tokens = [];
     })
     .finally(function() {
-      return reply.view('user/security', opts);
+      return reply.view('user/tokens', opts);
     });
 };
 
@@ -254,24 +254,24 @@ exports.handleCliToken = function(request, reply) {
   if (request.params && request.params.token) {
     UserModel.logoutCliToken(request.params.token)
       .then(function() {
-        return reply.redirect('/security');
+        return reply.redirect('/settings/tokens');
       })
       .catch(function(err) {
         err = new Error("Unable to delete token " + request.params.token);
         return request.saveNotifications([
           P.reject(err.message)
         ]).then(function(errToken) {
-          var url = '/security';
+          var url = '/settings/tokens';
           var param = errToken ? "?notice=" + errToken : "";
 
           url = url + param;
           return reply.redirect(url);
         }).catch(function(err) {
           request.logger.error(err);
-          return reply.redirect('/security');
+          return reply.redirect('/settings/tokens');
         });
       });
   } else {
-    return reply.redirect('/security');
+    return reply.redirect('/settings/tokens');
   }
 };

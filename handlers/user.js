@@ -3,7 +3,9 @@ var User = require('../models/user'),
   presenter = require('../presenters/user'),
   userValidate = require('npm-user-validate'),
   merge = require('lodash').merge,
+  P = require('bluebird'),
   Scope = require('../agents/scope');
+
 var feature = require('../lib/feature-flags');
 
 
@@ -225,4 +227,51 @@ exports.showProfileEdit = function(request, reply) {
   };
 
   return reply.view('user/profile-edit', opts);
+};
+
+exports.getCliTokens = function(request, reply) {
+  var UserModel = User.new(request);
+
+  var opts = {};
+
+  UserModel.getCliTokens(request.loggedInUser.name)
+    .then(function(tokens) {
+      opts.tokens = tokens;
+    })
+    .catch(function(err) {
+      request.logger.warn('unable to get cli tokens; user=' + request.loggedInUser.name);
+      request.logger.warn(err);
+      opts.tokens = [];
+    })
+    .finally(function() {
+      return reply.view('user/security', opts);
+    });
+};
+
+exports.handleCliToken = function(request, reply) {
+  var UserModel = User.new(request);
+
+  if (request.params && request.params.token) {
+    UserModel.logoutCliToken(request.params.token)
+      .then(function() {
+        return reply.redirect('/security');
+      })
+      .catch(function(err) {
+        err = new Error("Unable to delete token " + request.params.token);
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(errToken) {
+          var url = '/security';
+          var param = errToken ? "?notice=" + errToken : "";
+
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
+          return reply.redirect('/security');
+        });
+      });
+  } else {
+    return reply.redirect('/security');
+  }
 };

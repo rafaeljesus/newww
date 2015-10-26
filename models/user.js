@@ -384,6 +384,62 @@ User.prototype.signup = function(user, callback) {
     .nodeify(callback);
 };
 
+User.prototype.getCliTokens = function getCliTokens(name) {
+  var url = fmt('%s/user/%s/tokens', this.host, name);
+
+  return new P(function(accept, reject) {
+
+    var opts = {
+      url: url,
+      json: true
+    };
+
+    Request.get(opts, function(err, resp, body) {
+
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode > 399) {
+        err = Error('error getting cli tokens for user ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  });
+};
+
+User.prototype.logoutCliToken = function logoutCliToken(token) {
+  var url = fmt('%s/user/-/logout', this.host);
+
+  var opts = {
+    url: url,
+    json: true,
+    form: {
+      'auth_token': token
+    }
+  };
+
+  return new P(function(accept, reject) {
+
+    Request.post(opts, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode > 399) {
+        err = Error('error logging token out; token=' + token);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  });
+};
+
 User.prototype.getMailchimp = function getMailchimp() {
   if (!chimp) {
     chimp = new mailchimp.Mailchimp(process.env.MAILCHIMP_KEY);

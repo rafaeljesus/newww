@@ -1,0 +1,43 @@
+{{> profile-secondary-nav}}
+
+<div class="container">
+
+  <hgroup>
+    <h1>Security</h1>
+  </hgroup>
+
+
+  <table class="subscriptions">
+    <thead>
+      <tr>
+        <th>Token</th>
+        <th>Last Updated</th>
+        <th>Delete</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each tokens}}
+        <tr>
+          <td>{{token}}</td>
+          <td data-date="{{updated}}" data-date-format="%B %e %Y">
+            {{updated}}
+          </td>
+          <td>
+            <form method="POST" id="token-delete-{{@index}}" action="/token/{{token}}">
+              {{#with ../this}}
+              {{> form_security }}
+              {{/with}}
+              <input type="hidden" name="updateType" value="deleteToken" />
+              <button type="submit" class="icon-x"><span class="a11y-only">Delete Token {{token}}</span></button>
+            </form>
+          </td>
+        </tr>
+      {{else}}
+        <tr>
+          <td colspan=2>You are not logged in to any cli sessions.<td>
+        </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+</div>

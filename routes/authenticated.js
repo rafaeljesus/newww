@@ -48,6 +48,14 @@ module.exports = [
     method: "GET",
     handler: require('../facets/user/show-email-edit')
   }, {
+    path: "/security",
+    method: "GET",
+    handler: require('../handlers/user').getCliTokens
+  }, {
+    path: "/token/{token}",
+    method: "POST",
+    handler: require('../handlers/user').handleCliToken
+  }, {
     path: "/password",
     method: "GET",
     handler: require('../facets/user/show-password')

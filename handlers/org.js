@@ -126,34 +126,34 @@ exports.removeUserFromOrg = function(request, reply) {
   };
   var opts = {};
 
-  request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
-
-    if (err) {
+  return request.customer.getLicenseIdForOrg(orgName)
+    .then(function(licenseId) {
+      return request.customer.revokeSponsorship(user.user, licenseId)
+        .then(function() {
+          return Org(loggedInUser)
+            .removeUser(orgName, user.user)
+            .then(function() {
+              return exports.getOrg(request, reply);
+            })
+            .catch(function(err) {
+              request.logger.error(err);
+              return reply.view('errors/internal', err).code(err.statusCode);
+            });
+        })
+        .catch(function(err) {
+          request.logger.error('issue revoking sponsorship for user ', user);
+          request.logger.error(err);
+          // TODO: make better error page here
+          return reply.view('errors/internal', err).code(err.statusCode);
+        });
+    })
+    .catch(function(err) {
       request.logger.error('could not get license ID for ' + orgName);
       request.logger.error(err);
       // TODO: make better error page here
       return reply.view('errors/internal', err).code(404);
-    }
-
-    request.customer.revokeSponsorship(user.user, licenseId, function(err) {
-
-      if (err) {
-        request.logger.error('issue revoking sponsorship for user ', user);
-        request.logger.error(err);
-        // TODO: make better error page here
-        return reply.view('errors/internal', err).code(err.statusCode);
-      }
-
-      Org(loggedInUser)
-        .removeUser(orgName, user.user, function(err) {
-          if (err) {
-            request.logger.error(err);
-            return reply.view('errors/internal', err).code(err.statusCode);
-          }
-          return exports.getOrg(request, reply);
-        });
     });
-  });
+
 };
 
 exports.updateUserPayStatus = function(request, reply) {

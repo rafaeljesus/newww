@@ -126,34 +126,35 @@ exports.removeUserFromOrg = function(request, reply) {
   };
   var opts = {};
 
-  request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
-
-    if (err) {
-      request.logger.error('could not get license ID for ' + orgName);
-      request.logger.error(err);
-      // TODO: make better error page here
-      return reply.view('errors/internal', err).code(404);
-    }
-
-    request.customer.revokeSponsorship(user.user, licenseId, function(err) {
-
-      if (err) {
-        request.logger.error('issue revoking sponsorship for user ', user);
+  return request.customer.getLicenseIdForOrg(orgName)
+    .then(function(licenseId) {
+      return request.customer.revokeSponsorship(user.user, licenseId)
+    })
+    .then(function() {
+      return Org(loggedInUser)
+        .removeUser(orgName, user.user)
+    })
+    .then(function() {
+      return reply.redirect('/org/' + orgName);
+    })
+    .catch(function(err) {
+      if (err.statusCode >= 500) {
         request.logger.error(err);
-        // TODO: make better error page here
-        return reply.view('errors/internal', err).code(err.statusCode);
-      }
-
-      Org(loggedInUser)
-        .removeUser(orgName, user.user, function(err) {
-          if (err) {
-            request.logger.error(err);
-            return reply.view('errors/internal', err).code(err.statusCode);
-          }
-          return exports.getOrg(request, reply);
+        return reply.view('errors/internal', err);
+      } else {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/' + orgName;
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
         });
-    });
-  });
+      }
+    })
+
 };
 
 exports.updateUserPayStatus = function(request, reply) {

@@ -305,33 +305,37 @@ Org.prototype.getTeams = function(name, callback) {
 
 Org.prototype.removeUser = function(name, userId, callback) {
   var url = USER_HOST + '/org/' + name + '/user/' + userId;
+  var self = this;
 
-  Request.del({
-    url: url,
-    json: true,
-    id: name,
-    userId: userId,
-    headers: {
-      bearer: this.bearer
-    }
-  }, function(err, resp, removedUser) {
-    if (err) {
-      callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.del({
+      url: url,
+      json: true,
+      id: name,
+      userId: userId,
+      headers: {
+        bearer: self.bearer
+      }
+    }, function(err, resp, removedUser) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('org or user not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('org or user not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(removedUser);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
+      return accept(removedUser);
 
-    return callback(null, removedUser);
-  });
+    });
+  }).nodeify(callback);
+
 };

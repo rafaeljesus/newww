@@ -138,8 +138,8 @@ exports.removeUserFromOrg = function(request, reply) {
       return reply.redirect('/org/' + orgName);
     })
     .catch(function(err) {
-      if (err.statusCode === 500) {
-        return reply.view('errors/internal', err).statusCode(500);
+      if (err.statusCode >= 500) {
+        return reply.view('errors/internal', err);
       } else {
         return request.saveNotifications([
           P.reject(err.message)

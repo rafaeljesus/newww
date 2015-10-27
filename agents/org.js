@@ -327,11 +327,10 @@ Org.prototype.removeUser = function(name, userId, callback) {
       }
 
       if (resp.statusCode >= 400) {
-        err = new Error(body);
+        err = new Error(removedUser);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
-
 
       return accept(removedUser);
 

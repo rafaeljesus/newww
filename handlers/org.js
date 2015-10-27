@@ -139,6 +139,7 @@ exports.removeUserFromOrg = function(request, reply) {
     })
     .catch(function(err) {
       if (err.statusCode >= 500) {
+        request.logger.error(err);
         return reply.view('errors/internal', err);
       } else {
         return request.saveNotifications([

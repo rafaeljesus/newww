@@ -1043,9 +1043,24 @@ describe('updating an org', function() {
         server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
-          expect(resp.statusCode).to.equal(404);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
-          done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('No org with that name exists');
+            done();
+          });
         });
       });
     });
@@ -1082,9 +1097,24 @@ describe('updating an org', function() {
         server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
-          expect(resp.statusCode).to.equal(404);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
-          done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('user or licenseId not found');
+            done();
+          });
         });
       });
     });
@@ -1135,9 +1165,24 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(404);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
-          done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('org or user not found');
+            done();
+          });
         });
       });
     });
@@ -1149,8 +1194,6 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob@boom.me")
-          .reply(200, fixtures.customers.fetched_happy)
           .get("/customer/bob/stripe/subscription")
           .reply(200, fixtures.users.bobsubscriptions)
           .delete("/sponsorship/1/betty")
@@ -1174,15 +1217,6 @@ describe('updating an org', function() {
             "role": "developer",
             "updated": "2015-08-05T15:26:46.970Z",
             "user_id": 15
-          })
-          .get("/org/bigco")
-          .reply(200, fixtures.orgs.bigco)
-          .get("/org/bigco/user")
-          .reply(200, fixtures.orgs.bigcoAddedUsers)
-          .get('/org/bigco/package')
-          .reply(200, {
-            count: 1,
-            items: [fixtures.packages.fake]
           });
 
         var options = {
@@ -1204,8 +1238,8 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(200);
-          expect(resp.request.response.source.template).to.equal('org/info');
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.equal('/org/bigco');
           done();
         });
       });

@@ -365,12 +365,12 @@ exports.validateOrgCreation = function(request, reply) {
                   var url = '/org/create/billing?orgScope=' + planData.orgScope + '&human-name=' + planData["human-name"];
                   return reply.redirect(url);
                 } else {
-                  response.logger.error(err);
+                  request.logger.error(err);
                   return reply.view('errors/internal', err);
                 }
               });
           } else {
-            response.logger.error(err);
+            request.logger.error(err);
             return reply.view('errors/internal', err);
           }
         });
@@ -452,12 +452,12 @@ exports.getOrgCreationBillingPage = function(request, reply) {
                   stripePublicKey: process.env.STRIPE_PUBLIC_KEY
                 });
               } else {
-                response.logger.error(err);
+                request.logger.error(err);
                 return reply.view('errors/internal', err);
               }
             });
         } else {
-          response.logger.error(err);
+          request.logger.error(err);
           return reply.view('errors/internal', err);
         }
       });

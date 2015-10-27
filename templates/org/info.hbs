@@ -77,8 +77,8 @@
             </td>
             {{#if ../currentUserIsAdmin}}
             <td>
-              <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../org.info.name}}">
-                {{#with ../this}}
+              <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
+                {{#with ../../this}}
                 {{> form_security }}
                 {{/with}}
                   <input type="hidden" name="username" value="{{name}}" />
@@ -148,7 +148,7 @@
             {{#if ../currentUserIsAdmin}}
               <td>
                 <div class="collapsible-wrapper">
-                <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../org.info.name}}" class="edit-pay-status">
+                <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../org.info.name}}" class="edit-pay-status">
                 <div class="switch-container pay-status">
                   <label><span class="a11y-only">Paid Status</span>
                   {{#if sponsoredByOrg}}
@@ -165,7 +165,7 @@
                   <span class="switch-label checked-text" aria-hidden="true">paid</span>
                   </label>
                 </div>
-                  {{#with ../this}}
+                  {{#with ../../this}}
                   {{> form_security }}
                   {{/with}}
                     <input type="hidden" name="username" value="{{name}}" />
@@ -182,10 +182,10 @@
               </td>
               <td>
                 <div class="collapsible-wrapper">
-                <form method="POST" id="org-user-delete-{{@index}}" action="/org/{{../org.info.name}}">
-                  {{#with ../this}}
-                  {{> form_security }}
-                  {{/with}}
+                  <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
+                    {{#with ../../this}}
+                    {{> form_security }}
+                    {{/with}}
                     <input type="hidden" name="username" value="{{name}}" />
                     <input type="hidden" name="updateType" value="deleteUser" />
                     <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User {{name}}</span></button>

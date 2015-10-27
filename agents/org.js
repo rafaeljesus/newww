@@ -305,6 +305,7 @@ Org.prototype.getTeams = function(name, callback) {
 
 Org.prototype.removeUser = function(name, userId, callback) {
   var url = USER_HOST + '/org/' + name + '/user/' + userId;
+  var self = this;
 
   return new P(function(accept, reject) {
     Request.del({
@@ -313,7 +314,7 @@ Org.prototype.removeUser = function(name, userId, callback) {
       id: name,
       userId: userId,
       headers: {
-        bearer: this.bearer
+        bearer: self.bearer
       }
     }, function(err, resp, removedUser) {
       if (err) {
@@ -335,6 +336,6 @@ Org.prototype.removeUser = function(name, userId, callback) {
       return accept(removedUser);
 
     });
-  }.bind(this)).nodeify(callback);
+  }).nodeify(callback);
 
 };

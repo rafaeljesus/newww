@@ -426,7 +426,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
       var url = '/org/transfer-user-name';
       var param = token ? "?notice=" + token : "";
       param += orgScope ? "&orgScope=" + orgScope : "";
-      param += "human-name" ? "&human-name=" + humanName : "";
+      param += humanName ? "&human-name=" + humanName : "";
 
       url = url + param;
       return reply.redirect(url);

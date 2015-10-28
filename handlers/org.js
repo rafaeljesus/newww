@@ -386,6 +386,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
 
   var newUser = request.query['new-user'];
   var orgScope = request.query.orgScope;
+  var humanName = request.query['human-name'];
 
   if (invalidUserName(orgScope)) {
     var err = new Error("Org Scope must be a valid entry");
@@ -424,13 +425,13 @@ exports.getOrgCreationBillingPage = function(request, reply) {
     ]).then(function(token) {
       var url = '/org/transfer-user-name';
       var param = token ? "?notice=" + token : "";
-      param += planData.orgScope ? "&orgScope=" + planData.orgScope : "";
-      param += planData["human-name"] ? "&human-name=" + planData["human-name"] : "";
+      param += orgScope ? "&orgScope=" + orgScope : "";
+      param += "human-name" ? "&human-name=" + humanName : "";
 
       url = url + param;
       return reply.redirect(url);
     }).catch(function(err) {
-      request.logger.error(err);
+      return request.logger.error(err);
     });
   };
 

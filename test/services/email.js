@@ -33,7 +33,7 @@ beforeEach(function(done) {
 
 before(function(done) {
   redisProcess = spawn('redis-server');
-  client = require("redis-url").connect();
+  client = require("redis").createClient();
   client.on("error", function(err) {
     console.log("Error " + err);
   });

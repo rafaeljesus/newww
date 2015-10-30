@@ -1,5 +1,5 @@
 var crypto = require('crypto');
-var client = require('redis-url').connect(process.env.REDIS_URL)
+var client = require('redis').createClient(process.env.REDIS_URL)
 
 client.on("error", function(err) {
   console.log("Error " + err);

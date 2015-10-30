@@ -130,6 +130,18 @@ describe('getting to the org marketing page', function() {
       done();
     });
   });
+
+  it('redirects from /orgs/orgname properly', function(done) {
+    var options = {
+      url: "/orgs/orgname"
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.equal('/org/orgname');
+      done();
+    });
+  });
 });
 
 describe('getting an org', function() {

@@ -61,7 +61,7 @@ var publicRoutes = [
   }, {
     // redirect plural forms to singular
     paths: [
-      "/orgs",
+      "/orgs/{org?}",
     ],
     feature: '!npmo',
     method: "GET",
@@ -71,7 +71,9 @@ var publicRoutes = [
         return reply.redirect("/org?join-beta").code(301);
       }
 
-      return reply.redirect("/org").code(301);
+      var urlAppend = request.params.org ? '/' + request.params.org : '';
+
+      return reply.redirect("/org" + urlAppend).code(301);
     }
   }, {
     path: "/org",

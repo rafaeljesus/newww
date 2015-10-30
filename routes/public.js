@@ -366,6 +366,11 @@ var publicRoutes = [
   }, {
     method: '*',
     feature: '!npmo',
+    path: '/npm/{slug*}',
+    handler: require('../handlers/cms').displayCMSPage
+  }, {
+    method: '*',
+    feature: '!npmo',
     path: '/private-modules',
     handler: function(request, reply) {
       var route = request.path.substr(1, request.path.length);

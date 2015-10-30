@@ -69,20 +69,21 @@ Team.prototype._addUser = function(opts, callback) {
 Team.prototype.addUsers = function(opts, callback) {
   opts = opts || {};
   opts.users = opts.users || [];
+  var self = this;
 
   var data = {
     id: opts.teamName,
-    scope: opts.orgScope
+    scope: opts.scope
   };
 
 
   var requests = opts.users.map(function(user) {
-    return this._addUser({
+    return self._addUser({
       userName: user,
       id: data.id,
       scope: data.scope
     });
-  }.bind(this));
+  });
 
   return P.all(requests).nodeify(callback);
 };

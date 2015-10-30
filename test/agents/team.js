@@ -4,8 +4,7 @@ var Code = require('code'),
   describe = lab.experiment,
   it = lab.test,
   expect = Code.expect,
-  nock = require('nock'),
-  fixtures = require('../fixtures');
+  nock = require('nock');
 
 var Team = require('../../agents/team');
 
@@ -27,9 +26,9 @@ describe('Team', function() {
 
       Team('bob').addUsers({
         teamName: 'bigteam',
-        orgScope: 'bigco',
+        scope: 'bigco',
         users: ['littlebob']
-      }, function(err, body) {
+      }, function(err) {
         teamMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('no bearer token included');
@@ -46,9 +45,9 @@ describe('Team', function() {
 
       Team('bob').addUsers({
         teamName: 'bigteam',
-        orgScope: 'bigco',
+        scope: 'bigco',
         users: ['littlebob']
-      }, function(err, body) {
+      }, function(err) {
         teamMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('Team or Org not found');
@@ -65,9 +64,9 @@ describe('Team', function() {
 
       Team('bob').addUsers({
         teamName: 'bigteam',
-        orgScope: 'bigco',
+        scope: 'bigco',
         users: ['littlebob']
-      }, function(err, body) {
+      }, function(err) {
         teamMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('The provided User is already on this Team');

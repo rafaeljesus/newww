@@ -70,7 +70,8 @@ exports.addTeamToOrg = function(request, reply) {
   var teamName = request.payload["team-name"];
   var description = request.payload.description;
 
-  var members = request.payload.member;
+  var members = request.payload.member || [];
+  members = Array.isArray(members) ? members : [].concat(members);
 
   if (invalidUserName(orgName)) {
     return handleUserError(request, reply, '/org', "Invalid Org Name.");
@@ -92,8 +93,15 @@ exports.addTeamToOrg = function(request, reply) {
     })
     .then(function() {
       // add members
-      return Team(loggedInUser)
-        .addUsers(members);
+      return members.length ?
+        Team(loggedInUser)
+          .addUsers({
+            teamName: teamName,
+            scope: orgName,
+            users: members
+
+          })
+        : P.resolve(null);
     })
     .then(function() {
       return reply.view('team/show');

@@ -1,4 +1,4 @@
-var CMS = require('../lib/cms');
+var CMS = require('../agents/cms');
 
 module.exports = {
   displayCMSPage: function(request, reply) {

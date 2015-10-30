@@ -9,7 +9,7 @@ var Code = require('code'),
   it = lab.test,
   expect = Code.expect;
 
-var fixture = require('./fixtures/cms/testPage.json');
+var fixture = require('../fixtures/cms/testPage.json');
 
 var requireInject = require('require-inject');
 
@@ -17,7 +17,7 @@ var nock = require('nock');
 
 process.env.CMS_API = 'http://cms-api/npm/v1/';
 
-var CMS = requireInject('../lib/cms', {
+var CMS = requireInject('../../agents/cms', {
   redis: require('redis-mock')
 });
 

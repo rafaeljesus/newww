@@ -3,6 +3,20 @@ var Org = require('../agents/org');
 var Team = require('../agents/team');
 var invalidUserName = require('npm-user-validate').username;
 
+var handleUserError = function(request, reply, redirectUrl, message) {
+  return request.saveNotifications([
+    P.reject(message)
+  ]).then(function(token) {
+    var url = redirectUrl;
+    var param = token ? "?notice=" + token : "";
+    url = url + param;
+    return reply.redirect(url);
+  }).catch(function(err) {
+    request.logger.log(err);
+    return reply.view('errors/internal', err);
+  });
+};
+
 exports.getTeamCreationPage = function(request, reply) {
   if (!request.features.org_billing) {
     return reply.redirect('/org');
@@ -29,17 +43,7 @@ exports.getTeamCreationPage = function(request, reply) {
           org: request.params.org
         });
       } else {
-        return request.saveNotifications([
-          P.reject("You do not have access to that page")
-        ]).then(function(token) {
-          var url = '/org/' + orgName;
-          var param = token ? "?notice=" + token : "";
-          url = url + param;
-          return reply.redirect(url);
-        }).catch(function(err) {
-          request.logger.log(err);
-          return reply.view('errors/internal', err);
-        });
+        return handleUserError(request, reply, '/org/' + orgName, "You do not have access to that page");
       }
     })
     .catch(function(err) {
@@ -47,6 +51,8 @@ exports.getTeamCreationPage = function(request, reply) {
 
       if (err.statusCode === 404) {
         return reply.view('errors/not-found', err).code(404);
+      } else if (err.statusCode < 500) {
+        return handleUserError(request, reply, '/org/' + orgName, err.message);
       } else {
         return reply.view('errors/internal', err);
       }
@@ -67,31 +73,11 @@ exports.addTeamToOrg = function(request, reply) {
   var members = request.payload.member;
 
   if (invalidUserName(orgName)) {
-    return request.saveNotifications([
-      P.reject("Invalid Org Name.")
-    ]).then(function(token) {
-      var url = '/org';
-      var param = token ? "?notice=" + token : "";
-      url = url + param;
-      return reply.redirect(url);
-    }).catch(function(err) {
-      request.logger.log(err);
-      return reply.view('errors/internal', err);
-    });
+    return handleUserError(request, reply, '/org', "Invalid Org Name.");
   }
 
   if (invalidUserName(teamName)) {
-    return request.saveNotifications([
-      P.reject("Invalid Team Name.")
-    ]).then(function(token) {
-      var url = '/org/' + orgName + '/team';
-      var param = token ? "?notice=" + token : "";
-      url = url + param;
-      return reply.redirect(url);
-    }).catch(function(err) {
-      request.logger.log(err);
-      return reply.view('errors/internal', err);
-    });
+    return handleUserError(request, reply, '/org' + orgName + '/team', "Invalid Team Name.");
   }
 
   Org(loggedInUser)
@@ -117,17 +103,7 @@ exports.addTeamToOrg = function(request, reply) {
       if (err.statusCode === 404) {
         return reply.view('errors/not-found', err).code(404);
       } else if (err.statusCode < 500) {
-        return request.saveNotifications([
-          P.reject(err.message)
-        ]).then(function(token) {
-          var url = '/org';
-          var param = token ? "?notice=" + token : "";
-          url = url + param;
-          return reply.redirect(url);
-        }).catch(function(err) {
-          request.logger.log(err);
-          return reply.view('errors/internal', err);
-        });
+        return handleUserError(request, reply, '/org', err.message);
       } else {
         return reply.view('errors/internal', err);
       }

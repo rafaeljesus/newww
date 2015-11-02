@@ -330,21 +330,6 @@ exports.validateOrgCreation = function(request, reply) {
         });
       }
 
-      if (invalidUserName(planData.orgScope)) {
-        var err = new Error("Org Scope must be valid name");
-        return request.saveNotifications([
-          P.reject(err.message)
-        ]).then(function(token) {
-          var url = '/org/create';
-          var param = token ? "?notice=" + token : "";
-
-          url = url + param;
-          return reply.redirect(url);
-        }).catch(function(err) {
-          request.logger.error(err);
-        });
-      }
-
       if (planData.orgScope === loggedInUser) {
         return reportScopeInUseError({
           inUseByMe: true,
@@ -496,4 +481,31 @@ exports.getTransferPage = function(request, reply) {
     humanName: request.query["human-name"],
     orgScope: request.query.orgScope
   });
+};
+
+exports.redirectToOrg = function redirectToOrg(request, reply) {
+  if (request.query.hasOwnProperty('join-beta')) {
+    return reply.redirect("/org?join-beta").code(301);
+  }
+
+  var orgName = request.params.org || '';
+
+  if (invalidUserName(orgName)) {
+    var err = new Error(orgName + " is not a valid Org name");
+    return request.saveNotifications([
+      P.reject(err.message)
+    ]).then(function(token) {
+      var url = '/org';
+      var param = token ? "?notice=" + token : "";
+
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+
+  var urlAppend =  orgName ? '/' + orgName : '';
+
+  return reply.redirect("/org" + urlAppend).code(301);
 };

@@ -65,16 +65,7 @@ var publicRoutes = [
     ],
     feature: '!npmo',
     method: "GET",
-    handler: function(request, reply) {
-
-      if (request.query.hasOwnProperty('join-beta')) {
-        return reply.redirect("/org?join-beta").code(301);
-      }
-
-      var urlAppend = request.params.org ? '/' + request.params.org : '';
-
-      return reply.redirect("/org" + urlAppend).code(301);
-    }
+    handler: require('../handlers/org').redirectToOrg
   }, {
     path: "/org",
     feature: '!npmo',

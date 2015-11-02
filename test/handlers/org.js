@@ -142,6 +142,18 @@ describe('getting to the org marketing page', function() {
       done();
     });
   });
+
+  it('renders a 404 if the orgname is not valid while attempting to redirect from /orgs/orgname', function(done) {
+    var options = {
+      url: "/orgs/.invalid"
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.headers.location).to.include('/org?notice=');
+      done();
+    });
+  });
 });
 
 describe('getting an org', function() {

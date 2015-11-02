@@ -130,6 +130,30 @@ describe('getting to the org marketing page', function() {
       done();
     });
   });
+
+  it('redirects from /orgs/orgname properly', function(done) {
+    var options = {
+      url: "/orgs/orgname"
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.equal('/org/orgname');
+      done();
+    });
+  });
+
+  it('renders a 404 if the orgname is not valid while attempting to redirect from /orgs/orgname', function(done) {
+    var options = {
+      url: "/orgs/.invalid"
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(404);
+      expect(resp.request.response.source.template).to.equal('errors/not-found');
+      done();
+    });
+  });
 });
 
 describe('getting an org', function() {

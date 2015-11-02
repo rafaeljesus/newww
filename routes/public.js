@@ -61,18 +61,11 @@ var publicRoutes = [
   }, {
     // redirect plural forms to singular
     paths: [
-      "/orgs",
+      "/orgs/{org?}",
     ],
     feature: '!npmo',
     method: "GET",
-    handler: function(request, reply) {
-
-      if (request.query.hasOwnProperty('join-beta')) {
-        return reply.redirect("/org?join-beta").code(301);
-      }
-
-      return reply.redirect("/org").code(301);
-    }
+    handler: require('../handlers/org').redirectToOrg
   }, {
     path: "/org",
     feature: '!npmo',

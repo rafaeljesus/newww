@@ -28,7 +28,7 @@ describe('redis-requiring session stuff', function() {
   var prefix = "hapi-cache:%7Csessions:";
 
   before(function(done) {
-    client = require("redis-url").connect();
+    client = require("redis").createClient();
     client.flushdb();
     client.on("error", function(err) {
       console.log("Error " + err);

@@ -29,7 +29,7 @@ describe('setting and deleting sessions', function() {
   var userSessionId;
 
   before(function(done) {
-    client = require('redis-url').connect();
+    client = require('redis').createClient();
     client.flushdb();
     client.on('error', function(err) {
       console.log('Error ' + err);

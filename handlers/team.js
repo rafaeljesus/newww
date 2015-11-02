@@ -81,12 +81,12 @@ exports.addTeamToOrg = function(request, reply) {
     return handleUserError(request, reply, '/org' + orgName + '/team', "Invalid Team Name.");
   }
 
-  Org(loggedInUser)
+  return Org(loggedInUser)
     .get(orgName)
     .then(function() {
       return Org(loggedInUser)
         .addTeam({
-          scope: orgName,
+          orgScope: orgName,
           teamName: teamName,
           description: description
         });

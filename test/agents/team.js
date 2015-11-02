@@ -74,5 +74,27 @@ describe('Team', function() {
       });
     });
 
+    it('allows multiple members to be added', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .put('/team/bigco/bigteam/user', {
+          user: 'littlebob'
+        })
+        .reply(200)
+        .put('/team/bigco/bigteam/user', {
+          user: 'bigbob'
+        })
+        .reply(200);
+
+      Team('bob').addUsers({
+        teamName: 'bigteam',
+        scope: 'bigco',
+        users: ['littlebob', 'bigbob']
+      }, function(err) {
+        teamMock.done();
+        expect(err).to.not.exist();
+        done();
+      });
+    });
+
   });
 });

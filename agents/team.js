@@ -3,7 +3,6 @@ var assert = require('assert');
 var Request = require('../lib/external-request');
 var USER_HOST = process.env.USER_API || "https://user-api-example.com";
 var P = require('bluebird');
-var async = require('async');
 
 var Team = module.exports = function(bearer) {
   assert(_.isString(bearer), "Must pass a bearer (loggedInUser) to Team agent");

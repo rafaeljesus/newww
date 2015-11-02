@@ -311,5 +311,168 @@ describe('team', function() {
         });
       });
     });
+
+    it('allows team to be added without users', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco')
+        .reply(200, fixtures.orgs.bigco)
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoUsers)
+        .get('/org/bigco/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        })
+        .put('/org/bigco/team', {
+          scope: 'bigco',
+          name: 'bigcoteam',
+          description: 'bigco has a team called bigcoteam',
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "team-name": "bigcoteam",
+            description: 'bigco has a team called bigcoteam',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(200);
+          expect(resp.request.response.source.template).to.equal('team/show');
+          done();
+        });
+      });
+    });
+
+    it('allows team to be added with one user', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco')
+        .reply(200, fixtures.orgs.bigco)
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoUsers)
+        .get('/org/bigco/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        })
+        .put('/org/bigco/team', {
+          scope: 'bigco',
+          name: 'bigcoteam',
+          description: 'bigco has a team called bigcoteam',
+        })
+        .reply(200)
+        .put('/team/bigco/bigcoteam/user', {
+          user: 'billy'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "team-name": "bigcoteam",
+            description: 'bigco has a team called bigcoteam',
+            member: "billy",
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(200);
+          expect(resp.request.response.source.template).to.equal('team/show');
+          done();
+        });
+      });
+    });
+
+    it('allows team to be added with multiple users', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco')
+        .reply(200, fixtures.orgs.bigco)
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoUsers)
+        .get('/org/bigco/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        })
+        .put('/org/bigco/team', {
+          scope: 'bigco',
+          name: 'bigcoteam',
+          description: 'bigco has a team called bigcoteam',
+        })
+        .reply(200)
+        .put('/team/bigco/bigcoteam/user', {
+          user: 'billy'
+        })
+        .reply(200)
+        .put('/team/bigco/bigcoteam/user', {
+          user: 'sally'
+        })
+        .reply(200)
+        .put('/team/bigco/bigcoteam/user', {
+          user: 'deb'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "team-name": "bigcoteam",
+            description: 'bigco has a team called bigcoteam',
+            member: ['billy', 'sally', 'deb'],
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(200);
+          expect(resp.request.response.source.template).to.equal('team/show');
+          done();
+        });
+      });
+    });
+
   });
 });

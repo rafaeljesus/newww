@@ -64,7 +64,18 @@ Cache.prototype.get = function(key) {
       var freshAfter = Date.now() - cache.ttl;
       if (cached.fetchedAt < freshAfter) {
         debug("Freshening %j because content fetched at %j is older than %j", key, cached.fetchedAt, freshAfter);
-        cache.fetch(key);
+        cache.fetch(key).catch(function(err) {
+          if (err.statusCode == 404) {
+            debug("Deleting %j from cache", key);
+            return withRedis(function(redis) {
+              return redis.delAsync(cacheKey);
+            });
+          } else {
+            throw err;
+          }
+        }).catch(function(err) {
+          logger.error(err);
+        });
       }
 
       return cached;

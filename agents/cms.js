@@ -116,6 +116,11 @@ function fetchPage(slug) {
   var pageUrl = url.resolve(pageRoot, slug);
   debug("Fetching %j for %j", pageUrl, slug);
   return fetch(pageUrl).then(function(res) {
+    if (res.status >= 300) {
+      var err = new Error("Bad status: " + res.status);
+      err.statusCode = res.status;
+      throw err;
+    }
     return res.json()
   }).then(function(page) {
     debug("Got content for %j: %j", slug, page);

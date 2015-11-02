@@ -14,6 +14,94 @@ var Team = module.exports = function(bearer) {
   this.bearer = bearer;
 };
 
+Team.prototype._get = function(opts) {
+  var url = USER_HOST + '/team/' + opts.orgName + '/' + opts.teamName;
+
+  var data = {
+    url: url,
+    json: true,
+    headers: {
+      bearer: this.bearer
+    }
+  };
+
+  return new P(function(accept, reject) {
+    Request.get(data, function(err, resp, team) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = Error('no bearer token included');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('Team or Org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(team);
+    });
+  });
+};
+
+Team.prototype.get = function(opts, callback) {
+
+  var requests = [
+    this._get(opts),
+    this.getUsers(opts)
+  ];
+
+  return P.all(requests).spread(function(team, users) {
+    team = team || {};
+    users = users || [];
+
+    team.users = {
+      items: users,
+      count: users.length
+    };
+
+    return team;
+  }).nodeify(callback);
+};
+
+Team.prototype.getUsers = function(opts) {
+  var url = USER_HOST + '/team/' + opts.orgName + '/' + opts.teamName + '/user';
+
+  var data = {
+    url: url,
+    json: true,
+    headers: {
+      bearer: this.bearer
+    }
+  };
+
+  return new P(function(accept, reject) {
+    Request.get(data, function(err, resp, users) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = Error('no bearer token included');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('Team or Org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(users);
+    });
+  });
+};
+
 Team.prototype._addUser = function(opts, callback) {
   opts = opts || {};
 

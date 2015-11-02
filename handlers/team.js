@@ -104,7 +104,7 @@ exports.addTeamToOrg = function(request, reply) {
         : P.resolve(null);
     })
     .then(function() {
-      return reply.view('team/show');
+      return reply.redirect('/org/' + orgName + '/team/' + teamName);
     })
     .catch(function(err) {
       request.logger.error(err);
@@ -117,4 +117,48 @@ exports.addTeamToOrg = function(request, reply) {
       }
     });
 
+};
+
+
+exports.showTeam = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  var orgName = request.params.org;
+  var teamName = request.params.teamName;
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  if (invalidUserName(orgName)) {
+    return handleUserError(request, reply, '/org', "Invalid Org Name.");
+  }
+
+  if (invalidUserName(teamName)) {
+    return handleUserError(request, reply, '/org' + orgName + '/team', "Invalid Team Name.");
+  }
+
+  return Team(loggedInUser)
+    .get({
+      orgName: orgName,
+      teamName: teamName
+    })
+    .then(function(team) {
+      return reply.view('team/show', {
+        teamName: team.name,
+        orgName: team.scope_id,
+        users: team.members
+      });
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      } else if (err.statusCode < 500) {
+        return handleUserError(request, reply, '/org/' + orgName, err.message);
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
 };

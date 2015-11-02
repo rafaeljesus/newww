@@ -150,5 +150,9 @@ module.exports = [
     path: "/org/{org}/team",
     method: "POST",
     handler: require('../handlers/team').addTeamToOrg
+  }, {
+    path: "/org/{org}/team/{teamName}",
+    method: "GET",
+    handler: require('../handlers/team').showTeam
   }
 ];

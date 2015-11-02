@@ -353,8 +353,8 @@ describe('team', function() {
         server.inject(options, function(resp) {
           userMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(200);
-          expect(resp.request.response.source.template).to.equal('team/show');
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
           done();
         });
       });
@@ -406,8 +406,8 @@ describe('team', function() {
         server.inject(options, function(resp) {
           userMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(200);
-          expect(resp.request.response.source.template).to.equal('team/show');
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
           done();
         });
       });
@@ -467,12 +467,17 @@ describe('team', function() {
         server.inject(options, function(resp) {
           userMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(200);
-          expect(resp.request.response.source.template).to.equal('team/show');
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
           done();
         });
       });
     });
 
   });
+/**
+describe('viewing a team page', function() {
+  it('
+});
+*/
 });

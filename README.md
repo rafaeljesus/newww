@@ -116,3 +116,61 @@ npm run dev
 The server should be running at [localhost:15443](https://localhost:15443).
 
 If you have any trouble getting the site running locally, please [open an issue](https://github.com/npm/newww/issues/new) and we'll help you figure it out.
+
+# Environment variables
+
+`newww` uses many environment variables for configuration.
+
+## API Endpoints
+
+* `BILLING_API`, the URL to the billing API service
+* `CANONICAL_HOST`, the canonical hostname users should visit for this service
+* `DOWNLOADS_API`, the URL of the downloads API
+* `ELASTICSEARCH_URL`, the URL to the elastic search database to use for search
+* `LICENSE_API`, the URL to the license API
+* `USER_API`, the URL to the user-acl API
+
+## Zendesk integration
+
+* `ZENDESK_URI`, the URL to the Zendesk API
+* `ZENDESK_TOKEN`, the Zendesk access token
+* `ZENDESK_USERNAME`, the Zendesk account username
+
+## Configuration
+
+* `REDIS_URL`, the URL to a redis instance for this service
+* `SESSION_PASSWORD`, a password for sessions
+* `SESSION_SALT`, a salt to randomize encryption of sessions
+* `SESSION_COOKIE`, the cookie name for session IDs
+* `MAIL_ACCESS_KEY_ID`, the access key ID for sending mail
+* `MAIL_SECRET_ACCESS_KEY`, the secret key for sending mail
+* `USE_CACHE`, ???
+
+
+## Marketing integration
+
+* `HUBSPOT_FORM_NPME_SIGNUP`, uuid of a hubspot form
+* `HUBSPOT_FORM_NPME_AGREED_ULA`, uuid of a hubspot form
+* `HUBSPOT_FORM_NPME_CONTACT_ME`, uuid of a hubspot form
+* `HUBSPOT_FORM_PRIVATE_NPM, uuid of a hubspot form`
+* `HUBSPOT_FORM_PRIVATE_NPM_SIGNUP, uuid of a hubspot form`
+* `HUBSPOT_PORTAL_ID`, the hubspot portal ID
+* `MAILCHIMP_KEY`, the mailchimp key
+
+## New Relic integration
+
+* `NEW_RELIC_LICENSE_KEY`, the license key
+* `NEW_RELIC_APP_NAME`, the app name
+* `NEW_RELIC_NO_CONFIG_FILE`, must be set to true because we provide config in the environment
+* `NEW_RELIC_ENABLED`, boolean
+
+## Feature Flags
+
+* `FEATURE_ORG_BILLING`, users who are allowed to use Teams and Orgs
+* `FEATURE_BYPASS_EMAIL_VERIFY`, users who can bypass email verification, for testing
+* `FEATURE_NPMO`, boolean, whether to run in npm On-site mode, which is a stripped-down configuration
+
+## Miscellaneous
+
+* `NPME_PRODUCT_ID`, uuid of the npm On-site product
+* `NPMO_COBRAND`, the user's brand displayed in the npm On-site product

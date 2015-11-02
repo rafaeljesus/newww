@@ -149,8 +149,8 @@ describe('getting to the org marketing page', function() {
     };
 
     server.inject(options, function(resp) {
-      expect(resp.statusCode).to.equal(302);
-      expect(resp.headers.location).to.include('/org?notice=');
+      expect(resp.statusCode).to.equal(404);
+      expect(resp.request.response.source.template).to.equal('errors/not-found');
       done();
     });
   });

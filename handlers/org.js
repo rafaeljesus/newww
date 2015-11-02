@@ -491,21 +491,10 @@ exports.redirectToOrg = function redirectToOrg(request, reply) {
   var orgName = request.params.org || '';
 
   if (invalidUserName(orgName)) {
-    var err = new Error(orgName + " is not a valid Org name");
-    return request.saveNotifications([
-      P.reject(err.message)
-    ]).then(function(token) {
-      var url = '/org';
-      var param = token ? "?notice=" + token : "";
-
-      url = url + param;
-      return reply.redirect(url);
-    }).catch(function(err) {
-      request.logger.error(err);
-    });
+    return reply.view('errors/not-found').code(404);
   }
 
-  var urlAppend =  orgName ? '/' + orgName : '';
+  var urlAppend = orgName ? '/' + orgName : '';
 
   return reply.redirect("/org" + urlAppend).code(301);
 };

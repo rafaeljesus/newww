@@ -50,16 +50,16 @@ else
 fi
 export npm_config_loglevel
 
-# make sure that node exists
+# make sure that Node.js exists
 node=`which node 2>&1`
 ret=$?
 if [ $ret -eq 0 ] && [ -x "$node" ]; then
   (exit 0)
 else
-  echo "npm cannot be installed without node.js." >&2
-  echo "Install node first, and then try again." >&2
+  echo "npm cannot be installed without Node.js." >&2
+  echo "Install Node.js first, and then try again." >&2
   echo "" >&2
-  echo "Maybe node is installed, but not in the PATH?" >&2
+  echo "Maybe Node.js is installed, but not in the PATH?" >&2
   echo "Note that running as sudo can change envs." >&2
   echo ""
   echo "PATH=$PATH" >&2
@@ -149,21 +149,21 @@ fi
 node_version=`"$node" --version 2>&1`
 ret=$?
 if [ $ret -ne 0 ]; then
-  echo "You need node to run this program." >&2
+  echo "You need Node.js to run this program." >&2
   echo "node --version reports: $node_version" >&2
   echo "with exit code = $ret" >&2
-  echo "Please install node before continuing." >&2
+  echo "Please install Node.js before continuing." >&2
   exit $ret
 fi
 
 t="${npm_install}"
 if [ -z "$t" ]; then
-  # switch based on node version.
+  # switch based on Node.js version.
   # note that we can only use strict sh-compatible patterns here.
   case $node_version in
     0.[01234567].* | v0.[01234567].*)
       echo "You are using an outdated and unsupported version of" >&2
-      echo "node ($node_version).  Please update node and try again." >&2
+      echo "Node.js ($node_version).  Please update Node.js and try again." >&2
       exit 99
       ;;
     *)

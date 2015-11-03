@@ -120,16 +120,11 @@ describe('GET /~bob for logged-in bob', function() {
       .get('/user/bob/org')
       .reply(200, fixtures.orgs.bobsOrgs);
 
-    // var licenseMock = nock('https://license-api-example.com')
-    //   .get('/customer/bob/stripe').twice()
-    //   .reply(404);
-    //
     server.inject({
       url: '/~bob',
       credentials: users.bob
     }, function(response) {
       userMock.done();
-      // licenseMock.done();
       resp = response;
       $ = cheerio.load(resp.result);
       context = resp.request.response.source.context;

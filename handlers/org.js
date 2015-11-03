@@ -12,71 +12,67 @@ exports.getOrg = function(request, reply) {
   var opts = {};
 
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
-  request.customer.getById(request.loggedInUser.email, function(err, cust) {
-    if (err) {
-      request.logger.error(err);
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
+  return request.customer.getById(request.loggedInUser.email)
+    .tap(function(cust) {
+      opts.customer_id = cust.stripe_customer_id;
+    })
+    .then(function() {
+      return Org(loggedInUser)
+        .get(request.params.org);
+    })
+    .then(function(org) {
+      org = org || {};
+      org.info = org.info || {};
+
+      if (org.info.resource && org.info.resource.human_name) {
+        org.info.human_name = org.info.resource.human_name;
+      } else {
+        org.info.human_name = org.info.name;
       }
-      return reply.view('errors/internal', err);
-    }
 
-    Org(loggedInUser)
-      .get(request.params.org, function(err, org) {
-        if (err) {
-          request.logger.error(err);
-
-          if (err.statusCode === 404) {
-            return reply.view('errors/not-found', err).code(404);
-          } else {
-            return reply.view('errors/internal', err);
-          }
-        }
-
-        org = org || {};
-        org.info = org.info || {};
-
-        if (org.info.resource && org.info.resource.human_name) {
-          org.info.human_name = org.info.resource.human_name;
-        } else {
-          org.info.human_name = org.info.name;
-        }
-
-        opts.org = org;
-        opts.org.users.items = org.users.items.map(function(user) {
-          user.sponsoredByOrg = user.sponsored === 'by-org';
-          return user;
-        });
-
-        var isSuperAdmin = org.users.items.filter(function(user) {
-          return user.role && user.role.match(/super-admin/);
-        }).some(function(admin) {
-          return admin.name === loggedInUser;
-        });
-
-        var isAtLeastTeamAdmin = org.users.items.filter(function(user) {
-          return user.role && user.role.match(/admin/);
-        }).some(function(admin) {
-          return admin.name === loggedInUser;
-        });
-
-        var isAtLeastMember = org.users.items.filter(function(user) {
-          return user.role && (user.role.match(/developer/) || user.role.match(/admin/));
-        }).some(function(member) {
-          return member.name === loggedInUser;
-        });
-
-        opts.perms = {
-          isSuperAdmin: isSuperAdmin,
-          isAtLeastTeamAdmin: isAtLeastTeamAdmin,
-          isAtLeastMember: isAtLeastMember
-        };
-
-        opts.org.customer_id = cust.stripe_customer_id;
-        return reply.view('org/info', opts);
+      opts.org = org;
+      opts.org.users.items = org.users.items.map(function(user) {
+        user.sponsoredByOrg = user.sponsored === 'by-org';
+        return user;
       });
 
-  });
+
+      var isSuperAdmin = org.users.items.filter(function(user) {
+        return user.role && user.role.match(/super-admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      var isAtLeastTeamAdmin = org.users.items.filter(function(user) {
+        return user.role && user.role.match(/admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      var isAtLeastMember = org.users.items.filter(function(user) {
+        return user.role && (user.role.match(/developer/) || user.role.match(/admin/));
+      }).some(function(member) {
+        return member.name === loggedInUser;
+      });
+
+      opts.perms = {
+        isSuperAdmin: isSuperAdmin,
+        isAtLeastTeamAdmin: isAtLeastTeamAdmin,
+        isAtLeastMember: isAtLeastMember
+      };
+
+      return reply.view('org/info', opts);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
+
 };
 
 exports.addUserToOrg = function(request, reply) {

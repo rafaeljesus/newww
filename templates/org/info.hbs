@@ -14,7 +14,7 @@
             <li><a href="#members">{{pluralize org.users.count "member" true}}</a></li>
           {{/if}}
           {{#if perms.isSuperAdmin}}
-            <li><button type="button" id="billing" data-stripe-id="{{org.customer_id}}">payment info</button></li>
+            <li><button type="button" id="billing" data-stripe-id="{{customer_id}}">payment info</button></li>
           {{/if}}
         </ul>
       </div>

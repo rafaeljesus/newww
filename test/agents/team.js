@@ -22,6 +22,8 @@ describe('Team', function() {
         .get('/team/bigco/bigteam')
         .reply(401)
         .get('/team/bigco/bigteam/user')
+        .reply(401)
+        .get('/team/bigco/bigteam/package')
         .reply(401);
 
       Team('bob').get({
@@ -40,6 +42,8 @@ describe('Team', function() {
         .get('/team/bigco/bigteam')
         .reply(404)
         .get('/team/bigco/bigteam/user')
+        .reply(404)
+        .get('/team/bigco/bigteam/package')
         .reply(404);
 
       Team('bob').get({
@@ -64,7 +68,11 @@ describe('Team', function() {
           "deleted": null
         })
         .get('/team/bigco/bigteam/user')
-        .reply(200, ['bob']);
+        .reply(200, ['bob'])
+        .get('/team/bigco/bigteam/package')
+        .reply(200, {
+          "@npm/blerg": "write"
+        });
 
       Team('bob').get({
         orgName: 'bigco',
@@ -76,6 +84,8 @@ describe('Team', function() {
         expect(body.scope_id).to.equal("bigco");
         expect(body.users.count).to.equal(1);
         expect(body.users.items[0]).to.equal("bob");
+        expect(body.packages.count).to.equal(1);
+        expect(body.packages.items[0].name).to.equal("@npm/blerg");
         done();
       });
     });

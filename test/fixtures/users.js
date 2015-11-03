@@ -40,7 +40,7 @@ exports.bcoe = {
   "created": "2014-11-21T19:50:33.098Z",
   "updated": "2015-03-20T22:33:07.493Z",
   "deleted": null
-}
+};
 
 exports.ralph_the_reader = {
   name: 'ralph_the_reader',
@@ -274,7 +274,7 @@ exports.bobPrivateModules = [
   }
 ];
 
-exports.packages = require("./user_packages")
+exports.packages = require("./user_packages");
 
 exports.bobTokens = [
   {
@@ -298,4 +298,22 @@ exports.bobTokens = [
     "updated": "2015-05-26T18:29:58.808Z",
     "user_id": 1
   }
-]
+];
+
+exports.betty = {
+  name: 'betty',
+  email: 'betty@somewhere.com',
+  email_verified: true,
+  verification_key: '12345',
+  resource: {
+    fullname: "Betty Do",
+    github: 'betty',
+    twitter: 'betty',
+    homepage: 'http://betty.me',
+    freenode: 'bettttty',
+    feature_org_billing: 't'
+  },
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};

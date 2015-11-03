@@ -48,13 +48,30 @@ exports.getOrg = function(request, reply) {
           return user;
         });
 
-        var admins = org.users.items.filter(function(user) {
-          return user.role && user.role.match(/admin/);
-        });
-
-        opts.currentUserIsAdmin = admins.some(function(admin) {
+        var isSuperAdmin = org.users.items.filter(function(user) {
+          return user.role && user.role.match(/super-admin/);
+        }).some(function(admin) {
           return admin.name === loggedInUser;
         });
+
+        var isAtLeastTeamAdmin = org.users.items.filter(function(user) {
+          return user.role && user.role.match(/admin/);
+        }).some(function(admin) {
+          return admin.name === loggedInUser;
+        });
+
+        var isAtLeastMember = org.users.items.filter(function(user) {
+          return user.role && (user.role.match(/developer/) || user.role.match(/admin/));
+        }).some(function(member) {
+          return member.name === loggedInUser;
+        });
+
+        opts.perms = {
+          isSuperAdmin: isSuperAdmin,
+          isAtLeastTeamAdmin: isAtLeastTeamAdmin,
+          isAtLeastMember: isAtLeastMember
+        };
+
         opts.org.customer_id = cust.stripe_customer_id;
         return reply.view('org/info', opts);
       });

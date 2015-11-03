@@ -106,11 +106,9 @@ describe('Modifying the profile', function() {
       .get('/user/' + users.bob.name + '/package?format=mini&per_page=100&page=0')
       .reply(200, users.packages)
       .get('/user/' + users.bob.name + '/stars?format=detailed')
-      .reply(200, users.stars);
-
-    var licenseMock = nock('https://license-api-example.com')
-      .get('/customer/bob/stripe/subscription')
-      .reply(404);
+      .reply(200, users.stars)
+      .get('/user/' + users.bob.name + '/org')
+      .reply(401);
 
     generateCrumb(server, function(crumb) {
 
@@ -139,7 +137,6 @@ describe('Modifying the profile', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
-          licenseMock.done();
           expect(resp.statusCode).to.equal(200);
           var context = resp.request.response.source.context;
           expect(context.profile.name).to.equal("bob");

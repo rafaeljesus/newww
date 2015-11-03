@@ -38,7 +38,9 @@ before(function(done) {
     .get('/user/seldo')
     .reply(404)
     .get('/user/mikeal')
-    .reply(404);
+    .reply(404)
+    .get('/user/bob/org').times(2)
+    .reply(401);
 
   licenseMock = nock('https://license-api-example.com')
     .get('/customer/bob/stripe').times(13)
@@ -46,9 +48,7 @@ before(function(done) {
     .get('/customer/mikeal/stripe')
     .reply(200, {})
     .get('/customer/seldo/stripe').times(4)
-    .reply(200, {})
-    .get('/customer/bob/stripe/subscription').times(2)
-    .reply(404);
+    .reply(200, {});
 
   done();
 });

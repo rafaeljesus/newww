@@ -66,6 +66,8 @@ describe('team', function() {
         .get('/org/bigco/user')
         .reply(404)
         .get('/org/bigco/package')
+        .reply(404)
+        .get('/org/bigco/team')
         .reply(404);
 
       var options = {
@@ -97,7 +99,9 @@ describe('team', function() {
         .reply(200, {
           count: 1,
           items: [fixtures.packages.fake]
-        });
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
         url: "/org/bigco/team/create",
@@ -129,7 +133,9 @@ describe('team', function() {
         .reply(200, {
           count: 1,
           items: [fixtures.packages.fake]
-        });
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
         url: "/org/bigco/team/create",
@@ -285,6 +291,8 @@ describe('team', function() {
           .get('/org/bigco/user')
           .reply(500)
           .get('/org/bigco/package')
+          .reply(500)
+          .get('/org/bigco/team')
           .reply(500);
 
 
@@ -327,6 +335,8 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg)
         .put('/org/bigco/team', {
           scope: 'bigco',
           name: 'bigcoteam',
@@ -375,6 +385,8 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg)
         .put('/org/bigco/team', {
           scope: 'bigco',
           name: 'bigcoteam',
@@ -428,6 +440,8 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg)
         .put('/org/bigco/team', {
           scope: 'bigco',
           name: 'bigcoteam',

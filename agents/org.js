@@ -73,6 +73,7 @@ Org.prototype.get = function(name, callback) {
   var orgUrl = USER_HOST + '/org/' + name;
   var userUrl = USER_HOST + '/org/' + name + '/user';
   var packageUrl = USER_HOST + '/org/' + name + '/package';
+  var teamUrl = USER_HOST + '/org/' + name + '/team';
 
   var makeRequest = function(url) {
     return new P(function(accept, reject) {
@@ -102,10 +103,11 @@ Org.prototype.get = function(name, callback) {
   var requests = [
     makeRequest(orgUrl),
     makeRequest(userUrl),
-    makeRequest(packageUrl)
+    makeRequest(packageUrl),
+    makeRequest(teamUrl)
   ];
 
-  return P.all(requests).spread(function(org, users, pkg) {
+  return P.all(requests).spread(function(org, users, pkg, teams) {
     var ret = {};
 
     ret.info = org;
@@ -115,6 +117,7 @@ Org.prototype.get = function(name, callback) {
       return user;
     });
     ret.packages = pkg;
+    ret.teams = teams;
 
     return ret;
   }).nodeify(callback);

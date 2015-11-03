@@ -113,6 +113,20 @@ describe('Org', function() {
         .reply(200, {
           'count': 1,
           'items': [fixtures.packages.fake]
+        })
+        .get('/org/bigco/team')
+        .reply(200, {
+          count: 1,
+          items: [
+            {
+              "created": "2015-08-28T17:44:03.701Z",
+              "deleted": null,
+              "description": null,
+              "name": "developers",
+              "scope_id": 55555,
+              "updated": "2015-08-28T17:44:03.701Z"
+            }
+          ]
         });
 
       Org('betty').get(name, function(err, org) {
@@ -136,6 +150,8 @@ describe('Org', function() {
         .get('/org/' + name + '/user')
         .reply(404, 'not found')
         .get('/org/' + name + '/package')
+        .reply(404, 'not found')
+        .get('/org/' + name + '/team')
         .reply(404, 'not found');
 
       Org('betty').get(name, function(err, org) {

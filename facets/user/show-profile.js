@@ -27,19 +27,23 @@ module.exports = function(request, reply) {
         return cb();
       }
 
-      request.customer.getSubscriptions(function(err, subscriptions) {
-        // ignore any errors here
+      User.getOrgs(loggedInUser.name)
+        .catch(function(err) {
+          if (err.statusCode === 401) {
+            var orgs = {
+              count: 0,
+              items: []
+            };
+            return orgs;
+          }
 
-        var subs = subscriptions.filter(function(sub) {
-          return sub.status === "active";
+          throw err;
+        })
+        .then(function(orgs) {
+          return cb(null, orgs);
+        }, function(err) {
+          return cb(err);
         });
-
-        var orgs = subs.filter(function(sub) {
-          return request.features.org_billing && !sub.privateModules;
-        });
-
-        return cb(null, orgs);
-      });
     }
   };
 

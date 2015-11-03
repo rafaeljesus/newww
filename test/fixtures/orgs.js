@@ -135,7 +135,7 @@ exports.bigcoSponsorships = [
   }
 ];
 
-exports.bobsorgs = [
+exports.bobsOrgSubscriptions = [
   {
     "amount": 700,
     "cancel_at_period_end": false,
@@ -165,6 +165,15 @@ exports.bobsorgs = [
     "status": "active"
   }
 ];
+
+exports.bobsOrgs = {
+  items: [{
+    name: 'bigco',
+    description: '',
+    role: 'super-admin'
+  }],
+  count: 1
+};
 
 exports.notBobsOrg = {
   "name": "bligco",

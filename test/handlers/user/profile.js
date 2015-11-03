@@ -116,20 +116,20 @@ describe('GET /~bob for logged-in bob', function() {
       .get('/user/bob/package?format=mini&per_page=100&page=0')
       .reply(200, users.packages)
       .get('/user/bob/stars?format=detailed')
-      .reply(200, users.stars);
+      .reply(200, users.stars)
+      .get('/user/bob/org')
+      .reply(200, fixtures.orgs.bobsOrgs);
 
-    var licenseMock = nock('https://license-api-example.com')
-      .get('/customer/bob/stripe').twice()
-      .reply(404)
-      .get('/customer/bob/stripe/subscription')
-      .reply(200, fixtures.orgs.bobsorgs);
-
+    // var licenseMock = nock('https://license-api-example.com')
+    //   .get('/customer/bob/stripe').twice()
+    //   .reply(404);
+    //
     server.inject({
       url: '/~bob',
       credentials: users.bob
     }, function(response) {
       userMock.done();
-      licenseMock.done();
+      // licenseMock.done();
       resp = response;
       $ = cheerio.load(resp.result);
       context = resp.request.response.source.context;
@@ -175,13 +175,13 @@ describe('GET /~bob for logged-in bob', function() {
       .get('/user/bob/package?format=mini&per_page=100&page=0')
       .reply(200, users.packages)
       .get('/user/bob/stars?format=detailed')
-      .reply(200, users.stars);
+      .reply(200, users.stars)
+      .get('/user/bob/org')
+      .reply(401);
 
     var licenseMock = nock('https://license-api-example.com')
       .get('/customer/bob/stripe').twice()
-      .reply(200, customers.bob)
-      .get('/customer/bob/stripe/subscription')
-      .reply(404);
+      .reply(200, customers.bob);
 
     server.inject({
       url: '/~bob',

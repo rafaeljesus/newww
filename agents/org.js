@@ -75,6 +75,38 @@ Org.prototype.get = function(name, callback) {
   var packageUrl = USER_HOST + '/org/' + name + '/package';
   var teamUrl = USER_HOST + '/org/' + name + '/team';
 
+  var requestTeam = function(url) {
+    return new P(function(accept, reject) {
+
+      Request({
+        url: url,
+        json: true,
+        headers: {
+          bearer: self.bearer
+        }
+      }, function(err, resp, body) {
+        if (err) {
+          return reject(err);
+        }
+
+        if (resp.statusCode === 401) {
+          return accept({
+            count: 0,
+            items: []
+          });
+        }
+
+        if (resp.statusCode >= 400) {
+          err = new Error(body);
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+
+        return accept(body);
+      });
+    });
+  };
+
   var makeRequest = function(url) {
     return new P(function(accept, reject) {
 
@@ -104,7 +136,7 @@ Org.prototype.get = function(name, callback) {
     makeRequest(orgUrl),
     makeRequest(userUrl),
     makeRequest(packageUrl),
-    makeRequest(teamUrl)
+    requestTeam(teamUrl)
   ];
 
   return P.all(requests).spread(function(org, users, pkg, teams) {

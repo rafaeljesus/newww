@@ -306,7 +306,7 @@ describe('getting an org', function() {
           items: [fixtures.packages.fake]
         })
         .get('/org/notbobsorg/team')
-        .reply(200, fixtures.teams.bigcoOrg);
+        .reply(401);
 
       var options = {
         url: "/org/notbobsorg",

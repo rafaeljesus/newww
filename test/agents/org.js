@@ -89,6 +89,42 @@ describe('Org', function() {
       done();
     });
 
+    it('returns no teams if the response is a 401 for teams', function(done) {
+      var name = 'bigco';
+
+      var orgMocks = nock('https://user-api-example.com')
+        .get('/org/' + name)
+        .reply(200, {
+          'name': 'bigco',
+          'description': '',
+          'resource': {
+            "human_name": "Bob's Big Co"
+          },
+          'created': '2015-06-19T23:35:42.659Z',
+          'updated': '2015-06-19T23:35:42.659Z',
+          'deleted': null
+        })
+        .get('/org/' + name + '/user')
+        .reply(200, {
+          'count': 1,
+          'items': [fixtures.users.bigcoadmin]
+        })
+        .get('/org/' + name + '/package')
+        .reply(200, {
+          'count': 1,
+          'items': [fixtures.packages.fake]
+        })
+        .get('/org/bigco/team')
+        .reply(401);
+
+      Org('betty').get(name, function(err, org) {
+        orgMocks.done();
+        expect(err).to.be.null();
+        expect(org.teams.count).to.equal(0);
+        done();
+      });
+    });
+
     it('makes requests to get information about and users in the org', function(done) {
       var name = 'bigco';
 

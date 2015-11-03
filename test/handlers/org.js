@@ -344,7 +344,9 @@ describe('getting an org', function() {
         .reply(200, {
           count: 1,
           items: [fixtures.packages.fake]
-        });
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
         url: "/org/bigco",
@@ -422,7 +424,9 @@ describe('getting an org', function() {
         .reply(200, {
           count: 1,
           items: [fixtures.packages.fake]
-        });
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
         url: "/org/bigco",

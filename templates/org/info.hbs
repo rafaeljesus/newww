@@ -8,12 +8,11 @@
     <div class="tab-nav-container">
       <div class="nav-container nav-4-container">
         <ul class="nav nav-4 clear" role="navigation">
-          <li class="current"><a href="#overview">overview</a></li>
+          <li class="current"><a href="#packages">{{pluralize org.packages.count "package" true}}</a></li>
           {{#if perms.isAtLeastMember}}
             <li><a href="#teams">{{pluralize org.teams.count "team" true}}</a></li>
             <li><a href="#members">{{pluralize org.users.count "member" true}}</a></li>
           {{/if}}
-            <li><a href="#packages">Packages</a></li>
           {{#if perms.isSuperAdmin}}
             <li><button type="button" id="billing" data-stripe-id="{{org.customer_id}}">payment info</button></li>
           {{/if}}
@@ -21,10 +20,9 @@
       </div>
     </div>
 
-    <div id="overview" class="tab tab-1">
-      <h2>Overview</h2>
+    <div id="packages" class="tab tab-1">
+      <h2>{{pluralize org.packages.count "package" true}}</h2>
 
-      <h3>{{pluralize org.packages.count "Package" true}}</h3>
       {{#if org.packages.count}}
       <table class="org-table org-packages">
         <thead>
@@ -52,23 +50,68 @@
         </tbody>
       </table>
       {{/if}}
+    </div><!--/.tab-1-->
 
-      {{#if perms.isAtLeastMember}}
-        <h3>{{pluralize org.users.count "User" true}}</h3>
-        <table class="org-table org-users">
-          <thead>
-            <tr>
-              <th>Collaborators</th>
-              {{#if ../perms.isSuperAdmin}}
-              <th>Action</th>
+    {{#if perms.isAtLeastMember}}
+    <div id="teams" class="tab tab-2">
+      <h2>{{pluralize org.teams.count "team" true}}</h2>
+
+      {{#if org.teams.items}}
+      <table class="org-table org-teams">
+        <thead>
+          <tr>
+            <th>team name</th>
+            <th>admin(s)</th>
+            <th>members</th>
+            <th>packages</th>
+            <th>created</th>
+          </tr>
+        </thead>
+        <tbody>
+        {{#each org.teams.items}}
+          <tr>
+            <td>
+              <a href="/org/{{../org.info.name}}/team/{{name}}">{{name}}</a>
+              {{#if description}}
+              <span>{{description}}</span>
               {{/if}}
-            </tr>
-          </thead>
-          <tbody>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>{{created}}</td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+      {{else}}
+      {{/if}}
+
+    </div><!--/.tab-2-->
+    {{/if}}
+
+
+    {{#if perms.isAtLeastMember}}
+    <div id="members" class="tab tab-3">
+      <h2>{{pluralize org.users.count "active member" true}}</h2>
+      <table class="org-table org-users org-edit-user-table">
+        <thead>
+          <tr>
+            <th>Collaborators</th>
+            {{#if perms.isSuperAdmin}}
+            <th>Status</th>
+            <th>Action</th>
+            {{/if}}
+          </tr>
+        </thead>
+        <tbody>
           {{#each org.users.items}}
             <tr>
               <td>
-                <div>
+                <div class="collapsible-wrapper">
                   <span class="circle-avatar">
                     <img src="{{avatar.small}}" />
                   </span>
@@ -80,164 +123,85 @@
                   </span><!--/.name-->
                 </div>
               </td>
-              {{#if ../perms.isSuperAdmin}}
+            {{#if ../perms.isSuperAdmin}}
               <td>
-                <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
+                <div class="collapsible-wrapper">
+                <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../org.info.name}}" class="edit-pay-status">
+                <div class="switch-container pay-status">
+                  <label><span class="a11y-only">Paid Status</span>
+                  {{#if sponsoredByOrg}}
+                    <input class="switch" checked="checked" type="checkbox" name="payStatus">
+                  {{else}}
+                    {{#if sponsored}}
+                      <input class="switch" checked="checked" disabled="disabled" type="checkbox" name="payStatus">
+                    {{else}}
+                      <input class="switch" type="checkbox" name="payStatus">
+                    {{/if}}
+                  {{/if}}
+                  <div class="switch"></div>
+                  <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
+                  <span class="switch-label checked-text" aria-hidden="true">paid</span>
+                  </label>
+                </div>
                   {{#with ../../this}}
                   {{> form_security }}
                   {{/with}}
                     <input type="hidden" name="username" value="{{name}}" />
-                    <input type="hidden" name="updateType" value="deleteUser" />
-                    <button type="submit" class="icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
+                    <input type="hidden" name="updateType" value="updatePayStatus" />
+                    {{#if sponsoredByOrg}}
+                      <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
+                    {{else}}
+                      {{#unless sponsored}}
+                        <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
+                      {{/unless}}
+                    {{/if}}
                 </form>
+                </div>
+              </td>
+              <td>
+                <div class="collapsible-wrapper">
+                  <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
+                    {{#with ../../this}}
+                    {{> form_security }}
+                    {{/with}}
+                    <input type="hidden" name="username" value="{{name}}" />
+                    <input type="hidden" name="updateType" value="deleteUser" />
+                    <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
+                </form>
+                </div>
               </td>
               {{/if}}
             </tr>
           {{else}}
             <tr><td colspan=2><em>There are no users in this Org.</em></td></tr>
           {{/each}}
-            {{#if perms.isSuperAdmin}}
-            <tr>
-              <td colspan=2>
-                <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
-                  <label for="name"><span class="a11y-only">Username</span></label>
-                  <input required="required" type="text" id="username" name="username" placeholder="Invite a Member"/>
-                  <fieldset>
-                    <legend><span class="a11y-only">User Type:</span></legend>
-                    <label for="role-1">Member</label>
-                    <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
-                    <label for="role-2">Team Admin</label>
-                    <input type="radio" id="role-2" name="role" value="super-admin" />
-                  </fieldset>
+          {{#if perms.isSuperAdmin}}
+          <tr>
+            <td colspan=3>
+              <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
+                <label for="name"><span class="a11y-only">Username</span></label>
+                <input required="required" type="text" id="username" name="username" placeholder="Invite a Member"/>
+                <fieldset>
+                  <legend><span class="a11y-only">User Type:</span></legend>
+                  <label for="role-1">Member</label>
+                  <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
+                  <label for="role-2">Team Admin</label>
+                  <input type="radio" id="role-2" name="role" value="team-admin" />
+                </fieldset>
 
-                  {{> form_security}}
-                  <input type="hidden" name="updateType" value="addUser" />
-                  <button type="submit" class="button">Add User</button>
-                </form>
-              </td>
-            </tr>
-            {{/if}}
-          </tbody>
-        </table>
-      {{/if}}
+                {{> form_security}}
+                <input type="hidden" name="updateType" value="addUser" />
+                <button type="submit" class="button">Add User</button>
+              </form>
+            </td>
+          </tr>
+          {{/if}}
+        </tbody>
+      </table>
 
-    </div><!--/tab-1-->
-
-    <div id="teams" class="tab tab-2">
-    </div><!--/.tab-2-->
-
-
-    {{#if perms.isAtLeastMember}}
-      <div id="members" class="tab tab-3">
-        <h2>Members</h2>
-        <table class="org-table org-users org-edit-user-table">
-          <thead>
-            <tr>
-              <th>Collaborators</th>
-              {{#if perms.isSuperAdmin}}
-              <th>Status</th>
-              <th>Action</th>
-              {{/if}}
-            </tr>
-          </thead>
-          <tbody>
-            {{#each org.users.items}}
-              <tr>
-                <td>
-                  <div class="collapsible-wrapper">
-                    <span class="circle-avatar">
-                      <img src="{{avatar.small}}" />
-                    </span>
-                    <span class="name">
-                      <a class="username" href="/~{{name}}">{{name}}</a>
-                      {{#if resource.fullname}}
-                      <span class="display-name">{{resource.fullname}}</span>
-                      {{/if}}
-                    </span><!--/.name-->
-                  </div>
-                </td>
-              {{#if ../perms.isSuperAdmin}}
-                <td>
-                  <div class="collapsible-wrapper">
-                  <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../org.info.name}}" class="edit-pay-status">
-                  <div class="switch-container pay-status">
-                    <label><span class="a11y-only">Paid Status</span>
-                    {{#if sponsoredByOrg}}
-                      <input class="switch" checked="checked" type="checkbox" name="payStatus">
-                    {{else}}
-                      {{#if sponsored}}
-                        <input class="switch" checked="checked" disabled="disabled" type="checkbox" name="payStatus">
-                      {{else}}
-                        <input class="switch" type="checkbox" name="payStatus">
-                      {{/if}}
-                    {{/if}}
-                    <div class="switch"></div>
-                    <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
-                    <span class="switch-label checked-text" aria-hidden="true">paid</span>
-                    </label>
-                  </div>
-                    {{#with ../../this}}
-                    {{> form_security }}
-                    {{/with}}
-                      <input type="hidden" name="username" value="{{name}}" />
-                      <input type="hidden" name="updateType" value="updatePayStatus" />
-                      {{#if sponsoredByOrg}}
-                        <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
-                      {{else}}
-                        {{#unless sponsored}}
-                          <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
-                        {{/unless}}
-                      {{/if}}
-                  </form>
-                  </div>
-                </td>
-                <td>
-                  <div class="collapsible-wrapper">
-                    <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
-                      {{#with ../../this}}
-                      {{> form_security }}
-                      {{/with}}
-                      <input type="hidden" name="username" value="{{name}}" />
-                      <input type="hidden" name="updateType" value="deleteUser" />
-                      <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
-                  </form>
-                  </div>
-                </td>
-                {{/if}}
-              </tr>
-            {{else}}
-              <tr><td colspan=2><em>There are no users in this Org.</em></td></tr>
-            {{/each}}
-            {{#if perms.isSuperAdmin}}
-            <tr>
-              <td colspan=3>
-                <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
-                  <label for="name"><span class="a11y-only">Username</span></label>
-                  <input required="required" type="text" id="username" name="username" placeholder="Invite a Member"/>
-                  <fieldset>
-                    <legend><span class="a11y-only">User Type:</span></legend>
-                    <label for="role-1">Member</label>
-                    <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
-                    <label for="role-2">Team Admin</label>
-                    <input type="radio" id="role-2" name="role" value="team-admin" />
-                  </fieldset>
-
-                  {{> form_security}}
-                  <input type="hidden" name="updateType" value="addUser" />
-                  <button type="submit" class="button">Add User</button>
-                </form>
-              </td>
-            </tr>
-            {{/if}}
-          </tbody>
-        </table>
-
-      </div><!--/.tab-3-->
-
-    <div id="packages" class="tab tab-4">
-    </div><!--/.tab-4-->
-
+    </div><!--/.tab-3-->
     {{/if}}
+
   </div><!--/tabs-->
 
 

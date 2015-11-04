@@ -240,39 +240,42 @@ Org.prototype.addUser = function(name, user, callback) {
   assert(_.isObject(user), "must pass a user");
 
   var url = USER_HOST + '/org/' + name + '/user';
+  var bearer = this.bearer;
 
-  Request.put({
-    url: url,
-    json: true,
-    body: user,
-    headers: {
-      bearer: this.bearer
-    }
-  }, function(err, resp, user) {
-    if (err) {
-      callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.put({
+      url: url,
+      json: true,
+      body: user,
+      headers: {
+        bearer: bearer
+      }
+    }, function(err, resp, user) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 401) {
-      err = Error('bearer is unauthorized to add this user to this organization');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 401) {
+        err = Error('bearer is unauthorized to add this user to this organization');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('org or user not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('org or user not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(user);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, user);
-  });
+      return accept(user);
+    });
+  }).nodeify(callback);
 };
 
 Org.prototype.getUsers = function(name, callback) {

@@ -597,39 +597,37 @@ describe('getting an org', function() {
 
 describe('creating an org', function() {
   it('redirects back to org/create if the org scope name is in use by another org', function(done) {
-    generateCrumb(server, function(crumb) {
-      var userMock = nock("https://user-api-example.com")
-        .get("/user/bob")
-        .reply(200, fixtures.users.bob);
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
 
-      var licenseMock = nock("https://license-api-example.com")
-        .get("/customer/bob/stripe")
-        .reply(404);
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob/stripe")
+      .reply(404);
 
-      var orgMock = nock("https://user-api-example.com")
-        .get("/org/bigco")
-        .reply(200, fixtures.orgs.bigco)
-        .get("/org/bigco/user")
-        .reply(200, fixtures.orgs.bigcoAddedUsers)
-        .get("/org/bigco/package")
-        .reply(200, fixtures.packages.fake)
-        .get('/org/bigco/team')
-        .reply(200, fixtures.teams.bigcoOrg);
+    var orgMock = nock("https://user-api-example.com")
+      .get("/org/bigco")
+      .reply(200, fixtures.orgs.bigco)
+      .get("/org/bigco/user")
+      .reply(200, fixtures.orgs.bigcoAddedUsers)
+      .get("/org/bigco/package")
+      .reply(200, fixtures.packages.fake)
+      .get('/org/bigco/team')
+      .reply(200, fixtures.teams.bigcoOrg);
 
-      var options = {
-        url: "/org/create-validation?orgScope=bigco&human-name=Bob's big co",
-        method: "GET",
-        credentials: fixtures.users.bob
-      };
+    var options = {
+      url: "/org/create-validation?orgScope=bigco&human-name=Bob's big co",
+      method: "GET",
+      credentials: fixtures.users.bob
+    };
 
-      server.inject(options, function(resp) {
-        userMock.done();
-        licenseMock.done();
-        orgMock.done();
-        expect(resp.statusCode).to.equal(302);
-        expect(resp.request.response.headers.location).to.match(/org\/create/);
-        done();
-      });
+    server.inject(options, function(resp) {
+      userMock.done();
+      licenseMock.done();
+      orgMock.done();
+      expect(resp.statusCode).to.equal(302);
+      expect(resp.request.response.headers.location).to.match(/org\/create/);
+      done();
     });
 
   });

@@ -1,0 +1,48 @@
+.palette-group
+  display -webkit-flex
+  display flex
+  font-size 1em
+
+.palette-container
+  -webkit-flex 1
+  margin 10px
+  align-self flex-end
+
+  &.primary
+      background-color primary
+
+  &.secondary
+      background-color secondary
+
+  ul
+    @extend .vanilla-list
+    text-align center
+
+  .variations
+    display -webkit-flex
+    display flex
+    line-height 125%
+
+    div
+      -webkit-flex 1
+      margin 5px
+      background-color @background-color
+
+
+    // &.light
+    // background-color primary-light
+    //
+    // &.lighter
+    // background-color primary-lighter
+    //
+    // &.lightest
+    // background-color primary-lightest
+    //
+    // &.dark
+    // background-color primary-dark
+    //
+    // &.darker
+    // background-color primary-darker
+    //
+    // &.darkest
+    // background-color primary-darkest

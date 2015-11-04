@@ -15,7 +15,7 @@ var Team = module.exports = function(bearer) {
 };
 
 Team.prototype._get = function(opts) {
-  var url = USER_HOST + '/team/' + opts.orgName + '/' + opts.teamName;
+  var url = USER_HOST + '/team/' + opts.orgScope + '/' + opts.teamName;
 
   var data = {
     url: url,
@@ -83,7 +83,7 @@ Team.prototype.get = function(opts, callback) {
 };
 
 Team.prototype.getUsers = function(opts) {
-  var url = USER_HOST + '/team/' + opts.orgName + '/' + opts.teamName + '/user';
+  var url = USER_HOST + '/team/' + opts.orgScope + '/' + opts.teamName + '/user';
 
   var data = {
     url: url,
@@ -117,7 +117,7 @@ Team.prototype.getUsers = function(opts) {
 };
 
 Team.prototype.getPackages = function(opts) {
-  var url = USER_HOST + '/team/' + opts.orgName + '/' + opts.teamName + '/package';
+  var url = USER_HOST + '/team/' + opts.orgScope + '/' + opts.teamName + '/package';
 
   var data = {
     url: url,

@@ -27,7 +27,7 @@ describe('Team', function() {
         .reply(401);
 
       Team('bob').get({
-        orgName: 'bigco',
+        orgScope: 'bigco',
         teamName: 'bigteam'
       }).catch(function(err) {
         teamMock.done();
@@ -47,7 +47,7 @@ describe('Team', function() {
         .reply(404);
 
       Team('bob').get({
-        orgName: 'bigco',
+        orgScope: 'bigco',
         teamName: 'bigteam'
       }, function(err) {
         teamMock.done();
@@ -75,7 +75,7 @@ describe('Team', function() {
         });
 
       Team('bob').get({
-        orgName: 'bigco',
+        orgScope: 'bigco',
         teamName: 'bigteam'
       }, function(err, body) {
         teamMock.done();

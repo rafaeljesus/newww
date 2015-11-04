@@ -256,8 +256,28 @@ exports.addUserToOrg = function(request, reply) {
   var opts = {};
 
   Org(loggedInUser)
-    .addUser(orgName, user, function(err, addedUser) {
-      if (err) {
+    .addUser(orgName, user)
+    .then(function() {
+      return request.customer.getLicenseIdForOrg(orgName);
+    })
+    .then(function(licenseId) {
+      return request.customer.extendSponsorship(licenseId, user.user);
+    })
+    .then(function(extendedSponsorship) {
+      return request.customer.acceptSponsorship(extendedSponsorship.verification_key)
+        .catch(function(err) {
+          if (err.statusCode !== 403) {
+            throw err;
+          }
+        });
+    })
+    .then(function() {
+      return exports.getOrg(request, reply);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
         return request.saveNotifications([
           P.reject(err.message)
         ]).then(function(token) {
@@ -268,28 +288,9 @@ exports.addUserToOrg = function(request, reply) {
         }).catch(function(err) {
           request.logger.log(err);
         });
+      } else {
+        return reply.view('errors/internal', err);
       }
-      request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
-        if (err) {
-          request.logger.error(err);
-          return reply.view('errors/internal', err).code(404);
-        }
-        request.customer.extendSponsorship(licenseId, user.user, function(err, extendedSponsorship) {
-          if (err) {
-            request.logger.error(err);
-            return reply.view('errors/internal', err).code(err.statusCode);
-          }
-          request.customer.acceptSponsorship(extendedSponsorship.verification_key, function(err) {
-            if (err) {
-              request.logger.error(err);
-              if (err.statusCode !== 403) {
-                return reply.view('errors/internal', err).code(err.statusCode);
-              }
-            }
-            return exports.getOrg(request, reply);
-          });
-        });
-      });
     });
 };
 

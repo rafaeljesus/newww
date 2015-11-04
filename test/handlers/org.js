@@ -955,14 +955,29 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(404);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
-          done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('No org with that name exists');
+            done();
+          });
         });
       });
     });
 
-    it('renders an eror if a sponsorship cannot be extended', function(done) {
+    it('renders an error if a sponsorship cannot be extended', function(done) {
       generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
@@ -1011,9 +1026,24 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(404);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
-          done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('The sponsorship license number 1 is not found');
+            done();
+          });
         });
       });
     });
@@ -1078,9 +1108,24 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(404);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
-          done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('The verification key used for accepting this sponsorship does not exist');
+            done();
+          });
         });
       });
     });

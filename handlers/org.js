@@ -57,26 +57,13 @@ exports.getOrg = function(request, reply) {
         return member.name === loggedInUser;
       });
 
+
       opts.perms = {
         isSuperAdmin: isSuperAdmin,
         isAtLeastTeamAdmin: isAtLeastTeamAdmin,
         isAtLeastMember: isAtLeastMember
       };
 
-      return opts;
-    })
-    .then(function(opts) {
-      var teams = opts.org.teams.items.map(function(team) {
-        return Team(loggedInUser).get({
-          orgName: orgName,
-          teamName: team.name
-        });
-      });
-
-      return P.all(teams);
-    })
-    .then(function(teams) {
-      opts.org.teams.items = teams;
       return reply.view('org/info', opts);
     })
     .catch(function(err) {

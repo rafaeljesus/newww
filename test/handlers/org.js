@@ -182,13 +182,6 @@ describe('getting an org', function() {
       .get('/org/bigco/team')
       .reply(200, fixtures.teams.bigcoOrg);
 
-    var teamMock = nock("https://user-api-example.com")
-      .get('/team/bigco/developers')
-      .reply(200, fixtures.teams.bigcoOrg.items[0])
-      .get('/team/bigco/developers/user')
-      .reply(200, [])
-      .get('/team/bigco/developers/package')
-      .reply(200, {});
 
     var options = {
       url: "/org/bigco",
@@ -199,7 +192,6 @@ describe('getting an org', function() {
       userMock.done();
       licenseMock.done();
       orgMock.done();
-      teamMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('org/info');
       var users = resp.request.response.source.context.org.users.items;
@@ -235,13 +227,6 @@ describe('getting an org', function() {
       .get('/org/bigco/team')
       .reply(200, fixtures.teams.bigcoOrg);
 
-    var teamMock = nock("https://user-api-example.com")
-      .get('/team/bigco/developers')
-      .reply(200, fixtures.teams.bigcoOrg.items[0])
-      .get('/team/bigco/developers/user')
-      .reply(200, [])
-      .get('/team/bigco/developers/package')
-      .reply(200, {});
 
     var options = {
       url: "/org/bigco",
@@ -252,7 +237,6 @@ describe('getting an org', function() {
       userMock.done();
       licenseMock.done();
       orgMock.done();
-      teamMock.done();
       expect(resp.statusCode).to.equal(200);
       expect(resp.request.response.source.template).to.equal('org/info');
       var users = resp.request.response.source.context.org.users.items;
@@ -366,14 +350,6 @@ describe('getting an org', function() {
         .get('/org/bigco/team')
         .reply(200, fixtures.teams.bigcoOrg);
 
-      var teamMock = nock("https://user-api-example.com")
-        .get('/team/bigco/developers')
-        .reply(200, fixtures.teams.bigcoOrg.items[0])
-        .get('/team/bigco/developers/user')
-        .reply(200, [])
-        .get('/team/bigco/developers/package')
-        .reply(200, {});
-
       var options = {
         url: "/org/bigco",
         credentials: fixtures.users.bob
@@ -383,7 +359,6 @@ describe('getting an org', function() {
         userMock.done();
         licenseMock.done();
         orgMock.done();
-        teamMock.done();
         expect(resp.request.response.source.context.perms.isSuperAdmin).to.equal(true);
         expect(resp.request.response.source.context.perms.isAtLeastTeamAdmin).to.equal(true);
         expect(resp.request.response.source.context.perms.isAtLeastMember).to.equal(true);
@@ -415,14 +390,6 @@ describe('getting an org', function() {
         .get('/org/bigco/team')
         .reply(200, fixtures.teams.bigcoOrg);
 
-      var teamMock = nock("https://user-api-example.com")
-        .get('/team/bigco/developers')
-        .reply(200, fixtures.teams.bigcoOrg.items[0])
-        .get('/team/bigco/developers/user')
-        .reply(200, [])
-        .get('/team/bigco/developers/package')
-        .reply(200, {});
-
       var options = {
         url: "/org/bigco",
         credentials: fixtures.users.bob
@@ -432,7 +399,6 @@ describe('getting an org', function() {
         userMock.done();
         licenseMock.done();
         orgMock.done();
-        teamMock.done();
         expect(resp.request.response.source.context.perms.isSuperAdmin).to.equal(false);
         expect(resp.request.response.source.context.perms.isAtLeastTeamAdmin).to.equal(true);
         expect(resp.request.response.source.context.perms.isAtLeastMember).to.equal(true);
@@ -464,14 +430,6 @@ describe('getting an org', function() {
         .get('/org/bigco/team')
         .reply(200, fixtures.teams.bigcoOrg);
 
-      var teamMock = nock("https://user-api-example.com")
-        .get('/team/bigco/developers')
-        .reply(200, fixtures.teams.bigcoOrg.items[0])
-        .get('/team/bigco/developers/user')
-        .reply(200, [])
-        .get('/team/bigco/developers/package')
-        .reply(200, {});
-
       var options = {
         url: "/org/bigco",
         credentials: fixtures.users.betty
@@ -481,7 +439,6 @@ describe('getting an org', function() {
         userMock.done();
         licenseMock.done();
         orgMock.done();
-        teamMock.done();
         expect(resp.request.response.source.context.perms.isSuperAdmin).to.equal(false);
         expect(resp.request.response.source.context.perms.isAtLeastTeamAdmin).to.equal(false);
         expect(resp.request.response.source.context.perms.isAtLeastMember).to.equal(true);
@@ -514,14 +471,6 @@ describe('getting an org', function() {
       .get('/org/bigco/team')
       .reply(200, fixtures.teams.bigcoOrg);
 
-    var teamMock = nock("https://user-api-example.com")
-      .get('/team/bigco/developers')
-      .reply(200, fixtures.teams.bigcoOrg.items[0])
-      .get('/team/bigco/developers/user')
-      .reply(200, [])
-      .get('/team/bigco/developers/package')
-      .reply(200, {});
-
     var options = {
       url: "/org/bigco",
       credentials: fixtures.users.bob
@@ -531,7 +480,6 @@ describe('getting an org', function() {
       userMock.done();
       licenseMock.done();
       orgMock.done();
-      teamMock.done();
       expect(resp.request.response.source.context.org.info.name).to.equal("bigco");
       expect(resp.request.response.source.context.org.info.human_name).to.equal("BigCo Enterprises");
       done();
@@ -569,14 +517,6 @@ describe('getting an org', function() {
       .get('/org/bigco/team')
       .reply(200, fixtures.teams.bigcoOrg);
 
-    var teamMock = nock("https://user-api-example.com")
-      .get('/team/bigco/developers')
-      .reply(200, fixtures.teams.bigcoOrg.items[0])
-      .get('/team/bigco/developers/user')
-      .reply(200, [])
-      .get('/team/bigco/developers/package')
-      .reply(200, {});
-
     var options = {
       url: "/org/bigco",
       credentials: fixtures.users.bob
@@ -586,7 +526,6 @@ describe('getting an org', function() {
       userMock.done();
       licenseMock.done();
       orgMock.done();
-      teamMock.done();
       expect(resp.request.response.source.context.org.info.name).to.equal("bigco");
       expect(resp.request.response.source.context.org.info.human_name).to.equal("bigco");
       done();
@@ -1197,14 +1136,6 @@ describe('updating an org', function() {
           .get('/org/bigco/team')
           .reply(200, fixtures.teams.bigcoOrg);
 
-        var teamMock = nock("https://user-api-example.com")
-          .get('/team/bigco/developers')
-          .reply(200, fixtures.teams.bigcoOrg.items[0])
-          .get('/team/bigco/developers/user')
-          .reply(200, [])
-          .get('/team/bigco/developers/package')
-          .reply(200, {});
-
         var options = {
           url: "/org/bigco",
           method: "post",
@@ -1224,7 +1155,6 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          teamMock.done();
           expect(resp.statusCode).to.equal(200);
           expect(resp.request.response.source.template).to.equal('org/info');
           done();
@@ -1292,14 +1222,6 @@ describe('updating an org', function() {
           .get('/org/bigco/team')
           .reply(200, fixtures.teams.bigcoOrg);
 
-        var teamMock = nock("https://user-api-example.com")
-          .get('/team/bigco/developers')
-          .reply(200, fixtures.teams.bigcoOrg.items[0])
-          .get('/team/bigco/developers/user')
-          .reply(200, [])
-          .get('/team/bigco/developers/package')
-          .reply(200, {});
-
         var options = {
           url: "/org/bigco",
           method: "post",
@@ -1319,7 +1241,6 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          teamMock.done();
           expect(resp.statusCode).to.equal(200);
           expect(resp.request.response.source.template).to.equal('org/info');
           done();
@@ -1666,14 +1587,6 @@ describe('updating an org', function() {
             "verified": true
           });
 
-        var teamMock = nock("https://user-api-example.com")
-          .get('/team/bigco/developers')
-          .reply(200, fixtures.teams.bigcoOrg.items[0])
-          .get('/team/bigco/developers/user')
-          .reply(200, [])
-          .get('/team/bigco/developers/package')
-          .reply(200, {});
-
         var options = {
           url: "/org/bigco",
           method: "post",
@@ -1694,7 +1607,6 @@ describe('updating an org', function() {
           userMock.done();
           orgMock.done();
           licenseMock.done();
-          teamMock.done();
           expect(resp.statusCode).to.equal(200);
           expect(resp.request.response.source.template).to.equal('org/info');
           var betty = resp.request.response.source.context.org.users.items.filter(function(user) {
@@ -1741,14 +1653,6 @@ describe('updating an org', function() {
             "verified": null
           });
 
-        var teamMock = nock("https://user-api-example.com")
-          .get('/team/bigco/developers')
-          .reply(200, fixtures.teams.bigcoOrg.items[0])
-          .get('/team/bigco/developers/user')
-          .reply(200, [])
-          .get('/team/bigco/developers/package')
-          .reply(200, {});
-
         var options = {
           url: "/org/bigco",
           method: "post",
@@ -1767,7 +1671,6 @@ describe('updating an org', function() {
           userMock.done();
           orgMock.done();
           licenseMock.done();
-          teamMock.done();
           var betty = resp.request.response.source.context.org.users.items.filter(function(user) {
             return user.name === 'betty';
           })[0];

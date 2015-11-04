@@ -369,7 +369,7 @@ exports.updateUserPayStatus = function(request, reply) {
       return payForUser ? extend(licenseId, username) : request.customer.revokeSponsorship(username, licenseId);
     })
     .then(function() {
-      return exports.getOrg(request, reply);
+      return reply.redirect('/org/' + orgName + '/members');
     })
     .catch(function(err) {
       if (err.statusCode >= 500) {

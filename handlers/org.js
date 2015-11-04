@@ -253,7 +253,6 @@ exports.addUserToOrg = function(request, reply) {
     user: request.payload.username,
     role: request.payload.role
   };
-  var opts = {};
 
   Org(loggedInUser)
     .addUser(orgName, user)
@@ -301,19 +300,15 @@ exports.removeUserFromOrg = function(request, reply) {
 
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser.name;
-  var user = {
-    user: request.payload.username,
-    role: request.payload.role
-  };
-  var opts = {};
+  var username = request.payload.username;
 
   return request.customer.getLicenseIdForOrg(orgName)
     .then(function(licenseId) {
-      return request.customer.revokeSponsorship(user.user, licenseId)
+      return request.customer.revokeSponsorship(username, licenseId);
     })
     .then(function() {
       return Org(loggedInUser)
-        .removeUser(orgName, user.user)
+        .removeUser(orgName, username);
     })
     .then(function() {
       return reply.redirect('/org/' + orgName);

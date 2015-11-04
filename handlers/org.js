@@ -1,4 +1,5 @@
 var Org = require('../agents/org');
+var Team = require('../agents/team');
 var User = require('../models/user');
 var P = require('bluebird');
 var Joi = require('joi');
@@ -10,15 +11,16 @@ exports.getOrg = function(request, reply) {
   }
 
   var opts = {};
+  var orgName = request.params.org;
 
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   return request.customer.getById(request.loggedInUser.email)
-    .tap(function(cust) {
+    .then(function(cust) {
       opts.customer_id = cust.stripe_customer_id;
     })
     .then(function() {
       return Org(loggedInUser)
-        .get(request.params.org);
+        .get(orgName);
     })
     .then(function(org) {
       org = org || {};
@@ -61,6 +63,20 @@ exports.getOrg = function(request, reply) {
         isAtLeastMember: isAtLeastMember
       };
 
+      return opts;
+    })
+    .then(function(opts) {
+      var teams = opts.org.teams.items.map(function(team) {
+        return Team(loggedInUser).get({
+          orgName: orgName,
+          teamName: team.name
+        });
+      });
+
+      return P.all(teams);
+    })
+    .then(function(teams) {
+      opts.org.teams.items = teams;
       return reply.view('org/info', opts);
     })
     .catch(function(err) {

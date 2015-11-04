@@ -334,7 +334,7 @@ exports.removeUserFromOrg = function(request, reply) {
           request.logger.error(err);
         });
       }
-    })
+    });
 
 };
 
@@ -372,8 +372,21 @@ exports.updateUserPayStatus = function(request, reply) {
       return exports.getOrg(request, reply);
     })
     .catch(function(err) {
-      request.logger.error(err);
-      return reply.view('errors/internal', err);
+      if (err.statusCode >= 500) {
+        request.logger.error(err);
+        return reply.view('errors/internal', err);
+      } else {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/' + orgName;
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.error(err);
+        });
+      }
     });
 
 

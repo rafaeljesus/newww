@@ -146,6 +146,7 @@ Org.prototype.get = function(name, callback) {
     ret.users = users;
     ret.users.items = users.items.map(function(user) {
       user.avatar = avatar(user.email);
+      user.sponsoredByOrg = user.sponsored === 'by-org';
       return user;
     });
     ret.packages = pkg;

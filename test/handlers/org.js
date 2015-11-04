@@ -1137,8 +1137,6 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob@boom.me")
-          .reply(200, fixtures.customers.fetched_happy)
           .get("/customer/bob/stripe")
           .reply(404)
           .get("/customer/bob/stripe/subscription")
@@ -1171,15 +1169,7 @@ describe('updating an org', function() {
             "role": "developer",
             "updated": "2015-08-05T15:26:46.970Z",
             "user_id": 15
-          })
-          .get("/org/bigco")
-          .reply(200, fixtures.orgs.bigco)
-          .get("/org/bigco/user")
-          .reply(200, fixtures.orgs.bigcoAddedUsers)
-          .get("/org/bigco/package")
-          .reply(200, fixtures.packages.fake)
-          .get('/org/bigco/team')
-          .reply(200, fixtures.teams.bigcoOrg);
+          });
 
         var options = {
           url: "/org/bigco",
@@ -1200,8 +1190,8 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(200);
-          expect(resp.request.response.source.template).to.equal('org/info');
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.equal('/org/bigco/members');
           done();
         });
       });
@@ -1214,8 +1204,6 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob@boom.me")
-          .reply(200, fixtures.customers.fetched_happy)
           .get("/customer/bob/stripe")
           .reply(404)
           .get("/customer/bob/stripe/subscription")
@@ -1257,15 +1245,7 @@ describe('updating an org', function() {
             "role": "developer",
             "updated": "2015-08-05T15:26:46.970Z",
             "user_id": 15
-          })
-          .get("/org/bigco")
-          .reply(200, fixtures.orgs.bigco)
-          .get("/org/bigco/user")
-          .reply(200, fixtures.orgs.bigcoAddedUsers)
-          .get("/org/bigco/package")
-          .reply(200, fixtures.packages.fake)
-          .get('/org/bigco/team')
-          .reply(200, fixtures.teams.bigcoOrg);
+          });
 
         var options = {
           url: "/org/bigco",
@@ -1286,8 +1266,8 @@ describe('updating an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(200);
-          expect(resp.request.response.source.template).to.equal('org/info');
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.equal('/org/bigco/members');
           done();
         });
       });

@@ -272,7 +272,7 @@ exports.addUserToOrg = function(request, reply) {
         });
     })
     .then(function() {
-      return exports.getOrg(request, reply);
+      return reply.redirect('/org/' + orgName + '/members');
     })
     .catch(function(err) {
       request.logger.error(err);

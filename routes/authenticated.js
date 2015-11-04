@@ -108,6 +108,14 @@ module.exports = [
     method: "GET",
     handler: require('../handlers/org').getOrg
   }, {
+    path: "/org/{org}/members",
+    method: "GET",
+    handler: require('../handlers/org').getOrgMembers
+  }, {
+    path: "/org/{org}/teams",
+    method: "GET",
+    handler: require('../handlers/org').getOrgTeams
+  }, {
     path: "/org/{org}",
     method: "POST",
     handler: require('../handlers/org').updateOrg

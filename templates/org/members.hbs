@@ -1,0 +1,133 @@
+<div class="container">
+
+  <hgroup>
+    <h1 class="billing-header">{{org.info.name}}</h1>
+  </hgroup>
+
+    <div class="tab-nav-container">
+      <div class="nav-container nav-4-container">
+        <ul class="nav nav-4 clear" role="navigation">
+          <li><a href="/org/{{org.info.name}}">{{pluralize org.packages.count "package" true}}</a></li>
+          {{#if perms.isAtLeastMember}}
+          <li><a href="/org/{{org.info.name}}/teams">{{pluralize org.teams.count "team" true}}</a></li>
+            <li class="current"><a href="/org/{{org.info.name}}/members">{{pluralize org.users.count "member" true}}</a></li>
+          {{/if}}
+          {{#if perms.isSuperAdmin}}
+            <li><button type="button" id="billing" data-stripe-id="{{customer_id}}">payment info</button></li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
+
+    {{#if perms.isAtLeastMember}}
+    <div id="members">
+      <h2>{{pluralize org.users.count "active member" true}}</h2>
+      <table class="org-table org-users org-edit-user-table">
+        <thead>
+          <tr>
+            <th>Collaborators</th>
+            {{#if perms.isSuperAdmin}}
+            <th>Status</th>
+            <th>Action</th>
+            {{/if}}
+          </tr>
+        </thead>
+        <tbody>
+          {{#each org.users.items}}
+            <tr>
+              <td>
+                <div class="collapsible-wrapper">
+                  <span class="circle-avatar">
+                    <img src="{{avatar.small}}" />
+                  </span>
+                  <span class="name">
+                    <a class="username" href="/~{{name}}">{{name}}</a>
+                    {{#if resource.fullname}}
+                    <span class="display-name">{{resource.fullname}}</span>
+                    {{/if}}
+                  </span><!--/.name-->
+                </div>
+              </td>
+            {{#if ../perms.isSuperAdmin}}
+              <td>
+                <div class="collapsible-wrapper">
+                <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../org.info.name}}" class="edit-pay-status">
+                <div class="switch-container pay-status">
+                  <label><span class="a11y-only">Paid Status</span>
+                  {{#if sponsoredByOrg}}
+                    <input class="switch" checked="checked" type="checkbox" name="payStatus">
+                  {{else}}
+                    {{#if sponsored}}
+                      <input class="switch" checked="checked" disabled="disabled" type="checkbox" name="payStatus">
+                    {{else}}
+                      <input class="switch" type="checkbox" name="payStatus">
+                    {{/if}}
+                  {{/if}}
+                  <div class="switch"></div>
+                  <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
+                  <span class="switch-label checked-text" aria-hidden="true">paid</span>
+                  </label>
+                </div>
+                  {{#with ../../this}}
+                  {{> form_security }}
+                  {{/with}}
+                    <input type="hidden" name="username" value="{{name}}" />
+                    <input type="hidden" name="updateType" value="updatePayStatus" />
+                    {{#if sponsoredByOrg}}
+                      <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
+                    {{else}}
+                      {{#unless sponsored}}
+                        <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
+                      {{/unless}}
+                    {{/if}}
+                </form>
+                </div>
+              </td>
+              <td>
+                <div class="collapsible-wrapper">
+                  <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
+                    {{#with ../../this}}
+                    {{> form_security }}
+                    {{/with}}
+                    <input type="hidden" name="username" value="{{name}}" />
+                    <input type="hidden" name="updateType" value="deleteUser" />
+                    <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
+                </form>
+                </div>
+              </td>
+              {{/if}}
+            </tr>
+          {{else}}
+            <tr><td colspan=2><em>There are no users in this Org.</em></td></tr>
+          {{/each}}
+          {{#if perms.isSuperAdmin}}
+          <tr>
+            <td colspan=3>
+              <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
+                <label for="name"><span class="a11y-only">Username</span></label>
+                <input required="required" type="text" id="username" name="username" placeholder="Invite a Member"/>
+                <fieldset>
+                  <legend><span class="a11y-only">User Type:</span></legend>
+                  <label for="role-1">Member</label>
+                  <input type="radio" id="role-1" name="role" value="developer" checked="checked" />
+                  <label for="role-2">Team Admin</label>
+                  <input type="radio" id="role-2" name="role" value="team-admin" />
+                </fieldset>
+
+                {{> form_security}}
+                <input type="hidden" name="updateType" value="addUser" />
+                <button type="submit" class="button">Add User</button>
+              </form>
+            </td>
+          </tr>
+          {{/if}}
+        </tbody>
+      </table>
+
+    </div><!--/.tab-3-->
+    {{/if}}
+
+
+
+</div>
+<script src="https://static.accountdock.com/app.min.js"></script>

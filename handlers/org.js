@@ -344,53 +344,39 @@ exports.updateUserPayStatus = function(request, reply) {
   }
 
   var orgName = request.params.org;
-  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   var payForUser = !!request.payload.payStatus;
-  var username = request.payload.username
+  var username = request.payload.username;
 
-  request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
-
-    if (err) {
-      request.logger.error('could not get license ID for ' + orgName);
-      request.logger.error(err);
-      // TODO: make better error page here
-      return reply.view('errors/internal', err).code(404);
-    }
-
-    if (payForUser) {
-      request.customer.extendSponsorship(licenseId, username, function(err, extendedSponsorship) {
-        if (err) {
-          if (err.message.indexOf("duplicate key value violates unique constraint") > -1) {
-            return exports.getOrg(request, reply);
-          }
-          request.logger.error(err);
-          return reply.view('errors/internal', err).code(err.statusCode);
+  var extend = function(licenseId, username) {
+    return request.customer.extendSponsorship(licenseId, username)
+      .catch(function(err) {
+        if (err.statusCode !== 409) {
+          throw err;
         }
-        request.customer.acceptSponsorship(extendedSponsorship.verification_key, function(err) {
-          if (err) {
-            request.logger.error(err);
+      })
+      .then(function(extendedSponsorship) {
+        return request.customer.acceptSponsorship(extendedSponsorship.verification_key)
+          .catch(function(err) {
             if (err.statusCode !== 403) {
-              return reply.view('errors/internal', err).code(err.statusCode);
+              throw err;
             }
-          }
-
-          return exports.getOrg(request, reply);
-        });
+          });
       });
-    } else {
-      request.customer.revokeSponsorship(username, licenseId, function(err) {
+  };
 
-        if (err) {
-          request.logger.error('issue revoking sponsorship for user ', username);
-          request.logger.error(err);
-          // TODO: make better error page here
-          return reply.view('errors/internal', err).code(err.statusCode);
-        }
+  request.customer.getLicenseIdForOrg(orgName)
+    .then(function(licenseId) {
+      return payForUser ? extend(licenseId, username) : request.customer.revokeSponsorship(username, licenseId);
+    })
+    .then(function() {
+      return exports.getOrg(request, reply);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+      return reply.view('errors/internal', err);
+    });
 
-        return exports.getOrg(request, reply);
-      });
-    }
-  });
+
 };
 
 exports.updateOrg = function(request, reply) {

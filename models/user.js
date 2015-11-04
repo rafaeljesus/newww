@@ -9,6 +9,7 @@ var P = require('bluebird');
 var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
 var utils = require('../lib/utils');
+var Boom = require('boom');
 
 var chimp;
 
@@ -56,8 +57,7 @@ User.prototype.confirmEmail = function(user, callback) {
       }
       if (resp.statusCode > 399) {
         err = new Error('error verifying user ' + user.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
       return resolve(body);
     });
@@ -185,9 +185,8 @@ User.prototype.getPackages = function(name, page, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        var err = new Error('error getting packages for user ' + name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        err = new Error('error getting packages for user ' + name);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
 
       // it feels like this should really go in the handler instead,
@@ -236,9 +235,8 @@ User.prototype.getStars = function(name, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        var err = new Error('error getting stars for user ' + name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        err = new Error('error getting stars for user ' + name);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
       return resolve(body);
     });
@@ -302,8 +300,7 @@ User.prototype.lookupEmail = function(email, callback) {
       }
       if (resp.statusCode > 399) {
         err = new Error('error looking up username(s) for ' + email);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
 
       return resolve(body);
@@ -327,8 +324,7 @@ User.prototype.save = function(user, callback) {
       }
       if (resp.statusCode > 399) {
         err = new Error('error updating profile for ' + user.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
       return resolve(body);
     });
@@ -375,8 +371,7 @@ User.prototype.signup = function(user, callback) {
       }
       if (resp.statusCode > 399) {
         err = new Error('error creating user ' + user.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
       return resolve(body);
     });
@@ -402,8 +397,7 @@ User.prototype.getCliTokens = function getCliTokens(name) {
 
       if (resp.statusCode > 399) {
         err = Error('error getting cli tokens for user ' + name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
 
       return accept(body);
@@ -431,8 +425,7 @@ User.prototype.logoutCliToken = function logoutCliToken(token) {
 
       if (resp.statusCode > 399) {
         err = Error('error logging token out; token=' + token);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
 
       return accept(body);
@@ -481,8 +474,7 @@ User.prototype.getOrgs = function(name, callback) {
 
       if (resp.statusCode > 399) {
         err = Error('error getting orgs for user ' + name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
 
       return resolve(body);
@@ -529,8 +521,7 @@ User.prototype.toOrg = function(name, newUsername, callback) {
 
       if (resp.statusCode > 399) {
         err = new Error('error renaming user ' + name + ": " + body);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Boom.wrap(err, resp.statusCode, body));
       }
       return resolve(body);
     });

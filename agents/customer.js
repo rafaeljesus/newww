@@ -242,11 +242,13 @@ Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
 
       if (!org) {
         err = new Error('No org with that name exists');
+        err.statusCode = 404;
         return reject(err);
       }
 
       if (!org.license_id) {
         err = new Error('That org does not have a license_id');
+        err.statusCode = 400;
         return reject(err);
       }
 
@@ -295,7 +297,7 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
       }
 
       if (resp.statusCode === 404) {
-        err = new Error('License not found: ' + licenseId);
+        err = new Error('The sponsorship license number ' + licenseId + ' is not found');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -329,7 +331,7 @@ Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
       }
 
       if (resp.statusCode === 404) {
-        err = Error('verification key not found');
+        err = Error('The verification key used for accepting this sponsorship does not exist');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

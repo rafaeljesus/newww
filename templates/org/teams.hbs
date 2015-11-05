@@ -22,8 +22,10 @@
 
     {{#if perms.isAtLeastMember}}
     <div id="teams">
-      <h2>{{pluralize org.teams.count "team" true}}</h2>
-
+      <div class="clear org-info-header-container">
+        <h2>{{pluralize org.teams.count "team" true}}</h2>
+        <a class="button" href="/org/{{org.info.name}}/team/create">create a Team</a>
+      </div>
       {{#if org.teams.items}}
       <table class="org-table org-teams">
         <thead>
@@ -47,10 +49,20 @@
             <td>
             </td>
             <td>
+              {{#if users.count}}
+              <a href="/org/{{../../org.info.name}}/team/{{name}}#members">{{users.count}}</a>
+              {{else}}
+              <a href="/org/{{../../org.info.name}}/team/{{name}}/add-user">+ invite users</a>
+              {{/if}}
             </td>
             <td>
+              {{#if packages.count}}
+              <a href="/org/{{../../org.info.name}}/team/{{name}}#packages">{{packages.count}}</a>
+              {{else}}
+              <a href="/org/{{../../org.info.name}}/team/{{name}}/add-packages">+ add packages</a>
+              {{/if}}
             </td>
-            <td>{{created}}</td>
+            <td data-date="{{created}}" data-date-format="%d-%b-%Y">{{created}}</td>
           </tr>
         {{/each}}
         </tbody>
@@ -58,7 +70,7 @@
       {{else}}
       {{/if}}
 
-    </div><!--/.tab-2-->
+    </div>
     {{/if}}
 
 </div>

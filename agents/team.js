@@ -79,6 +79,7 @@ Team.prototype.get = function(opts, callback) {
     };
 
     return team;
+
   }).nodeify(callback);
 };
 
@@ -110,6 +111,8 @@ Team.prototype.getUsers = function(opts) {
         err.statusCode = resp.statusCode;
         return reject(err);
       }
+
+
 
       return accept(users);
     });

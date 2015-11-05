@@ -86,9 +86,7 @@ exports.getOrg = function(request, reply) {
     .then(function(cust) {
       cust = cust || {};
       opts.customer_id = cust.stripe_customer_id;
-      return opts;
-    })
-    .then(function(opts) {
+
       if (templateName.match(/teams/)) {
         var teams = opts.org.teams.items.map(function(team) {
           return Team(loggedInUser).get({
@@ -110,8 +108,6 @@ exports.getOrg = function(request, reply) {
         };
         opts.org.teams = orgTeams;
       }
-    })
-    .then(function() {
       return reply.view(templateName, opts);
     })
     .catch(function(err) {

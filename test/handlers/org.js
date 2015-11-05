@@ -209,8 +209,6 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob@boom.me")
-      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe")
       .reply(404);
 
@@ -254,8 +252,6 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob@boom.me")
-      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe")
       .reply(404);
 
@@ -279,9 +275,24 @@ describe('getting an org', function() {
       userMock.done();
       orgMock.done();
       licenseMock.done();
-      expect(resp.statusCode).to.equal(404);
-      expect(resp.request.response.source.template).to.equal('errors/not-found');
-      done();
+      var redirectPath = resp.headers.location;
+      var url = URL.parse(redirectPath);
+      var query = url.query;
+      var token = qs.parse(query).notice;
+      var tokenFacilitator = new TokenFacilitator({
+        redis: client
+      });
+      expect(token).to.be.string();
+      expect(token).to.not.be.empty();
+      expect(resp.statusCode).to.equal(302);
+      tokenFacilitator.read(token, {
+        prefix: "notice:"
+      }, function(err, notice) {
+        expect(err).to.not.exist();
+        expect(notice.notices).to.be.array();
+        expect(notice.notices[0]).to.equal('Org not found');
+        done();
+      });
     });
   });
 
@@ -292,8 +303,6 @@ describe('getting an org', function() {
         .reply(200, fixtures.users.bob);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/customer/bob@boom.me")
-        .reply(200, fixtures.customers.fetched_happy)
         .get("/customer/bob/stripe")
         .reply(404);
 
@@ -359,6 +368,7 @@ describe('getting an org', function() {
         userMock.done();
         licenseMock.done();
         orgMock.done();
+        expect(resp.statusCode).to.equal(200);
         expect(resp.request.response.source.context.perms.isSuperAdmin).to.equal(true);
         expect(resp.request.response.source.context.perms.isAtLeastTeamAdmin).to.equal(true);
         expect(resp.request.response.source.context.perms.isAtLeastMember).to.equal(true);
@@ -372,8 +382,6 @@ describe('getting an org', function() {
         .reply(200, fixtures.users.bob);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/customer/bob@boom.me")
-        .reply(200, fixtures.customers.fetched_happy)
         .get("/customer/bob/stripe")
         .reply(404);
 
@@ -412,8 +420,6 @@ describe('getting an org', function() {
         .reply(200, fixtures.users.betty);
 
       var licenseMock = nock("https://license-api-example.com")
-        .get("/customer/betty@somewhere.com")
-        .reply(200, fixtures.customers.fetched_happy)
         .get("/customer/betty/stripe")
         .reply(404);
 
@@ -453,8 +459,6 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob@boom.me")
-      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe")
       .reply(404);
 
@@ -492,8 +496,6 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob@boom.me")
-      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe")
       .reply(404);
 

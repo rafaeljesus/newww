@@ -96,6 +96,12 @@ Org.prototype.get = function(name, callback) {
           });
         }
 
+        if (resp.statusCode === 404) {
+          err = new Error("Org or Team not found");
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+
         if (resp.statusCode >= 400) {
           err = new Error(body);
           err.statusCode = resp.statusCode;
@@ -118,6 +124,12 @@ Org.prototype.get = function(name, callback) {
         }
       }, function(err, resp, body) {
         if (err) {
+          return reject(err);
+        }
+
+        if (resp.statusCode === 404) {
+          err = new Error("Org not found");
+          err.statusCode = resp.statusCode;
           return reject(err);
         }
 

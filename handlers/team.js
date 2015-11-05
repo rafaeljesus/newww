@@ -140,7 +140,7 @@ exports.showTeam = function(request, reply) {
 
   return Team(loggedInUser)
     .get({
-      orgName: orgName,
+      orgScope: orgName,
       teamName: teamName
     })
     .then(function(team) {

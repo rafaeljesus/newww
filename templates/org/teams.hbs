@@ -1,7 +1,7 @@
 <div class="container">
 
   <hgroup>
-    <h1 class="billing-header">{{org.info.name}}</h1>
+    <h1 class="billing-header">@{{org.info.name}}</h1>
   </hgroup>
 
     <div class="tab-nav-container">
@@ -22,7 +22,7 @@
 
     {{#if perms.isAtLeastMember}}
     <div id="teams">
-      <div class="clear org-info-header-container">
+      <div class="org-info-header-container">
         <h2>{{pluralize org.teams.count "team" true}}</h2>
         <a class="button" href="/org/{{org.info.name}}/team/create">create a Team</a>
       </div>
@@ -31,10 +31,10 @@
         <thead>
           <tr>
             <th>team name</th>
-            <th>admin(s)</th>
             <th>members</th>
             <th>packages</th>
             <th>created</th>
+            <th><span class="a11y-only">actions</span></th>
           </tr>
         </thead>
         <tbody>
@@ -43,10 +43,8 @@
             <td>
               <a href="/org/{{../org.info.name}}/team/{{name}}">{{name}}</a>
               {{#if description}}
-              <span>{{description}}</span>
+              <span class="description">{{description}}</span>
               {{/if}}
-            </td>
-            <td>
             </td>
             <td>
               {{#if users.count}}
@@ -62,12 +60,27 @@
               <a href="/org/{{../../org.info.name}}/team/{{name}}/add-packages">+ add packages</a>
               {{/if}}
             </td>
-            <td data-date="{{created}}" data-date-format="%d-%b-%Y">{{created}}</td>
+            <td class="created" data-date="{{created}}" data-date-format="%d-%b-%y">{{created}}</td>
+            <td>
+              <form method="POST" id="org-team-delete-{{@index}}" action="/org/{{../org.info.name}}/team">
+                {{#with ../../this}}
+                {{> form_security }}
+                {{/with}}
+                <input type="hidden" name="team-name" value="{{name}}" />
+                <input type="hidden" name="org-scope" value="{{../org.info.name}}" />
+                <input type="hidden" name="update-type" value="delete-team" />
+                <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete Team {{name}}</span></button>
+              </form>
+            </td>
           </tr>
         {{/each}}
         </tbody>
       </table>
       {{else}}
+      <div class="org-team-empty">
+        <div>You have no teams within this Org.</div>
+        <div>Why not add one?</div>
+      </div>
       {{/if}}
 
     </div>

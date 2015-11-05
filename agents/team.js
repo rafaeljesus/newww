@@ -66,6 +66,8 @@ Team.prototype.get = function(opts, callback) {
       count: users.length
     };
 
+    team.frontUsers = users.slice(0, 3);
+
     var pkgs = Object.keys(packages).map(function(name) {
       return {
         "name": name,

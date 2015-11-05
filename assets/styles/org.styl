@@ -5,6 +5,7 @@
 .org-table
   th,td
     padding 20px
+    vertical-align middle
 
   .icon-x
     border 0
@@ -12,7 +13,6 @@
     cursor pointer
 
 .org-table
-  border 1px solid table-border-grey
 
   th,td
     &:first-child
@@ -26,9 +26,8 @@
       text-align left
       width 100%
 
-  tbody tr
-    border-top 1px solid table-border-grey
-
+  tbody tr:nth-child(2n+1)
+    background table-background-grey
 
   tbody tr:last-child
     td:last-child
@@ -260,11 +259,37 @@
 
 .org-info-header-container
   position relative
+  padding-bottom 15px
+  border-bottom 1px solid table-border-grey
 
   .button
     position absolute
     top 15px
     right 0
+
+.org-table.org-teams
+
+  th,td
+    &:first-child
+      width 40%
+
+    &:last-child
+      text-align center
+      width 5%
+
+  .description
+    font-size inherit
+    display block
+
+  .created
+    width 10%
+    color detail-grey
+
+.org-team-empty
+  background table-background-grey
+  text-align center
+  color detail-grey
+  padding 20px 0
 
 @media (min-width: mobileMaxWidth + 1)
 

@@ -11,6 +11,8 @@ module.exports = function(done) {
   server.gitHead = require("../../lib/git-head")()
   server.methods = require('./server-methods')(server);
 
+  server.redis = require('redis-mock').createClient();
+
   server.register(require('hapi-auth-cookie'), function(err) {
     if (err) {
       throw err;

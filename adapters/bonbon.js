@@ -21,7 +21,7 @@ exports.register = function(server, options, next) {
     }
 
     request.metrics = metrics;
-    request.redis = request.server.app.cache._cache.connection.client;
+    request.redis = request.server.redis;
     request.logger = bole(request.id);
     request.timing = {
       start: Date.now(),

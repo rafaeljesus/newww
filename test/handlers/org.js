@@ -193,7 +193,7 @@ describe('getting an org', function() {
       licenseMock.done();
       orgMock.done();
       expect(resp.statusCode).to.equal(200);
-      expect(resp.request.response.source.template).to.equal('org/info');
+      expect(resp.request.response.source.template).to.equal('org/show');
       var users = resp.request.response.source.context.org.users.items;
       var sponsoredByOrg = users.filter(function(user) {
         return user.sponsoredByOrg;
@@ -236,7 +236,7 @@ describe('getting an org', function() {
       licenseMock.done();
       orgMock.done();
       expect(resp.statusCode).to.equal(200);
-      expect(resp.request.response.source.template).to.equal('org/info');
+      expect(resp.request.response.source.template).to.equal('org/show');
       var users = resp.request.response.source.context.org.users.items;
       var sponsoredByOrg = users.filter(function(user) {
         return user.sponsoredByOrg;

@@ -110,11 +110,11 @@ module.exports = [
   }, {
     path: "/org/{org}/members",
     method: "GET",
-    handler: require('../handlers/org').getOrgMembers
+    handler: require('../handlers/org').getOrg
   }, {
     path: "/org/{org}/teams",
     method: "GET",
-    handler: require('../handlers/org').getOrgTeams
+    handler: require('../handlers/org').getOrg
   }, {
     path: "/org/{org}",
     method: "POST",

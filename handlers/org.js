@@ -4,169 +4,22 @@ var User = require('../models/user');
 var P = require('bluebird');
 var Joi = require('joi');
 var invalidUserName = require('npm-user-validate').username;
+var URL = require('url');
 
-exports.getOrgTeams = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
+var resolveTemplateName = function(path) {
+  var pathname = URL.parse(path).pathname;
+  var pathArr = pathname.split('/');
+  var templateType = pathArr[pathArr.length - 1];
+  var templateName = "";
+
+  if (templateType === "members") {
+    templateName = "org/members";
+  } else if (templateType === "teams") {
+    templateName = "org/teams";
+  } else {
+    templateName = "org/info";
   }
-
-  var opts = {};
-  var orgName = request.params.org;
-
-  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
-  return request.customer.getById(request.loggedInUser.email)
-    .then(function(cust) {
-      opts.customer_id = cust.stripe_customer_id;
-    })
-    .then(function() {
-      return Org(loggedInUser)
-        .get(orgName);
-    })
-    .then(function(org) {
-      org = org || {};
-      org.info = org.info || {};
-
-      if (org.info.resource && org.info.resource.human_name) {
-        org.info.human_name = org.info.resource.human_name;
-      } else {
-        org.info.human_name = org.info.name;
-      }
-
-      opts.org = org;
-      opts.org.users.items = org.users.items.map(function(user) {
-        user.sponsoredByOrg = user.sponsored === 'by-org';
-        return user;
-      });
-
-
-      var isSuperAdmin = org.users.items.filter(function(user) {
-        return user.role && user.role.match(/super-admin/);
-      }).some(function(admin) {
-        return admin.name === loggedInUser;
-      });
-
-      var isAtLeastTeamAdmin = org.users.items.filter(function(user) {
-        return user.role && user.role.match(/admin/);
-      }).some(function(admin) {
-        return admin.name === loggedInUser;
-      });
-
-      var isAtLeastMember = org.users.items.filter(function(user) {
-        return user.role && (user.role.match(/developer/) || user.role.match(/admin/));
-      }).some(function(member) {
-        return member.name === loggedInUser;
-      });
-
-
-      opts.perms = {
-        isSuperAdmin: isSuperAdmin,
-        isAtLeastTeamAdmin: isAtLeastTeamAdmin,
-        isAtLeastMember: isAtLeastMember
-      };
-
-
-      return opts;
-    })
-    .then(function(opts) {
-      var teams = opts.org.teams.items.map(function(team) {
-        return Team(loggedInUser).get({
-          orgScope: orgName,
-          teamName: team.name
-        });
-      });
-      return P.all(teams);
-    })
-    .then(function(teams) {
-      teams = teams || [];
-      opts.org.teams = {
-        items: teams,
-        count: teams.length
-      };
-      return reply.view('org/teams', opts);
-    })
-    .catch(function(err) {
-      request.logger.error(err);
-
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
-      } else {
-        return reply.view('errors/internal', err);
-      }
-    });
-
-};
-
-exports.getOrgMembers = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
-  var opts = {};
-  var orgName = request.params.org;
-
-  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
-  return request.customer.getById(request.loggedInUser.email)
-    .then(function(cust) {
-      opts.customer_id = cust.stripe_customer_id;
-    })
-    .then(function() {
-      return Org(loggedInUser)
-        .get(orgName);
-    })
-    .then(function(org) {
-      org = org || {};
-      org.info = org.info || {};
-
-      if (org.info.resource && org.info.resource.human_name) {
-        org.info.human_name = org.info.resource.human_name;
-      } else {
-        org.info.human_name = org.info.name;
-      }
-
-      opts.org = org;
-      opts.org.users.items = org.users.items.map(function(user) {
-        user.sponsoredByOrg = user.sponsored === 'by-org';
-        return user;
-      });
-
-
-      var isSuperAdmin = org.users.items.filter(function(user) {
-        return user.role && user.role.match(/super-admin/);
-      }).some(function(admin) {
-        return admin.name === loggedInUser;
-      });
-
-      var isAtLeastTeamAdmin = org.users.items.filter(function(user) {
-        return user.role && user.role.match(/admin/);
-      }).some(function(admin) {
-        return admin.name === loggedInUser;
-      });
-
-      var isAtLeastMember = org.users.items.filter(function(user) {
-        return user.role && (user.role.match(/developer/) || user.role.match(/admin/));
-      }).some(function(member) {
-        return member.name === loggedInUser;
-      });
-
-
-      opts.perms = {
-        isSuperAdmin: isSuperAdmin,
-        isAtLeastTeamAdmin: isAtLeastTeamAdmin,
-        isAtLeastMember: isAtLeastMember
-      };
-
-      return reply.view('org/members', opts);
-    })
-    .catch(function(err) {
-      request.logger.error(err);
-
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
-      } else {
-        return reply.view('errors/internal', err);
-      }
-    });
-
+  return templateName;
 };
 
 exports.getOrg = function(request, reply) {
@@ -176,16 +29,11 @@ exports.getOrg = function(request, reply) {
 
   var opts = {};
   var orgName = request.params.org;
+  var templateName = resolveTemplateName(request.route.path);
 
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
-  return request.customer.getById(request.loggedInUser.email)
-    .then(function(cust) {
-      opts.customer_id = cust.stripe_customer_id;
-    })
-    .then(function() {
-      return Org(loggedInUser)
-        .get(orgName);
-    })
+  return Org(loggedInUser)
+    .get(orgName)
     .then(function(org) {
       org = org || {};
       org.info = org.info || {};
@@ -228,13 +76,58 @@ exports.getOrg = function(request, reply) {
         isAtLeastMember: isAtLeastMember
       };
 
-      return reply.view('org/info', opts);
+      return opts;
+    })
+    .then(function(opts) {
+      return opts.perms.isSuperAdmin ?
+        request.customer.getById(request.loggedInUser.email)
+        : P.resolve(null);
+    })
+    .then(function(cust) {
+      cust = cust || {};
+      opts.customer_id = cust.stripe_customer_id;
+      return opts;
+    })
+    .then(function(opts) {
+      if (templateName.match(/teams/)) {
+        var teams = opts.org.teams.items.map(function(team) {
+          return Team(loggedInUser).get({
+            orgScope: orgName,
+            teamName: team.name
+          });
+        });
+
+        return P.all(teams);
+      } else {
+        return P.resolve(null);
+      }
+    })
+    .then(function(teams) {
+      if (teams && typeof teams.length !== "undefined") {
+        var orgTeams = {
+          count: teams.length,
+          items: teams
+        };
+        opts.org.teams = orgTeams;
+      }
+    })
+    .then(function() {
+      return reply.view(templateName, opts);
     })
     .catch(function(err) {
       request.logger.error(err);
 
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/' + orgName;
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
       } else {
         return reply.view('errors/internal', err);
       }

@@ -1,4 +1,5 @@
 // Colors
+// to-do : replace with greighs non-alpha variants
 
 greigh0 = rgba(black, 1)
 greigh1 = rgba(black, 0.9)
@@ -22,24 +23,20 @@ table-background-grey = #e8e8e8
 
 banner-back-blue = rgba(207, 225, 236, 0.5)
 
-// Color Vars; to-do : strip any refs of npmred
+// Color Vars;
+// to-do : variablize any refs of npmred / midnight
 
-primary = npmred
-primary-light = lighten(primary,15%)
-primary-lighter = lighten(primary,40%)
-primary-lightest = lighten(primary,65%)
-primary-dark = darken(primary,15%)
-primary-darker = darken(primary,40%)
-primary-darkest = darken(primary,65%)
+primary = rgb(203, 56, 55, 1)
+primary-lighter = desaturate(lighten(primary,30%),20%)
+primary-lightest = desaturate(lighten(primary,60%),20%)
+primary-darker = darken(primary, 15%)
+primary-darkest = darken(primary, 30%)
 
-
-secondary = midnight
-secondary-light = lighten(secondary,15%)
-secondary-lighter = lighten(secondary,40%)
-secondary-lightest = lighten(secondary,65%)
-secondary-dark = darken(secondary,15%)
-secondary-darker = darken(secondary,40%)
-secondary-darkest = darken(secondary,65%)
+secondary = rgb(13, 62, 99, 1) // midnight blue
+secondary-lighter = desaturate(lighten(secondary,5%),20%)
+secondary-lightest = desaturate(lighten(secondary,60%),20%)
+secondary-darker = darken(secondary,15%)
+secondary-darkest = darken(secondary,30%)
 
 
 // Dimensions

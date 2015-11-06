@@ -1,48 +1,70 @@
-.palette-group
-  display -webkit-flex
-  display flex
-  font-size 1em
+// local functions
+
+color-check(val)
+  if light(@background)
+    val = black
+  else
+    val = white
+
+background-color-with-variation()
+  background arguments
+
+// end
 
 .palette-container
-  -webkit-flex 1
-  margin 10px
-  align-self flex-end
+  display flex
+  flex-direction row
+  $container-height = 200px
+  margin-bottom 40px
 
-  &.primary
-      background-color primary
-
-  &.secondary
-      background-color secondary
-
-  ul
-    @extend .vanilla-list
-    text-align center
-
-  .variations
-    display -webkit-flex
+  div
     display flex
-    line-height 125%
+    flex 1
+    width 50%
+    height $container-height
+    padding 20px
 
-    div
-      -webkit-flex 1
-      margin 5px
-      background-color @background-color
+  & .description
+    flex-direction column
+    margin 0px 10px
+    padding-top 0px
+
+  & .primary, & .secondary
+    flex-direction row
+    &:before
+     flex 0
+     content '.' attr(class)
+
+  & .primary
+    background primary
+    color color-check(val)
+
+  & .secondary
+    background secondary
+    color color-check(val)
 
 
-    // &.light
-    // background-color primary-light
-    //
-    // &.lighter
-    // background-color primary-lighter
-    //
-    // &.lightest
-    // background-color primary-lightest
-    //
-    // &.dark
-    // background-color primary-dark
-    //
-    // &.darker
-    // background-color primary-darker
-    //
-    // &.darkest
-    // background-color primary-darkest
+
+  & div > div
+    flex 1
+    display flex
+    flex-direction column
+    align-self flex-end
+    align-content center
+    height 33%
+    line-height 100%
+    padding 10px
+
+    &:before // shows the class name
+      flex 1
+      content '-' attr(class)
+
+// loop below draws upon the .{color}-{variation} color classes defined in variables.styl
+
+  for color in 'primary' 'secondary'
+    for variation in 'lighter' 'lightest' 'darker' 'darkest'
+      .{color} > .{variation}
+        background-color-with-variation(lookup(color + '-' + variation))
+        color color-check(val)
+        &:after // shows the hex
+          content \"@background\"

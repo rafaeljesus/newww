@@ -543,14 +543,19 @@ describe('Org', function() {
         .get('/org/' + name + '/team')
         .reply(200, fixtures.teams.bigcoOrg);
 
-      Org('bob').getTeams(name, function(err, teams) {
-        orgMocks.done();
-        expect(err).to.be.null();
-        expect(teams.items).to.be.an.array();
-        expect(teams.count).to.equal(1);
-        expect(teams.items[0].name).to.equal('developers');
-        done();
-      });
+      Org('bob').getTeams(name)
+        .then(function(teams) {
+          orgMocks.done();
+          expect(teams.items).to.be.an.array();
+          expect(teams.count).to.equal(1);
+          expect(teams.items[0].name).to.equal('developers');
+        })
+        .catch(function(err) {
+          expect(err).to.be(null);
+        })
+        .finally(function() {
+          done();
+        });
     });
 
     it('returns no teams if the org does not exist', function(done) {
@@ -560,14 +565,19 @@ describe('Org', function() {
         .get('/org/' + name + '/team')
         .reply(404, 'Org not found');
 
-      Org('bob').getTeams(name, function(err, teams) {
-        orgMocks.done();
-        expect(err).to.exist();
-        expect(err.message).to.equal('org not found');
-        expect(err.statusCode).to.equal(404);
-        expect(teams).to.not.exist();
-        done();
-      });
+      Org('bob').getTeams(name)
+        .then(function(teams) {
+          orgMocks.done();
+          expect(teams).to.not.exist();
+        })
+        .catch(function(err) {
+          expect(err).to.exist();
+          expect(err.message).to.equal('Org or Team not found');
+          expect(err.statusCode).to.equal(404);
+        })
+        .finally(function() {
+          done();
+        });
     });
   });
 

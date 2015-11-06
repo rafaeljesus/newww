@@ -73,45 +73,6 @@ Org.prototype.get = function(name, callback) {
   var orgUrl = USER_HOST + '/org/' + name;
   var userUrl = USER_HOST + '/org/' + name + '/user';
   var packageUrl = USER_HOST + '/org/' + name + '/package';
-  var teamUrl = USER_HOST + '/org/' + name + '/team';
-
-  var requestTeam = function(url) {
-    return new P(function(accept, reject) {
-
-      Request({
-        url: url,
-        json: true,
-        headers: {
-          bearer: self.bearer
-        }
-      }, function(err, resp, body) {
-        if (err) {
-          return reject(err);
-        }
-
-        if (resp.statusCode === 401) {
-          return accept({
-            count: 0,
-            items: []
-          });
-        }
-
-        if (resp.statusCode === 404) {
-          err = new Error("Org or Team not found");
-          err.statusCode = resp.statusCode;
-          return reject(err);
-        }
-
-        if (resp.statusCode >= 400) {
-          err = new Error(body);
-          err.statusCode = resp.statusCode;
-          return reject(err);
-        }
-
-        return accept(body);
-      });
-    });
-  };
 
   var makeRequest = function(url) {
     return new P(function(accept, reject) {
@@ -148,7 +109,7 @@ Org.prototype.get = function(name, callback) {
     makeRequest(orgUrl),
     makeRequest(userUrl),
     makeRequest(packageUrl),
-    requestTeam(teamUrl)
+    this.getTeams(name)
   ];
 
   return P.all(requests).spread(function(org, users, pkg, teams) {
@@ -322,36 +283,45 @@ Org.prototype.getUsers = function(name, callback) {
   });
 };
 
-Org.prototype.getTeams = function(name, callback) {
+Org.prototype.getTeams = function(name) {
   var url = USER_HOST + '/org/' + name + '/team';
+  var bearer = this.bearer;
 
-  Request.get({
-    url: url,
-    json: true,
-    id: name,
-    headers: {
-      bearer: this.bearer
-    }
-  }, function(err, resp, teams) {
-    if (err) {
-      callback(err);
-    }
+  return new P(function(accept, reject) {
 
-    if (resp.statusCode === 404) {
-      err = Error('org not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+    Request.get({
+      url: url,
+      json: true,
+      headers: {
+        bearer: bearer
+      }
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 401) {
+        return accept({
+          count: 0,
+          items: []
+        });
+      }
 
-    return callback(null, teams);
+      if (resp.statusCode === 404) {
+        err = new Error("Org or Team not found");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
   });
-
 };
 
 Org.prototype.removeUser = function(name, userId, callback) {

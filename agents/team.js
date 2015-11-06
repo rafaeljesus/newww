@@ -57,6 +57,7 @@ Team.prototype.get = function(opts, callback) {
   ];
 
   return P.all(requests).spread(function(team, users, packages) {
+    console.log("spread em");
     team = team || {};
     users = users || [];
     packages = packages || {};

@@ -269,3 +269,69 @@ exports.updateTeam = function(request, reply) {
       });
   });
 };
+
+exports.getAddTeamUserPage = function(request, reply) {
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  var orgName = request.params.org;
+  var teamName = request.params.teamName;
+  var opts = {};
+
+
+  if (invalidUserName(orgName)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  if (invalidUserName(teamName)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  Org(loggedInUser)
+    .get(orgName)
+    .then(function(org) {
+      org = org || {};
+      var users = org.users || [{
+          count: 0,
+          items: []
+        }];
+
+      var isAtLeastAdmin = users.items.filter(function(user) {
+        return user.role.match(/admin/);
+      })
+        .some(function(user) {
+          return user.name === loggedInUser;
+        });
+
+      if (!isAtLeastAdmin) {
+        var err = new Error("User does not have the appropriate permissions to reach this page");
+        err.statusCode = 403;
+        throw err;
+      }
+
+      return Team(loggedInUser).get({
+        orgScope: orgName,
+        teamName: teamName
+      });
+    })
+    .then(function(team) {
+      opts.team = team;
+      return reply.view('team/add-user', opts);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      } else if (err.statusCode < 500) {
+        return handleUserError(request, reply, '/org/' + orgName, err.message);
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
+
+};
+
+exports.showTeamMembers = function(request, reply) {
+  return reply(200);
+};

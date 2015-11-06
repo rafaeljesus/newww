@@ -166,5 +166,9 @@ module.exports = [
     path: "/org/{org}/team/{teamName}",
     method: "POST",
     handler: require('../handlers/team').updateTeam
+  }, {
+    path: "/org/{org}/team/{teamName}/add-user",
+    method: "GET",
+    handler: require('../handlers/team').getAddTeamUserPage
   }
 ];

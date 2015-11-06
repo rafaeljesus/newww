@@ -40,4 +40,24 @@ exports.bigcoteamUsers = [
 
 exports.bigcoteamPackages = {
   "@bigco/boomer": "read"
-}
+};
+
+exports.developersUsers = {
+  count: 1,
+  items: [
+    {
+      "created": "2015-09-11T18:02:20.807Z",
+      "deleted": null,
+      "email": "bob@boom.me",
+      "email_verified": true,
+      "has_installed_private_module_ro": false,
+      "has_installed_private_module_rw": false,
+      "has_published_private_module": false,
+      "name": "bob",
+      "resource": {},
+      "role": "super-admin",
+      "updated": "2015-09-11T18:02:20.807Z",
+      "verification_key": "d87d7-4932-899e-276e0ca0a450"
+    }
+  ]
+};

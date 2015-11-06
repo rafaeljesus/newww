@@ -563,7 +563,6 @@ describe('team', function() {
     });
 
     it('renders an error if the team name is invalid', function(done) {
-
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
@@ -653,6 +652,8 @@ describe('team', function() {
       });
     });
   });
+
+
 
   describe('updating the team packages', function() {
     it('allows a super/team-admin to update a package\'s permissions', function(done) {
@@ -833,6 +834,138 @@ describe('team', function() {
     });
   });
 
+  describe('viewing the add user to a team page', function() {
+    it('gives you a 404 if the org name is invalid', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/asj828&&&@@@13/team/bobteam/add-user",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(404);
+        expect(resp.request.response.source.template).to.equal('errors/not-found');
+        done();
+      });
+    });
+
+    it('gives you a 404 if the team name is invalid', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+
+      var options = {
+        url: "/org/bigco/team/asj828&&&@@@13/bobteam/add-user",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        expect(resp.statusCode).to.equal(404);
+        expect(resp.request.response.source.template).to.equal('errors/not-found');
+        done();
+      });
+    });
+
+    it('gives you an error if you are not an admin', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/betty")
+        .reply(200, fixtures.users.betty);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco')
+        .reply(200, fixtures.orgs.bigco)
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoAddedUsers)
+        .get('/org/bigco/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg);
+
+      var options = {
+        url: "/org/bigco/team/developers/add-user",
+        credentials: fixtures.users.betty
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
+        expect(resp.statusCode).to.equal(302);
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0]).to.equal('User does not have the appropriate permissions to reach this page');
+          done();
+        });
+      });
+    });
+
+    it('it takes you to the add-user template if you are admin', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco')
+        .reply(200, fixtures.orgs.bigco)
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoAddedUsers)
+        .get('/org/bigco/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg);
+
+      var teamMock = nock("https://user-api-example.com")
+        .get('/team/bigco/developers')
+        .reply(200, fixtures.teams.bigcoOrg)
+        .get('/team/bigco/developers/user')
+        .reply(200, fixtures.teams.bigcoOrgUsers)
+        .get('/team/bigco/developers/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        });
+
+      var options = {
+        url: "/org/bigco/team/developers/add-user",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        teamMock.done();
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.request.response.source.template).to.equal('team/add-user');
+        done();
+      });
+    });
+
+  });
+
+
   describe('team member management', function() {
     it('takes you to the team member page', function(done) {
       var userMock = nock("https://user-api-example.com")
@@ -946,6 +1079,7 @@ describe('team', function() {
       });
     });
 
+
     it('allows super/team admins to update the team description', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -988,5 +1122,5 @@ describe('team', function() {
       });
     });
   });
-
 });
+

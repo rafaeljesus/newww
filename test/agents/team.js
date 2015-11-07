@@ -172,4 +172,206 @@ describe('Team', function() {
     });
 
   });
+
+  describe('Packages', function() {
+    describe('addPackage()', function() {
+      it('returns an error if the bearer token is missing', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/foo',
+            permissions: 'read'
+          })
+          .reply(401, {
+            "error": "missing bearer token"
+          });
+
+        Team('').addPackage({
+          scope: 'bigco',
+          id: 'bigteam',
+          package: '@bigco/foo',
+          permissions: 'read'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(401);
+          expect(err.message).to.equal('no bearer token included');
+          done();
+        });
+      });
+
+      it('returns an error if the org or team or package is not found', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bloop'
+          }
+        })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/foo',
+            permissions: 'read'
+          })
+          .reply(404, {
+            "error": "Package not found"
+          });
+
+        Team('bloop').addPackage({
+          scope: 'bigco',
+          id: 'bigteam',
+          package: '@bigco/foo',
+          permissions: 'read'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(404);
+          expect(err.message).to.equal('Package not found');
+          done();
+        });
+      });
+
+      it('returns an error if any other error occurs', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bloop'
+          }
+        })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/foo',
+            permissions: 'read'
+          })
+          .reply(500, {
+            "error": "brokened"
+          });
+
+        Team('bloop').addPackage({
+          scope: 'bigco',
+          id: 'bigteam',
+          package: '@bigco/foo',
+          permissions: 'read'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(500);
+          expect(err.message).to.equal('brokened');
+          done();
+        });
+      });
+
+      it('returns nothing if you add/update a package', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/foo',
+            permissions: 'read'
+          })
+          .reply(200);
+
+        Team('bob').addPackage({
+          scope: 'bigco',
+          id: 'bigteam',
+          package: '@bigco/foo',
+          permissions: 'read'
+        }).catch(function(err) {
+          expect(err).to.not.exist();
+        }).then(function(packages) {
+          expect(packages).to.not.exist();
+        }).finally(function() {
+          teamMock.done();
+          done();
+        });
+      });
+    });
+
+    describe('getPackages()', function() {
+      it('returns an error if the bearer token is missing', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .get('/team/bigco/bigteam/package')
+          .reply(401, {
+            "error": "missing bearer token"
+          });
+
+        Team('').getPackages({
+          orgScope: 'bigco',
+          teamName: 'bigteam'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(401);
+          expect(err.message).to.equal('no bearer token included');
+          done();
+        });
+      });
+
+      it('returns an error if the org or team or package is not found', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bloop'
+          }
+        }).get('/team/bigco/bigteam/package')
+          .reply(404, {
+            "error": "not found"
+          });
+
+        Team('bloop').getPackages({
+          orgScope: 'bigco',
+          teamName: 'bigteam'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(404);
+          expect(err.message).to.equal('Team or Org not found');
+          done();
+        });
+      });
+
+      it('returns an error if any other error occurs', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bloop'
+          }
+        }).get('/team/bigco/bigteam/package')
+          .reply(500, {
+            "error": "brokened"
+          });
+
+        Team('bloop').getPackages({
+          orgScope: 'bigco',
+          teamName: 'bigteam'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(500);
+          expect(err.message).to.equal('brokened');
+          done();
+        });
+      });
+
+      it('returns a list of packages for authorized users', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        }).get('/team/bigco/bigteam/package')
+          .reply(200, {
+            "@bigco/fake-module": "write"
+          });
+
+        Team('bob').getPackages({
+          orgScope: 'bigco',
+          teamName: 'bigteam'
+        }).catch(function(err) {
+          expect(err).to.not.exist();
+        }).then(function(packages) {
+          expect(packages).to.exist();
+          expect(packages).to.be.an.object();
+          expect(packages['@bigco/fake-module']).to.equal('write');
+        }).finally(function() {
+          teamMock.done();
+          done();
+        });
+      });
+    });
+
+  });
 });

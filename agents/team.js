@@ -150,7 +150,59 @@ Team.prototype.getPackages = function(opts) {
         return reject(err);
       }
 
+      if (resp.statusCode >= 400) {
+        err = new Error(packages.error);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
       return accept(packages);
+    });
+  });
+};
+
+Team.prototype.addPackage = function(opts) {
+  opts = opts || {};
+
+  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id + '/package';
+
+  var data = {
+    url: url,
+    json: true,
+    body: {
+      package: opts.package,
+      permissions: opts.permissions
+    },
+    headers: {
+      bearer: this.bearer
+    }
+  };
+
+  return new P(function(accept, reject) {
+    Request.put(data, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = Error('no bearer token included');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error(body.error);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body.error);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
     });
   });
 };

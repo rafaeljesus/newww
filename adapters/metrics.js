@@ -1,5 +1,4 @@
 var Emitter = require('numbat-emitter'),
-  os = require('os'),
   emitter;
 
 module.exports = function constructEmitter(app) {
@@ -13,11 +12,9 @@ module.exports = function constructEmitter(app) {
   else {
     emitter = new Emitter({
       uri: process.env.METRICS_URL,
-      node: os.hostname(),
-      app:app, // optional.
+      app: app,
+      port: process.env.PORT || '0'
     });
-    // add port field to defaults to distinguish between multiple workers
-    emitter.defaults.port = (process.env.PORT||'0');
   }
 
   return emitter;

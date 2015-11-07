@@ -373,5 +373,102 @@ describe('Team', function() {
       });
     });
 
+    describe('removePackage()', function() {
+      it('returns an error if the bearer token is missing', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .delete('/team/bigco/bigteam/package', {
+            package: '@bigteam/fake-module'
+          })
+          .reply(401, {
+            "error": "missing bearer token"
+          });
+
+        Team('').removePackage({
+          scope: 'bigco',
+          id: 'bigteam',
+          package: '@bigteam/fake-module'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(401);
+          expect(err.message).to.equal('no bearer token included');
+          done();
+        });
+      });
+
+      it('returns an error if the team is not found', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        }).delete('/team/bigco/bigteam/package', {
+          package: '@bigteam/fake-module'
+        })
+          .reply(404, {
+            "error": "not found"
+          });
+
+        Team('bob').removePackage({
+          scope: 'bigco',
+          id: 'bigteam',
+          package: '@bigteam/fake-module'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(404);
+          expect(err.message).to.equal('Team or Org not found');
+          done();
+        });
+      });
+
+      it('returns an error if any other error occurs', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        }).delete('/team/bigco/bigteam/package', {
+          package: '@bigteam/fake-module'
+        })
+          .reply(500, {
+            "error": "brokened"
+          });
+
+        Team('bob').removePackage({
+          scope: 'bigco',
+          id: 'bigteam',
+          package: '@bigteam/fake-module'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(500);
+          expect(err.message).to.equal('brokened');
+          done();
+        });
+      });
+
+      it('returns nothing if you delete a package', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        }).delete('/team/bigco/bigteam/package', {
+          package: '@bigteam/fake-module'
+        })
+          .reply(200);
+
+        Team('bob').removePackage({
+          scope: 'bigco',
+          id: 'bigteam',
+          package: '@bigteam/fake-module'
+        }).catch(function(err) {
+          expect(err).to.not.exist();
+        }).then(function(packages) {
+          expect(packages).to.not.exist();
+        }).finally(function() {
+          teamMock.done();
+          done();
+        });
+      });
+    });
   });
 });

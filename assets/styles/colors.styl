@@ -1,0 +1,50 @@
+// Colors
+// to-do : replace with greighs non-alpha variants
+// to-do : variablize any refs of npmred / midnight
+
+greigh0 = rgba(black, 1)
+greigh1 = rgba(black, 0.9)
+greigh2 = rgba(black, 0.8)
+greigh3 = rgba(black, 0.6)
+greigh4 = rgba(black, 0.4)
+greigh5 = rgba(black, 0.2)
+greigh6 = rgba(black, 0.08)
+greigh7 = rgba(black, 0.04)
+greigh8 = rgba(black, 0.02)
+
+npmred = #cb3837
+background-color = white
+midnight = #2A303C
+text-color = greigh2
+text-color-subdued = greigh4
+error-background-color = white
+error-text-color = npmred
+table-border-grey = #ababab
+table-background-grey = #e8e8e8
+
+banner-back-blue = rgba(207, 225, 236, 0.5)
+
+primary = rgb(203, 56, 55, 1)
+primary-lighter = desaturate(lighten(primary,30%),20%)
+primary-lightest = desaturate(lighten(primary,60%),20%)
+primary-darker = darken(primary, 15%)
+primary-darkest = darken(primary, 50%)
+
+secondary = rgb(13, 62, 99, 1) // midnight blue
+secondary-lighter = desaturate(lighten(secondary,50%),40%)
+secondary-lightest = desaturate(lighten(secondary,80%),20%)
+secondary-darker = darken(secondary,15%)
+secondary-darkest = darken(secondary,30%)
+
+greigh = rgba(195,195,195,1) // median greigh
+greigh-lighter = lighten(greigh,40%)
+greigh-lightest = lighten(greigh,80%)
+greigh-darker = darken(greigh,40%)
+greigh-darkest = darken(greigh,80%)
+
+// error / info draws from primary and secondary values
+
+yellow = desaturate(lighten(rgba(255, 255, 88,1),25%),30%)
+yellow-dark = desaturate(darken(yellow, 85%),25%)
+green = desaturate(lighten(green, 80%),65%)
+green-dark = desaturate(darken(green, 75%),25%)

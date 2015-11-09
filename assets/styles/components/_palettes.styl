@@ -13,55 +13,50 @@ background-color-with-variation()
 
 .palette-container
   display flex
-  flex-direction row
-  $container-height = 200px
-  margin-bottom 40px
+  $container-height = 240px
 
   div
     display flex
     flex 1
-    width 50%
     height $container-height
-    padding 20px
 
   & .description
     flex-direction column
-    margin 0px 10px
-    padding-top 0px
+    padding 0px 20px
 
-  & .primary, & .secondary
-    flex-direction row
-    &:before
-     flex 0
-     content '.' attr(class)
-
-  & .primary
-    background primary
-    color color-check(val)
-
-  & .secondary
-    background secondary
-    color color-check(val)
-
-
+  for color in 'primary' 'secondary' 'greigh'
+    .{color}
+      background-color-with-variation(lookup(color))
+      color color-check(val)
+      padding-top 5px
+      text-indent 5px //hack
+      &:before
+        flex 0
+        content '.' attr(class)
 
   & div > div
     flex 1
     display flex
     flex-direction column
     align-self flex-end
-    align-content center
-    height 33%
-    line-height 100%
-    padding 10px
-
+    height 25%
+    padding 5px
     &:before // shows the class name
       flex 1
       content '-' attr(class)
 
-// loop below draws upon the .{color}-{variation} color classes defined in variables.styl
+  & div.status
+    display flex
+    flex-flow row wrap
+    padding-right 0px
+    > div
+      flex 1 100%
+      margin-bottom  10px
+      height $container-height/4
+      &:before
+        content '.' attr(class)
 
-  for color in 'primary' 'secondary'
+  for color in 'primary' 'secondary' 'greigh'
     for variation in 'lighter' 'lightest' 'darker' 'darkest'
       .{color} > .{variation}
         background-color-with-variation(lookup(color + '-' + variation))

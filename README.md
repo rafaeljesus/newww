@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/npm/newww.svg)](https://travis-ci.org/npm/newww)
 
-We're using [Hapi](https://github.com/spumko/hapi) as our framework for the npm website. We wrote all about why we chose Hapi in [a blog
+We're using [Hapi](https://github.com/hapijs/hapi) as our framework for the npm website. We wrote all about why we chose Hapi in [a blog
 post](http://blog.npmjs.org/post/88024339405/nearing-practical-maintainability).
 
 If you'd like to contribute to this project,
@@ -71,7 +71,7 @@ The above handler is defined inline, but most of the handlers in this applicatio
 
 ## Tests
 
-We're using [Lab](https://github.com/spumko/lab) as our testing utility and
+We're using [Lab](https://github.com/hapijs/lab) as our testing utility and
 [Code](https://www.npmjs.com/package/code) for assertions.
 
 ```sh

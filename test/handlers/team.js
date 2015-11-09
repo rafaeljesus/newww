@@ -41,6 +41,10 @@ describe('team', function() {
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
 
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
       var options = {
         url: "/org/asj828&&&@@@13/team/create",
         credentials: fixtures.users.bob
@@ -48,6 +52,7 @@ describe('team', function() {
 
       server.inject(options, function(resp) {
         userMock.done();
+        licenseMock.done();
         expect(resp.statusCode).to.equal(404);
         expect(resp.request.response.source.template).to.equal('errors/not-found');
         done();
@@ -59,6 +64,10 @@ describe('team', function() {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
         .get('/org/bigco')
@@ -77,6 +86,7 @@ describe('team', function() {
 
       server.inject(options, function(resp) {
         userMock.done();
+        licenseMock.done();
         orgMock.done();
         expect(resp.statusCode).to.equal(404);
         expect(resp.request.response.source.template).to.equal('errors/not-found');
@@ -89,6 +99,9 @@ describe('team', function() {
         .get("/user/betty")
         .reply(200, fixtures.users.betty);
 
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/betty/stripe')
+        .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
         .get('/org/bigco')
@@ -110,6 +123,7 @@ describe('team', function() {
 
       server.inject(options, function(resp) {
         userMock.done();
+        licenseMock.done();
         orgMock.done();
         expect(resp.statusCode).to.equal(302);
         expect(resp.request.response.headers.location).to.match(/\/org\/bigco\?notice=/);
@@ -123,6 +137,9 @@ describe('team', function() {
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
 
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
         .get('/org/bigco')
@@ -144,6 +161,7 @@ describe('team', function() {
 
       server.inject(options, function(resp) {
         userMock.done();
+        licenseMock.done();
         orgMock.done();
         expect(resp.statusCode).to.equal(200);
         expect(resp.request.response.source.template).to.equal("org/add-team");
@@ -160,7 +178,9 @@ describe('team', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
-
+        var licenseMock = nock('https://license-api-example.com')
+          .get('/customer/bob/stripe')
+          .reply(404);
 
         var options = {
           url: "/org/big@@@@@co/team",
@@ -176,6 +196,7 @@ describe('team', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
+          licenseMock.done();
           var redirectPath = resp.headers.location;
           var url = URL.parse(redirectPath);
           var query = url.query;
@@ -203,7 +224,9 @@ describe('team', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
-
+        var licenseMock = nock('https://license-api-example.com')
+          .get('/customer/bob/stripe')
+          .reply(404);
 
         var options = {
           url: "/org/bigco/team",
@@ -220,6 +243,7 @@ describe('team', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
+          licenseMock.done();
           var redirectPath = resp.headers.location;
           var url = URL.parse(redirectPath);
           var query = url.query;
@@ -247,15 +271,19 @@ describe('team', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
+        var licenseMock = nock('https://license-api-example.com')
+          .get('/customer/bob/stripe')
+          .reply(404);
+
         var orgMock = nock("https://user-api-example.com")
           .get('/org/bigco')
           .reply(404)
           .get('/org/bigco/user')
           .reply(404)
           .get('/org/bigco/package')
+          .reply(404)
+          .get('/org/bigco/team')
           .reply(404);
-
-
 
         var options = {
           url: "/org/bigco/team",
@@ -272,6 +300,7 @@ describe('team', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
+          licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(404);
           expect(resp.request.response.source.template).to.equal('errors/not-found');
@@ -285,6 +314,10 @@ describe('team', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
+        var licenseMock = nock('https://license-api-example.com')
+          .get('/customer/bob/stripe')
+          .reply(404);
+
         var orgMock = nock("https://user-api-example.com")
           .get('/org/bigco')
           .reply(500)
@@ -294,8 +327,6 @@ describe('team', function() {
           .reply(500)
           .get('/org/bigco/team')
           .reply(500);
-
-
 
         var options = {
           url: "/org/bigco/team",
@@ -312,6 +343,7 @@ describe('team', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
+          licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(200);
           expect(resp.request.response.source.template).to.equal('errors/internal');
@@ -324,6 +356,10 @@ describe('team', function() {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
         .get('/org/bigco')
@@ -362,6 +398,7 @@ describe('team', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
+          licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
@@ -374,6 +411,10 @@ describe('team', function() {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
         .get('/org/bigco')
@@ -417,6 +458,7 @@ describe('team', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
+          licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
@@ -429,6 +471,10 @@ describe('team', function() {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
         .get('/org/bigco')
@@ -480,6 +526,7 @@ describe('team', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
+          licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');

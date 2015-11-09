@@ -24,6 +24,7 @@ require("./fetch-packages")();
 require("./tabs")();
 require("./switch-submission")();
 require("./validator")();
+require("./add-users-to-teams")();
 
 window.github = require("./github")();
 window.star = require("./star")();

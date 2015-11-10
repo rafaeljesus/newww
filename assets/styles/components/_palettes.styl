@@ -1,0 +1,65 @@
+// local functions
+
+color-check(val)
+  if light(@background)
+    val = black
+  else
+    val = white
+
+background-color-with-variation()
+  background arguments
+
+// end
+
+.palette-container
+  display flex
+  $container-height = 240px
+
+  div
+    display flex
+    flex 1
+    height $container-height
+
+  & .description
+    flex-direction column
+    padding 0px 20px
+
+  for color in 'primary' 'secondary' 'greigh'
+    .{color}
+      background-color-with-variation(lookup(color))
+      color color-check(val)
+      padding-top 5px
+      text-indent 5px //hack
+      &:before
+        flex 0
+        content '.' attr(class)
+
+  & div > div
+    flex 1
+    display flex
+    flex-direction column
+    align-self flex-end
+    height 25%
+    padding 5px
+    &:before // shows the class name
+      flex 1
+      content '-' attr(class)
+
+  & div.status
+    display flex
+    flex-flow row wrap
+    padding-right 0px
+    > div
+      flex 1 100%
+      margin-bottom  10px
+      height $container-height/4
+      &:before
+        content '.' attr(class)
+
+  for color in 'primary' 'secondary' 'greigh'
+    for variation in 'lighter' 'lightest' 'darker' 'darkest'
+      .{color} > .{variation}
+        background-color-with-variation(lookup(color + '-' + variation))
+        color color-check(val)
+        &:after // shows the hex
+          content \"@background\"

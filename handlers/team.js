@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var avatar = require("../lib/avatar");
 var P = require('bluebird');
 var Org = require('../agents/org');
 var Team = require('../agents/team');
@@ -219,5 +220,50 @@ exports.updateTeam = function(request, reply) {
 };
 
 exports.showTeamMembers = function(request, reply) {
-  return reply(200);
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  var orgName = request.params.org;
+  var teamName = request.params.teamName;
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  if (invalidUserName(orgName)) {
+    return handleUserError(request, reply, '/org', "Invalid Org Name.");
+  }
+
+  if (invalidUserName(teamName)) {
+    return handleUserError(request, reply, '/org/' + orgName + '/team', "Invalid Team Name.");
+  }
+
+  return Team(loggedInUser)
+    .get({
+      orgScope: orgName,
+      teamName: teamName
+    })
+    .then(function(team) {
+      team.users.items.forEach(function(usr) {
+        usr.avatar = avatar(usr.email);
+      });
+
+      return reply.view('team/members', {
+        teamName: team.name,
+        description: team.description,
+        orgName: orgName,
+        members: team.users,
+        packages: team.packages,
+      });
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      } else if (err.statusCode < 500) {
+        return handleUserError(request, reply, '/org/' + orgName, err.message);
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
 };

@@ -1,0 +1,71 @@
+<div class="container">
+
+  <hgroup>
+    <h1 class="billing-header"><a href="/org/{{orgName}}">{{orgName}}</a> / {{teamName}}</h1>
+    <h2>{{description}}</h2>
+  </hgroup>
+
+  <div class="tab-nav-container">
+    <div class="nav-container nav-4-container">
+      <ul class="nav nav-4 clear" role="navigation">
+        <li><a href="/org/{{orgName}}/team/{{teamName}}">{{pluralize packages.count "package" true}}</a></li>
+        <li class="current"><a href="/org/{{orgName}}/team/{{teamName}}/members">{{pluralize members.count "member" true}}</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="members">
+    <h2>{{pluralize members.count "members" true}}</h2>
+
+    {{#if members.count}}
+    <table class="org-table org-users">
+      <thead>
+        <tr>
+          <th>avatar</th>
+          <th>member name</th>
+          <th>role</th>
+          <th>date added</th>
+          <th>status</th>
+          <th>action</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#each members.items}}
+        <tr>
+          <td>
+            <a href="/~{{name}}" class="circle-avatar">
+              <img src="{{#if avatar.large}}{{avatar.large}}{{else}}{{avatar.medium}}{{/if}}">
+            </a>
+          </td>
+          <td>
+            <div>
+              <span class="name">
+                <a class="username" href="/~{{name}}">{{name}}</a>
+              </span><!--/.name-->
+            </div>
+          </td>
+          <td>{{role}}</td>
+          <td>date added</td>
+          <td>{{#if sponsored}}active{{else}}inactive{{/if}}</td>
+          <td>
+            <div class="collapsible-wrapper">
+              <form method="POST" id="team-package-delete-overview-{{@index}}" action="/org/{{../orgName}}/team/{{../teamName}}/user">
+                {{#with ../../this}}
+                {{> form_security }}
+                {{/with}}
+                <input type="hidden" name="name" value="{{name}}" />
+                <input type="hidden" name="updateType" value="removeUser" />
+                <button type="submit" class="delete-user icon-x"><span class="a11y-only">Remove User {{name}} from {{../teamName}}</span></button>
+            </form>
+            </div>
+          </td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+  </div><!--/#users-->
+
+
+
+</div>

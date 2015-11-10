@@ -114,8 +114,6 @@ Team.prototype.getUsers = function(opts) {
         return reject(err);
       }
 
-
-
       return accept(users);
     });
   });

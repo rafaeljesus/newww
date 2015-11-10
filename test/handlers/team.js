@@ -832,6 +832,44 @@ describe('team', function() {
         });
       });
     });
+
+    it('allows an admin to add a user to a team', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var teamMock = nock("https://user-api-example.com")
+        .put('/team/bigco/bigcoteam/user', {
+          user: 'billy'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "member": ['billy'],
+            updateType: 'addUsersToTeam',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          teamMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
+          done();
+        });
+      });
+
+    });
   });
 
   describe('viewing the add user to a team page', function() {

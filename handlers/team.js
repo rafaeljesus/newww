@@ -196,6 +196,10 @@ var validPayloadSchema = {
   'team-description': Joi.string().when('updateType', {
     is: 'updateInfo',
     then: Joi.string().required()
+  }),
+  member: Joi.any().when('updateType', {
+    is: 'addUsersToTeam',
+    then: Joi.any().required()
   })
 };
 
@@ -246,6 +250,21 @@ exports.updateTeam = function(request, reply) {
               scope: orgName,
               id: teamName,
               description: validatedPayload['team-description']
+            });
+
+        case 'addUsersToTeam':
+
+          var members = request.payload.member || [];
+          members = Array.isArray(members) ? members : [].concat(members);
+          members = members.filter(function(member) {
+            return !invalidUserName(member);
+          });
+
+          return Team(loggedInUser)
+            .addUsers({
+              teamName: teamName,
+              scope: orgName,
+              users: members
             });
 
         default:

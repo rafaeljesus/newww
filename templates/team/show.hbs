@@ -1,0 +1,92 @@
+<div class="container">
+
+  <hgroup>
+    <h1 class="billing-header"><a href="/org/{{orgName}}">{{orgName}}</a> / {{teamName}}</h1>
+    <h2>{{description}}</h2>
+  </hgroup>
+
+  <div class="tab-nav-container">
+    <div class="nav-container nav-4-container">
+      <ul class="nav nav-4 clear" role="navigation">
+        <li class="current"><a href="/org/{{orgName}}/team/{{teamName}}">{{pluralize packages.count "package" true}}</a></li>
+        {{!-- {{#if perms.isAtLeastMember}} --}}
+        <li><a href="/org/{{orgName}}/team/{{teamName}}/members">{{pluralize members.count "member" true}}</a></li>
+        {{!-- {{/if}} --}}
+      </ul>
+    </div>
+  </div>
+
+  <div id="packages">
+    <h2>{{pluralize packages.count "package" true}}</h2>
+
+    {{#if packages.count}}
+    <table class="org-table org-packages">
+      <thead>
+        <tr>
+          <th>
+            <i class="icon-lock"></i>
+            package name
+          </th>
+          <th>author</th>
+          <th>date added</th>
+          <th>access</th>
+          <th>action</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#each packages.items}}
+        <tr>
+          <td>
+            <div>
+              {{#if private}}
+                <i class="icon-lock"></i>
+              {{/if}}
+              <span class="name">
+                <a class="packagename" href="/package/{{name}}">{{name}}</a>
+              </span><!--/.name-->
+            </div>
+          </td>
+          <td>author</td>
+          <td>date</td>
+          <td>
+            <div class="collapsible-wrapper">
+            <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../orgName}}/team/{{../../teamName}}" class="edit-write-permission">
+              <div class="switch-container">
+                <label><span class="a11y-only">Write Permission</span>
+                  <input class="switch" {{#if canWrite}}checked="checked"{{/if}} type="checkbox" name="writePermission">
+                  <div class="switch"></div>
+                  <span class="switch-label unchecked-text" aria-hidden="true">Read-Only</span>
+                  <span class="switch-label checked-text" aria-hidden="true">Read/Write</span>
+                </label>
+              </div>
+              {{#with ../../this}}
+              {{> form_security }}
+              {{/with}}
+              <input type="hidden" name="package" value="{{name}}" />
+              <input type="hidden" name="updateType" value="updateWritePermissions" />
+              <button type="submit" class="edit-write-permissions-save"><span>Save Changes</span></button>
+            </form>
+            </div>
+          </td>
+          <td>
+            <div class="collapsible-wrapper">
+              <form method="POST" id="team-package-delete-overview-{{@index}}" action="/org/{{../orgName}}/team/{{../teamName}}">
+                {{#with ../../this}}
+                {{> form_security }}
+                {{/with}}
+                <input type="hidden" name="name" value="{{name}}" />
+                <input type="hidden" name="updateType" value="removePackage" />
+                <button type="submit" class="delete-user icon-x"><span class="a11y-only">Remove Package {{name}} from {{../teamName}}</span></button>
+            </form>
+            </div>
+          </td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+  </div><!--/#packages-->
+
+
+
+</div>

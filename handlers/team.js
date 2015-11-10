@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var P = require('bluebird');
 var Org = require('../agents/org');
 var Team = require('../agents/team');
@@ -135,7 +136,7 @@ exports.showTeam = function(request, reply) {
   }
 
   if (invalidUserName(teamName)) {
-    return handleUserError(request, reply, '/org' + orgName + '/team', "Invalid Team Name.");
+    return handleUserError(request, reply, '/org/' + orgName + '/team', "Invalid Team Name.");
   }
 
   return Team(loggedInUser)
@@ -144,10 +145,18 @@ exports.showTeam = function(request, reply) {
       teamName: teamName
     })
     .then(function(team) {
+      team.packages.items.forEach(function(pkg) {
+        if (pkg.permission === 'write') {
+          pkg.canWrite = true;
+        }
+      });
+
       return reply.view('team/show', {
         teamName: team.name,
-        orgName: team.scope_id,
-        users: team.members
+        description: team.description,
+        orgName: orgName,
+        members: team.users,
+        packages: team.packages,
       });
     })
     .catch(function(err) {
@@ -161,4 +170,54 @@ exports.showTeam = function(request, reply) {
         return reply.view('errors/internal', err);
       }
     });
+};
+
+exports.updateTeam = function(request, reply) {
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var orgName = request.params.org;
+  var teamName = request.params.teamName;
+
+  var updateMethod = function(type) {
+    switch (type) {
+      case 'updateWritePermissions':
+        return Team(loggedInUser)
+          .addPackage({
+            scope: orgName,
+            id: teamName,
+            package: request.payload.name,
+            permissions: request.payload.writePermission === 'on' ? 'write' : 'read'
+          });
+
+      case 'removePackage':
+        return Team(loggedInUser)
+          .removePackage({
+            scope: orgName,
+            id: teamName,
+            package: request.payload.name
+          });
+
+      default:
+        throw new Error('no update method');
+    }
+  };
+
+  updateMethod(request.payload.updateType)
+    .then(function() {
+      return reply.redirect('/org/' + orgName + '/team/' + teamName);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      } else if (err.statusCode < 500) {
+        return handleUserError(request, reply, '/org/' + orgName + '/team/' + teamName, err.message);
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
+
+};
+
+exports.showTeamMembers = function(request, reply) {
+  return reply(200);
 };

@@ -162,5 +162,13 @@ module.exports = [
     path: "/org/{org}/team/{teamName}",
     method: "GET",
     handler: require('../handlers/team').showTeam
+  }, {
+    path: "/org/{org}/team/{teamName}",
+    method: "POST",
+    handler: require('../handlers/team').updateTeam
+  }, {
+    path: "/org/{org}/team/{teamName}/members",
+    method: "GET",
+    handler: require('../handlers/team').showTeamMembers
   }
 ];

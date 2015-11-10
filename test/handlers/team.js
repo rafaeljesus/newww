@@ -536,9 +536,301 @@ describe('team', function() {
     });
 
   });
-/**
-describe('viewing a team page', function() {
-  it('
-});
-*/
+
+  describe('viewing a team page', function() {
+    it('renders an error if the org name is invalid', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var options = {
+        url: "/org/.bigco/team/bigcoteam",
+        method: "GET",
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.include('/org?notice=');
+        done();
+      });
+    });
+
+    it('renders an error if the team name is invalid', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var options = {
+        url: "/org/bigco/team/.bigcoteam",
+        method: "GET",
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.request.response.headers.location).to.include('/org/bigco/team?notice=');
+        done();
+      });
+    });
+
+    it('renders an error if the team or org does not exist', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/team/bigco/bigcoteam')
+        .reply(404)
+        .get('/team/bigco/bigcoteam/user')
+        .reply(404)
+        .get('/team/bigco/bigcoteam/package')
+        .reply(404);
+
+      var options = {
+        url: "/org/bigco/team/bigcoteam",
+        method: "GET",
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(404);
+        expect(resp.request.response.source.template).to.equal('errors/not-found');
+        done();
+      });
+    });
+
+    it('displays the team page if everything goes well', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/team/bigco/bigcoteam')
+        .reply(200, fixtures.teams.bigcoteam)
+        .get('/team/bigco/bigcoteam/user')
+        .reply(200, fixtures.teams.bigcoteamUsers)
+        .get('/team/bigco/bigcoteam/package')
+        .reply(200, fixtures.teams.bigcoteamPackages);
+
+      var options = {
+        url: "/org/bigco/team/bigcoteam",
+        method: "GET",
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.request.response.source.template).to.equal('team/show');
+        done();
+      });
+    });
+  });
+
+  describe('updating the team packages', function() {
+    it('allows a super/team-admin to update a package\'s permissions', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .put('/team/bigco/bigcoteam/package', {
+          package: '@bigco/boomer',
+          permissions: 'write'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "name": "@bigco/boomer",
+            updateType: 'updateWritePermissions',
+            writePermission: 'on',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
+          done();
+        });
+      });
+    });
+
+    it('does not allow a non-super/team-admin to update a package\'s permissions', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .put('/team/bigco/bigcoteam/package', {
+          package: '@bigco/boomer',
+          permissions: 'write'
+        })
+        .reply(403, {
+          error: 'forbidden'
+        });
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "name": "@bigco/boomer",
+            updateType: 'updateWritePermissions',
+            writePermission: 'on',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.include('/org/bigco/team/bigcoteam?notice=');
+          done();
+        });
+      });
+    });
+
+    it('allows a super/team-admin to remove a package', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .delete('/team/bigco/bigcoteam/package', {
+          package: '@bigco/boomer'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "name": "@bigco/boomer",
+            updateType: 'removePackage',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
+          done();
+        });
+      });
+    });
+
+    it('does not allow a non-super/team-admin to remove a package', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .delete('/team/bigco/bigcoteam/package', {
+          package: '@bigco/boomer'
+        })
+        .reply(403, {
+          error: "forbidden"
+        });
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "name": "@bigco/boomer",
+            updateType: 'removePackage',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.include('/org/bigco/team/bigcoteam?notice=');
+          done();
+        });
+      });
+    });
+  });
+
 });

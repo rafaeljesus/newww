@@ -1738,11 +1738,8 @@ describe('deleting an org', function() {
         .reply(200, fixtures.orgs.bigcoUsers);
 
       var options = {
-        url: "/org/bigco/user",
+        url: "/org/bigco/user?member=betty",
         method: "GET",
-        payload: {
-          member: 'betty',
-        },
         credentials: fixtures.users.bob,
       };
 
@@ -1750,6 +1747,52 @@ describe('deleting an org', function() {
         userMock.done();
         orgMock.done();
         expect(resp.statusCode).to.equal(404);
+        done();
+      });
+    });
+
+    it('returns a 404 error if the org does not exist', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco/user')
+        .reply(404);
+
+      var options = {
+        url: "/org/bigco/user?member=betty",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(404);
+        done();
+      });
+    });
+
+    it('returns a 200 if the user is a member', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoUsers);
+
+      var options = {
+        url: "/org/bigco/user?member=bob",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(200);
         done();
       });
     });

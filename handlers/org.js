@@ -568,7 +568,19 @@ exports.getUser = function getUser(request, reply) {
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   var orgName = request.params.org;
 
-  var username = request.params.member;
+  var username = request.query.member;
+
+  if (invalidUserName(orgName)) {
+    return reply("Org not found")
+      .code(404)
+      .type('application/json');
+  }
+
+  if (invalidUserName(username)) {
+    return reply("User not found")
+      .code(404)
+      .type('application/json');
+  }
 
   return Org(loggedInUser)
     .getUsers(orgName)

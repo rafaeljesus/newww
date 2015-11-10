@@ -1728,8 +1728,30 @@ describe('deleting an org', function() {
   });
 
   describe('getting a user', function() {
-    it('returns an error if the bearer token does not exist', function(done) {
-      done();
+    it('returns a 404 error if the user is not in the org', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoUsers);
+
+      var options = {
+        url: "/org/bigco/user",
+        method: "GET",
+        payload: {
+          member: 'betty',
+        },
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(404);
+        done();
+      });
     });
   });
 });

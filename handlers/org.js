@@ -568,13 +568,14 @@ exports.getUser = function getUser(request, reply) {
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   var orgName = request.params.org;
 
-  var username = request.payload.member;
+  var username = request.params.member;
 
   return Org(loggedInUser)
     .getUsers(orgName)
     .then(function(members) {
-      members = members || [];
-      var userInOrg = members.some(function(member) {
+      members = members || {};
+      var items = members.items || [];
+      var userInOrg = items.some(function(member) {
         return username === member.name;
       });
 

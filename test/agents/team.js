@@ -91,86 +91,153 @@ describe('Team', function() {
     });
   });
 
-  describe('addUsers', function() {
-    it('returns an error if bearer token is incorrect', function(done) {
-      var teamMock = nock('https://user-api-example.com')
-        .put('/team/bigco/bigteam/user', {
-          user: 'littlebob'
-        })
-        .reply(401);
+  describe('Users', function() {
+    describe('addUsers', function() {
+      it('returns an error if bearer token is incorrect', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .put('/team/bigco/bigteam/user', {
+            user: 'littlebob'
+          })
+          .reply(401);
 
-      Team('bob').addUsers({
-        teamName: 'bigteam',
-        scope: 'bigco',
-        users: ['littlebob']
-      }, function(err) {
-        teamMock.done();
-        expect(err).to.exist();
-        expect(err.message).to.equal('no bearer token included');
-        done();
+        Team('bob').addUsers({
+          teamName: 'bigteam',
+          scope: 'bigco',
+          users: ['littlebob']
+        }, function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.message).to.equal('no bearer token included');
+          done();
+        });
+      });
+
+      it('returns an error if org or team is not found', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .put('/team/bigco/bigteam/user', {
+            user: 'littlebob'
+          })
+          .reply(404);
+
+        Team('bob').addUsers({
+          teamName: 'bigteam',
+          scope: 'bigco',
+          users: ['littlebob']
+        }, function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.message).to.equal('Team or Org not found');
+          done();
+        });
+      });
+
+      it('returns an error if user is already on team', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .put('/team/bigco/bigteam/user', {
+            user: 'littlebob'
+          })
+          .reply(409);
+
+        Team('bob').addUsers({
+          teamName: 'bigteam',
+          scope: 'bigco',
+          users: ['littlebob']
+        }, function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.message).to.equal('The provided User is already on this Team');
+          done();
+        });
+      });
+
+      it('allows multiple members to be added', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .put('/team/bigco/bigteam/user', {
+            user: 'littlebob'
+          })
+          .reply(200)
+          .put('/team/bigco/bigteam/user', {
+            user: 'bigbob'
+          })
+          .reply(200);
+
+        Team('bob').addUsers({
+          teamName: 'bigteam',
+          scope: 'bigco',
+          users: ['littlebob', 'bigbob']
+        }, function(err) {
+          teamMock.done();
+          expect(err).to.not.exist();
+          done();
+        });
       });
     });
 
-    it('returns an error if org or team is not found', function(done) {
-      var teamMock = nock('https://user-api-example.com')
-        .put('/team/bigco/bigteam/user', {
-          user: 'littlebob'
-        })
-        .reply(404);
+    describe('removeUser()', function() {
+      it('returns an error if the user is not an admin', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .delete('/team/bigco/bigteam/user', {
+            user: 'bob'
+          })
+          .reply(401, {
+            "error": "user must be admin to perform this operation"
+          });
 
-      Team('bob').addUsers({
-        teamName: 'bigteam',
-        scope: 'bigco',
-        users: ['littlebob']
-      }, function(err) {
-        teamMock.done();
-        expect(err).to.exist();
-        expect(err.message).to.equal('Team or Org not found');
-        done();
+        Team('betty').removeUser({
+          id: 'bigteam',
+          scope: 'bigco',
+          userName: 'bob'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(401);
+          expect(err.message).to.equal('user must be admin to perform this operation');
+          done();
+        });
+      });
+
+      it('returns an error if the user is not on the team', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .delete('/team/bigco/bigteam/user', {
+            user: 'nobody'
+          })
+          .reply(400, {
+            "error": "you must first add the user to the org"
+          });
+
+        Team('bob').removeUser({
+          id: 'bigteam',
+          scope: 'bigco',
+          userName: 'nobody'
+        }).catch(function(err) {
+          teamMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(400);
+          expect(err.message).to.equal('you must first add the user to the org');
+          done();
+        });
+      });
+
+      it('allows a super/team-admin to remove a user', function(done) {
+        var teamMock = nock('https://user-api-example.com')
+          .delete('/team/bigco/bigteam/user', {
+            user: 'betty'
+          })
+          .reply(200);
+
+        Team('bob').removeUser({
+          id: 'bigteam',
+          scope: 'bigco',
+          userName: 'betty'
+        }).catch(function(err) {
+          expect(err).to.not.exist();
+          done();
+        }).then(function() {
+          teamMock.done();
+          done();
+        });
       });
     });
-
-    it('returns an error if user is already on team', function(done) {
-      var teamMock = nock('https://user-api-example.com')
-        .put('/team/bigco/bigteam/user', {
-          user: 'littlebob'
-        })
-        .reply(409);
-
-      Team('bob').addUsers({
-        teamName: 'bigteam',
-        scope: 'bigco',
-        users: ['littlebob']
-      }, function(err) {
-        teamMock.done();
-        expect(err).to.exist();
-        expect(err.message).to.equal('The provided User is already on this Team');
-        done();
-      });
-    });
-
-    it('allows multiple members to be added', function(done) {
-      var teamMock = nock('https://user-api-example.com')
-        .put('/team/bigco/bigteam/user', {
-          user: 'littlebob'
-        })
-        .reply(200)
-        .put('/team/bigco/bigteam/user', {
-          user: 'bigbob'
-        })
-        .reply(200);
-
-      Team('bob').addUsers({
-        teamName: 'bigteam',
-        scope: 'bigco',
-        users: ['littlebob', 'bigbob']
-      }, function(err) {
-        teamMock.done();
-        expect(err).to.not.exist();
-        done();
-      });
-    });
-
   });
 
   describe('Packages', function() {

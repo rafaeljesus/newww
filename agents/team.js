@@ -322,3 +322,54 @@ Team.prototype.addUsers = function(opts, callback) {
 
   return P.all(requests).nodeify(callback);
 };
+
+Team.prototype.removeUser = function(opts) {
+  opts = opts || {};
+
+  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id + '/user';
+
+  var data = {
+    url: url,
+    json: true,
+    body: {
+      user: opts.userName
+    },
+    headers: {
+      bearer: this.bearer
+    }
+  };
+
+  return new P(function(accept, reject) {
+    Request.del(data, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = Error('user must be admin to perform this operation');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('Team or Org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 409) {
+        err = new Error('The provided User is already on this Team');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body.error);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  });
+}

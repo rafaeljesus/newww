@@ -137,12 +137,16 @@
 
   </header>
 
-  <div class="container content">
-    {{#each notices}}
-      <div class="notice">{{{ this }}}</div>
-    {{/each}}
+  {{#if contentIsFullwidth}}
     {{{ content }}}
-  </div>
+  {{else}}
+    <div class="container content">
+      {{#each notices}}
+        <div class="notice">{{{ this }}}</div>
+      {{/each}}
+      {{{ content }}}
+    </div>
+  {{/if}}
 
   <footer>
 

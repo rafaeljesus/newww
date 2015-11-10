@@ -105,6 +105,7 @@ module.exports = function() {
           role: role
         }
       ]);
+      group.find("[name=member]").val("");
     });
 
     auf.selectMenu.on("change", function() {

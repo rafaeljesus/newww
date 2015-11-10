@@ -20,7 +20,6 @@
           <input type="text" name="member" />
           <button id="add-member-to-list" type="button">add</button>
           </fieldset>
-          {{> form_security}}
         </section>
         <section>
           <div class="members-to-add">
@@ -36,6 +35,8 @@
           </div>
         </section>
 
+        <input type="hidden" name="updateType" value="addUsersToTeam"/>
+        {{> form_security}}
         <button class="button" type="submit">Make it so</button>
         <a href="/org/{{org}}">cancel</a>
 

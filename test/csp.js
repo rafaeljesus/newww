@@ -47,10 +47,6 @@ describe("csp (content security policy)", function() {
     })
 
     describe("frameSrc", function() {
-      it("has five allowances", function(done) {
-        expect(csp.default.frameSrc.length).to.equal(5)
-        done();
-      })
 
       it("allows checkout.stripe.com", function(done) {
         expect(csp.default.frameSrc).to.include('https://checkout.stripe.com');

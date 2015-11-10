@@ -537,7 +537,7 @@ describe('team', function() {
 
   });
 
-  describe('viewing a team page', function() {
+  describe('team package management', function() {
     it('renders an error if the org name is invalid', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -827,6 +827,83 @@ describe('team', function() {
           orgMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.request.response.headers.location).to.include('/org/bigco/team/bigcoteam?notice=');
+          done();
+        });
+      });
+    });
+  });
+
+  describe('team member management', function() {
+    it('takes you to the team member page', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/team/bigco/bigcoteam')
+        .reply(200, fixtures.teams.bigcoteam)
+        .get('/team/bigco/bigcoteam/user')
+        .reply(200, fixtures.teams.bigcoteamUsers)
+        .get('/team/bigco/bigcoteam/package')
+        .reply(200, fixtures.teams.bigcoteamPackages);
+
+      var options = {
+        url: "/org/bigco/team/bigcoteam#members",
+        method: "GET",
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.request.response.source.template).to.equal('team/show');
+        done();
+      });
+    });
+
+    it('allows a super/team-admin to remove a user from a team', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .delete('/team/bigco/bigcoteam/user', {
+          user: 'betty'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "name": "betty",
+            updateType: 'removeUser',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam#members');
           done();
         });
       });

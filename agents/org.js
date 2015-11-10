@@ -256,31 +256,34 @@ Org.prototype.getUsers = function(name, callback) {
 
   var url = USER_HOST + '/org/' + name + '/user';
 
-  Request.get({
-    url: url,
-    json: true,
-    headers: {
-      bearer: this.bearer
-    },
-  }, function(err, resp, users) {
-    if (err) {
-      callback(err);
-    }
+  return new P(function(accept, reject) {
+    return Request.get({
+      url: url,
+      json: true,
+      headers: {
+        bearer: this.bearer
+      },
+    }, function(err, resp, users) {
+      if (err) {
+        reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('org not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(users);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, users);
-  });
+      return accept(users);
+    });
+  }).nodeify(callback);
+
 };
 
 Org.prototype.getTeams = function(name) {

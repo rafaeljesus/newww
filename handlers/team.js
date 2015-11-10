@@ -272,6 +272,11 @@ exports.updateTeam = function(request, reply) {
 
 exports.getAddTeamUserPage = function(request, reply) {
 
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
 
@@ -341,6 +346,10 @@ exports.showTeamMembers = function(request, reply) {
 };
 
 exports.getUsers = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   var orgScope = request.params.org;
   var teamName = request.params.teamName;

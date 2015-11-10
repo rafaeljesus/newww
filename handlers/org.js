@@ -562,3 +562,44 @@ exports.redirectToOrg = function redirectToOrg(request, reply) {
 
   return reply.redirect("/org" + urlAppend).code(301);
 };
+
+exports.getUser = function getUser(request, reply) {
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var orgName = request.params.org;
+
+  var username = request.payload.member;
+
+  return Org(loggedInUser)
+    .getUsers(orgName)
+    .then(function(members) {
+      members = members || [];
+      var userInOrg = members.some(function(member) {
+        return username === member.name;
+      });
+
+      if (userInOrg) {
+        return reply("User " + username + " found.")
+          .type('application/json');
+      } else {
+        var err = new Error("User not found");
+        err.statusCode = 404;
+        throw err;
+      }
+
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
+        return reply(err.message)
+          .code(err.statusCode)
+          .type('application/json');
+      } else {
+        return reply("Internal Error")
+          .code(err.statusCode)
+          .type('application/json');
+      }
+
+    });
+};

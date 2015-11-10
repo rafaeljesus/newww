@@ -151,6 +151,10 @@ module.exports = [
     method: "GET",
     handler: require('../handlers/org').getOrgCreationBillingPage
   }, {
+    path: "/org/{org}/user",
+    method: "GET",
+    handler: require('../handlers/org').getUser
+  }, {
     path: "/org/{org}/team/create",
     method: "GET",
     handler: require('../handlers/team').getTeamCreationPage

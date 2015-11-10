@@ -1726,4 +1726,10 @@ describe('deleting an org', function() {
       });
     });
   });
+
+  describe('getting a user', function() {
+    it('returns an error if the bearer token does not exist', function(done) {
+      done();
+    });
+  });
 });

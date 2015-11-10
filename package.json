@@ -35,7 +35,7 @@
     "blankie": "^1.1.0",
     "bluebird": "^2.10.2",
     "bole": "~1.0.0",
-    "boom": "^2.9.0",
+    "boom": "^3.0.0",
     "catbox-redis": "^1.0.6",
     "cheerio": "^0.17.0",
     "chunk": "0.0.2",

@@ -37,7 +37,6 @@
     "bole": "~1.0.0",
     "boom": "^2.9.0",
     "catbox-redis": "^1.0.6",
-    "cheerio": "^0.17.0",
     "chunk": "0.0.2",
     "crumb": "^4.0.4",
     "debuglog": "^1.0.1",
@@ -111,6 +110,7 @@
   "devDependencies": {
     "bistre": "^1.0.0",
     "browserify": "^5.8.0",
+    "cheerio": "^0.19.0",
     "code": "^1.2.1",
     "esformatter": "^0.7.3",
     "favicons": "^3.0.2",

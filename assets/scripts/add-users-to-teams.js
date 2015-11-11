@@ -127,11 +127,12 @@ module.exports = function() {
     addBtn.on("click", function() {
       var group = $(this).closest("fieldset");
       var username = group.find("[name=member]").val();
-      var role = group.find("input[type=radio]:checked");
+      if (!username) {
+        return;
+      }
       auf.addUsers([
         {
-          name: username,
-          role: role
+          name: username
         }
       ]);
       group.find("[name=member]").val("");

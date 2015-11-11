@@ -87,7 +87,10 @@
     </div><!--/#packages-->
 
     <div id="members" class="tab tab-2">
-      <h2>{{pluralize members.count "members" true}}</h2>
+      <div class="org-info-header-container">
+        <h2>{{pluralize members.count "members" true}}</h2>
+        <a class="button" href="/org/{{orgName}}/team/{{teamName}}/add-user">add members</a>
+      </div>
 
       {{#if members.count}}
       <table class="org-table org-users">
@@ -121,7 +124,7 @@
             <td>{{#if sponsored}}active{{else}}inactive{{/if}}</td>
             <td>
               <div class="collapsible-wrapper">
-                <form method="POST" id="team-package-delete-overview-{{@index}}" action="/org/{{../orgName}}/team/{{../teamName}}">
+                <form method="POST" id="team-user-delete-overview-{{@index}}" action="/org/{{../orgName}}/team/{{../teamName}}">
                   {{#with ../../this}}
                   {{> form_security }}
                   {{/with}}

@@ -7,15 +7,19 @@ var template = function(user) {
   var username = user.name || "";
   var role = user.role || "";
 
-  return $("<li data-name='" + username + "'>")
-    .append("<span class='name'><a href='/~" +
-      username +
-      "'>" +
-      username +
-      "</a></span>")
-    .append("<span class='role'>" + role + "</span>")
-    .append("<button type='button' class='delete-user icon-x'><span class='a11y-only'>Remove User " + username + "</span></button>")
-    .append("<input type='hidden' name='member' value='" + username + "' />").html();
+  return "<li data-name='" + username + "'>" +
+    "<span class='name'><a href='/~" +
+    username +
+    "'>" +
+    username +
+    "</a></span>" +
+    "<span class='role'>" + role + "</span>" +
+    "<button type='button' class='delete-user icon-x'>" +
+    "<span class='a11y-only'>Remove User " +
+    username +
+    "</span></button>" +
+    "<input type='hidden' name='member' value='" +
+    username + "' />";
 
 };
 

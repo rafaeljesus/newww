@@ -2,18 +2,18 @@
   {{#if user.email_verified}}
   <h1>add {{team.name}} users</h1>
   <div>
-    <section>
-      <label class="custom-select-label" for="teams"><span>Populate from existing team</span></label>
-      <div class="dropdown">
-        <select class="custom" name="teams">
-          <option value="none" selected="selected">None</option>
-          {{#each orgTeams }}
-          <option value="{{name}}">{{name}}</option>
-          {{/each}}
-        </select>
-      </div>
-    </section>
     <form method="POST" id="add-user-to-team-form" action="/org/{{orgScope}}/team/{{team.name}}">
+      <section>
+        <label class="custom-select-label" for="teams"><span>Populate from existing team</span></label>
+        <div class="dropdown">
+          <select class="custom" name="teams">
+            <option value="_none_" selected="selected">None</option>
+            {{#each orgTeams }}
+            <option value="{{name}}">{{name}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </section>
         <section>
           <fieldset>
           <legend>invite additional members</legend>

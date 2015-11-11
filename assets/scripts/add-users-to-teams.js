@@ -153,7 +153,12 @@ module.exports = function() {
     });
 
     auf.selectMenu.on("change", function() {
-      return getTeamUsers(auf.orgScope, this.options[this.selectedIndex].value)
+      var teamName = this.options[this.selectedIndex].value;
+      if (teamName === "_none_") {
+        return;
+      }
+
+      return getTeamUsers(auf.orgScope, teamName)
         .done(function(users) {
           auf.removeAll();
           return auf.addUsers(users);

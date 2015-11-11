@@ -129,6 +129,7 @@ If you have any trouble getting the site running locally, please [open an issue]
 * `ELASTICSEARCH_URL`, the URL to the elastic search database to use for search
 * `LICENSE_API`, the URL to the license API
 * `USER_API`, the URL to the user-acl API
+* `CMS_API`, the URL to the npm v1 CMS API
 
 ## Zendesk integration
 

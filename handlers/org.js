@@ -600,7 +600,7 @@ exports.getUser = function getUser(request, reply) {
           user: username
         })
           .type('application/json')
-          .statusCode(200);
+          .code(200);
       } else {
         var err = new Error("User not found");
         err.statusCode = 404;

@@ -171,7 +171,9 @@ module.exports = function() {
     auf.$el.find("[type=submit]").on("click", function(e) {
       e.preventDefault();
       e.stopPropagation();
-      $("#add-member-input").attr("disabled", "disabled");
+      $("#add-member-input")
+        .val("")
+        .attr("disabled", "disabled");
 
       auf.$el.submit();
     });

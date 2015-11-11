@@ -78,8 +78,6 @@ var AddUserForm = function(form) {
     this.orgScope = actionArr[2];
     this.teamName = actionArr[4];
   }
-
-  this.bearer = $("[data-user-name]").data("user-name");
 };
 
 

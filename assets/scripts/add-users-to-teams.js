@@ -43,6 +43,28 @@ var getTeamUsers = function(orgName, teamName) {
   return $.ajax(opts);
 };
 
+var getUser = function(orgName, user) {
+  var url = "/org/" + orgName + "/user";
+
+  var opts = {
+    method: "GET",
+    url: url,
+    json: true,
+    data: {
+      member: user
+    }
+  };
+
+  if (window && window.crumb) {
+    opts.data.crumb = window.crumb;
+    opts.headers = {
+      'x-csrf-token': window.crumb
+    };
+  }
+
+  return $.ajax(opts);
+};
+
 var AddUserForm = function(form) {
   this.$el = form;
   this.selectMenu = this.$el.find("[name=teams]");
@@ -115,6 +137,20 @@ module.exports = function() {
         }
       ]);
       group.find("[name=member]").val("");
+
+      var message = "";
+      return getUser(auf.orgScope, username)
+        .fail(function(obj) {
+          if (obj.status === 404) {
+            message = "User " + username + " is not a member of this Org, please add them";
+          } else if (obj.status < 500) {
+            message = obj.responseJSON && obj.responseJSON.error;
+          } else {
+            message = "An internal error occurred";
+          }
+          auf.notify(message);
+          return auf.removeUser(username);
+        });
     });
 
     auf.selectMenu.on("change", function() {

@@ -175,3 +175,4 @@ If you have any trouble getting the site running locally, please [open an issue]
 
 * `NPME_PRODUCT_ID`, uuid of the npm On-site product
 * `NPMO_COBRAND`, the user's brand displayed in the npm On-site product
+* `CMS_CACHE_TIME`, in seconds, how long to cache CMS content without refetching

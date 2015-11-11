@@ -291,7 +291,7 @@ Team.prototype._addUser = function(opts, callback) {
       }
 
       if (resp.statusCode >= 400) {
-        err = new Error(body);
+        err = new Error(body.message);
         err.statusCode = resp.statusCode;
         return reject(err);
       }

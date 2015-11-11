@@ -87,6 +87,11 @@ AddUserForm.prototype.addUsers = function(users) {
   this.updateMemberCount();
 };
 
+AddUserForm.prototype.notify = function(notification) {
+  $(".notice").remove();
+  var html = "<div class='notice'>" + notification + "</div>";
+  $(".container.content").prepend(html);
+};
 
 module.exports = function() {
   $(function() {

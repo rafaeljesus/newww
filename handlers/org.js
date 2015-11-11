@@ -571,13 +571,17 @@ exports.getUser = function getUser(request, reply) {
   var username = request.query.member;
 
   if (invalidUserName(orgName)) {
-    return reply("Org not found")
+    return reply({
+      error: "Org not found"
+    })
       .code(404)
       .type('application/json');
   }
 
   if (invalidUserName(username)) {
-    return reply("User not found")
+    return reply({
+      error: "User not found"
+    })
       .code(404)
       .type('application/json');
   }
@@ -592,8 +596,11 @@ exports.getUser = function getUser(request, reply) {
       });
 
       if (userInOrg) {
-        return reply("User " + username + " found.")
-          .type('application/json');
+        return reply({
+          user: username
+        })
+          .type('application/json')
+          .statusCode(200);
       } else {
         var err = new Error("User not found");
         err.statusCode = 404;
@@ -605,11 +612,15 @@ exports.getUser = function getUser(request, reply) {
       request.logger.error(err);
 
       if (err.statusCode < 500) {
-        return reply(err.message)
+        return reply({
+          error: err.message
+        })
           .code(err.statusCode)
           .type('application/json');
       } else {
-        return reply("Internal Error")
+        return reply({
+          error: "Internal Error"
+        })
           .code(err.statusCode)
           .type('application/json');
       }

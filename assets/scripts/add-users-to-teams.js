@@ -176,5 +176,13 @@ module.exports = function() {
       auf.$el.submit();
     });
 
+    auf.$el.on("click", ".delete-user", function(e) {
+      var username = $(e.target).closest("[data-name]").data("name");
+
+      auf.removeUser(username);
+    });
+
+
+
   });
 };

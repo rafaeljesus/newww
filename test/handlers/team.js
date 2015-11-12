@@ -910,4 +910,83 @@ describe('team', function() {
     });
   });
 
+  describe('team description', function() {
+    it('renders an error notice if description is empty', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "team-description": "",
+            updateType: 'updateInfo',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.include('/org/bigco/team/bigcoteam?notice=');
+          done();
+        });
+      });
+    });
+
+    it('allows super/team admins to update the team description', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .post('/team/bigco/bigcoteam', {
+          description: 'best team ever'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "team-description": "best team ever",
+            updateType: 'updateInfo',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam#settings');
+          done();
+        });
+      });
+    });
+  });
+
 });

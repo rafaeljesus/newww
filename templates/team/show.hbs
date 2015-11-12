@@ -11,6 +11,7 @@
         <ul class="nav nav-4 clear" role="navigation">
           <li class="current"><a href="#packages">{{pluralize packages.count "package" true}}</a></li>
           <li><a href="#members">{{pluralize members.count "member" true}}</a></li>
+          <li><a href="#settings">settings</a></li>
         </ul>
       </div>
     </div>
@@ -140,6 +141,20 @@
       </table>
       {{/if}}
     </div><!--/#members-->
+
+    <div id="settings" class="tab tab-3">
+      <h2>settings</h2>
+
+      <form method="POST" id="team-settings" action="/org/{{orgName}}/team/{{teamName}}">
+        {{!-- <label for="team-human-readable">team name</label>
+        <input id="team-human-readable" name="team-name"/> --}}
+        <label for="team-description">description</label>
+        <input id="team-description" name="team-description"/>
+        {{> form_security }}
+        <input type="hidden" name="updateType" value="updateInfo" />
+        <button type="submit" class="button">Make it so.</button>
+      </form>
+    </div><!--/#settings-->
 
   </div><!--tabs-->
 </div>

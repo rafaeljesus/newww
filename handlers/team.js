@@ -1,5 +1,6 @@
 var avatar = require("../lib/avatar");
 var P = require('bluebird');
+var Joi = require('joi');
 var Org = require('../agents/org');
 var Team = require('../agents/team');
 var invalidUserName = require('npm-user-validate').username;
@@ -176,59 +177,95 @@ exports.showTeam = function(request, reply) {
     });
 };
 
+var validPayloadSchema = {
+  updateType: Joi.string().required(),
+  name: Joi.string().when('updateType', {
+    is: 'updateWritePermissions',
+    then: Joi.string().required()
+  }).when('updateType', {
+    is: 'removePackage',
+    then: Joi.string().required()
+  }).when('updateType', {
+    is: 'removeUser',
+    then: Joi.string().required()
+  }),
+  writePermission: Joi.string().when('updateType', {
+    is: 'updateWritePermissions',
+    then: Joi.string().required()
+  }),
+  'team-description': Joi.string().when('updateType', {
+    is: 'updateInfo',
+    then: Joi.string().required()
+  })
+};
+
 exports.updateTeam = function(request, reply) {
-  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
-  var orgName = request.params.org;
-  var teamName = request.params.teamName;
+  Joi.validate(request.payload, validPayloadSchema, function(err, validatedPayload) {
 
-  var tab = '';
+    var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+    var orgName = request.params.org;
+    var teamName = request.params.teamName;
+    var tab = '';
 
-  var updateMethod = function(type) {
-    switch (type) {
-      case 'updateWritePermissions':
-        return Team(loggedInUser)
-          .addPackage({
-            scope: orgName,
-            id: teamName,
-            package: request.payload.name,
-            permissions: request.payload.writePermission === 'on' ? 'write' : 'read'
-          });
-
-      case 'removePackage':
-        return Team(loggedInUser)
-          .removePackage({
-            scope: orgName,
-            id: teamName,
-            package: request.payload.name
-          });
-
-      case 'removeUser':
-        tab = '#members';
-        return Team(loggedInUser)
-          .removeUser({
-            scope: orgName,
-            id: teamName,
-            userName: request.payload.name
-          });
-
-      default:
-        throw new Error('no update method');
+    if (err) {
+      return handleUserError(request, reply, '/org/' + orgName + '/team/' + teamName, err.message);
     }
-  };
 
-  updateMethod(request.payload.updateType)
-    .then(function() {
-      return reply.redirect('/org/' + orgName + '/team/' + teamName + tab);
-    })
-    .catch(function(err) {
-      request.logger.error(err);
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
-      } else if (err.statusCode < 500) {
-        return handleUserError(request, reply, '/org/' + orgName + '/team/' + teamName + tab, err.message);
-      } else {
-        return reply.view('errors/internal', err);
+    var updateMethod = function(type) {
+      switch (type) {
+        case 'updateWritePermissions':
+          return Team(loggedInUser)
+            .addPackage({
+              scope: orgName,
+              id: teamName,
+              package: validatedPayload.name,
+              permissions: validatedPayload.writePermission === 'on' ? 'write' : 'read'
+            });
+
+        case 'removePackage':
+          return Team(loggedInUser)
+            .removePackage({
+              scope: orgName,
+              id: teamName,
+              package: validatedPayload.name
+            });
+
+        case 'removeUser':
+          tab = '#members';
+          return Team(loggedInUser)
+            .removeUser({
+              scope: orgName,
+              id: teamName,
+              userName: validatedPayload.name
+            });
+
+        case 'updateInfo':
+          tab = '#settings';
+          return Team(loggedInUser)
+            .updateInfo({
+              scope: orgName,
+              id: teamName,
+              description: validatedPayload['team-description']
+            });
+
+        default:
+          throw new Error('no update method');
       }
-    });
+    };
 
+    updateMethod(validatedPayload.updateType)
+      .then(function() {
+        return reply.redirect('/org/' + orgName + '/team/' + teamName + tab);
+      })
+      .catch(function(err) {
+        request.logger.error(err);
+        if (err.statusCode === 404) {
+          return reply.view('errors/not-found', err).code(404);
+        } else if (err.statusCode < 500) {
+          return handleUserError(request, reply, '/org/' + orgName + '/team/' + teamName + tab, err.message);
+        } else {
+          return reply.view('errors/internal', err);
+        }
+      });
+  });
 };

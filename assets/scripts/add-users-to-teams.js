@@ -163,8 +163,8 @@ module.exports = function() {
           auf.removeAll();
           return auf.addUsers(users);
         })
-        .fail(function(response) {
-          console.log(response);
+        .fail(function() {
+          auf.notify("An error occurred while populating the list");
         });
     });
 

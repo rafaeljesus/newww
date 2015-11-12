@@ -298,7 +298,7 @@ Customer.prototype.getSubscriptions = function(callback) {
 
       return accept(subs);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.updateBilling = function(body, callback) {
@@ -386,7 +386,7 @@ Customer.prototype.createSubscription = function(planInfo, callback) {
         accept(body);
       }
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
@@ -445,7 +445,7 @@ Customer.prototype.getLicenseForOrg = function(orgName, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 // should this go into the org agent instead?
@@ -503,7 +503,7 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
@@ -537,7 +537,7 @@ Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
@@ -566,7 +566,7 @@ Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.declineSponsorship = Customer.prototype.revokeSponsorship = Customer.prototype.removeSponsorship;

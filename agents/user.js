@@ -51,7 +51,7 @@ User.prototype.confirmEmail = function(user, callback) {
       }
       return resolve(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
@@ -81,7 +81,7 @@ User.prototype.fetchFromUserACL = function fetchFromUserACL(name, callback) {
 
       return resolve(body);
     });
-  }.bind(this)).nodeify(callback);
+  }.bind(this)).asCallback(callback);
 };
 
 User.prototype.fetchCustomer = function fetchCustomer(name, callback) {
@@ -201,7 +201,7 @@ User.prototype.getPackages = function(name, page, callback) {
 
       return resolve(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 User.prototype.getOwnedPackages = function(name) {
@@ -279,7 +279,7 @@ User.prototype.getStars = function(name, callback) {
       return resolve(body);
     });
   })
-    .nodeify(callback);
+    .asCallback(callback);
 };
 
 User.prototype.login = function(loginInfo, callback) {
@@ -313,7 +313,7 @@ User.prototype.login = function(loginInfo, callback) {
 
       return resolve(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 User.prototype.lookupEmail = function(email, callback) {
@@ -341,7 +341,7 @@ User.prototype.lookupEmail = function(email, callback) {
 
       return resolve(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 User.prototype.save = function(user, callback) {
@@ -366,7 +366,7 @@ User.prototype.save = function(user, callback) {
       }
       return resolve(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 User.prototype.signup = function(user, callback) {
@@ -414,7 +414,7 @@ User.prototype.signup = function(user, callback) {
       return resolve(body);
     });
   })
-    .nodeify(callback);
+    .asCallback(callback);
 };
 
 User.prototype.getCliTokens = function getCliTokens(name) {
@@ -520,7 +520,7 @@ User.prototype.getOrgs = function(name, callback) {
 
       return resolve(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 User.prototype.toOrg = function(name, newUsername, callback) {
@@ -568,5 +568,5 @@ User.prototype.toOrg = function(name, newUsername, callback) {
       return resolve(body);
     });
 
-  }).nodeify(callback);
+  }).asCallback(callback);
 };

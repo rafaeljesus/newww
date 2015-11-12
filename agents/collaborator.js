@@ -47,7 +47,7 @@ Collaborator.prototype.list = function(pkg, callback) {
 
         return resolve(body);
       });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Collaborator.prototype.add = function(pkg, collaborator, callback) {
@@ -79,7 +79,7 @@ Collaborator.prototype.add = function(pkg, collaborator, callback) {
       }
       return resolve(decorate(body), pkg);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 
@@ -112,7 +112,7 @@ Collaborator.prototype.update = function(pkg, collaborator, callback) {
       }
       return resolve(decorate(body), pkg);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Collaborator.prototype.del = function(pkg, collaboratorName, callback) {
@@ -148,5 +148,5 @@ Collaborator.prototype.del = function(pkg, collaboratorName, callback) {
         deleted: true
       });
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };

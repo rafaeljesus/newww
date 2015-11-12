@@ -37,6 +37,6 @@ Scope.prototype.get = function(name, callback) {
 
       return resolve(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 
 };

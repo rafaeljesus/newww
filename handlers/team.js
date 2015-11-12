@@ -200,7 +200,8 @@ var validPayloadSchema = {
   member: Joi.any().when('updateType', {
     is: 'addUsersToTeam',
     then: Joi.any().required()
-  })
+  }),
+  teams: Joi.any().optional()
 };
 
 exports.updateTeam = function(request, reply) {
@@ -253,6 +254,7 @@ exports.updateTeam = function(request, reply) {
             });
 
         case 'addUsersToTeam':
+          tab = '#members';
 
           var members = request.payload.member || [];
           members = Array.isArray(members) ? members : [].concat(members);

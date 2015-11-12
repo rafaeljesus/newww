@@ -13,3 +13,4 @@ config.admin.js
 static
 test/coverage.html
 *.swp
+newrelic.js

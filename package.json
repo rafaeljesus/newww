@@ -35,7 +35,7 @@
     "accept-language-parser": "^1.0.2",
     "async": "^1.5.0",
     "blankie": "^1.1.0",
-    "bluebird": "^2.10.2",
+    "bluebird": "^3.0.5",
     "bole": "~2.0.0",
     "boom": "^3.1.2",
     "catbox-redis": "^1.0.6",

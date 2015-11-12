@@ -538,4 +538,102 @@ describe('Team', function() {
       });
     });
   });
+
+  describe('Info', function() {
+    it('returns an error if a non-admin attempts to change the description', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .post('/team/bigco/bigteam', {
+          description: 'best team ever'
+        })
+        .reply(401, {
+          "error": "user must be admin to perform this operation"
+        });
+
+      Team('betty').updateInfo({
+        scope: 'bigco',
+        id: 'bigteam',
+        description: 'best team ever'
+      }).catch(function(err) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(401);
+        expect(err.message).to.equal('user must be admin to perform this operation');
+      }).then(function(resp) {
+        expect(resp).to.not.exist();
+      }).finally(function() {
+        teamMock.done();
+        done();
+      });
+    });
+
+    it('returns an error if the team does not exist', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .post('/team/bigco/bigsteam', {
+          description: 'best team ever'
+        })
+        .reply(404, {
+          "error": "Scope not found"
+        });
+
+      Team('bob').updateInfo({
+        scope: 'bigco',
+        id: 'bigsteam',
+        description: 'best team ever'
+      }).catch(function(err) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(404);
+        expect(err.message).to.equal('Team or Org not found');
+      }).then(function(resp) {
+        expect(resp).to.not.exist();
+      }).finally(function() {
+        teamMock.done();
+        done();
+      });
+    });
+
+    it('returns an error if something else goes wrong', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .post('/team/bigco/bigteam', {
+          description: 'best team ever'
+        })
+        .reply(400, {
+          "error": "Whoops"
+        });
+
+      Team('bob').updateInfo({
+        scope: 'bigco',
+        id: 'bigteam',
+        description: 'best team ever'
+      }).catch(function(err) {
+        expect(err).to.exist();
+        expect(err.statusCode).to.equal(400);
+        expect(err.message).to.equal('Whoops');
+      }).then(function(resp) {
+        expect(resp).to.not.exist();
+      }).finally(function() {
+        teamMock.done();
+        done();
+      });
+    });
+
+    it('returns nothing if everything works beautifully', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .post('/team/bigco/bigteam', {
+          description: 'best team ever'
+        })
+        .reply(200);
+
+      Team('bob').updateInfo({
+        scope: 'bigco',
+        id: 'bigteam',
+        description: 'best team ever'
+      }).catch(function(err) {
+        expect(err).to.not.exist();
+      }).then(function(resp) {
+        expect(resp).to.not.exist();
+      }).finally(function() {
+        teamMock.done();
+        done();
+      });
+    });
+  });
 });

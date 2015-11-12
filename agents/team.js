@@ -372,4 +372,49 @@ Team.prototype.removeUser = function(opts) {
       return accept(body);
     });
   });
-}
+};
+
+Team.prototype.updateInfo = function(opts) {
+  opts = opts || {};
+
+  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id;
+
+  var data = {
+    url: url,
+    json: true,
+    body: {
+      description: opts.description
+    },
+    headers: {
+      bearer: this.bearer
+    }
+  };
+
+  return new P(function(accept, reject) {
+    Request.post(data, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = Error('user must be admin to perform this operation');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('Team or Org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body.error);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  });
+};

@@ -1,7 +1,7 @@
 var Emitter = require('numbat-emitter'),
   emitter;
 
-module.exports = function constructEmitter(app) {
+module.exports = function constructEmitter() {
   if (emitter) {
     return emitter;
   }
@@ -12,7 +12,7 @@ module.exports = function constructEmitter(app) {
   else {
     emitter = new Emitter({
       uri: process.env.METRICS_URL,
-      app: app,
+      app: 'newww',
       port: process.env.PORT || '0'
     });
   }

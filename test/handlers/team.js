@@ -864,7 +864,7 @@ describe('team', function() {
           userMock.done();
           teamMock.done();
           expect(resp.statusCode).to.equal(302);
-          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam#members');
           done();
         });
       });

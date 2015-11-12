@@ -2,7 +2,7 @@
   {{#if user.email_verified}}
   <h1>add {{team.name}} users</h1>
   <div>
-    <form method="POST" id="add-user-to-team-form" action="/org/{{orgScope}}/team/{{team.name}}">
+    <form method="POST" data-form-function="add-user-to-team" id="add-user-to-team-form" action="/org/{{orgScope}}/team/{{team.name}}">
       <section>
         <div class="team-selector-container">
           <label class="custom-select-label" for="teams"><span>Populate from existing team</span></label>
@@ -40,7 +40,7 @@
         <input type="hidden" name="updateType" value="addUsersToTeam"/>
         {{> form_security}}
         <button class="button" type="submit">Make it so</button>
-        <a href="/org/{{org}}">cancel</a>
+        <a href="/org/{{orgScope}}/team/{{team.name}}#members">cancel</a>
 
       </form>
 

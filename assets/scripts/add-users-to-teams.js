@@ -74,8 +74,8 @@ var AddUserForm = function(form) {
   var action = this.$el.attr("action");
   var actionArr = action.split("/");
 
+  this.orgScope = actionArr[2];
   if (actionArr.length === 5) {
-    this.orgScope = actionArr[2];
     this.teamName = actionArr[4];
   }
 };
@@ -119,7 +119,7 @@ AddUserForm.prototype.notify = function(notification) {
 
 module.exports = function() {
   $(function() {
-    var form = $("#add-user-to-team-form");
+    var form = $("[data-form-function=add-user-to-team]");
     var auf = new AddUserForm(form);
 
     var addBtn = $("#add-member-to-list");
@@ -183,8 +183,6 @@ module.exports = function() {
 
       auf.removeUser(username);
     });
-
-
 
   });
 };

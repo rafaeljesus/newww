@@ -2,7 +2,7 @@
   {{#if user.email_verified}}
   <h1>Create a Team</h1>
   <div>
-    <form method="POST" id="create-team-form" action="/org/{{org}}/team">
+    <form method="POST" data-form-function="add-user-to-team" id="create-team-form" action="/org/{{org}}/team">
         <section>
           <label for="team-name">Team name</label>
           <input required="required" type="text" id="team-name" name="team-name" placeholder="developers" />
@@ -14,8 +14,22 @@
         <section>
           <fieldset>
           <legend>invite some members</legend>
-          <input type="text" name="member" />
+          <input type="text" name="member" class="inline-input" id="add-member-input"/>
+          <button id="add-member-to-list" class="button btn-inline btn-secondary add-member-btn" type="button">add</button>
           </fieldset>
+        </section>
+        <section>
+          <div class="members-to-add">
+            <div class="member-header">
+              <div class="add-count">
+                <span class="add-number">0</span>
+                <span class="unit">Users</span>
+              </div>
+              <button id="remove-all-added" type="button">remove all</button>
+            </div>
+            <ul class="members-list">
+            </ul>
+          </div>
         </section>
 
         {{> form_security}}

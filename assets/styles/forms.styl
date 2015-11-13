@@ -111,6 +111,23 @@ button[type="submit"].btn-secondary,
 .btn-inline
   display inline-block
 
+.btn-link
+  appearance none
+  -webkit-appearance none
+  -moz-appearance none
+  border none
+  box-shadow none
+  height auto
+  width auto
+  display inline
+  background transparent
+  color npmred
+  font inherit
+  cursor pointer
+
+  &:hover
+    text-decoration underline
+
 form[class^="remove-"]
   input[type=submit]
     margin 0
@@ -297,7 +314,6 @@ fieldset
 
 input[type=text] + .description
   margin-top -1.5em
-
 
 /**
  * Switch-style checkboxes.

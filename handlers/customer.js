@@ -208,6 +208,7 @@ customer.subscribe = function(request, reply) {
           return reply.redirect('/settings/billing' + (token ? '?notice=' + token : ''));
         }).catch(function(err) {
           request.logger.error(err);
+          return reply.view('errors/internal', err).code(500)
         });
       }
 

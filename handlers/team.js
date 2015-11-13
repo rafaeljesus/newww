@@ -142,10 +142,45 @@ exports.showTeam = function(request, reply) {
     return handleUserError(request, reply, '/org/' + orgName + '/team', "Invalid Team Name.");
   }
 
-  return Team(loggedInUser)
-    .get({
-      orgScope: orgName,
-      teamName: teamName
+  var perms = {};
+
+  return Org(loggedInUser)
+    .get(orgName)
+    .then(function(org) {
+
+      var isSuperAdmin = org.users.items.filter(function(user) {
+        return user.role && user.role.match(/super-admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      var isAtLeastTeamAdmin = org.users.items.filter(function(user) {
+        return user.role && user.role.match(/admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      var isAtLeastMember = org.users.items.filter(function(user) {
+        return user.role && (user.role.match(/developer/) || user.role.match(/admin/));
+      }).some(function(member) {
+        return member.name === loggedInUser;
+      });
+
+
+      perms = {
+        isSuperAdmin: isSuperAdmin,
+        isAtLeastTeamAdmin: isAtLeastTeamAdmin,
+        isAtLeastMember: isAtLeastMember
+      };
+
+      request.logger.info(perms);
+
+      return Team(loggedInUser)
+        .get({
+          orgScope: orgName,
+          teamName: teamName
+        });
+
     })
     .then(function(team) {
       team.packages.items.forEach(function(pkg) {
@@ -158,12 +193,14 @@ exports.showTeam = function(request, reply) {
         usr.avatar = avatar(usr.email);
       });
 
+
       return reply.view('team/show', {
         teamName: team.name,
         description: team.description,
         orgName: orgName,
         members: team.users,
         packages: team.packages,
+        perms: perms,
       });
     })
     .catch(function(err) {

@@ -29,8 +29,10 @@
             </th>
             <th>author</th>
             <th>date added</th>
+            {{#if perms.isAtLeastTeamAdmin }}
             <th>access</th>
             <th>action</th>
+            {{/if}}
           </tr>
         </thead>
         <tbody>
@@ -48,6 +50,7 @@
             </td>
             <td>author</td>
             <td>date</td>
+            {{#if ../../perms.isAtLeastTeamAdmin }}
             <td>
               <div class="collapsible-wrapper">
               <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../orgName}}/team/{{../../teamName}}" class="edit-write-permission">
@@ -80,6 +83,7 @@
               </form>
               </div>
             </td>
+            {{/if}}
           </tr>
         {{/each}}
         </tbody>
@@ -101,8 +105,10 @@
             <th>member name</th>
             <th>role</th>
             <th>date added</th>
+            {{#if perms.isAtLeastTeamAdmin }}
             <th>status</th>
             <th>action</th>
+            {{/if}}
           </tr>
         </thead>
         <tbody>
@@ -122,19 +128,21 @@
             </td>
             <td>{{role}}</td>
             <td>date added</td>
-            <td>{{#if sponsored}}active{{else}}inactive{{/if}}</td>
+            {{#if ../perms.isAtLeastTeamAdmin }}
+            <td>{{#if ../sponsored}}active{{else}}inactive{{/if}}</td>
             <td>
               <div class="collapsible-wrapper">
-                <form method="POST" id="team-user-delete-overview-{{@index}}" action="/org/{{../orgName}}/team/{{../teamName}}">
-                  {{#with ../../this}}
+                <form method="POST" id="team-user-delete-overview-{{@index}}" action="/org/{{../../orgName}}/team/{{../../teamName}}">
+                  {{#with ../../../this}}
                   {{> form_security }}
                   {{/with}}
-                  <input type="hidden" name="name" value="{{name}}" />
+                  <input type="hidden" name="name" value="{{../name}}" />
                   <input type="hidden" name="updateType" value="removeUser" />
-                  <button type="submit" class="delete-user icon-x"><span class="a11y-only">Remove User {{name}} from {{../teamName}}</span></button>
+                  <button type="submit" class="delete-user icon-x"><span class="a11y-only">Remove User {{../name}} from {{../../teamName}}</span></button>
               </form>
               </div>
             </td>
+            {{/if}}
           </tr>
         {{/each}}
         </tbody>

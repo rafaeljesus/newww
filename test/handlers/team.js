@@ -586,7 +586,7 @@ describe('team', function() {
       });
     });
 
-    it('renders an error if the team or org does not exist', function(done) {
+    it('renders an error if the org does not exist', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
@@ -596,11 +596,13 @@ describe('team', function() {
         .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
-        .get('/team/bigco/bigcoteam')
+        .get('/org/bigco')
         .reply(404)
-        .get('/team/bigco/bigcoteam/user')
+        .get('/org/bigco/user')
         .reply(404)
-        .get('/team/bigco/bigcoteam/package')
+        .get('/org/bigco/package')
+        .reply(404)
+        .get('/org/bigco/team')
         .reply(404);
 
       var options = {
@@ -619,6 +621,45 @@ describe('team', function() {
       });
     });
 
+    it('renders an error if the team does not exist', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco')
+        .reply(200, fixtures.orgs.bigco)
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoAddedUsers)
+        .get('/org/bigco/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg)
+        .get('/team/bigco/bigcoteam')
+        .reply(404)
+        .get('/team/bigco/bigcoteam/user')
+        .reply(404)
+        .get('/team/bigco/bigcoteam/package')
+        .reply(404);
+
+      var options = {
+        url: "/org/bigco/team/bigcoteam",
+        method: "GET",
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        expect(resp.statusCode).to.equal(404);
+        expect(resp.request.response.source.template).to.equal('errors/not-found');
+        done();
+      });
+    });
+
     it('displays the team page if everything goes well', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -629,6 +670,17 @@ describe('team', function() {
         .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco')
+        .reply(200, fixtures.orgs.bigco)
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoAddedUsers)
+        .get('/org/bigco/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg)
         .get('/team/bigco/bigcoteam')
         .reply(200, fixtures.teams.bigcoteam)
         .get('/team/bigco/bigcoteam/user')
@@ -1015,6 +1067,17 @@ describe('team', function() {
         .reply(404);
 
       var orgMock = nock("https://user-api-example.com")
+        .get('/org/bigco')
+        .reply(200, fixtures.orgs.bigco)
+        .get('/org/bigco/user')
+        .reply(200, fixtures.orgs.bigcoAddedUsers)
+        .get('/org/bigco/package')
+        .reply(200, {
+          count: 1,
+          items: [fixtures.packages.fake]
+        })
+        .get('/org/bigco/team')
+        .reply(200, fixtures.teams.bigcoOrg)
         .get('/team/bigco/bigcoteam')
         .reply(200, fixtures.teams.bigcoteam)
         .get('/team/bigco/bigcoteam/user')

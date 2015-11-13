@@ -82,7 +82,7 @@ exports.addTeamToOrg = function(request, reply) {
   }
 
   if (invalidUserName(teamName)) {
-    return handleUserError(request, reply, '/org' + orgName + '/team', "Invalid Team Name.");
+    return handleUserError(request, reply, '/org/' + orgName + '/team', "Invalid Team Name.");
   }
 
   return Org(loggedInUser)

@@ -1079,6 +1079,58 @@ describe('team', function() {
         });
       });
     });
+
+    it('does not allow a team member to remove a user from a team', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .delete('/team/bigco/bigcoteam/user', {
+          user: 'betty'
+        })
+        .reply(401);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "name": "betty",
+            updateType: 'removeUser',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('user must be admin to perform this operation');
+            done();
+          });
+        });
+      });
+    });
   });
 
   describe('team description', function() {

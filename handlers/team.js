@@ -4,15 +4,17 @@ var Joi = require('joi');
 var Org = require('../agents/org');
 var Team = require('../agents/team');
 var invalidUserName = require('npm-user-validate').username;
+var URL = require('url');
 
 var handleUserError = function(request, reply, redirectUrl, message) {
   return request.saveNotifications([
     P.reject(message)
   ]).then(function(token) {
-    var url = redirectUrl;
+    var url = URL.parse(redirectUrl);
     var param = token ? "?notice=" + token : "";
-    url = url + param;
-    return reply.redirect(url);
+    var hash = url.hash ? url.hash : "";
+    var redirUrl = url.path + param + hash;
+    return reply.redirect(redirUrl);
   }).catch(function(err) {
     request.logger.log(err);
     return reply.view('errors/internal', err);

@@ -384,22 +384,30 @@ exports.getUsers = function(request, reply) {
     })
     .then(function(users) {
       var resp = JSON.stringify(users);
-      return reply(resp)
+      return reply({
+        error: resp
+      })
         .type('application/json');
     })
     .catch(function(err) {
       request.logger.error(err);
 
       if (err.statusCode === 404) {
-        return reply("Not Found")
+        return reply({
+          error: "Not Found"
+        })
           .code(404)
           .type('application/json');
       } else if (err.statusCode < 500) {
-        return reply(err.message)
+        return reply({
+          error: err.message
+        })
           .code(err.statusCode)
           .type('application/json');
       } else {
-        return reply("Internal Error")
+        return reply({
+          error: "Internal Error"
+        })
           .code(err.statusCode)
           .type('application/json');
       }

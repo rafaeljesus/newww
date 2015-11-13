@@ -7,14 +7,16 @@ var template = function(user) {
   var username = user.name || "";
   var role = user.role || "";
 
-  return "<li data-name='" + username + "'>" +
+  return "<li class='clear' data-name='" + username + "'>" +
     "<span class='name'><a href='/~" +
     username +
     "'>" +
     username +
     "</a></span>" +
     "<span class='role'>" + role + "</span>" +
+    "<span class='delete-user-wrapper'>" +
     "<button type='button' class='delete-user icon-x'>" +
+    "</span>" +
     "<span class='a11y-only'>Remove User " +
     username +
     "</span></button>" +

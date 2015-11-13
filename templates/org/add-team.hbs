@@ -18,19 +18,7 @@
           <button id="add-member-to-list" class="button btn-inline btn-secondary add-member-btn" type="button">add</button>
           </fieldset>
         </section>
-        <section>
-          <div class="members-to-add">
-            <div class="member-header">
-              <div class="add-count">
-                <span class="add-number">0</span>
-                <span class="unit">Users</span>
-              </div>
-              <button id="remove-all-added" class="btn-link" type="button">remove all</button>
-            </div>
-            <ul class="members-list">
-            </ul>
-          </div>
-        </section>
+        {{> invite-members-to-team-list}}
 
         {{> form_security}}
         <button class="button org-submit-btn" type="submit">Make it so</button>

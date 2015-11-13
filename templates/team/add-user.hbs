@@ -1,4 +1,4 @@
-<div class="main narrow">
+<div class="main main-contain narrow">
   {{#if user.email_verified}}
   <h1>add {{team.name}} users</h1>
   <div>
@@ -23,19 +23,7 @@
           <button id="add-member-to-list" class="button btn-inline btn-secondary add-member-btn" type="button">add</button>
           </fieldset>
         </section>
-        <section>
-          <div class="members-to-add">
-            <div class="member-header">
-              <div class="add-count">
-                <span class="add-number">0</span>
-                <span class="unit">Users</span>
-              </div>
-              <button id="remove-all-added" type="button">remove all</button>
-            </div>
-            <ul class="members-list">
-            </ul>
-          </div>
-        </section>
+          {{> invite-members-to-team-list}}
 
         <input type="hidden" name="updateType" value="addUsersToTeam"/>
         {{> form_security}}

@@ -421,9 +421,7 @@ exports.getUsers = function(request, reply) {
     })
     .then(function(users) {
       var resp = JSON.stringify(users);
-      return reply({
-        error: resp
-      })
+      return reply(resp)
         .type('application/json');
     })
     .catch(function(err) {

@@ -1,4 +1,4 @@
-<div class="main">
+<div class="main main-contain narrow">
   {{#if user.email_verified}}
   <h1>Create a Team</h1>
   <div>
@@ -25,7 +25,7 @@
                 <span class="add-number">0</span>
                 <span class="unit">Users</span>
               </div>
-              <button id="remove-all-added" type="button">remove all</button>
+              <button id="remove-all-added" class="btn-link" type="button">remove all</button>
             </div>
             <ul class="members-list">
             </ul>
@@ -33,7 +33,7 @@
         </section>
 
         {{> form_security}}
-        <button class="button" type="submit">Make it so</button>
+        <button class="button org-submit-btn" type="submit">Make it so</button>
         <a href="/org/{{org}}">cancel</a>
 
       </form>

@@ -122,69 +122,73 @@ AddUserForm.prototype.notify = function(notification) {
 module.exports = function() {
   $(function() {
     var form = $("[data-form-function=add-user-to-team]");
-    var auf = new AddUserForm(form);
 
-    var addBtn = $("#add-member-to-list");
+    if (form.length) {
 
-    addBtn.on("click", function() {
-      var group = $(this).closest("fieldset");
-      var username = group.find("[name=member]").val();
-      if (!username) {
-        return;
-      }
-      auf.addUsers([
-        {
-          name: username
+      var auf = new AddUserForm(form);
+
+      var addBtn = $("#add-member-to-list");
+
+      addBtn.on("click", function() {
+        var group = $(this).closest("fieldset");
+        var username = group.find("[name=member]").val();
+        if (!username) {
+          return;
         }
-      ]);
-      group.find("[name=member]").val("");
-
-      var message = "";
-      return getUser(auf.orgScope, username)
-        .fail(function(obj) {
-          if (obj.status === 404) {
-            message = "User " + username + " is not a member of this Org, please add them";
-          } else if (obj.status < 500) {
-            message = obj.responseJSON && obj.responseJSON.error;
-          } else {
-            message = "An internal error occurred";
+        auf.addUsers([
+          {
+            name: username
           }
-          auf.notify(message);
-          return auf.removeUser(username);
-        });
-    });
+        ]);
+        group.find("[name=member]").val("");
 
-    auf.selectMenu.on("change", function() {
-      var teamName = this.options[this.selectedIndex].value;
-      if (teamName === "_none_") {
-        return;
-      }
+        var message = "";
+        return getUser(auf.orgScope, username)
+          .fail(function(obj) {
+            if (obj.status === 404) {
+              message = "User " + username + " is not a member of this Org, please add them";
+            } else if (obj.status < 500) {
+              message = obj.responseJSON && obj.responseJSON.error;
+            } else {
+              message = "An internal error occurred";
+            }
+            auf.notify(message);
+            return auf.removeUser(username);
+          });
+      });
 
-      return getTeamUsers(auf.orgScope, teamName)
-        .done(function(users) {
-          auf.removeAll();
-          return auf.addUsers(users);
-        })
-        .fail(function() {
-          auf.notify("An error occurred while populating the list");
-        });
-    });
+      auf.selectMenu.on("change", function() {
+        var teamName = this.options[this.selectedIndex].value;
+        if (teamName === "_none_") {
+          return;
+        }
 
-    auf.$el.find("[type=submit]").on("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      $("#add-member-input")
-        .val("")
-        .attr("disabled", "disabled");
+        return getTeamUsers(auf.orgScope, teamName)
+          .done(function(users) {
+            auf.removeAll();
+            return auf.addUsers(users);
+          })
+          .fail(function() {
+            auf.notify("An error occurred while populating the list");
+          });
+      });
 
-      auf.$el.submit();
-    });
+      auf.$el.find("[type=submit]").on("click", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $("#add-member-input")
+          .val("")
+          .attr("disabled", "disabled");
 
-    auf.$el.on("click", ".delete-user", function(e) {
-      var username = $(e.target).closest("[data-name]").data("name");
+        auf.$el.submit();
+      });
 
-      auf.removeUser(username);
-    });
+      auf.$el.on("click", ".delete-user", function(e) {
+        var username = $(e.target).closest("[data-name]").data("name");
 
+        auf.removeUser(username);
+      });
+
+    }
   });
 };

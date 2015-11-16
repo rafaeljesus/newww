@@ -68,7 +68,9 @@ module.exports = function() {
     for (var i = 0, l = forms.length; i < l; i++) {
       var form = forms[i];
       parser.href = form.action;
-      form.action = parser.pathname + location.hash;
+      if (!parser.host) {
+        form.action = parser.pathname + location.hash;
+      }
     }
   };
 

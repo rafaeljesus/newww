@@ -12,7 +12,6 @@ require("./tooltips")();
 require("./what-npm-is-for")();
 require("./billing")();
 require("./billing-cancel")();
-require("./banner")();
 require("./date-formatting")();
 require("./keyboard-shortcuts")();
 require("./add-active-class-to-links")();

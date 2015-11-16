@@ -68,17 +68,7 @@ Team.prototype.get = function(opts, callback) {
 
     team.frontUsers = users.slice(0, 3);
 
-    var pkgs = Object.keys(packages).map(function(name) {
-      return {
-        "name": name,
-        "permission": packages[name]
-      };
-    });
-
-    team.packages = {
-      count: pkgs.length,
-      items: pkgs
-    };
+    team.packages = packages;
 
     return team;
 
@@ -121,6 +111,8 @@ Team.prototype.getUsers = function(opts) {
 
 Team.prototype.getPackages = function(opts) {
   var url = USER_HOST + '/team/' + opts.orgScope + '/' + opts.teamName + '/package';
+
+  url += '?format=' + (opts.detailed ? 'detailed' : 'mini');
 
   var data = {
     url: url,

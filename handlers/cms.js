@@ -4,6 +4,7 @@ module.exports = {
   displayCMSPage: function(request, reply) {
     CMS(request.params.slug).then(function(page) {
       reply.view('cms', {
+        contentIsFullwidth: true,
         page: page,
         title: page.title
       });

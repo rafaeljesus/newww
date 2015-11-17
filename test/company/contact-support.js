@@ -12,7 +12,6 @@ var Code = require('code'),
 before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;
-    server.app.cache._cache.connection.client = {};
     done();
   });
 });
@@ -64,7 +63,6 @@ describe('sending a contact email', function() {
   });
 
   it("posts to zendesk if it's a support inquiry", function(done) {
-
     // first, forcibly mock the ticket.create method
     var Tickets = require("node-zendesk/lib/client/tickets.js").Tickets;
     Tickets.prototype.create = function(data, callback) {

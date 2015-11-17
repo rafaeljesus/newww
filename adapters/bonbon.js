@@ -21,7 +21,6 @@ exports.register = function(server, options, next) {
     }
 
     request.metrics = metrics;
-    request.redis = request.server.redis;
     request.logger = bole(request.id);
     request.timing = {
       start: Date.now(),
@@ -48,18 +47,27 @@ exports.register = function(server, options, next) {
       // Add feature flags to request
       request.features = featureFlag.getFeatures(request);
 
-      if (request.method !== "post") {
-        return reply.continue();
-      }
+      // Grab off a client from the cache Redis pool for use with this request.
+      request.server.cacheRedisPool.acquire(function(err, client) {
+        if (err) {
+          return next(err);
+        }
 
-      if (request.payload.honey && request.payload.honey.length) {
-        return reply(Boom.badRequest(request.path));
-      }
+        request.redis = client;
 
-      delete request.payload.honey;
-      return reply.continue();
+        if (request.method !== "post") {
+          return reply.continue();
+        }
+
+        if (request.payload.honey && request.payload.honey.length) {
+          return reply(Boom.badRequest(request.path));
+        }
+
+        delete request.payload.honey;
+
+        reply.continue();
+      });
     }
-
   });
 
   server.ext('onPreResponse', function(request, reply) {
@@ -126,6 +134,8 @@ exports.register = function(server, options, next) {
     request.logger.info(toCommonLogFormat(request, {
       ipHeader: 'fastly-client-ip'
     }), latency + 'ms');
+
+    request.server.cacheRedisPool.release(request.redis);
 
     return reply.continue();
   });

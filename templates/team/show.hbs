@@ -76,13 +76,13 @@
             </td>
             <td>
               <div class="collapsible-wrapper">
-                <form method="POST" id="team-package-delete-overview-{{@index}}" action="/org/{{../orgName}}/team/{{../teamName}}">
+                <form method="POST" id="team-package-delete-overview-{{@index}}" action="/org/{{../../orgName}}/team/{{../../teamName}}">
                   {{#with ../../this}}
                   {{> form_security }}
                   {{/with}}
                   <input type="hidden" name="name" value="{{name}}" />
                   <input type="hidden" name="updateType" value="removePackage" />
-                  <button type="submit" class="delete-user icon-x"><span class="a11y-only">Remove Package {{name}} from {{../teamName}}</span></button>
+                  <button type="submit" class="delete-user icon-x"><span class="a11y-only">Remove Package {{name}} from {{../../teamName}}</span></button>
               </form>
               </div>
             </td>

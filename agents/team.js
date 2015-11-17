@@ -197,6 +197,23 @@ Team.prototype.addPackage = function(opts) {
   });
 };
 
+Team.prototype.addPackages = function(opts) {
+  opts = opts || {};
+  opts.packages = opts.packages || [];
+  var self = this;
+
+  var requests = opts.packages.map(function(pkg) {
+    return self.addPackage({
+      package: pkg.name,
+      permissions: pkg.permissions,
+      id: opts.id,
+      scope: opts.scope
+    });
+  });
+
+  return P.all(requests);
+};
+
 Team.prototype.removePackage = function(opts) {
   opts = opts || {};
 

@@ -4,6 +4,7 @@ var Joi = require('joi');
 var Org = require('../agents/org');
 var Team = require('../agents/team');
 var invalidUserName = require('npm-user-validate').username;
+var validatePackageName = require('validate-npm-package-name');
 var URL = require('url');
 
 var handleUserError = function(request, reply, redirectUrl, message) {
@@ -184,7 +185,7 @@ exports.showTeam = function(request, reply) {
     })
     .then(function(team) {
       team.packages.items.forEach(function(pkg) {
-        if (pkg.permission === 'write') {
+        if (pkg.permissions === 'write') {
           pkg.canWrite = true;
         }
       });
@@ -192,7 +193,6 @@ exports.showTeam = function(request, reply) {
       team.users.items.forEach(function(usr) {
         usr.avatar = avatar(usr.email);
       });
-
 
       return reply.view('team/show', {
         teamName: team.name,
@@ -228,9 +228,17 @@ var validPayloadSchema = {
     is: 'removeUser',
     then: Joi.string().required()
   }),
+  names: Joi.array().when('updateType', {
+    is: 'addPackagesToTeam',
+    then: Joi.array().required()
+  }),
   writePermission: Joi.string().when('updateType', {
     is: 'updateWritePermissions',
     then: Joi.string().required()
+  }),
+  writePermissions: Joi.object().when('updateType', {
+    is: 'addPackagesToTeam',
+    then: Joi.object().required()
   }),
   'team-description': Joi.string().when('updateType', {
     is: 'updateInfo',
@@ -295,7 +303,7 @@ exports.updateTeam = function(request, reply) {
         case 'addUsersToTeam':
           tab = '#members';
 
-          var members = request.payload.member || [];
+          var members = validatedPayload.member || [];
           members = Array.isArray(members) ? members : [].concat(members);
           members = members.filter(function(member) {
             return !invalidUserName(member);
@@ -306,6 +314,30 @@ exports.updateTeam = function(request, reply) {
               teamName: teamName,
               scope: orgName,
               users: members
+            });
+
+        case 'addPackagesToTeam':
+          tab = '';
+
+          var pkgs = validatedPayload.names || [];
+          var writePermissions = validatedPayload.writePermissions;
+
+          pkgs = Array.isArray(pkgs) ? pkgs : [].concat(pkgs);
+
+          var packages = pkgs.filter(function(name) {
+            return !validatePackageName(name).errors;
+          }).map(function(pkg) {
+            return {
+              name: pkg,
+              permissions: writePermissions[pkg] === 'on' ? 'write' : 'read'
+            };
+          });
+
+          return Team(loggedInUser)
+            .addPackages({
+              id: teamName,
+              scope: orgName,
+              packages: packages
             });
 
         default:

@@ -349,6 +349,111 @@ describe('Team', function() {
       });
     });
 
+    describe('addPackages()', function() {
+      it('returns an error if something goes wrong', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/zoom',
+            permissions: 'write'
+          })
+          .reply(404, {
+            error: 'not found'
+          })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/boom',
+            permissions: 'write'
+          })
+          .reply(401, {
+            error: 'unauthorized'
+          })
+          .put('/team/bigco/bigteam/package', {
+            package: 'kaboom',
+            permissions: 'read'
+          })
+          .reply(200);
+
+        Team('bob').addPackages({
+          scope: 'bigco',
+          id: 'bigteam',
+          packages: [
+            {
+              name: '@bigco/zoom',
+              permissions: 'write'
+            },
+            {
+              name: 'kaboom',
+              permissions: 'read'
+            },
+            {
+              name: '@bigco/boom',
+              permissions: 'write'
+            }
+          ]
+        }).catch(function(err) {
+          expect(err).to.exist();
+          // i'd like this to show _all_ of the errors, not just the first one.
+          expect(err.message).to.equal('not found');
+          expect(err.statusCode).to.equal(404);
+        }).then(function(packages) {
+          expect(packages).to.not.exist();
+        }).finally(function() {
+          teamMock.done();
+          done();
+        });
+      });
+
+      it('adds a group of packages', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/zoom',
+            permissions: 'write'
+          })
+          .reply(200)
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/boom',
+            permissions: 'write'
+          })
+          .reply(200)
+          .put('/team/bigco/bigteam/package', {
+            package: 'kaboom',
+            permissions: 'read'
+          })
+          .reply(200);
+
+        Team('bob').addPackages({
+          scope: 'bigco',
+          id: 'bigteam',
+          packages: [
+            {
+              name: '@bigco/zoom',
+              permissions: 'write'
+            },
+            {
+              name: 'kaboom',
+              permissions: 'read'
+            },
+            {
+              name: '@bigco/boom',
+              permissions: 'write'
+            }
+          ]
+        }).catch(function(err) {
+          expect(err).to.not.exist();
+        }).then(function() {
+          teamMock.done();
+          done();
+        });
+      });
+    });
+
     describe('getPackages()', function() {
       it('returns an error if the bearer token is missing', function(done) {
         var teamMock = nock('https://user-api-example.com')

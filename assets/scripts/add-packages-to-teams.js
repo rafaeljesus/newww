@@ -87,9 +87,9 @@ AddPackageForm.prototype.removeAll = function() {
 AddPackageForm.prototype.updatePackageCount = function() {
   $(".add-count .add-number").text(this.packageCount);
   if (this.packageCount === 1) {
-    $(".add-count .unit").text("User");
+    $(".add-count .unit").text("Package");
   } else {
-    $(".add-count .unit").text("Users");
+    $(".add-count .unit").text("Packages");
   }
 };
 

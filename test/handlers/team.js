@@ -931,7 +931,7 @@ describe('team', function() {
           licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(200);
-          expect(resp.headers['content-type']).to.include('application/json')
+          expect(resp.headers['content-type']).to.include('application/json');
           var obj = JSON.parse(resp.payload);
           expect(obj.items[0].name).to.equal('@bigco/boom');
           done();
@@ -940,7 +940,113 @@ describe('team', function() {
     });
   });
 
+  describe('adding packages via the add-package page', function() {
+    it('renders an error if there is an issue adding packages', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
 
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .put('/team/bigco/bigcoteam/package', {
+          package: '@bigco/boom',
+          permissions: 'write'
+        })
+        .reply(401, {
+          error: 'not authorized'
+        })
+        .put('/team/bigco/bigcoteam/package', {
+          package: 'kabloom',
+          permissions: 'read'
+        })
+        .reply(404, {
+          error: 'not found'
+        });
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            names: ["@bigco/boom", "kabloom"],
+            writePermissions: {
+              "@bigco/boom": 'on'
+            },
+            updateType: 'addPackagesToTeam',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.include('/org/bigco/team/bigcoteam?notice=');
+          done();
+        });
+      });
+    });
+
+    it('allows a super/team-admin to add packages via the add-package page', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .put('/team/bigco/bigcoteam/package', {
+          package: '@bigco/boom',
+          permissions: 'write'
+        })
+        .reply(200)
+        .put('/team/bigco/bigcoteam/package', {
+          package: 'kabloom',
+          permissions: 'read'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            names: ["@bigco/boom", "kabloom"],
+            writePermissions: {
+              "@bigco/boom": 'on'
+            },
+            updateType: 'addPackagesToTeam',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
+          done();
+        });
+      });
+    });
+  });
 
   describe('updating the team packages', function() {
     it('allows a super/team-admin to update a package\'s permissions', function(done) {

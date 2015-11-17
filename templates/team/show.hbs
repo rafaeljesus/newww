@@ -17,7 +17,10 @@
     </div>
 
     <div id="packages" class="tab tab-1">
+      <div class="org-info-header-container">
       <h2>{{pluralize packages.count "package" true}}</h2>
+        <a class="button" href="/org/{{orgName}}/team/{{teamName}}/add-package">add packages</a>
+      </div>
 
       {{#if packages.count}}
       <table class="org-table org-packages">

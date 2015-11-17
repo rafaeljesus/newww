@@ -330,31 +330,16 @@ exports.updateTeam = function(request, reply) {
   });
 };
 
-exports.getAddTeamUserPage = function(request, reply) {
-
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
-
+exports._handleTeamAdditions = function(request, reply, successPage) {
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
-
-  var orgName = request.params.org;
-  var teamName = request.params.teamName;
   var opts = {};
 
+  opts.orgScope = request.params.org;
+  opts.teamName = request.params.teamName;
 
-  if (invalidUserName(orgName)) {
-    return reply.view('errors/not-found').code(404);
-  }
-
-  if (invalidUserName(teamName)) {
-    return reply.view('errors/not-found').code(404);
-  }
-
-  Org(loggedInUser)
-    .get(orgName)
+  return Org(loggedInUser)
+    .get(opts.orgScope)
     .then(function(org) {
       org = org || {};
       var users = org.users || [{
@@ -372,33 +357,65 @@ exports.getAddTeamUserPage = function(request, reply) {
       if (!isAtLeastAdmin) {
         var err = new Error("User does not have the appropriate permissions to reach this page");
         err.statusCode = 403;
-        throw err;
+        return handleUserError(request, reply, '/org/' + opts.orgScope, err.message);
       }
 
-      opts.orgScope = orgName;
       opts.orgTeams = org.teams.items;
 
       return Team(loggedInUser).get({
-        orgScope: orgName,
-        teamName: teamName
-      });
-    })
-    .then(function(team) {
-      opts.team = team;
-      return reply.view('team/add-user', opts);
-    })
-    .catch(function(err) {
-      request.logger.error(err);
+        orgScope: opts.orgScope,
+        teamName: opts.teamName
+      })
+        .then(function(team) {
+          opts.team = team;
+          return reply.view(successPage, opts);
+        })
+        .catch(function(err) {
+          request.logger.error(err);
 
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
-      } else if (err.statusCode < 500) {
-        return handleUserError(request, reply, '/org/' + orgName, err.message);
-      } else {
-        return reply.view('errors/internal', err);
-      }
+          if (err.statusCode === 404) {
+            return reply.view('errors/not-found', err).code(404);
+          } else if (err.statusCode < 500) {
+            return handleUserError(request, reply, '/org/' + opts.orgScope, err.message);
+          } else {
+            return reply.view('errors/internal', err);
+          }
+        });
     });
+};
 
+exports.getAddTeamUserPage = function(request, reply) {
+
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  if (invalidUserName(request.params.org)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  if (invalidUserName(request.params.teamName)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  return exports._handleTeamAdditions(request, reply, 'team/add-user');
+};
+
+exports.getAddTeamPackagePage = function(request, reply) {
+
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  if (invalidUserName(request.params.org)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  if (invalidUserName(request.params.teamName)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  return exports._handleTeamAdditions(request, reply, 'team/add-package');
 };
 
 exports.showTeamMembers = function(request, reply) {

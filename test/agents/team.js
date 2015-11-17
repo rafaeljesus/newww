@@ -4,7 +4,8 @@ var Code = require('code'),
   describe = lab.experiment,
   it = lab.test,
   expect = Code.expect,
-  nock = require('nock');
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var Team = require('../../agents/team');
 
@@ -23,7 +24,7 @@ describe('Team', function() {
         .reply(401)
         .get('/team/bigco/bigteam/user')
         .reply(401)
-        .get('/team/bigco/bigteam/package')
+        .get('/team/bigco/bigteam/package?format=mini')
         .reply(401);
 
       Team('bob').get({
@@ -43,7 +44,7 @@ describe('Team', function() {
         .reply(404)
         .get('/team/bigco/bigteam/user')
         .reply(404)
-        .get('/team/bigco/bigteam/package')
+        .get('/team/bigco/bigteam/package?format=mini')
         .reply(404);
 
       Team('bob').get({
@@ -69,10 +70,8 @@ describe('Team', function() {
         })
         .get('/team/bigco/bigteam/user')
         .reply(200, ['bob'])
-        .get('/team/bigco/bigteam/package')
-        .reply(200, {
-          "@npm/blerg": "write"
-        });
+        .get('/team/bigco/bigteam/package?format=mini')
+        .reply(200, fixtures.teams.bigcoteamPackages);
 
       Team('bob').get({
         orgScope: 'bigco',
@@ -85,7 +84,7 @@ describe('Team', function() {
         expect(body.users.count).to.equal(1);
         expect(body.users.items[0]).to.equal("bob");
         expect(body.packages.count).to.equal(1);
-        expect(body.packages.items[0].name).to.equal("@npm/blerg");
+        expect(body.packages.items[0].name).to.equal("@bigco/boom");
         done();
       });
     });
@@ -353,7 +352,7 @@ describe('Team', function() {
     describe('getPackages()', function() {
       it('returns an error if the bearer token is missing', function(done) {
         var teamMock = nock('https://user-api-example.com')
-          .get('/team/bigco/bigteam/package')
+          .get('/team/bigco/bigteam/package?format=mini')
           .reply(401, {
             "error": "missing bearer token"
           });
@@ -375,7 +374,7 @@ describe('Team', function() {
           reqheaders: {
             bearer: 'bloop'
           }
-        }).get('/team/bigco/bigteam/package')
+        }).get('/team/bigco/bigteam/package?format=mini')
           .reply(404, {
             "error": "not found"
           });
@@ -397,7 +396,7 @@ describe('Team', function() {
           reqheaders: {
             bearer: 'bloop'
           }
-        }).get('/team/bigco/bigteam/package')
+        }).get('/team/bigco/bigteam/package?format=mini')
           .reply(500, {
             "error": "brokened"
           });
@@ -419,7 +418,7 @@ describe('Team', function() {
           reqheaders: {
             bearer: 'bob'
           }
-        }).get('/team/bigco/bigteam/package')
+        }).get('/team/bigco/bigteam/package?format=mini')
           .reply(200, {
             "@bigco/fake-module": "write"
           });

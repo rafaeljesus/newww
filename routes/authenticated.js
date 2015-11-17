@@ -178,5 +178,13 @@ module.exports = [
     path: "/org/{org}/team/{teamName}/add-user",
     method: "GET",
     handler: require('../handlers/team').getAddTeamUserPage
+  }, {
+    path: "/org/{org}/team/{teamName}/package",
+    method: "GET",
+    handler: require('../handlers/team').getPackages
+  }, {
+    path: "/org/{org}/team/{teamName}/add-package",
+    method: "GET",
+    handler: require('../handlers/team').getAddTeamPackagePage
   }
 ];

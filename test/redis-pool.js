@@ -16,7 +16,7 @@ describe('lib/redis-pool.js', function() {
       var ports = [getRandomPort(), getRandomPort()];
       var processes = ports.map(spawnRedis);
       var client = new RedisPool(ports.map(function (port) {
-        return 'redis://127.0.0.1:' + port;
+        return { port: port };
       }));
 
       var seen = [];

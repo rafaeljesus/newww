@@ -18,7 +18,7 @@ describe('Team', function() {
   });
 
   describe('get', function() {
-    it('returns an error if bearer token is incorrect', function(done) {
+    it('returns an error if user is unauthorized', function(done) {
       var teamMock = nock('https://user-api-example.com')
         .get('/team/bigco/bigteam')
         .reply(401)
@@ -33,7 +33,7 @@ describe('Team', function() {
       }).catch(function(err) {
         teamMock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal('no bearer token included');
+        expect(err.message).to.equal('user is unauthorized to perform this action');
         done();
       });
     });
@@ -106,7 +106,7 @@ describe('Team', function() {
         }, function(err) {
           teamMock.done();
           expect(err).to.exist();
-          expect(err.message).to.equal('no bearer token included');
+          expect(err.message).to.equal('user is unauthorized to perform this action');
           done();
         });
       });
@@ -260,7 +260,7 @@ describe('Team', function() {
           teamMock.done();
           expect(err).to.exist();
           expect(err.statusCode).to.equal(401);
-          expect(err.message).to.equal('no bearer token included');
+          expect(err.message).to.equal('user is unauthorized to perform this action');
           done();
         });
       });
@@ -364,7 +364,7 @@ describe('Team', function() {
           teamMock.done();
           expect(err).to.exist();
           expect(err.statusCode).to.equal(401);
-          expect(err.message).to.equal('no bearer token included');
+          expect(err.message).to.equal('user is unauthorized to perform this action');
           done();
         });
       });
@@ -457,7 +457,7 @@ describe('Team', function() {
           teamMock.done();
           expect(err).to.exist();
           expect(err.statusCode).to.equal(401);
-          expect(err.message).to.equal('no bearer token included');
+          expect(err.message).to.equal('user is unauthorized to perform this action');
           done();
         });
       });

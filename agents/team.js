@@ -32,7 +32,7 @@ Team.prototype._get = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -93,7 +93,7 @@ Team.prototype.getUsers = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -129,7 +129,7 @@ Team.prototype.getPackages = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -175,7 +175,7 @@ Team.prototype.addPackage = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -220,7 +220,7 @@ Team.prototype.removePackage = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -265,7 +265,7 @@ Team.prototype._addUser = function(opts, callback) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

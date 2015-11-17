@@ -841,8 +841,102 @@ describe('team', function() {
       });
     });
 
-    describe('getting packages for the add-package page', function() {
-      it('')
+    describe('getting packages for the add-package page (via AJAX)', function() {
+
+      it('sends an error if something was not found', function(done) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var licenseMock = nock('https://license-api-example.com')
+          .get('/customer/bob/stripe')
+          .reply(404);
+
+        var orgMock = nock("https://user-api-example.com")
+          .get('/team/bigco/bigcoteam/package?format=mini')
+          .reply(404);
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam/package",
+          method: "GET",
+          credentials: fixtures.users.bob,
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(404);
+          expect(resp.headers['content-type']).to.include('application/json')
+          var obj = JSON.parse(resp.payload);
+          expect(obj.error).to.equal('Not Found');
+          done();
+        });
+      });
+
+      it('sends an error if something goes wrong', function(done) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var licenseMock = nock('https://license-api-example.com')
+          .get('/customer/bob/stripe')
+          .reply(404);
+
+        var orgMock = nock("https://user-api-example.com")
+          .get('/team/bigco/bigcoteam/package?format=mini')
+          .reply(401, {
+            "error": "cannot read from team"
+          });
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam/package",
+          method: "GET",
+          credentials: fixtures.users.bob,
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(401);
+          expect(resp.headers['content-type']).to.include('application/json')
+          var obj = JSON.parse(resp.payload);
+          expect(obj.error).to.equal('user is unauthorized to perform this action');
+          done();
+        });
+      });
+
+      it('returns packages as JSON', function(done) {
+        var userMock = nock("https://user-api-example.com")
+          .get("/user/bob")
+          .reply(200, fixtures.users.bob);
+
+        var licenseMock = nock('https://license-api-example.com')
+          .get('/customer/bob/stripe')
+          .reply(404);
+
+        var orgMock = nock("https://user-api-example.com")
+          .get('/team/bigco/bigcoteam/package?format=mini')
+          .reply(200, fixtures.teams.bigcoteamPackages);
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam/package",
+          method: "GET",
+          credentials: fixtures.users.bob,
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(200);
+          expect(resp.headers['content-type']).to.include('application/json')
+          var obj = JSON.parse(resp.payload);
+          expect(obj.items[0].name).to.equal('@bigco/boom');
+          done();
+        });
+      });
     });
   });
 

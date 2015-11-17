@@ -465,3 +465,47 @@ exports.getUsers = function(request, reply) {
       }
     });
 };
+
+exports.getPackages = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var orgScope = request.params.org;
+  var teamName = request.params.teamName;
+
+  return Team(loggedInUser)
+    .getPackages({
+      orgScope: orgScope,
+      teamName: teamName
+    })
+    .then(function(pkgs) {
+      var resp = JSON.stringify(pkgs);
+      return reply(resp)
+        .type('application/json');
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply({
+          error: "Not Found"
+        })
+          .code(404)
+          .type('application/json');
+      } else if (err.statusCode < 500) {
+        return reply({
+          error: err.message
+        })
+          .code(err.statusCode)
+          .type('application/json');
+      } else {
+        return reply({
+          error: "Internal Error"
+        })
+          .code(err.statusCode)
+          .type('application/json');
+      }
+    });
+};

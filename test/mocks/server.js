@@ -1,5 +1,6 @@
 var path = require('path');
 var Hapi = require('hapi');
+var GenericPool = require('generic-pool').Pool;
 
 module.exports = function(done) {
 
@@ -11,7 +12,17 @@ module.exports = function(done) {
   server.gitHead = require("../../lib/git-head")()
   server.methods = require('./server-methods')(server);
 
-  server.redis = server.cacheRedis = require('redis-mock').createClient();
+  server.cacheRedisPool = new GenericPool({
+    min: 0,
+    max: Infinity,
+    create: function(cb) {
+      cb(null, require('redis-mock').createClient());
+    },
+    destroy: function(client) {
+      client.end();
+    }
+  });
+
   server.persistentRedis = require('redis-mock').createClient();
 
   server.register(require('hapi-auth-cookie'), function(err) {

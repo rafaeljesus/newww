@@ -235,7 +235,7 @@ Org.prototype.addUser = function(name, user, callback) {
       }
 
       if (resp.statusCode === 404) {
-        err = Error('org or user not found');
+        err = Error('user not found');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

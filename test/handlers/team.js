@@ -954,18 +954,16 @@ describe('team', function() {
 
       var orgMock = nock("https://user-api-example.com")
         .put('/team/bigco/bigcoteam/package', {
-          package: '@bigco/boom',
-          permissions: 'write'
+          packages: [{
+            name: '@bigco/boom',
+            permissions: 'write'
+          }, {
+            name: 'kabloom',
+            permissions: 'read'
+          }]
         })
         .reply(401, {
           error: 'not authorized'
-        })
-        .put('/team/bigco/bigcoteam/package', {
-          package: 'kabloom',
-          permissions: 'read'
-        })
-        .reply(404, {
-          error: 'not found'
         });
 
       generateCrumb(server, function(crumb) {
@@ -1009,8 +1007,10 @@ describe('team', function() {
 
       var orgMock = nock("https://user-api-example.com")
         .put('/team/bigco/bigcoteam/package', {
-          package: '@bigco/boom',
-          permissions: 'write'
+          packages: [{
+            name: '@bigco/boom',
+            permissions: 'write'
+          }]
         })
         .reply(200);
 
@@ -1055,13 +1055,13 @@ describe('team', function() {
 
       var orgMock = nock("https://user-api-example.com")
         .put('/team/bigco/bigcoteam/package', {
-          package: '@bigco/boom',
-          permissions: 'write'
-        })
-        .reply(200)
-        .put('/team/bigco/bigcoteam/package', {
-          package: 'kabloom',
-          permissions: 'read'
+          packages: [{
+            name: '@bigco/boom',
+            permissions: 'write'
+          }, {
+            name: 'kabloom',
+            permissions: 'read'
+          }]
         })
         .reply(200);
 

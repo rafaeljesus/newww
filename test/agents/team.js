@@ -355,26 +355,18 @@ describe('Team', function() {
           reqheaders: {
             bearer: 'bob'
           }
-        })
-          .put('/team/bigco/bigteam/package', {
-            package: '@bigco/zoom',
+        }).put('/team/bigco/bigteam/package', {
+          packages: [{
+            name: '@bigco/zoom',
             permissions: 'write'
-          })
-          .reply(404, {
-            error: 'not found'
-          })
-          .put('/team/bigco/bigteam/package', {
-            package: '@bigco/boom',
-            permissions: 'write'
-          })
-          .reply(401, {
-            error: 'unauthorized'
-          })
-          .put('/team/bigco/bigteam/package', {
-            package: 'kaboom',
+          }, {
+            name: 'kaboom',
             permissions: 'read'
-          })
-          .reply(200);
+          }, {
+            name: '@bigco/boom',
+            permissions: 'write'
+          }]
+        }).reply(404);
 
         Team('bob').addPackages({
           scope: 'bigco',
@@ -396,7 +388,7 @@ describe('Team', function() {
         }).catch(function(err) {
           expect(err).to.exist();
           // i'd like this to show _all_ of the errors, not just the first one.
-          expect(err.message).to.equal('not found');
+          expect(err.message).to.equal('Team or Org or not found');
           expect(err.statusCode).to.equal(404);
         }).then(function(packages) {
           expect(packages).to.not.exist();
@@ -413,20 +405,18 @@ describe('Team', function() {
           }
         })
           .put('/team/bigco/bigteam/package', {
-            package: '@bigco/zoom',
-            permissions: 'write'
+            packages: [{
+              name: '@bigco/zoom',
+              permissions: 'write'
+            }, {
+              name: 'kaboom',
+              permissions: 'read'
+            }, {
+              name: '@bigco/boom',
+              permissions: 'write'
+            }]
           })
           .reply(200)
-          .put('/team/bigco/bigteam/package', {
-            package: '@bigco/boom',
-            permissions: 'write'
-          })
-          .reply(200)
-          .put('/team/bigco/bigteam/package', {
-            package: 'kaboom',
-            permissions: 'read'
-          })
-          .reply(200);
 
         Team('bob').addPackages({
           scope: 'bigco',

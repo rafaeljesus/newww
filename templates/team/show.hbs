@@ -11,7 +11,9 @@
         <ul class="nav nav-4 clear" role="navigation">
           <li class="current"><a href="#packages">{{pluralize packages.count "package" true}}</a></li>
           <li><a href="#members">{{pluralize members.count "member" true}}</a></li>
-          <li><a href="#settings">settings</a></li>
+          {{#if perms.isAtLeastTeamAdmin}}
+            <li><a href="#settings">settings</a></li>
+          {{/if}}
         </ul>
       </div>
     </div>
@@ -19,7 +21,9 @@
     <div id="packages" class="tab tab-1">
       <div class="org-info-header-container">
       <h2>{{pluralize packages.count "package" true}}</h2>
+      {{#if perms.isAtLeastTeamAdmin}}
         <a class="button" href="/org/{{orgName}}/team/{{teamName}}/add-package">add packages</a>
+      {{/if}}
       </div>
 
       {{#if packages.count}}
@@ -97,7 +101,9 @@
     <div id="members" class="tab tab-2">
       <div class="org-info-header-container">
         <h2>{{pluralize members.count "members" true}}</h2>
-        <a class="button" href="/org/{{orgName}}/team/{{teamName}}/add-user">add members</a>
+        {{#if perms.isAtLeastTeamAdmin}}
+          <a class="button" href="/org/{{orgName}}/team/{{teamName}}/add-user">add members</a>
+        {{/if}}
       </div>
 
       {{#if members.count}}
@@ -153,19 +159,21 @@
       {{/if}}
     </div><!--/#members-->
 
-    <div id="settings" class="tab tab-3">
-      <h2>settings</h2>
+    {{#if perms.isAtLeastTeamAdmin}}
+      <div id="settings" class="tab tab-3">
+        <h2>settings</h2>
 
-      <form method="POST" id="team-settings" action="/org/{{orgName}}/team/{{teamName}}">
-        {{!-- <label for="team-human-readable">team name</label>
-        <input id="team-human-readable" name="team-name"/> --}}
-        <label for="team-description">description</label>
-        <input id="team-description" name="team-description"/>
-        {{> form_security }}
-        <input type="hidden" name="updateType" value="updateInfo" />
-        <button type="submit" class="button">Make it so.</button>
-      </form>
-    </div><!--/#settings-->
+        <form method="POST" id="team-settings" action="/org/{{orgName}}/team/{{teamName}}">
+          {{!-- <label for="team-human-readable">team name</label>
+          <input id="team-human-readable" name="team-name"/> --}}
+          <label for="team-description">description</label>
+          <input id="team-description" name="team-description"/>
+          {{> form_security }}
+          <input type="hidden" name="updateType" value="updateInfo" />
+          <button type="submit" class="button">Make it so.</button>
+        </form>
+      </div><!--/#settings-->
+    {{/if}}
 
   </div><!--tabs-->
 </div>

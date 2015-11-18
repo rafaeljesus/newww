@@ -24,7 +24,9 @@
     <div id="teams">
       <div class="org-info-header-container">
         <h2>{{pluralize org.teams.count "team" true}}</h2>
-        <a class="button" href="/org/{{org.info.name}}/team/create">create a Team</a>
+        {{#if perms.isAtLeastTeamAdmin}}
+          <a class="button" href="/org/{{org.info.name}}/team/create">create a Team</a>
+        {{/if}}
       </div>
       {{#if org.teams.items}}
       <table class="org-table org-teams">
@@ -34,7 +36,9 @@
             <th>members</th>
             <th>packages</th>
             <th>created</th>
-            <th><span class="a11y-only">actions</span></th>
+            {{#if perms.isAtLeastTeamAdmin}}
+              <th><span class="a11y-only">actions</span></th>
+            {{/if}}
           </tr>
         </thead>
         <tbody>
@@ -61,17 +65,19 @@
               {{/if}}
             </td>
             <td class="created" data-date="{{created}}" data-date-format="%d-%b-%y">{{created}}</td>
-            <td>
-              <form method="POST" id="org-team-delete-{{@index}}" action="/org/{{../org.info.name}}/team">
-                {{#with ../../this}}
-                {{> form_security }}
-                {{/with}}
-                <input type="hidden" name="team-name" value="{{name}}" />
-                <input type="hidden" name="org-scope" value="{{../org.info.name}}" />
-                <input type="hidden" name="update-type" value="delete-team" />
-                <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete Team {{name}}</span></button>
-              </form>
-            </td>
+            {{#if perms.isAtLeastTeamAdmin}}
+              <td>
+                <form method="POST" id="org-team-delete-{{@index}}" action="/org/{{../org.info.name}}/team">
+                  {{#with ../../this}}
+                  {{> form_security }}
+                  {{/with}}
+                  <input type="hidden" name="team-name" value="{{name}}" />
+                  <input type="hidden" name="org-scope" value="{{../org.info.name}}" />
+                  <input type="hidden" name="update-type" value="delete-team" />
+                  <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete Team {{name}}</span></button>
+                </form>
+              </td>
+            {{/if}}
           </tr>
         {{/each}}
         </tbody>

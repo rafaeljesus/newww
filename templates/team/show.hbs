@@ -167,7 +167,7 @@
           {{!-- <label for="team-human-readable">team name</label>
           <input id="team-human-readable" name="team-name"/> --}}
           <label for="team-description">description</label>
-          <input id="team-description" name="team-description"/>
+          <input id="team-description" name="team-description" type="text" value="{{description}}" />
           {{> form_security }}
           <input type="hidden" name="updateType" value="updateInfo" />
           <button type="submit" class="button">Make it so.</button>

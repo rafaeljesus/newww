@@ -1,0 +1,17 @@
+<li data-name="{{pkgname}}">
+  <span class='name'>
+    <a href='/package/{{pkgname}}'>{{pkgname}}</a>
+  </span>
+  <div class="switch-container">
+    <label><span class="a11y-only">Write Permission</span>
+      <input class="switch" {{#if canWrite}}checked="checked"{{/if}} type="checkbox" name="writePermissions[{{pkgname}}]">
+      <div class="switch"></div>
+      <span class="switch-label unchecked-text" aria-hidden="true">Read-Only</span>
+      <span class="switch-label checked-text" aria-hidden="true">Read/Write</span>
+    </label>
+  </div>
+  <button type='button' class='delete-package icon-x'>
+    <span class='a11y-only'>Remove Package {{pkgname}}</span>
+  </button>
+  <input type='hidden' name='names' value='{{pkgname}}' />
+</li>

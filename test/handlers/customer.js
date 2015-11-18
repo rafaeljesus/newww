@@ -1021,6 +1021,20 @@ describe("subscribing to an org", function() {
         .reply(200, {
           "count": 1,
           "items": [fixtures.packages.fake]
+        })
+        .get("/org/boomer/team")
+        .reply(200, {
+          count: 1,
+          items: [
+            {
+              "created": "2015-08-28T17:44:03.701Z",
+              "deleted": null,
+              "description": null,
+              "name": "developers",
+              "scope_id": 55555,
+              "updated": "2015-08-28T17:44:03.701Z"
+            }
+          ]
         });
 
       var customerMock = nock("https://license-api-example.com")

@@ -5,14 +5,9 @@
 .org-table
   th,td
     padding 20px
-
-  .icon-x
-    border 0
-    background none
-    cursor pointer
+    vertical-align middle
 
 .org-table
-  border 1px solid table-border-grey
 
   th,td
     &:first-child
@@ -26,9 +21,8 @@
       text-align left
       width 100%
 
-  tbody tr
-    border-top 1px solid table-border-grey
-
+  tbody tr:nth-child(2n+1)
+    background table-background-grey
 
   tbody tr:last-child
     td:last-child
@@ -257,6 +251,95 @@
 .org-submit-btn
   display inline-block
   margin-right 1em
+
+.org-info-header-container
+  position relative
+  padding-bottom 15px
+  border-bottom 1px solid table-border-grey
+
+  .button
+    position absolute
+    top 15px
+    right 0
+
+.org-table.org-teams
+
+  th,td
+    &:first-child
+      width 40%
+
+    &:last-child
+      text-align center
+      width 5%
+
+  .description
+    font-size inherit
+    display block
+
+  .created
+    width 10%
+    color detail-grey
+
+.org-team-empty
+  background table-background-grey
+  text-align center
+  color detail-grey
+  padding 20px 0
+
+.member-header, .package-header
+  background table-background-grey
+
+.add-count
+  display inline-block
+
+.remove-all-users, .remove-all-pkgs
+  float right
+
+.members-list, .packages-list
+  overflow auto
+  display table
+  width 100%
+  border-collapse collapse
+
+  li
+    border-bottom 1px solid greigh5
+    display table-row
+
+    > span
+      display table-cell
+      height 44px
+      vertical-align middle
+
+      &:last-child
+        width 10%
+
+
+/** js-enhanced styles */
+.team-selector-container,
+.add-member-btn,
+.add-package-btn,
+.members-to-add,
+.packages-to-add
+  display none
+
+.js
+  .team-selector-container,
+  .members-to-add,
+  .packages-to-add
+    display block
+
+  .add-member-btn,
+  .add-package-btn
+    display inline-block
+    vertical-align top
+
+  .inline-input
+    display inline-block
+    margin-right 13px
+    width 71%
+    height  47px
+
+
 
 @media (min-width: mobileMaxWidth + 1)
 

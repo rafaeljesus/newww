@@ -1,0 +1,39 @@
+<div class="main main-contain narrow">
+  {{#if user.email_verified}}
+  <h1>add {{team.name}} users</h1>
+  <div>
+    <form method="POST" data-form-function="add-user-to-team" id="add-user-to-team-form" action="/org/{{orgScope}}/team/{{team.name}}">
+      <section>
+        <div class="team-selector-container">
+          <label class="custom-select-label" for="teams"><span>Populate from existing team</span></label>
+          <div class="dropdown">
+            <select class="custom" name="teams">
+              <option value="_none_" selected="selected">None</option>
+              {{#each orgTeams }}
+              <option value="{{name}}">{{name}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+      </section>
+        <section>
+          <fieldset>
+          <legend>invite additional members</legend>
+          <input type="text" name="member" class="inline-input" id="add-member-input"/>
+          <button id="add-member-to-list" class="button btn-inline btn-secondary add-member-btn" type="button">add</button>
+          </fieldset>
+        </section>
+          {{> invite-members-to-team-list}}
+
+        <input type="hidden" name="updateType" value="addUsersToTeam"/>
+        {{> form_security}}
+        <button class="button org-submit-btn" type="submit">Make it so</button>
+        <a href="/org/{{orgScope}}/team/{{team.name}}#members">cancel</a>
+
+      </form>
+
+  </div>
+  {{else}}
+    {{> email-verify-nag}}
+  {{/if}}
+</div><!--/.main-->

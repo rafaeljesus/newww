@@ -1,8 +1,26 @@
 var Org = require('../agents/org');
+var Team = require('../agents/team');
 var User = require('../models/user');
 var P = require('bluebird');
 var Joi = require('joi');
 var invalidUserName = require('npm-user-validate').username;
+var URL = require('url');
+
+var resolveTemplateName = function(path) {
+  var pathname = URL.parse(path).pathname;
+  var pathArr = pathname.split('/');
+  var templateType = pathArr[pathArr.length - 1];
+  var templateName = "";
+
+  if (templateType === "members") {
+    templateName = "org/members";
+  } else if (templateType === "teams") {
+    templateName = "org/teams";
+  } else {
+    templateName = "org/show";
+  }
+  return templateName;
+};
 
 exports.getOrg = function(request, reply) {
   if (!request.features.org_billing) {
@@ -10,73 +28,107 @@ exports.getOrg = function(request, reply) {
   }
 
   var opts = {};
+  var orgName = request.params.org;
+  var templateName = resolveTemplateName(request.route.path);
 
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
-  request.customer.getById(request.loggedInUser.email, function(err, cust) {
-    if (err) {
-      request.logger.error(err);
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
+  return Org(loggedInUser)
+    .get(orgName)
+    .then(function(org) {
+      org = org || {};
+      org.info = org.info || {};
+
+      if (org.info.resource && org.info.resource.human_name) {
+        org.info.human_name = org.info.resource.human_name;
+      } else {
+        org.info.human_name = org.info.name;
       }
-      return reply.view('errors/internal', err);
-    }
 
-    Org(loggedInUser)
-      .get(request.params.org, function(err, org) {
-        if (err) {
-          request.logger.error(err);
-
-          if (err.statusCode === 404) {
-            return reply.view('errors/not-found', err).code(404);
-          } else {
-            return reply.view('errors/internal', err);
-          }
-        }
-
-        org = org || {};
-        org.info = org.info || {};
-
-        if (org.info.resource && org.info.resource.human_name) {
-          org.info.human_name = org.info.resource.human_name;
-        } else {
-          org.info.human_name = org.info.name;
-        }
-
-        opts.org = org;
-        opts.org.users.items = org.users.items.map(function(user) {
-          user.sponsoredByOrg = user.sponsored === 'by-org';
-          return user;
-        });
-
-        var isSuperAdmin = org.users.items.filter(function(user) {
-          return user.role && user.role.match(/super-admin/);
-        }).some(function(admin) {
-          return admin.name === loggedInUser;
-        });
-
-        var isAtLeastTeamAdmin = org.users.items.filter(function(user) {
-          return user.role && user.role.match(/admin/);
-        }).some(function(admin) {
-          return admin.name === loggedInUser;
-        });
-
-        var isAtLeastMember = org.users.items.filter(function(user) {
-          return user.role && (user.role.match(/developer/) || user.role.match(/admin/));
-        }).some(function(member) {
-          return member.name === loggedInUser;
-        });
-
-        opts.perms = {
-          isSuperAdmin: isSuperAdmin,
-          isAtLeastTeamAdmin: isAtLeastTeamAdmin,
-          isAtLeastMember: isAtLeastMember
-        };
-
-        opts.org.customer_id = cust.stripe_customer_id;
-        return reply.view('org/info', opts);
+      opts.org = org;
+      opts.org.users.items = org.users.items.map(function(user) {
+        user.sponsoredByOrg = user.sponsored === 'by-org';
+        return user;
       });
 
-  });
+
+      var isSuperAdmin = org.users.items.filter(function(user) {
+        return user.role && user.role.match(/super-admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      var isAtLeastTeamAdmin = org.users.items.filter(function(user) {
+        return user.role && user.role.match(/admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      var isAtLeastMember = org.users.items.filter(function(user) {
+        return user.role && (user.role.match(/developer/) || user.role.match(/admin/));
+      }).some(function(member) {
+        return member.name === loggedInUser;
+      });
+
+
+      opts.perms = {
+        isSuperAdmin: isSuperAdmin,
+        isAtLeastTeamAdmin: isAtLeastTeamAdmin,
+        isAtLeastMember: isAtLeastMember
+      };
+
+      return opts;
+    })
+    .then(function(opts) {
+      return opts.perms.isSuperAdmin ?
+        request.customer.getById(request.loggedInUser.email)
+        : P.resolve(null);
+    })
+    .then(function(cust) {
+      cust = cust || {};
+      opts.customer_id = cust.stripe_customer_id;
+
+      if (templateName.match(/teams/)) {
+        var teams = opts.org.teams.items.map(function(team) {
+          return Team(loggedInUser).get({
+            orgScope: orgName,
+            teamName: team.name
+          });
+        });
+
+        return P.all(teams);
+      } else {
+        return P.resolve(null);
+      }
+    })
+    .then(function(teams) {
+      if (teams && typeof teams.length !== "undefined") {
+        var orgTeams = {
+          count: teams.length,
+          items: teams
+        };
+        opts.org.teams = orgTeams;
+      }
+      return reply.view(templateName, opts);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/' + orgName;
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
+
 };
 
 exports.addUserToOrg = function(request, reply) {
@@ -90,11 +142,30 @@ exports.addUserToOrg = function(request, reply) {
     user: request.payload.username,
     role: request.payload.role
   };
-  var opts = {};
 
   Org(loggedInUser)
-    .addUser(orgName, user, function(err, addedUser) {
-      if (err) {
+    .addUser(orgName, user)
+    .then(function() {
+      return request.customer.getLicenseIdForOrg(orgName);
+    })
+    .then(function(licenseId) {
+      return request.customer.extendSponsorship(licenseId, user.user);
+    })
+    .then(function(extendedSponsorship) {
+      return request.customer.acceptSponsorship(extendedSponsorship.verification_key)
+        .catch(function(err) {
+          if (err.statusCode !== 403) {
+            throw err;
+          }
+        });
+    })
+    .then(function() {
+      return reply.redirect('/org/' + orgName + '/members');
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
         return request.saveNotifications([
           P.reject(err.message)
         ]).then(function(token) {
@@ -105,28 +176,9 @@ exports.addUserToOrg = function(request, reply) {
         }).catch(function(err) {
           request.logger.log(err);
         });
+      } else {
+        return reply.view('errors/internal', err);
       }
-      request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
-        if (err) {
-          request.logger.error(err);
-          return reply.view('errors/internal', err).code(404);
-        }
-        request.customer.extendSponsorship(licenseId, user.user, function(err, extendedSponsorship) {
-          if (err) {
-            request.logger.error(err);
-            return reply.view('errors/internal', err).code(err.statusCode);
-          }
-          request.customer.acceptSponsorship(extendedSponsorship.verification_key, function(err) {
-            if (err) {
-              request.logger.error(err);
-              if (err.statusCode !== 403) {
-                return reply.view('errors/internal', err).code(err.statusCode);
-              }
-            }
-            return exports.getOrg(request, reply);
-          });
-        });
-      });
     });
 };
 
@@ -137,19 +189,15 @@ exports.removeUserFromOrg = function(request, reply) {
 
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser.name;
-  var user = {
-    user: request.payload.username,
-    role: request.payload.role
-  };
-  var opts = {};
+  var username = request.payload.username;
 
   return request.customer.getLicenseIdForOrg(orgName)
     .then(function(licenseId) {
-      return request.customer.revokeSponsorship(user.user, licenseId)
+      return request.customer.revokeSponsorship(username, licenseId);
     })
     .then(function() {
       return Org(loggedInUser)
-        .removeUser(orgName, user.user)
+        .removeUser(orgName, username);
     })
     .then(function() {
       return reply.redirect('/org/' + orgName);
@@ -170,7 +218,7 @@ exports.removeUserFromOrg = function(request, reply) {
           request.logger.error(err);
         });
       }
-    })
+    });
 
 };
 
@@ -180,53 +228,52 @@ exports.updateUserPayStatus = function(request, reply) {
   }
 
   var orgName = request.params.org;
-  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   var payForUser = !!request.payload.payStatus;
-  var username = request.payload.username
+  var username = request.payload.username;
 
-  request.customer.getLicenseIdForOrg(orgName, function(err, licenseId) {
-
-    if (err) {
-      request.logger.error('could not get license ID for ' + orgName);
-      request.logger.error(err);
-      // TODO: make better error page here
-      return reply.view('errors/internal', err).code(404);
-    }
-
-    if (payForUser) {
-      request.customer.extendSponsorship(licenseId, username, function(err, extendedSponsorship) {
-        if (err) {
-          if (err.message.indexOf("duplicate key value violates unique constraint") > -1) {
-            return exports.getOrg(request, reply);
-          }
-          request.logger.error(err);
-          return reply.view('errors/internal', err).code(err.statusCode);
+  var extend = function(licenseId, username) {
+    return request.customer.extendSponsorship(licenseId, username)
+      .catch(function(err) {
+        if (err.statusCode !== 409) {
+          throw err;
         }
-        request.customer.acceptSponsorship(extendedSponsorship.verification_key, function(err) {
-          if (err) {
-            request.logger.error(err);
+      })
+      .then(function(extendedSponsorship) {
+        return request.customer.acceptSponsorship(extendedSponsorship.verification_key)
+          .catch(function(err) {
             if (err.statusCode !== 403) {
-              return reply.view('errors/internal', err).code(err.statusCode);
+              throw err;
             }
-          }
-
-          return exports.getOrg(request, reply);
-        });
+          });
       });
-    } else {
-      request.customer.revokeSponsorship(username, licenseId, function(err) {
+  };
 
-        if (err) {
-          request.logger.error('issue revoking sponsorship for user ', username);
+  request.customer.getLicenseIdForOrg(orgName)
+    .then(function(licenseId) {
+      return payForUser ? extend(licenseId, username) : request.customer.revokeSponsorship(username, licenseId);
+    })
+    .then(function() {
+      return reply.redirect('/org/' + orgName + '/members');
+    })
+    .catch(function(err) {
+      if (err.statusCode >= 500) {
+        request.logger.error(err);
+        return reply.view('errors/internal', err);
+      } else {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/org/' + orgName;
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
           request.logger.error(err);
-          // TODO: make better error page here
-          return reply.view('errors/internal', err).code(err.statusCode);
-        }
+        });
+      }
+    });
 
-        return exports.getOrg(request, reply);
-      });
-    }
-  });
+
 };
 
 exports.updateOrg = function(request, reply) {
@@ -514,4 +561,69 @@ exports.redirectToOrg = function redirectToOrg(request, reply) {
   var urlAppend = orgName ? '/' + orgName : '';
 
   return reply.redirect("/org" + urlAppend).code(301);
+};
+
+exports.getUser = function getUser(request, reply) {
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var orgName = request.params.org;
+
+  var username = request.query.member;
+
+  if (invalidUserName(orgName)) {
+    return reply({
+      error: "Org not found"
+    })
+      .code(404)
+      .type('application/json');
+  }
+
+  if (invalidUserName(username)) {
+    return reply({
+      error: "User not found"
+    })
+      .code(404)
+      .type('application/json');
+  }
+
+  return Org(loggedInUser)
+    .getUsers(orgName)
+    .then(function(members) {
+      members = members || {};
+      var items = members.items || [];
+      var userInOrg = items.some(function(member) {
+        return username === member.name;
+      });
+
+      if (userInOrg) {
+        return reply({
+          user: username
+        })
+          .type('application/json')
+          .code(200);
+      } else {
+        var err = new Error("User not found");
+        err.statusCode = 404;
+        throw err;
+      }
+
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
+        return reply({
+          error: err.message
+        })
+          .code(err.statusCode)
+          .type('application/json');
+      } else {
+        return reply({
+          error: "Internal Error"
+        })
+          .code(err.statusCode)
+          .type('application/json');
+      }
+
+    });
 };

@@ -24,30 +24,32 @@ var Customer = module.exports = function(name, opts) {
 Customer.prototype.getById = function(id, callback) {
   var url = this.host + '/customer/' + id;
 
-  Request.get({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
+  return new P(function(accept, reject) {
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
 
-    if (err) {
-      return callback(err);
-    }
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('Customer not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('Customer not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
 
-    if (resp.statusCode >= 400) {
-      err = Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.getStripeData = function(callback) {
@@ -240,11 +242,13 @@ Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
 
       if (!org) {
         err = new Error('No org with that name exists');
+        err.statusCode = 404;
         return reject(err);
       }
 
       if (!org.license_id) {
         err = new Error('That org does not have a license_id');
+        err.statusCode = 400;
         return reject(err);
       }
 
@@ -293,7 +297,7 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
       }
 
       if (resp.statusCode === 404) {
-        err = new Error('License not found: ' + licenseId);
+        err = new Error('The sponsorship license number ' + licenseId + ' is not found');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -327,7 +331,7 @@ Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
       }
 
       if (resp.statusCode === 404) {
-        err = Error('verification key not found');
+        err = Error('The verification key used for accepting this sponsorship does not exist');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

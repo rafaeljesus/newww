@@ -100,6 +100,47 @@ input[type=submit], .button
   &[disabled]
     background greigh5
 
+input[type="submit"].btn-secondary,
+button[type="submit"].btn-secondary,
+.button.btn-secondary,
+.btn-secondary
+  color npmred
+  background white
+  border 1px solid npmred
+
+.btn-inline
+  display inline-block
+
+.btn-link
+  appearance none
+  -webkit-appearance none
+  -moz-appearance none
+  border none
+  box-shadow none
+  height auto
+  width auto
+  display inline
+  background transparent
+  color npmred
+  font inherit
+  cursor pointer
+
+  &:hover
+    text-decoration underline
+
+.delete-user
+  color white
+  background greigh2
+  border medium none
+  box-shadow none
+  appearance none
+  -moz-appearance none
+  -webkit-appearance none
+  border-radius 100%
+  width 25px
+  height 25px
+  cursor pointer
+
 form[class^="remove-"]
   input[type=submit]
     margin 0
@@ -287,7 +328,6 @@ fieldset
 input[type=text] + .description
   margin-top -1.5em
 
-
 /**
  * Switch-style checkboxes.
  * Inspired by Lea Verou
@@ -366,3 +406,70 @@ input[type="checkbox"].switch:checked ~ .checked-text
 
 .js .edit-pay-status-save
   display none
+
+.custom-select-label + .dropdown
+  position relative
+  display:block
+  margin-top:0.5em
+  overflow:hidden
+  width:100%
+  max-width:100%
+
+
+select.custom
+  width 110%
+  max-width 110%
+  min-width 110%
+  appearance none
+  -webkit-appearance none
+  -moz-appearance window
+  text-indent 0.01px
+  text-overflow ""
+  font-size 16px
+  font-weight bold
+  background none
+  border none
+  color #444
+  outline none
+  padding .5em 19% .4em .8em
+  font-family helvetica, sans-serif
+  line-height 1.2
+  margin .2em
+
+
+select.custom::-ms-expand
+  display none
+
+
+.custom-select-label + .dropdown:after
+  background transparent none repeat scroll 0% 0%
+  content "\25BC"
+  font-size 14px
+  padding 0px
+  position absolute
+  right 1em
+  top 0.7em
+  bottom 0.3em
+  z-index 1
+  color black
+  pointer-events none
+
+
+.custom-select-label + .dropdown:hover
+  border 1px solid #888
+
+
+select.custom:focus
+  outline none
+  box-shadow 0 0 3px 3px rgba(180,222,250, .85)
+
+
+select.custom:-moz-focusring
+  color transparent
+  text-shadow 0 0 0 #000
+
+
+.custom-select-label + .dropdown
+  border 1px solid #BBB
+  border-radius 0.2em
+  background transparent

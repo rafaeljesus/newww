@@ -380,6 +380,24 @@ describe("User", function() {
     });
   });
 
+  describe("getOwnedPackages()", function() {
+    it('gets all the packages the user has write access to', function(done) {
+      var packageMock = nock(User.host)
+        .get('/user/bob/package/owner?per_page=9999')
+        .reply(200, fixtures.users.ownedPackages);
+
+      User.getOwnedPackages('bob')
+        .catch(function(err) {
+          expect(err).to.be.null();
+        })
+        .then(function(body) {
+          packageMock.done();
+          expect(body.items[0].name).to.equal('@bigco/boom');
+          done();
+        });
+    });
+  });
+
   describe("getStars()", function() {
 
     it("makes an external request for /{user}/stars?format=detailed", function(done) {

@@ -3,6 +3,7 @@ var P = require('bluebird');
 var Joi = require('joi');
 var Org = require('../agents/org');
 var Team = require('../agents/team');
+var User = require('../models/user');
 var invalidUserName = require('npm-user-validate').username;
 var validatePackageName = require('validate-npm-package-name');
 var URL = require('url');
@@ -220,35 +221,36 @@ var validPayloadSchema = {
   updateType: Joi.string().required(),
   name: Joi.string().when('updateType', {
     is: 'updateWritePermissions',
-    then: Joi.string().required()
+    then: Joi.required()
   }).when('updateType', {
     is: 'removePackage',
-    then: Joi.string().required()
+    then: Joi.required()
   }).when('updateType', {
     is: 'removeUser',
-    then: Joi.string().required()
+    then: Joi.required()
   }),
-  names: Joi.array().when('updateType', {
+  names: Joi.any().when('updateType', {
     is: 'addPackagesToTeam',
-    then: Joi.array().required()
+    then: Joi.required()
   }),
   writePermission: Joi.string().when('updateType', {
     is: 'updateWritePermissions',
-    then: Joi.string().required()
+    then: Joi.required()
   }),
   writePermissions: Joi.object().when('updateType', {
     is: 'addPackagesToTeam',
-    then: Joi.object().required()
+    then: Joi.required()
   }),
   'team-description': Joi.string().when('updateType', {
     is: 'updateInfo',
-    then: Joi.string().required()
+    then: Joi.required()
   }),
   member: Joi.any().when('updateType', {
     is: 'addUsersToTeam',
-    then: Joi.any().required()
+    then: Joi.required()
   }),
-  teams: Joi.any().optional()
+  teams: Joi.any().optional(),
+  personal: Joi.any().optional()
 };
 
 exports.updateTeam = function(request, reply) {
@@ -394,12 +396,18 @@ exports._handleTeamAdditions = function(request, reply, successPage) {
 
       opts.orgTeams = org.teams.items;
 
-      return Team(loggedInUser).get({
-        orgScope: opts.orgScope,
-        teamName: opts.teamName
-      })
-        .then(function(team) {
+      var teamPackages = Team(loggedInUser)
+        .get({
+          orgScope: opts.orgScope,
+          teamName: opts.teamName
+        });
+
+      var personalPackages = User.new(request).getOwnedPackages(loggedInUser);
+
+      return P.all([teamPackages, personalPackages])
+        .spread(function(team, personal) {
           opts.team = team;
+          opts.personal = personal;
           return reply.view(successPage, opts);
         })
         .catch(function(err) {

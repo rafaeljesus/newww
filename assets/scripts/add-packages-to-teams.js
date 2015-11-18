@@ -58,7 +58,8 @@ var getPackage = function(orgName, pkg) {
 
 var AddPackageForm = function(form) {
   this.$el = form;
-  this.selectMenu = this.$el.find("[name=teams]");
+  this.teamSelect = this.$el.find("[name=teams]");
+  this.personalSelect = this.$el.find("[name=personal]");
   this.pkgsList = $(".packages-list");
   this.packageCount = 0;
 
@@ -101,6 +102,13 @@ AddPackageForm.prototype.addPackages = function(packages) {
   }).join("");
   this.pkgsList.append(list);
   this.packageCount = pkgs.length;
+  this.updatePackageCount();
+};
+
+AddPackageForm.prototype.addPackage = function (package) {
+  var pkg = template(package);
+  this.pkgsList.append(pkg);
+  this.packageCount += 1;
   this.updatePackageCount();
 };
 
@@ -147,7 +155,7 @@ module.exports = function() {
           });
       });
 
-      auf.selectMenu.on("change", function() {
+      auf.teamSelect.on("change", function() {
         var teamName = this.options[this.selectedIndex].value;
         if (teamName === "_none_") {
           return;
@@ -161,6 +169,15 @@ module.exports = function() {
           .fail(function() {
             auf.notify("An error occurred while populating the list");
           });
+      });
+
+      auf.personalSelect.on("change", function () {
+        var packageName = this.options[this.selectedIndex].value;
+        if (packageName === "_none_") {
+          return;
+        }
+
+        return auf.addPackage(packageName);
       });
 
       auf.$el.find("[type=submit]").on("click", function(e) {
@@ -180,7 +197,6 @@ module.exports = function() {
       });
 
       auf.$el.on("click", ".remove-all-pkgs", function() {
-        console.log('boom')
         auf.removeAll();
       });
     }

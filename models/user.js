@@ -214,6 +214,52 @@ User.prototype.getPackages = function(name, page, callback) {
   }).nodeify(callback);
 };
 
+User.prototype.getOwnedPackages = function(name) {
+  var self = this;
+  var url = fmt('%s/user/%s/package/owner', this.host, name);
+
+  return new P(function(resolve, reject) {
+    var PER_PAGE = 9999;
+
+    var opts = {
+      url: url,
+      qs: {
+        per_page: PER_PAGE
+      },
+      json: true
+    };
+
+    if (self.bearer) {
+      opts.headers = {
+        bearer: self.bearer
+      };
+    }
+
+    Request.get(opts, function(err, resp, body) {
+
+      if (err) {
+        return reject(err);
+      }
+      if (resp.statusCode > 399) {
+        err = new Error('error getting packages for user ' + name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (body.items) {
+        body.items = body.items.map(function(p) {
+          if (p.access === 'restricted') {
+            p.isPrivate = true;
+          }
+          return p;
+        });
+      }
+
+      return resolve(body);
+    });
+  });
+};
+
 User.prototype.getStars = function(name, callback) {
   var self = this;
   var url = fmt('%s/user/%s/stars?format=detailed', this.host, name);

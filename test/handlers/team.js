@@ -799,7 +799,9 @@ describe('team', function() {
       it('shows the add-package page if there are no issues', function(done) {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
-          .reply(200, fixtures.users.bob);
+          .reply(200, fixtures.users.bob)
+          .get('/user/bob/package/owner?per_page=9999')
+          .reply(200, fixtures.users.ownedPackages);
 
         var licenseMock = nock('https://license-api-example.com')
           .get('/customer/bob/stripe')
@@ -867,7 +869,7 @@ describe('team', function() {
           licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(404);
-          expect(resp.headers['content-type']).to.include('application/json')
+          expect(resp.headers['content-type']).to.include('application/json');
           var obj = JSON.parse(resp.payload);
           expect(obj.error).to.equal('Not Found');
           done();
@@ -900,7 +902,7 @@ describe('team', function() {
           licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(401);
-          expect(resp.headers['content-type']).to.include('application/json')
+          expect(resp.headers['content-type']).to.include('application/json');
           var obj = JSON.parse(resp.payload);
           expect(obj.error).to.equal('user is unauthorized to perform this action');
           done();
@@ -991,6 +993,52 @@ describe('team', function() {
           orgMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.request.response.headers.location).to.include('/org/bigco/team/bigcoteam?notice=');
+          done();
+        });
+      });
+    });
+
+    it('allows a super/team-admin to add a single package via the add-package page', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .put('/team/bigco/bigcoteam/package', {
+          package: '@bigco/boom',
+          permissions: 'write'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            names: "@bigco/boom",
+            writePermissions: {
+              "@bigco/boom": 'on'
+            },
+            updateType: 'addPackagesToTeam',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
           done();
         });
       });
@@ -1354,7 +1402,9 @@ describe('team', function() {
     it('it takes you to the add-user template if you are admin', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
-        .reply(200, fixtures.users.bob);
+        .reply(200, fixtures.users.bob)
+        .get("/user/bob/package/owner?per_page=9999")
+        .reply(200, fixtures.users.ownedPackages);
 
       var orgMock = nock("https://user-api-example.com")
         .get('/org/bigco')

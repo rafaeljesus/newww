@@ -61,7 +61,11 @@
               {{#if packages.count}}
               <a href="/org/{{../../org.info.name}}/team/{{name}}#packages">{{packages.count}}</a>
               {{else}}
-              <a href="/org/{{../../org.info.name}}/team/{{name}}/add-package">+ add packages</a>
+                {{#if perms.isAtLeastTeamAdmin}}
+                  <a href="/org/{{../../org.info.name}}/team/{{name}}/add-package">+ add packages</a>
+                {{else}}
+                  None
+                {{/if}}
               {{/if}}
             </td>
             <td class="created" data-date="{{created}}" data-date-format="%d-%b-%y">{{created}}</td>

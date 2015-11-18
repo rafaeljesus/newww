@@ -404,7 +404,6 @@ exports.getAddTeamUserPage = function(request, reply) {
 exports.showTeamMembers = function(request, reply) {
   return reply(200);
 };
-<<<<<<< HEAD
 
 exports.getUsers = function(request, reply) {
   if (!request.features.org_billing) {
@@ -444,40 +443,6 @@ exports.getUsers = function(request, reply) {
         return reply({
           error: "Internal Error"
         })
-          .code(err.statusCode)
-          .type('application/json');
-      }
-    });
-};
-
-exports.getUsers = function(request, reply) {
-  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
-  var orgScope = request.params.org;
-  var teamName = request.params.teamName;
-
-  return Team(loggedInUser)
-    .getUsers({
-      orgScope: orgScope,
-      teamName: teamName
-    })
-    .then(function(users) {
-      var resp = JSON.stringify(users);
-      return reply(resp)
-        .type('application/json');
-    })
-    .catch(function(err) {
-      request.logger.error(err);
-
-      if (err.statusCode === 404) {
-        return reply("Not Found")
-          .code(404)
-          .type('application/json');
-      } else if (err.statusCode < 500) {
-        return reply(err.message)
-          .code(err.statusCode)
-          .type('application/json');
-      } else {
-        return reply("Internal Error")
           .code(err.statusCode)
           .type('application/json');
       }

@@ -286,16 +286,16 @@
   color detail-grey
   padding 20px 0
 
-.member-header
+.member-header, .package-header
   background table-background-grey
 
 .add-count
   display inline-block
 
-.remove-all-users
+.remove-all-users, .remove-all-pkgs
   float right
 
-.members-list
+.members-list, .packages-list
   overflow auto
   display table
   width 100%
@@ -317,15 +317,19 @@
 /** js-enhanced styles */
 .team-selector-container,
 .add-member-btn,
-.members-to-add
+.add-package-btn,
+.members-to-add,
+.packages-to-add
   display none
 
 .js
   .team-selector-container,
-  .members-to-add
+  .members-to-add,
+  .packages-to-add
     display block
 
-  .add-member-btn
+  .add-member-btn,
+  .add-package-btn
     display inline-block
     vertical-align top
 

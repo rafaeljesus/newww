@@ -3,7 +3,9 @@ var P = require('bluebird');
 var Joi = require('joi');
 var Org = require('../agents/org');
 var Team = require('../agents/team');
+var User = require('../models/user');
 var invalidUserName = require('npm-user-validate').username;
+var validatePackageName = require('validate-npm-package-name');
 var URL = require('url');
 
 var handleUserError = function(request, reply, redirectUrl, message) {
@@ -184,7 +186,7 @@ exports.showTeam = function(request, reply) {
     })
     .then(function(team) {
       team.packages.items.forEach(function(pkg) {
-        if (pkg.permission === 'write') {
+        if (pkg.permissions === 'write') {
           pkg.canWrite = true;
         }
       });
@@ -192,7 +194,6 @@ exports.showTeam = function(request, reply) {
       team.users.items.forEach(function(usr) {
         usr.avatar = avatar(usr.email);
       });
-
 
       return reply.view('team/show', {
         teamName: team.name,
@@ -220,27 +221,36 @@ var validPayloadSchema = {
   updateType: Joi.string().required(),
   name: Joi.string().when('updateType', {
     is: 'updateWritePermissions',
-    then: Joi.string().required()
+    then: Joi.required()
   }).when('updateType', {
     is: 'removePackage',
-    then: Joi.string().required()
+    then: Joi.required()
   }).when('updateType', {
     is: 'removeUser',
-    then: Joi.string().required()
+    then: Joi.required()
+  }),
+  names: Joi.any().when('updateType', {
+    is: 'addPackagesToTeam',
+    then: Joi.required()
   }),
   writePermission: Joi.string().when('updateType', {
     is: 'updateWritePermissions',
-    then: Joi.string().required()
+    then: Joi.required()
+  }),
+  writePermissions: Joi.object().when('updateType', {
+    is: 'addPackagesToTeam',
+    then: Joi.required()
   }),
   'team-description': Joi.string().when('updateType', {
     is: 'updateInfo',
-    then: Joi.string().required()
+    then: Joi.required()
   }),
   member: Joi.any().when('updateType', {
     is: 'addUsersToTeam',
-    then: Joi.any().required()
+    then: Joi.required()
   }),
-  teams: Joi.any().optional()
+  teams: Joi.any().optional(),
+  personal: Joi.any().optional()
 };
 
 exports.updateTeam = function(request, reply) {
@@ -295,7 +305,7 @@ exports.updateTeam = function(request, reply) {
         case 'addUsersToTeam':
           tab = '#members';
 
-          var members = request.payload.member || [];
+          var members = validatedPayload.member || [];
           members = Array.isArray(members) ? members : [].concat(members);
           members = members.filter(function(member) {
             return !invalidUserName(member);
@@ -306,6 +316,30 @@ exports.updateTeam = function(request, reply) {
               teamName: teamName,
               scope: orgName,
               users: members
+            });
+
+        case 'addPackagesToTeam':
+          tab = '';
+
+          var pkgs = validatedPayload.names || [];
+          var writePermissions = validatedPayload.writePermissions;
+
+          pkgs = Array.isArray(pkgs) ? pkgs : [].concat(pkgs);
+
+          var packages = pkgs.filter(function(name) {
+            return !validatePackageName(name).errors;
+          }).map(function(pkg) {
+            return {
+              name: pkg,
+              permissions: writePermissions[pkg] === 'on' ? 'write' : 'read'
+            };
+          });
+
+          return Team(loggedInUser)
+            .addPackages({
+              id: teamName,
+              scope: orgName,
+              packages: packages
             });
 
         default:
@@ -330,31 +364,16 @@ exports.updateTeam = function(request, reply) {
   });
 };
 
-exports.getAddTeamUserPage = function(request, reply) {
-
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
-
+exports._handleTeamAdditions = function(request, reply, successPage) {
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
-
-  var orgName = request.params.org;
-  var teamName = request.params.teamName;
   var opts = {};
 
+  opts.orgScope = request.params.org;
+  opts.teamName = request.params.teamName;
 
-  if (invalidUserName(orgName)) {
-    return reply.view('errors/not-found').code(404);
-  }
-
-  if (invalidUserName(teamName)) {
-    return reply.view('errors/not-found').code(404);
-  }
-
-  Org(loggedInUser)
-    .get(orgName)
+  return Org(loggedInUser)
+    .get(opts.orgScope)
     .then(function(org) {
       org = org || {};
       var users = org.users || [{
@@ -372,33 +391,71 @@ exports.getAddTeamUserPage = function(request, reply) {
       if (!isAtLeastAdmin) {
         var err = new Error("User does not have the appropriate permissions to reach this page");
         err.statusCode = 403;
-        throw err;
+        return handleUserError(request, reply, '/org/' + opts.orgScope, err.message);
       }
 
-      opts.orgScope = orgName;
       opts.orgTeams = org.teams.items;
 
-      return Team(loggedInUser).get({
-        orgScope: orgName,
-        teamName: teamName
-      });
-    })
-    .then(function(team) {
-      opts.team = team;
-      return reply.view('team/add-user', opts);
-    })
-    .catch(function(err) {
-      request.logger.error(err);
+      var teamPackages = Team(loggedInUser)
+        .get({
+          orgScope: opts.orgScope,
+          teamName: opts.teamName
+        });
 
-      if (err.statusCode === 404) {
-        return reply.view('errors/not-found', err).code(404);
-      } else if (err.statusCode < 500) {
-        return handleUserError(request, reply, '/org/' + orgName, err.message);
-      } else {
-        return reply.view('errors/internal', err);
-      }
+      var personalPackages = User.new(request).getOwnedPackages(loggedInUser);
+
+      return P.all([teamPackages, personalPackages])
+        .spread(function(team, personal) {
+          opts.team = team;
+          opts.personal = personal;
+          return reply.view(successPage, opts);
+        })
+        .catch(function(err) {
+          request.logger.error(err);
+
+          if (err.statusCode === 404) {
+            return reply.view('errors/not-found', err).code(404);
+          } else if (err.statusCode < 500) {
+            return handleUserError(request, reply, '/org/' + opts.orgScope, err.message);
+          } else {
+            return reply.view('errors/internal', err);
+          }
+        });
     });
+};
 
+exports.getAddTeamUserPage = function(request, reply) {
+
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  if (invalidUserName(request.params.org)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  if (invalidUserName(request.params.teamName)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  return exports._handleTeamAdditions(request, reply, 'team/add-user');
+};
+
+exports.getAddTeamPackagePage = function(request, reply) {
+
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  if (invalidUserName(request.params.org)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  if (invalidUserName(request.params.teamName)) {
+    return reply.view('errors/not-found').code(404);
+  }
+
+  return exports._handleTeamAdditions(request, reply, 'team/add-package');
 };
 
 exports.showTeamMembers = function(request, reply) {
@@ -421,6 +478,50 @@ exports.getUsers = function(request, reply) {
     })
     .then(function(users) {
       var resp = JSON.stringify(users);
+      return reply(resp)
+        .type('application/json');
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply({
+          error: "Not Found"
+        })
+          .code(404)
+          .type('application/json');
+      } else if (err.statusCode < 500) {
+        return reply({
+          error: err.message
+        })
+          .code(err.statusCode)
+          .type('application/json');
+      } else {
+        return reply({
+          error: "Internal Error"
+        })
+          .code(err.statusCode)
+          .type('application/json');
+      }
+    });
+};
+
+exports.getPackages = function(request, reply) {
+  if (!request.features.org_billing) {
+    return reply.redirect('/org');
+  }
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var orgScope = request.params.org;
+  var teamName = request.params.teamName;
+
+  return Team(loggedInUser)
+    .getPackages({
+      orgScope: orgScope,
+      teamName: teamName
+    })
+    .then(function(pkgs) {
+      var resp = JSON.stringify(pkgs);
       return reply(resp)
         .type('application/json');
     })

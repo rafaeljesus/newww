@@ -4,7 +4,8 @@ var Code = require('code'),
   describe = lab.experiment,
   it = lab.test,
   expect = Code.expect,
-  nock = require('nock');
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var Team = require('../../agents/team');
 
@@ -17,13 +18,13 @@ describe('Team', function() {
   });
 
   describe('get', function() {
-    it('returns an error if bearer token is incorrect', function(done) {
+    it('returns an error if user is unauthorized', function(done) {
       var teamMock = nock('https://user-api-example.com')
         .get('/team/bigco/bigteam')
         .reply(401)
         .get('/team/bigco/bigteam/user')
         .reply(401)
-        .get('/team/bigco/bigteam/package')
+        .get('/team/bigco/bigteam/package?format=mini')
         .reply(401);
 
       Team('bob').get({
@@ -32,7 +33,7 @@ describe('Team', function() {
       }).catch(function(err) {
         teamMock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal('no bearer token included');
+        expect(err.message).to.equal('user is unauthorized to perform this action');
         done();
       });
     });
@@ -43,7 +44,7 @@ describe('Team', function() {
         .reply(404)
         .get('/team/bigco/bigteam/user')
         .reply(404)
-        .get('/team/bigco/bigteam/package')
+        .get('/team/bigco/bigteam/package?format=mini')
         .reply(404);
 
       Team('bob').get({
@@ -69,10 +70,8 @@ describe('Team', function() {
         })
         .get('/team/bigco/bigteam/user')
         .reply(200, ['bob'])
-        .get('/team/bigco/bigteam/package')
-        .reply(200, {
-          "@npm/blerg": "write"
-        });
+        .get('/team/bigco/bigteam/package?format=mini')
+        .reply(200, fixtures.teams.bigcoteamPackages);
 
       Team('bob').get({
         orgScope: 'bigco',
@@ -85,7 +84,7 @@ describe('Team', function() {
         expect(body.users.count).to.equal(1);
         expect(body.users.items[0]).to.equal("bob");
         expect(body.packages.count).to.equal(1);
-        expect(body.packages.items[0].name).to.equal("@npm/blerg");
+        expect(body.packages.items[0].name).to.equal("@bigco/boom");
         done();
       });
     });
@@ -107,7 +106,7 @@ describe('Team', function() {
         }, function(err) {
           teamMock.done();
           expect(err).to.exist();
-          expect(err.message).to.equal('no bearer token included');
+          expect(err.message).to.equal('user is unauthorized to perform this action');
           done();
         });
       });
@@ -261,7 +260,7 @@ describe('Team', function() {
           teamMock.done();
           expect(err).to.exist();
           expect(err.statusCode).to.equal(401);
-          expect(err.message).to.equal('no bearer token included');
+          expect(err.message).to.equal('user is unauthorized to perform this action');
           done();
         });
       });
@@ -350,10 +349,115 @@ describe('Team', function() {
       });
     });
 
+    describe('addPackages()', function() {
+      it('returns an error if something goes wrong', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/zoom',
+            permissions: 'write'
+          })
+          .reply(404, {
+            error: 'not found'
+          })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/boom',
+            permissions: 'write'
+          })
+          .reply(401, {
+            error: 'unauthorized'
+          })
+          .put('/team/bigco/bigteam/package', {
+            package: 'kaboom',
+            permissions: 'read'
+          })
+          .reply(200);
+
+        Team('bob').addPackages({
+          scope: 'bigco',
+          id: 'bigteam',
+          packages: [
+            {
+              name: '@bigco/zoom',
+              permissions: 'write'
+            },
+            {
+              name: 'kaboom',
+              permissions: 'read'
+            },
+            {
+              name: '@bigco/boom',
+              permissions: 'write'
+            }
+          ]
+        }).catch(function(err) {
+          expect(err).to.exist();
+          // i'd like this to show _all_ of the errors, not just the first one.
+          expect(err.message).to.equal('not found');
+          expect(err.statusCode).to.equal(404);
+        }).then(function(packages) {
+          expect(packages).to.not.exist();
+        }).finally(function() {
+          teamMock.done();
+          done();
+        });
+      });
+
+      it('adds a group of packages', function(done) {
+        var teamMock = nock('https://user-api-example.com', {
+          reqheaders: {
+            bearer: 'bob'
+          }
+        })
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/zoom',
+            permissions: 'write'
+          })
+          .reply(200)
+          .put('/team/bigco/bigteam/package', {
+            package: '@bigco/boom',
+            permissions: 'write'
+          })
+          .reply(200)
+          .put('/team/bigco/bigteam/package', {
+            package: 'kaboom',
+            permissions: 'read'
+          })
+          .reply(200);
+
+        Team('bob').addPackages({
+          scope: 'bigco',
+          id: 'bigteam',
+          packages: [
+            {
+              name: '@bigco/zoom',
+              permissions: 'write'
+            },
+            {
+              name: 'kaboom',
+              permissions: 'read'
+            },
+            {
+              name: '@bigco/boom',
+              permissions: 'write'
+            }
+          ]
+        }).catch(function(err) {
+          expect(err).to.not.exist();
+        }).then(function() {
+          teamMock.done();
+          done();
+        });
+      });
+    });
+
     describe('getPackages()', function() {
       it('returns an error if the bearer token is missing', function(done) {
         var teamMock = nock('https://user-api-example.com')
-          .get('/team/bigco/bigteam/package')
+          .get('/team/bigco/bigteam/package?format=mini')
           .reply(401, {
             "error": "missing bearer token"
           });
@@ -365,7 +469,7 @@ describe('Team', function() {
           teamMock.done();
           expect(err).to.exist();
           expect(err.statusCode).to.equal(401);
-          expect(err.message).to.equal('no bearer token included');
+          expect(err.message).to.equal('user is unauthorized to perform this action');
           done();
         });
       });
@@ -375,7 +479,7 @@ describe('Team', function() {
           reqheaders: {
             bearer: 'bloop'
           }
-        }).get('/team/bigco/bigteam/package')
+        }).get('/team/bigco/bigteam/package?format=mini')
           .reply(404, {
             "error": "not found"
           });
@@ -397,7 +501,7 @@ describe('Team', function() {
           reqheaders: {
             bearer: 'bloop'
           }
-        }).get('/team/bigco/bigteam/package')
+        }).get('/team/bigco/bigteam/package?format=mini')
           .reply(500, {
             "error": "brokened"
           });
@@ -419,7 +523,7 @@ describe('Team', function() {
           reqheaders: {
             bearer: 'bob'
           }
-        }).get('/team/bigco/bigteam/package')
+        }).get('/team/bigco/bigteam/package?format=mini')
           .reply(200, {
             "@bigco/fake-module": "write"
           });
@@ -458,7 +562,7 @@ describe('Team', function() {
           teamMock.done();
           expect(err).to.exist();
           expect(err.statusCode).to.equal(401);
-          expect(err.message).to.equal('no bearer token included');
+          expect(err.message).to.equal('user is unauthorized to perform this action');
           done();
         });
       });

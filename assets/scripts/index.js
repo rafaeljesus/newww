@@ -23,9 +23,9 @@ require("./fetch-packages")();
 require("./tabs")();
 require("./switch-submission")();
 require("./validator")();
-require("./add-users-to-teams")();
 require("./eloqua-integration")();
 require("./add-users-to-teams")();
+require("./add-packages-to-teams")();
 
 window.github = require("./github")();
 window.star = require("./star")();

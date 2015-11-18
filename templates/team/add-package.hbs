@@ -1,0 +1,62 @@
+<div class="main main-contain narrow">
+  {{#if user.email_verified}}
+  <h1>add {{team.name}} packages</h1>
+  <div>
+    <form method="POST" data-form-function="add-package-to-team" id="add-package-to-team-form" action="/org/{{orgScope}}/team/{{team.name}}">
+      <section>
+        <div class="team-selector-container">
+          <label class="custom-select-label" for="teams"><span>Populate from existing team</span></label>
+          <div class="dropdown">
+            <select class="custom" name="teams">
+              <option value="_none_" selected="selected">None</option>
+              {{#each orgTeams }}
+              <option value="{{name}}">{{name}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+      </section>
+      <section>
+        <div class="package-selector-container">
+          <label class="custom-select-label" for="personal"><span>Populate from personal packages</span></label>
+          <div class="dropdown">
+            <select class="custom" name="personal">
+              <option value="_none_" selected="selected">None</option>
+              {{#each personal.items }}
+              <option value="{{name}}">{{name}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+{{!--         <fieldset>
+        <legend>add additional packages</legend>
+        <input type="text" name="package" class="inline-input" id="add-package-input"/>
+        <button id="add-package-to-list" class="button btn-inline btn-secondary add-package-btn" type="button">add</button>
+        </fieldset> --}}
+      </section>
+      <section>
+        <div class="packages-to-add">
+          <div class="package-header clear">
+            <div class="add-count">
+              <span class="add-number">0</span>
+              <span class="unit">Packages</span>
+            </div>
+            <button id="remove-all-added" class="remove-all-pkgs btn-link" type="button">remove all</button>
+          </div>
+          <ul class="vanilla-list packages-list">
+          </ul>
+        </div>
+      </section>
+
+      <input type="hidden" name="updateType" value="addPackagesToTeam"/>
+      {{> form_security}}
+      <button class="button org-submit-btn" type="submit">Make it so</button>
+      <a href="/org/{{orgScope}}/team/{{team.name}}">cancel</a>
+
+    </form>
+
+  </div>
+  {{else}}
+    {{> email-verify-nag}}
+  {{/if}}
+</div><!--/.main-->

@@ -32,7 +32,7 @@ Team.prototype._get = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -68,17 +68,7 @@ Team.prototype.get = function(opts, callback) {
 
     team.frontUsers = users.slice(0, 3);
 
-    var pkgs = Object.keys(packages).map(function(name) {
-      return {
-        "name": name,
-        "permission": packages[name]
-      };
-    });
-
-    team.packages = {
-      count: pkgs.length,
-      items: pkgs
-    };
+    team.packages = packages;
 
     return team;
 
@@ -103,7 +93,7 @@ Team.prototype.getUsers = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -122,6 +112,8 @@ Team.prototype.getUsers = function(opts) {
 Team.prototype.getPackages = function(opts) {
   var url = USER_HOST + '/team/' + opts.orgScope + '/' + opts.teamName + '/package';
 
+  url += '?format=' + (opts.detailed ? 'detailed' : 'mini');
+
   var data = {
     url: url,
     json: true,
@@ -137,7 +129,7 @@ Team.prototype.getPackages = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -183,7 +175,7 @@ Team.prototype.addPackage = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -203,6 +195,23 @@ Team.prototype.addPackage = function(opts) {
       return accept(body);
     });
   });
+};
+
+Team.prototype.addPackages = function(opts) {
+  opts = opts || {};
+  opts.packages = opts.packages || [];
+  var self = this;
+
+  var requests = opts.packages.map(function(pkg) {
+    return self.addPackage({
+      package: pkg.name,
+      permissions: pkg.permissions,
+      id: opts.id,
+      scope: opts.scope
+    });
+  });
+
+  return P.all(requests);
 };
 
 Team.prototype.removePackage = function(opts) {
@@ -228,7 +237,7 @@ Team.prototype.removePackage = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }
@@ -273,7 +282,7 @@ Team.prototype._addUser = function(opts, callback) {
       }
 
       if (resp.statusCode === 401) {
-        err = Error('no bearer token included');
+        err = Error('user is unauthorized to perform this action');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

@@ -293,6 +293,21 @@ exports.bobPrivateModules = [
 
 exports.packages = require("./user_packages");
 
+exports.ownedPackages = {
+  "count": 1,
+  "items": [
+    {
+      "created": "2015-08-21T22:26:41.810Z",
+      "deleted": null,
+      "name": "@bigco/boom",
+      "permissions": "write",
+      "private": true,
+      "scope_id": 12345,
+      "updated": "2015-08-21T22:26:41.810Z"
+    },
+  ]
+};
+
 exports.bobTokens = [
   {
     "created": "2015-03-20T20:27:21.258Z",

@@ -39,7 +39,16 @@ exports.bigcoteamUsers = [
 ];
 
 exports.bigcoteamPackages = {
-  "@bigco/boomer": "read"
+  count: 1,
+  items: [{
+    "created": "2015-10-27T00:10:40.449Z",
+    "deleted": null,
+    "name": "@bigco/boom",
+    "permissions": "write",
+    "private": true,
+    "scope_id": 12345,
+    "updated": "2015-11-12T23:58:56.326Z"
+  }]
 };
 
 exports.developersUsers = {

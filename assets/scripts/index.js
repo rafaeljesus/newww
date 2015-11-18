@@ -23,6 +23,7 @@ require("./fetch-packages")();
 require("./tabs")();
 require("./switch-submission")();
 require("./validator")();
+require("./eloqua-integration")();
 
 window.github = require("./github")();
 window.star = require("./star")();

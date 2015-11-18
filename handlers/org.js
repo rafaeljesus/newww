@@ -169,7 +169,7 @@ exports.addUserToOrg = function(request, reply) {
         return request.saveNotifications([
           P.reject(err.message)
         ]).then(function(token) {
-          var url = '/org/' + orgName;
+          var url = '/org/' + orgName + '/members';
           var param = token ? "?notice=" + token : "";
           url = url + param;
           return reply.redirect(url);

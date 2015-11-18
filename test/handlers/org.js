@@ -897,6 +897,7 @@ describe('updating an org', function() {
           var tokenFacilitator = new TokenFacilitator({
             redis: client
           });
+          expect(redirectPath).to.include('/org/bigco/members?notice=');
           expect(token).to.be.string();
           expect(token).to.not.be.empty();
           expect(resp.statusCode).to.equal(302);
@@ -905,7 +906,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('org or user not found');
+            expect(notice.notices[0]).to.equal('user not found');
             done();
           });
         });

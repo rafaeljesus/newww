@@ -199,19 +199,33 @@ Team.prototype.addPackage = function(opts) {
 
 Team.prototype.addPackages = function(opts) {
   opts = opts || {};
-  opts.packages = opts.packages || [];
-  var self = this;
-
-  var requests = opts.packages.map(function(pkg) {
-    return self.addPackage({
-      package: pkg.name,
-      permissions: pkg.permissions,
-      id: opts.id,
-      scope: opts.scope
-    });
+  var packages = (opts.packages || []).map(function (xs) {
+    return {
+      name: xs.name,
+      permissions: xs.permissions
+    };
   });
-
-  return P.all(requests);
+  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id + '/package';
+  return P.promisify(Request.put)({
+    url: url,
+    json: true,
+    body: {
+      packages: packages
+    },
+    headers: {
+      bearer: this.bearer
+    }
+  }).spread(function (resp, body) {
+    if (resp.statusCode >= 400) {
+      throw _.extend(new Error(
+        resp.statusCode === 400 ? body.error :
+        resp.statusCode === 401 ? 'user is unauthorized to perform this action' :
+        resp.statusCode === 404 ? 'Team or Org not found' :
+        body.error || err.message
+      ), {statusCode: resp.statusCode});
+    }
+    return body;
+  })
 };
 
 Team.prototype.removePackage = function(opts) {

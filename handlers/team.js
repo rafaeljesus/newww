@@ -235,7 +235,7 @@ var validPayloadSchema = {
   }),
   writePermission: Joi.string().when('updateType', {
     is: 'updateWritePermissions',
-    then: Joi.required()
+    then: Joi.allow('on')
   }),
   writePermissions: Joi.object().when('updateType', {
     is: 'addPackagesToTeam',

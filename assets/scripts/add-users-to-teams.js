@@ -196,6 +196,10 @@ module.exports = function() {
         auf.removeUser(username);
       });
 
+      auf.$el.on("click", ".remove-all-users", function(e) {
+        auf.removeAll();
+      });
+
     }
   });
 };

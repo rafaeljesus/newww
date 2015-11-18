@@ -1097,7 +1097,7 @@ describe('team', function() {
   });
 
   describe('updating the team packages', function() {
-    it('allows a super/team-admin to update a package\'s permissions', function(done) {
+    it('allows a super/team-admin to make a package writable by the team', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
@@ -1123,6 +1123,49 @@ describe('team', function() {
             "name": "@bigco/boomer",
             updateType: 'updateWritePermissions',
             writePermission: 'on',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          orgMock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.request.response.headers.location).to.equal('/org/bigco/team/bigcoteam');
+          done();
+        });
+      });
+    });
+
+    it('allows a super/team-admin to make a package read-only by the team', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+
+      var orgMock = nock("https://user-api-example.com")
+        .put('/team/bigco/bigcoteam/package', {
+          package: '@bigco/boomer',
+          permissions: 'read'
+        })
+        .reply(200);
+
+      generateCrumb(server, function(crumb) {
+
+        var options = {
+          url: "/org/bigco/team/bigcoteam",
+          method: "POST",
+          credentials: fixtures.users.bob,
+          payload: {
+            "name": "@bigco/boomer",
+            updateType: 'updateWritePermissions',
             crumb: crumb
           },
           headers: {

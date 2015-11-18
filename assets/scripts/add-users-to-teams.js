@@ -157,6 +157,13 @@ module.exports = function() {
           });
       });
 
+      $(window).keydown(function(e) {
+        if (e.keyCode === 13) {
+          e.preventDefault();
+          return addBtn.triggerHandler("click");
+        }
+      });
+
       auf.selectMenu.on("change", function() {
         var teamName = this.options[this.selectedIndex].value;
         if (teamName === "_none_") {

@@ -25,10 +25,11 @@
       <table class="org-table org-users org-edit-user-table">
         <thead>
           <tr>
-            <th>Collaborators</th>
+            <th>collaborators</th>
+            <th>role</th>
             {{#if perms.isSuperAdmin}}
-            <th>Status</th>
-            <th>Action</th>
+            <th>status</th>
+            <th>action</th>
             {{/if}}
           </tr>
         </thead>
@@ -48,6 +49,7 @@
                   </span><!--/.name-->
                 </div>
               </td>
+              <td>{{role}}</td>
             {{#if ../perms.isSuperAdmin}}
               <td>
                 <div class="collapsible-wrapper">

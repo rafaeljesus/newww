@@ -646,7 +646,7 @@ describe('team', function() {
         .reply(404)
         .get('/team/bigco/bigcoteam/user')
         .reply(404)
-        .get('/team/bigco/bigcoteam/package?format=mini')
+        .get('/team/bigco/bigcoteam/package?format=detailed')
         .reply(404);
 
       var options = {
@@ -690,7 +690,7 @@ describe('team', function() {
         .reply(200, fixtures.teams.bigcoteam)
         .get('/team/bigco/bigcoteam/user')
         .reply(200, fixtures.teams.bigcoteamUsers)
-        .get('/team/bigco/bigcoteam/package?format=mini')
+        .get('/team/bigco/bigcoteam/package?format=detailed')
         .reply(200, fixtures.teams.bigcoteamPackages);
 
       var options = {
@@ -1513,7 +1513,7 @@ describe('team', function() {
         .reply(200, fixtures.teams.bigcoteam)
         .get('/team/bigco/bigcoteam/user')
         .reply(200, fixtures.teams.bigcoteamUsers)
-        .get('/team/bigco/bigcoteam/package?format=mini')
+        .get('/team/bigco/bigcoteam/package?format=detailed')
         .reply(200, fixtures.teams.bigcoteamPackages);
 
       var options = {

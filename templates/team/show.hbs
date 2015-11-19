@@ -35,7 +35,7 @@
               package name
             </th>
             <th>author</th>
-            <th>date added</th>
+            <th>last published</th>
             {{#if perms.isAtLeastTeamAdmin }}
             <th>access</th>
             <th>action</th>
@@ -52,11 +52,16 @@
                 {{/if}}
                 <span class="name">
                   <a class="packagename" href="/package/{{name}}">{{name}}</a>
+                  {{#if version}}<strong>&nbsp;(v{{version}})</strong>{{/if}}
                 </span><!--/.name-->
               </div>
             </td>
-            <td>author</td>
-            <td>date</td>
+            <td><a href="/~{{publisher.name}}">{{publisher.name}}</a></td>
+            <td>
+              <span data-date="{{lastPublishedAt}}" data-date-format="relative">
+                {{lastPublishedAt}}
+              </span>
+            </td>
             {{#if ../../perms.isAtLeastTeamAdmin }}
             <td>
               <div class="collapsible-wrapper">

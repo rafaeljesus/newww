@@ -146,7 +146,7 @@ module.exports = function() {
         return getUser(auf.orgScope, username)
           .fail(function(obj) {
             if (obj.status === 404) {
-              message = "User " + username + " is not a member of this Org, please add them";
+              message = "User " + username + " is not a member of this Organization, <a href='/org/" + auf.orgScope + "/members'>please add them</a>";
             } else if (obj.status < 500) {
               message = obj.responseJSON && obj.responseJSON.error;
             } else {

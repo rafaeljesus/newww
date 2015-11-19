@@ -115,10 +115,9 @@
       <table class="org-table org-users">
         <thead>
           <tr>
-            <th>avatar</th>
+            <th></th>
             <th>member name</th>
             <th>role</th>
-            <th>date added</th>
             {{#if perms.isAtLeastTeamAdmin }}
             <th>status</th>
             <th>action</th>
@@ -141,7 +140,6 @@
               </div>
             </td>
             <td>{{role}}</td>
-            <td>date added</td>
             {{#if ../perms.isAtLeastTeamAdmin }}
             <td>{{#if ../sponsored}}active{{else}}inactive{{/if}}</td>
             <td>

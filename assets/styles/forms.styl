@@ -128,7 +128,7 @@ button[type="submit"].btn-secondary,
   &:hover
     text-decoration underline
 
-.delete-user
+.delete-user, .delete-package
   color white
   background greigh2
   border medium none
@@ -333,12 +333,13 @@ input[type=text] + .description
  * Inspired by Lea Verou
  */
 
-.collapsible-wrapper
-  min-width 260px
+form.edit-write-permission
   margin-top 20px
+  width 300px
 
 .switch-container
-  float left
+  display inline
+  padding 20px 0px 0px
 
 .switch-container input[type="checkbox"]:not(:checked),
 .switch-container input[type="checkbox"]:checked  /* :checked here acting as a filter for older browsers */
@@ -355,9 +356,11 @@ input[type=text] + .description
   width 9em
 
 .edit-write-permissions-save
+  display inline
   float right
+  margin-top 2px
   normal-font()
-  font-size 90%
+  font-size 95%
   border none
   background none
   color primary

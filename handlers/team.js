@@ -180,7 +180,8 @@ exports.showTeam = function(request, reply) {
       return Team(loggedInUser)
         .get({
           orgScope: orgName,
-          teamName: teamName
+          teamName: teamName,
+          detailed: true
         });
 
     })
@@ -188,6 +189,10 @@ exports.showTeam = function(request, reply) {
       team.packages.items.forEach(function(pkg) {
         if (pkg.permissions === 'write') {
           pkg.canWrite = true;
+        }
+
+        if(pkg.access === 'restricted') {
+          pkg.private = true;
         }
       });
 

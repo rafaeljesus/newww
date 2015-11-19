@@ -15,7 +15,7 @@ var Team = module.exports = function(bearer) {
 };
 
 Team.prototype._get = function(opts) {
-  var url = USER_HOST + '/team/' + opts.orgScope + '/' + opts.teamName;
+  var url = USER_HOST + '/team/' + opts.orgScope + '/' + encodeURIComponent(opts.teamName);
 
   var data = {
     url: url,
@@ -76,7 +76,7 @@ Team.prototype.get = function(opts, callback) {
 };
 
 Team.prototype.getUsers = function(opts) {
-  var url = USER_HOST + '/team/' + opts.orgScope + '/' + opts.teamName + '/user';
+  var url = USER_HOST + '/team/' + opts.orgScope + '/' + encodeURIComponent(opts.teamName) + '/user';
 
   var data = {
     url: url,
@@ -110,7 +110,7 @@ Team.prototype.getUsers = function(opts) {
 };
 
 Team.prototype.getPackages = function(opts) {
-  var url = USER_HOST + '/team/' + opts.orgScope + '/' + opts.teamName + '/package';
+  var url = USER_HOST + '/team/' + opts.orgScope + '/' + encodeURIComponent(opts.teamName) + '/package';
 
   url += '?format=' + (opts.detailed ? 'detailed' : 'mini');
 
@@ -154,7 +154,7 @@ Team.prototype.getPackages = function(opts) {
 Team.prototype.addPackage = function(opts) {
   opts = opts || {};
 
-  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id + '/package';
+  var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id) + '/package';
 
   var data = {
     url: url,
@@ -205,7 +205,7 @@ Team.prototype.addPackages = function(opts) {
       permissions: xs.permissions
     };
   });
-  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id + '/package';
+  var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id) + '/package';
   return P.promisify(Request.put)({
     url: url,
     json: true,
@@ -231,7 +231,7 @@ Team.prototype.addPackages = function(opts) {
 Team.prototype.removePackage = function(opts) {
   opts = opts || {};
 
-  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id + '/package';
+  var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id) + '/package';
 
   var data = {
     url: url,
@@ -276,7 +276,7 @@ Team.prototype.removePackage = function(opts) {
 Team.prototype._addUser = function(opts, callback) {
   opts = opts || {};
 
-  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id + '/user';
+  var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id) + '/user';
 
   var data = {
     url: url,
@@ -349,7 +349,7 @@ Team.prototype.addUsers = function(opts, callback) {
 Team.prototype.removeUser = function(opts) {
   opts = opts || {};
 
-  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id + '/user';
+  var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id) + '/user';
 
   var data = {
     url: url,
@@ -400,7 +400,7 @@ Team.prototype.removeUser = function(opts) {
 Team.prototype.updateInfo = function(opts) {
   opts = opts || {};
 
-  var url = USER_HOST + '/team/' + opts.scope + '/' + opts.id;
+  var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id);
 
   var data = {
     url: url,

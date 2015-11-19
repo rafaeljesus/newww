@@ -221,7 +221,7 @@ Team.prototype.addPackages = function(opts) {
         resp.statusCode === 400 ? body.error :
         resp.statusCode === 401 ? 'user is unauthorized to perform this action' :
         resp.statusCode === 404 ? 'Team or Org not found' :
-        body.error || err.message
+        body.error
       ), {statusCode: resp.statusCode});
     }
     return body;

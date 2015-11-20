@@ -1,8 +1,9 @@
 <div class="container">
 
-  <hgroup class="lefty">
-    <h1 class="billing-header"><a href="/org/{{orgName}}">@{{orgName}}</a> / {{teamName}}</h1>
-    <h4>{{description}}</h4>
+  <hgroup class="breadcrumb">
+    <h3><a href="/org/{{orgName}}">@{{orgName}}</a> /</h3>
+    <h1>{{teamName}}</h1>
+    <h4 class="description">{{description}}</h4>
   </hgroup>
 
   <div class="tabs">
@@ -31,7 +32,6 @@
         <thead>
           <tr>
             <th>
-              <i class="icon-lock"></i>
               package name
             </th>
             <th>author</th>

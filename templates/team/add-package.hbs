@@ -1,6 +1,6 @@
 <div class="main main-contain narrow">
   {{#if user.email_verified}}
-  <h1>add {{team.name}} packages</h1>
+  <h1>add packages to <br /><a href="/org/{{orgScope}}/team/{{team.name}}">{{team.name}}</a></h1>
   <div>
     <form method="POST" data-form-function="add-package-to-team" id="add-package-to-team-form" action="/org/{{orgScope}}/team/{{team.name}}">
       <section>
@@ -38,16 +38,17 @@
             </div>
             <a id="remove-all-added" class="remove-all-pkgs btn-link" type="button">remove all</a>
           </div>
-          <ul class="vanilla-list packages-list">
+          <ul class="packages-list">
           </ul>
         </div>
       </section>
 
       <input type="hidden" name="updateType" value="addPackagesToTeam"/>
       {{> form_security}}
-      <button class="button org-submit-btn" type="submit">Make it so</button>
-      <a href="/org/{{orgScope}}/team/{{team.name}}">cancel</a>
-
+      <div class="submit-row">
+        <button class="button org-submit-btn" type="submit">make it so</button>
+        <a href="/org/{{orgScope}}/team/{{team.name}}">cancel</a>
+      </div>
     </form>
 
   </div>

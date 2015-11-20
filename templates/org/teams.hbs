@@ -25,7 +25,7 @@
       <div class="org-info-header-container">
         <h2>{{pluralize org.teams.count "team" true}}</h2>
         {{#if perms.isAtLeastTeamAdmin}}
-          <a class="button" href="/org/{{org.info.name}}/team/create">create a Team</a>
+          <a class="button" href="/org/{{org.info.name}}/team/create">create a team</a>
         {{/if}}
       </div>
       {{#if org.teams.items}}

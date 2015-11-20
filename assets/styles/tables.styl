@@ -52,23 +52,28 @@ table
 .remove-all-users, .remove-all-pkgs
   float right
 
-// list quick fix until we change Adds to tabular
+// list quick fix until we change Adds to tabular rows
 
 .members-list, .packages-list
-  display table
+  display inline-block
   width table-width
   position relative
-
+  margin 0px
   li
-    display table-row
+    display flex
     height 50px
-    padding auto 5px
-    margin-top 10px
-
+    border-bottom 1px solid greigh7
+    *
+      display flex
+      align-items center
+      justify-content space-between
+      margin auto 0px
     .name
       display flex
       justify-content left
-      width 200px
+      width 240px
+    .role
+      width 180px
       a
         box-sizing border-box
         display inline-block
@@ -77,8 +82,17 @@ table
         text-overflow ellipsis
         word-break break-all
         word-wrap break-word
-
     .switch-container
-        display table-cell
+      label
+        display inline-table
+      .switch //not ideal; switch doesn't switch fully...
+        position absolute
+        left 40%
+        top 6px
     button
-      align-items right
+      display inline-block
+      margin-left 15px
+
+.members-list
+  li span.name
+    width 100%

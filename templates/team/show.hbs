@@ -59,7 +59,6 @@
             <td>date</td>
             {{#if ../../perms.isAtLeastTeamAdmin }}
             <td>
-              <div class="collapsible-wrapper">
               <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../orgName}}/team/{{../../teamName}}" class="edit-write-permission">
                 <div class="switch-container">
                   <label><span class="a11y-only">Write Permission</span>
@@ -74,12 +73,10 @@
                 {{/with}}
                 <input type="hidden" name="name" value="{{name}}" />
                 <input type="hidden" name="updateType" value="updateWritePermissions" />
-                <button type="submit" class="edit-write-permissions-save"><span>Save</span></button>
+                <button type="submit" class="edit-write-permissions-save"><span>Save</span></button> <!-- kill this Roq! -->
               </form>
-              </div>
             </td>
             <td>
-              <div class="collapsible-wrapper">
                 <form method="POST" id="team-package-delete-overview-{{@index}}" action="/org/{{../../orgName}}/team/{{../../teamName}}">
                   {{#with ../../this}}
                   {{> form_security }}
@@ -88,7 +85,6 @@
                   <input type="hidden" name="updateType" value="removePackage" />
                   <button type="submit" class="delete-user icon-x"><span class="a11y-only">Remove Package {{name}} from {{../../teamName}}</span></button>
               </form>
-              </div>
             </td>
             {{/if}}
           </tr>
@@ -100,7 +96,7 @@
 
     <div id="members" class="tab tab-2">
       <div class="org-info-header-container">
-        <h2>{{pluralize members.count "members" true}}</h2>
+        <h2>{{pluralize members.count "active members" true}}</h2>
         {{#if perms.isAtLeastTeamAdmin}}
           <a class="button" href="/org/{{orgName}}/team/{{teamName}}/add-user">add members</a>
         {{/if}}
@@ -110,8 +106,7 @@
       <table class="org-table org-users">
         <thead>
           <tr>
-            <th>avatar</th>
-            <th>member name</th>
+            <th>name</th>
             <th>role</th>
             <th>date added</th>
             {{#if perms.isAtLeastTeamAdmin }}
@@ -124,23 +119,21 @@
         {{#each members.items}}
           <tr>
             <td>
-              <a href="/~{{name}}" class="circle-avatar">
-                <img src="{{#if avatar.large}}{{avatar.large}}{{else}}{{avatar.medium}}{{/if}}">
-              </a>
-            </td>
-            <td>
-              <div>
-                <span class="name">
-                  <a class="username" href="/~{{name}}">{{name}}</a>
-                </span><!--/.name-->
-              </div>
+                <span class="avatar-small">
+                  <img src="{{avatar.small}}" />
+                </span>
+                <ul class="name-desc vanilla-list ellipsis">
+                  <li><a class="name" href="/~{{name}}">{{name}}</a></li>
+                  {{#if resource.fullname}}
+                  <li><span class="display-name">{{resource.fullname}}</span></li>
+                  {{/if}}
+                </ul><!--/.name-->
             </td>
             <td>{{role}}</td>
             <td>date added</td>
             {{#if ../perms.isAtLeastTeamAdmin }}
             <td>{{#if ../sponsored}}active{{else}}inactive{{/if}}</td>
             <td>
-              <div class="collapsible-wrapper">
                 <form method="POST" id="team-user-delete-overview-{{@index}}" action="/org/{{../../orgName}}/team/{{../../teamName}}">
                   {{#with ../../../this}}
                   {{> form_security }}
@@ -149,7 +142,6 @@
                   <input type="hidden" name="updateType" value="removeUser" />
                   <button type="submit" class="delete-user icon-x"><span class="a11y-only">Remove User {{../name}} from {{../../teamName}}</span></button>
               </form>
-              </div>
             </td>
             {{/if}}
           </tr>

@@ -45,10 +45,12 @@
         {{#each org.teams.items}}
           <tr>
             <td>
-              <a href="/org/{{../org.info.name}}/team/{{name}}">{{name}}</a>
-              {{#if description}}
-              <span class="description">{{description}}</span>
-              {{/if}}
+              <ul class="name-desc">
+                <li><a class="name" href="/org/{{../org.info.name}}/team/{{name}}">{{name}}</a></li>
+                {{#if description}}
+                <li><span class="display-name">{{description}}</span></li>
+                {{/if}}
+            </ul>
             </td>
             <td>
               {{#if users.count}}

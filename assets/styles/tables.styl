@@ -1,0 +1,84 @@
+table-width = 100%
+table-row-height = 60px
+
+table
+  border-collapse collapse
+  width table-width
+  margin 0
+
+  thead
+    border-bottom 1px solid greigh6
+    tr
+      height 30px
+      text-transform lowercase
+
+  tbody
+    margin-top 10px
+
+  tr
+    height table-row-height
+
+    &:nth-child(2n)
+      background greigh-lightest
+
+    &.user-add
+      padding 10px auto
+      vertical-align middle
+      border-top 1px solid greigh7
+      background lighten(yellow,75%)
+
+  th,td
+    vertical-align middle
+    text-align center
+    color greigh2
+
+    &:first-of-type
+      padding-left 10px
+      text-align left
+  th
+    color greigh4
+    font-weight 600
+
+
+.org-team-empty
+  background table-background-grey
+  text-align center
+  color detail-grey
+  padding 20px 0
+
+.add-count
+  display inline-block
+
+.remove-all-users, .remove-all-pkgs
+  float right
+
+// list quick fix until we change Adds to tabular
+
+.members-list, .packages-list
+  display table
+  width table-width
+  position relative
+
+  li
+    display table-row
+    height 50px
+    padding auto 5px
+    margin-top 10px
+
+    .name
+      display flex
+      justify-content left
+      width 200px
+      a
+        box-sizing border-box
+        display inline-block
+        overflow hidden
+        white-space nowrap
+        text-overflow ellipsis
+        word-break break-all
+        word-wrap break-word
+
+    .switch-container
+        display table-cell
+    button
+      align-items right

@@ -4,23 +4,9 @@
     <h1 class="billing-header">@{{org.info.name}}</h1>
   </hgroup>
 
-    <div class="tab-nav-container">
-      <div class="nav-container nav-4-container">
-        <ul class="nav nav-4 clear" role="navigation">
-          <li><a href="/org/{{org.info.name}}">{{pluralize org.packages.count "package" true}}</a></li>
-          {{#if perms.isAtLeastMember}}
-          <li class="current"><a href="/org/{{org.info.name}}/teams">{{pluralize org.teams.count "team" true}}</a></li>
-            <li><a href="/org/{{org.info.name}}/members">{{pluralize org.users.count "member" true}}</a></li>
-          {{/if}}
-          {{#if perms.isSuperAdmin}}
-            <li><button type="button" id="billing" data-stripe-id="{{customer_id}}">payment info</button></li>
-          {{/if}}
-        </ul>
-      </div>
-    </div>
+  {{> org-nav teams=true}}
 
-
-    {{#if perms.isAtLeastMember}}
+  {{#if perms.isAtLeastMember}}
     <div id="teams">
       <div class="org-info-header-container">
         <h2>{{pluralize org.teams.count "team" true}}</h2>
@@ -86,12 +72,12 @@
         {{/each}}
         </tbody>
       </table>
-      {{else}}
+    {{else}}
       <div class="org-team-empty">
         <div>You have no teams within this Org.</div>
         <div>Why not add one?</div>
       </div>
-      {{/if}}
+    {{/if}}
 
     </div>
     {{/if}}

@@ -2,7 +2,7 @@ var formToRequestObject = require("./form-to-request-object");
 
 module.exports = function() {
   $(function() {
-    var eut = $(".org-edit-user-table");
+    var eut = $(".org-edit-user-table, .org-edit-packages-table");
 
     eut.on("click", "input[type=checkbox].switch", function(e) {
       var checkbox = $(this);

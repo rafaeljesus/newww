@@ -28,14 +28,14 @@
       </div>
 
       {{#if packages.count}}
-      <table class="org-table org-packages">
+      <table class="org-table org-packages org-edit-packages-table">
         <thead>
           <tr>
             <th>
               package name
             </th>
             <th>author</th>
-            <th>date added</th>
+            <th>last published</th>
             {{#if perms.isAtLeastTeamAdmin }}
             <th>access</th>
             <th>action</th>
@@ -52,11 +52,16 @@
                 {{/if}}
                 <span class="name">
                   <a class="packagename" href="/package/{{name}}">{{name}}</a>
+                  {{#if version}}<strong>&nbsp;(v{{version}})</strong>{{/if}}
                 </span><!--/.name-->
               </div>
             </td>
-            <td>author</td>
-            <td>date</td>
+            <td><a href="/~{{publisher.name}}">{{publisher.name}}</a></td>
+            <td>
+              <span data-date="{{lastPublishedAt}}" data-date-format="relative">
+                {{lastPublishedAt}}
+              </span>
+            </td>
             {{#if ../../perms.isAtLeastTeamAdmin }}
             <td>
               <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../orgName}}/team/{{../../teamName}}" class="edit-write-permission">
@@ -108,7 +113,6 @@
           <tr>
             <th>name</th>
             <th>role</th>
-            <th>date added</th>
             {{#if perms.isAtLeastTeamAdmin }}
             <th>status</th>
             <th>action</th>
@@ -130,7 +134,6 @@
                 </ul><!--/.name-->
             </td>
             <td>{{role}}</td>
-            <td>date added</td>
             {{#if ../perms.isAtLeastTeamAdmin }}
             <td>{{#if ../sponsored}}active{{else}}inactive{{/if}}</td>
             <td>

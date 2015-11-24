@@ -496,7 +496,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
             .catch(function(err) {
               if (err.statusCode === 404) {
                 return reply.view('org/billing', {
-                  humanName: request.query["human-name"],
+                  humanName: humanName,
                   orgScope: orgScope,
                   newUser: newUser,
                   stripePublicKey: process.env.STRIPE_PUBLIC_KEY
@@ -513,7 +513,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
       });
   } else {
     return reply.view('org/billing', {
-      humanName: request.query["human-name"],
+      humanName: humanName,
       orgScope: orgScope,
       stripePublicKey: process.env.STRIPE_PUBLIC_KEY
     });

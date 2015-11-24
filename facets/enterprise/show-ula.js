@@ -11,10 +11,7 @@ module.exports = function createHubspotLead(request, reply) {
     firstname: Joi.string().required(),
     lastname: Joi.string().required(),
     email: Joi.string().regex(/^.+@.+\..+$/).required(), // email default accepts "boom@boom", which is kinda no bueno atm
-    phone: Joi.string().required(),
-    company: Joi.string().required(),
-    numemployees: Joi.string().optional(),
-    comments: Joi.string().optional().allow('')
+    phone: Joi.string().optional().allow('')
   });
 
   var joiOptions = {

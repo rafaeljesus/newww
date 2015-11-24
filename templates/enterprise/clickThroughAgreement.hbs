@@ -1,39 +1,18 @@
 <div class="container tablet-width">
-
-  <hgroup>
+  <hgroup class="center">
     <h1>npm On-Site</h1>
-    <h2>Two ways to get started</h2>
+    <h3>To download, please read and agree to our User License Agreement.</h3>
   </hgroup>
-
   <section>
-    <h2>Option 1: Download now</h2>
-
-    <p>To immediately download and try npm On-Site, please read and agree to our User License Agreement.</p>
-
     <div class="scroll-beyond-300">{{> license-text}}</div>
-
     <form accept-charset="UTF-8" action="/enterprise-trial-signup" method="POST">
       <input type="hidden" id="customer_email" name="customer_email" value="{{customer_email}}">
       <input type="hidden" id="customer_id" name="customer_id" value="{{customer_id}}">
-      <label for="agree">
+      <label class="capn-obvs" for="agree">
         <input type="checkbox" required="required" id="agree" name="agree"> I agree to the npm On-Site ULA
       </label>
-      <input class="full-width" type="submit" value="Agree to license">
+      <input class="full-width" type="submit" value="let's get it started">
       {{> form_security}}
     </form>
   </section>
-
-  <section>
-    <h2>Option 2: Start a conversation</h2>
-
-    <p>If you have further questions before beginning your trial, we’re here to help. Click here to drop us a line; we’ll be in touch within a day.</p>
-
-    <form accept-charset="UTF-8" action="/enterprise-contact-me" method="POST">
-      <input type="hidden" id="contact_customer_email" name="contact_customer_email" value="{{customer_email}}">
-      <input type="hidden" id="contact_customer_id" name="contact_customer_id" value="{{customer_id}}">
-      <input class="full-width" type="submit" value="Contact me">
-      {{> form_security}}
-    </form>
-  </section>
-
 </div>

@@ -12,12 +12,10 @@
   {{> errors}}
 
   <form accept-charset="UTF-8" action="/enterprise-start-signup" method="POST" id="npme-signup-form">
-
     <div>
       <label for="firstname">First Name</label>
       <input type="text" required="required" id="firstname" name="firstname">
     </div>
-
     <div>
       <label for="lastname">Last Name</label>
       <input type="text" required="required" id="lastname" name="lastname">
@@ -27,19 +25,14 @@
       <label for="email">Email</label>
       <input type="email" required="required" id="email" name="email" autocapitalize="off" autocorrect="off" >
       <p class="help-text">This email will be the username for your trial license</p>
-
     </div>
-
     <div>
-      <label for="phone">Phone Number</label>
+      <label for="phone">Phone Number (optional)</label>
       <input type="text" id="phone" name="phone">
-      <p class="help-text">Phone number is optional</p>
     </div>
-
-
     <div>
       <div class="actions">
-        <input type="submit" class="full-width" value="Start npm On-Site trial">
+        <input type="submit" class="full-width" value="start npm On-Site trial">
       </div>
     </div>
     {{> form_security}}

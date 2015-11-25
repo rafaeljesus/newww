@@ -81,7 +81,7 @@ exports.getOrg = function(request, reply) {
     .then(function(opts) {
 
       if (!opts.perms.isSuperAdmin) {
-        return P.resolve(null);
+        return null;
       }
 
       return request.customer.getById(request.loggedInUser.email)

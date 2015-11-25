@@ -1,0 +1,98 @@
+table-width = 100%
+table-row-height = 60px
+
+table
+  border-collapse collapse
+  width table-width
+  margin 0
+
+  thead
+    border-bottom 1px solid greigh6
+    tr
+      height 30px
+      text-transform lowercase
+
+  tbody
+    margin-top 10px
+
+  tr
+    height table-row-height
+
+    &:nth-child(2n)
+      background greigh-lightest
+
+    &.user-add
+      padding 10px auto
+      vertical-align middle
+      border-top 1px solid greigh7
+      background lighten(yellow,75%)
+
+  th,td
+    vertical-align middle
+    text-align center
+    color greigh2
+
+    &:first-of-type
+      padding-left 10px
+      text-align left
+  th
+    color greigh4
+    font-weight 600
+
+
+.org-team-empty
+  background table-background-grey
+  text-align center
+  color detail-grey
+  padding 20px 0
+
+.add-count
+  display inline-block
+
+.remove-all-users, .remove-all-pkgs
+  float right
+
+// list quick fix until we change Adds to tabular rows
+
+.members-list, .packages-list
+  display inline-block
+  width table-width
+  position relative
+  margin 0px
+  li
+    display flex
+    height 50px
+    border-bottom 1px solid greigh7
+    *
+      display flex
+      align-items center
+      justify-content space-between
+      margin auto 0px
+    .name
+      display flex
+      justify-content left
+      width 240px
+    .role
+      width 180px
+      a
+        box-sizing border-box
+        display inline-block
+        overflow hidden
+        white-space nowrap
+        text-overflow ellipsis
+        word-break break-all
+        word-wrap break-word
+    .switch-container
+      label
+        display inline-table
+      .switch //not ideal; switch doesn't switch fully...
+        position absolute
+        left 40%
+        top 6px
+    button
+      display inline-block
+      margin-left 15px
+
+.members-list
+  li span.name
+    width 100%

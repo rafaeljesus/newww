@@ -1,10 +1,10 @@
 <div class="main main-contain narrow">
   {{#if user.email_verified}}
-  <h1>Create a Team</h1>
+  <h1>create a team</h1>
   <div>
     <form method="POST" data-form-function="add-user-to-team" id="create-team-form" action="/org/{{org}}/team">
         <section>
-          <label for="team-name">Team name</label>
+          <label for="team-name">team name</label>
           <input required="required" type="text" id="team-name" name="team-name" placeholder="developers" />
           <p class="description">Your team name <strong class="fake-strong">must</strong> be lower case and have no spaces or punctuation.</p>
 
@@ -21,9 +21,10 @@
         {{> invite-members-to-team-list}}
 
         {{> form_security}}
-        <button class="button org-submit-btn" type="submit">Make it so</button>
-        <a href="/org/{{org}}">cancel</a>
-
+        <div class="submit-row">
+          <button class="button org-submit-btn" type="submit">make it so</button>
+          <a href="/org/{{org}}">cancel</a>
+        </div>
       </form>
 
   </div>

@@ -1,93 +1,26 @@
 .billing-header
   text-align left
 
-.subscriptions,
-.org-table
-  th,td
-    padding 20px
-    vertical-align middle
-
-.org-table
-
-  th,td
-    &:last-child
-      text-align center
-      width 10%
-
-    &:only-child
-      text-align left
-      width 100%
-
-  tbody tr:nth-child(2n+1)
-    background table-background-grey
-
-  tbody tr:last-child
-    td:last-child
-      text-align center
-      width auto
-
-  .circle-avatar,
-  .name
-    display inline-block
-    vertical-align middle
-
-  .circle-avatar
-    padding-right 20px
-
-    img
-      border-radius 50%
-      width 42px
-      height 42px
-
-  .display-name
-    display block
-
-
-.subscriptions
-  border-collapse separate
-  border-spacing 0 1em
-
-  tbody tr
-    background-color table-background-grey
-
-  th,td
-    &:first-child
-      width 40%
-
-    &:last-child
-      text-align center
-      width 20%
-
-    &:only-child
-      text-align left
-      width 100%
-
-  td
-    border-top 1px solid table-border-grey
-    border-bottom 1px solid table-border-grey
-
-    &:first-child
-      border-left 1px solid table-border-grey
-      border-top-left-radius .2em
-      border-bottom-left-radius .2em
-
-    &:last-child
-      border-right 1px solid table-border-grey
-      border-top-right-radius .2em
-      border-bottom-right-radius .2em
-
-  td a
-    color text-color
-    font-weight 600
-
-    &:hover
-      text-decoration none
-
+.org-info-header-container
+  display flex
+  flex-direction row
+  align-items center
+  margin 10px auto
+  h2
+    flex 0 80%
+    padding 0
+    margin 0
+  a
+    flex 0 20%
 .org-packages
   .icon-lock
     position relative
     top 3px
     color greigh3
+
+.package-header, .member-header
+  padding 5px
+  background greigh7
 
 .org-user-add
   input[type=text],
@@ -96,233 +29,39 @@
   label,
   button
     display inline-block
-    vertical-align middle
 
   input[type=text]
-    width 60%
-    margin 0
+    margin auto
+    width 35%
 
   fieldset
-    margin 0 3%
+    min-width 200px
+    margin auto 10px
 
     legend
       margin 0
 
-.org-marketing-page
-  h1
-    font-size 46px
-
-  h2
-    font-size 42px
-    font-weight 300
-    line-height 1.238
-
-  h3
-    font-size 28px
-    color npmred
-    font-weight 300
-    line-height 1.286
-  h4
-    color npmred
-    font-size 18px
-    line-height 1.3333
-    margin-bottom 15px
-
-  .description
-    color #485165
-    font-size 13px
-    line-height 2.15
-    margin-bottom 1em
-
-  .button
-    display inline-block
-
-.marketing-banner-container
-  background banner-back-blue
-  margin -50px -20px 0
-  padding 40px 20px 20px
-
-.marketing-banner
-  max-width 1180px
-  margin 0 auto
-
-.marketing-banner .img-container
-  display none
-  float right
-  width 45%
-  max-width 601px
-
-.org-banner-info
-  float left
-  margin-right 20px
-
-.org-marketing-description
-  font-size 16px
-  color #212121
-  font-weight 300
-  line-height 1.75
-
-.org-marketing-feature-list li
-  color #A5B3AA
-  font-weight 300
-  margin-top 20px
-
-  &:first-child
-    margin-top 0
-
-.org-marketing-feature-list span
-  color black
-
-.org-marketing-pricing .intro-text
-  text-align: center;
-
-.org-marketing-pricing ul
-  margin: 65px auto 0;
-  text-align center
-  width 75%
-
-.org-marketing-pricing li
-  display inline-block
-  vertical-align middle
-  width 33%
-  margin-left -4px
-  height 400px
-
-  &:first-child
-    margin-left 0
-
-.org-marketing-pricing .img-container
-  height 140px
-  position relative
-  margin-bottom 1em
-
-  img
-    position absolute
-    top 50%
-    left 50%
-    -webkit-transform translate(-50%, -50%)
-    transform translate(-50%, -50%)
-    margin-right -50%
-
-.org-pricing
-  position relative
-  height 100%
-
-.org-pricing .org-plan
-  font-size 16px
-  font-weight 600
-
-.org-price
-  padding-top 10px
-  padding-bottom 5px
-
-.org-pricing .org-price .price
-  color npmred
-  font-size 31px
-  display block
-  font-weight 600
-
-  &:before
-    content '$'
-    vertical-align super
-    font-size 50%
-
-.org-pricing .org-price .frequency
-  font-size 14px
-  font-weight 300
-
-.org-pricing .org-sign-up-button-container
-  position absolute
-  top 50%
-  left 50%
-  transform translate(-50%, -50%)
-  margin-right -50%
-
-.org-details
-  span
-    display inline-block
-
-  .includes
-    font-weight 600
-
-.org-submit-btn
-  display inline-block
-  margin-right 1em
-
-.org-info-header-container
-  position relative
-  padding-bottom 15px
-  border-bottom 1px solid table-border-grey
-
-  .button
-    position absolute
-    top 15px
-    right 0
-
-.org-table.org-teams
-
-  th,td
-    &:first-child
-      width 40%
-
-    &:last-child
-      text-align center
-      width 5%
-
-  .description
-    font-size inherit
-    display block
-
-  .created
-    width 10%
-    color detail-grey
-
-.org-team-empty
-  background table-background-grey
-  text-align center
-  color detail-grey
-  padding 20px 0
-
-.member-header, .package-header
-  background table-background-grey
-
-.add-count
-  display inline-block
-
-.remove-all-users, .remove-all-pkgs
-  float right
-
-.members-list, .packages-list
-  overflow auto
-  display table
-  width 100%
-  border-collapse collapse
-
+.name-desc
+  @extend .vanilla-list
+  @extend .ellipsis
+  margin 10px
+  line-height 125% //not ideal
   li
-    border-bottom 1px solid greigh5
-    display table-row
+    &:only-child
+      line-height 285% // also, not ideal
+  .display-name
+    color greigh4
 
-    > span
-      display table-cell
-      height 44px
-      vertical-align middle
-
-      &:last-child
-        width 10%
-    .name a
-      display block
-      white-space nowrap
-      width 180px
-      overflow hidden
-      text-overflow ellipsis
-
-    .switch-container
-      display table-cell
-      padding 20px 0px 0px
-
-    button
-      float right
-      margin-bottom -5px
+.submit-row
+  display flex
+  flex-direction row
+  justify-content space-between
+  width 50%
+  margin 0px auto
+  button
+    align-self center
+  a
+    align-self center
 
 /** js-enhanced styles */
 .team-selector-container,
@@ -348,21 +87,3 @@
     margin-right 13px
     width 71%
     height  47px
-
-
-
-@media (min-width: mobileMaxWidth + 1)
-
-  .marketing-banner
-    .org-banner-info
-      width 50%
-      max-width 417px
-
-    .img-container
-      display block
-
-  .org-marketing-main
-    h2
-      margin -95px 0 25px
-      padding-bottom 25px
-      border-bottom 1px solid #eaeaea

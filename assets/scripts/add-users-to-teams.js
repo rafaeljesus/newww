@@ -7,7 +7,7 @@ var template = function(user) {
   var username = user.name || "";
   var role = user.role || "";
 
-  return "<li class='clear' data-name='" + username + "'>" +
+  return "<li data-name='" + username + "'>" +
     "<span class='name'><a href='/~" +
     username +
     "'>" +

@@ -1,6 +1,6 @@
 <div class="main main-contain narrow">
   {{#if user.email_verified}}
-  <h1>add {{team.name}} users</h1>
+  <h1>add members to <br /><a href="/org/{{orgScope}}/team/{{team.name}}#members">{{team.name}}</a></h1>
   <div>
     <form method="POST" data-form-function="add-user-to-team" id="add-user-to-team-form" action="/org/{{orgScope}}/team/{{team.name}}">
       <section>
@@ -27,9 +27,10 @@
 
         <input type="hidden" name="updateType" value="addUsersToTeam"/>
         {{> form_security}}
-        <button class="button org-submit-btn" type="submit">Make it so</button>
-        <a href="/org/{{orgScope}}/team/{{team.name}}#members">cancel</a>
-
+        <div class="submit-row">
+          <button class="button org-submit-btn" type="submit">make it so</button>
+          <a href="/org/{{orgScope}}/team/{{team.name}}#members">cancel</a>
+        </div>
       </form>
 
   </div>

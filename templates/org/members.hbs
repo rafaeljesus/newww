@@ -24,22 +24,19 @@
           {{#each org.users.items}}
             <tr>
               <td>
-                <div class="collapsible-wrapper">
-                  <span class="circle-avatar">
+                  <span class="avatar-small">
                     <img src="{{avatar.small}}" />
                   </span>
-                  <span class="name">
-                    <a class="username" href="/~{{name}}">{{name}}</a>
+                  <ul class="name-desc vanilla-list ellipsis">
+                    <li><a class="name" href="/~{{name}}">{{name}}</a></li>
                     {{#if resource.fullname}}
-                    <span class="display-name">{{resource.fullname}}</span>
+                    <li><span class="display-name">{{resource.fullname}}</span></li>
                     {{/if}}
-                  </span><!--/.name-->
-                </div>
+                  </ul>
               </td>
               <td>{{role}}</td>
             {{#if ../perms.isSuperAdmin}}
               <td>
-                <div class="collapsible-wrapper">
                 <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../org.info.name}}" class="edit-pay-status">
                 <div class="switch-container pay-status">
                   <label><span class="a11y-only">Paid Status</span>
@@ -70,10 +67,8 @@
                       {{/unless}}
                     {{/if}}
                 </form>
-                </div>
               </td>
               <td>
-                <div class="collapsible-wrapper">
                   <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
                     {{#with ../../this}}
                     {{> form_security }}
@@ -82,16 +77,15 @@
                     <input type="hidden" name="updateType" value="deleteUser" />
                     <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
                 </form>
-                </div>
               </td>
               {{/if}}
             </tr>
           {{else}}
-            <tr><td colspan=2><em>There are no users in this Org.</em></td></tr>
+            <tr><td colspan=2><em>There are no users in this Organization</em></td></tr>
           {{/each}}
           {{#if perms.isSuperAdmin}}
-          <tr>
-            <td colspan=3>
+          <tr class="user-add">
+            <td colspan=4>
               <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">
                 <label for="name"><span class="a11y-only">Username</span></label>
                 <input required="required" type="text" id="username" name="username" placeholder="Invite a Member"/>
@@ -105,7 +99,7 @@
 
                 {{> form_security}}
                 <input type="hidden" name="updateType" value="addUser" />
-                <button type="submit" class="button">Add User</button>
+                <button type="submit"class="button">add member</button>
               </form>
             </td>
           </tr>
@@ -115,8 +109,6 @@
 
     </div><!--/.tab-3-->
   {{/if}}
-
-
 
 </div>
 <script src="https://static.accountdock.com/app.min.js"></script>

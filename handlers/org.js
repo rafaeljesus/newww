@@ -84,16 +84,11 @@ exports.getOrg = function(request, reply) {
         return P.resolve(null);
       }
 
-      request.customer.getById(request.loggedInUser.email)
-        .then(function(cust) {
-          return P.resolve(cust);
-        })
+      return request.customer.getById(request.loggedInUser.email)
         .catch(function(err) {
-          if (err.statusCode === '404') {
-            return P.resolve(null);
-          } else {
-            return P.reject(err);
-          }
+          return Number(err.statusCode) === 404;
+        }, function(err) {
+          return null;
         });
     })
     .then(function(cust) {

@@ -91,105 +91,58 @@
   .nav-breadcrumb-flow-indicator li
     padding-left 9em
 
-  .nav-container
-    border-bottom-width 1px
-    border-bottom-style solid
-    margin-left -40px
-    padding-left 40px
-    margin-right -40px
-    padding-right 40px
+// tabs
 
-  .nav-2-container
-    border-bottom-color black
-    border-top 1px solid table-border-grey
+tab-height = 45px
+tab-width = 120px
 
-  .nav-3-container
-    border-bottom-color table-border-grey
+.tab-row
+  border-bottom 1px solid greigh
+  input
+    display none
+  label.tab
+    margin 0 2px -1px
+    font-weight 600
+    text-align center
+    height tab-height
+    width tab-width
+    a
+      display inline-block
+      color greigh4
+      padding-top (tab-height/5)
+      padding-right 5px // numeration spacing
+      &:hover
+        text-decoration none
+    &:first-of-type
+      margin-left 10px
 
-  .nav-4-container
-    border-bottom-color #c6c6c6
+  input + label.tab
+    cursor pointer
+    border-radius 3px
+    border-top 1px solid transparent
+    border-bottom 1px solid transparent
 
-.nav > li
-  float: left
-  color table-border-grey
-  text-align center
-  position relative
+    &:hover
+      border 1px solid greigh
+      border-bottom 1px solid white
 
-.nav-2 li
-  margin-left 50px
-  padding-top 20px
-  padding-bottom 20px
+  input:checked + label.tab
+    color greigh-dark
+    border 1px solid greigh
+    border-top 5px solid primary
+    border-bottom 1px solid white
+    a
+      color greigh-darkest
+      padding-top ((tab-height/5) + -3px) // border compensation
 
-  &:first-child
-    margin-left 0
 
-.nav-3 li
-  width 200px
-  height 2em
-  border-right-width 1px
-  border-right-style solid
-  -webkit-border-image -webkit-linear-gradient(bottom, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
-  -moz-border-image -moz-linear-gradient(bottom, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
-  -o-border-image -o-linear-gradient(bottom, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
-  border-image linear-gradient(to top, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
-  &:first-child
-    border-left-width 1px
-    border-left-style solid
+  @media screen and (max-width: 650px)
+    label
+      font-size 0
+    label:before
+      margin 0
+      font-size 18px
 
-.nav-4 li
-  background #f8f8f8
-  width 150px
-  height 40px
-  padding .5em 0
-  margin-left 5px
-  border-top 1px solid #979797
-  border-left 1px solid #979797
-  border-right 1px solid #979797
-  border-top-left-radius 2px
-  border-top-right-radius 2px
-
-  &:first-child
-    margin-left 0
-
-.nav button,
-.nav a
-  color inherit
-  font inherit
-  -moz-appearance none
-  appearance none
-  background-color transparent
-  text-decoration none
-  cursor: pointer
-
-  &:hover
-    text-decoration none
-
-.nav button
-  border: 0px none
-
-.nav .current
-  color black
-  &:after
-    content "\0020"
-    position absolute
-    bottom 0
-    height 2px
-    width 100%
-    background-color npmred
-    display block
-
-.nav-4 .current
-  background transparent
-  border-top none
-  border-left-color greigh5
-  border-right-color greigh5
-
-  &:after
-    bottom auto
-    top 0
-    left -0.7px
-    width 101.1%
-    height 4px
-    border 1px solid npmred
-    border-top-left-radius 2px
-    border-top-right-radius 2px
+  @media screen and (max-width: 400px)
+    label
+      padding 15px

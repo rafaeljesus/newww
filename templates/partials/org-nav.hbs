@@ -1,14 +1,15 @@
-<div class="tab-nav-container">
-  <div class="nav-container nav-4-container">
-    <ul class="nav nav-4 clear" role="navigation">
-      <li {{#if packages}}class="current"{{/if}}><a href="/org/{{org.info.name}}">{{pluralize org.packages.count "package" true}}</a></li>
-      {{#if perms.isAtLeastMember}}
-        <li {{#if teams}}class="current"{{/if}}><a href="/org/{{org.info.name}}/teams">{{pluralize org.teams.count "team" true}}</a></li>
-        <li {{#if members}}class="current"{{/if}}><a href="/org/{{org.info.name}}/members">{{pluralize org.users.count "member" true}}</a></li>
-      {{/if}}
-      {{#if perms.isSuperAdmin}}
-        <li><a href="/settings/billing">payment info</a></li>
-      {{/if}}
-    </ul>
-  </div>
+<div class="tab-row">
+  <input id="packages" type="radio" name="tabs" {{#if packages}}checked{{/if}}>
+  <label class="tab" for="packages"><a href="/org/{{org.info.name}}">{{pluralize org.packages.count "package" true}}</a></label>
+
+  <input id="teams" type="radio" name="tabs" {{#if teams}}checked{{/if}}>
+  <label  class="tab" for="teams"><a href="/org/{{org.info.name}}/teams">{{pluralize org.teams.count "team" true}}</a></label>
+
+  <input id="members" type="radio" name="tabs" {{#if members}}members{{/if}}>
+  <label class="tab" for="members"><a href="/org/{{org.info.name}}/members">{{pluralize org.users.count "member" true}}</a></label>
+
+  {{#if perms.isSuperAdmin}}
+  <input id="billing" type="radio" name="tabs">
+  <label class="tab" for="billing"><a href="/settings/billing">payment info</a></label>
+  {{/if}}
 </div>

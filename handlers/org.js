@@ -50,11 +50,12 @@ exports.getOrg = function(request, reply) {
         return user;
       });
 
-
       var isSuperAdmin = org.users.items.filter(function(user) {
         return user.role && user.role.match(/super-admin/);
       }).some(function(admin) {
-        return admin.name === loggedInUser;
+        var isSA = admin.name === loggedInUser;
+        admin.isTheSuperAdmin = isSA;
+        return isSA;
       });
 
       var isAtLeastTeamAdmin = org.users.items.filter(function(user) {

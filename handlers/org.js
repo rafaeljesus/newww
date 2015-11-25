@@ -70,7 +70,6 @@ exports.getOrg = function(request, reply) {
         return member.name === loggedInUser;
       });
 
-
       opts.perms = {
         isSuperAdmin: isSuperAdmin,
         isAtLeastTeamAdmin: isAtLeastTeamAdmin,
@@ -80,9 +79,22 @@ exports.getOrg = function(request, reply) {
       return opts;
     })
     .then(function(opts) {
-      return opts.perms.isSuperAdmin ?
-        request.customer.getById(request.loggedInUser.email)
-        : P.resolve(null);
+
+      if (!opts.perms.isSuperAdmin) {
+        return P.resolve(null);
+      }
+
+      request.customer.getById(request.loggedInUser.email)
+        .then(function(cust) {
+          return P.resolve(cust);
+        })
+        .catch(function(err) {
+          if (err.statusCode === '404') {
+            return P.resolve(null);
+          } else {
+            return P.reject(err);
+          }
+        });
     })
     .then(function(cust) {
       cust = cust || {};

@@ -9,6 +9,13 @@ body>header
   -webkit-align-items center
   align-items center
   text-align center
+  &.min-header
+    background primary
+    height 50px
+    position fixed
+    top 0
+    width 100%
+
 
   @media only screen and (max-width: mobileMaxWidth)
     text-align left
@@ -203,6 +210,11 @@ body>nav
     vertical-align middle
     width 125px
     height 49px
+  &.small img // how to do parent lookups?
+      vertical-align middle
+      width 115px
+      height 40px
+      margin-left: -10px
 
   .cobrand
     font-weight bold
@@ -396,7 +408,6 @@ body>nav
       font-size 36px
       font-weight 600
     h3
-      @extend .featherweight-heading
       font-size 24px
       color rgba(white, 0.8)
 

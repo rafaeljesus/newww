@@ -1,241 +1,264 @@
-<h2>Colors</h2>
-<h3>Primary Color</h3>
-<div class="palette-container clear">
-  <div class="primary">
-    <div class="lightest"></div>
-    <div class="lighter"></div>
-    <div class="darker"></div>
-    <div class="darkest"></div>
-  </div>
-  <div class="description">
-    <h3>npm red</h3>
-    <p>The color of ripe, juicy persimmons which us wombats love to eat. The color of a warm, furry embrace inside of a darkened log under the dense eucalyptus canopy.</p>
-    <p>We currenty use the instantly-recognizable npm red for many CTAs (calls to action), active tab highlghts and indication of link state. It also provides a background to header and footer elements of a most distinctive nature.</p>
-    <p>We must be careful when we connatate the use of similar red with danger or error, as not to confuse skittish hoomans.</p>
-  </div>
-</div>
-<h3>Secondary Color</h3>
-<div class="palette-container clear">
-  <div class="secondary">
-    <div class="lightest"></div>
-    <div class="lighter"></div>
-    <div class="darker"></div>
-    <div class="darkest"></div>
-  </div>
-  <div class="description">
-    <h3>midnight blue</h3>
-    <p>As the sun has set o'er the billabong long ago, the night sky illumniates with a glory of stars in the Southern Hemipshere sky.</p>
-    <p>Our complimentary blue is deep enough to balance the contrast of the stark red. Midnight blue is currently in use merely as a background color, something to provide distinction and maturity to our product offerings.</p>
-    <p>However, we must be careful ne'er to try to use this alongside the red for interaction elements, lest the color-challenged hoomans have to make distinctions betwixt the two.</p>
+<div class="sidebar-nav">
+  <div class="tabs">
+    <ul role="navigation">
+      <li class="current"><a href="#intro">Intro</a></li>
+      <li><a href="#colors">Colors</a></li>
+      <li><a href="#type">Typography</a></li>
+      <li><a href="#layout">Layout</a></li>
+      <li><a href="#buttons">Buttons, Links & Switches</a></li>
+      <li><a href="#forms">Forms & Inputs</a></li>
+      <li><a href="#images">Images</a></li>
+      <li><a href="#copy">Copy & Tone</a></li>
+    </ul>
   </div>
 </div>
 
-<h3>Greigh Matter</h3>
-<div class="palette-container clear">
-  <div class="greigh">
-    <div class="lightest"></div>
-    <div class="lighter"></div>
-    <div class="darker"></div>
-    <div class="darkest"></div>
-  </div>
-  <div class="description">
-    <h3>greigh</h3>
-    <p>Only randos see in absolute, young padawan. Our use of greighs (neither gray nor grey) draw inspiration from the different shades of clouds roling across the Vancouver skyline - so very greigh, eh? Yet, as colorful wombats living in a mostly duotone world, we often use greigh ubiqutously as tint elements, content blocks and separators. We do define our black a bit lighter for legibility here at npm.</p>
-    <p>Your legibility of greighs will vary across displays and devices, try to use them only as a background compliment to a layout structure.</p>
-  </div>
-</div>
+<div class="main">
 
-<h3>Status Tints</h3>
-<div class="palette-container clear">
-  <div class="status">
-    <div class="error"></div>
-    <div class="alert"></div>
-    <div class="info"></div>
-    <div class="success"></div>
-  </div>
-  <div class="description">
-    <h3>status</h3>
-    <p>What your status, you might ask? These complimentary colors will serve as our cues for all the elements of success and failure in our lives. OK - at least our lives as they relate to the submission of npm forms. The colors are purposefully muted somewhat, to allow for a bit of contrast between the overlayed icons and status descriptions. Don't use these anywhere else, as rainbow pastels doth not become thee.</p>
-    <p>Eff Why Eye - The error and the info and status message colors are tied to the red and blue primary / secondary variables.</p>
-  </div>
-</div>
-<hr />
-<h2>Navigation</h2>
-<h3>Primary Navs</h3>
+  <div id="intro" class="tab">
+      <h1>intro</h1>
+  </div> <!--/intro-->
+  <div id="colors" class="tab">
+      <h1>Colors</h1>
+      <h2 id="primary">Primary Color</h2>
 
-<h4>Nav 2</h4>
-<div class="nav-container nav-2-container">
-  <ul class="nav nav-2 clear" role="navigation">
-    <li class="current"><a href="#">Overview</a></li>
-    <li><a href="#">Payment Information</a></li>
-    <li><a href="#">Payment History</a></li>
-  </ul>
-</div>
+      <div class="palette-container">
+        <div class="primary">
+          <div class="lightest"></div>
+          <div class="lighter"></div>
+          <div class="darker"></div>
+          <div class="darkest"></div>
+        </div>
+          <p>The color of ripe, juicy persimmons which us wombats love to eat. The color of a warm, furry embrace inside of a darkened log under the dense eucalyptus canopy.</p>
+          <p>We currenty use the instantly-recognizable npm red for many CTAs (calls to action), active tab highlghts and indication of link state. It also provides a background to header and footer elements of a most distinctive nature.</p>
+          <p>We must be careful when we connatate the use of similar red with danger or error, as not to confuse skittish hoomans.</p>
 
-<h4>Nav 3</h4>
-<div class="nav-container nav-3-container">
-  <ul class="nav nav-3 clear" role="navigation">
-    <li class="current"><a href="#">24 Packages</a></li>
-    <li><a href="#">5 Collaborators</a></li>
-    <li><a href="#">Settings</a></li>
-  </ul>
-</div>
+          <h3>Example</h3>
+          <code>
+              background primary-lightest
+              //. background #57381
+          </code>
+      </div>
 
-<h4>Nav 4</h4>
-<div class="nav-container nav-4-container">
-  <ul class="nav nav-4 clear" role="navigation">
-    <li class="current"><a href="#">overview</a></li>
-    <li><a href="#">teams</a></li>
-    <li><a href="#">members</a></li>
-    <li><a href="#">packages</a></li>
-    <li><a href="#">payment info</a></li>
-  </ul>
-</div>
+      <h2 id="secondary">Secondary Color</h2>
+      <div class="palette-container">
+        <div class="secondary">
+          <div class="lightest"></div>
+          <div class="lighter"></div>
+          <div class="darker"></div>
+          <div class="darkest"></div>
+        </div>
+          <p>As the sun has set o'er the billabong long ago, the night sky illumniates with a glory of stars in the Southern Hemipshere sky.</p>
+          <p>Our complimentary blue is deep enough to balance the contrast of the stark red. Midnight blue is currently in use merely as a background color, something to provide distinction and maturity to our product offerings.</p>
+          <p>However, we must be careful ne'er to try to use this alongside the red for interaction elements, lest the color-challenged hoomans have to make distinctions betwixt the two.</p>
+      </div>
 
-<h4>Tabs</h4>
-<div class="tabs">
-  <div class="tab-nav-container">
-    <div class="nav-container nav-4-container">
-      <ul class="nav nav-4 clear" role="navigation">
-        <li class="current"><a href="#org-info-tab-1">1 Package</a></li>
-        <li><a href="#org-info-tab-2">1 Collaborator</a></li>
-        <li><a href="#">Payment Information</a></li>
-      </ul>
+      <h2 id="greighs">Greighs</h2>
+      <div class="palette-container">
+        <div class="greigh">
+          <div class="lightest"></div>
+          <div class="lighter"></div>
+          <div class="darker"></div>
+          <div class="darkest"></div>
+        </div>
+          <p>Only randos see in absolute, young padawan. Our use of greighs (neither gray nor grey) draw inspiration from the different shades of clouds roling across the Vancouver skyline - so very greigh, eh? Yet, as colorful wombats living in a mostly duotone world, we often use greigh ubiqutously as tint elements, content blocks and separators. We do define our black a bit lighter for legibility here at npm.</p>
+          <p>Your legibility of greighs will vary across displays and devices, try to use them only as a background compliment to a layout structure.</p>
+      </div>
+
+      <h2 id="status">Status Tints</h2>
+      <div class="palette-container">
+        <div class="status">
+          <div class="error"></div>
+          <div class="alert"></div>
+          <div class="info"></div>
+          <div class="success"></div>
+        </div>
+
+          <p>What your status, you might ask? These complimentary colors will serve as our cues for all the elements of success and failure in our lives. OK - at least our lives as they relate to the submission of npm forms. The colors are purposefully muted somewhat, to allow for a bit of contrast between the overlayed icons and status descriptions. Don't use these anywhere else, as rainbow pastels doth not become thee.</p>
+          <p>FYI - The error and the info and status message colors are tied to the red and blue primary / secondary variables.</p>
+
+      </div>
     </div>
-  </div>
 
-  <div id="org-info-tab-1" class="tab tab-1">
-    <h2>Overview</h2>
+    <div id="navigation" class="tab">
+      <h2>Navigation</h2>
+      <h3>Primary Navs</h3>
+      <h4>Nav 2</h4>
+      <div class="nav-container nav-2-container">
+        <ul class="nav nav-2 clear" role="navigation">
+          <li class="current"><a href="#">Overview</a></li>
+          <li><a href="#">Payment Information</a></li>
+          <li><a href="#">Payment History</a></li>
+        </ul>
+      </div>
 
-    <h3>1 Package</h3>
-    <table class="org-packages">
-      <thead>
-        <th>Package</th>
-        <th>Access</th>
-        <th>Action</th>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <div>
-              <a href="/npm">NPM</a>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div><!--/tab-1-->
+      <h4>Nav 3</h4>
+      <div class="nav-container nav-3-container">
+        <ul class="nav nav-3 clear" role="navigation">
+          <li class="current"><a href="#">24 Packages</a></li>
+          <li><a href="#">5 Collaborators</a></li>
+          <li><a href="#">Settings</a></li>
+        </ul>
+      </div>
 
-  <div id="org-info-tab-2" class="tab tab-2">
-    <h2>Paid Users</h2>
-    <table class="org-users">
-      <thead>
-        <th>Collaborators</th>
-        <th>Status</th>
-        <th>Action</th>
-      </thead>
-      <tbody>
-          <tr>
-            <td>
-              <div>
-                <span class="name">
-                  <a class="username" href="/~jlembeck">jlembeck</a>
-                  {{#if resource.fullname}}
-                  <span class="display-name">Jeff Lembeck</span>
-                  {{/if}}
-                </span><!--/.name-->
-              </div>
-            </td>
-            <td>
-              <div class="switch-container">
-                <label><span class="a11y-only">Paid Status</span>
-                <input class="switch" checked="checked" type="checkbox" value="paid">
-                <div class="switch"></div>
-                <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
-                <span class="switch-label checked-text" aria-hidden="true">paid</span>
-                </label>
-              </div>
-            </td>
-            <td>
-              <form method="POST" id="org-user-delete-1" action="/foo">
-                  <button type="submit" class="icon-x"><span class="a11y-only">Delete User</span></button>
-              </form>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-  </div><!--/.tab-2-->
-  <div class="tab tab-3">
-    <h2>Payment Information</h2>
-  </div><!--/.tab-3-->
-</div><!--/tabs-->
+      <h4>Nav 4</h4>
+      <div class="nav-container nav-4-container">
+        <ul class="nav nav-4 clear" role="navigation">
+          <li class="current"><a href="#">overview</a></li>
+          <li><a href="#">teams</a></li>
+          <li><a href="#">members</a></li>
+          <li><a href="#">packages</a></li>
+          <li><a href="#">payment info</a></li>
+        </ul>
+      </div>
 
-<h3>Breadcrumbs</h3>
-<h4>Flow Logic</h4>
-<h5>3 items</h5>
-<div class="nav-breadcrumb-flow-indicator-container">
-  <ul class="nav-breadcrumb-flow-indicator">
-    <li class="done">Create Account</li>
-    <li class="current">Create Organization</li>
-    <li>Invite Members</li>
-  </ul>
-</div>
+      <h4>Tabs</h4>
+      <div class="tabs">
+        <div class="tab-nav-container">
+          <div class="nav-container nav-4-container">
+            <ul class="nav nav-4 clear" role="navigation">
+              <li class="current"><a href="#org-info-tab-1">1 Package</a></li>
+              <li><a href="#org-info-tab-2">1 Collaborator</a></li>
+              <li><a href="#">Payment Information</a></li>
+            </ul>
+          </div>
+        </div>
 
-<h5>4 items</h5>
-<div class="nav-breadcrumb-flow-indicator-container">
-  <ul class="nav-breadcrumb-flow-indicator">
-    <li class="done">Create Account</li>
-    <li class="done">Create Org</li>
-    <li class="current">Billing</li>
-    <li>Invite Members</li>
-  </ul>
-</div>
+        <div id="org-info-tab-1" class="tab tab-1">
+          <h2>Overview</h2>
 
-<h2>Forms</h2>
-<h3>Radios &amp; Checkboxes</h3>
+          <h3>1 Package</h3>
+          <table class="org-packages">
+            <thead>
+              <th>Package</th>
+              <th>Access</th>
+              <th>Action</th>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div>
+                    <a href="/npm">NPM</a>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div><!--/tab-1-->
 
-<h4>Slide checkbox</h4>
-<div class="switch-container">
-  <label><span class="a11y-only">Write permission</span><input type="checkbox" class="switch" checked /><div class="switch"></div>
-  <span class="switch-label unchecked-text" aria-hidden="true">Read-Only</span>
-  <span class="switch-label checked-text" aria-hidden="true">Read/Write</span>
-  </label>
-</div>
+        <div id="org-info-tab-2" class="tab tab-2">
+          <h2>Paid Users</h2>
+          <table class="org-users">
+            <thead>
+              <th>Collaborators</th>
+              <th>Status</th>
+              <th>Action</th>
+            </thead>
+            <tbody>
+                <tr>
+                  <td>
+                    <div>
+                      <span class="name">
+                        <a class="username" href="/~jlembeck">jlembeck</a>
+                        {{#if resource.fullname}}
+                        <span class="display-name">Jeff Lembeck</span>
+                        {{/if}}
+                      </span><!--/.name-->
+                    </div>
+                  </td>
+                  <td>
+                    <div class="switch-container">
+                      <label><span class="a11y-only">Paid Status</span>
+                      <input class="switch" checked="checked" type="checkbox" value="paid">
+                      <div class="switch"></div>
+                      <span class="switch-label unchecked-text" aria-hidden="true">unpaid</span>
+                      <span class="switch-label checked-text" aria-hidden="true">paid</span>
+                      </label>
+                    </div>
+                  </td>
+                  <td>
+                    <form method="POST" id="org-user-delete-1" action="/foo">
+                        <button type="submit" class="icon-x"><span class="a11y-only">Delete User</span></button>
+                    </form>
+                  </td>
+                </tr>
+            </tbody>
+          </table>
+        </div><!--/.tab-2-->
+        <div class="tab tab-3">
+          <h2>Payment Information</h2>
+        </div><!--/.tab-3-->
+      </div><!--/tabs-->
 
-<h4>Standard Radio</h4>
-<fieldset>
-  <legend>Radio buttons:</legend>
-  <input name="org-type" id="free-org-radio" value="free-org" checked="checked" type="radio">
-  <label for="free-org-radio">Create a Free Org</label>
-  <input name="org-type" id="premium-org-radio" value="premium-org" type="radio">
-  <label for="premium-org-radio">Create a Premium Org</label>
-</fieldset>
+      <h3>Breadcrumbs</h3>
+      <h4>Flow Logic</h4>
+      <h5>3 items</h5>
+      <div class="nav-breadcrumb-flow-indicator-container">
+        <ul class="nav-breadcrumb-flow-indicator">
+          <li class="done">Create Account</li>
+          <li class="current">Create Organization</li>
+          <li>Invite Members</li>
+        </ul>
+      </div>
+      <h5>4 items</h5>
+      <div class="nav-breadcrumb-flow-indicator-container">
+        <ul class="nav-breadcrumb-flow-indicator">
+          <li class="done">Create Account</li>
+          <li class="done">Create Org</li>
+          <li class="current">Billing</li>
+          <li>Invite Members</li>
+        </ul>
+      </div>
+    </div> <!--/navigation-->
 
-<h3>Buttons</h3>
-<h4>Primary Button</h4>
-<div>
-  <input type="submit" class="btn-primary" value="Primary" />
-  <button type="submit" class="btn-primary">Primary</button>
-  <a href="#" class="btn-primary">Primary</a>
-</div>
+    <div id="forms" class="tab">
+      <h2>Forms</h2>
+      <h3>Radios &amp; Checkboxes</h3>
 
-<h4>Secondary Button</h4>
-<div>
-  <input type="submit" class="btn-secondary" value="Secondary" />
-  <button type="submit" class="btn-secondary">Secondary</button>
-  <a href="#" class="btn-secondary">Secondary</a>
-</div>
+      <h4>Slide checkbox</h4>
+      <div class="switch-container">
+        <label><span class="a11y-only">Write permission</span><input type="checkbox" class="switch" checked /><div class="switch"></div>
+        <span class="switch-label unchecked-text" aria-hidden="true">Read-Only</span>
+        <span class="switch-label checked-text" aria-hidden="true">Read/Write</span>
+        </label>
+      </div>
 
-<h4>Back Button</h4>
-<div>
-  <input type="submit" class="btn-back" value="Go Back" />
-  <button type="button" class="btn-back">Go Back</button>
-  <a href="#" class="btn-back">Go Back</a>
-</div>
+      <h4>Standard Radio</h4>
+      <fieldset>
+        <legend>Radio buttons:</legend>
+        <input name="org-type" id="free-org-radio" value="free-org" checked="checked" type="radio">
+        <label for="free-org-radio">Create a Free Org</label>
+        <input name="org-type" id="premium-org-radio" value="premium-org" type="radio">
+        <label for="premium-org-radio">Create a Premium Org</label>
+      </fieldset>
 
-<h4>Continue Button</h4>
-<div>
-  <input type="submit" class="btn-continue" value="Save &amp; Continue" />
-  <button type="submit" class="btn-continue">Save &amp; Continue</button>
-  <a href="#" class="btn-continue">Continue</a>
+      <h3>Buttons</h3>
+      <h4>Primary Button</h4>
+      <div>
+        <input type="submit" class="btn-primary" value="Primary" />
+        <button type="submit" class="btn-primary">Primary</button>
+        <a href="#" class="btn-primary">Primary</a>
+      </div>
+
+      <h4>Secondary Button</h4>
+      <div>
+        <input type="submit" class="btn-secondary" value="Secondary" />
+        <button type="submit" class="btn-secondary">Secondary</button>
+        <a href="#" class="btn-secondary">Secondary</a>
+      </div>
+
+      <h4>Back Button</h4>
+      <div>
+        <input type="submit" class="btn-back" value="Go Back" />
+        <button type="button" class="btn-back">Go Back</button>
+        <a href="#" class="btn-back">Go Back</a>
+      </div>
+
+      <h4>Continue Button</h4>
+      <div>
+        <input type="submit" class="btn-continue" value="Save &amp; Continue" />
+        <button type="submit" class="btn-continue">Save &amp; Continue</button>
+        <a href="#" class="btn-continue">Continue</a>
+      </div>
+    </div> <!--/forms-->
 </div>

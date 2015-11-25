@@ -1,0 +1,47 @@
+.main
+  width 73.5%
+  float right
+  padding 0px 20px
+  @media only screen and (max-width: 760px)
+    float right
+    width 100%
+.sidebar-nav
+  position fixed
+  float left
+  width 25%
+  height 100%
+  overflow-y scroll
+  left 0px
+  top 50px
+  background greigh-lightest
+  border-right 1px solid greigh
+  @media only screen and (max-width: 760px)
+    position relative
+    display table
+    width 98.0%
+    left 0px
+    text-align center
+  ul
+    margin 0px
+    padding 0px
+    li
+      list-style none
+      display flex
+      background greigh-darker
+      border-bottom 1px solid greigh
+      padding 5px 20px
+      font-size font-smallest
+      height 40px
+      &.current
+        background darken(@background,35%)
+      &:hover
+        background lighten(@background,25%)
+      &:first-of-type
+        border-top none
+      a
+        color white
+        align-self center
+        height 25px
+        width 100%
+        &:hover
+          text-decoration none

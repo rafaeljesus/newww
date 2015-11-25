@@ -12,17 +12,15 @@ background-color-with-variation()
 // end
 
 .palette-container
-  display flex
   $container-height = 240px
-
   div
     display flex
     flex 1
     height $container-height
 
-  & .description
+  p
+    font-size initial
     flex-direction column
-    padding 0px 20px
 
   for color in 'primary' 'secondary' 'greigh'
     .{color}

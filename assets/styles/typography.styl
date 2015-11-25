@@ -1,144 +1,85 @@
-.red
-  color npmred
+// global type vars
 
-.subdued
-  opacity 0.6
+normal-font()
+  font-family 'Source Sans Pro', 'Lucida Grande', sans-serif
+  color greigh-darkest
 
-.full-width
-  width 100%
+header-font()
+  font-family 'Helvetica Neue', 'Helvetica', sans-serif
+  color greigh-darkest
 
-.center, .centered
-  text-align center
+code-font()
+  font-family Consolas, "Liberation Mono", Menlo, Monaco, Courier, monospace
+  color greigh-darkest
+
+
+font-base = .8em
+font-smallest = (font-base * .55)
+font-smaller = (font-base * .75)
+font-small = (font-base * .85)
+font-large = (font-base * 2)
+font-larger = (font-base * 3)
+font-largest = (font-base * 4)
+
+line-height-base = 200%
+line-height-small = (line-height-base * .75)
+line-height-large = (line-height-base * 1.25)
+
 
 body
   normal-font()
   font-weight 400
-  font-size 16px
-  line-height 25px
-  letter-spacing -0.03em
+  font-size font-base
+  line-height line-height-base
 
-a
-  color npmred
-  text-decoration none
-  &:hover
-    text-decoration underline
-  &.unadorned
-    color text-color
-    font-weight 400
+// headers & paragraph
 
-  .sidebar &
-    color greigh2
-    @extend .red-on-hover
-    font-weight 600
-
-  .profile-sidebar-links &
-    color npmred
+h1, h2, h3, h4, h5, h6
+  header-font()
+  margin 0
+  padding 0
+  font-weight 500
 
 h1
-  margin 0
-  padding 20px 0 0 0
-  font-weight 400
-  font-size 44px
-  line-height 1.2
-  letter-spacing -1.5px
-  color greigh1
-
-  .narrow &
-    margin 0.2em 0
+  font-size font-largest
+  line-height line-height-large
 
 h2
-  margin 0
-  padding 20px 0 10px 0
-  font-weight 700
-  font-size 24px
-  color text-color
-  letter-spacing 0
+  font-size font-larger
+  line-height line-height-large
 
-  &:before
-    font-size 45px
-    float left
-    margin-right 10px
+h3
+  font-size font-large
+  line-height line-height-large
 
-  &.ruled
-    letter-spacing -.8px
-    font-weight 400
-    border-bottom 2px solid greigh6
-    padding-bottom 22px
-    margin-bottom 20px
-    a
-      font-weight 600
+h4
+  font-size = (font-base * 1.25)
+  line-height line-height-large
+
+h5
+  font-size = (font-base * 1.15)
+  line-height line-height-large
+
+h6
+  font-size = (font-base * 1.05)
+  line-height line-height-larger
 
 hgroup
   margin 25px 0
 
-  h1,h2
-    margin 0
-    padding 0
-    text-align center
-    a
-      color greigh1
-      text-decoration none
-      &:hover
-        text-decoration underline
-
-  h2
-    font-weight 300
-    line-height 1.2
-    a
-      font-weight 300
-
-
-h3
-  display block
-  margin 0
-  padding 20px 0 10px 0
-  font-size 20px
-  font-weight 600
-  line-height 1
-  color greigh2
-
-  .sidebar &
-    color npmred
-    a
-      color npmred
-
-
-h1, h2, h3
-  &.undecorated
-    a
-      color text-color
-
-.featherweight-heading
-  font-weight 300
-  line-height 1.2
-  font-size 24px
-  margin 0 0 10px 0
-  padding 0
-  a
-    font-weight 300
-    color text-color
-    text-decoration underline
-    &:hover
-      color npmred
-
 p
-  margin 0 0 15px 0
+  font-size font-base
+  line-height line-height-base
+  margin-bottom font-base
+// links
 
-  &.notice
-    line-height 1.5
+a
+  color primary
+  text-decoration none
+  &:hover
+    color primary-darker
 
-  &.whoa
-    background npmred
-    color white
-    border-color darken(npmred, 20%)
-    a
-      color white
-      text-decoration underline
-      &:hover
-        color white
-
-  &.list-of-links a
-    font-weight 400
+// code
 
 strong
   &.code
@@ -151,7 +92,8 @@ blockquote
 
 code
   code-font()
-  background-color #F5F5F5
+  background-color greigh-lighter
+  font-size font-base()
 
 pre
   overflow-x auto
@@ -161,29 +103,7 @@ pre
     padding 8px
     border-radius 2px
 
-&.package-name
-  padding-bottom 0
-  padding-right 25px
-  a
-    color text-color
-    text-decoration none
-
-&.package-name-redundant
-  display none
-
-&.package-description-redundant
-  display none
-
-&.package-description
-  @extend .featherweight-heading
-
-.notice
-  margin-top 15px
-  margin-bottom 25px
-  padding 12px 10px
-  background greigh8
-  border 1px solid greigh6
-  border-radius 3px
+// modifiers
 
 .visible
   display block
@@ -200,16 +120,8 @@ pre
     content "*"
     display inline
 
-.description
-  color #979797
-  font-size .75em
-  margin 0
-
   .included,
   .additional
     display block
     margin-left 2.333333em
     line-height 1.5
-
-.inactive
-  color #aaa

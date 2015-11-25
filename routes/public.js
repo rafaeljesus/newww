@@ -341,7 +341,9 @@ var publicRoutes = [
     method: '*',
     path: '/ui-docs',
     handler: function(request, reply) {
-      return reply.view('ui-docs/index').code(200);
+      return reply.view('ui-docs/index', {}, {
+        layout: 'ui-docs'
+      }).code(200);
     }
   }, {
     method: '*',

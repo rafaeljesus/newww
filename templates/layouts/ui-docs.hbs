@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{#if title}}{{title}}{{#if q}}{{q}}{{/if}}{{else}}npm{{/if}}</title>
+
+  <meta http-equiv="cleartype" content="on" />
+
+  <meta name="apple-mobile-web-app-capable" content="no">
+  <meta name="description" content="npm is the package manager for javascript">
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,initial-scale=1,user-scalable=yes">
+
+  {{> touch-icons}}
+
+  <link rel="canonical" href="{{canonicalURL}}">
+  {{#if devEnv}}
+  <link rel="stylesheet" media="all" href="/static/css/index.css">
+  {{else}}
+  <link rel="stylesheet" media="all" href="/static/{{m "css/index.css"}}">
+  {{/if}}
+  <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="npm">
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700">
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <![endif]-->
+
+  {{#if devEnv}}
+  <script src="/static/js/index.js"></script>
+  {{else}}
+  <script src="/static/{{m "js/index.min.js"}}"></script>
+  {{/if}}
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
+  <meta itemprop="url" content="https://www.npmjs.com/">
+
+  <header class="min-header">
+    <div id='npm-logo' class="small">
+      <a href="/"><img src="/static/images/npm-logo.svg" alt="npm logo" /></a>
+    </div>
+  </header>
+
+  <div class="content">
+    {{{ content }}}
+  </div>
+
+  <footer>
+  </footer>
+  {{#if devEnv}}<script defer async src="/static/js/tota11y.min.js"></script>{{/if}}
+  <script defer src="/static/{{m "js/vendor.min.js"}}"></script>
+</body>
+</html>
+
+<!-- {{stamp}} -->

@@ -59,12 +59,12 @@
             <td class="created" data-date="{{created}}" data-date-format="%d-%b-%y">{{created}}</td>
             {{#if ../perms.isAtLeastTeamAdmin}}
               <td>
-                <form method="POST" id="org-team-delete-{{@index}}" action="/org/{{../org.info.name}}/team">
+                <form method="POST" id="org-team-delete-{{@index}}" action="/org/{{../../org.info.name}}/team">
                   {{#with ../../this}}
                   {{> form_security }}
                   {{/with}}
                   <input type="hidden" name="team-name" value="{{name}}" />
-                  <input type="hidden" name="org-scope" value="{{../org.info.name}}" />
+                  <input type="hidden" name="org-scope" value="{{../../org.info.name}}" />
                   <input type="hidden" name="update-type" value="delete-team" />
                   <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete Team {{name}}</span></button>
                 </form>

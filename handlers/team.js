@@ -339,6 +339,8 @@ exports.updateTeam = function(request, reply) {
             });
 
         case 'addPackagesToTeam':
+          section = '/team/' + teamName;
+
           var pkgs = validatedPayload.names || [];
           var writePermissions = validatedPayload.writePermissions;
 

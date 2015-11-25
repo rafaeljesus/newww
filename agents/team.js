@@ -397,6 +397,32 @@ Team.prototype.removeUser = function(opts) {
   });
 };
 
+Team.prototype.removeTeam = function(opts) {
+  opts = opts || {};
+
+  var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id);
+
+  var data = {
+    body: {id: opts.id},
+    headers: {bearer: this.bearer},
+    json: true,
+    url: url
+  };
+
+  return new P(function(accept, reject) {
+    Request.del(data, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      // TODO(@jonathanmarvens):
+      // Handle error responses.
+
+      return accept(body);
+    });
+  });
+};
+
 Team.prototype.updateInfo = function(opts) {
   opts = opts || {};
 

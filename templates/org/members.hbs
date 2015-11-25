@@ -69,6 +69,7 @@
                 </form>
               </td>
               <td>
+                {{#unless isTheSuperAdmin}}
                   <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
                     {{#with ../../this}}
                     {{> form_security }}
@@ -76,7 +77,8 @@
                     <input type="hidden" name="username" value="{{name}}" />
                     <input type="hidden" name="updateType" value="deleteUser" />
                     <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User {{name}}</span></button>
-                </form>
+                  </form>
+                {{/unless}}
               </td>
               {{/if}}
             </tr>

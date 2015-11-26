@@ -296,6 +296,47 @@ describe('getting an org', function() {
     });
   });
 
+  it('allows an unpaid super-admin to see the org', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(404)
+      .get("/customer/bob/stripe")
+      .reply(404);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get('/org/bigco')
+      .reply(200, fixtures.orgs.bigco)
+      .get('/org/bigco/user')
+      .reply(200, fixtures.orgs.bigcoUsers)
+      .get('/org/bigco/package')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      })
+      .get('/org/bigco/team')
+      .reply(200, fixtures.teams.bigcoOrg);
+
+    var options = {
+      url: "/org/bigco",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      licenseMock.done();
+      orgMock.done();
+      expect(resp.statusCode).to.equal(200);
+      expect(resp.request.response.source.context.perms.isSuperAdmin).to.equal(true);
+      expect(resp.request.response.source.context.perms.isAtLeastTeamAdmin).to.equal(true);
+      expect(resp.request.response.source.context.perms.isAtLeastMember).to.equal(true);
+      done();
+    });
+  });
+
   describe('org member permissions', function() {
     it('does not give any perms if user is not a member of the org', function(done) {
       var userMock = nock("https://user-api-example.com")

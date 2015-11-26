@@ -265,7 +265,7 @@ exports.updateTeam = function(request, reply) {
     var orgName = request.params.org;
     var teamName = request.params.teamName;
     var tab = '';
-    var section = '';
+    var section = '/team/' + teamName;
 
     if (err) {
       return handleUserError(request, reply, '/org/' + orgName + '/team/' + teamName, err.message);
@@ -292,7 +292,7 @@ exports.updateTeam = function(request, reply) {
 
         case 'removeUser':
           tab = '#members';
-          section = '/team/' + teamName + tab;
+          section += tab;
 
           return Team(loggedInUser)
             .removeUser({
@@ -312,7 +312,7 @@ exports.updateTeam = function(request, reply) {
 
         case 'updateInfo':
           tab = '#settings';
-          section = '/team/' + teamName + tab;
+          section += tab;
 
           return Team(loggedInUser)
             .updateInfo({
@@ -323,7 +323,7 @@ exports.updateTeam = function(request, reply) {
 
         case 'addUsersToTeam':
           tab = '#members';
-          section = '/team/' + teamName + tab;
+          section += tab;
 
           var members = validatedPayload.member || [];
           members = Array.isArray(members) ? members : [].concat(members);
@@ -339,8 +339,6 @@ exports.updateTeam = function(request, reply) {
             });
 
         case 'addPackagesToTeam':
-          section = '/team/' + teamName;
-
           var pkgs = validatedPayload.names || [];
           var writePermissions = validatedPayload.writePermissions;
 

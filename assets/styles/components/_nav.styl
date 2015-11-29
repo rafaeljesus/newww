@@ -91,24 +91,41 @@
   .nav-breadcrumb-flow-indicator li
     padding-left 9em
 
-// tabs
+// tabs : http://codepen.io/oknoblich/pen/tfjFl
 
 tab-height = 45px
 tab-width = 120px
 
-.tab-row
-  border-bottom 1px solid greigh
+.primary-tabs, .secondary-tabs
   input
     display none
-  label.tab
-    margin 0 2px -1px
+  label
     font-weight 600
     text-align center
-    height tab-height
-    width tab-width
     a
       display inline-block
       color greigh4
+      &:hover
+        text-decoration none
+  input + label
+    cursor pointer
+
+  input:checked + label
+    color greigh-dark
+    a
+      color greigh-darkest
+  &.center-tabs
+    display flex
+    justify-content center
+
+.primary-tabs
+  border-bottom 1px solid greigh
+
+  label.primary-tab
+    margin 0 2px -1px
+    height tab-height
+    width tab-width
+    a
       padding-top (tab-height/5)
       padding-right 5px // numeration spacing
       &:hover
@@ -116,8 +133,7 @@ tab-width = 120px
     &:first-of-type
       margin-left 10px
 
-  input + label.tab
-    cursor pointer
+  input + label.primary-tab
     border-radius 3px
     border-top 1px solid transparent
     border-bottom 1px solid transparent
@@ -126,15 +142,42 @@ tab-width = 120px
       border 1px solid greigh
       border-bottom 1px solid white
 
-  input:checked + label.tab
-    color greigh-dark
+  input:checked + label.primary-tab
     border 1px solid greigh
     border-top 5px solid primary
     border-bottom 1px solid white
     a
-      color greigh-darkest
-      padding-top ((tab-height/5) + -3px) // border compensation
+      padding-top ((tab-height/5) + -4px) // border compensation
 
+  @media screen and (max-width: 650px)
+    label
+      font-size 13px
+      width (tab-width * .85)
+      padding auto 0px
+
+  @media screen and (max-width: 400px)
+    label
+      font-size 12px
+      width (tab-width * .75)
+      padding auto 0px
+
+.secondary-tabs
+  margin 5px auto
+
+  label.secondary-tab
+    height tab-height
+    width tab-width
+    padding-top (tab-height/5)
+    a
+      &:hover
+        text-decoration none
+
+  input + label.secondary-tab
+    &:hover
+      background greigh-lightest
+      border-radius 3px
+  input:checked + label.secondary-tab
+    color greigh1
 
   @media screen and (max-width: 650px)
     label

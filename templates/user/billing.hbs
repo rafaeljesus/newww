@@ -53,25 +53,27 @@
     </p>
   {{/if}}
 
-  {{#if features.org_billing}}
-  <div class="tabs">
-    <div class="tab-nav-container">
-      <div class="nav-container nav-2-container">
-        <ul class="nav nav-2 clear" role="navigation">
-          <li class="current"><a href="#overview">Overview</a></li>
-          {{#if customer}}
-          <li><a href="#payment-information">Payment Information</a></li>
-          {{else}}
-          <li><a href="#payment-information">Sign up for private modules</a></li>
-          {{/if}}
-          {{#if customer.customer_id}}
-          <li><button type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</button></li>
-          {{/if}}
-        </ul>
-      </div>
+    {{#if features.org_billing}}
+    <div class="secondary-tabs center-tabs push-down pull-up">
+      <input id="overview" type="radio" name="secondary-tabs" checked />
+      <label class="secondary-tab" for="overview"><a href="#overview">overview</a></label>
+
+      {{#if customer}}
+      <input id="payment-information" type="radio" name="secondary-tabs" {{#if payment-information}}checked{{/if}}>
+      <label class="secondary-tab" for="payment-information"><a href="#payment-information">payment info</a></label>
+      {{else}}
+
+      <input id="members" type="radio" name="secondary-tabs" {{#if payment-information}}checked{{/if}}>
+      <label class="secondary-tab" for="payment-information"><a href="#payment-information">sign up for private packages</a></label>
+      {{/if}}
+
+      {{#if customer.customer_id}}
+      <input id="billing" type="radio" name="secondary-tabs">
+      <label class="secondary-tab" for="billing"><a id="billing" data-stripe-id="{{customer.customer_id}}">payment history</a></label>
+      {{/if}}
     </div>
 
-    <div id="overview" class="tab tab-1">
+    <div id="overview">
       {{#if privateModules}}
       <table class="subscriptions">
         <thead>
@@ -142,7 +144,7 @@
       {{/if}}
     </div><!--/.tab-1-->
 
-    <div id="payment-information" class="tab tab-2">
+    <div id="payment-information">
       {{> billing-info}}
     </div><!--/.tab-2-->
   </div><!--/.tabs-->
@@ -151,8 +153,6 @@
       {{> billing-info}}
     </div>
     {{/if}}
-
-
 
 </div>
 

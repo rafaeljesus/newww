@@ -1,9 +1,16 @@
-<div class="secondary-nav">
-  <div class="container">
-    <a href="/profile-edit">profile</a>
-    <a href="/email-edit">email</a>
-    <a href="/password">password</a>
-    <a href="/settings/billing">{{#if features.org_billing}}subscriptions{{else}}billing{{/if}}</a>
-    <a href="/settings/tokens">tokens</a>
-  </div>
+<div class="primary-tabs center-tabs push-up">
+    <input id="packages" type="radio" name="primary-tabs" {{#if profile-edit}}checked{{/if}} checked>
+    <label class="primary-tab" for="profile-edit"><a href="/profile-edit">profile</a></label>
+
+    <input id="packages" type="radio" name="primary-tabs" {{#if email-edit}}checked{{/if}}>
+    <label class="primary-tab" for="email-edit"><a href="/email-edit">email</a></label>
+
+    <input id="packages" type="radio" name="primary-tabs" {{#if password}}checked{{/if}}>
+    <label class="primary-tab" for="password"><a href="/password">password</a></label>
+
+    <input id="packages" type="radio" name="primary-tabs" {{#if billing}}checked{{/if}}>
+    <label class="primary-tab" for="billing"><a href="/settings/billing">{{#if features.org_billing}}subscriptions{{else}}billing{{/if}}</a></label>
+
+    <input id="packages" type="radio" name="primary-tabs" {{#if tokens}}checked{{/if}}>
+    <label class="primary-tab" for="tokens"><a href="/settings/tokens">tokens</a></label>
 </div>

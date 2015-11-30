@@ -56,29 +56,31 @@ Customer.prototype.getStripeData = function(callback) {
   var self = this;
   var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
 
-  Request.get({
-    url: stripeUrl,
-    json: true
-  }, function(err, resp, stripeData) {
+  return new P(function(accept, reject) {
+    Request.get({
+      url: stripeUrl,
+      json: true
+    }, function(err, resp, stripeData) {
 
-    if (err) {
-      return callback(err);
-    }
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('customer not found: ' + self.name);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('customer not found: ' + self.name);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(stripeData);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(stripeData);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, stripeData);
-  });
+      accept(stripeData);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.getSubscriptions = function(callback) {

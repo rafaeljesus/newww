@@ -32,6 +32,10 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
   <![endif]-->
 
+  {{#each page.stylesheets}}
+  <link rel='stylesheet' href='{{this}}'>
+  {{/each}}
+
   {{#if devEnv}}
   <script src="/static/js/index.js"></script>
   {{else}}
@@ -44,36 +48,13 @@
   <meta itemprop="url" content="https://www.npmjs.com/">
 
   {{#unless features.npmo}}
-    <div id="notification-banner" class="hidden">
-      <div class="container">
-        <hgroup>
-          <a href="/private-modules"
-            data-event-trigger="click"
-            data-event-name="private-modules-banner-signup-via-wombat">
-            <img src="/static/images/wombat-by-night.svg" alt="night wombat">
-          </a>
-          <h2>private npm is here.</h2>
-          <h3>publish unlimited private modules for just $7/month</h3>
-        </hgroup>
-        <a class="button" href="/private-modules"
-          data-event-trigger="click"
-          data-event-name="private-modules-banner-signup">sign up</a>
-        <a class="button button-subtle banner-close" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks">no thanks</a>
-      </div>
-      <a class="button banner-close button-banner-close icon-x" data-event-trigger="click" data-event-name="private-modules-banner-no-thanks"><span class="a11y-only">close</span></a>
-    </div>
-  {{/unless}}
-
-  {{#unless features.npmo}}
     <nav>
       <div class="container">
         <a href="#" id="npm-expansions" data-event-trigger="click" data-event-name="npm-expansions">node package manager</a>
-        <a href="/private-modules" data-event-trigger="click" data-event-name="private-modules-nav-link">npm private modules</a>
-        <a href="/enterprise">npm On-Site</a>
+        <a href="/npm/on-site">npm On-Site</a>
+        <a href="/npm/private-packages" data-event-trigger="click" data-event-name="private-modules-nav-link">npm Private Packages</a>
+        <a href="/npm/open-source">npm Open Source</a>
         <a href="https://docs.npmjs.com">documentation</a>
-        <a href="http://blog.npmjs.org/">blog</a>
-        <a href="/npm-weekly">npm weekly</a>
-        <a href="/jobs">jobs</a>
         <a href="/support">support</a>
       </div>
     </nav>
@@ -133,12 +114,16 @@
 
   </header>
 
-  <div class="container content">
-    {{#each notices}}
-      <div class="notice">{{{ this }}}</div>
-    {{/each}}
+  {{#if contentIsFullwidth}}
     {{{ content }}}
-  </div>
+  {{else}}
+    <div class="container content">
+      {{#each notices}}
+        <div class="notice">{{{ this }}}</div>
+      {{/each}}
+      {{{ content }}}
+    </div>
+  {{/if}}
 
   <footer>
 
@@ -164,7 +149,7 @@
             <ul class="links">
               <li><a href="/about">About npm, Inc</a></li>
               <li><a href="/jobs">Jobs</a></li>
-              <li><a href="/private-modules">npm private modules</a></li>
+              <li><a href="/npm-weekly">npm Weekly</a></li>
               <li><a href="http://blog.npmjs.org">Blog</a></li>
               <li><a href="https://twitter.com/npmjs">Twitter</a></li>
               <li><a href="https://github.com/npm">GitHub</a></li>
@@ -174,9 +159,9 @@
           <li>
             <h3>Legal Stuff</h3>
             <ul class="links">
+              <li><a href="/policies/terms">Terms of Use</a></li>
               <li><a href="/policies/conduct">Code of Conduct</a></li>
               <li><a href="/policies/disputes">Package Name Disputes</a></li>
-              <li><a href="/policies/npm-license">npm License</a></li>
               <li><a href="/policies/privacy">Privacy Policy</a></li>
               <li><a href="/policies/receiving-reports">Reporting Abuse</a></li>
               <li><a href="/policies/">Other policies</a></li>
@@ -207,6 +192,11 @@
   </footer>
   {{#if devEnv}}<script defer async src="/static/js/tota11y.min.js"></script>{{/if}}
   <script defer src="/static/{{m "js/vendor.min.js"}}"></script>
+  <script defer async src="https://cdn.optimizely.com/js/3318080746.js"></script>
+  {{#each page.scripts}}
+  <script defer async src="{{this}}"></script>
+  {{/each}}
+  <script defer async src='//img.en25.com/i/elqCfg.min.js'></script><!-- Eloqua -->
 </body>
 </html>
 

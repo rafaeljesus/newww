@@ -38,7 +38,7 @@ exports.bigcoUsers = {
       created: '2014-11-21T20:05:05.423Z',
       updated: '2015-01-24T00:08:41.269Z',
       deleted: null,
-      role: "team-admin",
+      role: "super-admin",
       sponsored: false
     }
   ]
@@ -135,7 +135,7 @@ exports.bigcoSponsorships = [
   }
 ];
 
-exports.bobsorgs = [
+exports.bobsOrgSubscriptions = [
   {
     "amount": 700,
     "cancel_at_period_end": false,
@@ -165,6 +165,15 @@ exports.bobsorgs = [
     "status": "active"
   }
 ];
+
+exports.bobsOrgs = {
+  items: [{
+    name: 'bigco',
+    description: '',
+    role: 'super-admin'
+  }],
+  count: 1
+};
 
 exports.notBobsOrg = {
   "name": "bligco",

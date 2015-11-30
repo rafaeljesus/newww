@@ -88,6 +88,12 @@ Org.prototype.get = function(name, callback) {
           return reject(err);
         }
 
+        if (resp.statusCode === 404) {
+          err = new Error("Org not found");
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+
         if (resp.statusCode >= 400) {
           err = new Error(body);
           err.statusCode = resp.statusCode;
@@ -102,19 +108,22 @@ Org.prototype.get = function(name, callback) {
   var requests = [
     makeRequest(orgUrl),
     makeRequest(userUrl),
-    makeRequest(packageUrl)
+    makeRequest(packageUrl),
+    this.getTeams(name)
   ];
 
-  return P.all(requests).spread(function(org, users, pkg) {
+  return P.all(requests).spread(function(org, users, pkg, teams) {
     var ret = {};
 
     ret.info = org;
     ret.users = users;
     ret.users.items = users.items.map(function(user) {
       user.avatar = avatar(user.email);
+      user.sponsoredByOrg = user.sponsored === 'by-org';
       return user;
     });
     ret.packages = pkg;
+    ret.teams = teams;
 
     return ret;
   }).nodeify(callback);
@@ -204,39 +213,42 @@ Org.prototype.addUser = function(name, user, callback) {
   assert(_.isObject(user), "must pass a user");
 
   var url = USER_HOST + '/org/' + name + '/user';
+  var bearer = this.bearer;
 
-  Request.put({
-    url: url,
-    json: true,
-    body: user,
-    headers: {
-      bearer: this.bearer
-    }
-  }, function(err, resp, user) {
-    if (err) {
-      callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.put({
+      url: url,
+      json: true,
+      body: user,
+      headers: {
+        bearer: bearer
+      }
+    }, function(err, resp, user) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 401) {
-      err = Error('bearer is unauthorized to add this user to this organization');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 401) {
+        err = Error('bearer is unauthorized to add this user to this organization');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('org or user not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('user not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(user);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, user);
-  });
+      return accept(user);
+    });
+  }).nodeify(callback);
 };
 
 Org.prototype.getUsers = function(name, callback) {
@@ -244,63 +256,75 @@ Org.prototype.getUsers = function(name, callback) {
 
   var url = USER_HOST + '/org/' + name + '/user';
 
-  Request.get({
-    url: url,
-    json: true,
-    headers: {
-      bearer: this.bearer
-    },
-  }, function(err, resp, users) {
-    if (err) {
-      callback(err);
-    }
+  return new P(function(accept, reject) {
+    return Request.get({
+      url: url,
+      json: true,
+      headers: {
+        bearer: this.bearer
+      },
+    }, function(err, resp, users) {
+      if (err) {
+        reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      err = Error('org not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 404) {
+        err = Error('org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(users);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, users);
-  });
+      return accept(users);
+    });
+  }).nodeify(callback);
+
 };
 
-Org.prototype.getTeams = function(name, callback) {
+Org.prototype.getTeams = function(name) {
   var url = USER_HOST + '/org/' + name + '/team';
+  var bearer = this.bearer;
 
-  Request.get({
-    url: url,
-    json: true,
-    id: name,
-    headers: {
-      bearer: this.bearer
-    }
-  }, function(err, resp, teams) {
-    if (err) {
-      callback(err);
-    }
+  return new P(function(accept, reject) {
 
-    if (resp.statusCode === 404) {
-      err = Error('org not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+    Request.get({
+      url: url,
+      json: true,
+      headers: {
+        bearer: bearer
+      }
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode === 401) {
+        return accept({
+          count: 0,
+          items: []
+        });
+      }
 
-    return callback(null, teams);
+      if (resp.statusCode === 404) {
+        err = new Error("Org or Team not found");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
   });
-
 };
 
 Org.prototype.removeUser = function(name, userId, callback) {
@@ -337,5 +361,57 @@ Org.prototype.removeUser = function(name, userId, callback) {
 
     });
   }).nodeify(callback);
+};
 
+Org.prototype.addTeam = function(opts, callback) {
+  opts = opts || {};
+
+  var url = USER_HOST + '/org/' + opts.orgScope + '/team';
+
+  var data = {
+    url: url,
+    json: true,
+    body: {
+      scope: opts.orgScope,
+      name: opts.teamName,
+      description: opts.description
+    },
+    headers: {
+      bearer: this.bearer
+    }
+  };
+
+  return new P(function(accept, reject) {
+    Request.put(data, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = Error('no bearer token included in adding of team ' + opts.teamName);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('Org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 409) {
+        err = new Error('The provided Team\'s name is already in use for this Org');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  }).nodeify(callback);
 };

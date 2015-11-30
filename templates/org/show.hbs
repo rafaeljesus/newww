@@ -1,0 +1,44 @@
+<div class="container">
+
+  <hgroup>
+    <h1 class="billing-header">@{{org.info.name}}</h1>
+  </hgroup>
+
+  {{> org-nav packages=true}}
+
+  <div id="packages">
+    <h2>{{pluralize org.packages.count "package" true}}</h2>
+
+    {{#if org.packages.count}}
+    <table class="org-table org-packages">
+      <thead>
+        <tr>
+          <th>name</th>
+        </tr>
+      </thead>
+      <tbody>
+      {{#each org.packages.items}}
+        <tr>
+          <td>
+            <div>
+              {{#if private}}
+                <i class="icon-lock"></i>
+              {{!-- {{else}}
+                <i class="icon-public"></i> --}}
+              {{/if}}
+              <span class="name">
+                <a class="packagename" href="/package/{{name}}">{{name}}</a>
+              </span><!--/.name-->
+            </div>
+          </td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+  </div><!--/#packages-->
+
+
+
+</div>
+<script src="https://static.accountdock.com/app.min.js"></script>

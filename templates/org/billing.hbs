@@ -1,12 +1,13 @@
 <div class="nav-breadcrumb-flow-indicator-container">
   <ul class="nav-breadcrumb-flow-indicator">
     <li class="done">Create Account</li>
-    <li class="current">Create Org</li>
+    <li class="current">Create Organization</li>
     <li>Invite Members</li>
   </ul>
 </div>
 {{#if user.email_verified}}
   <h1>Billing information</h1>
+  <p class="error billing-error" style="display: none;"></p>
   <form method="POST" id="payment-form" action="/settings/billing/subscribe" data-stripe-public-key="{{stripePublicKey}}">
     <section>
       <p class="description">

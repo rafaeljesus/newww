@@ -55,7 +55,6 @@
 
   {{#if features.org_billing}}
   <div class="tabs">
-
     <div class="tab-nav-container">
       <div class="nav-container nav-2-container">
         <ul class="nav nav-2 clear" role="navigation">
@@ -130,7 +129,7 @@
                   {{> form_security }}
                   {{/with}}
                     <input type="hidden" name="updateType" value="deleteOrg" />
-                    <button type="submit" class="icon-x"><span class="a11y-only">Delete Org {{npm_org}}</span></button>
+                    <button type="submit" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></button>
                 </form>
               </td>
               {{/if}}

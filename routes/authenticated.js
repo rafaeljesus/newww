@@ -108,6 +108,14 @@ module.exports = [
     method: "GET",
     handler: require('../handlers/org').getOrg
   }, {
+    path: "/org/{org}/members",
+    method: "GET",
+    handler: require('../handlers/org').getOrg
+  }, {
+    path: "/org/{org}/teams",
+    method: "GET",
+    handler: require('../handlers/org').getOrg
+  }, {
     path: "/org/{org}",
     method: "POST",
     handler: require('../handlers/org').updateOrg
@@ -142,5 +150,41 @@ module.exports = [
     path: "/org/create/billing",
     method: "GET",
     handler: require('../handlers/org').getOrgCreationBillingPage
+  }, {
+    path: "/org/{org}/user",
+    method: "GET",
+    handler: require('../handlers/org').getUser
+  }, {
+    path: "/org/{org}/team/create",
+    method: "GET",
+    handler: require('../handlers/team').getTeamCreationPage
+  }, {
+    path: "/org/{org}/team",
+    method: "POST",
+    handler: require('../handlers/team').addTeamToOrg
+  }, {
+    path: "/org/{org}/team/{teamName}",
+    method: "GET",
+    handler: require('../handlers/team').showTeam
+  }, {
+    path: "/org/{org}/team/{teamName}",
+    method: "POST",
+    handler: require('../handlers/team').updateTeam
+  }, {
+    path: "/org/{org}/team/{teamName}/user",
+    method: "GET",
+    handler: require('../handlers/team').getUsers
+  }, {
+    path: "/org/{org}/team/{teamName}/add-user",
+    method: "GET",
+    handler: require('../handlers/team').getAddTeamUserPage
+  }, {
+    path: "/org/{org}/team/{teamName}/package",
+    method: "GET",
+    handler: require('../handlers/team').getPackages
+  }, {
+    path: "/org/{org}/team/{teamName}/add-package",
+    method: "GET",
+    handler: require('../handlers/team').getAddTeamPackagePage
   }
 ];

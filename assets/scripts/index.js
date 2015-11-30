@@ -12,7 +12,6 @@ require("./tooltips")();
 require("./what-npm-is-for")();
 require("./billing")();
 require("./billing-cancel")();
-require("./banner")();
 require("./date-formatting")();
 require("./keyboard-shortcuts")();
 require("./add-active-class-to-links")();
@@ -24,6 +23,9 @@ require("./fetch-packages")();
 require("./tabs")();
 require("./switch-submission")();
 require("./validator")();
+require("./eloqua-integration")();
+require("./add-users-to-teams")();
+require("./add-packages-to-teams")();
 
 window.github = require("./github")();
 window.star = require("./star")();

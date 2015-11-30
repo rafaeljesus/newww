@@ -511,7 +511,7 @@ describe("Customer", function() {
       Customer.extendSponsorship(11111, "boomer", function(err, sponsorships) {
         customerMock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal("License not found: 11111");
+        expect(err.message).to.equal("The sponsorship license number 11111 is not found");
         expect(err.statusCode).to.equal(404);
 
         done();
@@ -560,7 +560,7 @@ describe("Customer", function() {
       Customer.acceptSponsorship(verification_key, function(err, verifiedUser) {
         customerMock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal('verification key not found');
+        expect(err.message).to.equal('The verification key used for accepting this sponsorship does not exist');
         expect(verifiedUser).to.not.exist();
         done();
       });

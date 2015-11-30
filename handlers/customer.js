@@ -344,4 +344,3 @@ customer.subscribe = function(request, reply) {
     }
   });
 };
-

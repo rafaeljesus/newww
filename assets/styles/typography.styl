@@ -44,6 +44,11 @@ h1
   font-size font-largest
   line-height line-height-large
 
+  .narrow &
+    margin 0.2em 0
+    text-align center
+    font-size 32px
+
 h2
   font-size font-larger
   line-height line-height-large
@@ -60,12 +65,31 @@ h5
   font-size = (font-base * 1.15)
   line-height line-height-large
 
+hgroup
+  margin 25px 0
+  h1,h2
+    margin 0
+    padding 0
+    text-align center
+    a
+      color primary
+      text-decoration none
+      &:hover
+        color primary-darker
+        text-decoration none
+
+  &.breadcrumb
+    *
+      text-align left
+    .description
+      font-size 100%
+      color greigh4
+      font-weight 400
+
+
 h6
   font-size = (font-base * 1.05)
   line-height line-height-larger
-
-hgroup
-  margin 25px 0
 
 p
   font-size font-base
@@ -119,9 +143,3 @@ pre
   &:after
     content "*"
     display inline
-
-  .included,
-  .additional
-    display block
-    margin-left 2.333333em
-    line-height 1.5

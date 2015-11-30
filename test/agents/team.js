@@ -3,13 +3,36 @@ var Code = require('code'),
   lab = exports.lab = Lab.script(),
   describe = lab.experiment,
   it = lab.test,
+  afterEach = lab.afterEach,
   expect = Code.expect,
   nock = require('nock'),
   fixtures = require('../fixtures');
 
 var Team = require('../../agents/team');
 
+var rejectionMap = {};
+
+process.on('unhandledRejection', function(reason, promise) {
+  rejectionMap[promise] = reason;
+});
+
+process.on('rejectionHandled', function(promise) {
+  delete rejectionMap[promise]
+  ;
+});
+
 describe('Team', function() {
+  afterEach(function(done) {
+    while (process.domain) {
+      process.domain.exit();
+    }
+    for (var xs in rejectionMap) {
+      if (rejectionMap.hasOwnProperty(xs)) {
+        throw rejectionMap[xs];
+      }
+    }
+    done();
+  });
   it('throws if no bearer is passed', function(done) {
     expect(function() {
       return Team();

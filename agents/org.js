@@ -71,7 +71,6 @@ Org.prototype.get = function(name, callback) {
 
   var self = this;
   var orgUrl = USER_HOST + '/org/' + name;
-  var packageUrl = USER_HOST + '/org/' + name + '/package';
 
   var makeRequest = function(url) {
     return new P(function(accept, reject) {
@@ -107,7 +106,7 @@ Org.prototype.get = function(name, callback) {
   var requests = [
     makeRequest(orgUrl),
     this.getUsers(name),
-    makeRequest(packageUrl),
+    this.getPackages(name),
     this.getTeams(name)
   ];
 
@@ -250,6 +249,47 @@ Org.prototype.addUser = function(name, user, callback) {
   }).nodeify(callback);
 };
 
+Org.prototype.getPackages = function(name, page) {
+  assert(_.isString(name), "name must be a string");
+
+  page = page || 0;
+
+  var url = USER_HOST + '/org/' + name + '/package';
+  var PER_PAGE = 100;
+
+  return new P(function(accept, reject) {
+    return Request.get({
+      url: url,
+      json: true,
+      headers: {
+        bearer: this.bearer
+      },
+      qs: {
+        per_page: PER_PAGE,
+        page: page
+      }
+    }, function(err, resp, users) {
+      if (err) {
+        reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = Error('org not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(users);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(users);
+    });
+  });
+
+};
 Org.prototype.getUsers = function(name, page) {
   assert(_.isString(name), "name must be a string");
 

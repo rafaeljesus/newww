@@ -680,4 +680,52 @@ describe('Org', function() {
       });
     });
   });
+
+  describe('getPackages', function() {
+    it('returns an error when one happens', function(done) {
+      var orgMock = nock('https://user-api-example.com')
+        .get('/org/bigco/package?per_page=100&page=0')
+        .reply(404);
+
+      Org('bob').getPackages('bigco')
+        .catch(function(err) {
+          orgMock.done();
+          expect(err).to.exist();
+        })
+        .then(function(packages) {
+          expect(packages).to.not.exist();
+          done();
+        });
+
+    });
+
+    it('returns packages when response is good', function(done) {
+      var orgMock = nock('https://user-api-example.com')
+        .get('/org/bigco/package?per_page=100&page=0')
+        .reply(200, {
+          count: 1,
+          items: [{
+            "name": "super-package",
+            "private": "false",
+            "created": "2015-06-19T23:35:42.659Z",
+            "updated": "2015-06-19T23:35:42.659Z",
+            "deleted": null
+          }]
+        });
+
+      Org('bob').getPackages('bigco')
+        .catch(function(err) {
+          orgMock.done();
+          expect(err).to.not.exist();
+        })
+        .then(function(packages) {
+          expect(packages).to.exist();
+          expect(packages.count).to.equal(1);
+          expect(packages.items.length).to.equal(1);
+          expect(packages.items[0].name).to.equal("super-package");
+          done();
+        });
+
+    });
+  });
 });

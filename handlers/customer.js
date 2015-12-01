@@ -8,6 +8,8 @@ var utils = require('../lib/utils');
 var validate = require('validate-npm-package-name');
 var invalidUserName = require('npm-user-validate').username;
 
+var _ = require('lodash');
+
 customer.getBillingInfo = function(request, reply) {
 
   var opts = {
@@ -23,51 +25,71 @@ customer.getBillingInfo = function(request, reply) {
     opts.package = request.query.package;
   }
 
-  request.customer.getById(request.loggedInUser.email, function(err, cust) {
+  P.join(
+    request.customer.getById(request.loggedInUser.email).then(function(cust) {
 
-    request.customer.getStripeData(function(err, customer) {
+      return request.customer.getStripeData().then(function(customer) {
 
-      if (customer) {
-        opts.customer = customer;
-        opts.customer.customer_id = cust && cust.stripe_customer_id;
-      }
-
-      request.customer.getSubscriptions(function(err, subscriptions) {
-        if (err) {
-          request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
-          request.logger.error(err);
-          subscriptions = [];
+        if (customer && cust) {
+          customer.customer_id = cust.stripe_customer_id;
         }
-        var subs = subscriptions.filter(function(sub) {
-          return sub.status === "active";
-        });
 
-        var privateModules = [],
-          orgs = [];
+        return {
+          customer: customer
+        }
+      })
+    }, function(err) {
+      if (err.statusCode == 404) {
+        return {};
+      } else {
+        throw err;
+      }
+    }),
 
-        subs.forEach(function(sub) {
-          sub.cost = (sub.amount / 100) * sub.quantity;
-          if (sub.privateModules) {
-            privateModules.push(sub);
-          } else {
-            orgs.push(sub);
-          }
-        });
+    request.customer.getSubscriptions().catch(function(err) {
+      request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
+      request.logger.error(err);
+      return [];
+    }).then(function(subscriptions) {
 
-
-        opts.totalCost = subs.map(function(sub) {
-          return sub.cost;
-        }).reduce(function(prev, curr) {
-          return prev + curr;
-        }, 0);
-
-        opts.privateModules = privateModules;
-        opts.orgs = orgs;
-
-        return reply.view('user/billing', opts);
-
+      var subs = subscriptions.filter(function(sub) {
+        return sub.status === "active";
       });
+
+      var privateModules = [],
+        orgs = [];
+
+      subs.forEach(function(sub) {
+        sub.cost = (sub.amount / 100) * sub.quantity;
+        if (sub.privateModules) {
+          privateModules.push(sub);
+        } else {
+          orgs.push(sub);
+        }
+      });
+
+      opts.totalCost = subs.map(function(sub) {
+        return sub.cost;
+      }).reduce(function(prev, curr) {
+        return prev + curr;
+      }, 0);
+
+      return {
+        privateModules: privateModules,
+        orgs: orgs
+      };
+    })
+  ).then(function mixInAdditionalOpts(addopts) {
+    addopts.forEach(function(e) {
+      _.extend(opts, e);
     });
+
+    return opts;
+  }).then(function(opts) {
+    return reply.view('user/billing', opts);
+  }, function(err) {
+    request.logger.error(err);
+    return reply.view('errors/internal', err).code(500);
   });
 };
 

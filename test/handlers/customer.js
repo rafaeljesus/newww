@@ -52,7 +52,7 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe").times(2)
+      .get("/customer/bob@boom.me")
       .reply(404)
       .get("/customer/bob/stripe/subscription")
       .reply(404);
@@ -80,6 +80,8 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
@@ -108,6 +110,8 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
@@ -135,6 +139,8 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
@@ -164,6 +170,8 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
@@ -193,6 +201,8 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
@@ -221,6 +231,8 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
@@ -250,6 +262,8 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
@@ -278,6 +292,8 @@ describe('GET /settings/billing', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob@boom.me")
+      .reply(200, fixtures.customers.fetched_happy)
       .get("/customer/bob/stripe").times(2)
       .reply(200, fixtures.customers.bob)
       .get("/customer/bob/stripe/subscription")
@@ -317,6 +333,8 @@ describe('GET /settings/billing', function() {
         .reply(200, fixtures.users.bob);
 
       licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob@boom.me")
+        .reply(200, fixtures.customers.fetched_happy)
         .get("/customer/bob/stripe").times(2)
         .reply(200, fixtures.customers.bob)
         .get("/customer/bob/stripe/subscription")
@@ -407,6 +425,8 @@ describe('GET /settings/billing', function() {
         .reply(200, fixtures.users.diana_delinquent);
 
       licenseMock = nock("https://license-api-example.com")
+        .get("/customer/diana@late.fee")
+        .reply(200, fixtures.customers.fetched_happy)
         .get("/customer/diana_delinquent/stripe").times(2)
         .reply(200, fixtures.customers.license_expired)
         .get("/customer/diana_delinquent/stripe/subscription")
@@ -454,10 +474,10 @@ describe('GET /settings/billing', function() {
         .reply(200, fixtures.users.norbert_newbie);
 
       licenseMock = nock("https://license-api-example.com")
-        .get("/customer/norbert_newbie/stripe")
-        .reply(200, fixtures.customers.happy)
+        .get("/customer/norbert@newbies.com")
+        .reply(404)
         .get("/customer/norbert_newbie/stripe/subscription")
-        .reply(200, fixtures.customers.subscriptions.bob)
+        .reply(404)
         .get("/customer/norbert_newbie/stripe")
         .reply(404);
 
@@ -507,7 +527,7 @@ describe('GET /settings/billing', function() {
         .reply(200, fixtures.users.uncle_unverified);
 
       var customerMock = nock("https://license-api-example.com")
-        .get("/customer/uncle_unverified/stripe").times(2)
+        .get("/customer/uncle@unverified.com")
         .reply(404)
         .get("/customer/uncle_unverified/stripe/subscription")
         .reply(404);

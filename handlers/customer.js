@@ -38,6 +38,12 @@ customer.getBillingInfo = function(request, reply) {
           customer: customer
         }
       })
+    }, function(err) {
+      if (err.statusCode == 404) {
+        return {};
+      } else {
+        throw err;
+      }
     }),
 
     request.customer.getSubscriptions().catch(function(err) {

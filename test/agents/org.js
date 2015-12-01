@@ -104,7 +104,7 @@ describe('Org', function() {
           'updated': '2015-06-19T23:35:42.659Z',
           'deleted': null
         })
-        .get('/org/' + name + '/user')
+        .get('/org/' + name + '/user?per_page=100&page=0')
         .reply(200, {
           'count': 1,
           'items': [fixtures.users.bigcoadmin]
@@ -140,7 +140,7 @@ describe('Org', function() {
           'updated': '2015-06-19T23:35:42.659Z',
           'deleted': null
         })
-        .get('/org/' + name + '/user')
+        .get('/org/' + name + '/user?per_page=100&page=0')
         .reply(200, {
           'count': 1,
           'items': [fixtures.users.bigcoadmin]
@@ -183,7 +183,7 @@ describe('Org', function() {
       var orgMocks = nock('https://user-api-example.com')
         .get('/org/' + name)
         .reply(404, 'not found')
-        .get('/org/' + name + '/user')
+        .get('/org/' + name + '/user?per_page=100&page=0')
         .reply(404, 'not found')
         .get('/org/' + name + '/package')
         .reply(404, 'not found')
@@ -427,37 +427,43 @@ describe('Org', function() {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com')
-        .get('/org/' + name + '/user')
+        .get('/org/' + name + '/user?per_page=100&page=0')
         .reply(200, {
           "count": 1,
           "items": [fixtures.users.bigcoadmin]
         });
 
-      Org('bob').getUsers(name, function(err, users) {
-        orgMocks.done();
-        expect(err).to.be.null();
-        expect(users.items).to.be.an.array();
-        expect(users.count).to.equal(1);
-        expect(users.items[0].name).to.equal('bob');
-        done();
-      });
+      Org('bob').getUsers(name)
+        .catch(function(err) {
+          orgMocks.done();
+          expect(err).to.be.null();
+        })
+        .then(function(users) {
+          expect(users.items).to.be.an.array();
+          expect(users.count).to.equal(1);
+          expect(users.items[0].name).to.equal('bob');
+          done();
+        });
     });
 
     it('returns no users if the org does not exist', function(done) {
       var name = 'bigco';
 
       var orgMocks = nock('https://user-api-example.com')
-        .get('/org/' + name + '/user')
+        .get('/org/' + name + '/user?per_page=100&page=0')
         .reply(404, 'Org not found');
 
-      Org('bob').getUsers(name, function(err, users) {
-        orgMocks.done();
-        expect(err).to.exist();
-        expect(err.message).to.equal('org not found');
-        expect(err.statusCode).to.equal(404);
-        expect(users).to.not.exist();
-        done();
-      });
+      Org('bob').getUsers(name)
+        .catch(function(err) {
+          orgMocks.done();
+          expect(err).to.exist();
+          expect(err.message).to.equal('org not found');
+          expect(err.statusCode).to.equal(404);
+        })
+        .then(function(users) {
+          expect(users).to.not.exist();
+          done();
+        });
     });
   });
 

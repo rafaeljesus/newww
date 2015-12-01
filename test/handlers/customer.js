@@ -930,7 +930,7 @@ describe("subscribing to an org", function() {
       var orgMock = nock("https://user-api-example.com")
         .get("/org/boomer")
         .reply(404, "not found")
-        .get("/org/boomer/user")
+        .get("/org/boomer/user?per_page=100&page=0")
         .reply(404, "not found")
         .get("/org/boomer/package")
         .reply(404, "not found")
@@ -1032,7 +1032,7 @@ describe("subscribing to an org", function() {
           "updated": "2015-07-10T21:07:16.799Z",
           "deleted": null
         })
-        .get("/org/boomer/user")
+        .get("/org/boomer/user?per_page=100&page=0")
         .reply(200, {
           "count": 1,
           "items": [fixtures.users.bob]
@@ -1204,7 +1204,7 @@ describe("subscribing to an org", function() {
       var orgMock = nock("https://user-api-example.com")
         .get("/org/bob")
         .reply(404, "not found")
-        .get("/org/bob/user")
+        .get("/org/bob/user?per_page=100&page=0")
         .reply(404, "not found")
         .get("/org/bob/package")
         .reply(404, "not found")

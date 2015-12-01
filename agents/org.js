@@ -71,7 +71,6 @@ Org.prototype.get = function(name, callback) {
 
   var self = this;
   var orgUrl = USER_HOST + '/org/' + name;
-  var userUrl = USER_HOST + '/org/' + name + '/user';
   var packageUrl = USER_HOST + '/org/' + name + '/package';
 
   var makeRequest = function(url) {
@@ -107,7 +106,7 @@ Org.prototype.get = function(name, callback) {
 
   var requests = [
     makeRequest(orgUrl),
-    makeRequest(userUrl),
+    this.getUsers(name),
     makeRequest(packageUrl),
     this.getTeams(name)
   ];
@@ -251,10 +250,15 @@ Org.prototype.addUser = function(name, user, callback) {
   }).nodeify(callback);
 };
 
-Org.prototype.getUsers = function(name, callback) {
+Org.prototype.getUsers = function(name, page) {
   assert(_.isString(name), "name must be a string");
 
+  if (typeof page === 'undefined') {
+    page = 0;
+  }
+
   var url = USER_HOST + '/org/' + name + '/user';
+  var PER_PAGE = 100;
 
   return new P(function(accept, reject) {
     return Request.get({
@@ -263,6 +267,10 @@ Org.prototype.getUsers = function(name, callback) {
       headers: {
         bearer: this.bearer
       },
+      qs: {
+        per_page: PER_PAGE,
+        page: page
+      }
     }, function(err, resp, users) {
       if (err) {
         reject(err);
@@ -282,7 +290,7 @@ Org.prototype.getUsers = function(name, callback) {
 
       return accept(users);
     });
-  }).nodeify(callback);
+  });
 
 };
 

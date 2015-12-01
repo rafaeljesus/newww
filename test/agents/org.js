@@ -109,7 +109,7 @@ describe('Org', function() {
           'count': 1,
           'items': [fixtures.users.bigcoadmin]
         })
-        .get('/org/' + name + '/package')
+        .get('/org/' + name + '/package?per_page=100&page=0')
         .reply(200, {
           'count': 1,
           'items': [fixtures.packages.fake]
@@ -145,7 +145,7 @@ describe('Org', function() {
           'count': 1,
           'items': [fixtures.users.bigcoadmin]
         })
-        .get('/org/' + name + '/package')
+        .get('/org/' + name + '/package?per_page=100&page=0')
         .reply(200, {
           'count': 1,
           'items': [fixtures.packages.fake]
@@ -185,7 +185,7 @@ describe('Org', function() {
         .reply(404, 'not found')
         .get('/org/' + name + '/user?per_page=100&page=0')
         .reply(404, 'not found')
-        .get('/org/' + name + '/package')
+        .get('/org/' + name + '/package?per_page=100&page=0')
         .reply(404, 'not found')
         .get('/org/' + name + '/team')
         .reply(404, 'not found');

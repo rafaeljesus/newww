@@ -125,7 +125,7 @@
                 </td>
               {{else}}
                 <td>
-                  <form method="POST" id="org-delete-{{@index}}" action="/org/{{npm_org}}">
+                  <form method="POST" action="/org/{{npm_org}}">
                     {{#with ../../this}}
                       {{> form_security }}
                     {{/with}}

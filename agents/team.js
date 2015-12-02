@@ -403,7 +403,7 @@ Team.prototype.removeTeam = function(opts) {
   var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id);
 
   var data = {
-    body: {id: opts.id},
+    body: {},
     headers: {bearer: this.bearer},
     json: true,
     url: url
@@ -415,8 +415,23 @@ Team.prototype.removeTeam = function(opts) {
         return reject(err);
       }
 
-      // TODO(@jonathanmarvens):
-      // Handle error responses.
+      if (resp.statusCode === 401) {
+        err = new Error('The user must be an admin to perform this operation.');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = new Error('The team or organization was not found.');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body.error);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
       return accept(body);
     });

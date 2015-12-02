@@ -60,12 +60,12 @@
         <ul class="nav nav-2 clear" role="navigation">
           <li class="current"><a href="#overview">Overview</a></li>
           {{#if customer}}
-          <li><a href="#payment-information">Payment Information</a></li>
+            <li><a href="#payment-information">Payment Information</a></li>
           {{else}}
-          <li><a href="#payment-information">Sign up for private modules</a></li>
+            <li><a href="#payment-information">Sign up for private modules</a></li>
           {{/if}}
           {{#if customer.customer_id}}
-          <li><button type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</button></li>
+            <li><button type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</button></li>
           {{/if}}
         </ul>
       </div>
@@ -94,6 +94,7 @@
         </tbody>
       </table>
       {{/if}}
+
       {{#if orgs}}
       <table class="subscriptions">
         <thead>
@@ -111,34 +112,34 @@
               <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
               <td>{{quantity}}</td>
               {{#if cancel_at_period_end}}
-              <td>--</td>
+                <td>--</td>
               {{else}}
-              <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
-                {{next_billing_date}}
-              </td>
+                <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+                  {{next_billing_date}}
+                </td>
               {{/if}}
               <td>{{cost}}</td>
               {{#if cancel_at_period_end}}
-              <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
-                Last date - {{next_billing_date}}
-              </td>
+                <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+                  Last date - {{next_billing_date}}
+                </td>
               {{else}}
-              <td>
-                <form method="POST" id="org-delete-{{@index}}" action="/org/{{npm_org}}">
-                  {{#with ../../this}}
-                  {{> form_security }}
-                  {{/with}}
+                <td>
+                  <form method="POST" id="org-delete-{{@index}}" action="/org/{{npm_org}}">
+                    {{#with ../../this}}
+                      {{> form_security }}
+                    {{/with}}
                     <input type="hidden" name="updateType" value="deleteOrg" />
                     <button type="submit" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></button>
-                </form>
-              </td>
+                  </form>
+                </td>
               {{/if}}
             </tr>
           {{/each}}
         </tbody>
       </table>
       {{else}}
-      <p>You do not have any subscriptions</p>
+        <p>You do not have any subscriptions</p>
       {{/if}}
     </div><!--/.tab-1-->
 
@@ -150,9 +151,7 @@
     <div class="container narrow">
       {{> billing-info}}
     </div>
-    {{/if}}
-
-
+  {{/if}}
 
 </div>
 

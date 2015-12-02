@@ -300,6 +300,30 @@ exports.updateOrg = function(request, reply) {
   }
 };
 
+exports.deleteOrgConfirm = function(request, reply) {
+  request.customer.getSubscriptions().then(assertSubscriptionExists).then(function() {
+    return reply.view('user/billing-confirm-cancel', {
+      npm_org: request.params.npm_org
+    });
+  }, function(err) {
+    if (err.statusCode == 404) {
+      return reply.view('errors/not-found').code(404);
+    } else {
+      return reply(err)
+    }
+  });
+
+  function assertSubscriptionExists(subscriptions) {
+    if (!subscriptions.filter(function(e) {
+        return e.npm_org == request.params.npm_org
+      }).length) {
+      var err = new Error("Subscription not found");
+      err.statusCode = 404;
+      throw err;
+    }
+  }
+};
+
 exports.deleteOrg = function(request, reply) {
   if (!request.features.org_billing) {
     return reply.redirect('/org');

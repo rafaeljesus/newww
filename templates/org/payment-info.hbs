@@ -6,207 +6,281 @@
 
   {{> org-nav payment-info=true}}
 
-  <div>
-    <ul class="payment-nav" role="navigation">
-      <li>created 12-Dec-15</li>
-      <li><a href="#">delete Organization</a></li>
-      <li><a href="#">suspend Organization</a></li>
-      <li><a href="settings/billing#payment-information">update CC info</a></li>
+<div class="status-row">
+
+  <div class="big-data">
+    <span class="num">##</span>
+    <span class="tiny">total members</span>
   </div>
 
   <div class="big-data">
     <span class="num">##</span>
-    <span class="desc">total members</span>
+    <span class="tiny">paid-for members</span>
   </div>
-  <div class="big-data">
-    <span class="num">##</span>
-    <span class="desc">paid-for members</span>
-  </div>
+
   <div class="big-data">
     <span class="dolla">$</span>
     <span class="num">123</span>
     <span class="period">/mo.</span>
-    <span class="desc">total members</span>
+    <span class="tiny">approximate amount <span class="wtf" original-title="pro-rated based upon the number of paid-for users in the billing month" rel="tipsy">?</span></span>
   </div>
 
   <div class="disclaimer">
-      <p>Lorem Ipsum Dolor sit amet</p>
+    <ul>
+      <li>Next billing date: <strong>12-Jan-16</strong></li>
+      <li>Valid payment method ending in <a href="#">4242</a></li>
+      <li><a href="#">Suspend this Org</a> &nbsp;|&nbsp; <a href="#">Delete this Org</a></li>
+<!--  <li><a href="#">Reactivate this Org</a> &nbsp;|&nbsp; <a href="#">Delete this Org</a></li> -->
+    </ul>
   </div>
 
-  <ul class="expando-row">
-
-    <li>
-      <h3>Full Access</h3>
-      <table class="org-table org-users org-edit-user-table">
-              <thead>
-                <tr>
-                  <th>member</th>
-                  <th>role</th>
-                  <th>date added</th>
-                  <th>action</th>
-                </tr>
-              </thead>
-              <tbody>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                        </ul>
-                    </td>
-                    <td>super-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                          <li><span class="display-name">Isaac Z. Schlueter</span></li>
-                        </ul>
-                    </td>
-                    <td>super-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                        </ul>
-                    </td>
-                    <td>team-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                          <li><span class="display-name">Isaac Z. Schlueter</span></li>
-                        </ul>
-                    </td>
-                    <td>team-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                          <li><span class="display-name">Isaac Z. Schlueter</span></li>
-                        </ul>
-                    </td>
-                    <td>super-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                          <li><span class="display-name">Isaac Z. Schlueter</span></li>
-                        </ul>
-                    </td>
-                    <td>super-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                        </ul>
-                    </td>
-                    <td>super-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                        </ul>
-                    </td>
-                    <td>super-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                        <span class="avatar-small">
-                          <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                        </span>
-                        <ul class="name-desc vanilla-list ellipsis">
-                          <li><a class="name" href="/~bcoe">bcoe</a></li>
-                        </ul>
-                    </td>
-                    <td>super-admin</td>
-                    <td>12-Dec-15</td>
-                    <td>
-                          <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
-                    </td>
-                  </tr>
-              </tbody>
-            </table>
-    </li>
-
-    <li>
-      <h3>Open Source</h3>
-      <table>
-        <tr>
-          <th>test</th>
-          <th>test</th>
-          <th>test</th>
-        </tr>
-        <tr>
-          <td>test</td>
-          <td>test</td>
-          <td>test</td>
-        </tr>
-      </table>
-    </li>
-  </ul>
-
-
-
 </div>
+
+<ul class="expando-row">
+  <li>
+    <h3>Full Access</h3>
+    <table class="org-table org-users org-edit-user-table">
+            <thead>
+              <tr>
+                <th>member</th>
+                <th>role</th>
+                <th>date added</th>
+                <th>action</th>
+              </tr>
+            </thead>
+            <tbody>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                      </ul>
+                      <span class="paid-for" original-title="you are paying for this user" rel="tipsy">$</span>
+                  </td>
+                  <td>super-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                    <div class="actions-nav" role='navigation'>
+                      <ul>
+                        <li><a href="#">...</a>
+                          <ul>
+                            <li><a href="#">Delete this Member</a></li>
+                            <li><a href="#">Convert to Open Source</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                        <li><span class="display-name">Isaac Z. Schlueter</span></li>
+                      </ul>
+                      <span class="paid-for" original-title="you are paying for this user" rel="tipsy">$</span>
+                  </td>
+                  <td>super-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                    <div class="actions-nav" role='navigation'>
+                      <ul>
+                        <li><a href="#">...</a>
+                          <ul>
+                            <li><a href="#">Delete this Member</a></li>
+                            <li><a href="#">Convert to Open Source</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                      </ul>
+                  </td>
+                  <td>team-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                        <button type="submit" class="delete-user icon-x"><span class="a11y-only">Delete User bcoe</span></button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                        <li><span class="display-name">Isaac Z. Schlueter</span></li>
+                      </ul>
+                  </td>
+                  <td>team-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                    <div class="actions-nav" role='navigation'>
+                      <ul>
+                        <li><a href="#">...</a>
+                          <ul>
+                            <li><a href="#">Delete this Member</a></li>
+                            <li><a href="#">Convert to Open Source</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                        <li><span class="display-name">Isaac Z. Schlueter</span></li>
+                      </ul>
+                  </td>
+                  <td>super-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                    <div class="actions-nav" role='navigation'>
+                      <ul>
+                        <li><a href="#">...</a>
+                          <ul>
+                            <li><a href="#">Delete this Member</a></li>
+                            <li><a href="#">Convert to Open Source</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                        <li><span class="display-name">Isaac Z. Schlueter</span></li>
+                      </ul>
+                  </td>
+                  <td>super-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                    <div class="actions-nav" role='navigation'>
+                      <ul>
+                        <li><a href="#">...</a>
+                          <ul>
+                            <li><a href="#">Delete this Member</a></li>
+                            <li><a href="#">Convert to Open Source</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                      </ul>
+                  </td>
+                  <td>super-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                    <div class="actions-nav" role='navigation'>
+                      <ul>
+                        <li><a href="#">...</a>
+                          <ul>
+                            <li><a href="#">Delete this Member</a></li>
+                            <li><a href="#">Convert to Open Source</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                      </ul>
+                  </td>
+                  <td>super-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                    <div class="actions-nav" role='navigation'>
+                      <ul>
+                        <li><a href="#">...</a>
+                          <ul>
+                            <li><a href="#">Delete this Member</a></li>
+                            <li><a href="#">Convert to Open Source</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                      <span class="avatar-small">
+                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
+                      </span>
+                      <ul class="name-desc vanilla-list ellipsis">
+                        <li><a class="name" href="/~bcoe">bcoe</a></li>
+                      </ul>
+                  </td>
+                  <td>super-admin</td>
+                  <td>12-Dec-15</td>
+                  <td>
+                    <div class="actions-nav" role='navigation'>
+                      <ul>
+                        <li><a href="#">...</a>
+                          <ul>
+                            <li><a href="#">Delete this Member</a></li>
+                            <li><a href="#">Convert to Open Source</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+            </tbody>
+          </table>
+  </li>
+
+  <li>
+    <h3>Open Source</h3>
+    <table>
+      <tr>
+        <th>test</th>
+        <th>test</th>
+        <th>test</th>
+      </tr>
+      <tr>
+        <td>test</td>
+        <td>test</td>
+        <td>test</td>
+      </tr>
+    </table>
+  </li>
+</ul>
+
+</div> <!-- end container -->

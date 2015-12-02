@@ -156,10 +156,10 @@ exports.addUserToOrg = function(request, reply) {
   Org(loggedInUser)
     .addUser(orgName, user)
     .then(function() {
-      return request.customer.getLicenseIdForOrg(orgName);
+      return request.customer.getLicenseForOrg(orgName);
     })
-    .then(function(licenseId) {
-      return request.customer.extendSponsorship(licenseId, user.user);
+    .then(function(license) {
+      return request.customer.extendSponsorship(license.license_id, user.user);
     })
     .then(function(extendedSponsorship) {
       return request.customer.acceptSponsorship(extendedSponsorship.verification_key)
@@ -201,9 +201,9 @@ exports.removeUserFromOrg = function(request, reply) {
   var loggedInUser = request.loggedInUser.name;
   var username = request.payload.username;
 
-  return request.customer.getLicenseIdForOrg(orgName)
-    .then(function(licenseId) {
-      return request.customer.revokeSponsorship(username, licenseId);
+  return request.customer.getLicenseForOrg(orgName)
+    .then(function(license) {
+      return request.customer.revokeSponsorship(username, license.license_id);
     })
     .then(function() {
       return Org(loggedInUser)
@@ -258,9 +258,9 @@ exports.updateUserPayStatus = function(request, reply) {
       });
   };
 
-  request.customer.getLicenseIdForOrg(orgName)
-    .then(function(licenseId) {
-      return payForUser ? extend(licenseId, username) : request.customer.revokeSponsorship(username, licenseId);
+  request.customer.getLicenseForOrg(orgName)
+    .then(function(license) {
+      return payForUser ? extend(license.license_id, username) : request.customer.revokeSponsorship(username, license.license_id);
     })
     .then(function() {
       return reply.redirect('/org/' + orgName + '/members');
@@ -336,7 +336,6 @@ exports.deleteOrg = function(request, reply) {
   }
 
   var orgToDelete = request.params.org;
-  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
@@ -353,7 +352,7 @@ exports.deleteOrg = function(request, reply) {
       return reply.redirect('/settings/billing');
     }
 
-    request.customer.cancelSubscription(subscription.id, function(err, sub) {
+    request.customer.cancelSubscription(subscription.id, function(err) {
       if (err) {
         request.logger.error(err);
         return reply.view('errors/internal', err);

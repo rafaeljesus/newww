@@ -231,32 +231,42 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
   });
 };
 
-Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
+Customer.prototype.getLicenseForOrg = function(orgName, callback) {
+  var url = this.host + '/customer/' + this.name + '/stripe/subscription';
+
   return new P(function(accept, reject) {
-    this.getSubscriptions(function(err, subscriptions) {
+    Request.get({
+      url: url,
+      json: true,
+      qs: {
+        org: orgName
+      }
+    }, function(err, resp, body) {
       if (err) {
         return reject(err);
       }
 
-      var org = _.find(subscriptions, function(subscription) {
-        return orgName === subscription.npm_org;
-      });
-
-      if (!org) {
-        err = new Error('No org with that name exists');
+      if (resp.statusCode === 404) {
+        err = new Error('Customer not found');
         err.statusCode = 404;
         return reject(err);
       }
 
-      if (!org.license_id) {
-        err = new Error('That org does not have a license_id');
-        err.statusCode = 400;
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
         return reject(err);
       }
 
-      return accept(org.license_id);
+      if (!body.length) {
+        err = new Error('No license for org ' + orgName + ' found');
+        err.statusCode = 404;
+        return reject(err);
+      }
+
+      return accept(body[0]);
     });
-  }.bind(this)).nodeify(callback);
+  }).nodeify(callback);
 };
 
 // should this go into the org agent instead?

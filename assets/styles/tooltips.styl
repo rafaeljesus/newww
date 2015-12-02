@@ -1,19 +1,21 @@
-tooltip-border-color = npmred
-tooltip-text-color = #FFF
+tooltip-border-color = greigh1
+tooltip-text-color = white
 
 .tipsy
   font-size 13px
   position absolute
   padding 5px
   z-index 100000
+  cursor pointer
   -webkit-font-smoothing subpixel-antialiased
 
 .tipsy-inner
   background-color tooltip-border-color
   color tooltip-text-color
-  line-height 1.9
+  line-height 1.75
+  letter-spacing .05em
   max-width 200px
-  padding 0px 6px
+  padding 6px
   text-align center
   border-radius 3px
 
@@ -111,3 +113,27 @@ tooltip-text-color = #FFF
     border-left none
     border-top-color transparent
     border-bottom-color transparent
+
+.wtf
+  background greigh5
+  cursor pointer
+  height 20px
+  width 20px
+  color white
+  border-radius 20px
+  text-align center
+  display inline-block
+  line-height 20px
+  font-weight 600
+  margin auto 5px
+
+.paid-for
+  @extend .wtf
+  background green
+  height 25px
+  width 25px
+  line-height 25px
+  border-radius 25px
+  margin 20px auto // should be a divider of a row-height variable
+  &:hover
+    background darken(green, 35%)

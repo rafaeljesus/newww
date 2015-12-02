@@ -79,6 +79,7 @@
             <th>Personal Plan</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -89,6 +90,21 @@
               {{next_billing_date}}
             </td>
             <td>{{cost}}</td>
+            {{#if cancel_at_period_end}}
+              <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+                Last date - {{next_billing_date}}
+              </td>
+            {{else}}
+              <td>
+                <form method="POST" action="/org/{{npm_org}}">
+                  {{#with ../../this}}
+                    {{> form_security }}
+                  {{/with}}
+                    <input type="hidden" name="updateType" value="deleteOrg" />
+                    <button type="submit" class="icon-x delete-package"><span class="a11y-only">Delete Private Modulest</span></button>
+                </form>
+              </td>
+            {{/if}}
           </tr>
           {{/each}}
         </tbody>

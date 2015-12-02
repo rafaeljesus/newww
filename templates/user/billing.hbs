@@ -100,13 +100,7 @@
               </td>
             {{else}}
               <td>
-                <form method="POST" action="/org/{{npm_org}}">
-                  {{#with ../../this}}
-                    {{> form_security }}
-                  {{/with}}
-                    <input type="hidden" name="updateType" value="deleteOrg" />
-                    <button type="submit" class="icon-x delete-package"><span class="a11y-only">Delete Private Modulest</span></button>
-                </form>
+                <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package"><span class="a11y-only">Delete Private Modules</span></a>
               </td>
             {{/if}}
           </tr>
@@ -145,13 +139,9 @@
                 </td>
               {{else}}
                 <td>
-                  <form method="POST" action="/org/{{npm_org}}">
-                    {{#with ../../this}}
-                      {{> form_security }}
-                    {{/with}}
-                    <input type="hidden" name="updateType" value="deleteOrg" />
-                    <button type="submit" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></button>
-                  </form>
+                  <td>
+                    <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
+                  </td>
                 </td>
               {{/if}}
             </tr>

@@ -86,9 +86,13 @@
           {{#each privateModules}}
           <tr>
             <td>Private Modules Plan <span>This plan is paid by you.</span></td>
-            <td data-date="{{next_billing_date}}" data-date-format="%B %e, %Y">
-              {{next_billing_date}}
-            </td>
+            {{#if cancel_at_period_end}}
+              <td>--</td>
+            {{else}}
+              <td data-date="{{next_billing_date}}" data-date-format="%B %e, %Y">
+                {{next_billing_date}}
+              </td>
+            {{/if}}
             <td>{{cost}}</td>
             {{#if cancel_at_period_end}}
               <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">

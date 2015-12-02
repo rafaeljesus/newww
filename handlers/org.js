@@ -334,7 +334,7 @@ exports.deleteOrg = function(request, reply) {
 
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
-      return replay.view('errors/internal', err);
+      return reply.view('errors/internal', err);
     }
     var subscription = subscriptions.filter(function(sub) {
       return orgToDelete === sub.npm_org;

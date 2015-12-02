@@ -116,6 +116,10 @@ module.exports = [
     method: "GET",
     handler: require('../handlers/org').getOrg
   }, {
+    path: "/org/{org}/payment-info",
+    method: "GET",
+    handler: require('../handlers/org').getOrg
+  }, {
     path: "/org/{org}/teams",
     method: "GET",
     handler: require('../handlers/org').getOrg

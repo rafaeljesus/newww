@@ -301,9 +301,9 @@ exports.updateOrg = function(request, reply) {
 };
 
 exports.deleteOrgConfirm = function(request, reply) {
-  request.customer.getSubscriptions().then(assertSubscriptionExists).then(function() {
+  request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
     return reply.view('user/billing-confirm-cancel', {
-      npm_org: request.params.npm_org
+      subscription: subscription
     });
   }, function(err) {
     if (err.statusCode == 404) {
@@ -313,10 +313,14 @@ exports.deleteOrgConfirm = function(request, reply) {
     }
   });
 
-  function assertSubscriptionExists(subscriptions) {
-    if (!subscriptions.filter(function(e) {
-        return e.npm_org == request.params.npm_org
-      }).length) {
+  function selectSubscription(subscriptions) {
+    var sub = subscriptions.filter(function(e) {
+      return e.npm_org == request.params.npm_org
+    })[0];
+
+    if (sub) {
+      return sub;
+    } else {
       var err = new Error("Subscription not found");
       err.statusCode = 404;
       throw err;

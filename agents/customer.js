@@ -211,24 +211,26 @@ Customer.prototype.createSubscription = function(planInfo, callback) {
 
 Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription/' + subscriptionId;
-  Request.del({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
-    if (resp.statusCode === 404) {
-      err = new Error('License not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.del({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+      if (resp.statusCode === 404) {
+        err = new Error('License not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.getLicenseForOrg = function(orgName, callback) {
@@ -272,26 +274,28 @@ Customer.prototype.getLicenseForOrg = function(orgName, callback) {
 // should this go into the org agent instead?
 Customer.prototype.getAllSponsorships = function(licenseId, callback) {
   var url = this.host + '/sponsorship/' + licenseId;
-  Request.get({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      return callback(null, []);
-    }
+      if (resp.statusCode === 404) {
+        return accept([]);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
@@ -389,3 +393,16 @@ Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
 };
 
 Customer.prototype.declineSponsorship = Customer.prototype.revokeSponsorship = Customer.prototype.removeSponsorship;
+
+Customer.prototype.swapSponsorship = function(npmUser, oldLicenseId, newLicenseId) {
+  var self = this;
+  var newSponsorship = {};
+  return self.extendSponsorship(newLicenseId, npmUser)
+    .then(function(sponsorship) {
+      newSponsorship = sponsorship;
+      return self.revokeSponsorship(npmUser, oldLicenseId);
+    })
+    .then(function() {
+      return self.acceptSponsorship(newSponsorship.verification_key);
+    });
+};

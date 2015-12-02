@@ -1874,4 +1874,212 @@ describe('deleting an org', function() {
       });
     });
   });
+
+  describe('restarting a canceled org', function() {
+    it('redirects with an error if license for org does not exist', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, []);
+
+      generateCrumb(server, function(crumb) {
+        var options = {
+          url: "/org/bigco",
+          method: "POST",
+          payload: {
+            updateType: 'restartOrg',
+            crumb: crumb
+          },
+          credentials: fixtures.users.bob,
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          expect(resp.statusCode).to.equal(302);
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('No license for org bigco found');
+            done();
+          });
+        });
+      });
+    });
+
+    it('redirects to the org if it successfully swaps', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, fixtures.orgs.bobsBigcoSubscription)
+        .get("/sponsorship/1")
+        .reply(200, [
+          {
+            "created": "2015-09-02T19:38:57.390Z",
+            "deleted": null,
+            "id": 28,
+            "license_id": 1,
+            "npm_user": "bob",
+            "updated": "2015-09-02T19:38:57.487Z",
+            "verification_key": "9d295e2c",
+            "verified": true
+          },
+          {
+            "created": "2015-09-02T19:39:24.644Z",
+            "deleted": null,
+            "id": 267,
+            "license_id": 1,
+            "npm_user": "betty",
+            "updated": "2015-09-02T19:39:24.757Z",
+            "verification_key": "64b8e949",
+            "verified": true
+          }
+        ])
+        .delete("/customer/bob/stripe/subscription/sub_abcd")
+        .reply(200, {
+          "id": "sub_abcd",
+          "current_period_end": 1439766874,
+          "current_period_start": 1437088474,
+          "quantity": 2,
+          "status": "active",
+          "interval": "month",
+          "amount": 700,
+          "license_id": 17,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a",
+          "cancel_at_period_end": true
+        })
+        .put("/customer/bob/stripe/subscription", {
+          npm_org: "bigco",
+          plan: "npm-paid-org-7",
+          quantity: 2
+        })
+        .reply(200, {
+          "amount": 700,
+          "cancel_at_period_end": false,
+          "current_period_end": 1451853472,
+          "current_period_start": 1449175072,
+          "id": "sub_7Sz",
+          "interval": "month",
+          "license_id": 28,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "b5822d32",
+          "quantity": 2,
+          "status": "active"
+        })
+        .put("/sponsorship/28", {
+          npm_user: "bob"
+        })
+        .reply(200, {
+          "created": "2015-12-03T21:54:17.673Z",
+          "deleted": null,
+          "id": 28,
+          "license_id": 1,
+          "npm_user": "bob",
+          "updated": "2015-12-03T21:54:17.673Z",
+          "verification_key": "3839ff7d",
+          "verified": null
+        })
+        .delete("/sponsorship/1/bob")
+        .reply(200, {
+          "created": "2015-12-03T21:54:17.673Z",
+          "deleted": "2016-01-03T21:54:17.673Z",
+          "id": 58,
+          "license_id": 28,
+          "npm_user": "bob",
+          "updated": "2015-12-03T21:54:17.673Z",
+          "verification_key": "9d295e2c",
+          "verified": null
+        })
+        .post("/sponsorship/3839ff7d")
+        .reply(200, {
+          id: 59,
+          npm_user: "bob",
+          created: "2015-12-03T21:54:17.673Z",
+          updated: "2015-12-03T21:54:17.673Z",
+          deleted: null,
+          verified: true
+        })
+        .put("/sponsorship/28", {
+          npm_user: "betty"
+        })
+        .reply(200, {
+          "created": "2015-12-03T21:54:17.673Z",
+          "deleted": null,
+          "id": 28,
+          "license_id": 211,
+          "npm_user": "betty",
+          "updated": "2015-12-03T21:54:17.673Z",
+          "verification_key": "3839f888",
+          "verified": null
+        })
+        .delete("/sponsorship/1/betty")
+        .reply(200, {
+          "created": "2015-09-02T19:39:24.644Z",
+          "deleted": "2016-01-03T21:54:17.673Z",
+          "id": 267,
+          "license_id": 1,
+          "npm_user": "betty",
+          "updated": "2015-09-02T19:39:24.757Z",
+          "verification_key": "64b8e949",
+          "verified": null
+        })
+        .post("/sponsorship/3839f888")
+        .reply(200, {
+          "id": 268,
+          "npm_user": "betty",
+          "created": "2015-12-03T21:54:17.673Z",
+          "updated": "2015-12-03T21:54:17.673Z",
+          "deleted": null,
+          "verified": true
+        });
+
+
+      generateCrumb(server, function(crumb) {
+        var options = {
+          url: "/org/bigco",
+          method: "POST",
+          payload: {
+            updateType: 'restartOrg',
+            crumb: crumb
+          },
+          credentials: fixtures.users.bob,
+          headers: {
+            cookie: 'crumb=' + crumb
+          }
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          licenseMock.done();
+          expect(resp.statusCode).to.equal(302);
+          done();
+        });
+      });
+    });
+
+  });
 });

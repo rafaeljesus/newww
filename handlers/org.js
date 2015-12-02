@@ -16,6 +16,8 @@ var resolveTemplateName = function(path) {
     templateName = "org/members";
   } else if (templateType === "teams") {
     templateName = "org/teams";
+  } else if (templateType === "payment-info") {
+    templateName = "org/payment-info";
   } else {
     templateName = "org/show";
   }

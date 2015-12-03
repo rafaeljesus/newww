@@ -61,7 +61,7 @@
     "lodash": "^3.8.0",
     "mailchimp-api": "^2.0.7",
     "malarkey": "^1.3.2",
-    "marky-markdown": "~5.4.0",
+    "marky-markdown": "~5.5.1",
     "moment": "^2.10.2",
     "moment-tokens": "^1.0.0",
     "month": "^1.0.0",

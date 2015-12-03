@@ -1839,4 +1839,55 @@ describe('deleting an org', function() {
       });
     });
   });
+
+  describe('org delete confirmation', function() {
+    it('returns a 404 error if the org does not exist', function(done) {
+      nock.disableNetConnect();
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var options = {
+        url: "/org/bigco/confirm-delete",
+        method: "GET",
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        expect(resp.statusCode).to.equal(404);
+        userMock.done();
+        done();
+      });
+    });
+
+    it('links to the delete page if there', function(done) {
+      nock.disableNetConnect();
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe")
+        .reply(200, fixtures.customers.happy)
+        .get("/customer/bob/stripe/subscription")
+        .reply(200, fixtures.users.bobsubscriptions)
+
+      var options = {
+        url: "/org/bigco/confirm-delete",
+        method: "GET",
+        credentials: fixtures.users.bob,
+      };
+
+      server.inject(options, function(resp) {
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.payload).to.match(/bigco/);
+        expect(resp.payload).to.match(/deleteOrg/);
+        userMock.done();
+        licenseMock.done();
+        done();
+      });
+    });
+  });
 });

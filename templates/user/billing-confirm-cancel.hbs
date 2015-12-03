@@ -1,0 +1,11 @@
+<form method="POST" action="/org/{{subscription.npm_org}}">
+  {{#if subscription.privateModules}}
+    <p>Are you sure you want to cancel your private modules subscription?</p>
+  {{else}}
+    <p>Are you sure you want to cancel the subscription for the organization <strong>@{{subscription.npm_org}}</strong>?<</p>
+  {{/if}}
+  {{> form_security}}
+  <input type="hidden" name="updateType" value="deleteOrg">
+  <button type="submit" class="button btn-inline">Yes, cancel this subscription</button>
+  <a href="/settings/billing" class="button btn-inline btn-secondary">No, go back</a>
+</form>

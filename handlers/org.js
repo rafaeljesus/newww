@@ -300,6 +300,34 @@ exports.updateOrg = function(request, reply) {
   }
 };
 
+exports.deleteOrgConfirm = function(request, reply) {
+  request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
+    return reply.view('user/billing-confirm-cancel', {
+      subscription: subscription
+    });
+  }, function(err) {
+    if (err.statusCode == 404) {
+      return reply.view('errors/not-found').code(404);
+    } else {
+      return reply(err)
+    }
+  });
+
+  function selectSubscription(subscriptions) {
+    var sub = subscriptions.filter(function(e) {
+      return e.npm_org == request.params.npm_org
+    })[0];
+
+    if (sub) {
+      return sub;
+    } else {
+      var err = new Error("Subscription not found");
+      err.statusCode = 404;
+      throw err;
+    }
+  }
+};
+
 exports.deleteOrg = function(request, reply) {
   if (!request.features.org_billing) {
     return reply.redirect('/org');
@@ -310,7 +338,7 @@ exports.deleteOrg = function(request, reply) {
 
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
-      return replay.view('errors/internal', err);
+      return reply.view('errors/internal', err);
     }
     var subscription = subscriptions.filter(function(sub) {
       return orgToDelete === sub.npm_org;

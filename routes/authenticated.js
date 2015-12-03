@@ -108,6 +108,10 @@ module.exports = [
     method: "GET",
     handler: require('../handlers/org').getOrg
   }, {
+    path: "/org/{npm_org}/confirm-delete",
+    method: "GET",
+    handler: require('../handlers/org').deleteOrgConfirm
+  }, {
     path: "/org/{org}/members",
     method: "GET",
     handler: require('../handlers/org').getOrg

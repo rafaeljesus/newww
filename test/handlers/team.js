@@ -16,7 +16,7 @@ var generateCrumb = require("../handlers/crumb.js"),
 var requireInject = require('require-inject');
 var redisMock = require('redis-mock');
 var TokenFacilitator = require('token-facilitator');
-var client = redisMock.createClient();
+var redisClient = redisMock.createClient();
 
 before(function(done) {
   process.env.FEATURE_ORG_BILLING = 'bob,betty';
@@ -202,7 +202,7 @@ describe('team', function() {
           var query = url.query;
           var token = qs.parse(query).notice;
           var tokenFacilitator = new TokenFacilitator({
-            redis: client
+            redis: redisClient
           });
           expect(token).to.be.string();
           expect(token).to.not.be.empty();
@@ -249,7 +249,7 @@ describe('team', function() {
           var query = url.query;
           var token = qs.parse(query).notice;
           var tokenFacilitator = new TokenFacilitator({
-            redis: client
+            redis: redisClient
           });
           expect(token).to.be.string();
           expect(token).to.not.be.empty();
@@ -535,6 +535,100 @@ describe('team', function() {
       });
     });
 
+  });
+
+  describe('removing a team from an organization', function() {
+    it('allows an admin to remove a team from an organization', function(done) {
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/bob/stripe')
+        .reply(404);
+      var teamMock = nock('https://user-api-example.com')
+        .delete('/team/bigco/bigcoteam')
+        .reply(200);
+      var userMock = nock('https://user-api-example.com')
+        .get('/user/bob')
+        .reply(200, fixtures.users.bob);
+
+      generateCrumb(server, function(crumb) {
+        var options = {
+          credentials: fixtures.users.bob,
+          headers: {cookie: 'crumb=' + crumb},
+          method: 'POST',
+          payload: {
+            crumb: crumb,
+            updateType: 'removeTeam'
+          },
+          url: '/org/bigco/team/bigcoteam'
+        };
+
+        server.inject(options, function(response) {
+          try {
+            expect(response.statusCode).to.equal(302);
+            expect(response.headers.location).to.equal('/org/bigco/teams');
+
+            done();
+          } catch (error) {
+            done(error);
+          } finally {
+            licenseMock.done();
+            teamMock.done();
+            userMock.done();
+          }
+        });
+      });
+    });
+
+    it('does not allow a non-admin to remove a team from an organization', function(done) {
+      var licenseMock = nock('https://license-api-example.com')
+        .get('/customer/betty/stripe')
+        .reply(404);
+      var teamMock = nock('https://user-api-example.com')
+        .delete('/team/bigco/bigcoteam')
+        .reply(401);
+      var userMock = nock('https://user-api-example.com')
+        .get('/user/betty')
+        .reply(200, fixtures.users.betty);
+
+      generateCrumb(server, function(crumb) {
+        var options = {
+          credentials: fixtures.users.betty,
+          headers: {cookie: 'crumb=' + crumb},
+          method: 'POST',
+          payload: {
+            crumb: crumb,
+            updateType: 'removeTeam'
+          },
+          url: '/org/bigco/team/bigcoteam'
+        };
+
+        server.inject(options, function(response) {
+          try {
+            var parsedRedirectUrl = URL.parse(response.headers.location);
+            var redirectPath = parsedRedirectUrl.pathname
+            var noticeToken = qs.parse(parsedRedirectUrl.query).notice;
+            var tokenFacilitator = new TokenFacilitator({redis: redisClient});
+
+            expect(noticeToken).to.be.string();
+            expect(noticeToken).to.not.be.empty();
+            expect(response.statusCode).to.equal(302);
+            expect(redirectPath).to.equal('/org/bigco/team/bigcoteam');
+            tokenFacilitator.read(noticeToken, {prefix: 'notice:'}, function(error, noticeContainer) {
+              expect(error).to.not.exist();
+              expect(noticeContainer.notices).to.be.array();
+              expect(noticeContainer.notices[0]).to.equal('You do not have permission to perform this operation.');
+
+              done();
+            })
+          } catch (error) {
+            done(error);
+          } finally {
+            licenseMock.done();
+            teamMock.done();
+            userMock.done();
+          }
+        });
+      });
+    });
   });
 
   describe('team package management', function() {
@@ -1426,7 +1520,7 @@ describe('team', function() {
         var query = url.query;
         var token = qs.parse(query).notice;
         var tokenFacilitator = new TokenFacilitator({
-          redis: client
+          redis: redisClient
         });
         expect(token).to.be.string();
         expect(token).to.not.be.empty();
@@ -1609,7 +1703,7 @@ describe('team', function() {
           var query = url.query;
           var token = qs.parse(query).notice;
           var tokenFacilitator = new TokenFacilitator({
-            redis: client
+            redis: redisClient
           });
           expect(token).to.be.string();
           expect(token).to.not.be.empty();

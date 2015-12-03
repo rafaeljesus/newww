@@ -265,6 +265,7 @@ exports.updateTeam = function(request, reply) {
     var orgName = request.params.org;
     var teamName = request.params.teamName;
     var tab = '';
+    var section = '/team/' + teamName;
 
     if (err) {
       return handleUserError(request, reply, '/org/' + orgName + '/team/' + teamName, err.message);
@@ -291,6 +292,8 @@ exports.updateTeam = function(request, reply) {
 
         case 'removeUser':
           tab = '#members';
+          section += tab;
+
           return Team(loggedInUser)
             .removeUser({
               scope: orgName,
@@ -298,8 +301,19 @@ exports.updateTeam = function(request, reply) {
               userName: validatedPayload.name
             });
 
+        case 'removeTeam':
+          section = '/teams';
+
+          return Team(loggedInUser)
+            .removeTeam({
+              id: teamName,
+              scope: orgName
+            });
+
         case 'updateInfo':
           tab = '#settings';
+          section += tab;
+
           return Team(loggedInUser)
             .updateInfo({
               scope: orgName,
@@ -309,6 +323,7 @@ exports.updateTeam = function(request, reply) {
 
         case 'addUsersToTeam':
           tab = '#members';
+          section += tab;
 
           var members = validatedPayload.member || [];
           members = Array.isArray(members) ? members : [].concat(members);
@@ -324,8 +339,6 @@ exports.updateTeam = function(request, reply) {
             });
 
         case 'addPackagesToTeam':
-          tab = '';
-
           var pkgs = validatedPayload.names || [];
           var writePermissions = validatedPayload.writePermissions;
 
@@ -354,7 +367,7 @@ exports.updateTeam = function(request, reply) {
 
     updateMethod(validatedPayload.updateType)
       .then(function() {
-        return reply.redirect('/org/' + orgName + '/team/' + teamName + tab);
+        return reply.redirect('/org/' + orgName + section);
       })
       .catch(function(err) {
         request.logger.error(err);

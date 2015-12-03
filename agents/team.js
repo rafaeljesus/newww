@@ -397,6 +397,47 @@ Team.prototype.removeUser = function(opts) {
   });
 };
 
+Team.prototype.removeTeam = function(opts) {
+  opts = opts || {};
+
+  var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id);
+
+  var data = {
+    body: {},
+    headers: {bearer: this.bearer},
+    json: true,
+    url: url
+  };
+
+  return new P(function(accept, reject) {
+    Request.del(data, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 401) {
+        err = new Error('You do not have permission to perform this operation.');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = new Error('The team or organization was not found.');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body.error);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  });
+};
+
 Team.prototype.updateInfo = function(opts) {
   opts = opts || {};
 

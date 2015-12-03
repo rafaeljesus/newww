@@ -17,6 +17,45 @@ describe('Team', function() {
     done();
   });
 
+  describe('removeTeam()', function() {
+    it('returns an error if the user is not an admin', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .delete('/team/bigco/bigteam')
+        .reply(401, {error: 'You do not have permission to perform this operation.'});
+
+      Team('betty')
+        .removeTeam({
+          id: 'bigteam',
+          scope: 'bigco'
+        })
+        .catch(function(err) {
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(401);
+          expect(err.message).to.equal('You do not have permission to perform this operation.');
+        })
+        .then(function() {
+          teamMock.done();
+        })
+        .then(done, done);
+    });
+
+    it('allows an admin to remove a team', function(done) {
+      var teamMock = nock('https://user-api-example.com')
+        .delete('/team/bigco/bigteam')
+        .reply(200);
+
+      Team('bob')
+        .removeTeam({
+          id: 'bigteam',
+          scope: 'bigco'
+        })
+        .then(function() {
+          teamMock.done();
+        })
+        .then(done, done)
+    });
+  });
+
   describe('get', function() {
     it('returns an error if user is unauthorized', function(done) {
       var teamMock = nock('https://user-api-example.com')

@@ -426,22 +426,56 @@ describe('Org', function() {
     it('returns all the users of an org', function(done) {
       var name = 'bigco';
 
-      var orgMocks = nock('https://user-api-example.com')
+      var orgMock = nock('https://user-api-example.com', {
+        reqheaders: {
+          bearer: 'betty'
+        }
+      })
         .get('/org/' + name + '/user?per_page=100&page=0')
         .reply(200, {
           "count": 1,
           "items": [fixtures.users.bigcoadmin]
         });
 
-      Org('bob').getUsers(name)
+      Org('betty').getUsers(name)
         .catch(function(err) {
-          orgMocks.done();
+          orgMock.done();
           expect(err).to.be.null();
         })
         .then(function(users) {
           expect(users.items).to.be.an.array();
           expect(users.count).to.equal(1);
           expect(users.items[0].name).to.equal('bob');
+          expect(users.items[0]).to.not.include('sponsored');
+          done();
+        });
+    });
+
+    it('returns `sponsored` information if requesting user is super-admin', function(done) {
+      var name = 'bigco';
+
+      var orgMock = nock('https://user-api-example.com', {
+        reqheaders: {
+          bearer: 'bob'
+        }
+      })
+        .get('/org/' + name + '/user?per_page=100&page=0')
+        .reply(200, {
+          "count": 1,
+          "items": [fixtures.users.bigcoadminSA]
+        });
+
+      Org('bob').getUsers(name)
+        .catch(function(err) {
+          orgMock.done();
+          expect(err).to.be.null();
+        })
+        .then(function(users) {
+          expect(users.items).to.be.an.array();
+          expect(users.count).to.equal(1);
+          expect(users.items[0].name).to.equal('bob');
+          expect(users.items[0]).to.include('sponsored');
+          expect(users.items[0].sponsored).to.equal("by-org");
           done();
         });
     });

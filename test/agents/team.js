@@ -21,7 +21,7 @@ describe('Team', function() {
     it('returns an error if the user is not an admin', function(done) {
       var teamMock = nock('https://user-api-example.com')
         .delete('/team/bigco/bigteam')
-        .reply(401, {error: 'The user must be an admin to perform this operation.'});
+        .reply(401, {error: 'You do not have permission to perform this operation.'});
 
       Team('betty')
         .removeTeam({
@@ -31,7 +31,7 @@ describe('Team', function() {
         .catch(function(err) {
           expect(err).to.exist();
           expect(err.statusCode).to.equal(401);
-          expect(err.message).to.equal('The user must be an admin to perform this operation.');
+          expect(err.message).to.equal('You do not have permission to perform this operation.');
         })
         .then(function() {
           teamMock.done();

@@ -615,7 +615,7 @@ describe('team', function() {
             tokenFacilitator.read(noticeToken, {prefix: 'notice:'}, function(error, noticeContainer) {
               expect(error).to.not.exist();
               expect(noticeContainer.notices).to.be.array();
-              expect(noticeContainer.notices[0]).to.equal('The user must be an admin to perform this operation.');
+              expect(noticeContainer.notices[0]).to.equal('You do not have permission to perform this operation.');
 
               done();
             })

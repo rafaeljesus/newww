@@ -416,7 +416,7 @@ Team.prototype.removeTeam = function(opts) {
       }
 
       if (resp.statusCode === 401) {
-        err = new Error('The user must be an admin to perform this operation.');
+        err = new Error('You do not have permission to perform this operation.');
         err.statusCode = resp.statusCode;
         return reject(err);
       }

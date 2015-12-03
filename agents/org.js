@@ -253,6 +253,8 @@ Org.prototype.addUser = function(name, user, callback) {
 Org.prototype.getUsers = function(name, page) {
   assert(_.isString(name), "name must be a string");
 
+  var self = this;
+
   if (typeof page === 'undefined') {
     page = 0;
   }
@@ -265,7 +267,7 @@ Org.prototype.getUsers = function(name, page) {
       url: url,
       json: true,
       headers: {
-        bearer: this.bearer
+        bearer: self.bearer
       },
       qs: {
         per_page: PER_PAGE,

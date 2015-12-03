@@ -193,3 +193,75 @@
     border 1px solid npmred
     border-top-left-radius 2px
     border-top-right-radius 2px
+
+.action-nav
+  position relative
+  *, *:before, *:after
+    -webkit-box-sizing border-box
+    -moz-box-sizing border-box
+    box-sizing border-box
+    padding 0
+    margin 0
+  ul
+    list-style none
+    position relative
+    float right
+    display inline-table
+    li
+      float right
+      -webkit-transition all .2s ease-in-out
+      -moz-transition all .2s ease-in-out
+      transition all .2s ease-in-out
+      &:hover
+        background greigh7
+      &:hover > ul
+        display block
+    li
+      float left
+      -webkit-transition all .2s ease-in-out
+      -moz-transition all .2s ease-in-out
+      transition all .2s ease-in-out
+      a
+        display block
+        height 40px
+        width 40px
+        color greigh1
+        i
+          display block
+          height 40px
+          width 40px
+          font-size xx-large
+          text-align center
+          line-height 46px
+        &:hover
+          text-decoration none
+
+    &:first-child
+      background greigh7
+      border 1px solid greigh6
+      border-radius 2px
+
+     ul // flyout level
+       display none
+       position absolute
+       float right
+       width 220px
+       top 0
+       right 40px
+       border 1px solid greigh6
+       background white
+       box-shadow -3px 3px 10px -2px greigh6
+       li
+         float right
+         position relative
+         text-align right
+         right 0
+         a
+           display block
+           width 220px
+           height 40px
+           color primary
+           padding 8px 20px
+           border-bottom 1px solid greigh6
+           &:hover
+            text-decoration none

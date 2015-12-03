@@ -24,5 +24,6 @@ module.exports = [
       lang: "en_US"
     }
   },
-  require('hapi-stateless-notifications')
+  require('hapi-stateless-notifications'),
+  require('../lib/error-handler')
 ];

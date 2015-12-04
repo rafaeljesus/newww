@@ -40,6 +40,11 @@ var pool = P.promisifyAll(require('generic-pool').Pool({
   }
 }));
 
+/**
+ * name: the cache name, for namespacing redis keys
+ * fn: the function to cache
+ * ttl: the cache time in seconds
+ */
 function Cache(name, fn, ttl) {
   this.pending = {};
   this.fn = fn;
@@ -61,7 +66,7 @@ Cache.prototype.get = function(key) {
       debug("%j is in cache.", key);
       cached.fetchedFromCacheAt = Date.now();
 
-      var freshAfter = Date.now() - cache.ttl;
+      var freshAfter = Date.now() - cache.ttl * 1000;
       if (cached.fetchedAt < freshAfter) {
         debug("Freshening %j because content fetched at %j is older than %j", key, cached.fetchedAt, freshAfter);
         cache.fetch(key).catch(function(err) {
@@ -120,7 +125,7 @@ function withRedis(liftedFn) {
   });
 }
 
-var cache = new Cache('content', fetchPage, 30 * 60 * 1000);
+var cache = new Cache('content', fetchPage, process.env.CMS_CACHE_TIME || 30 * 60);
 
 function fetchPage(slug) {
   var pageRoot = url.resolve(process.env.CMS_API, 'pages/');

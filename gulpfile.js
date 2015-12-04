@@ -10,7 +10,6 @@ var bistre = require('bistre');
 var nodemon = require('gulp-nodemon');
 var rename = require('gulp-rename');
 var jshint = require('gulp-jshint');
-var pngcrush = require('imagemin-pngcrush');
 var RevAll = require('gulp-rev-all');
 
 var revAll = new RevAll();

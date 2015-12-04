@@ -25,7 +25,7 @@
       {{#each tokens}}
         <tr>
           <td>{{token}}</td>
-          <td data-date="{{created}}" data-date-format="%B %e %Y">
+          <td data-date="{{created}}" data-date-format="%b %e, %Y">
             {{created}}
           </td>
           <td>
@@ -34,7 +34,7 @@
               {{> form_security }}
               {{/with}}
               <input type="hidden" name="updateType" value="deleteToken" />
-              <button type="submit" class="icon-x delete-package"><span class="a11y-only">Delete Token {{token}}</span></button>
+              <button type="submit" class="icon-x delete-package" rel="tipsy" original-title="delete this token"><span class="a11y-only">Delete Token {{token}}</span></button>
             </form>
           </td>
         </tr>

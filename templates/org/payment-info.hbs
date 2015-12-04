@@ -9,12 +9,12 @@
 <div class="status-row">
 
   <div class="big-data">
-    <span class="num">6</span>
+    <span class="num">{{org.users.count}}</span>
     <span class="tiny">total members</span>
   </div>
 
   <div class="big-data">
-    <span class="num">2</span>
+    <span class="num">{{org.users.numSponsored}}</span>
     <span class="tiny">paid-for members</span>
   </div>
 
@@ -26,16 +26,19 @@
   </div>
 
   <div class="disclaimer">
-    <ul>
-      <li>Next billing date: <strong>12-Jan-16</strong></li>
-      <li>Valid payment method ending in <a href="#">4242</a></li>
-      <li><a href="#" class="btn-secondary link-btn">Suspend this Org</a> &nbsp;&nbsp;<a href="#" class="btn-secondary link-btn">Delete this Org</a></li>
-    </ul>
-    <!-- <ul>
-      <li>Next billing date: <strong>n/a</strong></li>
-      <li><a href="#">No valid payment on file</a></li>
-      <li><a href="#" class="btn-secondary link-btn">Reactivate this Org</a> &nbsp;&nbsp;<a href="#" class="btn-secondary link-btn">Delete this Org</a></li>
-    </ul> ALTERNATE STATE FOR THIS BOX -->
+    {{#if customer}}
+      <ul>
+        <li>Next billing date: <strong>12-Jan-16</strong></li>
+        <li>Valid payment method ending in <a href="#">{{customer.card.last4}}</a></li>
+        <li><a href="#" class="btn-secondary link-btn">Suspend this Org</a> &nbsp;&nbsp;<a href="#" class="btn-secondary link-btn">Delete this Org</a></li>
+      </ul>
+    {{else}}
+      <ul>
+        <li>Next billing date: <strong>n/a</strong></li>
+        <li><a href="#">No valid payment on file</a></li>
+        <li><a href="#" class="btn-secondary link-btn">Reactivate this Org</a> &nbsp;&nbsp;<a href="#" class="btn-secondary link-btn">Delete this Org</a></li>
+      </ul>
+    {{/if}}
   </div>
 
 </div>
@@ -44,179 +47,49 @@
   <li>
     <h3>Full Access</h3>
     <table class="org-table org-users org-edit-user-table">
-            <thead>
-              <tr>
-                <th>member</th>
-                <th>role</th>
-                <th>date added</th>
-                <th>action</th>
-              </tr>
-            </thead>
-            <tbody>
-                <tr>
-                  <td>
-                      <span class="avatar-small">
-                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                      </span>
-                      <ul class="name-desc vanilla-list ellipsis">
-                        <li><a class="name" href="/~bcoe">bcoe</a></li>
-                      </ul>
-                      <span class="paid-for" original-title="you are paying for this member" rel="tipsy">$</span>
-                  </td>
-                  <td>team-admin</td>
-                  <td>12-Dec-15</td>
-                  <td>
-                    <div class="action-nav" role='navigation'>
-                      <ul>
-                        <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
-                          <ul>
-                            <li><a href="">stop paying for this member</a></li>
-                            <li><a href="">delete this member</a></li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                      <span class="avatar-small">
-                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                      </span>
-                      <ul class="name-desc vanilla-list ellipsis">
-                        <li><a class="name" href="/~bcoe">bcoe</a></li>
-                        <li><span class="display-name">Isaac Z. Schlueter</span></li>
-                      </ul>
-                      <span class="paid-for" original-title="you are paying for this member" rel="tipsy">$</span>
-                  </td>
-                  <td>team-admin</td>
-                  <td>12-Dec-15</td>
-                  <td>
-                    <div class="action-nav" role='navigation'>
-                      <ul>
-                        <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
-                          <ul>
-                            <li><a href="">stop paying for this member</a></li>
-                            <li><a href="">delete this member</a></li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                      <span class="avatar-small">
-                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                      </span>
-                      <ul class="name-desc vanilla-list ellipsis">
-                        <li><a class="name" href="/~bcoe">jerry freebie</a></li>
-                      </ul>
-                  </td>
-                  <td>super-admin</td>
-                  <td>12-Dec-15</td>
-                  <td>
-                    <div class="action-nav" role='navigation'>
-                      <ul>
-                        <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
-                          <ul>
-                            <li><a href="">delete this member</a></li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                      <span class="avatar-small">
-                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                      </span>
-                      <ul class="name-desc vanilla-list ellipsis">
-                        <li><a class="name" href="/~bcoe">johnny freebie</a></li>
-                      </ul>
-                  </td>
-                  <td>super-admin</td>
-                  <td>12-Dec-15</td>
-                  <td>
-                    <div class="action-nav" role='navigation'>
-                      <ul>
-                        <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
-                          <ul>
-                            <li><a href="">delete this member</a></li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-            </tbody>
-          </table>
-  </li>
-
-  <li>
-    <h3>Unpaid / Open Source</h3>
-    <table class="org-table org-users org-edit-user-table">
-            <thead>
-              <tr>
-                <th>member</th>
-                <th>role</th>
-                <th>date added</th>
-                <th>action</th>
-              </tr>
-            </thead>
-            <tbody>
-                <tr>
-                  <td>
-                      <span class="avatar-small">
-                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                      </span>
-                      <ul class="name-desc vanilla-list ellipsis">
-                        <li><a class="name" href="/~bcoe">bcoe</a></li>
-                      </ul>
-                  </td>
-                  <td>member</td>
-                  <td>12-Dec-15</td>
-                  <td>
-                    <div class="action-nav" role='navigation'>
-                      <ul>
-                        <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
-                          <ul>
-                            <li><a href="">start paying for this member</a></li>
-                            <li><a href="">delete this member</a></li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                      <span class="avatar-small">
-                        <img src="https://s.gravatar.com/avatar/463ec992a0ae0613c917f3513aadac23?size=50&amp;default=retro">
-                      </span>
-                      <ul class="name-desc vanilla-list ellipsis">
-                        <li><a class="name" href="/~bcoe">bcoe</a></li>
-                        <li><span class="display-name">Isaac Z. Schlueter</span></li>
-                      </ul>
-                  </td>
-                  <td>member</td>
-                  <td>12-Dec-15</td>
-                  <td>
-                    <div class="action-nav" role='navigation'>
-                      <ul>
-                        <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
-                          <ul>
-                            <li><a href="">start paying for this member</a></li>
-                            <li><a href="">delete this member</a></li>
-                          </ul>
-                        </li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-            </tbody>
-          </table>
+      <thead>
+        <tr>
+          <th>member</th>
+          <th>role</th>
+          {{!-- <th>date added</th> --}}
+          <th>action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each org.users.items}}
+          <tr>
+            <td>
+              <span class="avatar-small">
+                <img src="{{avatar.small}}">
+              </span>
+              <ul class="name-desc vanilla-list ellipsis">
+                <li><a class="name" href="/~{{name}}">{{name}}</a></li>
+                {{#if resource.fullname}}
+                <li><span class="display-name">{{resource.fullname}}</span></li>
+                {{/if}}
+              </ul>
+              {{#if sponsoredByOrg}}
+                <span class="paid-for" original-title="you are paying for this user" rel="tipsy">$</span>
+              {{/if}}
+            </td>
+            <td>{{role}}</td>
+            {{!-- <td>12-Dec-15</td> --}}
+            <td>
+              <div class="action-nav" role='navigation'>
+                <ul>
+                  <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
+                    <ul>
+                      <li><a href="">stop paying for this member</a></li>
+                      <li><a href="">delete this member</a></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
   </li>
 </ul>
 

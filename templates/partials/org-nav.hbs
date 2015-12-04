@@ -7,7 +7,7 @@
         <li class="members{{#if members}} current{{/if}}"><a href="/org/{{org.info.name}}/members">{{pluralize org.users.count "member" true}}</a></li>
       {{/if}}
       {{#if perms.isSuperAdmin}}
-        <li><a href="/org/{{org.info.name}}/payment-info">payment info</a></li>
+        <li {{#if payment-info}}class="current"{{/if}}><a href="/org/{{org.info.name}}/payment-info">payment info</a></li>
       {{/if}}
     </ul>
   </div>

@@ -47,47 +47,51 @@
 
   <div class="tabs">
     <div class="tab-nav-container">
-      <div class="nav-container nav-2-container">
-        <ul class="nav nav-2 clear" role="navigation">
+      <div class="nav-container nav-3-container">
+        <ul class="nav nav-3 clear" role="navigation">
           <li class="current"><a href="#overview">Overview</a></li>
           {{#if customer}}
             <li><a href="#payment-information">Payment Information</a></li>
           {{/if}}
-          {{#unless privateModules.length}}
-            <li><a href="#payment-information">Sign up for private modules</a></li>
-          {{/unless}}
           {{#if customer.customer_id}}
-            <li><button type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</button></li>
+            <li><a type="button" id="billing" data-stripe-id="{{customer.customer_id}}">Payment History</a></li>
           {{/if}}
         </ul>
       </div>
     </div>
 
     <div id="overview" class="tab tab-1">
+      <h3>Personal</h3>
+
       {{#if privateModules}}
       <table class="subscriptions">
         <thead>
           <tr>
-            <th>Personal Plan</th>
+            <th>name</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
-            <th>Delete</th>
+            <th>actions</th>
           </tr>
         </thead>
         <tbody>
           {{#each privateModules}}
           <tr>
-            <td>Private Modules Plan <span>This plan is paid by you.</span></td>
+            <td>
+              <ul class="name-desc vanilla-list ellipsis">
+                <li><strong>Personal Plan</strong></li>
+                <li><span class="display-name">This plan is paid by you.</span></li>
+              </ul>
+            </td>
             {{#if cancel_at_period_end}}
               <td>--</td>
             {{else}}
-              <td data-date="{{next_billing_date}}" data-date-format="%B %e, %Y">
+              <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
                 {{next_billing_date}}
               </td>
             {{/if}}
             <td>{{cost}}</td>
             {{#if cancel_at_period_end}}
-              <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+              <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
                 Last date - {{next_billing_date}}
               </td>
             {{else}}
@@ -99,54 +103,91 @@
           {{/each}}
         </tbody>
       </table>
+      {{else}}
+      <table class="subscriptions">
+        <tbody>
+          <tr>
+            <td colspan="4">You do not have a Personal Plan</td>
+          </tr>
+          <tr class="add-more">
+            <td colspan="4"><a href="/signup"> + sign up for a Personal Plan</a></td>
+          </tr>
+        </tbody>
+      </table>
       {{/if}}
 
       {{#if orgs}}
-      <table class="subscriptions">
+      <h3 class="push-down">Organizations</h3>
+      <table class="subscriptions push-down">
         <thead>
           <tr>
-            <th>Organizations</th>
+            <th>name</th>
             <th>Paid Users</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
-            <th>Delete</th>
+            <th>cancellation date</th>
+            <th>actions</th>
           </tr>
         </thead>
         <tbody>
           {{#each orgs}}
             <tr>
-              <td><a href="/org/{{npm_org}}">{{npm_org}}</href></td>
+              <td><a href="/org/{{npm_org}}">@{{npm_org}}</href></td>
               <td>{{quantity}}</td>
               {{#if cancel_at_period_end}}
                 <td>--</td>
               {{else}}
-                <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+                <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
                   {{next_billing_date}}
                 </td>
               {{/if}}
-              <td>{{cost}}</td>
+              <td>${{cost}}</td>
               {{#if cancel_at_period_end}}
-                <td data-date="{{next_billing_date}}" data-date-format="%B %e %Y">
+                <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
                   Last date - {{next_billing_date}}
                 </td>
+                <td></td>
               {{else}}
+                <td>--</td>
                 <td>
                   <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
                 </td>
               {{/if}}
             </tr>
           {{/each}}
+          <tr class="add-more">
+            <td colspan="6"><a href="#"> + create another Organization</a></td>
+          </tr>
         </tbody>
       </table>
       {{else}}
-        <p>You do not have any subscriptions</p>
-      {{/if}}
+      <table class="subscriptions">
+        <tbody>
+          <tr>
+            <td colspan="4">You do not have any Organizations</td>
+          </tr>
+          <tr class="add-more">
+            <td colspan="4"><a href="/org/create"> + create an Organization</a></td>
+          </tr>
+        </tbody>
+      </table>
+    {{/if}}
     </div><!--/.tab-1-->
 
     <div id="payment-information" class="tab tab-2">
+      <h3>Payment Information</h3>
       {{> billing-info}}
     </div><!--/.tab-2-->
   </div><!--/.tabs-->
+<<<<<<< b1140799234797b661ddc9096d1ba719752efb78
+=======
+  {{else}}
+    <div class="container narrow">
+      <h3>Payment Information</h3>
+      {{> billing-info}}
+    </div>
+  {{/if}}
+>>>>>>> 1599 subscription / CC / confirmation page
 
 </div>
 

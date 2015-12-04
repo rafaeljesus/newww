@@ -104,28 +104,27 @@
     border-top 1px solid table-border-grey
 
   .nav-3-container
-    border-bottom-color table-border-grey
+    border-bottom-color white
 
   .nav-4-container
     border-bottom-color #c6c6c6
 
-.nav > li
+.nav > li, .nav-2 > li
   float: left
   color table-border-grey
   text-align center
   position relative
 
-.nav-2 li
-  margin-left 50px
-  padding-top 20px
-  padding-bottom 20px
-
-  &:first-child
-    margin-left 0
+.nav-3
+  display table   /* Allow the centering to work */
+  margin 0 auto
+  text-transform lowercase
 
 .nav-3 li
   width 200px
-  height 2em
+  height 2.2em
+  text-align center
+  border-bottom 1px solid greigh5
   border-right-width 1px
   border-right-style solid
   -webkit-border-image -webkit-linear-gradient(bottom, table-border-grey 0%, rgba(0, 0, 0, 0) 66%) 1
@@ -135,6 +134,8 @@
   &:first-child
     border-left-width 1px
     border-left-style solid
+  &.current
+    font-weight 600
 
 .nav-4 li
   background #f8f8f8

@@ -301,21 +301,28 @@ exports.updateOrg = function(request, reply) {
       }).catch(function(err) {
         request.logger.error(err);
       });
-
   }
 
 };
 
 exports.deleteOrgConfirm = function(request, reply) {
   request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
+    var referrer = URL.parse(request.info.referrer).pathname || "";
+    var invalidURL = referrer.split("/").some(function(path) {
+      return !!invalidUserName(path);
+    });
+
+    referrer = invalidURL ? "/settings/billing" : referrer;
+
     return reply.view('user/billing-confirm-cancel', {
-      subscription: subscription
+      subscription: subscription,
+      referrer: referrer || "/settings/billing"
     });
   }, function(err) {
     if (err.statusCode == 404) {
       return reply.view('errors/not-found').code(404);
     } else {
-      return reply(err)
+      return reply(err);
     }
   });
 

@@ -70,8 +70,8 @@
               </td>
               <td>
                 {{#unless isTheSuperAdmin}}
-                  <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../org.info.name}}">
-                    {{#with ../../this}}
+                  <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../../org.info.name}}">
+                    {{#with ../../../this}}
                     {{> form_security }}
                     {{/with}}
                     <input type="hidden" name="username" value="{{name}}" />

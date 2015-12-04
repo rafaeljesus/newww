@@ -1,29 +1,26 @@
 {{#if customer}}
-<table class="ruled key-value card-info">
+<table class="subscriptions push-down">
+  <thead>
+    <th>Type</th>
+    <th>Last 4 Digits</th>
+    <th>Expiration</th>
+  </thead>
   <tbody>
     <tr>
-      <td>Card Type</td>
       <td class="card-brand">{{customer.card.brand}}</td>
-    </tr>
-    <tr>
-      <td>Last 4 Digits</td>
       <td class="card-last4">{{customer.card.last4}}</td>
-    </tr>
-    <tr>
-      <td>Expiration</td>
       <td>
         <span class="card-exp-month">{{month-name customer.card.exp_month}}</span>
         <span class="card-exp-year">{{customer.card.exp_year}}</td></span>
+      </td>
+    </tr>
+    <tr class="add-more">
+      <td colspan="3">
+        <a href="#" id="update-subscription-toggler">update payment info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a href="#" id="cancel-subscription-toggler">cancel all subscriptions</a>
+      </td>
     </tr>
   </tbody>
 </table>
-
-<p>
-  You can also
-  <a href="#" id="update-subscription-toggler">update payment info</a>
-  or
-  <a href="#" id="cancel-subscription-toggler">stop paying us</a>.
-</p>
 
 {{else}}
 <p>

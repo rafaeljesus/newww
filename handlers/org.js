@@ -43,8 +43,13 @@ exports.getOrg = function(request, reply) {
       }
 
       opts.org = org;
+      opts.org.users.numSponsored = 0;
+
       opts.org.users.items = org.users.items.map(function(user) {
         user.sponsoredByOrg = user.sponsored === 'by-org';
+        if (user.sponsoredByOrg) {
+          opts.org.users.numSponsored += 1;
+        }
         return user;
       });
 
@@ -91,7 +96,8 @@ exports.getOrg = function(request, reply) {
     })
     .then(function(cust) {
       cust = cust || {};
-      opts.customer_id = cust.stripe_customer_id;
+      // opts.customer_id = cust.stripe_customer_id;
+      opts.customer = cust;
 
       if (templateName.match(/teams/)) {
         var teams = opts.org.teams.items.map(function(team) {

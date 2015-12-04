@@ -174,7 +174,7 @@ describe('getting an org', function() {
       .reply(200, fixtures.orgs.bigco)
       .get('/org/bigco/user?per_page=100&page=0')
       .reply(200, fixtures.orgs.bigcoUsers)
-      .get('/org/bigco/package')
+      .get('/org/bigco/package?per_page=100&page=0')
       .reply(200, {
         count: 1,
         items: [fixtures.packages.fake]
@@ -217,7 +217,7 @@ describe('getting an org', function() {
       .reply(200, fixtures.orgs.bigco)
       .get('/org/bigco/user?per_page=100&page=0')
       .reply(200, fixtures.orgs.bigcoAddedUsers)
-      .get('/org/bigco/package')
+      .get('/org/bigco/package?per_page=100&page=0')
       .reply(200, {
         count: 1,
         items: [fixtures.packages.fake]
@@ -260,7 +260,7 @@ describe('getting an org', function() {
       .reply(404)
       .get("/org/bigconotthere/user?per_page=100&page=0")
       .reply(404)
-      .get("/org/bigconotthere/package")
+      .get("/org/bigconotthere/package?per_page=100&page=0")
       .reply(404)
       .get("/org/bigconotthere/team")
       .reply(404);
@@ -312,7 +312,7 @@ describe('getting an org', function() {
       .reply(200, fixtures.orgs.bigco)
       .get('/org/bigco/user?per_page=100&page=0')
       .reply(200, fixtures.orgs.bigcoUsers)
-      .get('/org/bigco/package')
+      .get('/org/bigco/package?per_page=100&page=0')
       .reply(200, {
         count: 1,
         items: [fixtures.packages.fake]
@@ -352,7 +352,7 @@ describe('getting an org', function() {
         .reply(200, fixtures.orgs.notBobsOrg)
         .get('/org/notbobsorg/user?per_page=100&page=0')
         .reply(200, fixtures.orgs.notBobsOrgUsers)
-        .get('/org/notbobsorg/package')
+        .get('/org/notbobsorg/package?per_page=100&page=0')
         .reply(200, {
           count: 1,
           items: [fixtures.packages.fake]
@@ -392,7 +392,7 @@ describe('getting an org', function() {
         .reply(200, fixtures.orgs.bigco)
         .get('/org/bigco/user?per_page=100&page=0')
         .reply(200, fixtures.orgs.bigcoUsers)
-        .get('/org/bigco/package')
+        .get('/org/bigco/package?per_page=100&page=0')
         .reply(200, {
           count: 1,
           items: [fixtures.packages.fake]
@@ -431,7 +431,7 @@ describe('getting an org', function() {
         .reply(200, fixtures.orgs.bigco)
         .get('/org/bigco/user?per_page=100&page=0')
         .reply(200, fixtures.orgs.bigcoAddedUsers)
-        .get('/org/bigco/package')
+        .get('/org/bigco/package?per_page=100&page=0')
         .reply(200, {
           count: 1,
           items: [fixtures.packages.fake]
@@ -469,7 +469,7 @@ describe('getting an org', function() {
         .reply(200, fixtures.orgs.bigco)
         .get('/org/bigco/user?per_page=100&page=0')
         .reply(200, fixtures.orgs.bigcoAddedUsers)
-        .get('/org/bigco/package')
+        .get('/org/bigco/package?per_page=100&page=0')
         .reply(200, {
           count: 1,
           items: [fixtures.packages.fake]
@@ -508,7 +508,7 @@ describe('getting an org', function() {
       .reply(200, fixtures.orgs.bigco)
       .get('/org/bigco/user?per_page=100&page=0')
       .reply(200, fixtures.orgs.bigcoAddedUsers)
-      .get('/org/bigco/package')
+      .get('/org/bigco/package?per_page=100&page=0')
       .reply(200, {
         count: 1,
         items: [fixtures.packages.fake]
@@ -552,7 +552,7 @@ describe('getting an org', function() {
       })
       .get('/org/bigco/user?per_page=100&page=0')
       .reply(200, fixtures.orgs.bigcoAddedUsers)
-      .get('/org/bigco/package')
+      .get('/org/bigco/package?per_page=100&page=0')
       .reply(200, {
         count: 1,
         items: [fixtures.packages.fake]
@@ -592,7 +592,7 @@ describe('creating an org', function() {
       .reply(200, fixtures.orgs.bigco)
       .get("/org/bigco/user?per_page=100&page=0")
       .reply(200, fixtures.orgs.bigcoAddedUsers)
-      .get("/org/bigco/package")
+      .get("/org/bigco/package?per_page=100&page=0")
       .reply(200, fixtures.packages.fake)
       .get('/org/bigco/team')
       .reply(200, fixtures.teams.bigcoOrg);
@@ -631,7 +631,7 @@ describe('creating an org', function() {
         .reply(404, fixtures.orgs.bigco)
         .get("/org/bigco/user?per_page=100&page=0")
         .reply(404, fixtures.orgs.bigcoAddedUsers)
-        .get("/org/bigco/package")
+        .get("/org/bigco/package?per_page=100&page=0")
         .reply(404, fixtures.packages.fake)
         .get("/org/bigco/team")
         .reply(404);
@@ -722,7 +722,7 @@ describe('creating an org', function() {
         .reply(404, fixtures.orgs.bigco)
         .get("/org/bigco/user?per_page=100&page=0")
         .reply(404, fixtures.orgs.bigcoAddedUsers)
-        .get("/org/bigco/package")
+        .get("/org/bigco/package?per_page=100&page=0")
         .reply(404, fixtures.packages.fake)
         .get("/org/bigco/team")
         .reply(404);
@@ -833,7 +833,7 @@ describe('transferring username to org', function() {
         .reply(404)
         .get("/org/bigco/user?per_page=100&page=0")
         .reply(404)
-        .get("/org/bigco/package")
+        .get("/org/bigco/package?per_page=100&page=0")
         .reply(404);
 
       var licenseMock = nock("https://license-api-example.com")
@@ -866,7 +866,7 @@ describe('transferring username to org', function() {
         .reply(200, fixtures.orgs.bigco)
         .get("/org/bigco/user?per_page=100&page=0")
         .reply(200, fixtures.orgs.bigcoUsers)
-        .get("/org/bigco/package")
+        .get("/org/bigco/package?per_page=100&page=0")
         .reply(200, [])
         .get('/org/bigco/team')
         .reply(200, fixtures.teams.bigcoOrg);

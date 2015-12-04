@@ -932,7 +932,7 @@ describe("subscribing to an org", function() {
         .reply(404, "not found")
         .get("/org/boomer/user?per_page=100&page=0")
         .reply(404, "not found")
-        .get("/org/boomer/package")
+        .get("/org/boomer/package?per_page=100&page=0")
         .reply(404, "not found")
         .put("/org", {
           name: "boomer",
@@ -1037,7 +1037,7 @@ describe("subscribing to an org", function() {
           "count": 1,
           "items": [fixtures.users.bob]
         })
-        .get("/org/boomer/package")
+        .get("/org/boomer/package?per_page=100&page=0")
         .reply(200, {
           "count": 1,
           "items": [fixtures.packages.fake]
@@ -1206,7 +1206,7 @@ describe("subscribing to an org", function() {
         .reply(404, "not found")
         .get("/org/bob/user?per_page=100&page=0")
         .reply(404, "not found")
-        .get("/org/bob/package")
+        .get("/org/bob/package?per_page=100&page=0")
         .reply(404, "not found")
         .put("/org", {
           name: "bob",

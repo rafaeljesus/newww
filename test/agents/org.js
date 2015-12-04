@@ -109,7 +109,7 @@ describe('Org', function() {
           'count': 1,
           'items': [fixtures.users.bigcoadmin]
         })
-        .get('/org/' + name + '/package')
+        .get('/org/' + name + '/package?per_page=100&page=0')
         .reply(200, {
           'count': 1,
           'items': [fixtures.packages.fake]
@@ -145,7 +145,7 @@ describe('Org', function() {
           'count': 1,
           'items': [fixtures.users.bigcoadmin]
         })
-        .get('/org/' + name + '/package')
+        .get('/org/' + name + '/package?per_page=100&page=0')
         .reply(200, {
           'count': 1,
           'items': [fixtures.packages.fake]
@@ -185,7 +185,7 @@ describe('Org', function() {
         .reply(404, 'not found')
         .get('/org/' + name + '/user?per_page=100&page=0')
         .reply(404, 'not found')
-        .get('/org/' + name + '/package')
+        .get('/org/' + name + '/package?per_page=100&page=0')
         .reply(404, 'not found')
         .get('/org/' + name + '/team')
         .reply(404, 'not found');
@@ -712,6 +712,58 @@ describe('Org', function() {
         expect(team.scope_id).to.equal("bigco");
         done();
       });
+    });
+  });
+
+  describe('getPackages', function() {
+    it('returns an error when one happens', function(done) {
+      var orgMock = nock('https://user-api-example.com')
+        .get('/org/bigco/package?per_page=100&page=0')
+        .reply(404);
+
+      Org('bob').getPackages('bigco')
+        .catch(function(err) {
+          expect(err).to.exist();
+        })
+        .then(function(packages) {
+          expect(packages).to.not.exist();
+        })
+        .finally(function() {
+          orgMock.done();
+          done();
+        });
+
+    });
+
+    it('returns packages when response is good', function(done) {
+      var orgMock = nock('https://user-api-example.com')
+        .get('/org/bigco/package?per_page=100&page=0')
+        .reply(200, {
+          count: 1,
+          items: [{
+            "name": "super-package",
+            "private": "false",
+            "created": "2015-06-19T23:35:42.659Z",
+            "updated": "2015-06-19T23:35:42.659Z",
+            "deleted": null
+          }]
+        });
+
+      Org('bob').getPackages('bigco')
+        .then(function(packages) {
+          expect(packages).to.exist();
+          expect(packages.count).to.equal(1);
+          expect(packages.items.length).to.equal(1);
+          expect(packages.items[0].name).to.equal("super-package");
+        })
+        .catch(function(err) {
+          expect(err).to.not.exist();
+        })
+        .finally(function() {
+          orgMock.done();
+          done();
+        });
+
     });
   });
 });

@@ -67,7 +67,7 @@
       <table class="subscriptions">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>name</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
             <th>actions</th>
@@ -85,13 +85,13 @@
             {{#if cancel_at_period_end}}
               <td>--</td>
             {{else}}
-              <td data-date="{{next_billing_date}}" data-date-format="%b %e, %Y">
+              <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
                 {{next_billing_date}}
               </td>
             {{/if}}
             <td>{{cost}}</td>
             {{#if cancel_at_period_end}}
-              <td data-date="{{next_billing_date}}" data-date-format="%b %e, %Y">
+              <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
                 Last date - {{next_billing_date}}
               </td>
             {{else}}
@@ -110,7 +110,7 @@
             <td colspan="4">You do not have a Personal Plan</td>
           </tr>
           <tr class="add-more">
-            <td colspan="4"><a href="/settings/billing{{#if ../../../features.org_billing}}#payment-information{{/if}}"> + sign up for a Personal Plan</a></td>
+            <td colspan="4"><a href="/signup"> + sign up for a Personal Plan</a></td>
           </tr>
         </tbody>
       </table>
@@ -121,12 +121,12 @@
       <table class="subscriptions push-down">
         <thead>
           <tr>
-            <th>Name</th>
+            <th>name</th>
             <th>Paid Users</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
-            <th>Cancellation Date</th>
-            <th>Actions</th>
+            <th>cancellation date</th>
+            <th>actions</th>
           </tr>
         </thead>
         <tbody>
@@ -137,28 +137,21 @@
               {{#if cancel_at_period_end}}
                 <td>--</td>
               {{else}}
-                <td data-date="{{next_billing_date}}" data-date-format="%b %e, %Y">
+                <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
                   {{next_billing_date}}
                 </td>
               {{/if}}
               <td>${{cost}}</td>
               {{#if cancel_at_period_end}}
-                <td data-date="{{next_billing_date}}" data-date-format="%b %e, %Y">
+                <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
                   Last date - {{next_billing_date}}
                 </td>
                 <td></td>
               {{else}}
-<<<<<<< e498757d1fa1a02d9da1289e083c8d2df748f119
-                <td>--</td>
-                <td>
-                  <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
-                </td>
-=======
                   <td>--</td>
                   <td>
                     <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package" rel="tipsy" original-title="delete this subscription"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
                   </td>
->>>>>>> capitalizations / date stamps
               {{/if}}
             </tr>
           {{/each}}
@@ -186,15 +179,12 @@
       {{> billing-info}}
     </div><!--/.tab-2-->
   </div><!--/.tabs-->
-<<<<<<< b1140799234797b661ddc9096d1ba719752efb78
-=======
   {{else}}
     <div class="container narrow">
       <h3>Payment Information</h3>
       {{> billing-info}}
     </div>
   {{/if}}
->>>>>>> 1599 subscription / CC / confirmation page
 
 </div>
 

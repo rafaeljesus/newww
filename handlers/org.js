@@ -208,7 +208,7 @@ exports.removeUserFromOrg = function(request, reply) {
         .removeUser(orgName, username);
     })
     .then(function() {
-      return reply.redirect('/org/' + orgName);
+      return reply.redirect('/org/' + orgName + '/members');
     })
     .catch(function(err) {
       if (err.statusCode >= 500) {

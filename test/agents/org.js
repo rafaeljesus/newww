@@ -689,11 +689,13 @@ describe('Org', function() {
 
       Org('bob').getPackages('bigco')
         .catch(function(err) {
-          orgMock.done();
           expect(err).to.exist();
         })
         .then(function(packages) {
           expect(packages).to.not.exist();
+        })
+        .finally(function() {
+          orgMock.done();
           done();
         });
 
@@ -714,15 +716,17 @@ describe('Org', function() {
         });
 
       Org('bob').getPackages('bigco')
-        .catch(function(err) {
-          orgMock.done();
-          expect(err).to.not.exist();
-        })
         .then(function(packages) {
           expect(packages).to.exist();
           expect(packages.count).to.equal(1);
           expect(packages.items.length).to.equal(1);
           expect(packages.items[0].name).to.equal("super-package");
+        })
+        .catch(function(err) {
+          expect(err).to.not.exist();
+        })
+        .finally(function() {
+          orgMock.done();
           done();
         });
 

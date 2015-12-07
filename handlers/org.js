@@ -164,7 +164,7 @@ exports.addUserToOrg = function(request, reply) {
     .then(function(extendedSponsorship) {
       return request.customer.acceptSponsorship(extendedSponsorship.verification_key)
         .catch(function(err) {
-          if (err.statusCode !== 403) {
+          if (err.statusCode !== 409) {
             throw err;
           }
         });
@@ -251,7 +251,7 @@ exports.updateUserPayStatus = function(request, reply) {
       .then(function(extendedSponsorship) {
         return request.customer.acceptSponsorship(extendedSponsorship.verification_key)
           .catch(function(err) {
-            if (err.statusCode !== 403) {
+            if (err.statusCode !== 409) {
               throw err;
             }
           });

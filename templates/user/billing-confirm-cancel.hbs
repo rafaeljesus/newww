@@ -10,3 +10,24 @@
   <a href="{{referrer}}" class="button btn-inline btn-secondary push-down">No, go back</a>
   <button type="submit" class="button btn-inline push-down">Yes, cancel this subscription</button>
 </form>
+
+
+<!-- needs insertion of sponsoring @orgname, logic around if Org exists -->
+
+<!--
+
+<form method="POST" action="/org/{{subscription.npm_org}}" class="center push-down">
+    <h1>cancel Personal Plan?</h1>
+    <h3>You are still being paid for by @[[orgname]], and can continue to publish Private Packages under their subscription.</h3>
+  <input type="hidden" name="updateType" value="deleteOrg">
+  <a href="/settings/billing" class="push-down">No, go back</a>&nbsp; &nbsp; &nbsp; &nbsp;<button type="submit" class="button btn-inline push-down">Yes, cancel this subscription</button>
+</form>
+
+<form method="POST" action="/org/{{subscription.npm_org}}" class="center push-down">
+    <h1>cancel Personal Plan?</h1>
+    <h3>You will no longer be able to access your Private Packages. You can regain access to them at any time by restarting your subscription, or having an organization pay for you.</h3>
+  <input type="hidden" name="updateType" value="deleteOrg">
+  <a href="/settings/billing" class="push-down">No, go back</a>&nbsp; &nbsp; &nbsp; &nbsp;<button type="submit" class="button btn-inline push-down">Yes, cancel this subscription</button>
+</form>
+
+-->

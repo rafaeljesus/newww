@@ -10,7 +10,10 @@ var Code = require('code'),
   expect = Code.expect,
   nock = require("nock"),
   sinon = require("sinon"),
-  cache = require("../../lib/cache"),
+  requireInject = require('require-inject'),
+  cache = requireInject.installGlobally("../../lib/cache", {
+    redis: require('redis-mock')
+  }),
   fixtures = require('../fixtures');
 
 var User, spy;
@@ -36,13 +39,9 @@ afterEach(function(done) {
 });
 
 before(function(done) {
-  process.env.USE_CACHE = 'true';
   process.env.LICENSE_API = "https://license-api-example.com";
-  cache.configure({
-    redis: "redis://localhost:6379",
-    ttl: 5,
-    prefix: "cache:"
-  });
+  process.env.USE_CACHE = 'true';
+  cache.configure({redis: 'redis://unimportant'});
   done();
 });
 

@@ -54,36 +54,31 @@ customer.getBillingInfo = function(request, reply) {
       request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
       request.logger.error(err);
       return [];
-    })
-    .then(function(subscriptions) {
+    }).then(function(subs) {
 
-      var subs = subscriptions.filter(function(sub) {
-        return sub.status === "active";
-      });
+    var privateModules = [],
+      orgs = [];
 
-      var privateModules = [],
-        orgs = [];
-
-      subs.forEach(function(sub) {
-        sub.cost = (sub.amount / 100) * sub.quantity;
-        if (sub.privateModules) {
-          privateModules.push(sub);
-        } else {
-          orgs.push(sub);
-        }
-      });
-
-      opts.totalCost = subs.map(function(sub) {
-        return sub.cost;
-      }).reduce(function(prev, curr) {
-        return prev + curr;
-      }, 0);
-
-      return {
-        privateModules: privateModules,
-        orgs: orgs
-      };
+    subs.forEach(function(sub) {
+      sub.cost = (sub.amount / 100) * sub.quantity;
+      if (sub.privateModules) {
+        privateModules.push(sub);
+      } else {
+        orgs.push(sub);
+      }
     });
+
+    opts.totalCost = subs.map(function(sub) {
+      return sub.cost;
+    }).reduce(function(prev, curr) {
+      return prev + curr;
+    }, 0);
+
+    return {
+      privateModules: privateModules,
+      orgs: orgs
+    };
+  });
 
   var onSuccess = function(opts) {
     return reply.view('user/billing', opts);

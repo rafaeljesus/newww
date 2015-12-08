@@ -17,12 +17,13 @@ var Code = require('code'),
   clone = require('lodash').clone,
   fixtures = require('../fixtures');
 
+var UserModel = require('../../models/user');
 var User, spy;
 
 var oldEnv = clone(process.env)
 
 beforeEach(function(done) {
-  User = new (require("../../models/user"))({
+  User = new UserModel({
     host: "https://user.com"
   });
   spy = sinon.spy(function(a, b, c) {});

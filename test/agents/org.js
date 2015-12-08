@@ -717,7 +717,11 @@ describe('Org', function() {
 
   describe('getPackages', function() {
     it('returns an error when one happens', function(done) {
-      var orgMock = nock('https://user-api-example.com')
+      var orgMock = nock('https://user-api-example.com', {
+        reqheaders: {
+          bearer: 'bob'
+        }
+      })
         .get('/org/bigco/package?per_page=100&page=0')
         .reply(404);
 
@@ -736,7 +740,11 @@ describe('Org', function() {
     });
 
     it('returns packages when response is good', function(done) {
-      var orgMock = nock('https://user-api-example.com')
+      var orgMock = nock('https://user-api-example.com', {
+        reqheaders: {
+          bearer: 'bob'
+        }
+      })
         .get('/org/bigco/package?per_page=100&page=0')
         .reply(200, {
           count: 1,

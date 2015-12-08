@@ -1,8 +1,7 @@
 var validatePackageName = require('validate-npm-package-name');
 
 module.exports = function(request, reply) {
-
-  var route = request.params.p;
+  var route = ((request.path === '/npm') ? 'npm' : request.param.p);
   var opts = { };
 
   request.server.methods.corp.getPage(route, function(er, content) {

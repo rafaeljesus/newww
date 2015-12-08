@@ -357,10 +357,20 @@ var publicRoutes = [
       })).code(301);
     }
   }, {
+    handler: function(request, reply) {
+      if (request.path === '/npm') {
+        return require('../handlers/fallback')(request, reply);
+      } else {
+        return require('../handlers/cms').displayCMSPage(request, reply);
+      }
+    },
     method: '*',
+    path: '/npm'
+  }, {
     feature: '!npmo',
-    path: '/npm/{slug*}',
-    handler: require('../handlers/cms').displayCMSPage
+    handler: require('../handlers/cms').displayCMSPage,
+    method: '*',
+    path: '/npm/{slug*}'
   }, {
     method: '*',
     feature: '!npmo',

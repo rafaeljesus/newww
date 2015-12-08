@@ -6,38 +6,30 @@ var Code = require('code'),
   after = lab.after,
   it = lab.test,
   expect = Code.expect,
-  redis = require('redis'),
-  spawn = require('child_process').spawn,
-  redisSessions = require('../../adapters/redis-sessions'),
+  requireInject = require('require-inject'),
+  redis = require('redis-mock'),
+  redisSessions = requireInject.installGlobally('../../adapters/redis-sessions', {
+    redis: redis
+  }),
   redisProcess;
 
-before(function(done) {
-  redisProcess = spawn('redis-server');
-  done();
-});
-
-after(function(done) {
-  redisProcess.kill('SIGKILL');
-  done();
-});
-
 describe('redis-requiring session stuff', function() {
-  var client;
+  var redisClient;
   var bob1, bob2, alice1;
   var bobHash, aliceHash;
   var prefix = "hapi-cache:%7Csessions:";
 
   before(function(done) {
-    client = require("redis").createClient();
-    client.flushdb();
-    client.on("error", function(err) {
+    redisClient = redis.createClient();
+    redisClient.flushdb();
+    redisClient.on("error", function(err) {
       console.log("Error " + err);
     });
     done();
   });
 
   after('cleans up the db', function(done) {
-    client.flushdb(done);
+    redisClient.flushdb(done);
   });
 
   it('creates a random hash for each user', function(done) {
@@ -55,19 +47,19 @@ describe('redis-requiring session stuff', function() {
   });
 
   it('adds some data', function(done) {
-    client.set(prefix + bob1, 'This is Bob on Firefox');
-    client.set(prefix + bob2, 'This is Bob on Safari');
-    client.set(prefix + alice1, 'This is Alice on Opera');
+    redisClient.set(prefix + bob1, 'This is Bob on Firefox');
+    redisClient.set(prefix + bob2, 'This is Bob on Safari');
+    redisClient.set(prefix + alice1, 'This is Alice on Opera');
 
-    client.get(prefix + bob1, function(err, resp) {
+    redisClient.get(prefix + bob1, function(err, resp) {
       expect(err).to.not.exist();
       expect(resp).to.equal('This is Bob on Firefox');
 
-      client.get(prefix + bob2, function(err, resp) {
+      redisClient.get(prefix + bob2, function(err, resp) {
         expect(err).to.not.exist();
         expect(resp).to.equal('This is Bob on Safari');
 
-        client.get(prefix + alice1, function(err, resp) {
+        redisClient.get(prefix + alice1, function(err, resp) {
           expect(err).to.not.exist();
           expect(resp).to.equal('This is Alice on Opera');
 

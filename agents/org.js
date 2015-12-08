@@ -252,6 +252,8 @@ Org.prototype.addUser = function(name, user, callback) {
 Org.prototype.getPackages = function(name, page) {
   assert(_.isString(name), "name must be a string");
 
+  var self = this;
+
   page = page || 0;
 
   var url = USER_HOST + '/org/' + name + '/package';
@@ -262,13 +264,13 @@ Org.prototype.getPackages = function(name, page) {
       url: url,
       json: true,
       headers: {
-        bearer: this.bearer
+        bearer: self.bearer
       },
       qs: {
         per_page: PER_PAGE,
         page: page
       }
-    }, function(err, resp, users) {
+    }, function(err, resp, pkgs) {
       if (err) {
         reject(err);
       }
@@ -280,12 +282,12 @@ Org.prototype.getPackages = function(name, page) {
       }
 
       if (resp.statusCode >= 400) {
-        err = new Error(users);
+        err = new Error(pkgs);
         err.statusCode = resp.statusCode;
         return reject(err);
       }
 
-      return accept(users);
+      return accept(pkgs);
     });
   });
 

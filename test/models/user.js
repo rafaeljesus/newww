@@ -14,9 +14,12 @@ var Code = require('code'),
   cache = requireInject.installGlobally("../../lib/cache", {
     redis: require('redis-mock')
   }),
+  clone = require('lodash').clone,
   fixtures = require('../fixtures');
 
 var User, spy;
+
+var oldEnv = clone(process.env)
 
 beforeEach(function(done) {
   User = new (require("../../models/user"))({
@@ -30,23 +33,23 @@ beforeEach(function(done) {
       }
     };
   };
+  process.env.LICENSE_API = "https://license-api-example.com";
+  process.env.USE_CACHE = 'true';
   done();
 });
 
 afterEach(function(done) {
   User = null;
+  process.env = oldEnv;
   done();
 });
 
 before(function(done) {
-  process.env.LICENSE_API = "https://license-api-example.com";
-  process.env.USE_CACHE = 'true';
   cache.configure({redis: 'redis://unimportant'});
   done();
 });
 
 after(function(done) {
-  delete process.env.USE_CACHE;
   cache.disconnect();
   done();
 });
@@ -55,10 +58,8 @@ describe("User", function() {
 
   describe("initialization", function() {
     it("defaults to process.env.USER_API as host", function(done) {
-      var USER_API_OLD = process.env.USER_API;
       process.env.USER_API = "https://envy.com/";
       expect(new (require("../../models/user"))().host).to.equal('https://envy.com/');
-      process.env.USER_API = USER_API_OLD;
       done();
     });
 

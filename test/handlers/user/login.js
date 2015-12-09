@@ -93,9 +93,7 @@ describe('Getting to the login page', function() {
         expect(resp.statusCode).to.equal(400);
         var source = resp.request.response.source;
         expect(source.template).to.equal('user/login');
-        expect(source.context.error).to.contain({
-          type: 'missing'
-        });
+        expect(source.context.error).to.equal("Username and password are required");
         done();
       });
     });

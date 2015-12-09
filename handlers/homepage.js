@@ -45,6 +45,6 @@ module.exports = function(request, reply) {
     reply.view('homepage', context);
   }).catch(function(err) {
     request.logger.error(err);
-    reply.view('errors/internal', err);
+    return reply(err);
   });
 };

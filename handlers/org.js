@@ -121,7 +121,9 @@ exports.getOrg = function(request, reply) {
     .catch(function(err) {
       request.logger.error(err);
 
-      if (err.statusCode < 500) {
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      } else if (err.statusCode < 500) {
         return request.saveNotifications([
           P.reject(err.message)
         ]).then(function(token) {
@@ -133,7 +135,7 @@ exports.getOrg = function(request, reply) {
           request.logger.log(err);
         });
       } else {
-        return reply.view('errors/internal', err);
+        return reply(err);
       }
     });
 

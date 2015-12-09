@@ -99,6 +99,31 @@ describe('Getting to the login page', function() {
     });
   });
 
+  it('renders an error if the username field is invalid', function(done) {
+    generateCrumb(server, function(crumb) {
+      var options = {
+        url: '/login',
+        method: 'POST',
+        payload: {
+          crumb: crumb,
+          name: '\\',
+          password: 'does not matter'
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(options, function(resp) {
+        expect(resp.statusCode).to.equal(400);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('user/login');
+        expect(source.context.error).to.equal("That is not a valid username");
+        done();
+      });
+    });
+  });
+
   it('renders an error if the username or password is incorrect', function(done) {
 
     var mock = nock("https://user-api-example.com")

@@ -7,6 +7,8 @@ var Boom = require('boom'),
   tips = require('npm-tips'),
   marky = require('marky-markdown');
 
+var isInvalidUsername = require('npm-user-validate').username;
+
 var lockoutInterval = 60; // seconds
 var maxAttemptsBeforeLockout = 5;
 
@@ -23,11 +25,10 @@ module.exports = function login(request, reply) {
   if (request.method === 'post') {
 
     if (!request.payload.name || !request.payload.password) {
-      opts.error = {
-        type: 'missing'
-      };
+      opts.error = "Username and password are required";
+    } else if (isInvalidUsername(request.payload.name)) {
+      opts.error = "That is not a valid username";
     } else {
-
       var loginAttemptsKey = "login-attempts-" + request.payload.name;
       redis.get(loginAttemptsKey, function(err, attempts) {
         if (err) {
@@ -46,7 +47,10 @@ module.exports = function login(request, reply) {
 
         // User is not above the login attempt threshold, so try to log in...
         User.new(request)
-          .login(request.payload, function(er, user) {
+          .login({
+            name: request.payload.name,
+            password: request.payload.password
+          }, function(er, user) {
 
             if (er || !user) {
 

@@ -486,7 +486,6 @@ describe('GET /settings/billing', function() {
     });
 
     it("renders redacted version of existing billing info", function(done) {
-      expect($(".card-info").length).to.equal(1);
       expect($(".card-last4").text()).to.equal("4242");
       expect($(".card-brand").text()).to.equal("Visa");
       expect($(".card-exp-month").text()).to.equal("December");
@@ -505,7 +504,6 @@ describe('GET /settings/billing', function() {
       expect(form.attr("method")).to.equal("post");
       expect(form.attr("action")).to.equal("/settings/billing/cancel");
       expect(form.css('display')).to.equal("none");
-      expect($("#cancel-subscription-toggler").length).to.equal(1);
       done();
     });
 
@@ -560,7 +558,6 @@ describe('GET /settings/billing', function() {
     });
 
     it("has an expired license and past_due status", function(done) {
-      // console.log('==BOOM==', resp.request.response.source.context)
       expect(resp.request.response.source.context.customer.status).to.equal("past_due");
       expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
       done();

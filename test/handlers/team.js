@@ -76,7 +76,7 @@ describe('team', function() {
         .reply(404)
         .get('/org/bigco/package?per_page=100&page=0')
         .reply(404)
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(404);
 
       var options = {
@@ -113,7 +113,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
@@ -151,7 +151,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
@@ -282,7 +282,7 @@ describe('team', function() {
           .reply(404)
           .get('/org/bigco/package?per_page=100&page=0')
           .reply(404)
-          .get('/org/bigco/team')
+          .get('/org/bigco/team?per_page=100&page=0')
           .reply(404);
 
         var options = {
@@ -325,7 +325,7 @@ describe('team', function() {
           .reply(500)
           .get('/org/bigco/package?per_page=100&page=0')
           .reply(500)
-          .get('/org/bigco/team')
+          .get('/org/bigco/team?per_page=100&page=0')
           .reply(500);
 
         var options = {
@@ -371,7 +371,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg)
         .put('/org/bigco/team', {
           scope: 'bigco',
@@ -426,7 +426,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg)
         .put('/org/bigco/team', {
           scope: 'bigco',
@@ -486,7 +486,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg)
         .put('/org/bigco/team', {
           scope: 'bigco',
@@ -552,7 +552,9 @@ describe('team', function() {
       generateCrumb(server, function(crumb) {
         var options = {
           credentials: fixtures.users.bob,
-          headers: {cookie: 'crumb=' + crumb},
+          headers: {
+            cookie: 'crumb=' + crumb
+          },
           method: 'POST',
           payload: {
             crumb: crumb,
@@ -592,7 +594,9 @@ describe('team', function() {
       generateCrumb(server, function(crumb) {
         var options = {
           credentials: fixtures.users.betty,
-          headers: {cookie: 'crumb=' + crumb},
+          headers: {
+            cookie: 'crumb=' + crumb
+          },
           method: 'POST',
           payload: {
             crumb: crumb,
@@ -606,13 +610,17 @@ describe('team', function() {
             var parsedRedirectUrl = URL.parse(response.headers.location);
             var redirectPath = parsedRedirectUrl.pathname
             var noticeToken = qs.parse(parsedRedirectUrl.query).notice;
-            var tokenFacilitator = new TokenFacilitator({redis: redisClient});
+            var tokenFacilitator = new TokenFacilitator({
+              redis: redisClient
+            });
 
             expect(noticeToken).to.be.string();
             expect(noticeToken).to.not.be.empty();
             expect(response.statusCode).to.equal(302);
             expect(redirectPath).to.equal('/org/bigco/team/bigcoteam');
-            tokenFacilitator.read(noticeToken, {prefix: 'notice:'}, function(error, noticeContainer) {
+            tokenFacilitator.read(noticeToken, {
+              prefix: 'notice:'
+            }, function(error, noticeContainer) {
               expect(error).to.not.exist();
               expect(noticeContainer.notices).to.be.array();
               expect(noticeContainer.notices[0]).to.equal('You do not have permission to perform this operation.');
@@ -696,7 +704,7 @@ describe('team', function() {
         .reply(404)
         .get('/org/bigco/package?per_page=100&page=0')
         .reply(404)
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(404);
 
       var options = {
@@ -734,7 +742,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg)
         .get('/team/bigco/bigcoteam')
         .reply(404)
@@ -778,7 +786,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg)
         .get('/team/bigco/bigcoteam')
         .reply(200, fixtures.teams.bigcoteam)
@@ -871,7 +879,7 @@ describe('team', function() {
             count: 1,
             items: [fixtures.packages.fake]
           })
-          .get('/org/bigco/team')
+          .get('/org/bigco/team?per_page=100&page=0')
           .reply(200, fixtures.teams.bigcoOrg);
 
         var options = {
@@ -911,7 +919,7 @@ describe('team', function() {
             count: 1,
             items: [fixtures.packages.fake]
           })
-          .get('/org/bigco/team')
+          .get('/org/bigco/team?per_page=100&page=0')
           .reply(200, fixtures.teams.bigcoOrg)
           .get('/team/bigco/bigcoteam')
           .reply(200, fixtures.teams.bigcoteam)
@@ -1504,7 +1512,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
@@ -1553,7 +1561,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       var teamMock = nock("https://user-api-example.com")
@@ -1601,7 +1609,7 @@ describe('team', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg)
         .get('/team/bigco/bigcoteam')
         .reply(200, fixtures.teams.bigcoteam)

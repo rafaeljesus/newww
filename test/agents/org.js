@@ -114,7 +114,7 @@ describe('Org', function() {
           'count': 1,
           'items': [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(401);
 
       Org('betty').get(name, function(err, org) {
@@ -150,7 +150,7 @@ describe('Org', function() {
           'count': 1,
           'items': [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, {
           count: 1,
           items: [
@@ -187,7 +187,7 @@ describe('Org', function() {
         .reply(404, 'not found')
         .get('/org/' + name + '/package?per_page=100&page=0')
         .reply(404, 'not found')
-        .get('/org/' + name + '/team')
+        .get('/org/' + name + '/team?per_page=100&page=0')
         .reply(404, 'not found');
 
       Org('betty').get(name, function(err, org) {
@@ -580,7 +580,7 @@ describe('Org', function() {
       var name = 'bigcoOrg';
 
       var orgMocks = nock('https://user-api-example.com')
-        .get('/org/' + name + '/team')
+        .get('/org/' + name + '/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       Org('bob').getTeams(name)
@@ -602,7 +602,7 @@ describe('Org', function() {
       var name = 'bigcoOrg';
 
       var orgMocks = nock('https://user-api-example.com')
-        .get('/org/' + name + '/team')
+        .get('/org/' + name + '/team?per_page=100&page=0')
         .reply(404, 'Org not found');
 
       Org('bob').getTeams(name)

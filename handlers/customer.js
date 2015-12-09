@@ -187,6 +187,7 @@ customer.subscribe = function(request, reply) {
   var loggedInUser = request.loggedInUser.name;
 
   Joi.validate(request.payload, subscriptionSchema, function(err, planData) {
+
     if (err) {
       var notices;
 
@@ -369,4 +370,8 @@ customer.subscribe = function(request, reply) {
       });
     }
   });
+};
+
+customer.subscribePersonalConfirm = function(request, reply) {
+  return reply.view('user/billing-confirm-personal', {});
 };

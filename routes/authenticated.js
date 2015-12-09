@@ -79,6 +79,10 @@ module.exports = [
     method: "POST",
     handler: require('../handlers/customer').subscribe
   }, {
+    path: "/settings/billing/confirm-personal",
+    method: "GET",
+    handler: require('../handlers/customer').subscribePersonalConfirm
+  }, {
     paths: [
       "/package/{package}/collaborators",
       "/package/{scope}/{project}/collaborators",

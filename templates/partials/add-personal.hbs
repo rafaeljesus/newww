@@ -1,0 +1,9 @@
+{{#if customer}}
+  <td colspan="4"><a href="/settings/billing/confirm-personal"> + sign up for a Personal Plan</a></td>
+{{else}}
+  {{#if user.isPaid}}
+    <td colspan="4"><a href="/settings/billing/confirm-personal"> + sign up for a Personal Plan</a></td>
+  {{else}}
+    <td colspan="4"><a href="#payment-information"> + sign up for a Personal Plan</a></td>
+  {{/if}}
+{{/if}}

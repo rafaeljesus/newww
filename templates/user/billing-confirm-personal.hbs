@@ -1,0 +1,7 @@
+<form method="POST" action="/settings/billing/subscribe" class="center push-down">
+  <h3>Are you sure you want to subscribe to Personal Private Packages?</h3>
+
+  {{> form_security}}
+  <input type="hidden" name="planType" value="private_modules">
+  <a href="/settings/billing" class="push-down">No, go back</a>&nbsp; &nbsp; &nbsp; &nbsp;<button type="submit" class="button btn-inline push-down">Yes, sign me up</button>
+</form>

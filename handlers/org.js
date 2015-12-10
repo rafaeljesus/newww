@@ -45,12 +45,11 @@ exports.getOrg = function(request, reply) {
       opts.org = org;
       opts.org.users.numSponsored = 0;
 
-      opts.org.users.items = org.users.items.map(function(user) {
+      opts.org.users.items.forEach(function(user) {
         user.sponsoredByOrg = user.sponsored === 'by-org';
         if (user.sponsoredByOrg) {
           opts.org.users.numSponsored += 1;
         }
-        return user;
       });
 
       var isSuperAdmin = org.users.items.filter(function(user) {

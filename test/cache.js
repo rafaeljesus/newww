@@ -82,14 +82,6 @@ describe('lib/cache.js', function() {
       cache.logger.error.restore();
       done();
     });
-
-    it('reconnects on error', function(done) {
-      cache.redis.on('reconnecting', function() {
-        expect(true).to.be.true();
-        done();
-      });
-      cache.redis.stream.emit('error', new Error('my little pony'));
-    });
   });
 
   describe('_fingerprint()', function() {

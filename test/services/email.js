@@ -15,9 +15,8 @@ var Code = require('code'),
   mock = new MockTransport({
     boom: 'bam'
   }),
-  spawn = require('child_process').spawn,
-  client,
-  redisProcess;
+  redis = require('redis-mock'),
+  redisClient;
 
 beforeEach(function(done) {
   server = new Hapi.Server();
@@ -32,9 +31,8 @@ beforeEach(function(done) {
 });
 
 before(function(done) {
-  redisProcess = spawn('redis-server');
-  client = require("redis").createClient();
-  client.on("error", function(err) {
+  redisClient = redis.createClient();
+  redisClient.on("error", function(err) {
     console.log("Error " + err);
   });
 
@@ -47,9 +45,8 @@ afterEach(function(done) {
 });
 
 after(function(done) {
-  client.flushdb();
+  redisClient.flushdb();
   server.stop(function() {
-    redisProcess.kill('SIGKILL');
     done();
   });
 });
@@ -69,7 +66,7 @@ describe('send an email', function() {
       name: 'user'
     };
 
-    server.methods.email.send('confirm-user-email', user, client)
+    server.methods.email.send('confirm-user-email', user, redisClient)
       .then(function() {
         var msg = mock.sentMail[0];
         expect(msg.data.to).to.equal('"user" <user@npmjs.com>');
@@ -87,7 +84,7 @@ describe('send an email', function() {
 
     var mail = 'error';
 
-    server.methods.email.send('something', mail, client)
+    server.methods.email.send('something', mail, redisClient)
       .then(function() {
         var msg = mock.sentMail[0];
         expect(msg).to.not.exist();

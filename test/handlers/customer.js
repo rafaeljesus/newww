@@ -54,6 +54,8 @@ describe('GET /settings/billing', function() {
     var licenseMock = nock("https://license-api-example.com")
       .get("/customer/bob@boom.me")
       .reply(404)
+      .get("/customer/bob/stripe")
+      .reply(404)
       .get("/customer/bob/stripe/subscription")
       .reply(404);
 
@@ -72,7 +74,6 @@ describe('GET /settings/billing', function() {
       done();
     });
   });
-
 
   it('directs billing info updates to POST /settings/billing', function(done) {
     var userMock = nock("https://user-api-example.com")

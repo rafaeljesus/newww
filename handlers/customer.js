@@ -36,10 +36,16 @@ customer.getBillingInfo = function(request, reply) {
 
         return {
           customer: customer
+        };
+      }, function(err) {
+        if (err.statusCode === 404) {
+          return {};
+        } else {
+          throw err;
         }
-      })
+      });
     }, function(err) {
-      if (err.statusCode == 404) {
+      if (err.statusCode === 404) {
         return {};
       } else {
         throw err;

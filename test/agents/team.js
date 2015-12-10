@@ -427,7 +427,7 @@ describe('Team', function() {
         }).catch(function(err) {
           expect(err).to.exist();
           // i'd like this to show _all_ of the errors, not just the first one.
-          expect(err.message).to.equal('Team or Org or not found');
+          expect(err.message).to.equal('Team or Org not found');
           expect(err.statusCode).to.equal(404);
         }).then(function(packages) {
           expect(packages).to.not.exist();

@@ -8,10 +8,14 @@ var Code = require('code'),
   expect = Code.expect,
   nock = require("nock"),
   fixtures = require("../fixtures"),
+  requireInject = require('require-inject'),
+  DownloadModel = requireInject.installGlobally('../../models/download', {
+    redis: require('redis-mock')
+  }),
   Download;
 
 beforeEach(function(done) {
-  Download = new (require("../../models/download"))({
+  Download = new DownloadModel({
     host: "https://fake-download.com",
     timeout: 50,
   });

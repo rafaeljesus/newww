@@ -360,7 +360,7 @@ describe('GET /settings/billing', function() {
     it("adds billing data to view context", function(done) {
       var customer = resp.request.response.source.context.customer;
       expect(customer).to.exist();
-      expect(customer).to.exist();
+      expect(customer).to.be.an.object();
       expect(customer.status).to.equal("active");
       expect(customer.license_expired).to.equal(false);
       expect(customer.next_billing_amount).to.equal(700);

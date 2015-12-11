@@ -158,13 +158,6 @@ If you have any trouble getting the site running locally, please [open an issue]
 * `HUBSPOT_PORTAL_ID`, the hubspot portal ID
 * `MAILCHIMP_KEY`, the mailchimp key
 
-## New Relic integration
-
-* `NEW_RELIC_LICENSE_KEY`, the license key
-* `NEW_RELIC_APP_NAME`, the app name
-* `NEW_RELIC_NO_CONFIG_FILE`, must be set to true because we provide config in the environment
-* `NEW_RELIC_ENABLED`, boolean
-
 ## Feature Flags
 
 * `FEATURE_ORG_BILLING`, users who are allowed to use Teams and Orgs

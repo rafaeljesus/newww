@@ -78,6 +78,12 @@ exports.getOrg = function(request, reply) {
         isAtLeastMember: isAtLeastMember
       };
 
+      if (!opts.perms.isSuperAdmin && templateName.match(/payment-info/)) {
+        var err = new Error("You are not authorized to access this page");
+        err.statusCode = 403;
+        throw err;
+      }
+
       return opts;
     })
     .then(function(opts) {

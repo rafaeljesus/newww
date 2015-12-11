@@ -75,8 +75,28 @@
                 <ul>
                   <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
                     <ul>
-                      <li><a href="">stop paying for this member</a></li>
-                      <li><a href="">delete this member</a></li>
+                      {{#if sponsoredByOrg}}
+                      <li>
+                      <form method="POST" action="/org/{{../../org.info.name}}">
+                        {{#with ../../this}}
+                        {{> form_security }}
+                        {{/with}}
+                          <input type="hidden" name="username" value="{{name}}" />
+                          <input type="hidden" name="updateType" value="updatePayStatus" />
+                          <button type="submit">stop paying for this member</button>
+                      </form>
+                      </li>
+                      {{/if}}
+                      <li>
+                        <form method="POST" action="/org/{{../org.info.name}}">
+                          {{#with ../this}}
+                          {{> form_security }}
+                          {{/with}}
+                          <input type="hidden" name="username" value="{{name}}" />
+                          <input type="hidden" name="updateType" value="deleteUser" />
+                          <button type="submit">delete this member</button>
+                        </form>
+                      </li>
                     </ul>
                   </li>
                 </ul>

@@ -5,7 +5,6 @@ node_modules/
 .idea
 dump.rdb
 erl_crash.dump
-newrelic_agent.log
 npm-debug.log
 numbat.log
 numbat-config.js
@@ -13,4 +12,3 @@ config.admin.js
 static
 test/coverage.html
 *.swp
-newrelic.js

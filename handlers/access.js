@@ -10,6 +10,7 @@ module.exports = function(request, reply) {
     title: request.packageName + ": access",
     userHasReadAccessToPackage: false,
     userHasWriteAccessToPackage: false,
+    norobots: true,
   };
 
   var promise = Package(request.loggedInUser)

@@ -78,6 +78,15 @@ customer.getBillingInfo = function(request, reply) {
       };
     });
 
+  var onSuccess = function(opts) {
+    return reply.view('user/billing', opts);
+  };
+
+  var onError = function(err) {
+    request.logger.error(err);
+    return reply.view('errors/internal', err).code(500);
+  };
+
   P.join(customerStripeData, customerSubscriptions, function(customer, subscriptions) {
     var addopts = [customer, subscriptions];
 
@@ -87,13 +96,7 @@ customer.getBillingInfo = function(request, reply) {
 
     return opts;
   })
-    .catch(function(err) {
-      request.logger.error(err);
-      return reply.view('errors/internal', err).code(500);
-    })
-    .then(function(opts) {
-      return reply.view('user/billing', opts);
-    });
+    .then(onSuccess, onError);
 };
 
 customer.updateBillingInfo = function(request, reply, callback) {

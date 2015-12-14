@@ -17,7 +17,7 @@ before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;
     done();
-  });
+  }, require('../../lib/error-handler'));
 });
 
 after(function(done) {
@@ -27,6 +27,11 @@ after(function(done) {
 sinon.stub(elasticsearch, 'Client', function() {
   return {
     search: function(query, cb) {
+      if (query.body.query.dis_max.queries[0].function_score.query.match['name.untouched'] === 'stubThrowsError') {
+        var err = new Error('fake error');
+        err.statusCode = 400;
+        return cb(err);
+      }
       cb(null, {
         hits: fakeSearch
       })
@@ -58,6 +63,20 @@ describe('Rendering the view', function() {
     server.inject(options, function(resp) {
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include("/search?q=food-trucks");
+      done();
+    });
+  });
+
+  it('should error out if ES returns an error', function(done) {
+    var options = {
+      url: '/search/?q=stubThrowsError',
+      method: 'GET'
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(500);
+      var source = resp.request.response.source;
+      expect(source.template).to.equal('errors/internal');
       done();
     });
   });

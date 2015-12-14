@@ -1,7 +1,7 @@
 var path = require('path');
 var Hapi = require('hapi');
 
-module.exports = function(done) {
+module.exports = function(done, additionalPlugins) {
 
   var metrics = require('../../adapters/metrics')();
   var server = new Hapi.Server();
@@ -40,7 +40,7 @@ module.exports = function(done) {
       require('../../adapters/bonbon'),
       hackishMockRedis,
       require('hapi-stateless-notifications')
-    ], function(err) {
+    ].concat(additionalPlugins || []), function(err) {
       if (err) {
         throw err;
       }

@@ -11,6 +11,11 @@ module.exports = function(verificationKey, callback) {
     json: true
   }, function(er, resp, trial) {
 
+    if (er) {
+      log.error('error finding verification key ' + verificationKey, er);
+      return callback(er);
+    }
+
     if (resp.statusCode === 404) {
       log.error('unable to find verification key ' + verificationKey);
 
@@ -31,7 +36,12 @@ module.exports = function(verificationKey, callback) {
     request.put({
       url: trialEndpoint + '/' + trial.id + '/verification',
       json: true
-    }, function(er, resp, verifiedTrial) {
+    }, function(err, resp, verifiedTrial) {
+
+      if (err) {
+        log.error('error starting trial, from hubspot', err);
+        return callback(err);
+      }
 
       if (resp.statusCode === 200) {
         return callback(null, verifiedTrial);

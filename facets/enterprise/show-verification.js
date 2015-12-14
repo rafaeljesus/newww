@@ -16,34 +16,40 @@ module.exports = function verifyEnterpriseTrial(request, reply) {
   verifyTrial(request.query.v, function(err, trial) {
 
     if (err) {
+      err.internalStatusCode = 500;
       request.logger.error('Unable to verify the trial', request.query.v);
       request.logger.error(err);
-      reply.view('errors/internal', opts).code(500);
+      reply(err);
       return;
     }
 
     getCustomer(trial.customer_id, function(err, customer) {
 
       if (err) {
+        err.internalStatusCode = 500;
         request.logger.error('Unable to get customer from hubspot', trial.customer_id);
         request.logger.error(err);
-        reply.view('errors/internal', opts).code(500);
+        reply(err);
         return;
       }
 
       getLicenses(process.env.NPME_PRODUCT_ID, trial.customer_id, function(err, licenses) {
 
         if (err) {
+          err.internalStatusCode = 500;
           request.logger.error('Unable to get licenses from hubspot for customer ' + trial.customer_id);
           request.logger.error(err);
-          reply.view('errors/internal', opts).code(500);
+          reply(err);
           return;
         }
 
         // zero licenses bad, more than one license confusing
         if (licenses.length !== 1) {
-          request.logger.error('zero or more than one license for ' + trial.customer_id, 'licenses: ', licenses);
-          reply.view('errors/internal', opts).code(400);
+          var msg = 'zero or more than one license for ' + trial.customer_id;
+          var error = new Error(msg);
+          error.internalStatusCode = 400;
+          request.logger.error(msg, 'licenses: ', licenses);
+          reply(error);
           return;
         }
 
@@ -69,9 +75,10 @@ module.exports = function verifyEnterpriseTrial(request, reply) {
 
         sendEmail('enterprise-verification', mail, request.redis)
           .catch(function(er) {
+            er.internalStatusCode = 500;
             request.logger.error('Unable to send license to email', opts.email);
             request.logger.error(er);
-            reply.view('errors/internal', opts).code(500);
+            reply(er);
             return;
           })
           .then(function() {

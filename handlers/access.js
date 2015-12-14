@@ -27,13 +27,20 @@ module.exports = function(request, reply) {
           reply.view('errors/not-found').code(404);
           break;
         default:
-          reply.view('errors/internal', context).code(500);
+          err.internalStatusCode = 500;
+          reply(err);
       }
       return promise.cancel();
     })
     .then(function(pkg) {
       cpackage = omit(pkg, ['readme', 'versions']);
       return Collaborator(loggedInUser && loggedInUser.name).list(cpackage.name);
+    })
+    .catch(function(err) {
+      request.logger.error('unable to get collaborators for package', request.packageName);
+      request.logger.error(err);
+      reply(err);
+      return promise.cancel();
     })
     .then(function(collaborators) {
       cpackage.collaborators = collaborators;
@@ -71,6 +78,12 @@ module.exports = function(request, reply) {
         return reply.view('package/access', context);
       }
 
+    })
+    .catch(function(err) {
+      request.logger.error('unable to verify access for package', request.packageName);
+      request.logger.error(err);
+      reply(err);
+      return promise.cancel();
     });
 
 };

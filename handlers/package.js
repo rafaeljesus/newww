@@ -101,7 +101,8 @@ exports.show = function(request, reply) {
       }
 
       request.logger.error(err);
-      reply.view('errors/internal', context).code(500);
+      err.internalStatusCode = 500;
+      reply(err);
       return;
     });
 };

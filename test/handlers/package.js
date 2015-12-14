@@ -21,7 +21,7 @@ describe("package handler", function() {
     require('../mocks/server')(function(obj) {
       server = obj;
       done();
-    });
+    }, require('../../lib/error-handler'));
   });
 
   after(function(done) {
@@ -773,5 +773,36 @@ describe("package handler", function() {
       });
     });
 
+  });
+
+  describe('error handling', function() {
+    it('should handle unexpected error with error page', function(done) {
+      var packageMock = nock('https://user-api-example.com')
+        .get('/package/browserify')
+        .reply(500)
+        .get('/package?dependency=browserify&limit=50')
+        .reply(200, fixtures.dependents);
+
+      var downloadsMock = nock('https://downloads-api-example.com')
+        .get('/point/last-day/browserify')
+        .reply(200, fixtures.downloads.browserify.day)
+        .get('/point/last-week/browserify')
+        .reply(200, fixtures.downloads.browserify.week)
+        .get('/point/last-month/browserify')
+        .reply(200, fixtures.downloads.browserify.month);
+
+      var options = {
+        url: '/package/browserify'
+      };
+
+      server.inject(options, function(resp) {
+        packageMock.done();
+        downloadsMock.done();
+        expect(resp.statusCode).to.equal(500);
+        var source = resp.request.response.source;
+        expect(source.template).to.equal('errors/internal');
+        done();
+      });
+    });
   });
 });

@@ -105,9 +105,7 @@ describe('GET /settings/billing', function() {
       });
     });
 
-    it('no error: customer error, stripe not found, subscriptions not found', function(done) {
-
-      // shouldn't this be an error though?? why does this pass?
+    it('error: customer error, stripe not found, subscriptions not found', function(done) {
 
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -130,9 +128,8 @@ describe('GET /settings/billing', function() {
       server.inject(options, function(resp) {
         userMock.done();
         licenseMock.done();
-        expect(resp.statusCode).to.equal(200);
-        var $ = cheerio.load(resp.result);
-        expect($('#payment-form').attr('action')).to.equal('/settings/billing/subscribe');
+        expect(resp.statusCode).to.equal(500);
+        expect(resp.request.response.source.template).to.equal('errors/internal');
         done();
       });
     });

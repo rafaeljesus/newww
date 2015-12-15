@@ -51,7 +51,8 @@
   {{> pagination}}
 </div>
 
-<div class="sidebar">
-  <div class="hiring-container" data-template="vanilla"></div>
-</div>
-
+{{#unless features.npmo}}
+  <div class="sidebar">
+    <div class="hiring-container" data-template="vanilla"></div>
+  </div>
+{{/unless}}

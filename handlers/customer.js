@@ -47,10 +47,7 @@ customer.getBillingInfo = function(request, reply) {
     return {
       customer: stripeCustomer
     };
-  })
-    .catch(function(err) {
-      throw err;
-    });
+  });
 
   var customerSubscriptions = request.customer.getSubscriptions()
     .catch(function(err) {

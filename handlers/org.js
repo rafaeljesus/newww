@@ -291,15 +291,31 @@ exports.updateOrg = function(request, reply) {
     return reply.redirect('/org');
   }
 
-  if (request.payload.updateType === "addUser") {
-    exports.addUserToOrg(request, reply);
-  } else if (request.payload.updateType === "deleteUser") {
-    exports.removeUserFromOrg(request, reply);
-  } else if (request.payload.updateType === "updatePayStatus") {
-    exports.updateUserPayStatus(request, reply);
-  } else if (request.payload.updateType === "deleteOrg") {
-    exports.deleteOrg(request, reply);
+  switch (request.payload.updateType) {
+    case 'addUser':
+      return exports.addUserToOrg(request, reply);
+    case 'deleteUser':
+      return exports.removeUserFromOrg(request, reply);
+    case 'updatePayStatus':
+      return exports.updateUserPayStatus(request, reply);
+    case 'deleteOrg':
+      return exports.deleteOrg(request, reply);
+    case 'restartOrg':
+      return exports.restartOrg(request, reply);
+    default:
+      return request.saveNotifications([
+        P.reject("Incorrect updateType passed")
+      ]).then(function(token) {
+        var url = request.info.referrer || '/org/' + request.params.org;
+        var param = token ? "?notice=" + token : "";
+        url += param;
+        return reply.redirect(url);
+      }).catch(function(err) {
+        request.logger.error(err);
+      });
+
   }
+
 };
 
 exports.deleteOrgConfirm = function(request, reply) {
@@ -662,5 +678,58 @@ exports.getUser = function getUser(request, reply) {
           .type('application/json');
       }
 
+    });
+};
+
+exports.restartOrg = function(request, reply) {
+  var opts = {};
+  var orgName = request.params.org;
+
+  request.customer.getLicenseForOrg(orgName)
+    .then(function(license) {
+      opts.oldLicense = license;
+      return request.customer.getAllSponsorships(license.license_id);
+    })
+    .then(function(sponsorships) {
+      opts.sponsorships = sponsorships;
+      return request.customer.cancelSubscription(opts.oldLicense.id);
+    })
+    .then(function() {
+      var planInfo = {
+        "npm_org": orgName,
+        "plan": "npm-paid-org-7",
+        "quantity": 2
+      };
+      return request.customer.createSubscription(planInfo);
+    })
+    .then(function(subscription) {
+      var newSponsorships = opts.sponsorships.filter(function(sponsorship) {
+        return sponsorship.verified;
+      })
+        .map(function(sponsorship) {
+          return request.customer.swapSponsorship(sponsorship.npm_user, opts.oldLicense.license_id, subscription.license_id);
+        });
+      return P.all(newSponsorships);
+    })
+    .then(function() {
+      return reply.redirect('/org/' + orgName);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply.view('errors/internal', err);
+      }
     });
 };

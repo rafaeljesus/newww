@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>{{#if title}}{{title}}{{#if q}}{{q}}{{/if}}{{else}}npm{{/if}}</title>
+  <title>{{#if title}}{{title}}{{#if q}}{{q}}{{/if}}{{else}}npm{{#if env.NPMO_COBRAND}} ♡ {{env.NPMO_COBRAND}}{{/if}}{{/if}}</title>
 
   {{#if package}}
     <meta name="description" content="{{package.description}}">

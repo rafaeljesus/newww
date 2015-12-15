@@ -15,7 +15,7 @@ before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;
     done();
-  });
+  }, require('../../lib/error-handler'));
 });
 
 after(function(done) {
@@ -143,4 +143,86 @@ describe('GET / for a logged-in user', function() {
     done();
   });
 
+});
+
+describe('FEATURE_NPMO=false', function() {
+  var options = {
+    url: "/"
+  };
+
+  before(function(done) {
+    process.env.FEATURE_NPMO = 'false';
+    require('../../lib/feature-flags').calculate('npmo');
+    done();
+  });
+
+  after(function(done) {
+    delete process.env.FEATURE_NPMO;
+    require('../../lib/feature-flags').calculate('npmo');
+    done();
+  });
+
+  it('should render error page with correlationID', function(done) {
+    var packageMock = nock("https://user-api-example.com")
+      .get('/package?sort=dependents&count=12')
+      .reply(500)
+      .get('/package?sort=modified&count=12')
+      .reply(200, fixtures.aggregates.recently_updated_packages)
+      .get('/package/-/count')
+      .reply(200, 12345);
+    var downloadsMock = nock("https://downloads-api-example.com")
+      .get('/point/last-day')
+      .reply(200, fixtures.downloads.all.day)
+      .get('/point/last-week')
+      .reply(200, fixtures.downloads.all.week)
+      .get('/point/last-month')
+      .reply(200, fixtures.downloads.all.month);
+
+    server.inject(options, function(resp) {
+      packageMock.done();
+      downloadsMock.done();
+      expect(resp.statusCode).to.equal(500);
+      expect(resp.request.response.source.template).to.equal('errors/internal');
+      var $ = cheerio.load(resp.result);
+      var correlationID = $('div.narrow').find('pre code').html();
+      expect(correlationID.split(':').length).to.equal(5);
+      done();
+    });
+  });
+});
+
+describe('FEATURE_NPMO=true', function() {
+  var options = {
+    url: "/"
+  };
+
+  before(function(done) {
+    process.env.FEATURE_NPMO = 'true';
+    require('../../lib/feature-flags').calculate('npmo');
+    done();
+  });
+
+  after(function(done) {
+    delete process.env.FEATURE_NPMO;
+    require('../../lib/feature-flags').calculate('npmo');
+    done();
+  });
+
+  it('should render error page with stack trace', function(done) {
+    var packageMock = nock("https://user-api-example.com")
+      .get('/package?sort=dependents&count=12')
+      .reply(500)
+      .get('/package?sort=modified&count=12')
+      .reply(200, fixtures.aggregates.recently_updated_packages);
+
+    server.inject(options, function(resp) {
+      packageMock.done();
+      expect(resp.statusCode).to.equal(500);
+      expect(resp.request.response.source.template).to.equal('errors/internal');
+      var $ = cheerio.load(resp.result);
+      var npmoFullStack = $('div.container').find('pre code').html();
+      expect(npmoFullStack.split('\n').length).to.be.greaterThan(1);
+      done();
+    });
+  });
 });

@@ -25,7 +25,21 @@ customer.getBillingInfo = function(request, reply) {
     opts.package = request.query.package;
   }
 
-  var customerStripeData = P.join(request.customer.getStripeData(), request.customer.getById(request.loggedInUser.email), function(stripeCustomer, licenseApiCustomer) {
+  var stripeDataErrorHandler = function(err) {
+    if (err.statusCode === 404) {
+      return null;
+    } else {
+      throw err;
+    }
+  };
+
+  var stripeDataPromise = request.customer.getStripeData()
+    .catch(stripeDataErrorHandler);
+
+  var getByIdPromise = request.customer.getById(request.loggedInUser.email)
+    .catch(stripeDataErrorHandler);
+
+  var customerStripeData = P.join(stripeDataPromise, getByIdPromise, function(stripeCustomer, licenseApiCustomer) {
     if (stripeCustomer && licenseApiCustomer) {
       stripeCustomer.customer_id = licenseApiCustomer.stripe_customer_id;
     }
@@ -35,11 +49,7 @@ customer.getBillingInfo = function(request, reply) {
     };
   })
     .catch(function(err) {
-      if (err.statusCode === 404) {
-        return null;
-      } else {
-        throw err;
-      }
+      throw err;
     });
 
   var customerSubscriptions = request.customer.getSubscriptions()

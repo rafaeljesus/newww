@@ -11,6 +11,7 @@ var nodemon = require('gulp-nodemon');
 var rename = require('gulp-rename');
 var jshint = require('gulp-jshint');
 var RevAll = require('gulp-rev-all');
+var gutil = require('gulp-util');
 
 var revAll = new RevAll();
 var paths = {
@@ -49,6 +50,7 @@ gulp.task('styles', function() {
     .pipe(stylus({
       use: [nib()]
     }))
+    .on('error', gutil.log)
     .pipe(gulp.dest('static/css/'));
 });
 

@@ -45,34 +45,154 @@ describe('GET /settings/billing', function() {
     });
   });
 
-  it('directs new customers to POST /settings/billing/subscribe', function(done) {
+  describe('directs new customers to POST /settings/billing/subscribe', function() {
+    it('no error: customer, stripe, subscriptions not found', function(done) {
 
-    var userMock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, fixtures.users.bob);
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob@boom.me")
-      .reply(404)
-      .get("/customer/bob/stripe/subscription")
-      .reply(404);
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob@boom.me")
+        .reply(404)
+        .get("/customer/bob/stripe").twice()
+        .reply(404)
+        .get("/customer/bob/stripe/subscription")
+        .reply(404);
 
-    var options = {
-      method: "get",
-      url: "/settings/billing",
-      credentials: fixtures.users.bob
-    }
+      var options = {
+        method: "get",
+        url: "/settings/billing",
+        credentials: fixtures.users.bob
+      };
 
-    server.inject(options, function(resp) {
-      userMock.done();
-      licenseMock.done();
-      expect(resp.statusCode).to.equal(200);
-      var $ = cheerio.load(resp.result);
-      expect($('#payment-form').attr('action')).to.equal('/settings/billing/subscribe');
-      done();
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(200);
+        var $ = cheerio.load(resp.result);
+        expect($('#payment-form').attr('action')).to.equal('/settings/billing/subscribe');
+        done();
+      });
+    });
+
+    it('error: customer not found, stripe error, subscriptions not found', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob@boom.me")
+        .reply(404)
+        .get("/customer/bob/stripe").twice()
+        .reply(500)
+        .get("/customer/bob/stripe/subscription")
+        .reply(404);
+
+      var options = {
+        method: "get",
+        url: "/settings/billing",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(500);
+        expect(resp.request.response.source.template).to.equal('errors/internal');
+        done();
+      });
+    });
+
+    it('error: customer error, stripe not found, subscriptions not found', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob@boom.me")
+        .reply(500)
+        .get("/customer/bob/stripe").twice()
+        .reply(404)
+        .get("/customer/bob/stripe/subscription")
+        .reply(404);
+
+      var options = {
+        method: "get",
+        url: "/settings/billing",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(500);
+        expect(resp.request.response.source.template).to.equal('errors/internal');
+        done();
+      });
+    });
+
+    it('no error: customer and stripe not found, subscription error', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob@boom.me")
+        .reply(404)
+        .get("/customer/bob/stripe").twice()
+        .reply(404)
+        .get("/customer/bob/stripe/subscription")
+        .reply(500);
+
+      var options = {
+        method: "get",
+        url: "/settings/billing",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(200);
+        var $ = cheerio.load(resp.result);
+        expect($('#payment-form').attr('action')).to.equal('/settings/billing/subscribe');
+        done();
+      });
+    });
+
+    it('error: customer, stripe, subscriptions all have errors', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob@boom.me")
+        .reply(500)
+        .get("/customer/bob/stripe").twice()
+        .reply(500)
+        .get("/customer/bob/stripe/subscription")
+        .reply(500);
+
+      var options = {
+        method: "get",
+        url: "/settings/billing",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(500);
+        expect(resp.request.response.source.template).to.equal('errors/internal');
+        done();
+      });
     });
   });
-
 
   it('directs billing info updates to POST /settings/billing', function(done) {
     var userMock = nock("https://user-api-example.com")
@@ -359,7 +479,7 @@ describe('GET /settings/billing', function() {
     it("adds billing data to view context", function(done) {
       var customer = resp.request.response.source.context.customer;
       expect(customer).to.exist();
-      expect(customer).to.exist();
+      expect(customer).to.be.an.object();
       expect(customer.status).to.equal("active");
       expect(customer.license_expired).to.equal(false);
       expect(customer.next_billing_amount).to.equal(700);
@@ -478,7 +598,7 @@ describe('GET /settings/billing', function() {
         .reply(404)
         .get("/customer/norbert_newbie/stripe/subscription")
         .reply(404)
-        .get("/customer/norbert_newbie/stripe")
+        .get("/customer/norbert_newbie/stripe").twice()
         .reply(404);
 
       server.inject(options, function(response) {
@@ -529,6 +649,8 @@ describe('GET /settings/billing', function() {
       var customerMock = nock("https://license-api-example.com")
         .get("/customer/uncle@unverified.com")
         .reply(404)
+        .get("/customer/uncle_unverified/stripe").twice()
+        .reply(404)
         .get("/customer/uncle_unverified/stripe/subscription")
         .reply(404);
 
@@ -545,12 +667,6 @@ describe('GET /settings/billing', function() {
       expect($(".verify-email-notice").length).to.equal(1);
       done();
     });
-
-    // it("does not render the payment form", function(done) {
-    //   expect($("#payment-form").length).to.equal(0);
-    //   done();
-    // });
-
   });
 
 });

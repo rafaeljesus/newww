@@ -25,32 +25,37 @@ customer.getBillingInfo = function(request, reply) {
     opts.package = request.query.package;
   }
 
-  P.join(
-    request.customer.getById(request.loggedInUser.email).then(function(cust) {
+  var stripeDataErrorHandler = function(err) {
+    if (err.statusCode === 404) {
+      return null;
+    } else {
+      throw err;
+    }
+  };
 
-      return request.customer.getStripeData().then(function(customer) {
+  var stripeDataPromise = request.customer.getStripeData()
+    .catch(stripeDataErrorHandler);
 
-        if (customer && cust) {
-          customer.customer_id = cust.stripe_customer_id;
-        }
+  var getByIdPromise = request.customer.getById(request.loggedInUser.email)
+    .catch(stripeDataErrorHandler);
 
-        return {
-          customer: customer
-        }
-      })
-    }, function(err) {
-      if (err.statusCode == 404) {
-        return {};
-      } else {
-        throw err;
-      }
-    }),
+  var customerStripeData = P.join(stripeDataPromise, getByIdPromise, function(stripeCustomer, licenseApiCustomer) {
+    if (stripeCustomer && licenseApiCustomer) {
+      stripeCustomer.customer_id = licenseApiCustomer.stripe_customer_id;
+    }
 
-    request.customer.getSubscriptions().catch(function(err) {
+    return {
+      customer: stripeCustomer
+    };
+  });
+
+  var customerSubscriptions = request.customer.getSubscriptions()
+    .catch(function(err) {
       request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
       request.logger.error(err);
       return [];
-    }).then(function(subscriptions) {
+    })
+    .then(function(subscriptions) {
 
       var subs = subscriptions.filter(function(sub) {
         return sub.status === "active";
@@ -78,19 +83,27 @@ customer.getBillingInfo = function(request, reply) {
         privateModules: privateModules,
         orgs: orgs
       };
-    })
-  ).then(function mixInAdditionalOpts(addopts) {
+    });
+
+  var onSuccess = function(opts) {
+    return reply.view('user/billing', opts);
+  };
+
+  var onError = function(err) {
+    request.logger.error(err);
+    return reply.view('errors/internal', err).code(500);
+  };
+
+  P.join(customerStripeData, customerSubscriptions, function(customer, subscriptions) {
+    var addopts = [customer, subscriptions];
+
     addopts.forEach(function(e) {
       _.extend(opts, e);
     });
 
     return opts;
-  }).then(function(opts) {
-    return reply.view('user/billing', opts);
-  }, function(err) {
-    request.logger.error(err);
-    return reply.view('errors/internal', err).code(500);
-  });
+  })
+    .then(onSuccess, onError);
 };
 
 customer.updateBillingInfo = function(request, reply, callback) {

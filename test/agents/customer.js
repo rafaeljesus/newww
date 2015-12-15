@@ -395,60 +395,62 @@ describe("Customer", function() {
 
   });
 
-  describe("getLicenseIdForOrg", function() {
-    it('returns an error if there is no org with that name', function(done) {
+  describe("getLicenseForOrg", function() {
+    it('returns an error if customer does not exist', function(done) {
       var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
-        .get('/customer/bob/stripe/subscription')
+        .get('/customer/bob/stripe/subscription?org=bigco')
         .reply(404);
 
-      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
+      Customer.getLicenseForOrg('bigco', function(err, license) {
         customerMock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal('No org with that name exists');
-        expect(licenseId).not.exist();
+        expect(err.message).to.equal('Customer not found');
+        expect(license).to.not.exist();
         done();
       });
     });
 
-    it('returns an error if the org does not have a license id', function(done) {
+    it('returns an error if org does not exist', function(done) {
       var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
-        .get('/customer/bob/stripe/subscription')
-        .reply(200, [
-          {
-            "id": "sub_abcd",
-            "current_period_end": 1439766874,
-            "current_period_start": 1437088474,
-            "quantity": 2,
-            "status": "active",
-            "interval": "month",
-            "amount": 600,
-            "npm_org": "bigco",
-            "npm_user": "rockbot",
-            "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
-          }
-        ]);
+        .get('/customer/bob/stripe/subscription?org=bigco')
+        .reply(200, []);
 
-      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
+      Customer.getLicenseForOrg('bigco', function(err, license) {
         customerMock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal('That org does not have a license_id');
-        expect(licenseId).to.not.exist();
+        expect(err.statusCode).to.equal(404);
+        expect(err.message).to.equal('No license for org bigco found');
+        expect(license).to.not.exist();
         done();
       });
-    });
+    }) ;
 
-    it('gets the license id for an org', function(done) {
+
+    it('gets the license for an org', function(done) {
       var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
-        .get('/customer/bob/stripe/subscription')
-        .reply(200, fixtures.users.bobsubscriptions);
+        .get('/customer/bob/stripe/subscription?org=bigco')
+        .reply(200, [{
+          "amount": 700,
+          "cancel_at_period_end": false,
+          "current_period_end": 1451324640,
+          "current_period_start": 1448732640,
+          "id": "sub_6sc",
+          "interval": "month",
+          "license_id": 1,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "b5822d32",
+          "quantity": 8,
+          "status": "active"
+        }]);
 
-      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
+      Customer.getLicenseForOrg('bigco', function(err, license) {
         customerMock.done();
         expect(err).to.be.null();
-        expect(licenseId).to.equal(1);
+        expect(license.license_id).to.equal(1);
         done();
       });
     });

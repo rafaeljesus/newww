@@ -947,7 +947,7 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
+          .get("/customer/bob/stripe/subscription?org=bigco")
           .reply(200, []);
 
         var orgMock = nock("https://user-api-example.com")
@@ -998,7 +998,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('No org with that name exists');
+            expect(notice.notices[0]).to.equal('No license for org bigco found');
             done();
           });
         });
@@ -1014,8 +1014,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .put("/sponsorship/1", {
             "npm_user": "betty"
           })
@@ -1085,8 +1085,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .put("/sponsorship/1", {
             "npm_user": "betty"
           })
@@ -1167,8 +1167,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(404)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .put("/sponsorship/1", {
             "npm_user": "betty"
           })
@@ -1234,8 +1234,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(404)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .put("/sponsorship/1", {
             "npm_user": "betty"
           })
@@ -1312,8 +1312,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
-          .reply(404);
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, []);
 
         var options = {
           url: "/org/bigco",
@@ -1348,7 +1348,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('No org with that name exists');
+            expect(notice.notices[0]).to.equal("No license for org bigco found");
             done();
           });
         });
@@ -1364,8 +1364,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .delete("/sponsorship/1/betty")
           .reply(404);
 
@@ -1418,8 +1418,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .delete("/sponsorship/1/betty")
           .reply(200, {
             "created": "2015-08-05T20:55:54.759Z",
@@ -1487,8 +1487,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .delete("/sponsorship/1/betty")
           .reply(200, {
             "created": "2015-08-05T20:55:54.759Z",
@@ -1539,8 +1539,8 @@ describe('updating an org', function() {
           .reply(200, fixtures.users.bob);
 
         var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .get("/customer/bob/stripe")
           .reply(200)
           .delete("/sponsorship/1/betty")
@@ -1604,8 +1604,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com:443")
           .get("/customer/bob/stripe")
           .reply(200)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .put("/sponsorship/1", {
             "npm_user": "betty"
           })
@@ -1664,8 +1664,8 @@ describe('updating an org', function() {
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
           .reply(404)
-          .get("/customer/bob/stripe/subscription")
-          .reply(200, fixtures.users.bobsubscriptions)
+          .get("/customer/bob/stripe/subscription?org=bigco")
+          .reply(200, fixtures.orgs.bobsBigcoSubscription)
           .delete("/sponsorship/1/betty")
           .reply(200, {
             "created": "2015-08-05T20:55:54.759Z",
@@ -1713,12 +1713,12 @@ describe('deleting an org', function() {
 
       var licenseMock = nock("https://license-api-example.com")
         .get("/customer/bob/stripe/subscription")
-        .reply(200, fixtures.users.bobsubscriptions)
+        .reply(200, fixtures.orgs.bobsOrgSubscriptions)
         .get("/customer/bob/stripe")
         .reply(404)
-        .delete("/customer/bob/stripe/subscription/sub_abcd")
+        .delete("/customer/bob/stripe/subscription/sub_12346")
         .reply(200, {
-          "id": "sub_abcd",
+          "id": "sub_12346",
           "current_period_end": 1439766874,
           "current_period_start": 1437088474,
           "quantity": 2,

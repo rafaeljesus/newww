@@ -336,9 +336,9 @@ Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
         return reject(err);
       }
 
-      if (resp.statusCode === 409 || resp.statusCode === 500) {
+      if (resp.statusCode === 409) {
         err = Error('user is already sponsored');
-        err.statusCode = 403;
+        err.statusCode = resp.statusCode;
         return accept(err);
       }
 

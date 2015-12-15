@@ -94,9 +94,9 @@ exports.getOrg = function(request, reply) {
 
       return request.customer.getById(request.loggedInUser.email)
         .catch(function(err) {
-          return Number(err.statusCode) === 404;
-        }, function(err) {
-          return null;
+          if (err.statusCode !== 404) {
+            throw err;
+          }
         });
     })
     .then(function(cust) {
@@ -127,16 +127,23 @@ exports.getOrg = function(request, reply) {
       }
 
       if (templateName.match(/payment-info/)) {
-        return request.customer.getLicenseForOrg(orgName);
+        return request.customer.getLicenseForOrg(orgName)
+          .catch(function(err) {
+            if (err.statusCode === 404) {
+              return P.resolve(null);
+            } else {
+              throw err;
+            }
+          });
       } else {
         return P.resolve(null);
       }
 
     })
     .then(function(license) {
-      if (license) {
-        opts.org.canceled = !!license.cancel_at_period_end;
-      }
+      opts.org.canceled = (license && !!license.cancel_at_period_end) || !license;
+      opts.perms.isPaidSuperAdmin = opts.perms.isSuperAdmin && opts.customer && opts.customer.customer_id;
+
       return reply.view(templateName, opts);
     })
     .catch(function(err) {

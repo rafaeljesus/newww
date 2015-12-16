@@ -8,17 +8,18 @@
 		<h3>Mac</h3>
 			<p>Go to <a href="nodejs.org">nodejs.org</a>, click ‘install’, and run through the install process.</p>
 		<h3>Ubuntu</h3>
-			<p>Run the following on your command line</p>
-			<pre>curl -sL https://deb.nodesource.com/setup_0.10 | sudo -E bash -
-			sudo apt-get install -y nodejs</pre><p>
+			<p>Run the following on your command line to install the source for nodejs</p>
+			<pre class='shell'>curl -sL https://deb.nodesource.com/setup | sudo -E bash -</pre>
+			<p>Then, run this to get the latest nodejs package</p>
+			<pre class='shell'>sudo apt-get install -y nodejs</pre>
 		<h3>Windows</h3>
 			<p>Go ahead the download the <a href="https://nodejs.org/download/">Windows binary</a> and make sure to restart your computer.</p>
 		<hr>
 
 		<h2>Test It!</h2>
-			<pre>node -v</pre>
+			<pre class='shell'>node -v</pre>
 			<p>To see if Node is installed, type the above on your command line.</p>
-			<pre>npm -v</pre>
+			<pre class='shell'>npm -v</pre>
  			<p>To see if npm is installed, type the above on your command line.</p>
 
  		{{#if private}}
@@ -30,17 +31,17 @@
 		{{#unless private}} 		
 	 		<h2>Installing {{package.name}}</h2>
 	 		{{#with package}}
-	 			<pre>{{installCommand}}</pre>
+	 			<pre class='shell'>{{installCommand}}</pre>
 			{{/with}}
 			<p>To add this npm package to your local machine, type the above into your command line. You’ll notice a node_modules directory appear in your root where the package is now installed.<p>
 			<p>If you're having trouble installing packages, check out the helpful docs at <a>https://docs.npmjs.com/getting-started/installing-npm-packages-locally</a>
 		{{/unless}}
 		
 		<h2>Other Nifty Commands</h2>
-		<p><pre>npm init</pre>creates a package.json in root for you</p>
-		<p><pre>npm list</pre>lists all installed packages<p>
-		<p><pre>npm prune</pre>removes packages not depended on by your project according to your package.json<p>
-		<p><pre>npm outdated</pre>tells you which installed packages are outdated with respect to what is current in the npm registry but allowable by the version definition in your package.json<p>
+		<p><pre class='shell'>npm init</pre>creates a package.json in root for you</p>
+		<p><pre class='shell'>npm list</pre>lists all installed packages<p>
+		<p><pre class='shell'>npm prune</pre>removes packages not depended on by your project according to your package.json<p>
+		<p><pre class='shell'>npm outdated</pre>tells you which installed packages are outdated with respect to what is current in the npm registry but allowable by the version definition in your package.json<p>
 
 
 </div>

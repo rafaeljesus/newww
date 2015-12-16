@@ -104,7 +104,7 @@ describe('Getting to the ULA page', function() {
           firstname: 'Blerg',
           lastname: 'Bam',
           email: 'new-OOPS-bam.com',
-          phone: '123-456-7890',
+          phone: 'gfjbjhnb',
           company: "",
           numemployees: '1-25',
           comments: "",
@@ -120,12 +120,17 @@ describe('Getting to the ULA page', function() {
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/index');
         expect(source.context.errors).to.exist();
-        var names = source.context.errors.map(function(error) {
+        var errorMessages = source.context.errors.map(function(error) {
+          return error.message;
+        });
+        var errorNames = source.context.errors.map(function(error) {
           return error.path;
         });
-        expect(names).to.not.include('comments'); // because they're optional
-        expect(names).to.include('company');
-        expect(names).to.include('email');
+        expect(errorNames).to.include('phone');
+        expect(errorMessages).to.include('phone is not valid');
+        expect(errorNames).to.not.include('comments'); // because they're optional
+        expect(errorNames).to.include('company');
+        expect(errorNames).to.include('email');
         done();
       });
     });

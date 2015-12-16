@@ -1,4 +1,5 @@
 var Hoek = require('hoek'),
+  googleLibphonenumber = require('google-libphonenumber'),
   Joi = require('joi'),
   utils = require('../../lib/utils');
 
@@ -23,9 +24,22 @@ module.exports = function createHubspotLead(request, reply) {
   };
 
   var validatedData = Joi.validate(request.payload, schema, joiOptions);
+  var phoneNumberDataValid = googleLibphonenumber.PhoneNumberUtil.isViablePhoneNumber(request.payload.phone);
 
-  if (validatedData.error) {
-    opts.errors = validatedData.error.details;
+  if (validatedData.error || (! phoneNumberDataValid)) {
+    if (validatedData.error) {
+      opts.errors = validatedData.error.details;
+    }
+
+    if (! phoneNumberDataValid) {
+      opts.errors = opts.errors || [];
+
+      opts.errors.push({
+        message: 'phone is not valid',
+        path: 'phone'
+      });
+    }
+
     return reply.view('enterprise/index', opts).code(400);
   }
 

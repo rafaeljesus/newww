@@ -27,9 +27,13 @@ module.exports = function createHubspotLead(request, reply) {
   var phoneNumberDataValid = googleLibphonenumber.PhoneNumberUtil.isViablePhoneNumber(request.payload.phone);
 
   if (validatedData.error || (! phoneNumberDataValid)) {
-    opts.errors = validatedData.error.details;
+    if (validatedData.error) {
+      opts.errors = validatedData.error.details;
+    }
 
     if (! phoneNumberDataValid) {
+      opts.errors = opts.errors || [];
+
       opts.errors.push({
         message: 'phone is not valid',
         path: 'phone'

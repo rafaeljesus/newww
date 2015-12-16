@@ -165,7 +165,10 @@ var publicRoutes = [
     method: "GET",
     handler: require('../facets/enterprise/license-error')
   }, {
-    path: "/package/{package}/tutorial",
+    paths: [
+      "/package/{project}/tutorial",
+      "/package/{scope}/{project}/tutorial"
+    ],
     method: "GET",
     handler: require('../handlers/tutorial')
   }, {

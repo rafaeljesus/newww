@@ -120,6 +120,18 @@ exports.getOrg = function(request, reply) {
         };
         opts.org.teams = orgTeams;
       }
+
+      if (templateName.match(/payment-info/)) {
+        return request.customer.getLicenseForOrg(orgName);
+      } else {
+        return P.resolve(null);
+      }
+
+    })
+    .then(function(license) {
+      if (license) {
+        opts.org.canceled = !!license.cancel_at_period_end;
+      }
       return reply.view(templateName, opts);
     })
     .catch(function(err) {

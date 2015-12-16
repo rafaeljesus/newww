@@ -3,8 +3,8 @@
     <ul class="nav nav-4 clear" role="navigation">
       <li class="packages{{#if packages}} current{{/if}}"><a href="/org/{{org.info.name}}">{{pluralize org.packages.count "package" true}}</a></li>
       {{#if perms.isAtLeastMember}}
-        <li class="teams{{#if teams}}current{{/if}}"><a href="/org/{{org.info.name}}/teams">{{pluralize org.teams.count "team" true}}</a></li>
-        <li class="members{{#if members}}current{{/if}}"><a href="/org/{{org.info.name}}/members">{{pluralize org.users.count "member" true}}</a></li>
+        <li class="teams{{#if teams}} current{{/if}}"><a href="/org/{{org.info.name}}/teams">{{pluralize org.teams.count "team" true}}</a></li>
+        <li class="members{{#if members}} current{{/if}}"><a href="/org/{{org.info.name}}/members">{{pluralize org.users.count "member" true}}</a></li>
       {{/if}}
       {{#if perms.isSuperAdmin}}
         <li><a href="/settings/billing" class="payment-info">payment info</a></li>

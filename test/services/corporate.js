@@ -29,10 +29,8 @@ describe('getting pages from GitHub', function() {
     var md = "*emphasis* on **this** [link](boom.com)",
       html = '<p><em>emphasis</em> on <strong>this</strong> <a href="boom.com">link</a></p>\n';
 
-
-    var branch = (new Date() > new Date("2015-04-14T03:30:00-07:00")) ? "master" : "prerelease";
     var mock = nock("https://raw.githubusercontent.com/")
-      .get('/npm/static-pages/' + branch + '/boom.md')
+      .get('/npm/static-pages/master/boom.md')
       .reply(200, md);
 
     server.methods.corp.getPage('boom', function(er, content) {

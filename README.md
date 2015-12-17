@@ -160,7 +160,6 @@ If you have any trouble getting the site running locally, please [open an issue]
 
 ## Feature Flags
 
-* `FEATURE_ORG_BILLING`, users who are allowed to use Teams and Orgs
 * `FEATURE_BYPASS_EMAIL_VERIFY`, users who can bypass email verification, for testing
 * `FEATURE_NPMO`, boolean, whether to run in npm On-site mode, which is a stripped-down configuration
 

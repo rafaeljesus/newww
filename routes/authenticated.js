@@ -127,10 +127,6 @@ module.exports = [
     path: "/org/create",
     method: "GET",
     handler: function(request, reply) {
-      if (!request.features.org_billing) {
-        return reply.redirect('/org');
-      }
-
       var query = request.query || {};
 
       return reply.view('org/create', {

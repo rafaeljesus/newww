@@ -109,7 +109,6 @@ describe('GET /~bob for logged-in bob', function() {
   var context;
 
   before(function(done) {
-    process.env.FEATURE_ORG_BILLING = 'bob';
     var userMock = nock("https://user-api-example.com")
       .get('/user/bob').twice()
       .reply(200, users.bob)
@@ -134,7 +133,6 @@ describe('GET /~bob for logged-in bob', function() {
   });
 
   after(function(done) {
-    delete process.env.FEATURE_ORG_BILLING;
     done();
   });
 
@@ -155,13 +153,6 @@ describe('GET /~bob for logged-in bob', function() {
     expect($(".icon-lock ~ a").text()).to.equal("@bob/shhh");
     done();
   });
-
-  it("shows bob's organizations, since he is whitelisted", function(done) {
-    expect($("ul.organizations > li").length).to.equal(1);
-    expect($($("ul.organizations > li").get(0)).text().trim()).to.equal("@bigco");
-    done();
-  });
-
 
   it("shows a different billing page link for paid users", function(done) {
     var userMock = nock("https://user-api-example.com")

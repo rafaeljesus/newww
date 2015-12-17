@@ -24,10 +24,6 @@ var handleUserError = function(request, reply, redirectUrl, message) {
 };
 
 exports.getTeamCreationPage = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
@@ -66,10 +62,6 @@ exports.getTeamCreationPage = function(request, reply) {
 };
 
 exports.addTeamToOrg = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
@@ -127,10 +119,6 @@ exports.addTeamToOrg = function(request, reply) {
 
 
 exports.showTeam = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var orgName = request.params.org;
   var teamName = request.params.teamName;
 
@@ -443,11 +431,6 @@ exports._handleTeamAdditions = function(request, reply, successPage) {
 };
 
 exports.getAddTeamUserPage = function(request, reply) {
-
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   if (invalidUserName(request.params.org)) {
     return reply.view('errors/not-found').code(404);
   }
@@ -460,11 +443,6 @@ exports.getAddTeamUserPage = function(request, reply) {
 };
 
 exports.getAddTeamPackagePage = function(request, reply) {
-
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   if (invalidUserName(request.params.org)) {
     return reply.view('errors/not-found').code(404);
   }
@@ -481,10 +459,6 @@ exports.showTeamMembers = function(request, reply) {
 };
 
 exports.getUsers = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   var orgScope = request.params.org;
   var teamName = request.params.teamName;
@@ -525,10 +499,6 @@ exports.getUsers = function(request, reply) {
 };
 
 exports.getPackages = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   var orgScope = request.params.org;
   var teamName = request.params.teamName;

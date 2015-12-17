@@ -237,8 +237,7 @@ exports.bigcoadmin = {
     github: 'bob',
     twitter: 'twob',
     homepage: 'http://boom.me',
-    freenode: 'bobob',
-    "feature_org_billing": 't'
+    freenode: 'bobob'
   },
   created: '2014-11-21T20:05:05.423Z',
   updated: '2015-01-24T00:08:41.269Z',
@@ -256,8 +255,7 @@ exports.bigcoadminSA = {
     github: 'bob',
     twitter: 'twob',
     homepage: 'http://boom.me',
-    freenode: 'bobob',
-    "feature_org_billing": 't'
+    freenode: 'bobob'
   },
   created: '2014-11-21T20:05:05.423Z',
   updated: '2015-01-24T00:08:41.269Z',
@@ -362,8 +360,7 @@ exports.betty = {
     github: 'betty',
     twitter: 'betty',
     homepage: 'http://betty.me',
-    freenode: 'bettttty',
-    feature_org_billing: 't'
+    freenode: 'bettttty'
   },
   created: '2014-11-21T20:05:05.423Z',
   updated: '2015-01-24T00:08:41.269Z',

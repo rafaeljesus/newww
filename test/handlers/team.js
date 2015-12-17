@@ -19,8 +19,6 @@ var TokenFacilitator = require('token-facilitator');
 var redisClient = redisMock.createClient();
 
 before(function(done) {
-  process.env.FEATURE_ORG_BILLING = 'bob,betty';
-  require('../../lib/feature-flags').calculate('org_billing');
   requireInject.installGlobally('../mocks/server', {
     redis: redisMock
   })(function(obj) {
@@ -30,7 +28,6 @@ before(function(done) {
 });
 
 after(function(done) {
-  delete process.env.FEATURE_ORG_BILLING;
   server.stop(done);
 });
 

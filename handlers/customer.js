@@ -223,10 +223,6 @@ customer.subscribe = function(request, reply) {
       plan: plans[planType]
     };
 
-    if (planType === 'orgs' && !request.features.org_billing) {
-      return reply.redirect('/settings/billing');
-    }
-
     if (request.loggedInUser.customer) {
       return subscribe();
     } else {
@@ -234,7 +230,7 @@ customer.subscribe = function(request, reply) {
     }
 
     function subscribe() {
-      if (request.features.org_billing && planType === 'orgs') {
+      if (planType === 'orgs') {
         return subscribeToOrg();
       } else {
         return request.customer.createSubscription(planInfo, function(err, subscriptions) {

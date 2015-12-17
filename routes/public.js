@@ -71,13 +71,7 @@ var publicRoutes = [
     feature: '!npmo',
     method: "GET",
     handler: function(request, reply) {
-      if (request.features.org_billing) {
-        return reply.view("org/index");
-      } else if (!request.loggedInUser && request.query.hasOwnProperty('join-beta')) {
-        return reply.redirect('/login?done=%2Forg').code(302);
-      } else {
-        return reply.redirect("http://info.npmjs.com/test-orgs").code(302);
-      }
+      return reply.view("org/index");
     }
   }, {
     path: "/contact",

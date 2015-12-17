@@ -23,10 +23,6 @@ var resolveTemplateName = function(path) {
 };
 
 exports.getOrg = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var opts = {};
   var orgName = request.params.org;
   var templateName = resolveTemplateName(request.route.path);
@@ -142,10 +138,6 @@ exports.getOrg = function(request, reply) {
 };
 
 exports.addUserToOrg = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser.name;
   var user = {
@@ -193,10 +185,6 @@ exports.addUserToOrg = function(request, reply) {
 };
 
 exports.removeUserFromOrg = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser.name;
   var username = request.payload.username;
@@ -233,10 +221,6 @@ exports.removeUserFromOrg = function(request, reply) {
 };
 
 exports.updateUserPayStatus = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var orgName = request.params.org;
   var payForUser = !!request.payload.payStatus;
   var username = request.payload.username;
@@ -287,10 +271,6 @@ exports.updateUserPayStatus = function(request, reply) {
 };
 
 exports.updateOrg = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   switch (request.payload.updateType) {
     case 'addUser':
       return exports.addUserToOrg(request, reply);
@@ -347,10 +327,6 @@ exports.deleteOrgConfirm = function(request, reply) {
 };
 
 exports.deleteOrg = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var orgToDelete = request.params.org;
 
   request.customer.getSubscriptions(function(err, subscriptions) {
@@ -387,10 +363,6 @@ var orgSubscriptionSchema = {
 };
 
 exports.validateOrgCreation = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   var loggedInUser = request.loggedInUser.name;
 
   Joi.validate(request.query, orgSubscriptionSchema, function(err, planData) {
@@ -481,9 +453,6 @@ exports.validateOrgCreation = function(request, reply) {
 };
 
 exports.getOrgCreationBillingPage = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
   var loggedInUser = request.loggedInUser.name;
 
   var newUser = request.query['new-user'];
@@ -576,10 +545,6 @@ exports.getOrgCreationBillingPage = function(request, reply) {
 };
 
 exports.getTransferPage = function(request, reply) {
-  if (!request.features.org_billing) {
-    return reply.redirect('/org');
-  }
-
   if (invalidUserName(request.query.orgScope)) {
     var err = new Error("Org Scope must be a valid entry");
     request.logger.error(err);

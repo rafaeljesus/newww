@@ -1,17 +1,9 @@
 {{> profile-secondary-nav}}
 
-<div class="container{{#unless features.org_billing}} narrow{{/unless}}">
+<div class="container">
 
   <hgroup>
-    {{#if features.org_billing}}
-      <h1>Subscriptions</h1>
-    {{else}}
-      {{#if customer}}
-      <h1>your billing info</h1>
-      {{else}}
-      <h1>sign up for private modules</h1>
-      {{/if}}
-    {{/if}}
+    <h1>Subscriptions</h1>
   </hgroup>
 
   {{> email-verify-nag}}
@@ -53,7 +45,6 @@
     </p>
   {{/if}}
 
-  {{#if features.org_billing}}
   <div class="tabs">
     <div class="tab-nav-container">
       <div class="nav-container nav-2-container">
@@ -158,11 +149,6 @@
       {{> billing-info}}
     </div><!--/.tab-2-->
   </div><!--/.tabs-->
-  {{else}}
-    <div class="container narrow">
-      {{> billing-info}}
-    </div>
-  {{/if}}
 
 </div>
 

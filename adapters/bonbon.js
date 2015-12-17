@@ -104,6 +104,10 @@ exports.register = function(server, options, next) {
       case "view":
         request.response.source.context = Hoek.applyToDefaults(options, request.response.source.context);
         request.response.source.context.user = request.loggedInUser;
+
+        // appends charset to content-type header, for security reasons
+        request.response.type('text/html').charset('utf-8');
+
         break;
       case "plain":
         if (typeof (request.response.source) === "object") {
@@ -126,9 +130,6 @@ exports.register = function(server, options, next) {
         return reply(request.response.source.context);
       }
     }
-
-    // appends charset to content-type header, for security reasons
-    request.response.type('text/html').charset('utf-8');
 
     return reply.continue();
   });

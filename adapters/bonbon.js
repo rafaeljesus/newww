@@ -62,6 +62,23 @@ exports.register = function(server, options, next) {
 
   });
 
+  server.ext('onPostHandler', function(request, reply) {
+
+    var latency = Date.now() - request.timing.start;
+    metrics.metric({
+      name: 'latency.page',
+      value: latency,
+      page: request.timing.page,
+    });
+
+    // TODO log request info in as close to common log format as possible
+    request.logger.info(toCommonLogFormat(request, {
+      ipHeader: 'fastly-client-ip'
+    }), latency + 'ms');
+
+    return reply.continue();
+  });
+
   server.ext('onPreResponse', function(request, reply) {
 
     var options = {
@@ -87,6 +104,10 @@ exports.register = function(server, options, next) {
       case "view":
         request.response.source.context = Hoek.applyToDefaults(options, request.response.source.context);
         request.response.source.context.user = request.loggedInUser;
+
+        // appends charset to content-type header, for security reasons
+        request.response.type('text/html').charset('utf-8');
+
         break;
       case "plain":
         if (typeof (request.response.source) === "object") {
@@ -109,23 +130,6 @@ exports.register = function(server, options, next) {
         return reply(request.response.source.context);
       }
     }
-
-    return reply.continue();
-  });
-
-  server.ext('onPostHandler', function(request, reply) {
-
-    var latency = Date.now() - request.timing.start;
-    metrics.metric({
-      name: 'latency.page',
-      value: latency,
-      page: request.timing.page,
-    });
-
-    // TODO log request info in as close to common log format as possible
-    request.logger.info(toCommonLogFormat(request, {
-      ipHeader: 'fastly-client-ip'
-    }), latency + 'ms');
 
     return reply.continue();
   });

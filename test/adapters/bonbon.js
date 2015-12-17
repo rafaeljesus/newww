@@ -259,4 +259,13 @@ describe("bonbon", function() {
     });
   });
 
+  describe('headers', function() {
+    it('includes the charset=utf-8 header', function(done) {
+      server.inject('/', function(resp) {
+        expect(resp.headers['content-type']).to.equal('text/html; charset=utf-8');
+        done();
+      });
+    });
+  });
+
 });

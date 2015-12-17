@@ -26,19 +26,16 @@
   </div>
 
   <div class="disclaimer">
-    {{#if customer}}
       <ul>
-        <li>Next billing date: <strong>12-Jan-16</strong></li>
-        <li>Valid payment method ending in <a href="#">{{customer.card.last4}}</a></li>
-        <li><a href="#" class="btn-secondary link-btn">Suspend this Org</a> &nbsp;&nbsp;<a href="/org/{{org.info.name}}/confirm-delete" class="btn-secondary link-btn">Delete this Org</a></li>
-      </ul>
-    {{else}}
-      <ul>
+      {{#if org.canceled}}
         <li>Next billing date: <strong>n/a</strong></li>
         <li><a href="#">No valid payment on file</a></li>
-        <li><a href="#" class="btn-secondary link-btn">Reactivate this Org</a> &nbsp;&nbsp;<a href="#" class="btn-secondary link-btn">Delete this Org</a></li>
+      {{else}}
+        <li>Next billing date: <strong>12-Jan-16</strong></li>
+        <li>Valid payment method ending in <a href="#">{{customer.card.last4}}</a></li>
+        <li><a href="/org/{{org.info.name}}/confirm-delete" class="btn-secondary link-btn">cancel payment</a></li>
+      {{/if}}
       </ul>
-    {{/if}}
   </div>
 
 </div>

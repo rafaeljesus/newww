@@ -62,6 +62,23 @@ exports.register = function(server, options, next) {
 
   });
 
+  server.ext('onPostHandler', function(request, reply) {
+
+    var latency = Date.now() - request.timing.start;
+    metrics.metric({
+      name: 'latency.page',
+      value: latency,
+      page: request.timing.page,
+    });
+
+    // TODO log request info in as close to common log format as possible
+    request.logger.info(toCommonLogFormat(request, {
+      ipHeader: 'fastly-client-ip'
+    }), latency + 'ms');
+
+    return reply.continue();
+  });
+
   server.ext('onPreResponse', function(request, reply) {
 
     var options = {
@@ -110,22 +127,8 @@ exports.register = function(server, options, next) {
       }
     }
 
-    return reply.continue();
-  });
-
-  server.ext('onPostHandler', function(request, reply) {
-
-    var latency = Date.now() - request.timing.start;
-    metrics.metric({
-      name: 'latency.page',
-      value: latency,
-      page: request.timing.page,
-    });
-
-    // TODO log request info in as close to common log format as possible
-    request.logger.info(toCommonLogFormat(request, {
-      ipHeader: 'fastly-client-ip'
-    }), latency + 'ms');
+    // appends charset to content-type header, for security reasons
+    request.response.type('text/html').charset('utf-8');
 
     return reply.continue();
   });

@@ -508,7 +508,7 @@ describe('getting an org', function() {
         count: 1,
         items: [fixtures.packages.fake]
       })
-      .get('/org/bigco/team')
+      .get('/org/bigco/team?per_page=100&page=0')
       .reply(200, fixtures.teams.bigcoOrg);
 
     var options = {

@@ -4,6 +4,7 @@ var User = require('../models/user');
 var P = require('bluebird');
 var Joi = require('joi');
 var invalidUserName = require('npm-user-validate').username;
+var _ = require('lodash');
 var URL = require('url');
 
 var resolveTemplateName = function(path) {
@@ -92,12 +93,23 @@ exports.getOrg = function(request, reply) {
         return null;
       }
 
-      return request.customer.getById(request.loggedInUser.email)
-        .catch(function(err) {
-          if (err.statusCode !== 404) {
-            throw err;
-          }
-        });
+      var stripeDataErrorHandler = function(err) {
+        if (err.statusCode === 404) {
+          return null;
+        } else {
+          throw err;
+        }
+      };
+
+      var getStripeData = request.customer.getStripeData()
+        .catch(stripeDataErrorHandler);
+
+      var getCustomerById = request.customer.getById(request.loggedInUser.email)
+        .catch(stripeDataErrorHandler);
+
+      return P.join(getStripeData, getCustomerById, function(stripeData, customer) {
+        return _.extend(stripeData, customer);
+      });
     })
     .then(function(cust) {
       cust = cust || {};

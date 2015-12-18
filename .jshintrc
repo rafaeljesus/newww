@@ -81,6 +81,9 @@
     "wsh"           : false,    // Windows Scripting Host
     "yui"           : false,    // Yahoo User Interface
 
+    // ES6
+    "esnext" : true, // allow es6
+
     // Custom Globals
     "globals"       : {
       "require": false,

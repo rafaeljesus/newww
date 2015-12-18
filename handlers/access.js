@@ -27,7 +27,7 @@ module.exports = function(request, reply) {
           reply.view('errors/not-found').code(404);
           break;
         default:
-          err.internalStatusCode = 500;
+          err.statusCode = 500;
           reply(err);
       }
       return promise.cancel();

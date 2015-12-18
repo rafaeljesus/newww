@@ -101,7 +101,7 @@ exports.show = function(request, reply) {
       }
 
       request.logger.error(err);
-      err.internalStatusCode = 500;
+      err.statusCode = 500;
       reply(err);
       return;
     });

@@ -87,9 +87,9 @@ module.exports = function(request, reply) {
     var opts = { };
 
     if (error) {
-      error.internalStatusCode = 500;
       request.logger.warn('elasticsearch failed searching ' + request.query.q);
       request.logger.error(error);
+      error.statusCode = 500;
       return reply(error);
     }
 

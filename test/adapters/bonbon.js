@@ -40,7 +40,11 @@ before(function(done) {
     .get('/user/mikeal')
     .reply(404)
     .get('/user/bob/org').times(2)
-    .reply(401);
+    .reply(401)
+    .get('/package?sort=modified&count=12')
+    .reply(200, fixtures.aggregates.recently_updated_packages)
+    .get('/package?sort=dependents&count=12')
+    .reply(200, fixtures.aggregates.most_depended_upon_packages);
 
   licenseMock = nock('https://license-api-example.com')
     .get('/customer/bob/stripe').times(13)

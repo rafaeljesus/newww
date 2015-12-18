@@ -19,7 +19,7 @@ describe("package access", function() {
     require('../mocks/server')(function(obj) {
       server = obj;
       done();
-    });
+    }, require('../../lib/error-handler'));
   });
 
   after(function(done) {
@@ -714,6 +714,88 @@ describe("package access", function() {
 
     });
 
+    describe('error handling', function() {
+      it('should handle 402 fetching package with redirect to billing', function(done) {
+        // mock request made by agents/package.js
+        var mock = nock('https://user-api-example.com')
+          .get('/package/payment-required')
+          .reply(402);
+
+        var options = {
+          url: '/package/payment-required/access',
+          method: 'GET'
+        };
+
+        server.inject(options, function(resp) {
+          mock.done();
+          expect(resp.statusCode).to.equal(302);
+          expect(resp.headers.location).to.equal('/settings/billing?package=payment-required');
+          done();
+        });
+      });
+
+      it('should handle 404 fetching package with not-found page', function(done) {
+        // mock request made by agents/package.js
+        var mock = nock('https://user-api-example.com')
+          .get('/package/notfound')
+          .reply(404);
+
+        var options = {
+          url: '/package/notfound/access',
+          method: 'GET'
+        };
+
+        server.inject(options, function(resp) {
+          mock.done();
+          expect(resp.statusCode).to.equal(404);
+          var source = resp.request.response.source;
+          expect(source.template).to.equal('errors/not-found');
+          done();
+        });
+      });
+
+      it('should handle 500 fetching package with error page', function(done) {
+        // mock request made by agents/package.js
+        var mock = nock('https://user-api-example.com')
+          .get('/package/strongbad')
+          .reply(500);
+
+        var options = {
+          url: '/package/strongbad/access',
+          method: 'GET'
+        };
+
+        server.inject(options, function(resp) {
+          mock.done();
+          expect(resp.statusCode).to.equal(500);
+          var source = resp.request.response.source;
+          expect(source.template).to.equal('errors/internal');
+          done();
+        });
+      });
+
+      it('should handle any error on fetching collaborators with error page', function(done) {
+        // mock requests made by agents/package.js and agents/collaborator.js
+        var mock = nock('https://user-api-example.com')
+          .get('/package/browserify')
+          .reply(200, fixtures.packages.browserify)
+          .get('/package/browserify/collaborators')
+          .reply(500);
+
+        var options = {
+          url: '/package/browserify/access',
+          method: 'GET'
+        };
+
+        server.inject(options, function(resp) {
+          mock.done();
+          expect(resp.statusCode).to.equal(500);
+          var source = resp.request.response.source;
+          expect(source.template).to.equal('errors/internal');
+          done();
+        });
+      });
+    });
 
   });
 

@@ -1,10 +1,19 @@
-<div class="container narrow">
+<div class="container{{#unless npmoFullStack}} narrow{{/unless}}">
 
   <hgroup>
     <h1>{{t "errors.generic.title"}}</h1>
     <h2>{{t "errors.generic.subtitle"}}</h2>
   </hgroup>
 
+  {{#if npmoFullStack}}
+  <p>
+    If you feel this error is the result of a bug, please email
+    <a href="mailto:support@npmjs.com?subject=npm%20On-Site%20Error&body={{encode npmoFullStack}}">support@npmjs.com</a>
+    and reference the following error:
+  </p>
+
+  <pre><code>{{npmoFullStack}}</code></pre>
+  {{else}}
   <p>
     If you feel this error is the result of a bug, please
     <a href="mailto:support@npmjs.com">email us</a>,
@@ -14,6 +23,7 @@
   </p>
 
   <pre><code>{{correlationID}}</code></pre>
+  {{/if}}
 
   <p>Be sure to let us know what you were doing and how you got here so we can help you as quickly as possible!</p>
 

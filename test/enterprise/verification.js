@@ -15,7 +15,7 @@ before(function(done) {
     server = obj;
     server.app.cache._cache.connection.client = {};
     done();
-  });
+  }, require('../../lib/error-handler'));
 });
 
 after(function(done) {

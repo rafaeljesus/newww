@@ -106,7 +106,7 @@ describe('getting an org', function() {
         count: 1,
         items: [fixtures.packages.fake]
       })
-      .get('/org/bigco/team')
+      .get('/org/bigco/team?per_page=100&page=0')
       .reply(200, fixtures.teams.bigcoOrg);
 
 
@@ -149,7 +149,7 @@ describe('getting an org', function() {
         count: 1,
         items: [fixtures.packages.fake]
       })
-      .get('/org/bigco/team')
+      .get('/org/bigco/team?per_page=100&page=0')
       .reply(200, fixtures.teams.bigcoOrg);
 
 
@@ -189,7 +189,7 @@ describe('getting an org', function() {
       .reply(404)
       .get("/org/bigconotthere/package?per_page=100&page=0")
       .reply(404)
-      .get("/org/bigconotthere/team")
+      .get("/org/bigconotthere/team?per_page=100&page=0")
       .reply(404);
 
 
@@ -228,7 +228,7 @@ describe('getting an org', function() {
         count: 1,
         items: [fixtures.packages.fake]
       })
-      .get('/org/bigco/team')
+      .get('/org/bigco/team?per_page=100&page=0')
       .reply(200, fixtures.teams.bigcoOrg);
 
     var options = {
@@ -268,7 +268,7 @@ describe('getting an org', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/notbobsorg/team')
+        .get('/org/notbobsorg/team?per_page=100&page=0')
         .reply(401);
 
       var options = {
@@ -308,7 +308,7 @@ describe('getting an org', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
@@ -347,7 +347,7 @@ describe('getting an org', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
@@ -385,7 +385,7 @@ describe('getting an org', function() {
           count: 1,
           items: [fixtures.packages.fake]
         })
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       var options = {
@@ -424,7 +424,7 @@ describe('getting an org', function() {
         count: 1,
         items: [fixtures.packages.fake]
       })
-      .get('/org/bigco/team')
+      .get('/org/bigco/team?per_page=100&page=0')
       .reply(200, fixtures.teams.bigcoOrg);
 
     var options = {
@@ -468,7 +468,7 @@ describe('getting an org', function() {
         count: 1,
         items: [fixtures.packages.fake]
       })
-      .get('/org/bigco/team')
+      .get('/org/bigco/team?per_page=100&page=0')
       .reply(200, fixtures.teams.bigcoOrg);
 
     var options = {
@@ -505,7 +505,7 @@ describe('creating an org', function() {
       .reply(200, fixtures.orgs.bigcoAddedUsers)
       .get("/org/bigco/package?per_page=100&page=0")
       .reply(200, fixtures.packages.fake)
-      .get('/org/bigco/team')
+      .get('/org/bigco/team?per_page=100&page=0')
       .reply(200, fixtures.teams.bigcoOrg);
 
     var options = {
@@ -544,7 +544,7 @@ describe('creating an org', function() {
         .reply(404, fixtures.orgs.bigcoAddedUsers)
         .get("/org/bigco/package?per_page=100&page=0")
         .reply(404, fixtures.packages.fake)
-        .get("/org/bigco/team")
+        .get("/org/bigco/team?per_page=100&page=0")
         .reply(404);
 
       var options = {
@@ -635,7 +635,7 @@ describe('creating an org', function() {
         .reply(404, fixtures.orgs.bigcoAddedUsers)
         .get("/org/bigco/package?per_page=100&page=0")
         .reply(404, fixtures.packages.fake)
-        .get("/org/bigco/team")
+        .get("/org/bigco/team?per_page=100&page=0")
         .reply(404);
 
       var options = {
@@ -779,7 +779,7 @@ describe('transferring username to org', function() {
         .reply(200, fixtures.orgs.bigcoUsers)
         .get("/org/bigco/package?per_page=100&page=0")
         .reply(200, [])
-        .get('/org/bigco/team')
+        .get('/org/bigco/team?per_page=100&page=0')
         .reply(200, fixtures.teams.bigcoOrg);
 
       var licenseMock = nock("https://license-api-example.com")

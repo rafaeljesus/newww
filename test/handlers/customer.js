@@ -1072,7 +1072,7 @@ describe("subscribing to an org", function() {
           "count": 1,
           "items": [fixtures.packages.fake]
         })
-        .get("/org/boomer/team")
+        .get("/org/boomer/team?per_page=100&page=0")
         .reply(200, {
           count: 1,
           items: [

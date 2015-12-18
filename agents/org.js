@@ -338,9 +338,13 @@ Org.prototype.getUsers = function(name, page) {
 
 };
 
-Org.prototype.getTeams = function(name) {
+Org.prototype.getTeams = function(name, page) {
   var url = USER_HOST + '/org/' + name + '/team';
   var bearer = this.bearer;
+  var PER_PAGE = 100;
+
+  page = page || 0;
+
 
   return new P(function(accept, reject) {
 
@@ -349,6 +353,10 @@ Org.prototype.getTeams = function(name) {
       json: true,
       headers: {
         bearer: bearer
+      },
+      qs: {
+        per_page: PER_PAGE,
+        page: page
       }
     }, function(err, resp, body) {
       if (err) {

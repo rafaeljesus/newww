@@ -113,7 +113,6 @@ exports.getOrg = function(request, reply) {
     })
     .then(function(cust) {
       cust = cust || {};
-      // opts.customer_id = cust.stripe_customer_id;
       opts.customer = cust;
 
       if (templateName.match(/teams/)) {

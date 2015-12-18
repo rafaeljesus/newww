@@ -144,6 +144,12 @@ exports.getOrg = function(request, reply) {
       opts.org.canceled = (license && !!license.cancel_at_period_end) || !license;
       opts.perms.isPaidSuperAdmin = opts.perms.isSuperAdmin && opts.customer && opts.customer.customer_id;
 
+      if (!opts.perms.isPaidSuperAdmin && templateName.match(/payment-info/)) {
+        var err = new Error("You must be paying for this organization to see this page");
+        err.statusCode = 403;
+        throw err;
+      }
+
       return reply.view(templateName, opts);
     })
     .catch(function(err) {

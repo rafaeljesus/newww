@@ -31,7 +31,7 @@
         <li>Next billing date: <strong>n/a</strong></li>
         <li>No payment on file</li>
       {{else}}
-        <li>Next billing date: <strong>12-Jan-16</strong></li>
+      <li>Next billing date: <strong data-date="{{org.next_billing_date}}" data-date-format="%B %e, %Y">{{org.next_billing_date}}</strong></li>
         <li>Valid payment method ending in <a href="#">{{customer.card.last4}}</a></li>
         <li><a href="/org/{{org.info.name}}/confirm-delete" class="btn-secondary link-btn">cancel payment</a></li>
       {{/if}}

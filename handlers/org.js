@@ -5,6 +5,7 @@ var P = require('bluebird');
 var Joi = require('joi');
 var invalidUserName = require('npm-user-validate').username;
 var _ = require('lodash');
+var moment = require('moment');
 var URL = require('url');
 
 var resolveTemplateName = function(path) {
@@ -152,6 +153,7 @@ exports.getOrg = function(request, reply) {
 
     })
     .then(function(license) {
+      opts.org.next_billing_date = license && moment.unix(license.current_period_end);
       opts.org.canceled = (license && !!license.cancel_at_period_end) || !license;
       opts.perms.isPaidSuperAdmin = opts.perms.isSuperAdmin && opts.customer && opts.customer.customer_id;
 

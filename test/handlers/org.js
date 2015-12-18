@@ -46,6 +46,18 @@ describe('getting to the org marketing page', function() {
     });
   });
 
+  it('redirects from /org to the /npm/private-packages page properly', function(done) {
+    var options = {
+      url: "/org"
+    };
+
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(301);
+      expect(resp.headers.location).to.equal('/npm/private-packages');
+      done();
+    });
+  });
+
   it('redirects from /orgs/orgname properly', function(done) {
     var options = {
       url: "/orgs/orgname"

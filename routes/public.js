@@ -71,7 +71,7 @@ var publicRoutes = [
     feature: '!npmo',
     method: "GET",
     handler: function(request, reply) {
-      return reply.view("org/index");
+      return reply.redirect("/npm/private-packages").code(301);
     }
   }, {
     path: "/contact",

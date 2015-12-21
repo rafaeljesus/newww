@@ -8,6 +8,9 @@ var _ = require('lodash');
 var moment = require('moment');
 var URL = require('url');
 
+const defaultPricePerOrgUser = 700;
+const startingPriceForOrg = 14;
+
 var resolveTemplateName = function(path) {
   var pathname = URL.parse(path).pathname;
   var pathArr = pathname.split('/');
@@ -153,8 +156,22 @@ exports.getOrg = function(request, reply) {
 
     })
     .then(function(license) {
-      opts.org.next_billing_date = license && moment.unix(license.current_period_end);
-      opts.org.canceled = (license && !!license.cancel_at_period_end) || !license;
+      var amount = 0,
+        quantity = 0;
+      if (license) {
+        opts.org.next_billing_date = moment.unix(license.current_period_end);
+        opts.org.canceled = !!license.cancel_at_period_end;
+
+        amount = license.amount;
+        quantity = license.quantity;
+
+      } else {
+        opts.org.canceled = true;
+      }
+
+      opts.org.price = Math.max((amount * quantity) / 100, startingPriceForOrg);
+
+
       opts.perms.isPaidSuperAdmin = opts.perms.isSuperAdmin && opts.customer && opts.customer.stripe_customer_id;
 
       return reply.view(templateName, opts);

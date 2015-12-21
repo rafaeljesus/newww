@@ -136,6 +136,37 @@ describe("Package", function() {
         });
     });
 
+    describe('maybeUpgradeRRPackageData()', function () {
+      it('pulls inner package-data out to top level', function (done) {
+        var mock = nock(USER_API)
+          .get('/package/rimraf')
+          .reply(200, fixtures.packages.rr_rimraf);
+
+        Package().get('rimraf')
+          .then(function(pkg) {
+            expect(pkg.name).to.equal('rimraf');
+            expect(pkg.version).to.equal('2.4.4');
+            mock.done();
+            done();
+          });
+      });
+
+      it('copies fields from latest publication to top level', function (done) {
+        var mock = nock(USER_API)
+          .get('/package/rimraf')
+          .reply(200, fixtures.packages.rr_rimraf);
+
+        Package().get('rimraf')
+          .then(function(pkg) {
+            expect(pkg.dependencies).to.deep.equal(['glob']);
+            expect(pkg.keywords).to.deep.equal(['pork-chops']);
+            expect(pkg.repository.type).to.equal('git');
+            mock.done();
+            done();
+          });
+      });
+    });
+
   });
 
   describe("update()", function() {

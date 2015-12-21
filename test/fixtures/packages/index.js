@@ -9,4 +9,5 @@ module.exports = {
   unpublished: require("./unpublished.json"),
   wrigley_scoped_public: require("./wrigley_scoped_public.json"),
   wrigley_scoped_private: require("./wrigley_scoped_private.json"),
+  rr_rimraf: require("./rr_rimraf")
 }

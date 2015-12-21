@@ -8,8 +8,7 @@ var _ = require('lodash');
 var moment = require('moment');
 var URL = require('url');
 
-const defaultPricePerOrgUser = 700;
-const startingPriceForOrg = 14;
+const STARTING_PRICE_FOR_ORG = process.env.ORG_STARTING_PRICE || 14;
 
 var resolveTemplateName = function(path) {
   var pathname = URL.parse(path).pathname;
@@ -169,7 +168,7 @@ exports.getOrg = function(request, reply) {
         opts.org.canceled = true;
       }
 
-      opts.org.price = Math.max((amount * quantity) / 100, startingPriceForOrg);
+      opts.org.price = Math.max((amount * quantity) / 100, STARTING_PRICE_FOR_ORG);
 
 
       opts.perms.isPaidSuperAdmin = opts.perms.isSuperAdmin && opts.customer && opts.customer.stripe_customer_id;

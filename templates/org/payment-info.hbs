@@ -48,7 +48,9 @@
         <tr>
           <th>member</th>
           <th>role</th>
+          {{#if perms.isPaidSuperAdmin}}
           <th>action</th>
+          {{/if}}
         </tr>
       </thead>
       <tbody>
@@ -69,6 +71,7 @@
               {{/if}}
             </td>
             <td>{{role}}</td>
+            {{#if ../perms.isPaidSuperAdmin}}
             <td>
               <div class="action-nav" role='navigation'>
                 <ul>
@@ -76,8 +79,8 @@
                     <ul>
                       {{#if sponsoredByOrg}}
                       <li>
-                      <form method="POST" action="/org/{{../../org.info.name}}">
-                        {{#with ../../this}}
+                      <form method="POST" action="/org/{{../../../org.info.name}}">
+                        {{#with ../../../this}}
                         {{> form_security }}
                         {{/with}}
                           <input type="hidden" name="username" value="{{name}}" />
@@ -87,8 +90,8 @@
                       </li>
                       {{/if}}
                       <li>
-                        <form method="POST" action="/org/{{../org.info.name}}">
-                          {{#with ../this}}
+                        <form method="POST" action="/org/{{../../org.info.name}}">
+                          {{#with ../../this}}
                           {{> form_security }}
                           {{/with}}
                           <input type="hidden" name="username" value="{{name}}" />
@@ -101,6 +104,7 @@
                 </ul>
               </div>
             </td>
+            {{/if}}
           </tr>
         {{/each}}
       </tbody>

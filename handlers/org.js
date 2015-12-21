@@ -155,7 +155,7 @@ exports.getOrg = function(request, reply) {
     .then(function(license) {
       opts.org.next_billing_date = license && moment.unix(license.current_period_end);
       opts.org.canceled = (license && !!license.cancel_at_period_end) || !license;
-      opts.perms.isPaidSuperAdmin = opts.perms.isSuperAdmin && opts.customer && opts.customer.customer_id;
+      opts.perms.isPaidSuperAdmin = opts.perms.isSuperAdmin && opts.customer && opts.customer.stripe_customer_id;
 
       return reply.view(templateName, opts);
     })

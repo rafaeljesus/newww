@@ -141,18 +141,14 @@ exports.getOrg = function(request, reply) {
         opts.org.teams = orgTeams;
       }
 
-      if (templateName.match(/payment-info/)) {
-        return request.customer.getLicenseForOrg(orgName)
-          .catch(function(err) {
-            if (err.statusCode === 404) {
-              return P.resolve(null);
-            } else {
-              throw err;
-            }
-          });
-      } else {
-        return P.resolve(null);
-      }
+      return request.customer.getLicenseForOrg(orgName)
+        .catch(function(err) {
+          if (err.statusCode === 404) {
+            return P.resolve(null);
+          } else {
+            throw err;
+          }
+        });
 
     })
     .then(function(license) {
@@ -163,7 +159,7 @@ exports.getOrg = function(request, reply) {
         opts.org.canceled = !!license.cancel_at_period_end;
 
         amount = license.amount;
-        quantity = license.quantity;
+        quantity = opts.org.users.numSponsored;
 
       } else {
         opts.org.canceled = true;

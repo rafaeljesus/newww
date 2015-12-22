@@ -137,8 +137,22 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe")
-      .reply(404);
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [
+        {
+          "id": "sub_12346",
+          "current_period_end": 1439766874,
+          "current_period_start": 1437088474,
+          "quantity": 3,
+          "status": "active",
+          "interval": "month",
+          "amount": 700,
+          "license_id": 1,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
+        }
+      ]);
 
     var orgMock = nock("https://user-api-example.com")
       .get('/org/bigco')
@@ -171,8 +185,8 @@ describe('getting an org', function() {
       });
       expect(sponsoredByOrg.length).to.not.equal(0);
       var numSponsored = resp.request.response.source.context.org.users.numSponsored;
-      expect(numSponsored).to.equal(2);
-      expect(resp.request.response.source.context.org.price).to.equal(14);
+      expect(numSponsored).to.equal(3);
+      expect(resp.request.response.source.context.org.price).to.equal(21);
       done();
     });
   });

@@ -6,6 +6,7 @@ var Joi = require('joi');
 var invalidUserName = require('npm-user-validate').username;
 var _ = require('lodash');
 var moment = require('moment');
+var validReferrer = require('../lib/referrer-validator');
 var URL = require('url');
 
 const STARTING_PRICE_FOR_ORG = process.env.ORG_STARTING_PRICE || 14;
@@ -360,16 +361,9 @@ exports.updateOrg = function(request, reply) {
 
 exports.deleteOrgConfirm = function(request, reply) {
   request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
-    var referrer = URL.parse(request.info.referrer).pathname || "";
-    var invalidURL = referrer.split("/").some(function(path) {
-      return !!invalidUserName(path);
-    });
-
-    referrer = invalidURL ? "/settings/billing" : referrer;
-
     return reply.view('user/billing-confirm-cancel', {
       subscription: subscription,
-      referrer: referrer || "/settings/billing"
+      referrer: validReferrer(request.info.referrer, "/settings/billing")
     });
   }, function(err) {
     if (err.statusCode == 404) {

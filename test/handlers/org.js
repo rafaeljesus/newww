@@ -250,6 +250,59 @@ describe('getting an org', function() {
     });
   });
 
+  it('does not allow a non-super-admin to see the org payment-info', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/betty")
+      .reply(200, fixtures.users.betty);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/betty/stripe")
+      .reply(404);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get('/org/bigco')
+      .reply(200, fixtures.orgs.bigco)
+      .get('/org/bigco/user?per_page=100&page=0')
+      .reply(200, fixtures.orgs.bigcoUsers)
+      .get('/org/bigco/package?per_page=100&page=0')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      })
+      .get('/org/bigco/team?per_page=100&page=0')
+      .reply(200, fixtures.teams.bigcoOrg);
+
+    var options = {
+      url: "/org/bigco/payment-info",
+      credentials: fixtures.users.betty
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      licenseMock.done();
+      orgMock.done();
+      var redirectPath = resp.headers.location;
+      var url = URL.parse(redirectPath);
+      var query = url.query;
+      var token = qs.parse(query).notice;
+      var tokenFacilitator = new TokenFacilitator({
+        redis: client
+      });
+      expect(redirectPath).to.include('/org/bigco');
+      expect(token).to.be.string();
+      expect(token).to.not.be.empty();
+      expect(resp.statusCode).to.equal(302);
+      tokenFacilitator.read(token, {
+        prefix: "notice:"
+      }, function(err, notice) {
+        expect(err).to.not.exist();
+        expect(notice.notices).to.be.array();
+        expect(notice.notices[0]).to.equal('You are not authorized to access this page');
+        done();
+      });
+    });
+  });
+
   describe('org member permissions', function() {
     it('does not give any perms if user is not a member of the org', function(done) {
       var userMock = nock("https://user-api-example.com")

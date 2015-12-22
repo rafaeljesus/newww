@@ -1,6 +1,6 @@
 {
   "name": "newww",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "The npmjs.com website",
   "main": "server.js",
   "scripts": {

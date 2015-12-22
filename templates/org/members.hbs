@@ -14,7 +14,7 @@
           <tr>
             <th>collaborators</th>
             <th>role</th>
-            {{#if perms.isSuperAdmin}}
+            {{#if perms.isPaidSuperAdmin}}
             <th>status</th>
             <th>action</th>
             {{/if}}
@@ -35,7 +35,7 @@
                   </ul>
               </td>
               <td>{{role}}</td>
-            {{#if ../perms.isSuperAdmin}}
+            {{#if ../perms.isPaidSuperAdmin}}
               <td>
                 <form method="POST" id="org-user-update-{{@index}}" action="/org/{{../../org.info.name}}" class="edit-pay-status">
                 <div class="switch-container pay-status">
@@ -54,18 +54,18 @@
                   <span class="switch-label checked-text" aria-hidden="true">paid</span>
                   </label>
                 </div>
-                  {{#with ../../this}}
-                  {{> form_security }}
-                  {{/with}}
-                    <input type="hidden" name="username" value="{{name}}" />
-                    <input type="hidden" name="updateType" value="updatePayStatus" />
-                    {{#if sponsoredByOrg}}
+                {{#with ../../this}}
+                {{> form_security }}
+                {{/with}}
+                  <input type="hidden" name="username" value="{{name}}" />
+                  <input type="hidden" name="updateType" value="updatePayStatus" />
+                  {{#if sponsoredByOrg}}
+                    <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
+                  {{else}}
+                    {{#unless sponsored}}
                       <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
-                    {{else}}
-                      {{#unless sponsored}}
-                        <button type="submit" class="edit-pay-status-save"><span>Save Changes</span></button>
-                      {{/unless}}
-                    {{/if}}
+                    {{/unless}}
+                  {{/if}}
                 </form>
               </td>
               <td>
@@ -85,7 +85,7 @@
           {{else}}
             <tr><td colspan=2><em>There are no users in this Organization</em></td></tr>
           {{/each}}
-          {{#if perms.isSuperAdmin}}
+          {{#if perms.isPaidSuperAdmin}}
           <tr class="user-add">
             <td colspan=4>
               <form method="POST" class="org-user-add" action="/org/{{org.info.name}}">

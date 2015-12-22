@@ -1,0 +1,115 @@
+<div class="container">
+
+  <hgroup>
+    <h1 class="billing-header">@{{org.info.name}}</h1>
+  </hgroup>
+
+  {{> org-nav payment-info=true}}
+
+<div class="status-row">
+
+  <div class="big-data">
+    <span class="num">{{org.users.count}}</span>
+    <span class="tiny">total members</span>
+  </div>
+
+  <div class="big-data">
+    <span class="num">{{org.users.numSponsored}}</span>
+    <span class="tiny">paid-for members</span>
+  </div>
+
+  <div class="big-data">
+    <span class="dolla">$</span>
+    <span class="num">{{org.price}}</span>
+    <span class="period">/mo.</span>
+    <span class="tiny">approximate cost<span class="explain" original-title="pro-rated based upon the number of paid-for users in the billing month" rel="tipsy">?</span></span>
+  </div>
+
+  <div class="disclaimer">
+      <ul>
+      {{#if org.canceled}}
+        <li>Next billing date: <strong>n/a</strong></li>
+        <li>No payment on file</li>
+      {{else}}
+      <li>Next billing date: <strong data-date="{{org.next_billing_date}}" data-date-format="%B %e, %Y">{{org.next_billing_date}}</strong></li>
+        <li>Valid payment method ending in <a href="#">{{customer.card.last4}}</a></li>
+        <li><a href="/org/{{org.info.name}}/confirm-delete" class="btn-secondary link-btn">cancel payment</a></li>
+      {{/if}}
+      </ul>
+  </div>
+
+</div>
+
+<ul class="expando-row">
+  <li>
+    <h3>Full Access</h3>
+    <table class="org-table org-users org-edit-user-table">
+      <thead>
+        <tr>
+          <th>member</th>
+          <th>role</th>
+          {{#if perms.isPaidSuperAdmin}}
+          <th>action</th>
+          {{/if}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each org.users.items}}
+          <tr>
+            <td>
+              <span class="avatar-small">
+                <img src="{{avatar.small}}">
+              </span>
+              <ul class="name-desc vanilla-list ellipsis">
+                <li><a class="name" href="/~{{name}}">{{name}}</a></li>
+                {{#if resource.fullname}}
+                <li><span class="display-name">{{resource.fullname}}</span></li>
+                {{/if}}
+              </ul>
+              {{#if sponsoredByOrg}}
+                <span class="paid-for" original-title="you are paying for this user" rel="tipsy">$</span>
+              {{/if}}
+            </td>
+            <td>{{role}}</td>
+            {{#if ../perms.isPaidSuperAdmin}}
+            <td>
+              <div class="action-nav" role='navigation'>
+                <ul>
+                  <li><a href="#"><img alt="actions" class="iconic iconic-md" data-src="/static/images/iconic/actions.svg"/></a>
+                    <ul>
+                      {{#if sponsoredByOrg}}
+                      <li>
+                      <form method="POST" action="/org/{{../../../org.info.name}}">
+                        {{#with ../../../this}}
+                        {{> form_security }}
+                        {{/with}}
+                          <input type="hidden" name="username" value="{{name}}" />
+                          <input type="hidden" name="updateType" value="updatePayStatus" />
+                          <button type="submit">stop paying for this member</button>
+                      </form>
+                      </li>
+                      {{/if}}
+                      <li>
+                        <form method="POST" action="/org/{{../../org.info.name}}">
+                          {{#with ../../this}}
+                          {{> form_security }}
+                          {{/with}}
+                          <input type="hidden" name="username" value="{{name}}" />
+                          <input type="hidden" name="updateType" value="deleteUser" />
+                          <button type="submit">delete this member</button>
+                        </form>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </td>
+            {{/if}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+</div> <!-- end container -->

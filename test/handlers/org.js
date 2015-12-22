@@ -126,6 +126,7 @@ describe('getting an org', function() {
         return user.sponsoredByOrg;
       });
       expect(sponsoredByOrg.length).to.equal(0);
+      expect(resp.request.response.source.context.org.price).to.equal(14);
       done();
     });
   });
@@ -136,8 +137,22 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe")
-      .reply(404);
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [
+        {
+          "id": "sub_12346",
+          "current_period_end": 1439766874,
+          "current_period_start": 1437088474,
+          "quantity": 3,
+          "status": "active",
+          "interval": "month",
+          "amount": 700,
+          "license_id": 1,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
+        }
+      ]);
 
     var orgMock = nock("https://user-api-example.com")
       .get('/org/bigco')
@@ -169,6 +184,9 @@ describe('getting an org', function() {
         return user.sponsoredByOrg;
       });
       expect(sponsoredByOrg.length).to.not.equal(0);
+      var numSponsored = resp.request.response.source.context.org.users.numSponsored;
+      expect(numSponsored).to.equal(3);
+      expect(resp.request.response.source.context.org.price).to.equal(21);
       done();
     });
   });
@@ -245,6 +263,59 @@ describe('getting an org', function() {
       expect(resp.request.response.source.context.perms.isAtLeastTeamAdmin).to.equal(true);
       expect(resp.request.response.source.context.perms.isAtLeastMember).to.equal(true);
       done();
+    });
+  });
+
+  it('does not allow a non-super-admin to see the org payment-info', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/betty")
+      .reply(200, fixtures.users.betty);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/betty/stripe")
+      .reply(404);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get('/org/bigco')
+      .reply(200, fixtures.orgs.bigco)
+      .get('/org/bigco/user?per_page=100&page=0')
+      .reply(200, fixtures.orgs.bigcoUsers)
+      .get('/org/bigco/package?per_page=100&page=0')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      })
+      .get('/org/bigco/team?per_page=100&page=0')
+      .reply(200, fixtures.teams.bigcoOrg);
+
+    var options = {
+      url: "/org/bigco/payment-info",
+      credentials: fixtures.users.betty
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      licenseMock.done();
+      orgMock.done();
+      var redirectPath = resp.headers.location;
+      var url = URL.parse(redirectPath);
+      var query = url.query;
+      var token = qs.parse(query).notice;
+      var tokenFacilitator = new TokenFacilitator({
+        redis: client
+      });
+      expect(redirectPath).to.include('/org/bigco');
+      expect(token).to.be.string();
+      expect(token).to.not.be.empty();
+      expect(resp.statusCode).to.equal(302);
+      tokenFacilitator.read(token, {
+        prefix: "notice:"
+      }, function(err, notice) {
+        expect(err).to.not.exist();
+        expect(notice.notices).to.be.array();
+        expect(notice.notices[0]).to.equal('You are not authorized to access this page');
+        done();
+      });
     });
   });
 
@@ -483,6 +554,61 @@ describe('getting an org', function() {
       expect(resp.request.response.source.context.org.info.name).to.equal("bigco");
       expect(resp.request.response.source.context.org.info.human_name).to.equal("bigco");
       done();
+    });
+  });
+
+  it('keeps you out of the payment-info page if you do not have super-admin permissions', function(done) {
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get('/org/bigco')
+      .reply(200, {
+        "name": "bigco",
+        "description": "bigco organization",
+        "resource": {},
+        "created": "2015-07-10T20:29:37.816Z",
+        "updated": "2015-07-10T21:07:16.799Z",
+        "deleted": null
+      })
+      .get('/org/bigco/user?per_page=100&page=0')
+      .reply(200, fixtures.orgs.bigcoAddedUsers)
+      .get('/org/bigco/package?per_page=100&page=0')
+      .reply(200, {
+        count: 1,
+        items: [fixtures.packages.fake]
+      })
+      .get('/org/bigco/team?per_page=100&page=0')
+      .reply(200, fixtures.teams.bigcoOrg);
+
+    var options = {
+      url: "/org/bigco/payment-info",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      orgMock.done();
+      var redirectPath = resp.headers.location;
+      var url = URL.parse(redirectPath);
+      var query = url.query;
+      var token = qs.parse(query).notice;
+      var tokenFacilitator = new TokenFacilitator({
+        redis: client
+      });
+      expect(redirectPath).to.include('/org/bigco');
+      expect(token).to.be.string();
+      expect(token).to.not.be.empty();
+      expect(resp.statusCode).to.equal(302);
+      tokenFacilitator.read(token, {
+        prefix: "notice:"
+      }, function(err, notice) {
+        expect(err).to.not.exist();
+        expect(notice.notices).to.be.array();
+        expect(notice.notices[0]).to.equal('You are not authorized to access this page');
+        done();
+      });
     });
   });
 

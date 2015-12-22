@@ -7,6 +7,6 @@
   {{/if}}
   {{> form_security}}
   <input type="hidden" name="updateType" value="deleteOrg">
-  <a href="/settings/billing" class="button btn-inline btn-secondary push-down">No, go back</a>
+  <a href="{{referrer}}" class="button btn-inline btn-secondary push-down">No, go back</a>
   <button type="submit" class="button btn-inline push-down">Yes, cancel this subscription</button>
 </form>

@@ -1,0 +1,83 @@
+.payment-nav
+  display flex
+  color greigh3
+  li
+    padding 0.5em
+    list-style none
+
+  &:first-of-type
+    width 75%
+.status-row
+  display flex
+  flex-direction row
+  margin-top 20px
+  @media only screen and (max-width: mobileMaxWidth)
+    flex-direction column-reverse
+
+.big-data
+  flex 1 1 20%
+  width 20%
+  padding 0px
+  margin 0px
+  margin-top 10px
+  text-align center
+  &:first-of-type
+    margin-left -5%
+    @media only screen and (max-width: mobileMaxWidth)
+      margin-left -2.5%
+  &:nth-of-type(2)
+    margin-left -2.5%
+  .num
+    font-size 80px
+    line-height 80px
+    height 80px
+  .tiny
+    display block
+    color greigh3
+    font-size 16px
+  .dolla
+    font-size 40px
+    vertical-align top
+    line-height 80px
+    height 80px
+    position relative
+    top -8px
+  .period
+    margin-right 30px
+  @media only screen and (max-width: mobileMaxWidth)
+    flex 1 1 100%
+    width 100%
+
+.disclaimer
+  flex 1 1 40%
+  flex-direction column
+  justify-content center
+  vertical-align middle
+  @extend .vanilla-list
+  line-height 175%
+  background greigh7
+  color greigh3
+  height 140px
+  margin-left 50px
+  ul
+    margin 20px
+    height 100%
+    li
+      line-height 200%
+      &:last-child
+        line-height 300%
+  @media only screen and (max-width: mobileMaxWidth)
+    flex 3 1 100%
+    flex-direction row
+    width 100%
+    text-align center
+    margin-left 0px
+
+.expando-row
+  @extend .vanilla-list
+
+  h3
+    background secondary
+    padding 10px
+    color white
+    margin 20px auto

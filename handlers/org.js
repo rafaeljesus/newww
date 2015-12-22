@@ -4,7 +4,12 @@ var User = require('../models/user');
 var P = require('bluebird');
 var Joi = require('joi');
 var invalidUserName = require('npm-user-validate').username;
+var _ = require('lodash');
+var moment = require('moment');
+var validReferrer = require('../lib/referrer-validator');
 var URL = require('url');
+
+const STARTING_PRICE_FOR_ORG = process.env.ORG_STARTING_PRICE || 14;
 
 var resolveTemplateName = function(path) {
   var pathname = URL.parse(path).pathname;
@@ -16,6 +21,8 @@ var resolveTemplateName = function(path) {
     templateName = "org/members";
   } else if (templateType === "teams") {
     templateName = "org/teams";
+  } else if (templateType === "payment-info") {
+    templateName = "org/payment-info";
   } else {
     templateName = "org/show";
   }
@@ -41,9 +48,13 @@ exports.getOrg = function(request, reply) {
       }
 
       opts.org = org;
-      opts.org.users.items = org.users.items.map(function(user) {
+      opts.org.users.numSponsored = 0;
+
+      opts.org.users.items.forEach(function(user) {
         user.sponsoredByOrg = user.sponsored === 'by-org';
-        return user;
+        if (user.sponsoredByOrg) {
+          opts.org.users.numSponsored += 1;
+        }
       });
 
       var isSuperAdmin = org.users.items.filter(function(user) {
@@ -72,6 +83,12 @@ exports.getOrg = function(request, reply) {
         isAtLeastMember: isAtLeastMember
       };
 
+      if (!opts.perms.isSuperAdmin && templateName.match(/payment-info/)) {
+        var err = new Error("You are not authorized to access this page");
+        err.statusCode = 403;
+        throw err;
+      }
+
       return opts;
     })
     .then(function(opts) {
@@ -80,16 +97,27 @@ exports.getOrg = function(request, reply) {
         return null;
       }
 
-      return request.customer.getById(request.loggedInUser.email)
-        .catch(function(err) {
-          return Number(err.statusCode) === 404;
-        }, function(err) {
+      var stripeDataErrorHandler = function(err) {
+        if (err.statusCode === 404) {
           return null;
-        });
+        } else {
+          throw err;
+        }
+      };
+
+      var getStripeData = request.customer.getStripeData()
+        .catch(stripeDataErrorHandler);
+
+      var getCustomerById = request.customer.getById(request.loggedInUser.email)
+        .catch(stripeDataErrorHandler);
+
+      return P.join(getStripeData, getCustomerById, function(stripeData, customer) {
+        return _.extend(stripeData, customer);
+      });
     })
     .then(function(cust) {
       cust = cust || {};
-      opts.customer_id = cust.stripe_customer_id;
+      opts.customer = cust;
 
       if (templateName.match(/teams/)) {
         var teams = opts.org.teams.items.map(function(team) {
@@ -112,6 +140,36 @@ exports.getOrg = function(request, reply) {
         };
         opts.org.teams = orgTeams;
       }
+
+      return request.customer.getLicenseForOrg(orgName)
+        .catch(function(err) {
+          if (err.statusCode === 404) {
+            return P.resolve(null);
+          } else {
+            throw err;
+          }
+        });
+
+    })
+    .then(function(license) {
+      var amount = 0,
+        quantity = 0;
+      if (license) {
+        opts.org.next_billing_date = moment.unix(license.current_period_end);
+        opts.org.canceled = !!license.cancel_at_period_end;
+
+        amount = license.amount;
+        quantity = opts.org.users.numSponsored;
+
+      } else {
+        opts.org.canceled = true;
+      }
+
+      opts.org.price = Math.max((amount * quantity) / 100, STARTING_PRICE_FOR_ORG);
+
+
+      opts.perms.isPaidSuperAdmin = opts.perms.isSuperAdmin && opts.customer && opts.customer.stripe_customer_id;
+
       return reply.view(templateName, opts);
     })
     .catch(function(err) {
@@ -293,7 +351,6 @@ exports.updateOrg = function(request, reply) {
       }).catch(function(err) {
         request.logger.error(err);
       });
-
   }
 
 };
@@ -301,13 +358,14 @@ exports.updateOrg = function(request, reply) {
 exports.deleteOrgConfirm = function(request, reply) {
   request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
     return reply.view('user/billing-confirm-cancel', {
-      subscription: subscription
+      subscription: subscription,
+      referrer: validReferrer(request.info.referrer, "/settings/billing")
     });
   }, function(err) {
     if (err.statusCode == 404) {
       return reply.view('errors/not-found').code(404);
     } else {
-      return reply(err)
+      return reply(err);
     }
   });
 

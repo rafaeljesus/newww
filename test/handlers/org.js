@@ -126,6 +126,7 @@ describe('getting an org', function() {
         return user.sponsoredByOrg;
       });
       expect(sponsoredByOrg.length).to.equal(0);
+      expect(resp.request.response.source.context.org.price).to.equal(14);
       done();
     });
   });
@@ -171,6 +172,7 @@ describe('getting an org', function() {
       expect(sponsoredByOrg.length).to.not.equal(0);
       var numSponsored = resp.request.response.source.context.org.users.numSponsored;
       expect(numSponsored).to.equal(2);
+      expect(resp.request.response.source.context.org.price).to.equal(14);
       done();
     });
   });

@@ -79,6 +79,14 @@ module.exports = [
     method: "POST",
     handler: require('../handlers/customer').subscribe
   }, {
+    path: "/settings/billing/subscribe",
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.view('user/private-plan-billing', {
+        stripePublicKey: process.env.STRIPE_PUBLIC_KEY
+      });
+    }
+  }, {
     paths: [
       "/package/{package}/collaborators",
       "/package/{scope}/{project}/collaborators",

@@ -16,7 +16,7 @@
             <th>role</th>
             {{#if perms.isPaidSuperAdmin}}
             <th>status</th>
-            <th>action</th>
+            <th class="action">action</th>
             {{/if}}
           </tr>
         </thead>
@@ -68,7 +68,7 @@
                   {{/if}}
                 </form>
               </td>
-              <td>
+              <td class="action">
                 {{#unless isTheSuperAdmin}}
                   <form method="POST" id="org-user-delete-overview-{{@index}}" action="/org/{{../../../org.info.name}}">
                     {{#with ../../../this}}

@@ -194,7 +194,8 @@ describe('Posting to the enterprise license purchase page', function() {
   describe('for a monthly enterprise starter pack', function() {
     it('sends an email on success', function(done) {
       var mock = nock('https://api.stripe.com')
-        .post('/v1/customers', {
+        .post('/v1/customers')
+        .query({
           card: 'tok_12345',
           plan: 'enterprise-starter-pack',
           quantity: 1,
@@ -232,7 +233,8 @@ describe('Posting to the enterprise license purchase page', function() {
   describe('for an annual enterprise starter pack', function() {
     it('sends an email on success', function(done) {
       var mock = nock('https://api.stripe.com')
-        .post('/v1/customers', {
+        .post('/v1/customers')
+        .query({
           card: 'tok_12345',
           plan: 'enterprise-starter-pack-annual',
           quantity: 1,
@@ -271,7 +273,8 @@ describe('Posting to the enterprise license purchase page', function() {
   describe('for a multi-seat license', function() {
     it('sends an email on success', function(done) {
       var mock = nock('https://api.stripe.com')
-        .post('/v1/customers', {
+        .post('/v1/customers')
+        .query({
           card: 'tok_12345',
           plan: 'enterprise-multi-seat',
           quantity: 20,

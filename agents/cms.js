@@ -15,7 +15,7 @@ function fetchPage(slug) {
   debug("Fetching %j for %j", pageUrl, slug);
   return fetchAndDecode(pageUrl).then(function(page) {
     debug("Got content for %j: %j", slug, page);
-    if (typeof page != 'object' || !page.id || !page.html || !page.title) {
+    if (!page.id || !page.html || !page.title) {
       throw new Error("Invalid page returned");
     }
     return page;
@@ -30,10 +30,17 @@ function fetchAndDecode(url) {
       throw err;
     }
     return res.json();
-  }).then(function addMarker(json) {
+  }).then(assertObject).then(function addMarker(json) {
     json.fetchedAt = Date.now();
     return json;
   });
+}
+
+function assertObject(val) {
+  if (typeof val != 'object') {
+    throw new Error("Invalid data received");
+  }
+  return val;
 }
 
 module.exports = {

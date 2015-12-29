@@ -22,8 +22,10 @@ module.exports = {
   },
 
   csplog: function(request, reply) {
-    request.logger.warn('csp report');
-    request.logger.warn(request.payload);
+    if (!(request.payload && request.payload['csp-report'] && /^safari-extension:/.test(request.payload['csp-report']['source-file']))) {
+      request.logger.warn('csp report');
+      request.logger.warn(request.payload);
+    }
     return reply('ok').code(200);
   }
 

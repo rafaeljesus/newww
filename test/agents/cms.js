@@ -24,7 +24,7 @@ var CMS = requireInject('../../agents/cms', {
 describe('CMS', function() {
   it('loads a page', function(done) {
     var cmsMock = nock(process.env.CMS_API).get('/pages/test-page').reply(200, fixture);
-    CMS('test-page').then(function(page) {
+    CMS.getPage('test-page').then(function(page) {
       expect(page.fetchedAt).to.be.a.number();
       expect(page.fetchedFromCacheAt).to.not.exist();
       cmsMock.done();
@@ -33,7 +33,7 @@ describe('CMS', function() {
   });
 
   it('loads a page again', function(done) {
-    CMS('test-page').then(function(page) {
+    CMS.getPage('test-page').then(function(page) {
       expect(page.fetchedAt).to.be.a.number();
       expect(page.fetchedFromCacheAt).to.be.a.number();
       done()

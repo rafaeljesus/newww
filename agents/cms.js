@@ -32,6 +32,8 @@ function fetchPage(slug) {
   });
 }
 
-module.exports = function getPage(slug) {
-  return cache.get(slug);
+module.exports = {
+  getPage: function getPage(slug) {
+    return cache.get(slug);
+  }
 };

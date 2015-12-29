@@ -13,7 +13,19 @@ var fixtures = require("../fixtures"),
   after = lab.after,
   it = lab.test,
   expect = Code.expect,
-  server;
+  server,
+  cms_api;
+
+before(function(done) {
+  cms_api = process.env.CMS_API;
+  process.env.CMS_API = 'http://cms-api/npm/v1/';
+  done();
+});
+
+after(function(done) {
+  process.env.CMS_API = cms_api;
+  done();
+});
 
 var requireInject = require('require-inject');
 var redisMock = require('redis-mock');
@@ -55,7 +67,12 @@ describe("package handler", function() {
         .get('/point/last-month/browserify')
         .reply(200, fixtures.downloads.browserify.month);
 
+      var promosMock = nock("http://cms-api")
+        .get("/npm/v1/promotions").query(true)
+        .reply(200, fixtures.cms.promotion);
+
       server.inject(options, function(response) {
+        promosMock.done();
         packageMock.done();
         downloadsMock.done();
         resp = response;

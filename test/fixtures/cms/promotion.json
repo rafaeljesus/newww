@@ -1,0 +1,20 @@
+{
+  "above-chrome": {
+    "id": 334,
+    "html": "<p class=\"promotion-notice\">this is the default above the chrome</p>",
+    "title": "Default Above Chrome",
+    "stylesheet": ".promotion-notice {\r\n    color: red;\r\n}"
+  },
+  "below-header": {
+    "id": 440,
+    "html": "<h1>Congratulations on publishing a private package!</h1>",
+    "title": "Private packages AND has published",
+    "stylesheet": ""
+  },
+  "package-page": {
+    "id": 335,
+    "html": "<p class=\"promotion-notice\">this is the default package page</p>",
+    "title": "Default Package Page",
+    "stylesheet": ".promotion-notice { color: blue; }"
+  }
+}

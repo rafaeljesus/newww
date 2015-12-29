@@ -10,6 +10,7 @@ var Code = require('code'),
   expect = Code.expect;
 
 var fixture = require('../fixtures/cms/testPage.json');
+var promoFixture = require('../fixtures/cms/promotion.json');
 
 var requireInject = require('require-inject');
 
@@ -38,5 +39,23 @@ describe('CMS', function() {
       expect(page.fetchedFromCacheAt).to.be.a.number();
       done()
     }, done);
+  });
+
+  it('loads a promo', function(done) {
+    var cmsMock = nock(process.env.CMS_API).get('/promotions?user_vars%5B0%5D=test').reply(200, promoFixture);
+    CMS.getPromotion('test').then(function(promo) {
+      expect(promo.fetchedAt).to.be.a.number();
+      expect(promo.fetchedFromCacheAt).to.not.exist();
+      cmsMock.done();
+      done()
+    }, done);
+  });
+
+  it('loads a promo again', function(done) {
+    CMS.getPromotion('test').then(function(promo) {
+      expect(promo.fetchedAt).to.be.a.number();
+      expect(promo.fetchedFromCacheAt).to.be.a.number();
+      done()
+    }).catch(done);
   });
 });

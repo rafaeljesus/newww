@@ -44,6 +44,7 @@
     "debuglog": "^1.0.1",
     "dotenv": "^1.2.0",
     "elasticsearch": "~9.0.0",
+    "freshy": "^1.0.1",
     "generic-pool": "^2.4.0",
     "github-url-to-object": "^1.6.0",
     "google-libphonenumber": "^1.0.12",

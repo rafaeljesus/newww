@@ -1,9 +1,6 @@
-var P = require('bluebird');
 var url = require('url');
 var qs = require('qs');
-var fetch = require('node-fetch');
-fetch.Promise = P;
-
+var fetch = require('../lib/external-fetch');
 var Cache = require('../lib/background-refresh-cache');
 
 var debug = require('debuglog')('newww:cms');

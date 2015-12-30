@@ -44,6 +44,7 @@ describe('CMS', function() {
   it('loads a promo', function(done) {
     var cmsMock = nock(process.env.CMS_API).get('/promotions?user_vars%5B0%5D=test').reply(200, promoFixture);
     CMS.getPromotion('test').then(function(promo) {
+      expect(promo.belowHeader).to.exist();
       expect(promo.fetchedAt).to.be.a.number();
       expect(promo.fetchedFromCacheAt).to.not.exist();
       cmsMock.done();
@@ -53,6 +54,7 @@ describe('CMS', function() {
 
   it('loads a promo again', function(done) {
     CMS.getPromotion('test').then(function(promo) {
+      expect(promo.belowHeader).to.exist();
       expect(promo.fetchedAt).to.be.a.number();
       expect(promo.fetchedFromCacheAt).to.be.a.number();
       done()

@@ -53,7 +53,15 @@ function fetchPromotion(tags) {
   debug("Fetching promos for tags %j", tags);
   return fetchAndDecode(promotionUrl).then(function(promo) {
     debug("Got promo %j", promo);
-    return promo;
+
+    // Because templates make it hard to get to non-javascript-property named variables, we fix those up.
+    var out = {};
+    Object.keys(promo).forEach(function(k) {
+      out[k.replace(/-(.)/g, (m, p1) => p1.toUpperCase())] = promo[k];
+    });
+
+    debug("reformatted promo to %j", out);
+    return out;
   });
 }
 

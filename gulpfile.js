@@ -104,6 +104,7 @@ gulp.task('nodemon', ['dev-build'], function() {
     ext: 'hbs js',
     ignore: [
       'assets/',
+      'templates/',
       'facets/*/test/',
       'node_modules/',
       'static/',

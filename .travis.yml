@@ -20,5 +20,5 @@ addons:
     - g++-4.8
 script:
   - if [ "$TRAVIS_BRANCH" == "deploy-ducky" ];
-      then npm run browserstack;
+      then npm run all-tests;
     fi

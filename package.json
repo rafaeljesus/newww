@@ -4,6 +4,7 @@
   "description": "The npmjs.com website",
   "main": "server.js",
   "scripts": {
+    "all-tests": "npm t && npm run browserstack",
     "browserstack": "NODE_ENV=browserstack tap -t90 integration/*.js",
     "coverage": "npm test -- --reporter html > test/coverage.html && open test/coverage.html",
     "dev": "NODE_ENV=dev gulp dev",

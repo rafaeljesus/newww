@@ -40,6 +40,22 @@
   <link rel='stylesheet' href='{{this}}'>
   {{/each}}
 
+  {{#if promotion.belowHeader}}
+    <style>
+      {{{promotion.belowHeader.stylesheet}}}
+    </style>
+  {{/if}}
+  {{#if promotion.aboveChrome}}
+    <style>
+      {{{promotion.aboveChrome.stylesheet}}}
+    </style>
+  {{/if}}
+  {{#if promotion.packagePage}}
+    <style>
+      {{{promotion.packagePage.stylesheet}}}
+    </style>
+  {{/if}}
+
   {{#if devEnv}}
   <script src="/static/js/index.js"></script>
   {{else}}
@@ -50,6 +66,10 @@
 
 <body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
   <meta itemprop="url" content="https://www.npmjs.com/">
+
+  {{#if promotion.aboveChrome}}
+    {{{promotion.aboveChrome.html}}}
+  {{/if}}
 
   {{#unless features.npmo}}
     <nav>
@@ -114,6 +134,10 @@
     </form>
 
   </header>
+
+  {{#if promotion.belowHeader}}
+    {{{promotion.belowHeader.html}}}
+  {{/if}}
 
   {{#if contentIsFullwidth}}
     {{{ content }}}

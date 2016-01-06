@@ -43,7 +43,11 @@
     </div>
   {{/if}}
 
-	<ul class="box">
+  {{#with ../promotion.packagePage}}
+    {{{html}}}
+  {{/with}}
+
+  <ul class="box">
 
     {{#if publisher}}
       <li class="last-publisher">

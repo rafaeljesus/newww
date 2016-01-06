@@ -83,6 +83,7 @@ describe('getting to the org marketing page', function() {
   });
 });
 
+
 describe('getting an org', function() {
   it('does not include sponsorships if the org has not sponsored anyone', function(done) {
     var userMock = nock("https://user-api-example.com")
@@ -92,6 +93,8 @@ describe('getting an org', function() {
     var licenseMock = nock("https://license-api-example.com")
       .get("/customer/bob@boom.me")
       .reply(200, fixtures.customers.fetched_happy)
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [])
       .get("/customer/bob/stripe")
       .reply(404);
 
@@ -233,6 +236,8 @@ describe('getting an org', function() {
     var licenseMock = nock("https://license-api-example.com")
       .get("/customer/bob@boom.me")
       .reply(404)
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [])
       .get("/customer/bob/stripe")
       .reply(404);
 
@@ -519,6 +524,8 @@ describe('getting an org', function() {
       .reply(200, fixtures.users.bob);
 
     var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [])
       .get("/customer/bob/stripe")
       .reply(404);
 

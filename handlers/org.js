@@ -154,7 +154,8 @@ exports.getOrg = function(request, reply) {
     .then(function(license) {
       var amount = 0,
         quantity = 0;
-      if (license) {
+      if (license && license.length) {
+        license = license[0];
         opts.org.next_billing_date = moment.unix(license.current_period_end);
         opts.org.canceled = !!license.cancel_at_period_end;
 
@@ -209,6 +210,13 @@ exports.addUserToOrg = function(request, reply) {
       return request.customer.getLicenseForOrg(orgName);
     })
     .then(function(license) {
+      if (license && license.length) {
+        license = license[0];
+      } else {
+        var err = new Error("No license for org " + orgName + " found");
+        err.statusCode = 404;
+        throw err;
+      }
       return request.customer.extendSponsorship(license.license_id, user.user);
     })
     .then(function(extendedSponsorship) {
@@ -249,6 +257,13 @@ exports.removeUserFromOrg = function(request, reply) {
 
   return request.customer.getLicenseForOrg(orgName)
     .then(function(license) {
+      if (license && license.length) {
+        license = license[0];
+      } else {
+        var err = new Error("No license for org " + orgName + " found");
+        err.statusCode = 404;
+        throw err;
+      }
       return request.customer.revokeSponsorship(username, license.license_id);
     })
     .then(function() {
@@ -302,6 +317,13 @@ exports.updateUserPayStatus = function(request, reply) {
 
   request.customer.getLicenseForOrg(orgName)
     .then(function(license) {
+      if (license && license.length) {
+        license = license[0];
+      } else {
+        var err = new Error("No license for org " + orgName + " found");
+        err.statusCode = 404;
+        throw err;
+      }
       return payForUser ? extend(license.license_id, username) : request.customer.revokeSponsorship(username, license.license_id);
     })
     .then(function() {
@@ -710,6 +732,13 @@ exports.restartOrg = function(request, reply) {
 
   request.customer.getLicenseForOrg(orgName)
     .then(function(license) {
+      if (license && license.length) {
+        license = license[0];
+      } else {
+        var err = new Error("No license for org " + orgName + " found");
+        err.statusCode = 404;
+        throw err;
+      }
       opts.oldLicense = license;
       return request.customer.getAllSponsorships(license.license_id);
     })

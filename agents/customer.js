@@ -260,13 +260,7 @@ Customer.prototype.getLicenseForOrg = function(orgName, callback) {
         return reject(err);
       }
 
-      if (!body.length) {
-        err = new Error('No license for org ' + orgName + ' found');
-        err.statusCode = 404;
-        return reject(err);
-      }
-
-      return accept(body[0]);
+      return accept(body);
     });
   }).nodeify(callback);
 };

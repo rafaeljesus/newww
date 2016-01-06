@@ -422,6 +422,57 @@ describe('Org', function() {
     });
   });
 
+  describe('get info', function() {
+    it('returns info of org', function(done) {
+      var name = 'bigco';
+
+      var orgMock = nock('https://user-api-example.com')
+        .get('/org/' + name)
+        .reply(200, {
+          'name': 'bigco',
+          'description': '',
+          'resource': {
+            "human_name": "Bob's Big Co"
+          },
+          'created': '2015-06-19T23:35:42.659Z',
+          'updated': '2015-06-19T23:35:42.659Z',
+          'deleted': null
+        });
+
+      Org('betty').getInfo(name)
+        .catch(function(err) {
+          orgMock.done();
+          expect(err.to.be.null());
+        })
+        .then(function(info) {
+          expect(info).to.be.an.object();
+          expect(info.name).to.equal('bigco');
+          expect(info.deleted).to.be.null();
+          done();
+        });
+    });
+
+    it('returns error if org is not found', function(done) {
+      var name = 'bigco';
+
+      var orgMocks = nock('https://user-api-example.com')
+        .get('/org/' + name)
+        .reply(404, 'Org not found');
+
+      Org('bob').getInfo(name)
+        .catch(function(err) {
+          orgMocks.done();
+          expect(err).to.exist();
+          expect(err.message).to.equal('Org not found');
+          expect(err.statusCode).to.equal(404);
+        })
+        .then(function(info) {
+          expect(info).to.not.exist();
+          done();
+        });
+    });
+  });
+
   describe('get users', function() {
     it('returns all the users of an org', function(done) {
       var name = 'bigco';

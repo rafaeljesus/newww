@@ -1632,6 +1632,9 @@ describe('updating an org', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
+        var orgMock = nock("https://user-api-example.com")
+          .get('/org/bigco')
+          .reply(200);
 
         var licenseMock = nock("https://license-api-example.com:443")
           .get("/customer/bob/stripe")
@@ -1680,6 +1683,7 @@ describe('updating an org', function() {
         server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
+          orgMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.equal('/org/bigco/members');
           done();
@@ -1692,6 +1696,10 @@ describe('updating an org', function() {
         var userMock = nock("https://user-api-example.com")
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
+
+        var orgMock = nock("https://user-api-example.com")
+          .get('/org/bigco')
+          .reply(200);
 
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe")
@@ -1727,6 +1735,7 @@ describe('updating an org', function() {
         server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
+          orgMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.equal('/org/bigco/members');
           done();

@@ -297,6 +297,7 @@ exports.updateUserPayStatus = function(request, reply) {
   var orgName = request.params.org;
   var payForUser = !!request.payload.payStatus;
   var username = request.payload.username;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
   var extend = function(licenseId, username) {
     return request.customer.extendSponsorship(licenseId, username)
@@ -315,8 +316,9 @@ exports.updateUserPayStatus = function(request, reply) {
       });
   };
 
-  request.customer.getLicenseForOrg(orgName)
-    .then(function(license) {
+  return P.all([Org(loggedInUser).getInfo(orgName),
+    request.customer.getLicenseForOrg(orgName)])
+    .spread(function(orgInfo, license) {
       if (license && license.length) {
         license = license[0];
       } else {

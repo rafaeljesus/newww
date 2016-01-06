@@ -60,7 +60,9 @@ exports.show = function(request, reply) {
 
       pkg.hasStats = pkg.downloads || (pkg.bugs && pkg.bugs.url) || (pkg.pull_requests && pkg.pull_requests.url);
 
-      pkg.marketing = marketingblob(request.query.marketing);
+      if (!feature('npmo')) {
+        pkg.marketing = marketingblob(request.query.marketing);
+      }
       context.package = pkg;
 
       return reply.view('package/show', context);

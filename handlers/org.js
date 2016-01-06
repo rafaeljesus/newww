@@ -11,6 +11,14 @@ var URL = require('url');
 
 const STARTING_PRICE_FOR_ORG = process.env.ORG_STARTING_PRICE || 14;
 
+var defaultOrgInfo = function(orgName) {
+  return {
+    "npm_org": orgName,
+    "plan": "npm-paid-org-7",
+    "quantity": 2
+  };
+};
+
 var resolveTemplateName = function(path) {
   var pathname = URL.parse(path).pathname;
   var pathArr = pathname.split('/');
@@ -364,6 +372,8 @@ exports.updateOrg = function(request, reply) {
       return exports.deleteOrg(request, reply);
     case 'restartOrg':
       return exports.restartOrg(request, reply);
+    case 'restartObliteratedOrg':
+      return exports.restartObliteratedOrg(request, reply);
     default:
       return request.saveNotifications([
         P.reject("Incorrect updateType passed")
@@ -728,18 +738,76 @@ exports.getUser = function getUser(request, reply) {
     });
 };
 
+exports.restartObliteratedOrg = function(request, reply) {
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var orgName = request.params.org;
+  var opts = {};
+
+  return Org(loggedInUser).getUsers(orgName)
+    .then(function(users) {
+      opts.users = users || {};
+      opts.users.items = opts.users.items || [];
+
+      return request.customer.createSubscription(defaultOrgInfo(orgName));
+    })
+    .then(function(license) {
+
+      var users = opts.users.items;
+      var extensions = users.map(function(user) {
+        return request.customer.extendSponsorship(license.license_id, user);
+      });
+      return P.all(extensions);
+    })
+    .then(function(sponsorships) {
+      var acceptances = sponsorships.map(function(sponsorship) {
+        return request.customer.acceptSponsorship(sponsorship.verification_key);
+      });
+      return P.all(acceptances)
+        .catch(function(err) {
+          if (err.statusCode !== 409) {
+            throw err;
+          }
+        });
+    })
+    .then(function() {
+      // redirect org/orgName (pass along happy notifications, or whatever, that's just your opinion, man)
+      return reply.redirect("/org/" + orgName);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
+};
+
 exports.restartOrg = function(request, reply) {
   var opts = {};
   var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
-  request.customer.getLicenseForOrg(orgName)
-    .then(function(license) {
+  return P.all([Org(loggedInUser).getInfo(orgName),
+    request.customer.getLicenseForOrg(orgName)])
+    .spread(function(orgInfo, license) {
       if (license && license.length) {
         license = license[0];
       } else {
-        var err = new Error("No license for org " + orgName + " found");
-        err.statusCode = 404;
-        throw err;
+        return reply.redirect("/boom", {
+          orgName: orgName
+        });
       }
       opts.oldLicense = license;
       return request.customer.getAllSponsorships(license.license_id);
@@ -749,12 +817,7 @@ exports.restartOrg = function(request, reply) {
       return request.customer.cancelSubscription(opts.oldLicense.id);
     })
     .then(function() {
-      var planInfo = {
-        "npm_org": orgName,
-        "plan": "npm-paid-org-7",
-        "quantity": 2
-      };
-      return request.customer.createSubscription(planInfo);
+      return request.customer.createSubscription(defaultOrgInfo(orgName));
     })
     .then(function(subscription) {
       var newSponsorships = opts.sponsorships.filter(function(sponsorship) {

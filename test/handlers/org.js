@@ -1375,6 +1375,10 @@ describe('updating an org', function() {
           .get("/customer/bob/stripe/subscription?org=bigco")
           .reply(200, []);
 
+        var orgMock = nock("https://user-api-example.com")
+          .delete('/org/bigco/user/betty')
+          .reply(200);
+
         var options = {
           url: "/org/bigco",
           method: "post",
@@ -1391,6 +1395,7 @@ describe('updating an org', function() {
         };
 
         server.inject(options, function(resp) {
+          orgMock.done();
           userMock.done();
           licenseMock.done();
           var redirectPath = resp.headers.location;
@@ -1429,6 +1434,10 @@ describe('updating an org', function() {
           .delete("/sponsorship/1/betty")
           .reply(404);
 
+        var orgMock = nock("https://user-api-example.com")
+          .delete('/org/bigco/user/betty')
+          .reply(200);
+
         var options = {
           url: "/org/bigco",
           method: "post",
@@ -1445,6 +1454,7 @@ describe('updating an org', function() {
         };
 
         server.inject(options, function(resp) {
+          orgMock.done();
           userMock.done();
           licenseMock.done();
           var redirectPath = resp.headers.location;
@@ -1475,23 +1485,6 @@ describe('updating an org', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
-        var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription?org=bigco")
-          .reply(200, fixtures.orgs.bobsBigcoSubscription)
-          .delete("/sponsorship/1/betty")
-          .reply(200, {
-            "created": "2015-08-05T20:55:54.759Z",
-            "deleted": "2015-08-05T15:30:46.970Z",
-            "id": 15,
-            "license_id": 1,
-            "npm_user": "betty",
-            "updated": "2015-08-05T20:55:54.759Z",
-            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
-            "verified": null
-          });
-
         var orgMock = nock("https://user-api-example.com")
           .delete('/org/bigco/user/betty')
           .reply(404);
@@ -1513,7 +1506,6 @@ describe('updating an org', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
-          licenseMock.done();
           orgMock.done();
           var redirectPath = resp.headers.location;
           var url = URL.parse(redirectPath);
@@ -1544,23 +1536,6 @@ describe('updating an org', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
-        var licenseMock = nock("https://license-api-example.com")
-          .get("/customer/bob/stripe")
-          .reply(200, fixtures.customers.happy)
-          .get("/customer/bob/stripe/subscription?org=bigco")
-          .reply(200, fixtures.orgs.bobsBigcoSubscription)
-          .delete("/sponsorship/1/betty")
-          .reply(200, {
-            "created": "2015-08-05T20:55:54.759Z",
-            "deleted": "2015-08-05T15:30:46.970Z",
-            "id": 15,
-            "license_id": 1,
-            "npm_user": "betty",
-            "updated": "2015-08-05T20:55:54.759Z",
-            "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
-            "verified": null
-          });
-
         var orgMock = nock("https://user-api-example.com")
           .delete('/org/bigco/user/betty')
           .reply(500);
@@ -1582,7 +1557,6 @@ describe('updating an org', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
-          licenseMock.done();
           orgMock.done();
           expect(resp.statusCode).to.equal(200);
           expect(resp.request.response.source.template).to.equal('errors/internal');
@@ -1598,11 +1572,20 @@ describe('updating an org', function() {
           .get("/user/bob")
           .reply(200, fixtures.users.bob);
 
+        var orgMock = nock("https://user-api-example.com")
+          .delete('/org/bigco/user/betty')
+          .reply(200, {
+            "created": "2015-08-05T15:26:46.970Z",
+            "deleted": "2015-08-05T15:30:46.970Z",
+            "org_id": 1,
+            "role": "developer",
+            "updated": "2015-08-05T15:26:46.970Z",
+            "user_id": 15
+          });
+
         var licenseMock = nock("https://license-api-example.com")
           .get("/customer/bob/stripe/subscription?org=bigco")
           .reply(200, fixtures.orgs.bobsBigcoSubscription)
-          .get("/customer/bob/stripe")
-          .reply(200)
           .delete("/sponsorship/1/betty")
           .reply(200, {
             "created": "2015-08-05T20:55:54.759Z",
@@ -1613,17 +1596,6 @@ describe('updating an org', function() {
             "updated": "2015-08-05T20:55:54.759Z",
             "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
             "verified": null
-          });
-
-        var orgMock = nock("https://user-api-example.com")
-          .delete('/org/bigco/user/betty')
-          .reply(200, {
-            "created": "2015-08-05T15:26:46.970Z",
-            "deleted": "2015-08-05T15:30:46.970Z",
-            "org_id": 1,
-            "role": "developer",
-            "updated": "2015-08-05T15:26:46.970Z",
-            "user_id": 15
           });
 
         var options = {
@@ -1643,8 +1615,8 @@ describe('updating an org', function() {
 
         server.inject(options, function(resp) {
           userMock.done();
-          licenseMock.done();
           orgMock.done();
+          licenseMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.equal('/org/bigco/members');
           done();

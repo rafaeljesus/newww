@@ -255,7 +255,11 @@ exports.removeUserFromOrg = function(request, reply) {
   var loggedInUser = request.loggedInUser.name;
   var username = request.payload.username;
 
-  return request.customer.getLicenseForOrg(orgName)
+  return Org(loggedInUser)
+    .removeUser(orgName, username)
+    .then(function() {
+      return request.customer.getLicenseForOrg(orgName);
+    })
     .then(function(license) {
       if (license && license.length) {
         license = license[0];
@@ -265,10 +269,6 @@ exports.removeUserFromOrg = function(request, reply) {
         throw err;
       }
       return request.customer.revokeSponsorship(username, license.license_id);
-    })
-    .then(function() {
-      return Org(loggedInUser)
-        .removeUser(orgName, username);
     })
     .then(function() {
       return reply.redirect('/org/' + orgName + '/members');

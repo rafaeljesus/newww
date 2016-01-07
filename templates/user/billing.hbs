@@ -145,6 +145,33 @@
     </div><!--/.tab-1-->
 
     <div id="payment-information" class="tab tab-2">
+
+      {{#if customer}}
+
+        {{> payment-info-on-file}}
+        <p>
+          You can also
+          <a href="#" id="update-subscription-toggler">update payment info</a>
+          or
+          <a href="#" id="cancel-subscription-toggler">stop paying us</a>.
+        </p>
+
+      {{else}}
+
+        <p>
+          A paid account costs just <strong>$7 a month</strong> per user, and allows you to create
+          and share an unlimited number of modules. The only limit is
+          <a href="http://www.zombo.com/" target="_blank">yourself</a>.
+        </p>
+
+        <p>
+          Sign up for <a href="/settings/billing/subscribe">private modules</a> or <a href="/orgs">organizations</a> today!
+        </p>
+
+      {{/if}}
+
+      {{> errors}}
+
       {{> update-billing-info}}
     </div><!--/.tab-2-->
   </div><!--/.tabs-->

@@ -372,8 +372,8 @@ exports.updateOrg = function(request, reply) {
       return exports.deleteOrg(request, reply);
     case 'restartOrg':
       return exports.restartOrg(request, reply);
-    case 'restartObliteratedOrg':
-      return exports.restartObliteratedOrg(request, reply);
+    case 'restartUnlicensedOrg':
+      return exports.restartUnlicensedOrg(request, reply);
     default:
       return request.saveNotifications([
         P.reject("Incorrect updateType passed")
@@ -738,7 +738,7 @@ exports.getUser = function getUser(request, reply) {
     });
 };
 
-exports.restartObliteratedOrg = function(request, reply) {
+exports.restartUnlicensedOrg = function(request, reply) {
 
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
   var orgName = request.params.org;

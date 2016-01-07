@@ -132,6 +132,15 @@ gulp.task('lint', function() {
     .pipe(jshint.reporter('default'));
 });
 
+gulp.task('marketing-blob', function() {
+  var exec = require('child_process').exec;
+  exec('npm install npm-marketing-sidebar-blob', function (er) {
+    if (er) {
+      throw er;
+    }
+  })
+});
+
 gulp.task('rev', ['browserify', 'styles'], function() {
   return gulp.src(['static/js/index.js', 'static/js/index.min.js', 'static/css/index.css', 'static/js/vendor.min.js'])
     .pipe(revAll.revision())
@@ -141,7 +150,7 @@ gulp.task('rev', ['browserify', 'styles'], function() {
 });
 
 gulp.task('dev-build', ['fonts', 'images', 'misc', 'styles', 'browserify', 'concat']);
-gulp.task('prod-build', ['dev-build', 'rev']);
+gulp.task('prod-build', ['dev-build', 'rev', 'marketing-blob']);
 gulp.task('build', ['prod-build']);
 gulp.task('dev', ['dev-build', 'tota11y', 'nodemon', 'watch']);
 gulp.task('default', ['build']);

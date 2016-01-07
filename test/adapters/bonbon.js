@@ -16,6 +16,7 @@ var homepageMock = require('../mocks/homepage-requests');
 
 var server;
 before(function(done) {
+  redisMock.createClient().flushall();
   requireInject.installGlobally('../mocks/server', {
     redis: redisMock
   })(function(obj) {

@@ -15,10 +15,15 @@ var fixtures = require("../fixtures"),
   expect = Code.expect,
   server;
 
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+
 describe("package handler", function() {
 
   before(function(done) {
-    require('../mocks/server')(function(obj) {
+    requireInject.installGlobally('../mocks/server', {
+      redis: redisMock
+    })(function(obj) {
       server = obj;
       done();
     });

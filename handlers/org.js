@@ -738,6 +738,46 @@ exports.getUser = function getUser(request, reply) {
     });
 };
 
+exports.restartSubscription = function(request, reply) {
+  var opts = {};
+  var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  return P.all([Org(loggedInUser).getUsers(orgName),
+    request.customer.getLicenseForOrg(orgName)])
+    .spread(function(orgInfo, license) {
+      if (license && license.length) {
+        var err = new Error('The license for ' + orgName + ' already exists.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      // WE NEED TO CHECK TO SEE IF THE LOGGED IN USER IS A SUPER-ADMIN OMG
+
+      opts.orgName = orgName;
+
+      return reply.view('org/restart-subscription', opts);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
+};
+
 exports.restartUnlicensedOrg = function(request, reply) {
 
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
@@ -755,7 +795,8 @@ exports.restartUnlicensedOrg = function(request, reply) {
 
       var users = opts.users.items;
       var extensions = users.map(function(user) {
-        return request.customer.extendSponsorship(license.license_id, user);
+        console.log('==user==', user, license)
+        return request.customer.extendSponsorship(license.license_id, user.name);
       });
       return P.all(extensions);
     })
@@ -771,6 +812,7 @@ exports.restartUnlicensedOrg = function(request, reply) {
         });
     })
     .then(function() {
+
       // redirect org/orgName (pass along happy notifications, or whatever, that's just your opinion, man)
       return reply.redirect("/org/" + orgName);
     })
@@ -805,9 +847,7 @@ exports.restartOrg = function(request, reply) {
       if (license && license.length) {
         license = license[0];
       } else {
-        return reply.redirect("/boom", {
-          orgName: orgName
-        });
+        throw new Error('license not found');
       }
       opts.oldLicense = license;
       return request.customer.getAllSponsorships(license.license_id);
@@ -833,6 +873,10 @@ exports.restartOrg = function(request, reply) {
     })
     .catch(function(err) {
       request.logger.error(err);
+
+      if (err.message === 'license not found') {
+        return reply.redirect("/org/" + orgName + "/restart");
+      }
 
       if (err.statusCode < 500) {
         return request.saveNotifications([

@@ -42,7 +42,7 @@
 
 <p class="error billing-error" style="display:none;"></p>
 
-<form method="POST" action="/settings/billing{{#unless customer}}/subscribe{{/unless}}" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
+<form method="POST" action="/settings/billing" id="payment-form" data-stripe-public-key="{{stripePublicKey}}">
   <label for="card-number">Card Number</label>
   <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
 
@@ -55,12 +55,8 @@
   <label for="card-exp-year">Expiration Year</label>
   <input required="required" type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
 
-  <label for="coupon">Coupon Code</label>
-  <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon" />
-
   {{> form_security}}
-  <input type="hidden" name="planType" value="private_modules">
-  <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}save my billing info{{/if}}">
+  <input type="submit" class="full-width" value="update billing info">
 
 </form>
 {{/if}}

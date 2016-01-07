@@ -52,7 +52,7 @@ describe("package handler", function() {
       url: '/package/browserify'
     };
 
-    before(function(done) {
+    it('runs the request', function(done) {
       var packageMock = nock("https://user-api-example.com")
         .get('/package/browserify')
         .reply(200, fixtures.packages.browserify)
@@ -72,12 +72,16 @@ describe("package handler", function() {
         .reply(200, fixtures.cms.promotion);
 
       server.inject(options, function(response) {
-        promosMock.done();
-        packageMock.done();
-        downloadsMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
-        done();
+        try {
+          promosMock.done();
+          packageMock.done();
+          downloadsMock.done();
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
     });
 

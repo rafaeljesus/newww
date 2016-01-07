@@ -48,8 +48,18 @@
               <input id="card-exp-year" required="required" type="text" minlength="4" maxlength="4" name="card-exp-year" placeholder="YYYY" />
             </div><!--/.year-->
           </div><!--/.inline-input-set-->
-        {{/if}}
-      </fieldset>
+        </fieldset>
+      {{/if}}
+
+      {{#if personalPlan}}
+        <div class="inline-input-set">
+          <div class="coupon large">
+            <label for="coupon">Coupon Code</label>
+            <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon">
+          </div>
+        </div>
+      {{/if}}
+
     </section>
 
     {{> form_security}}

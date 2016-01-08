@@ -2314,5 +2314,34 @@ describe('deleting an org', function() {
 
   });
 
+  it('successfully accesses the page if the org exists, the license does not, and the user is the super-admin of the org', function(done) {
+
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get("/org/bigco/user?per_page=100&page=0")
+      .reply(200, fixtures.orgs.bigcoUsers);
+
+    var licenseMock = nock("https://license-api-example.com")
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, []);
+
+    var options = {
+      url: "/org/bigco/restart",
+      method: "GET",
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      userMock.done();
+      orgMock.done();
+      licenseMock.done();
+      expect(resp.statusCode).to.equal(200);
+      done();
+    });
+  });
+
 
 });

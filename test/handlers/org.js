@@ -2198,8 +2198,25 @@ describe('deleting an org', function() {
         userMock.done();
         orgMock.done();
         licenseMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
         expect(resp.statusCode).to.equal(302);
-        done();
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0]).to.equal('org not found');
+          done();
+        });
       });
     });
   });

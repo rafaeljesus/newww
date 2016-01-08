@@ -1915,8 +1915,11 @@ describe('deleting an org', function() {
       });
     });
   });
+});
 
-  describe('restarting a canceled org', function() {
+describe('restarting an org', function() {
+
+  describe('restarting a licensed org for a current customer', function() {
     it('redirects with an error if org does not exist', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -2265,83 +2268,298 @@ describe('deleting an org', function() {
       });
 
     });
-  });
 
-  it('redirects if org exists, license does not, but user is a super-admin in the org', function(done) {
+    it('redirects if org exists, license does not, but user is a super-admin in the org', function(done) {
 
-    var userMock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, fixtures.users.bob);
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
 
-    var orgMock = nock("https://user-api-example.com")
-      .get("/org/bigco/user?per_page=100&page=0")
-      .reply(200);
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(200);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe/subscription?org=bigco")
-      .reply(200, []);
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, []);
 
-    var options = {
-      url: "/org/bigco/restart",
-      method: "GET",
-      credentials: fixtures.users.bob
-    };
+      var options = {
+        url: "/org/bigco/restart",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
 
-    server.inject(options, function(resp) {
-      userMock.done();
-      orgMock.done();
-      licenseMock.done();
-      var redirectPath = resp.headers.location;
-      var url = URL.parse(redirectPath);
-      var query = url.query;
-      var token = qs.parse(query).notice;
-      var tokenFacilitator = new TokenFacilitator({
-        redis: client
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        licenseMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
+        expect(resp.statusCode).to.equal(302);
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0]).to.equal('bob does not have permission to view this page');
+          done();
+        });
       });
-      expect(redirectPath).to.include('/settings/billing');
-      expect(token).to.be.string();
-      expect(token).to.not.be.empty();
-      expect(resp.statusCode).to.equal(302);
-      tokenFacilitator.read(token, {
-        prefix: "notice:"
-      }, function(err, notice) {
-        expect(err).to.not.exist();
-        expect(notice.notices).to.be.array();
-        expect(notice.notices[0]).to.equal('bob does not have permission to view this page');
+
+    });
+
+    it('successfully accesses the page if the org exists, the license does not, and the user is the super-admin of the org', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(200, fixtures.orgs.bigcoUsers);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, []);
+
+      var options = {
+        url: "/org/bigco/restart",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(200);
         done();
       });
     });
 
   });
 
-  it('successfully accesses the page if the org exists, the license does not, and the user is the super-admin of the org', function(done) {
+  describe('restarting an unlicensed org for a current customer', function() {
+    it('redirects if org does not exist', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
 
-    var userMock = nock("https://user-api-example.com")
-      .get("/user/bob")
-      .reply(200, fixtures.users.bob);
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(404);
 
-    var orgMock = nock("https://user-api-example.com")
-      .get("/org/bigco/user?per_page=100&page=0")
-      .reply(200, fixtures.orgs.bigcoUsers);
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, []);
 
-    var licenseMock = nock("https://license-api-example.com")
-      .get("/customer/bob/stripe/subscription?org=bigco")
-      .reply(200, []);
+      generateCrumb(server, function(crumb) {
+        var options = {
+          url: "/org/bigco",
+          method: "POST",
+          payload: {
+            updateType: 'restartUnlicensedOrg',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          },
+          credentials: fixtures.users.bob
+        };
 
-    var options = {
-      url: "/org/bigco/restart",
-      method: "GET",
-      credentials: fixtures.users.bob
-    };
-
-    server.inject(options, function(resp) {
-      userMock.done();
-      orgMock.done();
-      licenseMock.done();
-      expect(resp.statusCode).to.equal(200);
-      done();
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          licenseMock.done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(redirectPath).to.include('/settings/billing');
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('org not found');
+            done();
+          });
+        });
+      });
     });
+
+    it('redirects if org and license exist', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(200);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, [{}]);
+
+      generateCrumb(server, function(crumb) {
+        var options = {
+          url: "/org/bigco",
+          method: "POST",
+          payload: {
+            updateType: 'restartUnlicensedOrg',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          },
+          credentials: fixtures.users.bob
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          licenseMock.done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(redirectPath).to.include('/settings/billing');
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('The license for bigco already exists.');
+            done();
+          });
+        });
+      });
+
+    });
+
+    it('redirects if org exists, license does not, but user is a super-admin in the org', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(200);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, []);
+
+      generateCrumb(server, function(crumb) {
+        var options = {
+          url: "/org/bigco",
+          method: "POST",
+          payload: {
+            updateType: 'restartUnlicensedOrg',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          },
+          credentials: fixtures.users.bob
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          licenseMock.done();
+          var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(redirectPath).to.include('/settings/billing');
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0]).to.equal('bob does not have permission to restart this organization');
+            done();
+          });
+        });
+      });
+
+    });
+
+    it('redirects if org exists, license does not, but user is a super-admin in the org', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(200);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, []);
+
+      var options = {
+        url: "/org/bigco/restart",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        licenseMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
+        expect(resp.statusCode).to.equal(302);
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0]).to.equal('bob does not have permission to view this page');
+          done();
+        });
+      });
+
+    });
+
+
   });
-
-
 });

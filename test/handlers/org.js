@@ -1922,6 +1922,10 @@ describe('deleting an org', function() {
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
 
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(200);
+
       var licenseMock = nock("https://license-api-example.com")
         .get("/customer/bob/stripe/subscription?org=bigco")
         .reply(200, []);
@@ -1943,25 +1947,11 @@ describe('deleting an org', function() {
         server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
+          orgMock.done();
           expect(resp.statusCode).to.equal(302);
           var redirectPath = resp.headers.location;
-          var url = URL.parse(redirectPath);
-          var query = url.query;
-          var token = qs.parse(query).notice;
-          var tokenFacilitator = new TokenFacilitator({
-            redis: client
-          });
-          expect(token).to.be.string();
-          expect(token).to.not.be.empty();
-          expect(resp.statusCode).to.equal(302);
-          tokenFacilitator.read(token, {
-            prefix: "notice:"
-          }, function(err, notice) {
-            expect(err).to.not.exist();
-            expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('No license for org bigco found');
-            done();
-          });
+          expect(redirectPath).to.match(/\/org\/bigco\/restart/);
+          done();
         });
       });
     });
@@ -1970,6 +1960,10 @@ describe('deleting an org', function() {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco")
+        .reply(200);
 
       var licenseMock = nock("https://license-api-example.com")
         .get("/customer/bob/stripe/subscription?org=bigco")
@@ -2116,7 +2110,10 @@ describe('deleting an org', function() {
         server.inject(options, function(resp) {
           userMock.done();
           licenseMock.done();
+          orgMock.done();
           expect(resp.statusCode).to.equal(302);
+          var redirectPath = resp.headers.location;
+          expect(redirectPath).to.match(/\/org\/bigco/);
           done();
         });
       });

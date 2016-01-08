@@ -745,14 +745,28 @@ exports.restartSubscription = function(request, reply) {
 
   return P.all([Org(loggedInUser).getUsers(orgName),
     request.customer.getLicenseForOrg(orgName)])
-    .spread(function(orgInfo, license) {
+    .spread(function(users, license) {
+      var err;
       if (license && license.length) {
-        var err = new Error('The license for ' + orgName + ' already exists.');
+        err = new Error('The license for ' + orgName + ' already exists.');
         err.statusCode = 400;
         throw err;
       }
 
-      // WE NEED TO CHECK TO SEE IF THE LOGGED IN USER IS A SUPER-ADMIN OMG
+      users = users || {};
+      users.items = users.items || [];
+
+      var isSuperAdmin = users.items.filter(function(user) {
+        return user.role && user.role.match(/super-admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      if (!isSuperAdmin) {
+        err = new Error(loggedInUser + ' does not have permission to view this page');
+        err.statusCode = 403;
+        throw err;
+      }
 
       opts.orgName = orgName;
 
@@ -786,8 +800,22 @@ exports.restartUnlicensedOrg = function(request, reply) {
 
   return Org(loggedInUser).getUsers(orgName)
     .then(function(users) {
-      opts.users = users || {};
-      opts.users.items = opts.users.items || [];
+      users = users || {};
+      users.items = users.items || [];
+
+      opts.users = users;
+
+      var isSuperAdmin = users.items.filter(function(user) {
+        return user.role && user.role.match(/super-admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      if (!isSuperAdmin) {
+        var err = new Error(loggedInUser + ' does not have permission to restart this organization');
+        err.statusCode = 403;
+        throw err;
+      }
 
       return request.customer.createSubscription(defaultOrgInfo(orgName));
     })

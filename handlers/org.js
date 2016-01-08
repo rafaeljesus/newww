@@ -823,7 +823,6 @@ exports.restartUnlicensedOrg = function(request, reply) {
 
       var users = opts.users.items;
       var extensions = users.map(function(user) {
-        console.log('==user==', user, license)
         return request.customer.extendSponsorship(license.license_id, user.name);
       });
       return P.all(extensions);

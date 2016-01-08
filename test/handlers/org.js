@@ -2004,7 +2004,7 @@ describe('deleting an org', function() {
           orgMock.done();
           expect(resp.statusCode).to.equal(302);
           var redirectPath = resp.headers.location;
-          expect(redirectPath).to.match(/\/org\/bigco\/restart/);
+          expect(redirectPath).to.include("/org/bigco/restart");
           done();
         });
       });
@@ -2167,7 +2167,7 @@ describe('deleting an org', function() {
           orgMock.done();
           expect(resp.statusCode).to.equal(302);
           var redirectPath = resp.headers.location;
-          expect(redirectPath).to.match(/\/org\/bigco/);
+          expect(redirectPath).to.include("/org/bigco");
           done();
         });
       });

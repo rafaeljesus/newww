@@ -13,8 +13,7 @@ var fixtures = require("../fixtures"),
   after = lab.after,
   it = lab.test,
   expect = Code.expect,
-  server,
-  feature = require('../../lib/feature-flags');
+  server;
 
 describe("package handler", function() {
 
@@ -805,53 +804,5 @@ describe("package handler", function() {
         done();
       });
     });
-  });
-
-  describe('marketing sidebar blobs', function() {
-    describe('NPMO = true', function() {
-      runTest(true, 'should not show blob for npm On-Site');
-    });
-
-    describe('NPMO = false', function() {
-      runTest(false, 'should show blob for regular www site');
-    });
-
-    function runTest(isNPMO, message) {
-      var $;
-      var resp;
-      var options = {
-        url: '/package/browserify'
-      };
-
-      var isNPMO = false;
-
-      before(function(done) {
-        if (isNPMO) {
-          process.env.FEATURE_NPMO = 'true';
-        } else {
-          delete process.env.FEATURE_NPMO;
-        }
-        feature.calculate('npmo');
-
-        var packageMock = nock("https://user-api-example.com")
-          .get('/package/browserify')
-          .reply(200, fixtures.packages.browserify)
-          .get('/package?dependency=browserify&limit=50')
-          .reply(200, fixtures.dependents);
-
-        server.inject(options, function(response) {
-          packageMock.done();
-          resp = response;
-          $ = cheerio.load(resp.result);
-          expect(response.statusCode).to.equal(200);
-          done();
-        });
-      });
-
-      it(message, function(done) {
-        expect($('.marketing').length).to.equal(isNPMO ? 0 : 1);
-        done();
-      });
-    }
   });
 });

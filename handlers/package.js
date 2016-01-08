@@ -5,7 +5,6 @@ var npa = require('npm-package-arg');
 var PackageAgent = require("../agents/package");
 var DownloadAgent = require('../agents/download');
 var feature = require('../lib/feature-flags');
-var marketingblob = require('npm-marketing-sidebar-blob');
 
 var DEPENDENCY_TTL = 5 * 60; // 5 minutes
 
@@ -51,10 +50,6 @@ exports.show = function(request, reply) {
       && (loggedInUser.name in pkg.collaborators);
 
     pkg.hasStats = pkg.downloads || (pkg.bugs && pkg.bugs.url) || (pkg.pull_requests && pkg.pull_requests.url);
-
-    if (!feature('npmo')) {
-      pkg.marketing = marketingblob(request.query.marketing);
-    }
 
     context.package = pkg;
     return reply.view('package/show', context);

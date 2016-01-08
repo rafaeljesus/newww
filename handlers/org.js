@@ -798,8 +798,16 @@ exports.restartUnlicensedOrg = function(request, reply) {
   var orgName = request.params.org;
   var opts = {};
 
-  return Org(loggedInUser).getUsers(orgName)
-    .then(function(users) {
+  return P.all([Org(loggedInUser).getUsers(orgName),
+    request.customer.getLicenseForOrg(orgName)])
+    .spread(function(users, license) {
+
+      if (license && license.length) {
+        err = new Error('The license for ' + orgName + ' already exists.');
+        err.statusCode = 400;
+        throw err;
+      }
+
       users = users || {};
       users.items = users.items || [];
 

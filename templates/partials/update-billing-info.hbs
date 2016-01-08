@@ -1,5 +1,7 @@
 {{#if user.email_verified}}
 
+<h2>Update your billing information</h2>
+
 <p class="error billing-error" style="display:none;"></p>
 
 <form method="POST" action="/settings/billing" id="payment-form" data-stripe-public-key="{{stripePublicKey}}">

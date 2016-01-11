@@ -15,6 +15,7 @@ var redisMock = require('redis-mock');
 var homepageMock = require('../mocks/homepage-requests');
 
 var server;
+
 before(function(done) {
   redisMock.createClient().flushall();
   requireInject.installGlobally('../mocks/server', {
@@ -28,15 +29,15 @@ before(function(done) {
 describe("bonbon", function() {
   var username1 = 'bob';
   var userMock = nock("https://user-api-example.com")
-    .get('/user/bob').times(8)
+    .get('/user/bob').times(9)
     .reply(200, fixtures.users.bob)
     .get('/user/seldo').times(3)
     .reply(200, fixtures.users.npmEmployee)
     .get('/user/constructor')
     .reply(200, fixtures.users.propName)
-    .get('/user/bob/package?format=mini&per_page=100&page=0').times(10)
+    .get('/user/bob/package?format=mini&per_page=100&page=0').times(11)
     .reply(200, fixtures.users.packages)
-    .get('/user/bob/stars?format=detailed').times(10)
+    .get('/user/bob/stars?format=detailed').times(11)
     .reply(200, fixtures.users.stars)
     .get('/user/bob').times(5)
     .reply(404)
@@ -289,6 +290,7 @@ describe("bonbon headers", function() {
   it('includes the charset=utf-8 header', function(done) {
     server.inject('/', function(resp) {
       expect(resp.headers['content-type']).to.equal('text/html; charset=utf-8');
+      expect(resp.statusCode).to.equal(200);
       done();
     });
   });

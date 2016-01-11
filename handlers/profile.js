@@ -51,11 +51,11 @@ module.exports = function(request, reply) {
   async.parallel(actions, function(err, results) {
 
     if (err) {
-      request.logger.error(err);
       if (err.message === 'unexpected status code 404') {
+        request.logger.error(err);
         return reply.view('errors/user-not-found', opts).code(404);
       } else {
-        return reply.view('errors/internal', opts).code(500);
+        return reply(err);
       }
     }
 

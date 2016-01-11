@@ -145,8 +145,28 @@
     </div><!--/.tab-1-->
 
     <div id="payment-information" class="tab tab-2">
-      {{> billing-info}}
+      {{#if customer}}
+
+        {{> payment-info-on-file}}
+
+        <p>
+          You can also <a href="#" id="cancel-subscription-toggler">stop paying us</a> entirely and cancel all your subscriptions.
+        </p>
+
+      {{/if}}
+
+      {{> errors}}
+
+      {{#if customer}}
+
+        {{> update-billing-info}}
+
+        {{> cancel-all-subscriptions}}
+
+      {{/if}}
+
     </div><!--/.tab-2-->
+
   </div><!--/.tabs-->
 
 </div>

@@ -324,9 +324,9 @@ exports.updateUserPayStatus = function(request, reply) {
       });
   };
 
-  return P.all([Org(loggedInUser).getInfo(orgName),
-    request.customer.getLicenseForOrg(orgName)])
-    .spread(function(orgInfo, license) {
+  return P.join(Org(loggedInUser).getInfo(orgName),
+    request.customer.getLicenseForOrg(orgName),
+    function(orgInfo, license) {
       if (license && license.length) {
         license = license[0];
       } else {
@@ -743,9 +743,9 @@ exports.restartLicense = function(request, reply) {
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
-  return P.all([Org(loggedInUser).getUsers(orgName),
-    request.customer.getLicenseForOrg(orgName)])
-    .spread(function(users, license) {
+  return P.join(Org(loggedInUser).getUsers(orgName),
+    request.customer.getLicenseForOrg(orgName),
+    function(users, license) {
       var err;
       if (license && license.length) {
         err = new Error('The license for ' + orgName + ' already exists.');
@@ -798,9 +798,9 @@ exports.restartUnlicensedOrg = function(request, reply) {
   var orgName = request.params.org;
   var opts = {};
 
-  return P.all([Org(loggedInUser).getUsers(orgName),
-    request.customer.getLicenseForOrg(orgName)])
-    .spread(function(users, license) {
+  return P.join(Org(loggedInUser).getUsers(orgName),
+    request.customer.getLicenseForOrg(orgName),
+    function(users, license) {
 
       if (license && license.length) {
         err = new Error('The license for ' + orgName + ' already exists.');

@@ -880,9 +880,9 @@ exports.restartOrg = function(request, reply) {
 
   var noLicenseErrMsg = 'license not found';
 
-  return P.all([Org(loggedInUser).getInfo(orgName),
-    request.customer.getLicenseForOrg(orgName)])
-    .spread(function(orgInfo, license) {
+  return P.join(Org(loggedInUser).getInfo(orgName),
+    request.customer.getLicenseForOrg(orgName),
+    function(orgInfo, license) {
       if (license && license.length) {
         license = license[0];
       } else {

@@ -132,7 +132,7 @@ module.exports = [
     method: "GET",
     handler: require('../handlers/org').getOrg
   }, {
-    path: "/org/{org}/restart",
+    path: "/org/{org}/restart-license",
     method: "GET",
     handler: require('../handlers/org').restartSubscription
   }, {

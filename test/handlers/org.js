@@ -2007,7 +2007,7 @@ describe('restarting an org', function() {
           orgMock.done();
           expect(resp.statusCode).to.equal(302);
           var redirectPath = resp.headers.location;
-          expect(redirectPath).to.include("/org/bigco/restart");
+          expect(redirectPath).to.equal("/org/bigco/restart-license");
           done();
         });
       });
@@ -2192,7 +2192,7 @@ describe('restarting an org', function() {
         .reply(200, []);
 
       var options = {
-        url: "/org/bigco/restart",
+        url: "/org/bigco/restart-license",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -2237,7 +2237,7 @@ describe('restarting an org', function() {
         .reply(200, [{}]);
 
       var options = {
-        url: "/org/bigco/restart",
+        url: "/org/bigco/restart-license",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -2284,7 +2284,7 @@ describe('restarting an org', function() {
         .reply(200, []);
 
       var options = {
-        url: "/org/bigco/restart",
+        url: "/org/bigco/restart-license",
         method: "GET",
         credentials: fixtures.users.bob
       };
@@ -2331,7 +2331,7 @@ describe('restarting an org', function() {
         .reply(200, []);
 
       var options = {
-        url: "/org/bigco/restart",
+        url: "/org/bigco/restart-license",
         method: "GET",
         credentials: fixtures.users.bob
       };

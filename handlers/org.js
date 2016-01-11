@@ -914,7 +914,7 @@ exports.restartOrg = function(request, reply) {
       request.logger.error(err);
 
       if (err.message === noLicenseErrMsg) {
-        return reply.redirect("/org/" + orgName + "/restart");
+        return reply.redirect("/org/" + orgName + "/restart-license");
       }
 
       if (err.statusCode < 500) {

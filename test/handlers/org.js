@@ -2513,7 +2513,7 @@ describe('restarting an org', function() {
 
     });
 
-    it('redirects if org exists, license does not, but user is a super-admin in the org', function(done) {
+    it('successfully restarts an unlicensed org', function(done) {
 
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -2521,39 +2521,76 @@ describe('restarting an org', function() {
 
       var orgMock = nock("https://user-api-example.com")
         .get("/org/bigco/user?per_page=100&page=0")
-        .reply(200);
+        .reply(200, fixtures.orgs.bigcoUsers);
 
       var licenseMock = nock("https://license-api-example.com")
         .get("/customer/bob/stripe/subscription?org=bigco")
-        .reply(200, []);
-
-      var options = {
-        url: "/org/bigco/restart",
-        method: "GET",
-        credentials: fixtures.users.bob
-      };
-
-      server.inject(options, function(resp) {
-        userMock.done();
-        orgMock.done();
-        licenseMock.done();
-        var redirectPath = resp.headers.location;
-        var url = URL.parse(redirectPath);
-        var query = url.query;
-        var token = qs.parse(query).notice;
-        var tokenFacilitator = new TokenFacilitator({
-          redis: client
+        .reply(200, [])
+        .put("/customer/bob/stripe/subscription", {
+          "npm_org": "bigco",
+          "plan": "npm-paid-org-7",
+          "quantity": 2
+        })
+        .reply(200, {
+          "amount": 700,
+          "cancel_at_period_end": false,
+          "current_period_end": 1451853499,
+          "current_period_start": 1449175099,
+          "id": "sub_7Sz",
+          "interval": "month",
+          "license_id": 281,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "b5822d32",
+          "quantity": 2,
+          "status": "active"
+        })
+        .put("/sponsorship/281", {
+          "npm_user": "bob"
+        })
+        .reply(200, {
+          "created": "2016-01-10T20:55:54.759Z",
+          "deleted": null,
+          "id": 158,
+          "license_id": 12,
+          "npm_user": "bob",
+          "updated": "2016-01-10T20:55:54.759Z",
+          "verification_key": "f56dffef-b136-429a-97dc",
+          "verified": null
+        })
+        .post("/sponsorship/f56dffef-b136-429a-97dc")
+        .reply(200, {
+          "created": "2016-01-10T20:55:54.759Z",
+          "deleted": null,
+          "id": 158,
+          "license_id": 12,
+          "npm_user": "bob",
+          "updated": "2016-01-10T20:56:02.759Z",
+          "verification_key": "f56dffef-b136-429a-97dc",
+          "verified": true
         });
-        expect(redirectPath).to.include('/settings/billing');
-        expect(token).to.be.string();
-        expect(token).to.not.be.empty();
-        expect(resp.statusCode).to.equal(302);
-        tokenFacilitator.read(token, {
-          prefix: "notice:"
-        }, function(err, notice) {
-          expect(err).to.not.exist();
-          expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('bob does not have permission to view this page');
+
+      generateCrumb(server, function(crumb) {
+        var options = {
+          url: "/org/bigco",
+          method: "POST",
+          payload: {
+            updateType: 'restartUnlicensedOrg',
+            crumb: crumb
+          },
+          headers: {
+            cookie: 'crumb=' + crumb
+          },
+          credentials: fixtures.users.bob
+        };
+
+        server.inject(options, function(resp) {
+          userMock.done();
+          orgMock.done();
+          licenseMock.done();
+          expect(resp.statusCode).to.equal(302);
+          var redirectPath = resp.headers.location;
+          expect(redirectPath).to.include("/org/bigco");
           done();
         });
       });

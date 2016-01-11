@@ -878,13 +878,15 @@ exports.restartOrg = function(request, reply) {
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
+  var noLicenseErrMsg = 'license not found';
+
   return P.all([Org(loggedInUser).getInfo(orgName),
     request.customer.getLicenseForOrg(orgName)])
     .spread(function(orgInfo, license) {
       if (license && license.length) {
         license = license[0];
       } else {
-        throw new Error('license not found');
+        throw new Error(noLicenseErrMsg);
       }
       opts.oldLicense = license;
       return request.customer.getAllSponsorships(license.license_id);
@@ -911,7 +913,7 @@ exports.restartOrg = function(request, reply) {
     .catch(function(err) {
       request.logger.error(err);
 
-      if (err.message === 'license not found') {
+      if (err.message === noLicenseErrMsg) {
         return reply.redirect("/org/" + orgName + "/restart");
       }
 

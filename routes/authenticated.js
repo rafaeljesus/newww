@@ -134,7 +134,7 @@ module.exports = [
   }, {
     path: "/org/{org}/restart-license",
     method: "GET",
-    handler: require('../handlers/org').restartSubscription
+    handler: require('../handlers/org').restartLicense
   }, {
     path: "/org/{org}",
     method: "POST",

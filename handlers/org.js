@@ -738,7 +738,7 @@ exports.getUser = function getUser(request, reply) {
     });
 };
 
-exports.restartSubscription = function(request, reply) {
+exports.restartLicense = function(request, reply) {
   var opts = {};
   var orgName = request.params.org;
   var loggedInUser = request.loggedInUser && request.loggedInUser.name;
@@ -770,7 +770,7 @@ exports.restartSubscription = function(request, reply) {
 
       opts.orgName = orgName;
 
-      return reply.view('org/restart-subscription', opts);
+      return reply.view('org/restart-license', opts);
     })
     .catch(function(err) {
       request.logger.error(err);

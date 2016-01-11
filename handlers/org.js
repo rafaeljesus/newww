@@ -829,6 +829,8 @@ exports.restartUnlicensedOrg = function(request, reply) {
     })
     .then(function(license) {
 
+      license = license || {};
+
       var users = opts.users.items;
       var extensions = users.map(function(user) {
         return request.customer.extendSponsorship(license.license_id, user.name);

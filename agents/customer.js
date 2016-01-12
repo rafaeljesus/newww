@@ -35,8 +35,11 @@ Customer.prototype.getById = function(id, callback) {
       }
 
       if (resp.statusCode === 404) {
-        err = Error('Customer not found');
-        err.statusCode = resp.statusCode;
+        err = Object.assign(new Error('Customer not found'), {
+          code: 'ENOCUSTOMER',
+          statusCode: 404
+        });
+
         return reject(err);
       }
 
@@ -67,8 +70,10 @@ Customer.prototype.getStripeData = function(callback) {
       }
 
       if (resp.statusCode === 404) {
-        err = Error('customer not found: ' + self.name);
-        err.statusCode = resp.statusCode;
+        err = Object.assign(new Error('Customer not found: ' + self.name), {
+          code: 'ENOCUSTOMER',
+          statusCode: 404
+        });
         return reject(err);
       }
 
@@ -249,8 +254,11 @@ Customer.prototype.getLicenseForOrg = function(orgName, callback) {
       }
 
       if (resp.statusCode === 404) {
-        err = new Error('Customer not found');
-        err.statusCode = 404;
+        err = Object.assign(new Error('Customer not found'), {
+          code: 'ENOCUSTOMER',
+          statusCode: 404
+        });
+
         return reject(err);
       }
 

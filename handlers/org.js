@@ -253,7 +253,7 @@ exports.addUserToOrg = function(request, reply) {
           request.logger.log(err);
         });
       } else {
-        return reply.view('errors/internal', err);
+        return reply(err);
       }
     });
 };
@@ -284,7 +284,7 @@ exports.removeUserFromOrg = function(request, reply) {
     .catch(function(err) {
       if (err.statusCode >= 500) {
         request.logger.error(err);
-        return reply.view('errors/internal', err);
+        return reply(err);
       } else {
         return request.saveNotifications([
           P.reject(err.message)
@@ -342,7 +342,7 @@ exports.updateUserPayStatus = function(request, reply) {
     .catch(function(err) {
       if (err.statusCode >= 500) {
         request.logger.error(err);
-        return reply.view('errors/internal', err);
+        return reply(err);
       } else {
         return request.saveNotifications([
           P.reject(err.message)
@@ -423,7 +423,7 @@ exports.deleteOrg = function(request, reply) {
 
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
-      return reply.view('errors/internal', err);
+      return reply(err);
     }
     var subscription = subscriptions.filter(function(sub) {
       return orgToDelete === sub.npm_org;
@@ -439,7 +439,7 @@ exports.deleteOrg = function(request, reply) {
     request.customer.cancelSubscription(subscription.id, function(err) {
       if (err) {
         request.logger.error(err);
-        return reply.view('errors/internal', err);
+        return reply(err);
       }
 
       return reply.redirect('/settings/billing');
@@ -532,12 +532,12 @@ exports.validateOrgCreation = function(request, reply) {
                   return reply.redirect(url);
                 } else {
                   request.logger.error(err);
-                  return reply.view('errors/internal', err);
+                  return reply(err);
                 }
               });
           } else {
             request.logger.error(err);
-            return reply.view('errors/internal', err);
+            return reply(err);
           }
         });
     }
@@ -617,12 +617,12 @@ exports.getOrgCreationBillingPage = function(request, reply) {
                 });
               } else {
                 request.logger.error(err);
-                return reply.view('errors/internal', err);
+                return reply(err);
               }
             });
         } else {
           request.logger.error(err);
-          return reply.view('errors/internal', err);
+          return reply(err);
         }
       });
   } else {
@@ -787,7 +787,7 @@ exports.restartLicense = function(request, reply) {
           request.logger.log(err);
         });
       } else {
-        return reply.view('errors/internal', err);
+        return reply(err);
       }
     });
 };
@@ -868,7 +868,7 @@ exports.restartUnlicensedOrg = function(request, reply) {
           request.logger.log(err);
         });
       } else {
-        return reply.view('errors/internal', err);
+        return reply(err);
       }
     });
 };
@@ -929,7 +929,7 @@ exports.restartOrg = function(request, reply) {
           request.logger.log(err);
         });
       } else {
-        return reply.view('errors/internal', err);
+        return reply(err);
       }
     });
 };

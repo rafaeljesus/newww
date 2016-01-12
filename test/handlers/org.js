@@ -1529,43 +1529,6 @@ describe('updating an org', function() {
       });
     });
 
-    it('handles a 500 if removing a user gives us a 500 ', function(done) {
-
-      generateCrumb(server, function(crumb) {
-        var userMock = nock("https://user-api-example.com")
-          .get("/user/bob")
-          .reply(200, fixtures.users.bob);
-
-        var orgMock = nock("https://user-api-example.com")
-          .delete('/org/bigco/user/betty')
-          .reply(500);
-
-        var options = {
-          url: "/org/bigco",
-          method: "post",
-          credentials: fixtures.users.bob,
-          payload: {
-            username: 'betty',
-            role: 'developer',
-            updateType: 'deleteUser',
-            crumb: crumb
-          },
-          headers: {
-            cookie: 'crumb=' + crumb
-          }
-        };
-
-        server.inject(options, function(resp) {
-          userMock.done();
-          orgMock.done();
-          expect(resp.statusCode).to.equal(200);
-          expect(resp.request.response.source.template).to.equal('errors/internal');
-          done();
-        });
-      });
-
-    });
-
     it('successfully deletes the user from the organization', function(done) {
       generateCrumb(server, function(crumb) {
         var userMock = nock("https://user-api-example.com")

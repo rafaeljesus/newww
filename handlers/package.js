@@ -27,7 +27,7 @@ exports.show = function(request, reply) {
       limit: 50
     }, DEPENDENCY_TTL),
     feature('npmo') ? null : Download.getAll(name),
-    CMS.getPromotion(['default'])
+    CMS.getPromotion(['default']).catch(err => (request.logger.error(err), null))
   ]).spread(function(pkg, dependents, downloads, promotion) {
     pkg.dependents = dependents;
     if (pkg.name[0] != '@') {

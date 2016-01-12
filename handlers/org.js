@@ -917,6 +917,10 @@ exports.restartOrg = function(request, reply) {
         return reply.redirect("/org/" + orgName + "/restart-license");
       }
 
+      if (err.code === 'ENOCUSTOMER') {
+        return reply.redirect("/org/" + orgName + "/restart");
+      }
+
       if (err.statusCode < 500) {
         return request.saveNotifications([
           P.reject(err.message)

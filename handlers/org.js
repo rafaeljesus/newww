@@ -746,7 +746,7 @@ exports.restartSubscription = function(request, reply) {
     .then(function() {
       throw Object.assign(new Error("Customer exists"), {
         code: 'ECUSTOMEREXIST',
-        statusCode: 400
+        statusCode: 409
       });
 
     })

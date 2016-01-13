@@ -287,11 +287,14 @@ customer.subscribe = function(request, reply) {
 
 
       Org(loggedInUser)
-        .get(planData.orgScope).then(function() {
-        var err = new Error("Org already exists");
-        err.isUserError = true;
-        throw err;
-      }).catch(function(err) {
+        .get(planData.orgScope)
+        .then(function() {
+          throw Object.assign(new Error("Org already exists"), {
+            code: 'EEXIST',
+            statusCode: 409,
+            what: 'org'
+          });
+        }).catch(function(err) {
         if (err.statusCode !== 404) {
           throw err;
         }
@@ -350,7 +353,7 @@ customer.subscribe = function(request, reply) {
       }).catch(function(err) {
         request.logger.error(err);
 
-        if (err.isUserError) {
+        if (err.code === 'EEXIST' && err.what === 'org') {
           return reply.view('org/create', {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             notices: [err]

@@ -205,6 +205,7 @@ describe("package handler", function() {
     });
 
     it('renders a private label', function(done) {
+      expect(resp.request.response.source.template).to.equal('package/show');
       expect($('.package-name i').hasClass('icon-private')).to.be.true();
       done();
     });

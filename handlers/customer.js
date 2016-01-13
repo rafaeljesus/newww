@@ -325,27 +325,26 @@ customer.subscribe = function(request, reply) {
         }
       }).then(function() {
         planInfo.npm_org = planData.orgScope;
-        return Customer(loggedInUser).createSubscription(planInfo)
-          .tap(function(subscription) {
-            if (typeof subscription === 'string') {
-              request.logger.info("created subscription: ", planInfo);
+        return Customer(loggedInUser).createSubscription(planInfo);
+      }).tap(function(subscription) {
+        if (typeof subscription === 'string') {
+          request.logger.info("created subscription: ", planInfo);
+        }
+        return new P(function(accept, reject) {
+          User.new(request).dropCache(loggedInUser, function(err) {
+            if (err) {
+              request.logger.error(err);
+              return reject(err);
             }
-            return new P(function(accept, reject) {
-              User.new(request).dropCache(loggedInUser, function(err) {
-                if (err) {
-                  request.logger.error(err);
-                  return reject(err);
-                }
-                return accept();
-              });
-            });
-          }).then(function(subscription) {
-          return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
-        }).then(function(extendedSponsorship) {
-          return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
-        }).then(function() {
-          return reply.redirect('/org/' + planData.orgScope);
+            return accept();
+          });
         });
+      }).then(function(subscription) {
+        return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
+      }).then(function(extendedSponsorship) {
+        return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
+      }).then(function() {
+        return reply.redirect('/org/' + planData.orgScope);
       }).catch(function(err) {
         request.logger.error(err);
 

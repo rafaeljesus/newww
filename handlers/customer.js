@@ -346,14 +346,16 @@ customer.subscribe = function(request, reply) {
       }).then(function() {
         return reply.redirect('/org/' + planData.orgScope);
       }).catch(function(err) {
-        request.logger.error(err);
-
         if (err.code === 'EEXIST' && err.what === 'org') {
           return reply.view('org/create', {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             notices: [err]
           });
-        } else if (err.statusCode === 409 && err.message) {
+        } else {
+          throw err;
+        }
+      }).catch(function(err) {
+        if (err.statusCode === 409 && err.message) {
           return reply.view('org/create', {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             inUseError: true,
@@ -361,7 +363,12 @@ customer.subscribe = function(request, reply) {
             humanName: planData["human-name"],
             notices: [err]
           });
-        } else if (err.statusCode < 500) {
+        } else {
+          throw err;
+        }
+      }).catch(function(err) {
+        request.logger.error(err);
+        if (err.statusCode < 500) {
           return request.saveNotifications([
             P.reject(err.message)
           ]).then(function(token) {

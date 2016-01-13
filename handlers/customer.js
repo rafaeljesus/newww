@@ -287,7 +287,7 @@ customer.subscribe = function(request, reply) {
 
 
       Org(loggedInUser)
-        .get(planData.orgScope)
+        .getInfo(planData.orgScope)
         .then(function() {
           throw Object.assign(new Error("Org already exists"), {
             code: 'EEXIST',
@@ -314,7 +314,7 @@ customer.subscribe = function(request, reply) {
                 return setSession({
                   name: loggedInUser
                 });
-              })
+              });
           } else {
             return Org(loggedInUser)
               .create({

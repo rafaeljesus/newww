@@ -745,7 +745,8 @@ exports.restartSubscription = function(request, reply) {
   return request.customer.getLicenseForOrg(orgName)
     .then(function() {
       throw Object.assign(new Error("Customer exists"), {
-        code: 'ECUSTOMEREXIST'
+        code: 'ECUSTOMEREXIST',
+        statusCode: 400
       });
 
     })
@@ -765,9 +766,10 @@ exports.restartSubscription = function(request, reply) {
             });
 
             if (!isSuperAdmin) {
-              err = new Error(loggedInUser + ' does not have permission to view this page');
-              err.statusCode = 403;
-              throw err;
+              throw Object.assign(new Error(loggedInUser + ' does not have permission to view this page'), {
+                code: 'EACCES',
+                statusCode: 403
+              });
             }
 
             return reply.view('org/restart-subscription');

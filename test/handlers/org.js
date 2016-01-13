@@ -2433,10 +2433,47 @@ describe('restarting an org', function() {
         done();
       });
     });
+    it('redirects if the user is a current customer', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(200, []);
+
+      var options = {
+        url: "/org/bigco/restart",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        licenseMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
+        expect(resp.statusCode).to.equal(302);
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0]).to.equal('Customer exists');
+          done();
+        });
+      });
+    });
   /**
-  it('redirects if the user is a current customer', function() {});
-  it('redirects if the user is a non-customer and the org exists, licensed', function() {});
-  it('redirects if the user is a non-customer and the org exists, unlicensed, but the user is not the super-admin', function() {});
+    it('redirects if the user is a non-customer and the org exists, unlicensed, but the user is not the super-admin', function() {});
   it('redirects if the user is a non-customer and the org exists, unlicensed, and the user is the super-admin of the org', function() {});
   */
   });

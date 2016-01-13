@@ -738,6 +738,67 @@ exports.getUser = function getUser(request, reply) {
     });
 };
 
+exports.restartSubscription = function(request, reply) {
+  var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  return request.customer.getLicenseForOrg(orgName)
+    .then(function() {
+      throw Object.assign(new Error("Customer exists"), {
+        code: 'ECUSTOMEREXIST'
+      });
+
+    })
+    .catch(function(err) {
+      if (err.code !== 'ENOCUSTOMER') {
+        throw err;
+      } else {
+        return Org(loggedInUser).getUsers(orgName)
+          .then(function(users) {
+            users = users || {};
+            users.items = users.items || [];
+
+            var isSuperAdmin = users.items.filter(function(user) {
+              return user.role && user.role.match(/super-admin/);
+            }).some(function(admin) {
+              return admin.name === loggedInUser;
+            });
+
+            if (!isSuperAdmin) {
+              err = new Error(loggedInUser + ' does not have permission to view this page');
+              err.statusCode = 403;
+              throw err;
+            }
+
+            return reply.view('org/restart-subscription');
+          });
+      }
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      }
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply(err);
+      }
+    });
+
+};
+
 exports.restartLicense = function(request, reply) {
   var opts = {};
   var orgName = request.params.org;

@@ -2404,6 +2404,43 @@ describe('restarting an org', function() {
 
   });
 
+  describe('accessing the restart page for a non-customer and an unlicensed org', function() {
+    it('goes to error page if the org does not exist', function(done) {
+
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bob")
+        .reply(200, fixtures.users.bob);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(404, 'Org not found');
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bob/stripe/subscription?org=bigco")
+        .reply(404);
+
+      var options = {
+        url: "/org/bigco/restart",
+        method: "GET",
+        credentials: fixtures.users.bob
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(404);
+        done();
+      });
+    });
+  /**
+  it('redirects if the user is a current customer', function() {});
+  it('redirects if the user is a non-customer and the org exists, licensed', function() {});
+  it('redirects if the user is a non-customer and the org exists, unlicensed, but the user is not the super-admin', function() {});
+  it('redirects if the user is a non-customer and the org exists, unlicensed, and the user is the super-admin of the org', function() {});
+  */
+  });
+
   describe('restarting an unlicensed org for a current customer', function() {
     it('redirects if org does not exist', function(done) {
       var userMock = nock("https://user-api-example.com")

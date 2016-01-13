@@ -302,54 +302,50 @@ customer.subscribe = function(request, reply) {
         // org doesn't yet exist, transfer user then create org
         var start = newUser ? User.new(request).toOrg(loggedInUser, newUser) : P.resolve(null);
 
-        return start.then(function(newUserData) {
-          var setSession = P.promisify(request.server.methods.user.setSession(request));
-          var delSession = P.promisify(request.server.methods.user.delSession(request));
-          loggedInUser = newUserData ? newUser : loggedInUser;
+        return start;
+      }).then(function(newUserData) {
+        var setSession = P.promisify(request.server.methods.user.setSession(request));
+        var delSession = P.promisify(request.server.methods.user.delSession(request));
+        loggedInUser = newUserData ? newUser : loggedInUser;
 
-          if (newUserData) {
-            return delSession(request.loggedInUser)
-              .then(function() {
-                request.logger.info("setting session to: " + loggedInUser);
-                return setSession({
-                  name: loggedInUser
-                });
+        if (newUserData) {
+          return delSession(request.loggedInUser)
+            .then(function() {
+              request.logger.info("setting session to: " + loggedInUser);
+              return setSession({
+                name: loggedInUser
               });
-          } else {
-            return Org(loggedInUser)
-              .create({
-                scope: planData.orgScope,
-                humanName: planData["human-name"]
+            });
+        } else {
+          return Org(loggedInUser)
+            .create({
+              scope: planData.orgScope,
+              humanName: planData["human-name"]
+            });
+        }
+      }).then(function() {
+        planInfo.npm_org = planData.orgScope;
+        return Customer(loggedInUser).createSubscription(planInfo)
+          .tap(function(subscription) {
+            if (typeof subscription === 'string') {
+              request.logger.info("created subscription: ", planInfo);
+            }
+            return new P(function(accept, reject) {
+              User.new(request).dropCache(loggedInUser, function(err) {
+                if (err) {
+                  request.logger.error(err);
+                  return reject(err);
+                }
+                return accept();
               });
-          }
+            });
+          }).then(function(subscription) {
+          return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
+        }).then(function(extendedSponsorship) {
+          return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
         }).then(function() {
-          planInfo.npm_org = planData.orgScope;
-          return Customer(loggedInUser).createSubscription(planInfo)
-            .tap(function(subscription) {
-              if (typeof subscription === 'string') {
-                request.logger.info("created subscription: ", planInfo);
-              }
-              return new P(function(accept, reject) {
-                User.new(request).dropCache(loggedInUser, function(err) {
-                  if (err) {
-                    request.logger.error(err);
-                    return reject(err);
-                  }
-                  return accept();
-                });
-              });
-            }).then(function(subscription) {
-            return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
-          }).then(function(extendedSponsorship) {
-            return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
-          }).then(function() {
-            return reply.redirect('/org/' + planData.orgScope);
-          });
-        })
-          .catch(function(err) {
-            request.logger.error(err);
-            throw err;
-          });
+          return reply.redirect('/org/' + planData.orgScope);
+        });
       }).catch(function(err) {
         request.logger.error(err);
 

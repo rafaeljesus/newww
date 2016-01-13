@@ -352,6 +352,8 @@ customer.subscribe = function(request, reply) {
               stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
               notices: [err]
             });
+          }).catch(function(err) {
+            throw err;
           });
         } else {
           throw err;

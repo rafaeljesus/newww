@@ -992,7 +992,9 @@ describe("subscribing to an org", function() {
           "created": "2015-07-10T20:29:37.816Z",
           "updated": "2015-07-10T21:07:16.799Z",
           "deleted": null
-        });
+        })
+        .get('/org/boomer/user?per_page=100&page=0')
+        .reply(200);
 
       var customerMock = nock("https://license-api-example.com")
         .get("/customer/bob/stripe")

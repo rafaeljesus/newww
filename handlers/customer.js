@@ -347,9 +347,11 @@ customer.subscribe = function(request, reply) {
         return reply.redirect('/org/' + planData.orgScope);
       }).catch(function(err) {
         if (err.code === 'EEXIST' && err.what === 'org') {
-          return reply.view('org/create', {
-            stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-            notices: [err]
+          return Org(loggedInUser).getUsers(planData.orgScope).then(function() {
+            return reply.view('org/create', {
+              stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+              notices: [err]
+            });
           });
         } else {
           throw err;

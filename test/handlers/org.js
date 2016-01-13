@@ -2433,6 +2433,7 @@ describe('restarting an org', function() {
         done();
       });
     });
+
     it('redirects if the user is a current customer', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
@@ -2472,8 +2473,51 @@ describe('restarting an org', function() {
         });
       });
     });
+    it('redirects if the user is a non-customer and the org exists, unlicensed, but the user is not the super-admin', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/betty")
+        .reply(200, fixtures.users.betty);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(200, fixtures.orgs.bigcoAddedUsers);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/betty/stripe/subscription?org=bigco")
+        .reply(404);
+
+      var options = {
+        url: "/org/bigco/restart",
+        method: "GET",
+        credentials: fixtures.users.betty
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        licenseMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
+        expect(resp.statusCode).to.equal(302);
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0]).to.equal('betty does not have permission to view this page');
+          done();
+        });
+      });
+    });
   /**
-    it('redirects if the user is a non-customer and the org exists, unlicensed, but the user is not the super-admin', function() {});
   it('redirects if the user is a non-customer and the org exists, unlicensed, and the user is the super-admin of the org', function() {});
   */
   });

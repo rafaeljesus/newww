@@ -2517,9 +2517,36 @@ describe('restarting an org', function() {
         });
       });
     });
-  /**
-  it('redirects if the user is a non-customer and the org exists, unlicensed, and the user is the super-admin of the org', function() {});
-  */
+
+    it('successfully allows user to access page if the user is a non-customer and the org exists, unlicensed, and the user is the super-admin of the org', function(done) {
+      var userMock = nock("https://user-api-example.com")
+        .get("/user/bill")
+        .reply(200, fixtures.users.bill);
+
+      var orgMock = nock("https://user-api-example.com")
+        .get("/org/bigco/user?per_page=100&page=0")
+        .reply(200, fixtures.orgs.bigcoAddedUsers);
+
+      var licenseMock = nock("https://license-api-example.com")
+        .get("/customer/bill/stripe/subscription?org=bigco")
+        .reply(404);
+
+      var options = {
+        url: "/org/bigco/restart",
+        method: "GET",
+        credentials: fixtures.users.bill
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        orgMock.done();
+        licenseMock.done();
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.request.response.source.template).to.equal('org/restart-subscription');
+        done();
+      });
+    });
+
   });
 
   describe('restarting an unlicensed org for a current customer', function() {

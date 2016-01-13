@@ -574,7 +574,7 @@ User.prototype.toOrg = function(name, newUsername, callback) {
 };
 
 User.prototype.getPagesSeenThisSession = function(user) {
-  return redis.acquireAsync().then(function(redis) {
+  return redis.withConnection(function(redis) {
     return redis.getAsync(`pagesSeenThisSession:${user.sid}`).then(function(val) {
       return Number(val) || 0;
     });
@@ -585,7 +585,7 @@ User.prototype.incrPagesSeenThisSession = function(user) {
   if (!user) {
     return Promise.resolve();
   }
-  return redis.acquireAsync().then(function(redis) {
+  return redis.withConnection(function(redis) {
     var key = `pagesSeenThisSession:${user.sid}`;
     return redis.incrAsync(key).then(function() {
       return redis.expireAsync(key, 60 * 60 * 3);

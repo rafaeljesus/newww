@@ -285,6 +285,8 @@ customer.subscribe = function(request, reply) {
         });
       }
 
+      var opts = {};
+
 
       Org(loggedInUser)
         .getInfo(planData.orgScope)
@@ -294,72 +296,140 @@ customer.subscribe = function(request, reply) {
             statusCode: 409,
             what: 'org'
           });
-        }).catch(function(err) {
-        if (err.statusCode !== 404) {
-          throw err;
-        }
-
-        // org doesn't yet exist, transfer user then create org
-        var start = newUser ? User.new(request).toOrg(loggedInUser, newUser) : P.resolve(null);
-
-        return start;
-      }).then(function(newUserData) {
-        var setSession = P.promisify(request.server.methods.user.setSession(request));
-        var delSession = P.promisify(request.server.methods.user.delSession(request));
-        loggedInUser = newUserData ? newUser : loggedInUser;
-
-        if (newUserData) {
-          return delSession(request.loggedInUser)
-            .then(function() {
-              request.logger.info("setting session to: " + loggedInUser);
-              return setSession({
-                name: loggedInUser
-              });
-            });
-        } else {
-          return Org(loggedInUser)
-            .create({
-              scope: planData.orgScope,
-              humanName: planData["human-name"]
-            });
-        }
-      }).then(function() {
-        planInfo.npm_org = planData.orgScope;
-        return Customer(loggedInUser).createSubscription(planInfo);
-      }).tap(function(subscription) {
-        if (typeof subscription === 'string') {
-          request.logger.info("created subscription: ", planInfo);
-        }
-        return new P(function(accept, reject) {
-          User.new(request).dropCache(loggedInUser, function(err) {
-            if (err) {
-              request.logger.error(err);
-              return reject(err);
-            }
-            return accept();
-          });
-        });
-      }).then(function(subscription) {
-        return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
-      }).then(function(extendedSponsorship) {
-        return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
-      }).then(function() {
-        return reply.redirect('/org/' + planData.orgScope);
-      }).catch(function(err) {
-        if (err.code === 'EEXIST' && err.what === 'org') {
-          return Org(loggedInUser).getUsers(planData.orgScope).then(function() {
-            return reply.view('org/create', {
-              stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-              notices: [err]
-            });
-          }).catch(function(err) {
+        })
+        .catch(function(err) {
+          if (err.statusCode !== 404) {
             throw err;
+          }
+
+          // org doesn't yet exist, transfer user then create org
+          var start = newUser ? User.new(request).toOrg(loggedInUser, newUser) : P.resolve(null);
+
+          return start;
+        })
+        .then(function(newUserData) {
+          var setSession = P.promisify(request.server.methods.user.setSession(request));
+          var delSession = P.promisify(request.server.methods.user.delSession(request));
+          loggedInUser = newUserData ? newUser : loggedInUser;
+
+          if (newUserData) {
+            return delSession(request.loggedInUser)
+              .then(function() {
+                request.logger.info("setting session to: " + loggedInUser);
+                return setSession({
+                  name: loggedInUser
+                });
+              });
+          } else {
+            return Org(loggedInUser)
+              .create({
+                scope: planData.orgScope,
+                humanName: planData["human-name"]
+              });
+          }
+        })
+        .then(function() {
+          planInfo.npm_org = planData.orgScope;
+          return Customer(loggedInUser).createSubscription(planInfo);
+        })
+        .tap(function(subscription) {
+          if (typeof subscription === 'string') {
+            request.logger.info("created subscription: ", planInfo);
+          }
+          return new P(function(accept, reject) {
+            User.new(request).dropCache(loggedInUser, function(err) {
+              if (err) {
+                request.logger.error(err);
+                return reject(err);
+              }
+              return accept();
+            });
           });
-        } else {
-          throw err;
-        }
-      }).catch(function(err) {
-        if (err.statusCode === 409 && err.message) {
+        })
+        .then(function(subscription) {
+          return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
+        })
+        .then(function(extendedSponsorship) {
+          return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
+        })
+        .then(function() {
+          return reply.redirect('/org/' + planData.orgScope);
+        })
+        .catch(function(err) {
+          if (!(err.code === 'EEXIST' && err.what === 'org')) {
+            throw err;
+          }
+
+          return Org(loggedInUser).getUsers(planData.orgScope)
+            .then(function(users) {
+
+
+              users = users || {};
+              users.items = users.items || [];
+
+              var isSuperAdmin = users.items.filter(function(user) {
+                return user.role && user.role.match(/super-admin/);
+              }).some(function(admin) {
+                return admin.name === loggedInUser;
+              });
+
+              if (isSuperAdmin) {
+                opts.users = users;
+                return request.customer.getLicenseForOrg(planData.orgScope);
+              } else {
+                throw Object.assign(new Error("Org already exists"), {
+                  statusCode: 409,
+                  code: 'EEXIST',
+                  what: 'org'
+                });
+              }
+            })
+            .then(function() {
+              throw Object.assign(new Error("Customer exists"), {
+                code: 'EEXIST',
+                statusCode: 409,
+                what: 'customer'
+              });
+            })
+            .catch(function(err) {
+              if (err.code !== 'ENOCUSTOMER') {
+                throw err;
+              }
+
+              return Customer(loggedInUser).createSubscription(planInfo);
+            })
+            .then(function(license) {
+
+              license = license || {};
+              var extensions = opts.users.map(function(user) {
+                return Customer(loggedInUser).extendSponsorship(license.license_id, user.name);
+              });
+
+              return P.all(extensions);
+            })
+            .then(function(sponsorships) {
+              var acceptances = sponsorships.map(function(sponsorship) {
+                return request.customer.acceptSponsorship(sponsorship.verification_key);
+              });
+              return P.all(acceptances)
+                .catch(function(err) {
+                  if (err.statusCode !== 409) {
+                    throw err;
+                  }
+                });
+            })
+            .then(function() {
+              return reply.redirect("/org/" + planData.orgScope);
+            })
+            .catch(function(err) {
+              throw err;
+            });
+        })
+        .catch(function(err) {
+          if (!(err.statusCode === 409 && err.message)) {
+            throw err;
+          }
+
           return reply.view('org/create', {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             inUseError: true,
@@ -367,26 +437,24 @@ customer.subscribe = function(request, reply) {
             humanName: planData["human-name"],
             notices: [err]
           });
-        } else {
-          throw err;
-        }
-      }).catch(function(err) {
-        request.logger.error(err);
-        if (err.statusCode < 500) {
-          return request.saveNotifications([
-            P.reject(err.message)
-          ]).then(function(token) {
-            var url = '/org/create';
-            var param = token ? "?notice=" + token : "";
-            url = url + param;
-            return reply.redirect(url);
-          }).catch(function(err) {
-            request.logger.error(err);
-          });
-        } else {
-          return reply(err);
-        }
-      });
+        })
+        .catch(function(err) {
+          request.logger.error(err);
+          if (err.statusCode < 500) {
+            return request.saveNotifications([
+              P.reject(err.message)
+            ]).then(function(token) {
+              var url = '/org/create';
+              var param = token ? "?notice=" + token : "";
+              url = url + param;
+              return reply.redirect(url);
+            }).catch(function(err) {
+              request.logger.error(err);
+            });
+          } else {
+            return reply(err);
+          }
+        });
     }
   });
 };

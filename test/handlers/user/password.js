@@ -137,8 +137,7 @@ describe('Changing the password', function() {
         userMock.done();
         licenseMock.done();
         expect(resp.statusCode).to.equal(500);
-        var source = resp.request.response.source;
-        expect(source.template).to.include('errors/internal');
+        expect(resp.request.response.source.error).to.exist()
 
         redisSessions.dropKeysWithPrefix = oldDropKeys;
         done();

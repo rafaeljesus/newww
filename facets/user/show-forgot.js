@@ -76,21 +76,22 @@ function processToken(request, reply) {
     User.save(newAuth, function(err) {
 
       if (err) {
-        request.logger.error('Failed to set password for ' + newAuth.name);
-        request.logger.error(err);
-        reply.view('errors/internal', opts).code(500);
-        return;
+        return reply(new VError(err, "Failed to set password for %s", newAuth.name));
       }
 
       // make sure we're getting the latest user object next time we need it
-      User.dropCache(name, function() {
+      User.dropCache(name, function(err) {
+
+        if (err) {
+          return reply(new VError(err, "Unable to drop cached user object for %s", newAuth.name));
+        }
+
 
         cache.del(pwKey, function(err) {
-
           if (err) {
-            request.logger.warn('Unable to drop key ' + pwKey);
-            request.logger.warn(err);
+            return reply(new VError(err, "Unable to invalidate token for %s", newAuth.name));
           }
+
 
           opts.password = newPass;
 

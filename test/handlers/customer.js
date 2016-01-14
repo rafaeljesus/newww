@@ -963,7 +963,7 @@ describe("subscribing to an org", function() {
     });
   });
 
-  it("returns an error if the organization already exists", function(done) {
+  it("returns an error if the organization already exists, and the user is not a super-admin", function(done) {
     generateCrumb(server, function(crumb) {
       var opts = {
         url: '/settings/billing/subscribe',
@@ -1012,6 +1012,76 @@ describe("subscribing to an org", function() {
         done();
       });
     });
+  });
+
+  it("returns an error if the organization already exists, the user is a super-admin, and the org still has a license", function(done) {
+
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get("/org/bigco")
+      .reply(200, {
+        "name": "bigco",
+        "description": "",
+        "resource": {},
+        "created": "2015-07-10T20:29:37.816Z",
+        "updated": "2015-07-10T21:07:16.799Z",
+        "deleted": null
+      })
+      .get('/org/bigco/user?per_page=100&page=0')
+      .reply(200, fixtures.orgs.bigcoUsers);
+
+    var customerMock = nock("https://license-api-example.com")
+      .get("/customer/bob/stripe")
+      .reply(200, fixtures.customers.happy)
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [
+        {
+          "id": "sub_12346",
+          "current_period_end": 1439766874,
+          "current_period_start": 1437088474,
+          "quantity": 2,
+          "status": "active",
+          "interval": "month",
+          "amount": 700,
+          "license_id": 1,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
+        }
+      ]);
+
+    generateCrumb(server, function(crumb) {
+
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgScope: 'bigco',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        orgMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.request.response.source.template).to.equal('org/create');
+        var $ = cheerio.load(resp.result);
+        expect($('.notice')[0].children.length).to.equal(1);
+        expect($('.notice')[0].children[0].data).to.equal("Error: You already own this Organization");
+        done();
+      });
+    });
+
   });
 
   it("returns an error if the organization is missing a name", function(done) {

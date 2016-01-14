@@ -363,7 +363,6 @@ customer.subscribe = function(request, reply) {
           return Org(loggedInUser).getUsers(planData.orgScope)
             .then(function(users) {
 
-
               users = users || {};
               users.items = users.items || [];
 
@@ -372,6 +371,7 @@ customer.subscribe = function(request, reply) {
               }).some(function(admin) {
                 return admin.name === loggedInUser;
               });
+
 
               if (isSuperAdmin) {
                 opts.users = users;
@@ -385,7 +385,7 @@ customer.subscribe = function(request, reply) {
               }
             })
             .then(function() {
-              throw Object.assign(new Error("Customer exists"), {
+              throw Object.assign(new Error("You already own this Organization"), {
                 code: 'EEXIST',
                 statusCode: 409,
                 what: 'customer'
@@ -396,13 +396,13 @@ customer.subscribe = function(request, reply) {
                 throw err;
               }
 
-              return Customer(loggedInUser).createSubscription(planInfo);
+              return request.customer.createSubscription(planInfo);
             })
             .then(function(license) {
 
               license = license || {};
               var extensions = opts.users.map(function(user) {
-                return Customer(loggedInUser).extendSponsorship(license.license_id, user.name);
+                return request.customer.extendSponsorship(license.license_id, user.name);
               });
 
               return P.all(extensions);

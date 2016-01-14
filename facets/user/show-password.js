@@ -1,5 +1,6 @@
 var redisSessions = require("../../adapters/redis-sessions");
 var UserModel = require('../../models/user');
+var VError = require('verror');
 
 module.exports = function(request, reply) {
   var setSession = request.server.methods.user.setSession(request);
@@ -55,39 +56,32 @@ module.exports = function(request, reply) {
         }
       };
 
-      User.save(newAuth, function(er, data) {
-        if (er) {
-          request.logger.warn('Failed to change password; user=' + newAuth.name);
-          request.logger.warn(er);
-          return reply.view('errors/internal', opts).code(500);
+      User.save(newAuth, function(err, data) {
+        if (err) {
+          return reply(new VError(err, "Failed to change password for user '%s'", newAuth.name));
         }
 
-        User.dropCache(loggedInUser.name, function() {
+        User.dropCache(loggedInUser.name, function(err) {
+          if (err) {
+            return reply(new VError(err, "Unable to drop cached user object for user '%s'", newAuth.name));
+          }
 
           // Log out all of this user's existing sessions across all devices
           redisSessions.dropKeysWithPrefix(newAuth.name, function(err) {
             if (err) {
-              // TODO do we want this error to bubble up to the user?
-              request.logger.warn('Unable to drop all sessions; user=' + newAuth.name);
-              request.logger.warn(err);
-              return reply.view('errors/internal', opts).code(500);
+              return reply(new VError(err, "Unable to drop all sessions for user '%s'", newAuth.name));
             }
 
             request.logger.info("cleared all sessions; user=" + newAuth.name);
 
-            User.login(newAuth, function(er, user) {
-              if (er) {
-                request.logger.warn('Unable to log user in; user=' + newAuth.name);
-                request.logger.warn(er);
-                return reply.view('errors/internal', opts).code(500);
+            User.login(newAuth, function(err, user) {
+              if (err) {
+                return reply(new VError(err, "Unable to log in user '%s'", newAuth.name));
               }
 
               setSession(user, function(err) {
                 if (err) {
-                  // TODO consider the visibility of this error
-                  request.logger.warn('Unable to set session; user=' + user.name);
-                  request.logger.warn(err);
-                  return reply.view('errors/internal', opts).code(500);
+                  return reply(new VError(err, "Unable to set session for user '%s'", newAuth.name));
                 }
 
                 request.timing.page = 'changePass';

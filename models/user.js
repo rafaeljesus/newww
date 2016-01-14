@@ -9,6 +9,7 @@ var P = require('bluebird');
 var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
 var utils = require('../lib/utils');
+var VError = require('verror');
 
 var chimp;
 
@@ -372,9 +373,10 @@ User.prototype.save = function(user, callback) {
         return reject(err);
       }
       if (resp.statusCode > 399) {
-        err = new Error('error updating profile for ' + user.name);
-        err.statusCode = resp.statusCode;
-        return reject(err);
+        return reject(Object.assign(new VError('error updating profile for ' + user.name), {
+          statusCode: resp.statusCode,
+          what: 'user'
+        }));
       }
       return resolve(body);
     });

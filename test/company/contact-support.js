@@ -218,35 +218,5 @@ describe('sending a contact email', function() {
         });
       });
     });
-
-    it('rejects submission if `honey` is in the payload', function(done) {
-
-      generateCrumb(server, function(crumb) {
-
-        var opts = {
-          url: '/send-contact',
-          method: 'POST',
-          payload: {
-            name: 'Boom',
-            email: 'boom@bam.com',
-            subject: 'Hi!',
-            inquire: 'general',
-            message: 'This is a message.',
-            honey: 'I am a robot bear.',
-            crumb: crumb
-          },
-          headers: {
-            cookie: 'crumb=' + crumb
-          }
-        };
-
-        server.inject(opts, function(resp) {
-          expect(resp.statusCode).to.equal(400);
-          expect(resp.result.error).to.exist();
-          expect(resp.result.error).to.equal('Bad Request');
-          done();
-        });
-      });
-    });
   });
 });

@@ -52,11 +52,6 @@ exports.register = function(server, options, next) {
         return reply.continue();
       }
 
-      if (request.payload.honey && request.payload.honey.length) {
-        return reply(Boom.badRequest(request.path));
-      }
-
-      delete request.payload.honey;
       return reply.continue();
     }
 

@@ -11,16 +11,6 @@ var generateCrumb = require("../handlers/crumb.js"),
   _ = require('lodash'),
   server;
 
-// var bole = require('bole')
-  // var pretty = require('bistre')()
-
-// bole.output({
-  //     level: 'error'
-  //   , stream: pretty
-  // })
-
-// pretty.pipe(process.stdout)
-
 before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;
@@ -105,10 +95,14 @@ describe('Posting to the enterprise license purchase page', function() {
       };
 
       server.inject(opts, function(resp) {
-        expect(resp.statusCode).to.equal(403);
-        var source = resp.request.response.source;
-        expect(source).to.equal('validation error');
-        done();
+        try {
+          expect(resp.statusCode).to.equal(403);
+          var source = resp.request.response.source;
+          expect(source).to.equal('validation error');
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
     });
   });
@@ -131,10 +125,14 @@ describe('Posting to the enterprise license purchase page', function() {
       };
 
       server.inject(opts, function(resp) {
-        expect(resp.statusCode).to.equal(500);
-        var source = resp.request.response.source;
-        expect(source).to.equal('error loading customer');
-        done();
+        try {
+          expect(resp.statusCode).to.equal(500);
+          var source = resp.request.response.source;
+          expect(source).to.equal('error loading customer');
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
   });
@@ -157,10 +155,14 @@ describe('Posting to the enterprise license purchase page', function() {
       };
 
       server.inject(opts, function(resp) {
-        expect(resp.statusCode).to.equal(500);
-        var source = resp.request.response.source;
-        expect(source).to.equal('customer not found');
-        done();
+        try {
+          expect(resp.statusCode).to.equal(500);
+          var source = resp.request.response.source;
+          expect(source).to.equal('customer not found');
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
   });
@@ -183,10 +185,14 @@ describe('Posting to the enterprise license purchase page', function() {
       };
 
       server.inject(opts, function(resp) {
-        expect(resp.statusCode).to.equal(500);
-        var source = resp.request.response.source;
-        expect(source).to.equal('error validating customer ID');
-        done();
+        try {
+          expect(resp.statusCode).to.equal(500);
+          var source = resp.request.response.source;
+          expect(source).to.equal('error validating customer ID');
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
     });
   });
@@ -194,7 +200,8 @@ describe('Posting to the enterprise license purchase page', function() {
   describe('for a monthly enterprise starter pack', function() {
     it('sends an email on success', function(done) {
       var mock = nock('https://api.stripe.com')
-        .post('/v1/customers', {
+        .post('/v1/customers')
+        .query({
           card: 'tok_12345',
           plan: 'enterprise-starter-pack',
           quantity: 1,
@@ -219,11 +226,15 @@ describe('Posting to the enterprise license purchase page', function() {
         };
 
         server.inject(opts, function(resp) {
-          mock.done();
-          expect(resp.statusCode).to.equal(200);
-          var source = resp.request.response.source;
-          expect(source).to.equal('License purchase successful');
-          done();
+          try {
+            mock.done();
+            expect(resp.statusCode).to.equal(200);
+            var source = resp.request.response.source;
+            expect(source).to.equal('License purchase successful');
+            done();
+          } catch (e) {
+            done(e);
+          }
         });
       });
     });
@@ -232,7 +243,8 @@ describe('Posting to the enterprise license purchase page', function() {
   describe('for an annual enterprise starter pack', function() {
     it('sends an email on success', function(done) {
       var mock = nock('https://api.stripe.com')
-        .post('/v1/customers', {
+        .post('/v1/customers')
+        .query({
           card: 'tok_12345',
           plan: 'enterprise-starter-pack-annual',
           quantity: 1,
@@ -258,11 +270,15 @@ describe('Posting to the enterprise license purchase page', function() {
         };
 
         server.inject(opts, function(resp) {
-          mock.done();
-          expect(resp.statusCode).to.equal(200);
-          var source = resp.request.response.source;
-          expect(source).to.equal('License purchase successful');
-          done();
+          try {
+            mock.done();
+            expect(resp.statusCode).to.equal(200);
+            var source = resp.request.response.source;
+            expect(source).to.equal('License purchase successful');
+            done();
+          } catch (e) {
+            done(e)
+          }
         });
       });
     });
@@ -271,7 +287,8 @@ describe('Posting to the enterprise license purchase page', function() {
   describe('for a multi-seat license', function() {
     it('sends an email on success', function(done) {
       var mock = nock('https://api.stripe.com')
-        .post('/v1/customers', {
+        .post('/v1/customers')
+        .query({
           card: 'tok_12345',
           plan: 'enterprise-multi-seat',
           quantity: 20,
@@ -298,11 +315,15 @@ describe('Posting to the enterprise license purchase page', function() {
         };
 
         server.inject(opts, function(resp) {
-          mock.done();
-          expect(resp.statusCode).to.equal(200);
-          var source = resp.request.response.source;
-          expect(source).to.equal('License purchase successful');
-          done();
+          try {
+            mock.done();
+            expect(resp.statusCode).to.equal(200);
+            var source = resp.request.response.source;
+            expect(source).to.equal('License purchase successful');
+            done();
+          } catch (e) {
+            done(e);
+          }
         });
       });
     });

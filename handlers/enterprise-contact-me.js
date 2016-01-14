@@ -1,5 +1,6 @@
 var Joi = require('joi'),
   utils = require('../lib/utils');
+var VError = require('verror');
 
 // if they decide not to agree to the ULA
 // hit the hubspot contact-me form instead, and thank them
@@ -21,18 +22,14 @@ module.exports = function contactMe(request, reply) {
     email: request.payload.contact_customer_email,
   };
 
-  postToHubspot(process.env.HUBSPOT_FORM_NPME_CONTACT_ME, data, function(er) {
+  postToHubspot(process.env.HUBSPOT_FORM_NPME_CONTACT_ME, data, function(err) {
 
-    if (er) {
-      request.logger.error('Could not contact hubspot to register user');
-      request.logger.error(er);
-      return reply.view('errors/internal', opts).code(500);
+    if (err) {
+      return reply(new VError(err, "Could not contact hubspot to register user"));
     } else {
-
       opts.title = 'We will contact you shortly';
       return reply.view('enterprise/contact-me', opts);
     }
-  }
-  );
+  });
 
 };

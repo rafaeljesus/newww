@@ -92,9 +92,7 @@ describe('Getting to the contact me page', function() {
       server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(500);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('errors/internal');
-        expect(source.context.correlationID).to.exist();
-        expect(resp.payload).to.include(source.context.correlationID);
+        expect(source.error).to.exist();
         done();
       });
     });

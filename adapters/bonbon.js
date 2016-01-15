@@ -80,7 +80,11 @@ exports.register = function(server, options, next) {
       correlationID: request.id,
       stamp: request.server.stamp,
       features: request.features,
-      devEnv: (process.env.NODE_ENV === 'dev')
+      devEnv: (process.env.NODE_ENV === 'dev'),
+      env: {
+        NPMO_COBRAND: process.env.NPMO_COBRAND,
+        CANONICAL_HOST: process.env.CANONICAL_HOST
+      }
     };
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {

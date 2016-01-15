@@ -1084,6 +1084,103 @@ describe("subscribing to an org", function() {
 
   });
 
+  it("successfully restarts an organization, creating a customer in the process - if the org exists, and the user is not a customer, but is the super-admin of the org", function(done) {
+
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get("/org/bigco")
+      .reply(200, {
+        "name": "bigco",
+        "description": "",
+        "resource": {},
+        "created": "2015-07-10T20:29:37.816Z",
+        "updated": "2015-07-10T21:07:16.799Z",
+        "deleted": null
+      })
+      .get('/org/bigco/user?per_page=100&page=0')
+      .reply(200, fixtures.orgs.bigcoUsers);
+
+    var customerMock = nock("https://license-api-example.com")
+      .get("/customer/bob/stripe")
+      .reply(404)
+      .put("/customer/stripe")
+      .reply(200, fixtures.customers.bob)
+      .put("/customer/bob/stripe/subscription", {
+        plan: "npm-paid-org-7"
+      })
+      .reply(200, {
+        "id": "foo",
+        "license_id": 2,
+        "current_period_end": 0,
+        "current_period_start": 0,
+        "quantity": 2,
+        "status": "active",
+        "interval": "month",
+        "amount": 700,
+        "npm_org": "bigco",
+        "npm_user": "bob",
+        "product_id": "npm-paid-org-7"
+      })
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [])
+      .put("/sponsorship/2", {
+        "npm_user": "bob"
+      })
+      .reply(200, {
+        "created": "2015-08-05T20:55:54.759Z",
+        "deleted": null,
+        "id": 15,
+        "license_id": 2,
+        "npm_user": "bob",
+        "updated": "2015-08-05T20:55:54.759Z",
+        "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+        "verified": null
+      })
+      .post("/sponsorship/f56dffef-b136-429a-97dc-57a6ef035829")
+      .reply(200, {
+        "created": "2015-08-05T20:59:32.707Z",
+        "deleted": null,
+        "id": 15,
+        "license_id": 2,
+        "npm_user": "bob",
+        "updated": "2015-08-05T20:59:41.538Z",
+        "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+        "verified": true
+      });
+
+    generateCrumb(server, function(crumb) {
+
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgScope: 'bigco',
+          crumb: crumb,
+          stripeToken: 'tok_1234567890'
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(opts, function(resp) {
+        console.log(resp.statusCode);
+        userMock.done();
+        orgMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(302);
+        expect(resp.headers.location).to.equal('/org/bigco');
+        done();
+      });
+    });
+
+  });
+
   it("returns an error if the organization is missing a name", function(done) {
     generateCrumb(server, function(crumb) {
       var opts = {

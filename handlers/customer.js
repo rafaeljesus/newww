@@ -384,24 +384,32 @@ customer.subscribe = function(request, reply) {
                 });
               }
             })
-            .then(function() {
-              throw Object.assign(new Error("You already own this Organization"), {
-                code: 'EEXIST',
-                statusCode: 409,
-                what: 'customer'
-              });
+            .then(function(license) {
+              if (license && license.length) {
+                throw Object.assign(new Error("You already own this Organization"), {
+                  code: 'EEXIST',
+                  statusCode: 409,
+                  what: 'license'
+                });
+              } else {
+                throw Object.assign(new Error("No license for this org"), {
+                  code: 'ENOLICENSE',
+                  statusCode: 404
+                });
+              }
             })
             .catch(function(err) {
-              if (err.code !== 'ENOCUSTOMER') {
+              if (err.code !== 'ENOLICENSE') {
                 throw err;
               }
+
 
               return request.customer.createSubscription(planInfo);
             })
             .then(function(license) {
 
               license = license || {};
-              var extensions = opts.users.map(function(user) {
+              var extensions = opts.users.items.map(function(user) {
                 return request.customer.extendSponsorship(license.license_id, user.name);
               });
 

@@ -4,19 +4,27 @@ var generateCrumb = require("../handlers/crumb.js"),
   lab = exports.lab = Lab.script(),
   describe = lab.experiment,
   before = lab.before,
+  afterEach = lab.afterEach,
   after = lab.after,
   it = lab.test,
   expect = Code.expect,
   nock = require('nock'),
   _ = require('lodash'),
+  emailMock,
   server;
 
 before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;
+    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
     server.app.cache._cache.connection.client = {};
     done();
   });
+});
+
+afterEach(function(done) {
+  emailMock.sentMail = [];
+  done();
 });
 
 after(function(done) {
@@ -76,6 +84,37 @@ var stripeCustomer = {
   },
   default_source: 'card_15feYq4fnGb60djYJsvT2YGG'
 };
+
+function assertEmail () {
+  var expectedName = 'Boom Bam';
+  var expectedEmail = 'exists@bam.com';
+  var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
+  var expectedFrom = 'website@npmjs.com'; // fix with npm/mustache-mailer#5
+  var expectedLicenseKey = '0feed16c-0f28-4911-90f4-dfe49f7bfb41';
+  var expectedSupportEmail = 'support@npmjs.com';
+  var expectedRequirementsUrl = 'https://docs.npmjs.com/enterprise/installation#requirements';
+  var expectedInstructionsUrl = 'https://docs.npmjs.com/enterprise/installation';
+
+  var msg = emailMock.sentMail[0];
+  expect(msg.data.to).to.equal(expectedTo);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'To';
+  }).value).to.equal(expectedTo);
+  expect(msg.data.from).to.equal(expectedFrom);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'From';
+  }).value).to.equal(expectedFrom);
+  expect(msg.data.license_key).to.equal(expectedLicenseKey);
+  expect(msg.data.support_email).to.equal(expectedSupportEmail);
+  expect(msg.data.requirementsUrl).to.equal(expectedRequirementsUrl);
+  expect(msg.data.instructionsUrl).to.equal(expectedInstructionsUrl);
+  expect(msg.message.content).to.match(new RegExp(expectedName));
+  expect(msg.message.content).to.match(new RegExp(expectedEmail));
+  expect(msg.message.content).to.match(new RegExp(expectedLicenseKey));
+  expect(msg.message.content).to.match(new RegExp(expectedSupportEmail));
+  expect(msg.message.content).to.match(new RegExp(expectedRequirementsUrl));
+  expect(msg.message.content).to.match(new RegExp(expectedInstructionsUrl));
+}
 
 describe('Posting to the enterprise license purchase page', function() {
   it('errors out if the email sent is invalid', function(done) {
@@ -231,6 +270,7 @@ describe('Posting to the enterprise license purchase page', function() {
             expect(resp.statusCode).to.equal(200);
             var source = resp.request.response.source;
             expect(source).to.equal('License purchase successful');
+            assertEmail();
             done();
           } catch (e) {
             done(e);
@@ -275,6 +315,7 @@ describe('Posting to the enterprise license purchase page', function() {
             expect(resp.statusCode).to.equal(200);
             var source = resp.request.response.source;
             expect(source).to.equal('License purchase successful');
+            assertEmail();
             done();
           } catch (e) {
             done(e)
@@ -320,6 +361,7 @@ describe('Posting to the enterprise license purchase page', function() {
             expect(resp.statusCode).to.equal(200);
             var source = resp.request.response.source;
             expect(source).to.equal('License purchase successful');
+            assertEmail();
             done();
           } catch (e) {
             done(e);

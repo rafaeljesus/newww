@@ -8,7 +8,8 @@ exports.existingUser = {
   numemployees: '1-25',
   created: '2014-11-22T00:54:53.864Z',
   updated: '2015-03-13T00:09:47.632Z',
-  deleted: null
+  deleted: null,
+  verification_key: '12ab34cd-a123-4b56-789c-1de2deadbeef'
 };
 
 exports.newUser = {
@@ -18,7 +19,8 @@ exports.newUser = {
   phone: '123-456-7890',
   company: 'npm, Inc.',
   numemployees: '1-25',
-  comments: 'teehee'
+  comments: 'teehee',
+  verification_key: '12ab34cd-a123-4b56-789c-1de2deafbead'
 };
 
 exports.noLicenseUser = {
@@ -38,7 +40,7 @@ exports.licenseBrokenUser = {
 };
 
 exports.newTrial = {
-  customer_id: 'exists@bam.com',
+  customer_id: 'exists@bam.com'
 };
 
 exports.noCustomerTrial = {

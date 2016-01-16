@@ -4,6 +4,8 @@ var crypto = require('crypto');
 var fixtures = require('../fixtures.js');
 var Promise = require('bluebird');
 var assert = require('assert');
+var sendEmail = require('../../services/email/methods/send');
+var MockTransport = require('nodemailer-mock-transport');
 
 module.exports = function(server) {
   var methods = {
@@ -68,14 +70,12 @@ module.exports = function(server) {
     email: {
       send: function(template, user, redis) {
         assert(typeof redis === 'object', 'whoops need redis');
-        return new Promise(function(resolve, reject) {
 
-          if (user.email === 'lolbad@email') {
-            return reject(new Error('no bueno yo'));
-          }
+        if (user.email === 'lolbad@email') {
+          return Promise.reject(new Error('no bueno yo'))
+        }
 
-          return resolve(null);
-        });
+        return sendEmail(template, user, redis);
       }
     },
 
@@ -188,6 +188,9 @@ module.exports = function(server) {
       setSession: require('../../services/user/methods/sessions').set
     }
   };
+
+  sendEmail.mailConfig.mailTransportModule = new MockTransport();
+  methods.email.send.mailConfig = sendEmail.mailConfig;
 
   return methods;
 };

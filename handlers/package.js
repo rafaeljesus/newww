@@ -15,8 +15,7 @@ exports.show = function(request, reply) {
   };
   var loggedInUser = request.loggedInUser;
   var Download = require("../models/download").new({
-    request: request,
-    cache: require("../lib/cache")
+    request: request
   });
   var Package = PackageAgent(request.loggedInUser);
 

@@ -69,7 +69,7 @@ function sendVerificationEmail(request, reply, customer, trial) {
     .then(function() {
       return reply.view('enterprise/thanks', opts);
     })
-    .catch(function(er) {
+    .catch(function(err) {
       return reply(new VError(err, "unable to send verification email to %j", customer));
     });
 }

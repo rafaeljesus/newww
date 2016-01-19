@@ -8,15 +8,13 @@ module.exports = {
         page: page,
         title: page.title
       });
-    }, function(err) {
-      request.logger.error(err);
+    }).catch(function(err) {
       if (err.statusCode == 404) {
+        request.logger.error(err);
         return reply.view('errors/not-found', err).code(404);
       } else {
-        return reply.view('errors/internal', err).code(500);
+        return reply(err);
       }
-    }).catch(function(err) {
-      request.logger.error(err);
     });
   }
 }

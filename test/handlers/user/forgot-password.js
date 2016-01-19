@@ -4,6 +4,7 @@ var generateCrumb = require("../crumb"),
   lab = exports.lab = Lab.script(),
   describe = lab.experiment,
   before = lab.before,
+  afterEach = lab.afterEach,
   after = lab.after,
   it = lab.test,
   expect = Code.expect,
@@ -11,6 +12,7 @@ var generateCrumb = require("../crumb"),
   users = require('../../fixtures').users;
 
 var server;
+var emailMock;
 
 var postName = function(name_email, crumb) {
   return {
@@ -30,15 +32,43 @@ var postName = function(name_email, crumb) {
 before(function(done) {
   require('../../mocks/server')(function(obj) {
     server = obj;
+    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
     server.app.cache._cache.connection.client = {};
     done();
   });
+});
+
+afterEach(function(done) {
+  emailMock.sentMail = [];
+  done();
 });
 
 after(function(done) {
   delete server.app.cache._cache.connection.client;
   server.stop(done);
 });
+
+function assertEmail () {
+  var expectedName = 'bob';
+  var expectedEmail = 'bob@boom.me';
+  var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
+  var expectedFrom = 'website@npmjs.com';
+  var expectedSupportEmail = 'support@npmjs.com';
+
+  var msg = emailMock.sentMail[0];
+  expect(msg.data.to).to.equal(expectedTo);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'To';
+  }).value).to.equal(expectedTo);
+  expect(msg.data.from).to.equal(expectedFrom);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'From';
+  }).value).to.equal(expectedFrom);
+  expect(msg.data.name).to.equal(expectedName);
+  expect(msg.data.support_email).to.equal(expectedSupportEmail);
+  expect(msg.message.content).to.match(new RegExp(expectedName));
+  expect(msg.message.content).to.match(new RegExp(expectedSupportEmail));
+}
 
 describe('Accessing the forgot password page', function() {
   it('loads the forgot password page', function(done) {
@@ -194,6 +224,7 @@ describe('Looking up a user', function() {
           licenseMock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
+          assertEmail();
           done();
         });
       });
@@ -269,6 +300,7 @@ describe('Looking up a user', function() {
           licenseMock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
+          assertEmail();
           done();
         });
       });
@@ -294,6 +326,7 @@ describe('Looking up a user', function() {
           licenseMock.done();
           expect(resp.request.response.source.template).to.equal('user/password-recovery-form');
           expect(resp.statusCode).to.equal(200);
+          assertEmail();
           done();
         });
       });

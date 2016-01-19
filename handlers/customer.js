@@ -399,11 +399,11 @@ customer.subscribe = function(request, reply) {
               }
             })
             .catch(function(err) {
-              if (err.code !== 'ENOLICENSE') {
+              if (err.code !== 'ENOLICENSE' && err.code !== 'ENOCUSTOMER') {
                 throw err;
               }
 
-
+              planInfo.npm_org = planData.orgScope;
               return request.customer.createSubscription(planInfo);
             })
             .then(function(license) {

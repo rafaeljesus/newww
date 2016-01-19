@@ -4,8 +4,31 @@
 
 <a href="#">No, go back</a>
 
-<form method="POST" action="/org/{{orgName}}">
+{{#if user.email_verified}}
+
+<p class="error billing-error" style="display:none;"></p>
+
+<form method="POST" action="/settings/billing/subscribe" id="payment-form" data-stripe-public-key="{{stripePublicKey}}">
+  <label for="card-number">Card Number</label>
+  <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
+
+  <label for="card-cvc">Card security code</label>
+  <input required="required" type="text" size="4" data-stripe="cvc" placeholder="123" class="cvc" id="card-cvc" />
+
+  <label for="card-exp-month">Expiration Month</label>
+  <input required="required" type="text" size="2" data-stripe="exp-month" placeholder="MM" id="card-exp-month" />
+
+  <label for="card-exp-year">Expiration Year</label>
+  <input required="required" type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
+
+  <label for="coupon">Coupon Code</label>
+  <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon" />
+
   {{> form_security}}
-  <input type="hidden" name="updateType" value="restartUnlicensedOrg"/>
-  <button type="submit">Yes, restart this subscription</button>
+  <input type="hidden" name="planType" value="orgs">
+  <input type="hidden" name="orgScope" value="{{orgName}}">
+  <input type="submit" class="full-width" value="save my billing info">
+
 </form>
+{{/if}}
+<script src="https://js.stripe.com/v2/"></script>

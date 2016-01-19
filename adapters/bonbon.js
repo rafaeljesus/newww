@@ -114,7 +114,7 @@ exports.register = function(server, options, next) {
     // by adding a `?json` query parameter to the URL
     if ('json' in request.query &&
       Hoek.reach(request, 'response.source.context') &&
-      (process.env.NODE_ENV === "dev" || Hoek.reach(request, "loggedInUser.name") in humans)
+      (process.env.NODE_ENV === "dev" || humans.hasOwnProperty(Hoek.reach(request, "loggedInUser.name")))
     ) {
       if (request.query.json.length > 1) {
         // deep reference: ?json=profile.packages

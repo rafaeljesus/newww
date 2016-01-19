@@ -214,6 +214,16 @@ exports.npmEmployee = {
   deleted: null
 };
 
+exports.propName = {
+  name: 'constructor',
+  email: 'proto@proto.com',
+  email_verified: null,
+  verification_key: '12345',
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};
+
 exports.changePass = {
   current: '12345',
   new: 'abcde',

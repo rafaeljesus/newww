@@ -29,6 +29,8 @@ before(function(done) {
     .reply(200, fixtures.users.bob)
     .get('/user/seldo').times(3)
     .reply(200, fixtures.users.npmEmployee)
+    .get('/user/constructor')
+    .reply(200, fixtures.users.propName)
     .get('/user/bob/package?format=mini&per_page=100&page=0').times(10)
     .reply(200, fixtures.users.packages)
     .get('/user/bob/stars?format=detailed').times(10)
@@ -230,6 +232,22 @@ describe("bonbon", function() {
     });
   });
 
+  it('does not allow logged-in non-employees with obj prop names to request the view context', function(done) {
+
+    var options = {
+      url: '/~' + username1 + '?json',
+      credentials: fixtures.users.propName
+    };
+
+    expect(process.env.NODE_ENV).to.equal("production");
+    server.inject(options, function(resp) {
+      expect(resp.statusCode).to.equal(200);
+      expect(resp.headers['content-type']).to.match(/html/);
+      expect(resp.result).to.be.a.string();
+      done();
+    });
+  });
+
   it('does not allow anonymous fixtures.users to request the view context', function(done) {
 
     var options = {
@@ -245,6 +263,7 @@ describe("bonbon", function() {
       done();
     });
   });
+
 
   it('allows anyone to request the view context if NODE_ENV is `dev`', function(done) {
     process.env.NODE_ENV = "dev";

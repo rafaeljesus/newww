@@ -71,8 +71,7 @@ describe('Getting to the thank-you page', function() {
 
       server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(500);
-        var source = resp.request.response.source;
-        expect(source.template).to.equal('errors/internal');
+        expect(resp.request.response.source.error).to.exist();
         done();
       });
     });
@@ -97,8 +96,7 @@ describe('Getting to the thank-you page', function() {
 
       server.inject(opts, function(resp) {
         expect(resp.statusCode).to.equal(500);
-        var source = resp.request.response.source;
-        expect(source.template).to.equal('errors/internal');
+        expect(resp.request.response.source.error).to.exist();
         done();
       });
     });

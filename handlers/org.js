@@ -758,11 +758,20 @@ exports.restartSubscription = function(request, reply) {
   }
 
   return request.customer.getLicenseForOrg(orgName)
-    .then(function() {
-      throw Object.assign(new Error("Customer exists"), {
-        code: 'ECUSTOMEREXIST',
-        statusCode: 409
-      });
+    .then(function(license) {
+      if (license && license.length) {
+        throw Object.assign(new Error("License exists"), {
+          code: 'EEXIST',
+          statusCode: 409,
+          what: 'license'
+        });
+      } else {
+        throw Object.assign(new Error("Customer exists"), {
+          code: 'EEXIST',
+          statusCode: 409,
+          what: 'org'
+        });
+      }
 
     })
     .catch(function(err) {

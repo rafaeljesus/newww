@@ -2,7 +2,6 @@
 
 <p>We'll sponsor each user who doesn't have a Personal Plan or isn't sponsored by another organization already, and bill you for $7 each, or a minimum of $14 for the Organization.</p>
 
-<a href="#">No, go back</a>
 
 {{#if user.email_verified}}
 
@@ -27,7 +26,8 @@
   {{> form_security}}
   <input type="hidden" name="planType" value="orgs">
   <input type="hidden" name="orgScope" value="{{orgName}}">
-  <input type="submit" class="full-width" value="save my billing info">
+  <a href="{{referrer}}" class="button btn-inline btn-secondary push-down">No, go back</a>
+  <button type="submit"  class="button btn-inline push-down">save my billing info</button>
 
 </form>
 {{/if}}

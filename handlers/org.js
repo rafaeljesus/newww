@@ -789,7 +789,8 @@ exports.restartSubscription = function(request, reply) {
 
             return reply.view('org/restart-subscription', {
               stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-              orgName: orgName
+              orgName: orgName,
+              referrer: validReferrer("/settings/billing", request.info.referrer)
             });
           });
       }
@@ -850,6 +851,7 @@ exports.restartLicense = function(request, reply) {
       }
 
       opts.orgName = orgName;
+      opts.referrer = validReferrer("/settings/billing", request.info.referrer);
 
       return reply.view('org/restart-license', opts);
     })

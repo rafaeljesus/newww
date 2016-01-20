@@ -131,10 +131,11 @@
                   Last date - {{next_billing_date}}
                 </td>
               {{else}}
+                <td>--</td>
+              {{/if}}
                 <td>
                   <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
                 </td>
-              {{/if}}
             </tr>
           {{/each}}
         </tbody>

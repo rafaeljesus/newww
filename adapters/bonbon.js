@@ -52,11 +52,6 @@ exports.register = function(server, options, next) {
         return reply.continue();
       }
 
-      if (request.payload.honey && request.payload.honey.length) {
-        return reply(Boom.badRequest(request.path));
-      }
-
-      delete request.payload.honey;
       return reply.continue();
     }
 
@@ -86,7 +81,10 @@ exports.register = function(server, options, next) {
       stamp: request.server.stamp,
       features: request.features,
       devEnv: (process.env.NODE_ENV === 'dev'),
-      env: process.env,
+      env: {
+        NPMO_COBRAND: process.env.NPMO_COBRAND,
+        CANONICAL_HOST: process.env.CANONICAL_HOST
+      }
     };
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {
@@ -120,7 +118,7 @@ exports.register = function(server, options, next) {
     // by adding a `?json` query parameter to the URL
     if ('json' in request.query &&
       Hoek.reach(request, 'response.source.context') &&
-      (process.env.NODE_ENV === "dev" || Hoek.reach(request, "loggedInUser.name") in humans)
+      (process.env.NODE_ENV === "dev" || humans.hasOwnProperty(Hoek.reach(request, "loggedInUser.name")))
     ) {
       if (request.query.json.length > 1) {
         // deep reference: ?json=profile.packages

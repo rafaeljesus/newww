@@ -4,6 +4,7 @@ var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
 var PackageAgent = require("../agents/package");
 var feature = require('../lib/feature-flags');
+var marketingblob = require('npm-marketing-sidebar-blob');
 
 var DEPENDENCY_TTL = 5 * 60; // 5 minutes
 
@@ -14,8 +15,7 @@ exports.show = function(request, reply) {
   };
   var loggedInUser = request.loggedInUser;
   var Download = require("../models/download").new({
-    request: request,
-    cache: require("../lib/cache")
+    request: request
   });
   var Package = PackageAgent(request.loggedInUser);
 
@@ -59,7 +59,11 @@ exports.show = function(request, reply) {
 
       pkg.hasStats = pkg.downloads || (pkg.bugs && pkg.bugs.url) || (pkg.pull_requests && pkg.pull_requests.url);
 
+      if (!feature('npmo')) {
+        pkg.marketing = marketingblob(request.query.marketing);
+      }
       context.package = pkg;
+
       return reply.view('package/show', context);
 
     })
@@ -67,6 +71,7 @@ exports.show = function(request, reply) {
       // unpaid collaborator
       if (err.statusCode === 402) {
         reply.redirect('/settings/billing?package=' + name);
+        
         return;
       }
 

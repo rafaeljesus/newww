@@ -6,6 +6,7 @@ var generateCrumb = require("../crumb"),
   describe = lab.experiment,
   before = lab.before,
   after = lab.after,
+  afterEach = lab.afterEach,
   it = lab.test,
   expect = Code.expect,
   nock = require("nock"),
@@ -18,6 +19,7 @@ var generateCrumb = require("../crumb"),
 
 var server, cookieCrumb,
   client, redisProcess,
+  emailMock,
   newEmail = 'new@boom.me',
   oldEmail = users.bob.email;
 
@@ -37,6 +39,7 @@ var postEmail = function(emailOpts) {
 before(function(done) {
   require('../../mocks/server')(function(obj) {
     server = obj;
+    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
     done();
   });
 });
@@ -53,6 +56,11 @@ before(function(done) {
   done();
 });
 
+afterEach(function(done) {
+  emailMock.sentMail = [];
+  done();
+});
+
 after(function(done) {
   client.flushdb();
   server.stop(function() {
@@ -60,6 +68,44 @@ after(function(done) {
     done();
   });
 });
+
+function assertEmail () {
+  var expectedName = 'bob';
+  var expectedEmailOld = 'bob@boom.me';
+  var expectedEmailNew = 'new@boom.me';
+  var chgExpectedTo = '"' + expectedName + '" <' + expectedEmailOld + '>';
+  var newExpectedTo = '"' + expectedName + '" <' + expectedEmailNew + '>';
+  var expectedFrom = 'website@npmjs.com';
+  var expectedSupportEmail = 'support@npmjs.com';
+
+  var msgChange = emailMock.sentMail[0];
+  expect(msgChange.data.to).to.equal(chgExpectedTo);
+  expect(msgChange.message._headers.find(function (header) {
+    return header.key === 'To';
+  }).value).to.equal(chgExpectedTo);
+  expect(msgChange.data.from).to.equal(expectedFrom);
+  expect(msgChange.message._headers.find(function (header) {
+    return header.key === 'From';
+  }).value).to.equal(expectedFrom);
+  expect(msgChange.message.content).to.match(new RegExp(expectedName));
+  expect(msgChange.message.content).to.match(new RegExp(expectedEmailOld));
+  expect(msgChange.message.content).to.match(new RegExp(expectedEmailNew));
+  expect(msgChange.message.content).to.match(new RegExp(expectedSupportEmail));
+
+  var msgNew = emailMock.sentMail[1];
+  expect(msgNew.data.to).to.equal(newExpectedTo);
+  expect(msgNew.message._headers.find(function (header) {
+    return header.key === 'To';
+  }).value).to.equal(newExpectedTo);
+  expect(msgNew.data.from).to.equal(expectedFrom);
+  expect(msgNew.message._headers.find(function (header) {
+    return header.key === 'From';
+  }).value).to.equal(expectedFrom);
+  expect(msgNew.message.content).to.match(new RegExp(expectedName));
+  expect(msgNew.message.content).to.match(new RegExp(expectedEmailOld));
+  expect(msgNew.message.content).to.match(new RegExp(expectedEmailNew));
+  expect(msgNew.message.content).to.match(new RegExp(expectedSupportEmail));
+}
 
 describe('Accessing the email-edit page', function() {
   it('redirects unauthorized users to the login page', function(done) {
@@ -216,6 +262,7 @@ describe('Requesting an email change', function() {
       licenseMock.done();
       var source = resp.request.response.source;
       expect(source.template).to.equal('user/email-edit');
+      assertEmail();
       done();
     });
   });

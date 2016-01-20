@@ -43,37 +43,7 @@ describe('GET /settings/billing', function() {
     });
   });
 
-  describe('directs new customers to POST /settings/billing/subscribe', function() {
-    it('no error: customer, stripe, subscriptions not found', function(done) {
-
-      var userMock = nock("https://user-api-example.com")
-        .get("/user/bob")
-        .reply(200, fixtures.users.bob);
-
-      var licenseMock = nock("https://license-api-example.com")
-        .get("/customer/bob@boom.me")
-        .reply(404)
-        .get("/customer/bob/stripe").twice()
-        .reply(404)
-        .get("/customer/bob/stripe/subscription")
-        .reply(404);
-
-      var options = {
-        method: "get",
-        url: "/settings/billing",
-        credentials: fixtures.users.bob
-      };
-
-      server.inject(options, function(resp) {
-        userMock.done();
-        licenseMock.done();
-        expect(resp.statusCode).to.equal(200);
-        var $ = cheerio.load(resp.result);
-        expect($('#payment-form').attr('action')).to.equal('/settings/billing/subscribe');
-        done();
-      });
-    });
-
+  describe('Displays errors for error states', function() {
     it('error: customer not found, stripe error, subscriptions not found', function(done) {
 
       var userMock = nock("https://user-api-example.com")
@@ -128,36 +98,6 @@ describe('GET /settings/billing', function() {
         licenseMock.done();
         expect(resp.statusCode).to.equal(500);
         expect(resp.request.response.source.template).to.equal('errors/internal');
-        done();
-      });
-    });
-
-    it('no error: customer and stripe not found, subscription error', function(done) {
-
-      var userMock = nock("https://user-api-example.com")
-        .get("/user/bob")
-        .reply(200, fixtures.users.bob);
-
-      var licenseMock = nock("https://license-api-example.com")
-        .get("/customer/bob@boom.me")
-        .reply(404)
-        .get("/customer/bob/stripe").twice()
-        .reply(404)
-        .get("/customer/bob/stripe/subscription")
-        .reply(500);
-
-      var options = {
-        method: "get",
-        url: "/settings/billing",
-        credentials: fixtures.users.bob
-      };
-
-      server.inject(options, function(resp) {
-        userMock.done();
-        licenseMock.done();
-        expect(resp.statusCode).to.equal(200);
-        var $ = cheerio.load(resp.result);
-        expect($('#payment-form').attr('action')).to.equal('/settings/billing/subscribe');
         done();
       });
     });
@@ -614,11 +554,6 @@ describe('GET /settings/billing', function() {
       expect($(".card-brand").length).to.equal(0);
       expect($(".card-exp-month").length).to.equal(0);
       expect($(".card-exp-year").length).to.equal(0);
-      done();
-    });
-
-    it("displays a submit button with creation verbiage", function(done) {
-      expect($("#payment-form input[type=submit]").attr("value")).to.equal("save my billing info");
       done();
     });
 

@@ -3,25 +3,58 @@ var Code = require('code'),
   lab = exports.lab = Lab.script(),
   describe = lab.experiment,
   before = lab.before,
+  afterEach = lab.afterEach,
   after = lab.after,
   it = lab.test,
   expect = Code.expect;
 
 var server;
+var emailMock;
 
 
 before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;
+    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
     server.app.cache._cache.connection.client = {};
     done();
   }, require('../../lib/error-handler'));
+});
+
+afterEach(function(done) {
+  emailMock.sentMail = [];
+  done();
 });
 
 after(function(done) {
   delete server.app.cache._cache.connection.client;
   server.stop(done);
 });
+
+function assertEmail () {
+  var expectedName = 'Boom Bam';
+  var expectedEmail = 'exists@bam.com';
+  var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
+  var expectedFrom = 'website@npmjs.com'; // fix with npm/mustache-mailer#5
+  var expectedLicenseKey = '0feed16c-0f28-4911-90f4-dfe49f7bfb41';
+  var expectedSupportEmail = 'support@npmjs.com';
+
+  var msg = emailMock.sentMail[0];
+  expect(msg.data.to).to.equal(expectedTo);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'To';
+  }).value).to.equal(expectedTo);
+  expect(msg.data.from).to.equal(expectedFrom);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'From';
+  }).value).to.equal(expectedFrom);
+  expect(msg.data.license_key).to.equal(expectedLicenseKey);
+  expect(msg.data.support_email).to.equal(expectedSupportEmail);
+  expect(msg.message.content).to.match(new RegExp(expectedName));
+  expect(msg.message.content).to.match(new RegExp(expectedEmail));
+  expect(msg.message.content).to.match(new RegExp(expectedLicenseKey));
+  expect(msg.message.content).to.match(new RegExp(expectedSupportEmail));
+}
 
 describe('finishing the enterprise signup process', function() {
   it('takes us to the enterprise/complete page if everything goes perfectly', function(done) {
@@ -35,6 +68,7 @@ describe('finishing the enterprise signup process', function() {
       var source = resp.request.response.source;
       expect(source.template).to.equal('enterprise/complete');
       expect(source.context.email).to.equal('exists@bam.com');
+      assertEmail();
       done();
     });
   });

@@ -10,10 +10,12 @@ var Code = require('code'),
   users = require('../../fixtures').users;
 
 var server;
+var emailMock;
 
 before(function(done) {
   require('../../mocks/server')(function(obj) {
     server = obj;
+    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
     server.app.cache._cache.connection.client = {};
     done();
   });
@@ -24,6 +26,28 @@ after(function(done) {
     done();
   });
 });
+
+function assertEmail () {
+  var expectedName = 'bob';
+  var expectedEmail = 'bob@boom.me';
+  var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
+  var expectedFrom = 'website@npmjs.com';
+  var expectedSupportEmail = 'support@npmjs.com';
+
+  var msg = emailMock.sentMail[0];
+  expect(msg.data.to).to.equal(expectedTo);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'To';
+  }).value).to.equal(expectedTo);
+  expect(msg.data.from).to.equal(expectedFrom);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'From';
+  }).value).to.equal(expectedFrom);
+  expect(msg.data.name).to.equal(expectedName);
+  expect(msg.data.support_email).to.equal(expectedSupportEmail);
+  expect(msg.message.content).to.match(new RegExp(expectedName));
+  expect(msg.message.content).to.match(new RegExp(expectedSupportEmail));
+}
 
 describe('Request to resend confirmation email', function() {
 
@@ -58,6 +82,7 @@ describe('Request to resend confirmation email', function() {
       licenseMock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.equal('/profile-edit?verification-email-sent=true');
+      assertEmail();
       done();
     });
   });

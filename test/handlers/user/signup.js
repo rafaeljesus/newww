@@ -6,19 +6,27 @@ var generateCrumb = require("../crumb"),
   describe = lab.experiment,
   before = lab.before,
   after = lab.after,
+  afterEach = lab.afterEach,
   it = lab.test,
   expect = Code.expect,
   fixtures = require('../../fixtures'),
   forms = require('../../fixtures/signup'),
   server,
+  emailMock,
   cookieCrumb;
 
 before(function(done) {
   require('../../mocks/server')(function(obj) {
     server = obj;
+    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
     server.app.cache._cache.connection.client = {};
     done();
   });
+});
+
+afterEach(function(done) {
+  emailMock.sentMail = [];
+  done();
 });
 
 after(function(done) {
@@ -36,6 +44,28 @@ var postSignup = function(payload) {
     }
   };
 };
+
+function assertEmail () {
+  var expectedName = 'mikeal';
+  var expectedEmail = 'mikeal@president-of-javascript.com';
+  var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
+  var expectedFrom = 'website@npmjs.com';
+  var expectedSupportEmail = 'support@npmjs.com';
+
+  var msg = emailMock.sentMail[0];
+  expect(msg.data.to).to.equal(expectedTo);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'To';
+  }).value).to.equal(expectedTo);
+  expect(msg.data.from).to.equal(expectedFrom);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'From';
+  }).value).to.equal(expectedFrom);
+  expect(msg.data.name).to.equal(expectedName);
+  expect(msg.data.support_email).to.equal(expectedSupportEmail);
+  expect(msg.message.content).to.match(new RegExp(expectedName));
+  expect(msg.message.content).to.match(new RegExp(expectedSupportEmail));
+}
 
 describe('Signing up a new user', function() {
 
@@ -210,11 +240,11 @@ describe('Signing up a new user', function() {
       })
       .reply(200, fixtures.users.mikeal);
 
-
     server.inject(postSignup(forms.good), function(resp) {
       mock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
+      assertEmail();
       done();
     });
   });
@@ -237,6 +267,7 @@ describe('Signing up a new user', function() {
       mock.done();
       expect(resp.statusCode).to.equal(302);
       expect(resp.headers.location).to.include('profile-edit');
+      assertEmail();
       done();
     });
   });

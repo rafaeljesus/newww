@@ -4,16 +4,19 @@ var generateCrumb = require("../handlers/crumb.js"),
   lab = exports.lab = Lab.script(),
   describe = lab.experiment,
   before = lab.before,
+  afterEach = lab.afterEach,
   after = lab.after,
   it = lab.test,
   expect = Code.expect;
 
 var server;
+var emailMock;
 
 
 before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;
+    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
     server.app.cache._cache.connection.client = {};
     done();
   });
@@ -21,9 +24,36 @@ before(function(done) {
   process.env.STRIPE_PUBLIC_KEY = '12345';
 });
 
+afterEach(function(done) {
+  emailMock.sentMail = [];
+  done();
+});
+
 after(function(done) {
   server.stop(done);
 });
+
+function assertEmail (expectedEmail, expectedVerificationKey) {
+  var expectedTo = '"' + expectedEmail + '" <' + expectedEmail + '>';
+  var expectedFrom = 'website@npmjs.com';
+  var expectedSupportEmail = 'support@npmjs.com';
+
+  var msg = emailMock.sentMail[0];
+  expect(msg.data.to).to.equal(expectedTo);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'To';
+  }).value).to.equal(expectedTo);
+  expect(msg.data.from).to.equal(expectedFrom);
+  expect(msg.message._headers.find(function (header) {
+    return header.key === 'From';
+  }).value).to.equal(expectedFrom);
+  expect(msg.data.support_email).to.equal(expectedSupportEmail);
+  expect(msg.message.content).to.match(new RegExp(expectedSupportEmail));
+  expect(msg.data.verification_key).to.equal(expectedVerificationKey);
+  expect(msg.message.content).to.match(new RegExp(expectedVerificationKey));
+  expect(msg.message.content).to.match(new RegExp(expectedEmail));
+}
+
 
 describe('Getting to the enterprise license page', function() {
   it('gets there, no problem', function(done) {
@@ -210,6 +240,7 @@ describe('Posting to the enterprise license page', function() {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/check-email');
+        assertEmail('exists@bam.com', '12ab34cd-a123-4b56-789c-1de2deadbeef');
         done();
       });
     });
@@ -233,6 +264,7 @@ describe('Posting to the enterprise license page', function() {
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/check-email');
+        assertEmail('new@bam.com', '12ab34cd-a123-4b56-789c-1de2deafbead');
         done();
       });
     });

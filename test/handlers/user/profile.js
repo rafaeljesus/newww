@@ -137,8 +137,8 @@ describe('GET /~bob for logged-in bob', function() {
   });
 
   it("renders a link to billing page", function(done) {
-    expect($(".profile-edit-links a[href='/settings/billing#payment-information']").length).to.equal(1);
-    expect($(".profile-edit-links a[href='/settings/billing#payment-information']").text()).to.equal("sign up for private modules");
+    expect($(".profile-edit-links a[href='/settings/billing/subscribe']").length).to.equal(1);
+    expect($(".profile-edit-links a[href='/settings/billing/subscribe']").text()).to.equal("sign up for private modules");
     expect($('#user-info a').data('is-paid')).to.be.empty();
     done();
   });

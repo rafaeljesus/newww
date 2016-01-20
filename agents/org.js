@@ -69,42 +69,9 @@ Org.prototype.create = function(opts, callback) {
 Org.prototype.get = function(name, callback) {
   assert(_.isString(name), "name must be a string");
 
-  var self = this;
-  var orgUrl = USER_HOST + '/org/' + name;
-
-  var makeRequest = function(url) {
-    return new P(function(accept, reject) {
-
-      Request({
-        url: url,
-        json: true,
-        headers: {
-          bearer: self.bearer
-        }
-      }, function(err, resp, body) {
-        if (err) {
-          return reject(err);
-        }
-
-        if (resp.statusCode === 404) {
-          err = new Error("Org not found");
-          err.statusCode = resp.statusCode;
-          return reject(err);
-        }
-
-        if (resp.statusCode >= 400) {
-          err = new Error(body);
-          err.statusCode = resp.statusCode;
-          return reject(err);
-        }
-
-        return accept(body);
-      });
-    });
-  };
 
   var requests = [
-    makeRequest(orgUrl),
+    this.getInfo(name),
     this.getUsers(name),
     this.getPackages(name),
     this.getTeams(name)
@@ -247,6 +214,42 @@ Org.prototype.addUser = function(name, user, callback) {
       return accept(user);
     });
   }).nodeify(callback);
+};
+
+Org.prototype.getInfo = function(name) {
+  assert(_.isString(name), "name must be a string");
+
+  var url = USER_HOST + '/org/' + name;
+  var self = this;
+
+  return new P(function(accept, reject) {
+
+    Request({
+      url: url,
+      json: true,
+      headers: {
+        bearer: self.bearer
+      }
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        err = new Error("Org not found");
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body);
+    });
+  });
 };
 
 Org.prototype.getPackages = function(name, page) {

@@ -1,102 +1,79 @@
-{{#if customer}}
-<table class="ruled key-value card-info">
-  <tbody>
-    <tr>
-      <td>Card Type</td>
-      <td class="card-brand">{{customer.card.brand}}</td>
-    </tr>
-    <tr>
-      <td>Last 4 Digits</td>
-      <td class="card-last4">{{customer.card.last4}}</td>
-    </tr>
-    <tr>
-      <td>Expiration</td>
-      <td>
-        <span class="card-exp-month">{{month-name customer.card.exp_month}}</span>
-        <span class="card-exp-year">{{customer.card.exp_year}}</td></span>
-    </tr>
-  </tbody>
-</table>
-
-<p>
-  You can also
-  <a href="#" id="update-subscription-toggler">update payment info</a>
-  or
-  <a href="#" id="cancel-subscription-toggler">stop paying us</a>.
-</p>
-
-{{else}}
-<p>
-  A paid account costs just <strong>$7 a month</strong> per user, and allows you to create
-  and share an unlimited number of modules. The only limit is
-  <a href="http://www.zombo.com/" target="_blank">yourself</a>.
-</p>
-{{/if}}
-{{> errors}}
-
 {{#if user.email_verified}}
+  <h1>Billing information</h1>
+  <p class="error billing-error" style="display: none;"></p>
+  <form method="POST" id="payment-form" action="/settings/billing/subscribe" data-stripe-public-key="{{stripePublicKey}}">
+    <section>
+      {{#if orgsPlan}}
+        <p class="description">
+            <span class="included">$14/month for 2 included users</span>
+            <span class="additional">$7/month for additional users</span>
+        </p>
+        <input type="hidden" name="human-name" value="{{humanName}}"/>
+        <input type="hidden" name="orgScope" value="{{orgScope}}"/>
+        {{#if newUser}}
+          <input type="hidden" name="new-user" value="{{newUser}}"/>
+        {{/if}}
+      {{/if}}
 
-<p class="error billing-error" style="display:none;"></p>
+      {{#if personalPlan}}
+        <p class="description">
+          <span class="included">$7/month</span>
+        </p>
+      {{/if}}
 
-<form method="POST" action="/settings/billing{{#unless customer}}/subscribe{{/unless}}" id="payment-form" data-stripe-public-key="{{stripePublicKey}}" {{#if customer}}style="display:none;"{{/if}}>
-  <label for="card-number">Card Number</label>
-  <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
+      {{#if user.customer}}
+        <p>We will use the <a href="/settings/billing">billing information</a> we already have for you :-)</p>
+      {{else}}
+        <div class="inline-input-set">
+          <div class="card-number large">
+            <label for="card-number">card #</label>
+            <input required="required" type="text" name="card-number" id="card-number" />
+          </div>
 
-  <label for="card-cvc">Card security code</label>
-  <input required="required" type="text" size="4" data-stripe="cvc" placeholder="123" class="cvc" id="card-cvc" />
+          <div class="cvv small">
+            <label for="card-cvc">cvv</label>
+            <input required="required" type="text" name="card-cvc" id="card-cvc" />
+          </div><!--/.cvv-->
+        </div><!--/.inline-input-set-->
 
-  <label for="card-exp-month">Expiration Month</label>
-  <input required="required" type="text" size="2" data-stripe="exp-month" placeholder="MM" id="card-exp-month" />
+        <fieldset>
+          <legend>expiration date</legend>
+          <div class="inline-input-set">
+            <div class="month small">
+              <label for="card-exp-month"><span class="a11y-only">Month</span></label>
+              <input id="card-exp-month" required="required" type="text" minlength="1" maxlength="2" name="card-exp-month" placeholder="MM" />
+            </div><!--/.month-->
+            <div class="year small">
+              <label for="card-exp-year"><span class="a11y-only">Year</span></label>
+              <input id="card-exp-year" required="required" type="text" minlength="4" maxlength="4" name="card-exp-year" placeholder="YYYY" />
+            </div><!--/.year-->
+          </div><!--/.inline-input-set-->
+        </fieldset>
+      {{/if}}
 
-  <label for="card-exp-year">Expiration Year</label>
-  <input required="required" type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
+      {{#if personalPlan}}
+        <div class="inline-input-set">
+          <div class="coupon large">
+            <label for="coupon">Coupon Code</label>
+            <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon">
+          </div>
+        </div>
+      {{/if}}
 
-  <label for="coupon">Coupon Code</label>
-  <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon" />
-
-  {{> form_security}}
-  <input type="hidden" name="planType" value="private_modules">
-  <input type="submit" class="full-width" value="{{#if customer}}update billing info{{else}}save my billing info{{/if}}">
-
-</form>
-{{/if}}
-
-{{#if customer}}
-  <form id="cancel-subscription" action="/settings/billing/cancel" method="post" style="display: none">
-
-    {{#each orgs}}
-      <p class="notice">
-        You are cancelling billing for the organization <strong>@{{npm_org}}</strong>
-      </p>
-
-      <ul>
-        <li>All private modules in @{{npm_org}} will become unavailable.</li>
-        <li>All users paid for by @{{npm_org}} will <strong>no longer</strong> be able to access any private modules.</p>
-      </ul>
-    {{/each}}
-
-    {{#each privateModules}}
-      <p class="notice">
-        You are cancelling billing for the private modules for <strong>@{{npm_user}}</strong>. Cancelling your private npm subscription is not so scary. It will have the following effects:
-      </p>
-
-      <ul>
-        <li>
-          Your private subscription will remain active until
-          <strong data-date="{{next_billing_date}}" data-date-format="%B %e, %Y">
-            {{next_billing_date}}
-          </strong>
-        </li>
-        <li>Your regular npm account will still exist.</li>
-        <li>You can still access and publish to the public registry in all its glory.</li>
-        <li>You will NOT have access to any private modules.</li>
-        <li>Any private modules you've created will still be accessible to any paying users you've shared them with.</li>
-        <li>Should you decide to resume your paid subscription, your private modules will still exist.</li>
-      </ul>
-
-    {{/each}}
+    </section>
 
     {{> form_security}}
-    <input type="submit" value="Cancel my private npm subscription">
+    {{#if personalPlan}}
+      <input type="hidden" name="planType" value="private_modules">
+    {{/if}}
+    {{#if orgsPlan}}
+      <input type="hidden" name="planType" value="orgs">
+    {{/if}}
+    <input type="submit" value="Make it so">
+
   </form>
+  <script src="https://js.stripe.com/v2/"></script>
+
+{{else}}
+  {{> email-verify-nag}}
 {{/if}}

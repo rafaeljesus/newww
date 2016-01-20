@@ -83,10 +83,14 @@ describe("User", function() {
       };
 
       User.login(loginInfo, function(err, user) {
-        expect(err).to.be.null();
-        expect(user).to.exist();
-        userMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(user).to.exist();
+          userMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
   });
@@ -100,10 +104,14 @@ describe("User", function() {
         .reply(200, bob);
 
       User.verifyPassword(bob.name, '12345', function(err, user) {
-        expect(err).to.be.null();
-        expect(user).to.exist();
-        userMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(user).to.exist();
+          userMock.done();
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
     });
   });
@@ -130,17 +138,25 @@ describe("User", function() {
         .reply(404);
 
       User.dropCache(fixtures.users.bob.name, function(err) {
-        expect(err).to.not.exist();
-        User.get(fixtures.users.bob.name, function(err, body) {
-          userMock.done();
-          licenseMock.done();
-          expect(err).to.be.null();
-          expect(body).to.exist();
-          expect(body.name).to.equal("bob");
-          expect(body.email).to.exist();
-          expect(body.isPaid).to.be.false();
-          done();
-        });
+        try {
+          expect(err).to.not.exist();
+          User.get(fixtures.users.bob.name, function(err, body) {
+            try {
+              userMock.done();
+              licenseMock.done();
+              expect(err).to.be.null();
+              expect(body).to.exist();
+              expect(body.name).to.equal("bob");
+              expect(body.email).to.exist();
+              expect(body.isPaid).to.be.false();
+              done();
+            } catch (e) {
+              done(e);
+            }
+          });
+        } catch (e) {
+          done(e);
+        }
       });
     });
 
@@ -148,13 +164,17 @@ describe("User", function() {
       // no need for nock because no request will be made
 
       User.get(fixtures.users.bob.name, function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.exist();
+        try {
+          expect(err).to.be.null();
+          expect(body).to.exist();
 
-        expect(body.name).to.equal("bob");
-        expect(body.email).to.exist();
-        expect(body.isPaid).to.exist();
-        done();
+          expect(body.name).to.equal("bob");
+          expect(body.email).to.exist();
+          expect(body.isPaid).to.exist();
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
     });
 
@@ -168,14 +188,24 @@ describe("User", function() {
         .reply(200, fixtures.customers.bob);
 
       User.dropCache(fixtures.users.bob.name, function(err) {
-        User.get(fixtures.users.bob.name, function(err, body) {
-          expect(err).to.be.null();
-          expect(body.name).to.equal("bob");
-          expect(body.isPaid).to.be.true();
-          userMock.done();
-          licenseMock.done();
-          done();
-        });
+
+        try {
+          expect(err).to.not.exist();
+          User.get(fixtures.users.bob.name, function(err, body) {
+            try {
+              expect(err).to.be.null();
+              expect(body.name).to.equal("bob");
+              expect(body.isPaid).to.be.true();
+              userMock.done();
+              licenseMock.done();
+              done();
+            } catch (e) {
+              done(e)
+            }
+          });
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -190,35 +220,47 @@ describe("User", function() {
 
 
       User.get('foo', function(err, body) {
-        expect(err).to.exist();
-        expect(err.message).to.equal("unexpected status code 404");
-        expect(body).to.not.exist();
-        userMock.done();
-        licenseMock.done();
-        done();
+        try {
+          expect(err).to.exist();
+          expect(err.message).to.equal("unexpected status code 404");
+          expect(body).to.not.exist();
+          userMock.done();
+          licenseMock.done();
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
     });
 
     it("does not require a bearer token", function(done) {
       User.dropCache('hermione', function(err) {
-        expect(err).to.not.exist();
+        try {
+          expect(err).to.not.exist();
 
-        var userMock = nock(User.host, {
-          reqheaders: {}
-        })
-          .get('/user/hermione')
-          .reply(200);
-        var licenseMock = nock('https://license-api-example.com')
-          .get('/customer/hermione/stripe')
-          .reply(404);
+          var userMock = nock(User.host, {
+            reqheaders: {}
+          })
+            .get('/user/hermione')
+            .reply(200);
+          var licenseMock = nock('https://license-api-example.com')
+            .get('/customer/hermione/stripe')
+            .reply(404);
 
-        User.get('hermione', function(err, body) {
-          expect(err).to.be.null();
-          expect(body).to.exist();
-          userMock.done();
-          licenseMock.done();
-          done();
-        });
+          User.get('hermione', function(err, body) {
+            try {
+              expect(err).to.be.null();
+              expect(body).to.exist();
+              userMock.done();
+              licenseMock.done();
+              done();
+            } catch (e) {
+              done(e)
+            }
+          });
+        } catch (e) {
+          done(e)
+        }
       });
     });
   });
@@ -247,10 +289,14 @@ describe("User", function() {
         .reply(200, []);
 
       User.getPackages(fixtures.users.bob.name, function(err, body) {
-        packageMock.done();
-        expect(err).to.be.null();
-        expect(body).to.exist();
-        done();
+        try {
+          packageMock.done();
+          expect(err).to.be.null();
+          expect(body).to.exist();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -260,13 +306,17 @@ describe("User", function() {
         .reply(200, body);
 
       User.getPackages(fixtures.users.bob.name, function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.be.an.object();
-        expect(body.items).to.be.an.array();
-        expect(body.items[0].name).to.equal("foo");
-        expect(body.items[1].name).to.equal("bar");
-        packageMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(body).to.be.an.object();
+          expect(body.items).to.be.an.array();
+          expect(body.items[0].name).to.equal("foo");
+          expect(body.items[1].name).to.equal("bar");
+          packageMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -276,13 +326,17 @@ describe("User", function() {
         .reply(200, body);
 
       User.getPackages(fixtures.users.bob.name, function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.be.an.object();
-        expect(body.items).to.be.an.array();
-        expect(body.items[0].isPrivate).to.be.true();
-        expect(body.items[1].isPrivate).to.not.exist();
-        packageMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(body).to.be.an.object();
+          expect(body.items).to.be.an.array();
+          expect(body.items[0].isPrivate).to.be.true();
+          expect(body.items[1].isPrivate).to.not.exist();
+          packageMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -292,12 +346,16 @@ describe("User", function() {
         .reply(404);
 
       User.getPackages('foo', function(err, body) {
-        expect(err).to.exist();
-        expect(err.message).to.equal("error getting packages for user foo");
-        expect(err.statusCode).to.equal(404);
-        expect(body).to.not.exist();
-        packageMock.done();
-        done();
+        try {
+          expect(err).to.exist();
+          expect(err.message).to.equal("error getting packages for user foo");
+          expect(err.statusCode).to.equal(404);
+          expect(body).to.not.exist();
+          packageMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -317,10 +375,14 @@ describe("User", function() {
         .reply(200, body);
 
       User.getPackages('sally', function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.exist();
-        packageMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(body).to.exist();
+          packageMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -343,11 +405,15 @@ describe("User", function() {
         .reply(200, body);
 
       User.getPackages('sally', 2, function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.exist();
-        expect(body.hasMore).to.be.undefined();
-        packageMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(body).to.exist();
+          expect(body.hasMore).to.be.undefined();
+          packageMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -371,11 +437,15 @@ describe("User", function() {
         .reply(200, body);
 
       User.getPackages('sally', 0, function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.exist();
-        expect(body.hasMore).to.be.true();
-        packageMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(body).to.exist();
+          expect(body.hasMore).to.be.true();
+          packageMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
   });
@@ -387,14 +457,10 @@ describe("User", function() {
         .reply(200, fixtures.users.ownedPackages);
 
       User.getOwnedPackages('bob')
-        .catch(function(err) {
-          expect(err).to.be.null();
-        })
         .then(function(body) {
           packageMock.done();
           expect(body.items[0].name).to.equal('@bigco/boom');
-          done();
-        });
+        }).then(done, done);
     });
   });
 
@@ -406,10 +472,14 @@ describe("User", function() {
         .reply(200, ['lodash', 'nock', 'yargs']);
 
       User.getStars('bcoe', function(err, body) {
-        starMock.done();
-        expect(err).to.be.null();
-        expect(body).to.exist();
-        done();
+        try {
+          starMock.done();
+          expect(err).to.be.null();
+          expect(body).to.exist();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -419,12 +489,16 @@ describe("User", function() {
         .reply(200, ['blade', 'minimist']);
 
       User.getStars('ceej', function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.be.an.array();
-        expect(body[0]).to.equal("blade");
-        expect(body[1]).to.equal("minimist");
-        starMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(body).to.be.an.array();
+          expect(body[0]).to.equal("blade");
+          expect(body[1]).to.equal("minimist");
+          starMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -434,12 +508,16 @@ describe("User", function() {
         .reply(404);
 
       User.getStars('zeke', function(err, body) {
-        starMock.done();
-        expect(err).to.exist();
-        expect(err.message).to.equal("error getting stars for user zeke");
-        expect(err.statusCode).to.equal(404);
-        expect(body).to.not.exist();
-        done();
+        try {
+          starMock.done();
+          expect(err).to.exist();
+          expect(err.message).to.equal("error getting stars for user zeke");
+          expect(err.statusCode).to.equal(404);
+          expect(body).to.not.exist();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -459,10 +537,14 @@ describe("User", function() {
         .reply(200, 'something');
 
       User.getStars('rod11', function(err, body) {
-        expect(err).to.be.null();
-        expect(body).to.exist();
-        starMock.done();
-        done();
+        try {
+          expect(err).to.be.null();
+          expect(body).to.exist();
+          starMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -483,10 +565,14 @@ describe("User", function() {
   describe("lookup users by email", function() {
     it("returns an error for invalid email addresses", function(done) {
       User.lookupEmail('barf', function(err, usernames) {
-        expect(err).to.exist();
-        expect(err.statusCode).to.equal(400);
-        expect(usernames).to.be.undefined();
-        done();
+        try {
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(400);
+          expect(usernames).to.be.undefined();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -496,12 +582,16 @@ describe("User", function() {
         .reply(200, ['user', 'user2']);
 
       User.lookupEmail('ohai@boom.com', function(err, usernames) {
-        expect(err).to.not.exist();
-        expect(usernames).to.be.an.array();
-        expect(usernames[0]).to.equal('user');
-        expect(usernames[1]).to.equal('user2');
-        lookupMock.done();
-        done();
+        try {
+          expect(err).to.not.exist();
+          expect(usernames).to.be.an.array();
+          expect(usernames[0]).to.equal('user');
+          expect(usernames[1]).to.equal('user2');
+          lookupMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -511,11 +601,15 @@ describe("User", function() {
         .reply(400, []);
 
       User.lookupEmail('ohai@boom.com', function(err, usernames) {
-        expect(err).to.exist();
-        expect(err.statusCode).to.equal(400);
-        expect(usernames).to.not.exist();
-        lookupMock.done();
-        done();
+        try {
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(400);
+          expect(usernames).to.not.exist();
+          lookupMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
   });
@@ -538,11 +632,15 @@ describe("User", function() {
         .reply(400);
 
       User.signup(signupInfo, function(err, user) {
-        expect(err).to.exist();
-        expect(err.statusCode).to.equal(400);
-        expect(user).to.not.exist();
-        signupMock.done();
-        done();
+        try {
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(400);
+          expect(user).to.not.exist();
+          signupMock.done();
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
     });
 
@@ -552,11 +650,15 @@ describe("User", function() {
         .reply(200, userObj);
 
       User.signup(signupInfo, function(err, user) {
-        expect(err).to.not.exist();
-        expect(user).to.exist();
-        expect(user.name).to.equal(signupInfo.name);
-        signupMock.done();
-        done();
+        try {
+          expect(err).to.not.exist();
+          expect(user).to.exist();
+          expect(user.name).to.equal(signupInfo.name);
+          signupMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -595,10 +697,14 @@ describe("User", function() {
           email: 'boom@boom.com',
           npmweekly: "on"
         }, function(er, user) {
-          expect(er).to.not.exist();
-          // userMock.done();
-          expect(spy.calledWith(params)).to.be.true();
-          done();
+          try {
+            expect(er).to.not.exist();
+            // userMock.done();
+            expect(spy.calledWith(params)).to.be.true();
+            done();
+          } catch (e) {
+            done(e)
+          }
         });
       });
 
@@ -619,8 +725,12 @@ describe("User", function() {
           verify: '12345',
           email: 'boom@boom.com'
         }, function(er, user) {
-          expect(spy.called).to.be.false();
-          done();
+          try {
+            expect(spy.called).to.be.false();
+            done();
+          } catch (e) {
+            done(e)
+          }
         });
       });
     });
@@ -650,11 +760,15 @@ describe("User", function() {
         .reply(400);
 
       User.save(profile, function(err, user) {
-        expect(err).to.exist();
-        expect(err.statusCode).to.equal(400);
-        expect(user).to.not.exist();
-        saveMock.done();
-        done();
+        try {
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(400);
+          expect(user).to.not.exist();
+          saveMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -664,12 +778,16 @@ describe("User", function() {
         .reply(200, userObj);
 
       User.save(profile, function(err, user) {
-        expect(err).to.not.exist();
-        expect(user).to.exist();
-        expect(user.name).to.equal('npmjs');
-        expect(user.email).to.equal('support@npmjs.com');
-        saveMock.done();
-        done();
+        try {
+          expect(err).to.not.exist();
+          expect(user).to.exist();
+          expect(user.name).to.equal('npmjs');
+          expect(user.email).to.equal('support@npmjs.com');
+          saveMock.done();
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
   });
@@ -690,11 +808,15 @@ describe("User", function() {
         .reply(400);
 
       User.toOrg("npmjs", "npmjs-admin", function(err, data) {
-        userMock.done();
-        expect(err).to.exist();
-        expect(err.statusCode).to.equal(400);
-        expect(err.message).to.equal("you need authentication to give ownership of the new org to another existing user");
-        done();
+        try {
+          userMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(400);
+          expect(err.message).to.equal("you need authentication to give ownership of the new org to another existing user");
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -713,11 +835,15 @@ describe("User", function() {
         .reply(409);
 
       User.toOrg("npmjs", "bigco", function(err, data) {
-        userMock.done();
-        expect(err).to.exist();
-        expect(err.statusCode).to.equal(409);
-        expect(err.message).to.equal("a user or org already exists with the username you're trying to create as an owner");
-        done();
+        try {
+          userMock.done();
+          expect(err).to.exist();
+          expect(err.statusCode).to.equal(409);
+          expect(err.message).to.equal("a user or org already exists with the username you're trying to create as an owner");
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
 
@@ -745,10 +871,14 @@ describe("User", function() {
         .reply(200, orgObj);
 
       User.toOrg("npmjs", "npmjs-admin", function(err, data) {
-        userMock.done();
-        expect(err).to.be.null();
-        expect(data.name).to.equal("npmjs");
-        done();
+        try {
+          userMock.done();
+          expect(err).to.be.null();
+          expect(data.name).to.equal("npmjs");
+          done();
+        } catch (e) {
+          done(e)
+        }
       });
     });
   });
@@ -814,14 +944,9 @@ describe("User", function() {
         })
         .reply(200);
 
-      User.logoutCliToken(token)
-        .catch(function(err) {
-          expect(err).to.not.exist();
-        })
-        .then(function() {
-          userMock.done();
-          done();
-        });
+      User.logoutCliToken(token).then(function() {
+        userMock.done();
+      }).then(done, done);
     });
 
     it('returns an error if unable to log out a specific token', function(done) {

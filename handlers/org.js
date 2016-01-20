@@ -393,7 +393,7 @@ exports.deleteOrgConfirm = function(request, reply) {
   request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
     return reply.view('user/billing-confirm-cancel', {
       subscription: subscription,
-      referrer: validReferrer(request.info.referrer, "/settings/billing")
+      referrer: validReferrer("/settings/billing", request.info.referrer)
     });
   }, function(err) {
     if (err.statusCode == 404) {

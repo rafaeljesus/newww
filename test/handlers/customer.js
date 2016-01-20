@@ -1108,7 +1108,8 @@ describe("subscribing to an org", function() {
       .put("/customer/stripe")
       .reply(200, fixtures.customers.bob)
       .put("/customer/bob/stripe/subscription", {
-        plan: "npm-paid-org-7"
+        plan: "npm-paid-org-7",
+        npm_org: "bigco"
       })
       .reply(200, {
         "id": "foo",

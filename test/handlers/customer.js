@@ -500,7 +500,6 @@ describe('GET /settings/billing', function() {
     });
 
     it("has an expired license and past_due status", function(done) {
-      // console.log('==BOOM==', resp.request.response.source.context)
       expect(resp.request.response.source.context.customer.status).to.equal("past_due");
       expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
       done();
@@ -1169,7 +1168,6 @@ describe("subscribing to an org", function() {
       };
 
       server.inject(opts, function(resp) {
-        console.log(resp.statusCode);
         userMock.done();
         orgMock.done();
         customerMock.done();

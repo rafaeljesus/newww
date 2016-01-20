@@ -23,6 +23,11 @@ If you're keen on tackling something, go for it! To contribute:
 
 Not sure what to work on? Take a look at the issues under the [Patch Welcome label](https://github.com/npm/newww/labels/patch%20welcome)!
 
+### Security Issues
+
+Email security@npmjs.com and wait at least 1 working day for a reply.
+We, and our users, appreciate your confidentiality and discretion. 
+
 ### Tests
 
 Please make sure your tests pass. Pull requests without passing tests (or relevant tests that have been added) will not be merged.

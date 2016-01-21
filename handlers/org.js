@@ -766,6 +766,8 @@ exports.restartSubscription = function(request, reply) {
           what: 'license'
         });
       } else {
+        // getLicenseForOrg's API call returns a 404 if the customer does not
+        // exist, but returns OK:[] if the customer exists but the license does not
         throw Object.assign(new Error("Customer exists"), {
           code: 'EEXIST',
           statusCode: 409,

@@ -117,6 +117,12 @@ var publicRoutes = [
       return reply.redirect("/onsite").code(301);
     }
   }, {
+    path: "/security",
+    method: "GET",
+    handler: function(request, reply) {
+      return reply.redirect("/policies/security").code(301);
+    }
+  }, {
     path: "/onsite",
     feature: '!npmo',
     method: "GET",

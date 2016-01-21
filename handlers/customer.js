@@ -336,15 +336,8 @@ customer.subscribe = function(request, reply) {
           if (typeof subscription === 'string') {
             request.logger.info("created subscription: ", planInfo);
           }
-          return new P(function(accept, reject) {
-            User.new(request).dropCache(loggedInUser, function(err) {
-              if (err) {
-                request.logger.error(err);
-                return reject(err);
-              }
-              return accept();
-            });
-          });
+          var dropCache = P.promisify(User.new(request).dropCache);
+          return dropCache(loggedInUser);
         })
         .then(function(subscription) {
           return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);

@@ -421,9 +421,6 @@ customer.subscribe = function(request, reply) {
             })
             .then(function() {
               return reply.redirect("/org/" + planData.orgScope);
-            })
-            .catch(function(err) {
-              throw err;
             });
         })
         .catch(function(err) {

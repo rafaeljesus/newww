@@ -437,8 +437,8 @@ customer.subscribe = function(request, reply) {
           });
         })
         .catch(function(err) {
-          request.logger.error(err);
           if (err.statusCode < 500) {
+            request.logger.error(err);
             return request.saveNotifications([
               P.reject(err.message)
             ]).then(function(token) {

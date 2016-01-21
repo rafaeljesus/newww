@@ -393,7 +393,7 @@ exports.deleteOrgConfirm = function(request, reply) {
   request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
     return reply.view('user/billing-confirm-cancel', {
       subscription: subscription,
-      referrer: validReferrer(request.info.referrer, "/settings/billing")
+      referrer: validReferrer("/settings/billing", request.info.referrer)
     });
   }, function(err) {
     if (err.statusCode == 404) {
@@ -738,6 +738,99 @@ exports.getUser = function getUser(request, reply) {
     });
 };
 
+exports.restartSubscription = function(request, reply) {
+  var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  if (invalidUserName(orgName)) {
+    var err = new Error("Org Scope must be valid name");
+    return request.saveNotifications([
+      P.reject(err.message)
+    ]).then(function(token) {
+      var url = '/org/' + orgName;
+      var param = token ? "?notice=" + token : "";
+
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+
+  return request.customer.getLicenseForOrg(orgName)
+    .then(function(license) {
+      if (license && license.length) {
+        throw Object.assign(new Error("License exists"), {
+          code: 'EEXIST',
+          statusCode: 409,
+          what: 'license'
+        });
+      } else {
+        // getLicenseForOrg's API call returns a 404 (ENOCUSTOMER) if the customer
+        // does not exist, but returns OK:[] if the customer exists but the license does not
+        throw Object.assign(new Error("Customer exists"), {
+          code: 'EEXIST',
+          statusCode: 409,
+          what: 'org'
+        });
+      }
+
+    })
+    .catch(function(err) {
+      if (err.code !== 'ENOCUSTOMER') {
+        throw err;
+      } else {
+        return Org(loggedInUser).getUsers(orgName)
+          .then(function(users) {
+            users = users || {};
+            users.items = users.items || [];
+
+            var isSuperAdmin = users.items.filter(function(user) {
+              return user.role && user.role.match(/super-admin/);
+            }).some(function(admin) {
+              return admin.name === loggedInUser;
+            });
+
+            if (!isSuperAdmin) {
+              throw Object.assign(new Error(loggedInUser + ' does not have permission to view this page'), {
+                code: 'EACCES',
+                statusCode: 403
+              });
+            }
+
+            return reply.view('org/restart-subscription', {
+              stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+              orgName: orgName,
+              referrer: validReferrer("/settings/billing", request.info.referrer)
+            });
+          });
+      }
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      }
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply(err);
+      }
+    });
+
+};
+
 exports.restartLicense = function(request, reply) {
   var opts = {};
   var orgName = request.params.org;
@@ -769,6 +862,7 @@ exports.restartLicense = function(request, reply) {
       }
 
       opts.orgName = orgName;
+      opts.referrer = validReferrer("/settings/billing", request.info.referrer);
 
       return reply.view('org/restart-license', opts);
     })
@@ -915,6 +1009,10 @@ exports.restartOrg = function(request, reply) {
 
       if (err.code === 'ENOLICENSE') {
         return reply.redirect("/org/" + orgName + "/restart-license");
+      }
+
+      if (err.code === 'ENOCUSTOMER') {
+        return reply.redirect("/org/" + orgName + "/restart");
       }
 
       if (err.statusCode < 500) {

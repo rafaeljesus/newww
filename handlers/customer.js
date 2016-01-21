@@ -285,21 +285,29 @@ customer.subscribe = function(request, reply) {
         });
       }
 
+      var opts = {};
+
 
       Org(loggedInUser)
-        .get(planData.orgScope).then(function() {
-        var err = new Error("Org already exists");
-        err.isUserError = true;
-        throw err;
-      }).catch(function(err) {
-        if (err.statusCode !== 404) {
-          throw err;
-        }
+        .getInfo(planData.orgScope)
+        .then(function() {
+          throw Object.assign(new Error("Org already exists"), {
+            code: 'EEXIST',
+            statusCode: 409,
+            what: 'org'
+          });
+        })
+        .catch(function(err) {
+          if (err.statusCode !== 404) {
+            throw err;
+          }
 
-        // org doesn't yet exist, transfer user then create org
-        var start = newUser ? User.new(request).toOrg(loggedInUser, newUser) : P.resolve(null);
+          // org doesn't yet exist, transfer user then create org
+          var start = newUser ? User.new(request).toOrg(loggedInUser, newUser) : P.resolve(null);
 
-        return start.then(function(newUserData) {
+          return start;
+        })
+        .then(function(newUserData) {
           var setSession = P.promisify(request.server.methods.user.setSession(request));
           var delSession = P.promisify(request.server.methods.user.delSession(request));
           loggedInUser = newUserData ? newUser : loggedInUser;
@@ -311,7 +319,7 @@ customer.subscribe = function(request, reply) {
                 return setSession({
                   name: loggedInUser
                 });
-              })
+              });
           } else {
             return Org(loggedInUser)
               .create({
@@ -319,43 +327,107 @@ customer.subscribe = function(request, reply) {
                 humanName: planData["human-name"]
               });
           }
-        }).then(function() {
-          planInfo.npm_org = planData.orgScope;
-          return Customer(loggedInUser).createSubscription(planInfo)
-            .tap(function(subscription) {
-              if (typeof subscription === 'string') {
-                request.logger.info("created subscription: ", planInfo);
-              }
-              return new P(function(accept, reject) {
-                User.new(request).dropCache(loggedInUser, function(err) {
-                  if (err) {
-                    request.logger.error(err);
-                    return reject(err);
-                  }
-                  return accept();
-                });
-              });
-            }).then(function(subscription) {
-            return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
-          }).then(function(extendedSponsorship) {
-            return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
-          }).then(function() {
-            return reply.redirect('/org/' + planData.orgScope);
-          });
         })
-          .catch(function(err) {
-            request.logger.error(err);
+        .then(function() {
+          planInfo.npm_org = planData.orgScope;
+          return Customer(loggedInUser).createSubscription(planInfo);
+        })
+        .tap(function(subscription) {
+          if (typeof subscription === 'string') {
+            request.logger.info("created subscription: ", planInfo);
+          }
+          var dropCache = P.promisify(User.new(request).dropCache);
+          return dropCache(loggedInUser);
+        })
+        .then(function(subscription) {
+          return Customer(loggedInUser).extendSponsorship(subscription.license_id, loggedInUser);
+        })
+        .then(function(extendedSponsorship) {
+          return Customer(loggedInUser).acceptSponsorship(extendedSponsorship.verification_key);
+        })
+        .then(function() {
+          return reply.redirect('/org/' + planData.orgScope);
+        })
+        .catch(function(err) {
+          if (!(err.code === 'EEXIST' && err.what === 'org')) {
             throw err;
-          });
-      }).catch(function(err) {
-        request.logger.error(err);
+          }
 
-        if (err.isUserError) {
-          return reply.view('org/create', {
-            stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-            notices: [err]
-          });
-        } else if (err.statusCode === 409 && err.message) {
+          return Org(loggedInUser).getUsers(planData.orgScope)
+            .then(function(users) {
+
+              users = users || {};
+              users.items = users.items || [];
+
+              var isSuperAdmin = users.items.filter(function(user) {
+                return user.role && user.role.match(/super-admin/);
+              }).some(function(admin) {
+                return admin.name === loggedInUser;
+              });
+
+
+              if (isSuperAdmin) {
+                opts.users = users;
+                return request.customer.getLicenseForOrg(planData.orgScope);
+              } else {
+                throw Object.assign(new Error("Org already exists"), {
+                  statusCode: 409,
+                  code: 'EEXIST',
+                  what: 'org'
+                });
+              }
+            })
+            .then(function(license) {
+              if (license && license.length) {
+                throw Object.assign(new Error("You already own this Organization"), {
+                  code: 'EEXIST',
+                  statusCode: 409,
+                  what: 'license'
+                });
+              } else {
+                throw Object.assign(new Error("No license for this org"), {
+                  code: 'ENOLICENSE',
+                  statusCode: 404
+                });
+              }
+            })
+            .catch(function(err) {
+              if (err.code !== 'ENOLICENSE' && err.code !== 'ENOCUSTOMER') {
+                throw err;
+              }
+
+              planInfo.npm_org = planData.orgScope;
+              return request.customer.createSubscription(planInfo);
+            })
+            .then(function(license) {
+
+              license = license || {};
+              var extensions = opts.users.items.map(function(user) {
+                return request.customer.extendSponsorship(license.license_id, user.name);
+              });
+
+              return P.all(extensions);
+            })
+            .then(function(sponsorships) {
+              var acceptances = sponsorships.map(function(sponsorship) {
+                return request.customer.acceptSponsorship(sponsorship.verification_key);
+              });
+              return P.all(acceptances)
+                .catch(function(err) {
+                  if (err.statusCode !== 409) {
+                    throw err;
+                  }
+                });
+            })
+            .then(function() {
+              return reply.redirect("/org/" + planData.orgScope);
+            });
+        })
+        .catch(function(err) {
+          if (!(err.statusCode === 409 && err.message)) {
+            throw err;
+          }
+
           return reply.view('org/create', {
             stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
             inUseError: true,
@@ -363,10 +435,24 @@ customer.subscribe = function(request, reply) {
             humanName: planData["human-name"],
             notices: [err]
           });
-        } else {
-          return reply.view('errors/internal', err).code(500);
-        }
-      });
+        })
+        .catch(function(err) {
+          if (err.statusCode < 500) {
+            request.logger.error(err);
+            return request.saveNotifications([
+              P.reject(err.message)
+            ]).then(function(token) {
+              var url = '/org/create';
+              var param = token ? "?notice=" + token : "";
+              url = url + param;
+              return reply.redirect(url);
+            }).catch(function(err) {
+              request.logger.error(err);
+            });
+          } else {
+            return reply(err);
+          }
+        });
     }
   });
 };

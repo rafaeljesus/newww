@@ -94,7 +94,7 @@ describe("Customer", function() {
       Customer.getStripeData(function(err, body) {
         customerMock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal("customer not found: foo");
+        expect(err.message).to.equal("Customer not found: foo");
         expect(err.statusCode).to.equal(404);
         done();
       });

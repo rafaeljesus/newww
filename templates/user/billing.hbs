@@ -131,10 +131,21 @@
                   Last date - {{next_billing_date}}
                 </td>
               {{else}}
-                <td>
-                  <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
-                </td>
+                <td>--</td>
               {{/if}}
+                <td>
+                {{#if cancel_at_period_end}}
+                  <form action="/org/{{npm_org}}" method="POST">
+                    <input type="hidden" name="updateType" value="restartOrg">
+                    {{#with ../../this}}
+                    {{> form_security}}
+                    {{/with}}
+                    <button type="submit" title="restart organization" class="icon-restart"><span class="a11y-only">restart payment for organization {{npm_org}}</span></button>
+                  </form>
+                {{else}}
+                  <a href="/org/{{npm_org}}/confirm-delete" title="delete organization" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
+                {{/if}}
+                </td>
             </tr>
           {{/each}}
         </tbody>

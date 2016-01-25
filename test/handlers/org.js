@@ -318,7 +318,7 @@ describe('getting an org', function() {
       }, function(err, notice) {
         expect(err).to.not.exist();
         expect(notice.notices).to.be.array();
-        expect(notice.notices[0]).to.equal('You are not authorized to access this page');
+        expect(notice.notices[0].notice).to.equal('You are not authorized to access this page');
         done();
       });
     });
@@ -613,7 +613,7 @@ describe('getting an org', function() {
       }, function(err, notice) {
         expect(err).to.not.exist();
         expect(notice.notices).to.be.array();
-        expect(notice.notices[0]).to.equal('You are not authorized to access this page');
+        expect(notice.notices[0].notice).to.equal('You are not authorized to access this page');
         done();
       });
     });
@@ -991,7 +991,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('user not found');
+            expect(notice.notices[0].notice).to.equal('user not found');
             done();
           });
         });
@@ -1058,7 +1058,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('No license for org bigco found');
+            expect(notice.notices[0].notice).to.equal('No license for org bigco found');
             done();
           });
         });
@@ -1129,7 +1129,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('The sponsorship license number 1 is not found');
+            expect(notice.notices[0].notice).to.equal('The sponsorship license number 1 is not found');
             done();
           });
         });
@@ -1211,7 +1211,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('The verification key used for accepting this sponsorship does not exist');
+            expect(notice.notices[0].notice).to.equal('The verification key used for accepting this sponsorship does not exist');
             done();
           });
         });
@@ -1413,7 +1413,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal("No license for org bigco found");
+            expect(notice.notices[0].notice).to.equal("No license for org bigco found");
             done();
           });
         });
@@ -1472,7 +1472,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('user or licenseId not found');
+            expect(notice.notices[0].notice).to.equal('user or licenseId not found');
             done();
           });
         });
@@ -1522,7 +1522,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('org or user not found');
+            expect(notice.notices[0].notice).to.equal('org or user not found');
             done();
           });
         });
@@ -1930,7 +1930,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('Org not found');
+            expect(notice.notices[0].notice).to.equal('Org not found');
             done();
           });
         });
@@ -2063,7 +2063,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('Org not found');
+            expect(notice.notices[0].notice).to.equal('Org not found');
             done();
           });
         });
@@ -2274,7 +2274,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('org not found');
+          expect(notice.notices[0].notice).to.equal('org not found');
           done();
         });
       });
@@ -2319,7 +2319,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('The license for bigco already exists.');
+          expect(notice.notices[0].notice).to.equal('The license for bigco already exists.');
           done();
         });
       });
@@ -2366,7 +2366,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('bob does not have permission to view this page');
+          expect(notice.notices[0].notice).to.equal('bob does not have permission to view this page');
           done();
         });
       });
@@ -2468,7 +2468,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('Customer exists');
+          expect(notice.notices[0].notice).to.equal('Customer exists');
           done();
         });
       });
@@ -2512,7 +2512,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('betty does not have permission to view this page');
+          expect(notice.notices[0].notice).to.equal('betty does not have permission to view this page');
           done();
         });
       });
@@ -2597,7 +2597,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('org not found');
+            expect(notice.notices[0].notice).to.equal('org not found');
             done();
           });
         });
@@ -2651,7 +2651,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('The license for bigco already exists.');
+            expect(notice.notices[0].notice).to.equal('The license for bigco already exists.');
             done();
           });
         });
@@ -2707,7 +2707,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('bob does not have permission to restart this organization');
+            expect(notice.notices[0].notice).to.equal('bob does not have permission to restart this organization');
             done();
           });
         });

@@ -1209,8 +1209,8 @@ describe("subscribing to an org", function() {
         customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
-        expect(context.notices).to.be.an.array();
-        expect(context.notices[0]).to.equal('orgScope is not allowed to be empty');
+        expect(context.errorNotices).to.be.an.array();
+        expect(context.errorNotices[0]).to.equal('orgScope is not allowed to be empty');
         done();
       });
     });
@@ -1245,8 +1245,8 @@ describe("subscribing to an org", function() {
         customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
-        expect(context.notices).to.be.an.array();
-        expect(context.notices[0]).to.equal('name cannot start with an underscore');
+        expect(context.errorNotices).to.be.an.array();
+        expect(context.errorNotices[0]).to.equal('name cannot start with an underscore');
         done();
       });
     });
@@ -1325,8 +1325,8 @@ describe("subscribing to an org", function() {
         customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
-        expect(context.notices).to.be.an.array();
-        expect(context.notices[0].message).to.equal("The provided Org's @scope name is already in use");
+        expect(context.errorNotices).to.be.an.array();
+        expect(context.errorNotices[0].message).to.equal("The provided Org's @scope name is already in use");
         done();
       });
     });

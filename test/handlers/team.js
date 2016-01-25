@@ -209,7 +209,7 @@ describe('team', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('Invalid Org Name.');
+            expect(notice.notices[0].notice).to.equal('Invalid Org Name.');
             done();
           });
         });
@@ -256,7 +256,7 @@ describe('team', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('Invalid Team Name.');
+            expect(notice.notices[0].notice).to.equal('Invalid Team Name.');
             done();
           });
         });
@@ -620,7 +620,7 @@ describe('team', function() {
             }, function(error, noticeContainer) {
               expect(error).to.not.exist();
               expect(noticeContainer.notices).to.be.array();
-              expect(noticeContainer.notices[0]).to.equal('You do not have permission to perform this operation.');
+              expect(noticeContainer.notices[0].notice).to.equal('You do not have permission to perform this operation.');
 
               done();
             })
@@ -1535,7 +1535,7 @@ describe('team', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('User does not have the appropriate permissions to reach this page');
+          expect(notice.notices[0].notice).to.equal('User does not have the appropriate permissions to reach this page');
           done();
         });
       });
@@ -1718,7 +1718,7 @@ describe('team', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('user must be admin to perform this operation');
+            expect(notice.notices[0].notice).to.equal('user must be admin to perform this operation');
             done();
           });
         });

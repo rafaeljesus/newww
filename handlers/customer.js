@@ -197,7 +197,7 @@ customer.subscribe = function(request, reply) {
 
         return reply.view('org/create', {
           stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-          notices: notices
+          errorNotices: notices
         });
       } else {
         notices = err.details.map(function(e) {
@@ -281,7 +281,7 @@ customer.subscribe = function(request, reply) {
       if (valid.errors) {
         return reply.view('org/create', {
           stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-          notices: valid.errors
+          errorNotices: valid.errors
         });
       }
 
@@ -433,7 +433,7 @@ customer.subscribe = function(request, reply) {
             inUseError: true,
             orgScope: planData.orgScope,
             humanName: planData["human-name"],
-            notices: [err]
+            errorNotices: [err]
           });
         })
         .catch(function(err) {

@@ -12,7 +12,9 @@
     If you need more than 100 seats, please email <a href="mailto:sales@npmjs.com">sales@npmjs.com</a></p>
 
     <form>
-      <input type="hidden" data-key="{{stripeKey}}">
+      <input type="hidden" data-stripe-key="{{stripeKey}}">
+      <input type="hidden" id="billing-email" value="{{billingEmail}}">
+      <input type="hidden" id="customer-id" value="{{customerId}}">
       <p>Number of seats:
         <select name="multi-seat-count" id="multi-seat-count">
           <option value="10">10</option>

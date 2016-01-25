@@ -421,6 +421,21 @@ exports.deleteOrgConfirm = function(request, reply) {
 exports.deleteOrg = function(request, reply) {
   var orgToDelete = request.params.org;
 
+  if (invalidUserName(orgToDelete)) {
+    var err = new Error("Org Scope must be valid name");
+    return request.saveNotifications([
+      P.reject(err.message)
+    ]).then(function(token) {
+      var url = '/settings/billing';
+      var param = token ? "?notice=" + token : "";
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+
+
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
       return reply(err);

@@ -39,33 +39,6 @@ module.exports = function() {
       }
     });
 
-    $('#buy-starter-pack').click(function(e) {
-      subType = parseInt($("input[name='starter-pack-plan']:checked").val());
-      var description;
-      switch (subType) {
-        case 1:
-          description = "Starter Pack, billed monthly";
-          amount = 2500;
-          quantity = 1;
-          break;
-        case 2:
-          description = "One-year license for Starter Pack";
-          amount = 30000;
-          quantity = 1;
-          break;
-        default:
-          console.error("No starter pack was chosen.");
-          return false;
-      }
-
-      handler.open({
-        name: 'npm, Inc.',
-        description: description,
-        amount: amount
-      });
-      e.preventDefault();
-    });
-
     $('#buy-multi-seat').click(function(e) {
       subType = 3;
       var seatString = $('#multi-seat-count').val();

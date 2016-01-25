@@ -63,18 +63,6 @@ module.exports = function(request, reply) {
       // pick a plan based on their selection
       var stripePlan, stripeQuantity, stripeDescription, licenseSeats;
       switch (token.subType) {
-        case SUB_TYPE_MONTHLY:
-          stripePlan = "enterprise-starter-pack";
-          stripeDescription = "npm On-Site Starter Pack";
-          licenseSeats = 5;
-          stripeQuantity = 1;
-          break;
-        case SUB_TYPE_ANNUAL:
-          stripePlan = "enterprise-starter-pack-annual";
-          stripeDescription = "npm On-Site Starter Pack (annual)";
-          licenseSeats = 5;
-          stripeQuantity = 1;
-          break;
         case SUB_TYPE_MULTI_SEAT:
           stripePlan = "enterprise-multi-seat";
           stripeDescription = "npm On-Site multi-seat license";

@@ -6,25 +6,6 @@
   </hgroup>
 
   <section>
-    <h2>Starter pack: $25/month for up to 5 seats</h2>
-
-    <p>If you need 5 seats or less, this will save you money. Good for pilot programs and small teams.
-    You can pay monthly or annually.</p>
-
-    <form>
-      <input type="hidden" data-stripe-key="{{stripeKey}}">
-      <input type="hidden" id="billing-email" value="{{billingEmail}}">
-      <input type="hidden" id="customer-id" value="{{customerId}}">
-      <ul>
-        <li><input type="radio" name="starter-pack-plan" value="1" checked> Monthly ($25/month)</li>
-        <li><input type="radio" name="starter-pack-plan" value="2"> Annual ($300/year)</li>
-      </ul>
-      <input type="submit" class="full-width" value="Buy Starter Pack" id="buy-starter-pack">
-      {{> form_security}}
-    </form>
-  </section>
-
-  <section>
     <h2>Multi-seat license: $20/seat/month</h2>
 
     <p>If you need more than 5 seats, use this plan. You can always increase or

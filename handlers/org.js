@@ -969,9 +969,19 @@ exports.restartUnlicensedOrg = function(request, reply) {
         });
     })
     .then(function() {
+      var redirectUrl = "/org/" + orgName;
+      var message = "You have successfully restarted " + orgName;
 
-      // redirect org/orgName (pass along happy notifications, or whatever, that's just your opinion, man)
-      return reply.redirect("/org/" + orgName);
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.log(err);
+        return reply.redirect(redirectUrl);
+      });
     })
     .catch(function(err) {
       request.logger.error(err);
@@ -1028,7 +1038,20 @@ exports.restartOrg = function(request, reply) {
       return P.all(newSponsorships);
     })
     .then(function() {
-      return reply.redirect('/org/' + orgName);
+      var redirectUrl = "/org/" + orgName;
+      var message = "You have successfully restarted payment for " + orgName;
+
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.log(err);
+        return reply.redirect(redirectUrl);
+      });
+
     })
     .catch(function(err) {
       request.logger.error(err);

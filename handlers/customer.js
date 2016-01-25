@@ -420,7 +420,18 @@ customer.subscribe = function(request, reply) {
                 });
             })
             .then(function() {
-              return reply.redirect("/org/" + planData.orgScope);
+              var redirectUrl = "/org/" + planData.orgScope;
+              var message = "You have successfully restarted " + planData.orgScope;
+              return request.saveNotifications([
+                P.resolve(message)
+              ]).then(function(token) {
+                var param = token ? "?notice=" + token : "";
+                redirectUrl = redirectUrl + param;
+                return reply.redirect(redirectUrl);
+              }).catch(function(err) {
+                request.logger.error(err);
+                return reply.redirect(redirectUrl);
+              });
             });
         })
         .catch(function(err) {

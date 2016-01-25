@@ -1173,7 +1173,7 @@ describe("subscribing to an org", function() {
         orgMock.done();
         customerMock.done();
         expect(resp.statusCode).to.equal(302);
-        expect(resp.headers.location).to.equal('/org/bigco');
+        expect(resp.headers.location).to.include('/org/bigco');
         done();
       });
     });

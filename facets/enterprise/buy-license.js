@@ -159,7 +159,7 @@ module.exports = function(request, reply) {
             var sendEmail = request.server.methods.email.send;
 
             var data = {
-              requirementsUrl: "https://docs.npmjs.com/enterprise/installation#requirements",
+              requirementsUrl: "https://docs.npmjs.com/enterprise/requirements",
               instructionsUrl: "https://docs.npmjs.com/enterprise/installation",
               name: customer.name,
               email: customer.email,

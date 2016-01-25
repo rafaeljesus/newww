@@ -457,7 +457,18 @@ exports.deleteOrg = function(request, reply) {
         return reply(err);
       }
 
-      return reply.redirect('/settings/billing');
+      var message = "You will no longer be billed for @" + orgToDelete + ".";
+      var redirectUrl = '/settings/billing';
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.error(err);
+        return reply.redirect(redirectUrl);
+      });
     });
   });
 

@@ -35,7 +35,7 @@ after(function(done) {
 
 function assertEmail (expectedEmail, expectedVerificationKey) {
   var expectedTo = '"' + expectedEmail + '" <' + expectedEmail + '>';
-  var expectedFrom = 'website@npmjs.com';
+  var expectedFrom = '"npm, Inc." <website@npmjs.com>';
   var expectedSupportEmail = 'support@npmjs.com';
 
   var msg = emailMock.sentMail[0];

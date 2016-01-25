@@ -73,38 +73,40 @@ function assertEmail () {
   var expectedName = 'bob';
   var expectedEmailOld = 'bob@boom.me';
   var expectedEmailNew = 'new@boom.me';
-  var chgExpectedTo = '"' + expectedName + '" <' + expectedEmailOld + '>';
-  var newExpectedTo = '"' + expectedName + '" <' + expectedEmailNew + '>';
+  var expectedToRevert = '"' + expectedName + '" <' + expectedEmailOld + '>';
+  var expectedToConfirm = '"' + expectedName + '" <' + expectedEmailNew + '>';
   var expectedFrom = 'website@npmjs.com';
+  var expectedFromRevert = '"npm, Inc. support" <' + expectedFrom + '>';
+  var expectedFromConfirm = '"npm, Inc." <' + expectedFrom + '>';
   var expectedSupportEmail = 'support@npmjs.com';
 
-  var msgChange = emailMock.sentMail[0];
-  expect(msgChange.data.to).to.equal(chgExpectedTo);
-  expect(msgChange.message._headers.find(function (header) {
+  var msgRevert = emailMock.sentMail[0];
+  expect(msgRevert.data.to).to.equal(expectedToRevert);
+  expect(msgRevert.message._headers.find(function (header) {
     return header.key === 'To';
-  }).value).to.equal(chgExpectedTo);
-  expect(msgChange.data.from).to.equal(expectedFrom);
-  expect(msgChange.message._headers.find(function (header) {
+  }).value).to.equal(expectedToRevert);
+  expect(msgRevert.data.from).to.equal(expectedFromRevert);
+  expect(msgRevert.message._headers.find(function (header) {
     return header.key === 'From';
-  }).value).to.equal(expectedFrom);
-  expect(msgChange.message.content).to.match(new RegExp(expectedName));
-  expect(msgChange.message.content).to.match(new RegExp(expectedEmailOld));
-  expect(msgChange.message.content).to.match(new RegExp(expectedEmailNew));
-  expect(msgChange.message.content).to.match(new RegExp(expectedSupportEmail));
+  }).value).to.equal(expectedFromRevert);
+  expect(msgRevert.message.content).to.match(new RegExp(expectedName));
+  expect(msgRevert.message.content).to.match(new RegExp(expectedEmailOld));
+  expect(msgRevert.message.content).to.match(new RegExp(expectedEmailNew));
+  expect(msgRevert.message.content).to.match(new RegExp(expectedSupportEmail));
 
-  var msgNew = emailMock.sentMail[1];
-  expect(msgNew.data.to).to.equal(newExpectedTo);
-  expect(msgNew.message._headers.find(function (header) {
+  var msgConfirm = emailMock.sentMail[1];
+  expect(msgConfirm.data.to).to.equal(expectedToConfirm);
+  expect(msgConfirm.message._headers.find(function (header) {
     return header.key === 'To';
-  }).value).to.equal(newExpectedTo);
-  expect(msgNew.data.from).to.equal(expectedFrom);
-  expect(msgNew.message._headers.find(function (header) {
+  }).value).to.equal(expectedToConfirm);
+  expect(msgConfirm.data.from).to.equal(expectedFromConfirm);
+  expect(msgConfirm.message._headers.find(function (header) {
     return header.key === 'From';
-  }).value).to.equal(expectedFrom);
-  expect(msgNew.message.content).to.match(new RegExp(expectedName));
-  expect(msgNew.message.content).to.match(new RegExp(expectedEmailOld));
-  expect(msgNew.message.content).to.match(new RegExp(expectedEmailNew));
-  expect(msgNew.message.content).to.match(new RegExp(expectedSupportEmail));
+  }).value).to.equal(expectedFromConfirm);
+  expect(msgConfirm.message.content).to.match(new RegExp(expectedName));
+  expect(msgConfirm.message.content).to.match(new RegExp(expectedEmailOld));
+  expect(msgConfirm.message.content).to.match(new RegExp(expectedEmailNew));
+  expect(msgConfirm.message.content).to.match(new RegExp(expectedSupportEmail));
 }
 
 describe('Accessing the email-edit page', function() {

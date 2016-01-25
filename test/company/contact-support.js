@@ -31,7 +31,7 @@ after(function(done) {
 });
 
 function assertEmail (opts, expectedTo) {
-  var expectedFrom = 'website@npmjs.com';
+  var expectedFrom = '"npm, Inc. Support" <support@npmjs.com>';
   var expectedText = opts.payload.message;
   var expectedSubject = opts.payload.subject + ' - FROM: "' +
     opts.payload.name + '" <' + opts.payload.email + '>';

@@ -36,7 +36,7 @@ function assertEmail () {
   var expectedName = 'Boom Bam';
   var expectedEmail = 'exists@bam.com';
   var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
-  var expectedFrom = 'website@npmjs.com';
+  var expectedFrom = '"npm, Inc." <website@npmjs.com>';
   var expectedVerificationKey = '12ab34cd-a123-4b56-789c-1de2deadbeef';
   var expectedSupportEmail = 'support@npmjs.com';
 

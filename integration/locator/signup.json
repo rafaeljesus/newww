@@ -1,0 +1,7 @@
+{
+    "username": "css:#name",
+    "password": "css:#password",
+    "verify": "css:#verify",
+    "email": "css:#email",
+    "makeItSo": "css:[type='submit'][value='make it so']"
+}

@@ -53,7 +53,7 @@ module.exports = function verifyEnterpriseTrial(request, reply) {
           return;
         }
 
-        var requirementsUrl = "https://docs.npmjs.com/enterprise/installation#requirements",
+        var requirementsUrl = "https://docs.npmjs.com/enterprise/requirements",
           instructionsUrl = "https://docs.npmjs.com/enterprise/installation",
           license = licenses[0];
 

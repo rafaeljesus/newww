@@ -49,7 +49,7 @@ function assertEmail () {
   var expectedName = 'mikeal';
   var expectedEmail = 'mikeal@president-of-javascript.com';
   var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
-  var expectedFrom = 'website@npmjs.com';
+  var expectedFrom = '"npm, Inc." <website@npmjs.com>';
   var expectedSupportEmail = 'support@npmjs.com';
 
   var msg = emailMock.sentMail[0];

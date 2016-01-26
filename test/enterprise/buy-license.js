@@ -89,7 +89,7 @@ function assertEmail () {
   var expectedName = 'Boom Bam';
   var expectedEmail = 'exists@bam.com';
   var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
-  var expectedFrom = 'website@npmjs.com'; // fix with npm/mustache-mailer#5
+  var expectedFrom = '"npm, Inc." <website@npmjs.com>';
   var expectedLicenseKey = '0feed16c-0f28-4911-90f4-dfe49f7bfb41';
   var expectedSupportEmail = 'support@npmjs.com';
   var expectedRequirementsUrl = 'https://docs.npmjs.com/enterprise/requirements';

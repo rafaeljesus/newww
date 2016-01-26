@@ -71,7 +71,7 @@
     "month": "^1.0.0",
     "mousetrap": "0.0.1",
     "murmurhash": "0.0.2",
-    "mustache-mailer": "^2.1.2",
+    "mustache-mailer": "^3.0.0",
     "nib": "^1.1.0",
     "node-fetch": "^1.3.3",
     "node-uuid": "^1.4.3",

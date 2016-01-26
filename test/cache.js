@@ -362,7 +362,8 @@ describe('lib/cache.js', function() {
       cache.get(opts, function(err, data) {
         mock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal('unexpected status code 400');
+        expect(err.statusCode).to.equal(400);
+        expect(err.message).to.equal('unexpected status code "' + err.statusCode + '" while fetching "' + opts.url + '"');
         done();
       });
     });
@@ -496,7 +497,8 @@ describe('lib/cache.js', function() {
         .catch(function(err) {
           mock.done();
           expect(err).to.exist();
-          expect(err.message).to.equal('unexpected status code 400');
+          expect(err.statusCode).to.equal(400);
+          expect(err.message).to.equal('unexpected status code "' + err.statusCode + '" while fetching "' + opts.url + '"');
           done();
         }).done();
     });

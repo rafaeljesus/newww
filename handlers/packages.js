@@ -1,4 +1,4 @@
-var User = require('../../models/user');
+var User = require('../models/user');
 
 module.exports = function(request, reply) {
   var name = request.params.name;

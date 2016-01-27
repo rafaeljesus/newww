@@ -1,9 +1,9 @@
 var Boom = require('boom'),
   url = require('url'),
   fmt = require("util").format,
-  redis = require("../../adapters/redis-sessions"),
-  avatar = require("../../lib/avatar"),
-  User = require('../../models/user'),
+  redis = require("../adapters/redis-sessions"),
+  avatar = require("../lib/avatar"),
+  User = require('../models/user'),
   tips = require('npm-tips'),
   marky = require('marky-markdown');
 

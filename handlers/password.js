@@ -1,5 +1,5 @@
-var redisSessions = require("../../adapters/redis-sessions");
-var UserModel = require('../../models/user');
+var redisSessions = require("../adapters/redis-sessions");
+var UserModel = require('../models/user');
 var VError = require('verror');
 
 module.exports = function(request, reply) {

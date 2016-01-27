@@ -279,12 +279,12 @@ var publicRoutes = [
     ],
     method: "GET",
     feature: "!npmo",
-    handler: require('../facets/user/show-profile')
+    handler: require('../handlers/profile')
   }, {
     path: "/profile/{name}/packages",
     method: "GET",
     feature: "!npmo",
-    handler: require('../facets/user/show-packages')
+    handler: require('../handlers/packages')
   }, {
     path: "/signup",
     method: "GET",
@@ -299,32 +299,32 @@ var publicRoutes = [
     path: "/confirm-email/{token?}",
     method: "GET",
     feature: "!npmo",
-    handler: require('../facets/user/show-confirm-email')
+    handler: require('../handlers/confirm-email')
   }, {
     path: "/login",
     method: "GET",
     feature: '!npmo',
-    handler: require('../facets/user/show-login')
+    handler: require('../handlers/login')
   }, {
     path: "/login",
     method: "POST",
     feature: '!npmo',
-    handler: require('../facets/user/show-login')
+    handler: require('../handlers/login')
   }, {
     path: "/logout",
     method: "POST",
     feature: '!npmo',
-    handler: require('../facets/user/show-logout')
+    handler: require('../handlers/logout')
   }, {
     path: "/forgot/{token?}",
     method: "GET",
     feature: '!npmo',
-    handler: require('../facets/user/show-forgot')
+    handler: require('../handlers/forgot')
   }, {
     path: "/forgot/{token?}",
     method: "POST",
     feature: '!npmo',
-    handler: require('../facets/user/show-forgot')
+    handler: require('../handlers/forgot')
   }, {
     path: "/_monitor/ping",
     method: "GET",

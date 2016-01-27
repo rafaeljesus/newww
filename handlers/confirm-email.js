@@ -1,5 +1,5 @@
-var utils = require('../../lib/utils'),
-  UserModel = require('../../models/user');
+var utils = require('../lib/utils'),
+  UserModel = require('../models/user');
 
 module.exports = function confirmEmail(request, reply) {
   var opts = {};

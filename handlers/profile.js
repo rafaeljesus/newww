@@ -1,4 +1,4 @@
-var UserAPI = require('../../models/user'),
+var UserAPI = require('../models/user'),
   async = require('async');
 
 module.exports = function(request, reply) {

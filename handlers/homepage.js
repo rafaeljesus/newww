@@ -2,6 +2,7 @@ var P = require('bluebird');
 
 var feature = require('../lib/feature-flags.js');
 var PackageAgent = require('../agents/package');
+var DownloadAgent = require('../agents/download');
 
 var MINUTE = 60; // seconds
 var MODIFIED_TTL = 1 * MINUTE;
@@ -9,10 +10,7 @@ var DEPENDENTS_TTL = 30 * MINUTE;
 
 module.exports = function(request, reply) {
   var Package = new PackageAgent(request.loggedInUser);
-  var Download = require("../models/download").new({
-    request: request,
-    cache: require("../lib/cache")
-  });
+  var Download = new DownloadAgent();
   var context = {
     explicit: require("npm-explicit-installs")
   };

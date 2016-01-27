@@ -318,7 +318,7 @@ describe('getting an org', function() {
       }, function(err, notice) {
         expect(err).to.not.exist();
         expect(notice.notices).to.be.array();
-        expect(notice.notices[0]).to.equal('You are not authorized to access this page');
+        expect(notice.notices[0].notice).to.equal('You are not authorized to access this page');
         done();
       });
     });
@@ -613,7 +613,7 @@ describe('getting an org', function() {
       }, function(err, notice) {
         expect(err).to.not.exist();
         expect(notice.notices).to.be.array();
-        expect(notice.notices[0]).to.equal('You are not authorized to access this page');
+        expect(notice.notices[0].notice).to.equal('You are not authorized to access this page');
         done();
       });
     });
@@ -991,7 +991,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('user not found');
+            expect(notice.notices[0].notice).to.equal('user not found');
             done();
           });
         });
@@ -1058,7 +1058,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('No license for org bigco found');
+            expect(notice.notices[0].notice).to.equal('No license for org bigco found');
             done();
           });
         });
@@ -1129,7 +1129,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('The sponsorship license number 1 is not found');
+            expect(notice.notices[0].notice).to.equal('The sponsorship license number 1 is not found');
             done();
           });
         });
@@ -1211,7 +1211,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('The verification key used for accepting this sponsorship does not exist');
+            expect(notice.notices[0].notice).to.equal('The verification key used for accepting this sponsorship does not exist');
             done();
           });
         });
@@ -1413,7 +1413,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal("No license for org bigco found");
+            expect(notice.notices[0].notice).to.equal("No license for org bigco found");
             done();
           });
         });
@@ -1472,7 +1472,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('user or licenseId not found');
+            expect(notice.notices[0].notice).to.equal('user or licenseId not found');
             done();
           });
         });
@@ -1522,7 +1522,7 @@ describe('updating an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('org or user not found');
+            expect(notice.notices[0].notice).to.equal('org or user not found');
             done();
           });
         });
@@ -1709,6 +1709,51 @@ describe('updating an org', function() {
 });
 
 describe('deleting an org', function() {
+  it('redirects to billing page with an error when the org name is invalid', function(done) {
+
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    generateCrumb(server, function(crumb) {
+      var options = {
+        url: "/org/bigco_aoi&&",
+        method: "POST",
+        payload: {
+          updateType: "deleteOrg",
+          crumb: crumb,
+        },
+        credentials: fixtures.users.bob,
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
+        expect(resp.statusCode).to.equal(302);
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0].notice).to.equal('Org Scope must be valid name');
+          done();
+        });
+      });
+    });
+  });
+
   it('redirects to billing page when an org is to be deleted', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
@@ -1751,8 +1796,25 @@ describe('deleting an org', function() {
       server.inject(options, function(resp) {
         userMock.done();
         licenseMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
         expect(resp.statusCode).to.equal(302);
-        done();
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0].notice).to.equal('You will no longer be billed for @bigco.');
+          done();
+        });
       });
     });
   });
@@ -1930,7 +1992,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('Org not found');
+            expect(notice.notices[0].notice).to.equal('Org not found');
             done();
           });
         });
@@ -2063,14 +2125,14 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('Org not found');
+            expect(notice.notices[0].notice).to.equal('Org not found');
             done();
           });
         });
       });
     });
 
-    it('redirects to the org if it successfully swaps', function(done) {
+    it('redirects to the org if it successfully restarts payment', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
@@ -2225,10 +2287,25 @@ describe('restarting an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(302);
           var redirectPath = resp.headers.location;
-          expect(redirectPath).to.include("/org/bigco");
-          done();
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(redirectPath).to.include('/org/bigco');
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0].notice).to.equal('You have successfully restarted payment for bigco');
+            done();
+          });
         });
       });
     });
@@ -2274,7 +2351,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('org not found');
+          expect(notice.notices[0].notice).to.equal('org not found');
           done();
         });
       });
@@ -2319,7 +2396,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('The license for bigco already exists.');
+          expect(notice.notices[0].notice).to.equal('The license for bigco already exists.');
           done();
         });
       });
@@ -2366,7 +2443,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('bob does not have permission to view this page');
+          expect(notice.notices[0].notice).to.equal('bob does not have permission to view this page');
           done();
         });
       });
@@ -2468,7 +2545,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('Customer exists');
+          expect(notice.notices[0].notice).to.equal('Customer exists');
           done();
         });
       });
@@ -2512,7 +2589,7 @@ describe('restarting an org', function() {
         }, function(err, notice) {
           expect(err).to.not.exist();
           expect(notice.notices).to.be.array();
-          expect(notice.notices[0]).to.equal('betty does not have permission to view this page');
+          expect(notice.notices[0].notice).to.equal('betty does not have permission to view this page');
           done();
         });
       });
@@ -2597,7 +2674,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('org not found');
+            expect(notice.notices[0].notice).to.equal('org not found');
             done();
           });
         });
@@ -2651,7 +2728,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('The license for bigco already exists.');
+            expect(notice.notices[0].notice).to.equal('The license for bigco already exists.');
             done();
           });
         });
@@ -2707,7 +2784,7 @@ describe('restarting an org', function() {
           }, function(err, notice) {
             expect(err).to.not.exist();
             expect(notice.notices).to.be.array();
-            expect(notice.notices[0]).to.equal('bob does not have permission to restart this organization');
+            expect(notice.notices[0].notice).to.equal('bob does not have permission to restart this organization');
             done();
           });
         });
@@ -2791,9 +2868,24 @@ describe('restarting an org', function() {
           orgMock.done();
           licenseMock.done();
           var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
           expect(redirectPath).to.include('/org/bigco');
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
           expect(resp.statusCode).to.equal(302);
-          done();
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0].notice).to.equal('You have successfully restarted bigco');
+            done();
+          });
         });
       });
 

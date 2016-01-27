@@ -421,6 +421,21 @@ exports.deleteOrgConfirm = function(request, reply) {
 exports.deleteOrg = function(request, reply) {
   var orgToDelete = request.params.org;
 
+  if (invalidUserName(orgToDelete)) {
+    var err = new Error("Org Scope must be valid name");
+    return request.saveNotifications([
+      P.reject(err.message)
+    ]).then(function(token) {
+      var url = '/settings/billing';
+      var param = token ? "?notice=" + token : "";
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+
+
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
       return reply(err);
@@ -442,7 +457,18 @@ exports.deleteOrg = function(request, reply) {
         return reply(err);
       }
 
-      return reply.redirect('/settings/billing');
+      var message = "You will no longer be billed for @" + orgToDelete + ".";
+      var redirectUrl = '/settings/billing';
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.error(err);
+        return reply.redirect(redirectUrl);
+      });
     });
   });
 
@@ -943,9 +969,19 @@ exports.restartUnlicensedOrg = function(request, reply) {
         });
     })
     .then(function() {
+      var redirectUrl = "/org/" + orgName;
+      var message = "You have successfully restarted " + orgName;
 
-      // redirect org/orgName (pass along happy notifications, or whatever, that's just your opinion, man)
-      return reply.redirect("/org/" + orgName);
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.log(err);
+        return reply.redirect(redirectUrl);
+      });
     })
     .catch(function(err) {
       request.logger.error(err);
@@ -1002,7 +1038,20 @@ exports.restartOrg = function(request, reply) {
       return P.all(newSponsorships);
     })
     .then(function() {
-      return reply.redirect('/org/' + orgName);
+      var redirectUrl = "/org/" + orgName;
+      var message = "You have successfully restarted payment for " + orgName;
+
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.log(err);
+        return reply.redirect(redirectUrl);
+      });
+
     })
     .catch(function(err) {
       request.logger.error(err);

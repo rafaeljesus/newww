@@ -197,7 +197,7 @@ customer.subscribe = function(request, reply) {
 
         return reply.view('org/create', {
           stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-          notices: notices
+          errorNotices: notices
         });
       } else {
         notices = err.details.map(function(e) {
@@ -281,7 +281,7 @@ customer.subscribe = function(request, reply) {
       if (valid.errors) {
         return reply.view('org/create', {
           stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
-          notices: valid.errors
+          errorNotices: valid.errors
         });
       }
 
@@ -420,7 +420,18 @@ customer.subscribe = function(request, reply) {
                 });
             })
             .then(function() {
-              return reply.redirect("/org/" + planData.orgScope);
+              var redirectUrl = "/org/" + planData.orgScope;
+              var message = "You have successfully restarted " + planData.orgScope;
+              return request.saveNotifications([
+                P.resolve(message)
+              ]).then(function(token) {
+                var param = token ? "?notice=" + token : "";
+                redirectUrl = redirectUrl + param;
+                return reply.redirect(redirectUrl);
+              }).catch(function(err) {
+                request.logger.error(err);
+                return reply.redirect(redirectUrl);
+              });
             });
         })
         .catch(function(err) {
@@ -433,7 +444,7 @@ customer.subscribe = function(request, reply) {
             inUseError: true,
             orgScope: planData.orgScope,
             humanName: planData["human-name"],
-            notices: [err]
+            errorNotices: [err]
           });
         })
         .catch(function(err) {

@@ -11,6 +11,14 @@ var URL = require('url');
 
 const STARTING_PRICE_FOR_ORG = process.env.ORG_STARTING_PRICE || 14;
 
+var defaultOrgInfo = function(orgName) {
+  return {
+    "npm_org": orgName,
+    "plan": "npm-paid-org-7",
+    "quantity": 2
+  };
+};
+
 var resolveTemplateName = function(path) {
   var pathname = URL.parse(path).pathname;
   var pathArr = pathname.split('/');
@@ -154,7 +162,8 @@ exports.getOrg = function(request, reply) {
     .then(function(license) {
       var amount = 0,
         quantity = 0;
-      if (license) {
+      if (license && license.length) {
+        license = license[0];
         opts.org.next_billing_date = moment.unix(license.current_period_end);
         opts.org.canceled = !!license.cancel_at_period_end;
 
@@ -209,6 +218,13 @@ exports.addUserToOrg = function(request, reply) {
       return request.customer.getLicenseForOrg(orgName);
     })
     .then(function(license) {
+      if (license && license.length) {
+        license = license[0];
+      } else {
+        var err = new Error("No license for org " + orgName + " found");
+        err.statusCode = 404;
+        throw err;
+      }
       return request.customer.extendSponsorship(license.license_id, user.user);
     })
     .then(function(extendedSponsorship) {
@@ -237,7 +253,7 @@ exports.addUserToOrg = function(request, reply) {
           request.logger.log(err);
         });
       } else {
-        return reply.view('errors/internal', err);
+        return reply(err);
       }
     });
 };
@@ -247,13 +263,20 @@ exports.removeUserFromOrg = function(request, reply) {
   var loggedInUser = request.loggedInUser.name;
   var username = request.payload.username;
 
-  return request.customer.getLicenseForOrg(orgName)
-    .then(function(license) {
-      return request.customer.revokeSponsorship(username, license.license_id);
-    })
+  return Org(loggedInUser)
+    .removeUser(orgName, username)
     .then(function() {
-      return Org(loggedInUser)
-        .removeUser(orgName, username);
+      return request.customer.getLicenseForOrg(orgName);
+    })
+    .then(function(license) {
+      if (license && license.length) {
+        license = license[0];
+      } else {
+        var err = new Error("No license for org " + orgName + " found");
+        err.statusCode = 404;
+        throw err;
+      }
+      return request.customer.revokeSponsorship(username, license.license_id);
     })
     .then(function() {
       return reply.redirect('/org/' + orgName + '/members');
@@ -261,7 +284,7 @@ exports.removeUserFromOrg = function(request, reply) {
     .catch(function(err) {
       if (err.statusCode >= 500) {
         request.logger.error(err);
-        return reply.view('errors/internal', err);
+        return reply(err);
       } else {
         return request.saveNotifications([
           P.reject(err.message)
@@ -282,6 +305,7 @@ exports.updateUserPayStatus = function(request, reply) {
   var orgName = request.params.org;
   var payForUser = !!request.payload.payStatus;
   var username = request.payload.username;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
   var extend = function(licenseId, username) {
     return request.customer.extendSponsorship(licenseId, username)
@@ -300,8 +324,16 @@ exports.updateUserPayStatus = function(request, reply) {
       });
   };
 
-  request.customer.getLicenseForOrg(orgName)
-    .then(function(license) {
+  return P.join(Org(loggedInUser).getInfo(orgName),
+    request.customer.getLicenseForOrg(orgName),
+    function(orgInfo, license) {
+      if (license && license.length) {
+        license = license[0];
+      } else {
+        var err = new Error("No license for org " + orgName + " found");
+        err.statusCode = 404;
+        throw err;
+      }
       return payForUser ? extend(license.license_id, username) : request.customer.revokeSponsorship(username, license.license_id);
     })
     .then(function() {
@@ -310,7 +342,7 @@ exports.updateUserPayStatus = function(request, reply) {
     .catch(function(err) {
       if (err.statusCode >= 500) {
         request.logger.error(err);
-        return reply.view('errors/internal', err);
+        return reply(err);
       } else {
         return request.saveNotifications([
           P.reject(err.message)
@@ -340,6 +372,8 @@ exports.updateOrg = function(request, reply) {
       return exports.deleteOrg(request, reply);
     case 'restartOrg':
       return exports.restartOrg(request, reply);
+    case 'restartUnlicensedOrg':
+      return exports.restartUnlicensedOrg(request, reply);
     default:
       return request.saveNotifications([
         P.reject("Incorrect updateType passed")
@@ -359,7 +393,7 @@ exports.deleteOrgConfirm = function(request, reply) {
   request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
     return reply.view('user/billing-confirm-cancel', {
       subscription: subscription,
-      referrer: validReferrer(request.info.referrer, "/settings/billing")
+      referrer: validReferrer("/settings/billing", request.info.referrer)
     });
   }, function(err) {
     if (err.statusCode == 404) {
@@ -387,9 +421,24 @@ exports.deleteOrgConfirm = function(request, reply) {
 exports.deleteOrg = function(request, reply) {
   var orgToDelete = request.params.org;
 
+  if (invalidUserName(orgToDelete)) {
+    var err = new Error("Org Scope must be valid name");
+    return request.saveNotifications([
+      P.reject(err.message)
+    ]).then(function(token) {
+      var url = '/settings/billing';
+      var param = token ? "?notice=" + token : "";
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+
+
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
-      return reply.view('errors/internal', err);
+      return reply(err);
     }
     var subscription = subscriptions.filter(function(sub) {
       return orgToDelete === sub.npm_org;
@@ -405,10 +454,21 @@ exports.deleteOrg = function(request, reply) {
     request.customer.cancelSubscription(subscription.id, function(err) {
       if (err) {
         request.logger.error(err);
-        return reply.view('errors/internal', err);
+        return reply(err);
       }
 
-      return reply.redirect('/settings/billing');
+      var message = "You will no longer be billed for @" + orgToDelete + ".";
+      var redirectUrl = '/settings/billing';
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.error(err);
+        return reply.redirect(redirectUrl);
+      });
     });
   });
 
@@ -498,12 +558,12 @@ exports.validateOrgCreation = function(request, reply) {
                   return reply.redirect(url);
                 } else {
                   request.logger.error(err);
-                  return reply.view('errors/internal', err);
+                  return reply(err);
                 }
               });
           } else {
             request.logger.error(err);
-            return reply.view('errors/internal', err);
+            return reply(err);
           }
         });
     }
@@ -583,12 +643,12 @@ exports.getOrgCreationBillingPage = function(request, reply) {
                 });
               } else {
                 request.logger.error(err);
-                return reply.view('errors/internal', err);
+                return reply(err);
               }
             });
         } else {
           request.logger.error(err);
-          return reply.view('errors/internal', err);
+          return reply(err);
         }
       });
   } else {
@@ -704,38 +764,133 @@ exports.getUser = function getUser(request, reply) {
     });
 };
 
-exports.restartOrg = function(request, reply) {
+exports.restartSubscription = function(request, reply) {
+  var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  if (invalidUserName(orgName)) {
+    var err = new Error("Org Scope must be valid name");
+    return request.saveNotifications([
+      P.reject(err.message)
+    ]).then(function(token) {
+      var url = '/org/' + orgName;
+      var param = token ? "?notice=" + token : "";
+
+      url = url + param;
+      return reply.redirect(url);
+    }).catch(function(err) {
+      request.logger.error(err);
+    });
+  }
+
+  return request.customer.getLicenseForOrg(orgName)
+    .then(function(license) {
+      if (license && license.length) {
+        throw Object.assign(new Error("License exists"), {
+          code: 'EEXIST',
+          statusCode: 409,
+          what: 'license'
+        });
+      } else {
+        // getLicenseForOrg's API call returns a 404 (ENOCUSTOMER) if the customer
+        // does not exist, but returns OK:[] if the customer exists but the license does not
+        throw Object.assign(new Error("Customer exists"), {
+          code: 'EEXIST',
+          statusCode: 409,
+          what: 'org'
+        });
+      }
+
+    })
+    .catch(function(err) {
+      if (err.code !== 'ENOCUSTOMER') {
+        throw err;
+      } else {
+        return Org(loggedInUser).getUsers(orgName)
+          .then(function(users) {
+            users = users || {};
+            users.items = users.items || [];
+
+            var isSuperAdmin = users.items.filter(function(user) {
+              return user.role && user.role.match(/super-admin/);
+            }).some(function(admin) {
+              return admin.name === loggedInUser;
+            });
+
+            if (!isSuperAdmin) {
+              throw Object.assign(new Error(loggedInUser + ' does not have permission to view this page'), {
+                code: 'EACCES',
+                statusCode: 403
+              });
+            }
+
+            return reply.view('org/restart-subscription', {
+              stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
+              orgName: orgName,
+              referrer: validReferrer("/settings/billing", request.info.referrer)
+            });
+          });
+      }
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode === 404) {
+        return reply.view('errors/not-found', err).code(404);
+      }
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply(err);
+      }
+    });
+
+};
+
+exports.restartLicense = function(request, reply) {
   var opts = {};
   var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
-  request.customer.getLicenseForOrg(orgName)
-    .then(function(license) {
-      opts.oldLicense = license;
-      return request.customer.getAllSponsorships(license.license_id);
-    })
-    .then(function(sponsorships) {
-      opts.sponsorships = sponsorships;
-      return request.customer.cancelSubscription(opts.oldLicense.id);
-    })
-    .then(function() {
-      var planInfo = {
-        "npm_org": orgName,
-        "plan": "npm-paid-org-7",
-        "quantity": 2
-      };
-      return request.customer.createSubscription(planInfo);
-    })
-    .then(function(subscription) {
-      var newSponsorships = opts.sponsorships.filter(function(sponsorship) {
-        return sponsorship.verified;
-      })
-        .map(function(sponsorship) {
-          return request.customer.swapSponsorship(sponsorship.npm_user, opts.oldLicense.license_id, subscription.license_id);
-        });
-      return P.all(newSponsorships);
-    })
-    .then(function() {
-      return reply.redirect('/org/' + orgName);
+  return P.join(Org(loggedInUser).getUsers(orgName),
+    request.customer.getLicenseForOrg(orgName),
+    function(users, license) {
+      var err;
+      if (license && license.length) {
+        err = new Error('The license for ' + orgName + ' already exists.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      users = users || {};
+      users.items = users.items || [];
+
+      var isSuperAdmin = users.items.filter(function(user) {
+        return user.role && user.role.match(/super-admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      if (!isSuperAdmin) {
+        err = new Error(loggedInUser + ' does not have permission to view this page');
+        err.statusCode = 403;
+        throw err;
+      }
+
+      opts.orgName = orgName;
+      opts.referrer = validReferrer("/settings/billing", request.info.referrer);
+
+      return reply.view('org/restart-license', opts);
     })
     .catch(function(err) {
       request.logger.error(err);
@@ -752,7 +907,176 @@ exports.restartOrg = function(request, reply) {
           request.logger.log(err);
         });
       } else {
-        return reply.view('errors/internal', err);
+        return reply(err);
+      }
+    });
+};
+
+exports.restartUnlicensedOrg = function(request, reply) {
+
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+  var orgName = request.params.org;
+  var opts = {};
+
+  return P.join(Org(loggedInUser).getUsers(orgName),
+    request.customer.getLicenseForOrg(orgName),
+    function(users, license) {
+
+      if (license && license.length) {
+        err = new Error('The license for ' + orgName + ' already exists.');
+        err.statusCode = 400;
+        throw err;
+      }
+
+      users = users || {};
+      users.items = users.items || [];
+
+      opts.users = users;
+
+      var isSuperAdmin = users.items.filter(function(user) {
+        return user.role && user.role.match(/super-admin/);
+      }).some(function(admin) {
+        return admin.name === loggedInUser;
+      });
+
+      if (!isSuperAdmin) {
+        var err = new Error(loggedInUser + ' does not have permission to restart this organization');
+        err.statusCode = 403;
+        throw err;
+      }
+
+      return request.customer.createSubscription(defaultOrgInfo(orgName));
+    })
+    .then(function(license) {
+
+      license = license || {};
+
+      var users = opts.users.items;
+      var extensions = users.map(function(user) {
+        return request.customer.extendSponsorship(license.license_id, user.name);
+      });
+      return P.all(extensions);
+    })
+    .then(function(sponsorships) {
+      var acceptances = sponsorships.map(function(sponsorship) {
+        return request.customer.acceptSponsorship(sponsorship.verification_key);
+      });
+      return P.all(acceptances)
+        .catch(function(err) {
+          if (err.statusCode !== 409) {
+            throw err;
+          }
+        });
+    })
+    .then(function() {
+      var redirectUrl = "/org/" + orgName;
+      var message = "You have successfully restarted " + orgName;
+
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.log(err);
+        return reply.redirect(redirectUrl);
+      });
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply(err);
+      }
+    });
+};
+
+exports.restartOrg = function(request, reply) {
+  var opts = {};
+  var orgName = request.params.org;
+  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
+
+  return P.join(Org(loggedInUser).getInfo(orgName),
+    request.customer.getLicenseForOrg(orgName),
+    function(orgInfo, license) {
+      if (license && license.length) {
+        license = license[0];
+      } else {
+        throw Object.assign(new Error('license not found'), {
+          code: 'ENOLICENSE'
+        });
+      }
+      opts.oldLicense = license;
+      return request.customer.getAllSponsorships(license.license_id);
+    })
+    .then(function(sponsorships) {
+      opts.sponsorships = sponsorships;
+      return request.customer.cancelSubscription(opts.oldLicense.id);
+    })
+    .then(function() {
+      return request.customer.createSubscription(defaultOrgInfo(orgName));
+    })
+    .then(function(subscription) {
+      var newSponsorships = opts.sponsorships.filter(function(sponsorship) {
+        return sponsorship.verified;
+      })
+        .map(function(sponsorship) {
+          return request.customer.swapSponsorship(sponsorship.npm_user, opts.oldLicense.license_id, subscription.license_id);
+        });
+      return P.all(newSponsorships);
+    })
+    .then(function() {
+      var redirectUrl = "/org/" + orgName;
+      var message = "You have successfully restarted payment for " + orgName;
+
+      return request.saveNotifications([
+        P.resolve(message)
+      ]).then(function(token) {
+        var param = token ? "?notice=" + token : "";
+        redirectUrl = redirectUrl + param;
+        return reply.redirect(redirectUrl);
+      }).catch(function(err) {
+        request.logger.log(err);
+        return reply.redirect(redirectUrl);
+      });
+
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.code === 'ENOLICENSE') {
+        return reply.redirect("/org/" + orgName + "/restart-license");
+      }
+
+      if (err.code === 'ENOCUSTOMER') {
+        return reply.redirect("/org/" + orgName + "/restart");
+      }
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply(err);
       }
     });
 };

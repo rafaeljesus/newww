@@ -376,3 +376,20 @@ exports.betty = {
   updated: '2015-01-24T00:08:41.269Z',
   deleted: null
 };
+
+exports.bill = {
+  name: 'bill',
+  email: 'bill@boom.me',
+  email_verified: true,
+  verification_key: '12345',
+  resource: {
+    fullname: "Bill Henderson",
+    github: 'bill',
+    twitter: 'twill',
+    homepage: 'http://boom.me',
+    freenode: 'billib'
+  },
+  created: '2014-11-21T20:05:05.423Z',
+  updated: '2015-01-24T00:08:41.269Z',
+  deleted: null
+};

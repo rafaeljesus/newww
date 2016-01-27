@@ -15,6 +15,11 @@ var generateCrumb = require("../handlers/crumb.js"),
 
 var requireInject = require('require-inject');
 var redisMock = require('redis-mock');
+var client = redisMock.createClient();
+
+var URL = require('url');
+var qs = require('qs');
+var TokenFacilitator = require('token-facilitator');
 
 before(function(done) {
   requireInject.installGlobally('../mocks/server', {
@@ -500,7 +505,6 @@ describe('GET /settings/billing', function() {
     });
 
     it("has an expired license and past_due status", function(done) {
-      // console.log('==BOOM==', resp.request.response.source.context)
       expect(resp.request.response.source.context.customer.status).to.equal("past_due");
       expect(resp.request.response.source.context.customer.license_expired).to.equal(true);
       done();
@@ -895,10 +899,6 @@ describe("subscribing to an org", function() {
       var orgMock = nock("https://user-api-example.com")
         .get("/org/boomer")
         .reply(404, "not found")
-        .get("/org/boomer/user?per_page=100&page=0")
-        .reply(404, "not found")
-        .get("/org/boomer/package?per_page=100&page=0")
-        .reply(404, "not found")
         .put("/org", {
           name: "boomer",
           resource: {}
@@ -967,7 +967,7 @@ describe("subscribing to an org", function() {
     });
   });
 
-  it("returns an error if the organization already exists", function(done) {
+  it("returns an error if the organization already exists, and the user is not a super-admin", function(done) {
     generateCrumb(server, function(crumb) {
       var opts = {
         url: '/settings/billing/subscribe',
@@ -997,30 +997,8 @@ describe("subscribing to an org", function() {
           "updated": "2015-07-10T21:07:16.799Z",
           "deleted": null
         })
-        .get("/org/boomer/user?per_page=100&page=0")
-        .reply(200, {
-          "count": 1,
-          "items": [fixtures.users.bob]
-        })
-        .get("/org/boomer/package?per_page=100&page=0")
-        .reply(200, {
-          "count": 1,
-          "items": [fixtures.packages.fake]
-        })
-        .get("/org/boomer/team?per_page=100&page=0")
-        .reply(200, {
-          count: 1,
-          items: [
-            {
-              "created": "2015-08-28T17:44:03.701Z",
-              "deleted": null,
-              "description": null,
-              "name": "developers",
-              "scope_id": 55555,
-              "updated": "2015-08-28T17:44:03.701Z"
-            }
-          ]
-        });
+        .get('/org/boomer/user?per_page=100&page=0')
+        .reply(200);
 
       var customerMock = nock("https://license-api-example.com")
         .get("/customer/bob/stripe")
@@ -1038,6 +1016,189 @@ describe("subscribing to an org", function() {
         done();
       });
     });
+  });
+
+  it("returns an error if the organization already exists, the user is a super-admin, and the org still has a license", function(done) {
+
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get("/org/bigco")
+      .reply(200, {
+        "name": "bigco",
+        "description": "",
+        "resource": {},
+        "created": "2015-07-10T20:29:37.816Z",
+        "updated": "2015-07-10T21:07:16.799Z",
+        "deleted": null
+      })
+      .get('/org/bigco/user?per_page=100&page=0')
+      .reply(200, fixtures.orgs.bigcoUsers);
+
+    var customerMock = nock("https://license-api-example.com")
+      .get("/customer/bob/stripe")
+      .reply(200, fixtures.customers.happy)
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [
+        {
+          "id": "sub_12346",
+          "current_period_end": 1439766874,
+          "current_period_start": 1437088474,
+          "quantity": 2,
+          "status": "active",
+          "interval": "month",
+          "amount": 700,
+          "license_id": 1,
+          "npm_org": "bigco",
+          "npm_user": "bob",
+          "product_id": "1031405a-70b7-4a3f-b557-8609d9e1428a"
+        }
+      ]);
+
+    generateCrumb(server, function(crumb) {
+
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgScope: 'bigco',
+          crumb: crumb
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        orgMock.done();
+        customerMock.done();
+        expect(resp.statusCode).to.equal(200);
+        expect(resp.request.response.source.template).to.equal('org/create');
+        var $ = cheerio.load(resp.result);
+        expect($('.notice')[0].children.length).to.equal(1);
+        expect($('.notice')[0].children[0].data).to.equal("Error: You already own this Organization");
+        done();
+      });
+    });
+
+  });
+
+  it("successfully restarts an organization, creating a customer in the process - if the org exists, and the user is not a customer, but is the super-admin of the org", function(done) {
+
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    var orgMock = nock("https://user-api-example.com")
+      .get("/org/bigco")
+      .reply(200, {
+        "name": "bigco",
+        "description": "",
+        "resource": {},
+        "created": "2015-07-10T20:29:37.816Z",
+        "updated": "2015-07-10T21:07:16.799Z",
+        "deleted": null
+      })
+      .get('/org/bigco/user?per_page=100&page=0')
+      .reply(200, fixtures.orgs.bigcoUsers);
+
+    var customerMock = nock("https://license-api-example.com")
+      .get("/customer/bob/stripe")
+      .reply(404)
+      .put("/customer/stripe")
+      .reply(200, fixtures.customers.bob)
+      .put("/customer/bob/stripe/subscription", {
+        plan: "npm-paid-org-7",
+        npm_org: "bigco"
+      })
+      .reply(200, {
+        "id": "foo",
+        "license_id": 2,
+        "current_period_end": 0,
+        "current_period_start": 0,
+        "quantity": 2,
+        "status": "active",
+        "interval": "month",
+        "amount": 700,
+        "npm_org": "bigco",
+        "npm_user": "bob",
+        "product_id": "npm-paid-org-7"
+      })
+      .get("/customer/bob/stripe/subscription?org=bigco")
+      .reply(200, [])
+      .put("/sponsorship/2", {
+        "npm_user": "bob"
+      })
+      .reply(200, {
+        "created": "2015-08-05T20:55:54.759Z",
+        "deleted": null,
+        "id": 15,
+        "license_id": 2,
+        "npm_user": "bob",
+        "updated": "2015-08-05T20:55:54.759Z",
+        "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+        "verified": null
+      })
+      .post("/sponsorship/f56dffef-b136-429a-97dc-57a6ef035829")
+      .reply(200, {
+        "created": "2015-08-05T20:59:32.707Z",
+        "deleted": null,
+        "id": 15,
+        "license_id": 2,
+        "npm_user": "bob",
+        "updated": "2015-08-05T20:59:41.538Z",
+        "verification_key": "f56dffef-b136-429a-97dc-57a6ef035829",
+        "verified": true
+      });
+
+    generateCrumb(server, function(crumb) {
+
+      var opts = {
+        url: '/settings/billing/subscribe',
+        method: 'POST',
+        credentials: fixtures.users.bob,
+        payload: {
+          planType: 'orgs',
+          orgScope: 'bigco',
+          crumb: crumb,
+          stripeToken: 'tok_1234567890'
+        },
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(opts, function(resp) {
+        userMock.done();
+        orgMock.done();
+        customerMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/org/bigco');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
+        expect(resp.statusCode).to.equal(302);
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0].notice).to.equal('You have successfully restarted bigco');
+          done();
+        });
+      });
+    });
+
   });
 
   it("returns an error if the organization is missing a name", function(done) {
@@ -1069,8 +1230,8 @@ describe("subscribing to an org", function() {
         customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
-        expect(context.notices).to.be.an.array();
-        expect(context.notices[0]).to.equal('orgScope is not allowed to be empty');
+        expect(context.errorNotices).to.be.an.array();
+        expect(context.errorNotices[0]).to.equal('orgScope is not allowed to be empty');
         done();
       });
     });
@@ -1105,8 +1266,8 @@ describe("subscribing to an org", function() {
         customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
-        expect(context.notices).to.be.an.array();
-        expect(context.notices[0]).to.equal('name cannot start with an underscore');
+        expect(context.errorNotices).to.be.an.array();
+        expect(context.errorNotices[0]).to.equal('name cannot start with an underscore');
         done();
       });
     });
@@ -1169,10 +1330,6 @@ describe("subscribing to an org", function() {
       var orgMock = nock("https://user-api-example.com")
         .get("/org/bob")
         .reply(404, "not found")
-        .get("/org/bob/user?per_page=100&page=0")
-        .reply(404, "not found")
-        .get("/org/bob/package?per_page=100&page=0")
-        .reply(404, "not found")
         .put("/org", {
           name: "bob",
           resource: {}
@@ -1185,11 +1342,12 @@ describe("subscribing to an org", function() {
 
       server.inject(opts, function(resp) {
         userMock.done();
+        orgMock.done();
         customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var context = resp.request.response.source.context;
-        expect(context.notices).to.be.an.array();
-        expect(context.notices[0].message).to.equal("The provided Org's @scope name is already in use");
+        expect(context.errorNotices).to.be.an.array();
+        expect(context.errorNotices[0].message).to.equal("The provided Org's @scope name is already in use");
         done();
       });
     });

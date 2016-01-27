@@ -30,8 +30,15 @@
       {{#if org.canceled}}
         <li>Next billing date: <strong>n/a</strong></li>
         <li>No payment on file</li>
+        <li>
+          <form action="/org/{{org.info.name}}" method="POST">
+            <input type="hidden" name="updateType" value="restartOrg">
+            {{> form_security}}
+            <button type="submit" class="btn-secondary link-btn">restart payment</button>
+          </form>
+        </li>
       {{else}}
-      <li>Next billing date: <strong data-date="{{org.next_billing_date}}" data-date-format="%B %e, %Y">{{org.next_billing_date}}</strong></li>
+        <li>Next billing date: <strong data-date="{{org.next_billing_date}}" data-date-format="%B %e, %Y">{{org.next_billing_date}}</strong></li>
         <li>Valid payment method ending in <a href="#">{{customer.card.last4}}</a></li>
         <li><a href="/org/{{org.info.name}}/confirm-delete" class="btn-secondary link-btn">cancel payment</a></li>
       {{/if}}

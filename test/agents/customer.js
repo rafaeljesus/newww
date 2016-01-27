@@ -94,7 +94,7 @@ describe("Customer", function() {
       Customer.getStripeData(function(err, body) {
         customerMock.done();
         expect(err).to.exist();
-        expect(err.message).to.equal("customer not found: foo");
+        expect(err.message).to.equal("Customer not found: foo");
         expect(err.statusCode).to.equal(404);
         done();
       });
@@ -411,7 +411,7 @@ describe("Customer", function() {
       });
     });
 
-    it('returns an error if org does not exist', function(done) {
+    it('returns empty array if no license exists for passed org', function(done) {
       var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .get('/customer/bob/stripe/subscription?org=bigco')
@@ -419,10 +419,8 @@ describe("Customer", function() {
 
       Customer.getLicenseForOrg('bigco', function(err, license) {
         customerMock.done();
-        expect(err).to.exist();
-        expect(err.statusCode).to.equal(404);
-        expect(err.message).to.equal('No license for org bigco found');
-        expect(license).to.not.exist();
+        expect(err).to.be.null();
+        expect(license.length).to.equal(0);
         done();
       });
     }) ;
@@ -450,7 +448,7 @@ describe("Customer", function() {
       Customer.getLicenseForOrg('bigco', function(err, license) {
         customerMock.done();
         expect(err).to.be.null();
-        expect(license.license_id).to.equal(1);
+        expect(license[0].license_id).to.equal(1);
         done();
       });
     });

@@ -1,0 +1,11 @@
+<h1>restart @{{orgName}}?</h1>
+
+<p>We'll sponsor each user who doesn't have a Personal Plan or isn't sponsored by another organization already, and bill you for $7 each, or a minimum of $14 for the Organization.</p>
+
+
+<form method="POST" action="/org/{{orgName}}">
+  {{> form_security}}
+  <input type="hidden" name="updateType" value="restartUnlicensedOrg"/>
+  <a href="{{referrer}}" class="button btn-inline btn-secondary push-down">No, go back</a>
+  <button type="submit" class="button btn-inline push-down">Yes, restart this subscription</button>
+</form>

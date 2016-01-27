@@ -1,0 +1,34 @@
+<h1>restart @{{orgName}}?</h1>
+
+<p>We'll sponsor each user who doesn't have a Personal Plan or isn't sponsored by another organization already, and bill you for $7 each, or a minimum of $14 for the Organization.</p>
+
+
+{{#if user.email_verified}}
+
+<p class="error billing-error" style="display:none;"></p>
+
+<form method="POST" action="/settings/billing/subscribe" id="payment-form" data-stripe-public-key="{{stripePublicKey}}">
+  <label for="card-number">Card Number</label>
+  <input required="required" type="text" size="20" data-stripe="number" id="card-number" />
+
+  <label for="card-cvc">Card security code</label>
+  <input required="required" type="text" size="4" data-stripe="cvc" placeholder="123" class="cvc" id="card-cvc" />
+
+  <label for="card-exp-month">Expiration Month</label>
+  <input required="required" type="text" size="2" data-stripe="exp-month" placeholder="MM" id="card-exp-month" />
+
+  <label for="card-exp-year">Expiration Year</label>
+  <input required="required" type="text" size="4" data-stripe="exp-year" placeholder="YYYY" id="card-exp-year" />
+
+  <label for="coupon">Coupon Code</label>
+  <input type="text" size="20" data-stripe="coupon" id="coupon" name="coupon" />
+
+  {{> form_security}}
+  <input type="hidden" name="planType" value="orgs">
+  <input type="hidden" name="orgScope" value="{{orgName}}">
+  <a href="{{referrer}}" class="button btn-inline btn-secondary push-down">No, go back</a>
+  <button type="submit"  class="button btn-inline push-down">save my billing info</button>
+
+</form>
+{{/if}}
+<script src="https://js.stripe.com/v2/"></script>

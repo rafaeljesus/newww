@@ -119,8 +119,11 @@
     {{{ content }}}
   {{else}}
     <div class="container content">
-      {{#each notices}}
-        <div class="notice">{{{ this }}}</div>
+      {{#each successNotices}}
+        <div class="notice success">{{{ this }}}</div>
+      {{/each}}
+      {{#each errorNotices}}
+        <div class="notice error">{{{ this }}}</div>
       {{/each}}
       {{{ content }}}
     </div>

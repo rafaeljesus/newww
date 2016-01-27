@@ -1,7 +1,7 @@
 var Hoek = require('hoek'),
   googleLibphonenumber = require('google-libphonenumber'),
   Joi = require('joi'),
-  utils = require('../../lib/utils');
+  utils = require('../lib/utils');
 
 module.exports = function createHubspotLead(request, reply) {
   var postToHubspot = request.server.methods.npme.sendData;
@@ -26,12 +26,12 @@ module.exports = function createHubspotLead(request, reply) {
   var validatedData = Joi.validate(request.payload, schema, joiOptions);
   var phoneNumberDataValid = googleLibphonenumber.PhoneNumberUtil.isViablePhoneNumber(request.payload.phone);
 
-  if (validatedData.error || (! phoneNumberDataValid)) {
+  if (validatedData.error || (!phoneNumberDataValid)) {
     if (validatedData.error) {
       opts.errors = validatedData.error.details;
     }
 
-    if (! phoneNumberDataValid) {
+    if (!phoneNumberDataValid) {
       opts.errors = opts.errors || [];
 
       opts.errors.push({

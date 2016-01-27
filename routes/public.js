@@ -126,44 +126,44 @@ var publicRoutes = [
     path: "/onsite",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/enterprise/show-index')
+    handler: require('../handlers/enterprise-index')
   }, {
     path: "/enterprise-start-signup",
     method: "POST",
-    handler: require('../facets/enterprise/show-ula')
+    handler: require('../handlers/enterprise-ula')
   }, {
     path: "/enterprise-contact-me",
     method: "POST",
-    handler: require('../facets/enterprise/show-contact-me')
+    handler: require('../handlers/enterprise-contact-me')
   }, {
     path: "/enterprise-trial-signup",
     method: "POST",
-    handler: require('../facets/enterprise/show-trial-signup')
+    handler: require('../handlers/enterprise-trial-signup')
   }, {
     path: "/enterprise-verify",
     method: "GET",
-    handler: require('../facets/enterprise/show-verification')
+    handler: require('../handlers/enterprise-verification')
   }, {
     path: "/enterprise/license",
     method: ["GET", "POST"],
-    handler: require('../facets/enterprise/find-license'),
+    handler: require('../handlers/enterprise-find-license'),
   }, {
     path: "/enterprise/license-options",
     method: "GET",
-    handler: require('../facets/enterprise/license-options'),
+    handler: require('../handlers/enterprise-license-options'),
   }, {
     path: "/enterprise/buy-license",
     method: "POST",
-    handler: require('../facets/enterprise/buy-license'),
+    handler: require('../handlers/enterprise-buy-license'),
     config: ajaxy
   }, {
     path: "/enterprise/license-paid",
     method: "GET",
-    handler: require('../facets/enterprise/license-paid')
+    handler: require('../handlers/enterprise-license-paid')
   }, {
     path: "/enterprise/license-error",
     method: "GET",
-    handler: require('../facets/enterprise/license-error')
+    handler: require('../handlers/enterprise-license-error')
   }, {
     paths: [
       "/package/{project}/tutorial",

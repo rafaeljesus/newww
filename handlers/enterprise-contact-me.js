@@ -1,5 +1,5 @@
 var Joi = require('joi'),
-  utils = require('../../lib/utils');
+  utils = require('../lib/utils');
 
 // if they decide not to agree to the ULA
 // hit the hubspot contact-me form instead, and thank them

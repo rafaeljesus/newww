@@ -1,4 +1,4 @@
-var utils = require('../../lib/utils');
+var utils = require('../lib/utils');
 var VError = require('verror');
 
 // if they agree to the ULA, notify hubspot, create a trial and send verification link

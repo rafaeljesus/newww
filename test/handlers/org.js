@@ -1709,6 +1709,51 @@ describe('updating an org', function() {
 });
 
 describe('deleting an org', function() {
+  it('redirects to billing page with an error when the org name is invalid', function(done) {
+
+    var userMock = nock("https://user-api-example.com")
+      .get("/user/bob")
+      .reply(200, fixtures.users.bob);
+
+    generateCrumb(server, function(crumb) {
+      var options = {
+        url: "/org/bigco_aoi&&",
+        method: "POST",
+        payload: {
+          updateType: "deleteOrg",
+          crumb: crumb,
+        },
+        credentials: fixtures.users.bob,
+        headers: {
+          cookie: 'crumb=' + crumb
+        }
+      };
+
+      server.inject(options, function(resp) {
+        userMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
+        expect(resp.statusCode).to.equal(302);
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0].notice).to.equal('Org Scope must be valid name');
+          done();
+        });
+      });
+    });
+  });
+
   it('redirects to billing page when an org is to be deleted', function(done) {
     generateCrumb(server, function(crumb) {
       var userMock = nock("https://user-api-example.com")
@@ -1751,8 +1796,25 @@ describe('deleting an org', function() {
       server.inject(options, function(resp) {
         userMock.done();
         licenseMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/settings/billing');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
         expect(resp.statusCode).to.equal(302);
-        done();
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0].notice).to.equal('You will no longer be billed for @bigco.');
+          done();
+        });
       });
     });
   });

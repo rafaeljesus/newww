@@ -15,6 +15,11 @@ var generateCrumb = require("../handlers/crumb.js"),
 
 var requireInject = require('require-inject');
 var redisMock = require('redis-mock');
+var client = redisMock.createClient();
+
+var URL = require('url');
+var qs = require('qs');
+var TokenFacilitator = require('token-facilitator');
 
 before(function(done) {
   requireInject.installGlobally('../mocks/server', {
@@ -1172,9 +1177,25 @@ describe("subscribing to an org", function() {
         userMock.done();
         orgMock.done();
         customerMock.done();
+        var redirectPath = resp.headers.location;
+        var url = URL.parse(redirectPath);
+        var query = url.query;
+        var token = qs.parse(query).notice;
+        var tokenFacilitator = new TokenFacilitator({
+          redis: client
+        });
+        expect(redirectPath).to.include('/org/bigco');
+        expect(token).to.be.string();
+        expect(token).to.not.be.empty();
         expect(resp.statusCode).to.equal(302);
-        expect(resp.headers.location).to.include('/org/bigco');
-        done();
+        tokenFacilitator.read(token, {
+          prefix: "notice:"
+        }, function(err, notice) {
+          expect(err).to.not.exist();
+          expect(notice.notices).to.be.array();
+          expect(notice.notices[0].notice).to.equal('You have successfully restarted bigco');
+          done();
+        });
       });
     });
 

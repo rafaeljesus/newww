@@ -2132,7 +2132,7 @@ describe('restarting an org', function() {
       });
     });
 
-    it('redirects to the org if it successfully swaps', function(done) {
+    it('redirects to the org if it successfully restarts payment', function(done) {
       var userMock = nock("https://user-api-example.com")
         .get("/user/bob")
         .reply(200, fixtures.users.bob);
@@ -2287,10 +2287,25 @@ describe('restarting an org', function() {
           userMock.done();
           licenseMock.done();
           orgMock.done();
-          expect(resp.statusCode).to.equal(302);
           var redirectPath = resp.headers.location;
-          expect(redirectPath).to.include("/org/bigco");
-          done();
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
+          expect(redirectPath).to.include('/org/bigco');
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
+          expect(resp.statusCode).to.equal(302);
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0].notice).to.equal('You have successfully restarted payment for bigco');
+            done();
+          });
         });
       });
     });
@@ -2853,9 +2868,24 @@ describe('restarting an org', function() {
           orgMock.done();
           licenseMock.done();
           var redirectPath = resp.headers.location;
+          var url = URL.parse(redirectPath);
+          var query = url.query;
+          var token = qs.parse(query).notice;
+          var tokenFacilitator = new TokenFacilitator({
+            redis: client
+          });
           expect(redirectPath).to.include('/org/bigco');
+          expect(token).to.be.string();
+          expect(token).to.not.be.empty();
           expect(resp.statusCode).to.equal(302);
-          done();
+          tokenFacilitator.read(token, {
+            prefix: "notice:"
+          }, function(err, notice) {
+            expect(err).to.not.exist();
+            expect(notice.notices).to.be.array();
+            expect(notice.notices[0].notice).to.equal('You have successfully restarted bigco');
+            done();
+          });
         });
       });
 

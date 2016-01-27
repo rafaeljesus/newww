@@ -77,37 +77,37 @@ var publicRoutes = [
     path: "/contact",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-contact')
+    handler: require('../handlers/contact')
   }, {
     path: "/send-contact",
     feature: '!npmo',
     method: "POST",
-    handler: require('../facets/company/show-send-contact')
+    handler: require('../handlers/send-contact')
   }, {
     path: "/support",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-contact')
+    handler: require('../handlers/contact')
   }, {
     path: "/policies/{policy?}",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-policy')
+    handler: require('../handlers/policy')
   }, {
     path: "/whoshiring",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-whoshiring')
+    handler: require('../handlers/whoshiring')
   }, {
     path: "/joinwhoshiring",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-whoshiring-payments')
+    handler: require('../handlers/whoshiring-payments')
   }, {
     path: "/joinwhoshiring",
     feature: '!npmo',
     method: "POST",
-    handler: require('../facets/company/show-whoshiring-payments'),
+    handler: require('../handlers/whoshiring-payments'),
     config: ajaxy
   }, {
     path: "/enterprise",
@@ -126,44 +126,44 @@ var publicRoutes = [
     path: "/onsite",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/enterprise/show-index')
+    handler: require('../handlers/enterprise-index')
   }, {
     path: "/enterprise-start-signup",
     method: "POST",
-    handler: require('../facets/enterprise/show-ula')
+    handler: require('../handlers/enterprise-ula')
   }, {
     path: "/enterprise-contact-me",
     method: "POST",
-    handler: require('../facets/enterprise/show-contact-me')
+    handler: require('../handlers/enterprise-contact-me')
   }, {
     path: "/enterprise-trial-signup",
     method: "POST",
-    handler: require('../facets/enterprise/show-trial-signup')
+    handler: require('../handlers/enterprise-trial-signup')
   }, {
     path: "/enterprise-verify",
     method: "GET",
-    handler: require('../facets/enterprise/show-verification')
+    handler: require('../handlers/enterprise-verification')
   }, {
     path: "/enterprise/license",
     method: ["GET", "POST"],
-    handler: require('../facets/enterprise/find-license'),
+    handler: require('../handlers/enterprise-find-license'),
   }, {
     path: "/enterprise/license-options",
     method: "GET",
-    handler: require('../facets/enterprise/license-options'),
+    handler: require('../handlers/enterprise-license-options'),
   }, {
     path: "/enterprise/buy-license",
     method: "POST",
-    handler: require('../facets/enterprise/buy-license'),
+    handler: require('../handlers/enterprise-buy-license'),
     config: ajaxy
   }, {
     path: "/enterprise/license-paid",
     method: "GET",
-    handler: require('../facets/enterprise/license-paid')
+    handler: require('../handlers/enterprise-license-paid')
   }, {
     path: "/enterprise/license-error",
     method: "GET",
-    handler: require('../facets/enterprise/license-error')
+    handler: require('../handlers/enterprise-license-error')
   }, {
     paths: [
       "/package/{project}/tutorial",
@@ -270,7 +270,7 @@ var publicRoutes = [
   }, {
     path: "/search/{q?}",
     method: "GET",
-    handler: require('../facets/registry/show-search')
+    handler: require('../handlers/search')
   }, {
     paths: [
       "/~{name}",
@@ -279,12 +279,12 @@ var publicRoutes = [
     ],
     method: "GET",
     feature: "!npmo",
-    handler: require('../facets/user/show-profile')
+    handler: require('../handlers/profile')
   }, {
     path: "/profile/{name}/packages",
     method: "GET",
     feature: "!npmo",
-    handler: require('../facets/user/show-packages')
+    handler: require('../handlers/packages')
   }, {
     path: "/signup",
     method: "GET",
@@ -299,32 +299,32 @@ var publicRoutes = [
     path: "/confirm-email/{token?}",
     method: "GET",
     feature: "!npmo",
-    handler: require('../facets/user/show-confirm-email')
+    handler: require('../handlers/confirm-email')
   }, {
     path: "/login",
     method: "GET",
     feature: '!npmo',
-    handler: require('../facets/user/show-login')
+    handler: require('../handlers/login')
   }, {
     path: "/login",
     method: "POST",
     feature: '!npmo',
-    handler: require('../facets/user/show-login')
+    handler: require('../handlers/login')
   }, {
     path: "/logout",
     method: "POST",
     feature: '!npmo',
-    handler: require('../facets/user/show-logout')
+    handler: require('../handlers/logout')
   }, {
     path: "/forgot/{token?}",
     method: "GET",
     feature: '!npmo',
-    handler: require('../facets/user/show-forgot')
+    handler: require('../handlers/forgot')
   }, {
     path: "/forgot/{token?}",
     method: "POST",
     feature: '!npmo',
-    handler: require('../facets/user/show-forgot')
+    handler: require('../handlers/forgot')
   }, {
     path: "/_monitor/ping",
     method: "GET",

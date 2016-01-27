@@ -10,7 +10,7 @@ module.exports = [
       "/profile",
     ],
     method: "GET",
-    handler: require('../facets/user/show-profile')
+    handler: require('../handlers/profile')
   }, {
     path: "/profile-edit",
     method: "GET",
@@ -26,26 +26,26 @@ module.exports = [
   }, {
     path: "/resend-email-confirmation",
     method: "GET",
-    handler: require('../facets/user/show-resend-email-confirmation')
+    handler: require('../handlers/resend-email-confirmation')
   }, {
     path: "/email-edit",
     method: "GET",
-    handler: require('../facets/user/show-email-edit')
+    handler: require('../handlers/email-edit')
   }, {
     path: "/email-edit",
     method: "PUT",
-    handler: require('../facets/user/show-email-edit')
+    handler: require('../handlers/email-edit')
   }, {
     path: "/email-edit",
     method: "POST",
-    handler: require('../facets/user/show-email-edit')
+    handler: require('../handlers/email-edit')
   }, {
     // confirm or revert
     // /email-edit/confirm/1234567
     // /email-edit/revert/1234567
     path: "/email-edit/{token*2}",
     method: "GET",
-    handler: require('../facets/user/show-email-edit')
+    handler: require('../handlers/email-edit')
   }, {
     path: "/settings/tokens",
     method: "GET",
@@ -57,11 +57,11 @@ module.exports = [
   }, {
     path: "/password",
     method: "GET",
-    handler: require('../facets/user/show-password')
+    handler: require('../handlers/password')
   }, {
     path: "/password",
     method: "POST",
-    handler: require('../facets/user/show-password')
+    handler: require('../handlers/password')
   }, {
     path: "/settings/billing",
     method: "GET",

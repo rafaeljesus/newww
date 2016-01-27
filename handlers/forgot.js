@@ -1,7 +1,7 @@
 var crypto = require('crypto'),
-  UserModel = require('../../models/user'),
+  UserModel = require('../models/user'),
   userValidate = require('npm-user-validate'),
-  utils = require('../../lib/utils');
+  utils = require('../lib/utils');
 
 module.exports = function(request, reply) {
   var opts = { };

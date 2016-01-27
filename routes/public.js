@@ -77,37 +77,37 @@ var publicRoutes = [
     path: "/contact",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-contact')
+    handler: require('../handlers/contact')
   }, {
     path: "/send-contact",
     feature: '!npmo',
     method: "POST",
-    handler: require('../facets/company/show-send-contact')
+    handler: require('../handlers/send-contact')
   }, {
     path: "/support",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-contact')
+    handler: require('../handlers/contact')
   }, {
     path: "/policies/{policy?}",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-policy')
+    handler: require('../handlers/policy')
   }, {
     path: "/whoshiring",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-whoshiring')
+    handler: require('../handlers/whoshiring')
   }, {
     path: "/joinwhoshiring",
     feature: '!npmo',
     method: "GET",
-    handler: require('../facets/company/show-whoshiring-payments')
+    handler: require('../handlers/whoshiring-payments')
   }, {
     path: "/joinwhoshiring",
     feature: '!npmo',
     method: "POST",
-    handler: require('../facets/company/show-whoshiring-payments'),
+    handler: require('../handlers/whoshiring-payments'),
     config: ajaxy
   }, {
     path: "/enterprise",

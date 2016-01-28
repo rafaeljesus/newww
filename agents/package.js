@@ -193,12 +193,12 @@ Package.prototype.unstar = function(pkg) {
 };
 
 function maybeUpgradeRRPackageData(pkg) {
-  if (Object.keys(pkg).length == 1) {
+  if (Object.keys(pkg).length === 1) {
     pkg = pkg[Object.keys(pkg)[0]];
     // registry-relational returns several important fields
     // stored on the latest release, rather than the top level.
     if (pkg['dist-tags'] && pkg['dist-tags'].latest && pkg.versions[pkg['dist-tags'].latest]) {
-      _.extend(pkg, pkg.versions[pkg['dist-tags'].latest])
+      _.extend(pkg, pkg.versions[pkg['dist-tags'].latest]);
     }
   }
 

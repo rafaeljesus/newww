@@ -1,7 +1,7 @@
 var userValidate = require('npm-user-validate'),
   crypto = require('crypto'),
   utils = require('../lib/utils'),
-  UserModel = require('../models/user');
+  UserAgent = require('../agents/user');
 
 module.exports = function(request, reply) {
   var opts = { };
@@ -49,7 +49,7 @@ module.exports = function(request, reply) {
 
     var loggedInUser = request.loggedInUser;
 
-    UserModel.new(request)
+    new UserAgent(loggedInUser)
       .verifyPassword(loggedInUser.name, data.password, function(err, isCorrect) {
         if (!isCorrect) {
           opts.error = {
@@ -116,10 +116,9 @@ function handle(request, reply, emailTo) {
 }
 
 function confirmEmail(request, reply) {
-  var User = UserModel.new(request);
-
   var opts = { },
-    loggedInUser = request.loggedInUser;
+    loggedInUser = request.loggedInUser,
+    User = new UserAgent(loggedInUser);
 
   var token = request.params.token.split('/')[1],
     confHash = utils.sha(token),
@@ -200,10 +199,9 @@ function confirmEmail(request, reply) {
 }
 
 function revertEmail(request, reply) {
-  var User = UserModel.new(request);
-
   var opts = { },
-    loggedInUser = request.loggedInUser;
+    loggedInUser = request.loggedInUser,
+    User = new UserAgent(loggedInUser);
 
   var token = request.params.token.split('/')[1],
     revHash = utils.sha(token),

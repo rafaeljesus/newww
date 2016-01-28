@@ -3,7 +3,7 @@ var Boom = require('boom'),
   fmt = require("util").format,
   redis = require("../adapters/redis-sessions"),
   avatar = require("../lib/avatar"),
-  User = require('../models/user'),
+  User = require('../agents/user'),
   tips = require('npm-tips'),
   marky = require('marky-markdown');
 
@@ -46,7 +46,7 @@ module.exports = function login(request, reply) {
         }
 
         // User is not above the login attempt threshold, so try to log in...
-        User.new(request)
+        new User(request.loggedInUser)
           .login({
             name: request.payload.name,
             password: request.payload.password

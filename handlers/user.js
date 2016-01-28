@@ -1,4 +1,4 @@
-var User = require('../models/user'),
+var UserAgent = require('../agents/user'),
   Joi = require('joi'),
   presenter = require('../presenters/user'),
   userValidate = require('npm-user-validate'),
@@ -42,7 +42,7 @@ exports.handleSignup = function signup(request, reply) {
   };
 
   var data = request.payload;
-  var UserModel = User.new(request);
+  var User = new UserAgent(request.loggedInUser);
 
   Joi.validate(data, schema, joiOptions, function(err, validatedUser) {
     var opts = {
@@ -93,7 +93,7 @@ exports.handleSignup = function signup(request, reply) {
           request.logger.warn(er);
         }
 
-        UserModel.signup(validatedUser, function(er, user) {
+        User.signup(validatedUser, function(er, user) {
           if (er) {
             request.logger.warn('Failed to create account.');
             return reply.view('errors/internal', opts).code(403);
@@ -109,7 +109,7 @@ exports.handleSignup = function signup(request, reply) {
             }
           };
           if (feature('bypass_email_verify', almostARequest)) {
-            UserModel.confirmEmail(user).then(function() {
+            User.confirmEmail(user).then(function() {
               request.logger.info('Bypassed email verification');
             }).catch(function(err) {
               // This is for test purposes, don't let it block the main use cases.
@@ -167,7 +167,7 @@ exports.handleSignup = function signup(request, reply) {
 
 exports.handleProfileEdit = function(request, reply) {
   var loggedInUser = request.loggedInUser;
-  var UserModel = User.new(request);
+  var User = new UserAgent(loggedInUser);
 
   var opts = { };
 
@@ -185,7 +185,7 @@ exports.handleProfileEdit = function(request, reply) {
       return reply.view('user/profile-edit', opts).code(400);
     }
 
-    UserModel.get(loggedInUser.name, function(err, user) {
+    User.get(loggedInUser.name, function(err, user) {
 
       if (err) {
         request.logger.error('unable to get user ' + loggedInUser.name);
@@ -196,14 +196,14 @@ exports.handleProfileEdit = function(request, reply) {
       merge(user.resource, userChanges);
       user = presenter(user);
 
-      UserModel.save(user, function(err, data) {
+      User.save(user, function(err, data) {
         if (err) {
           request.logger.warn('unable to save profile; user=' + user.name);
           request.logger.warn(err);
           return reply.view('errors/internal', opts).code(500);
         }
 
-        UserModel.dropCache(user.name, function() {
+        User.dropCache(user.name, function() {
 
           request.timing.page = 'saveProfile';
           request.metrics.metric({
@@ -230,11 +230,11 @@ exports.showProfileEdit = function(request, reply) {
 };
 
 exports.getCliTokens = function(request, reply) {
-  var UserModel = User.new(request);
+  var User = new UserAgent(request.loggedInUser);
 
   var opts = {};
 
-  UserModel.getCliTokens(request.loggedInUser.name)
+  User.getCliTokens(request.loggedInUser.name)
     .then(function(tokens) {
       opts.tokens = tokens;
     })
@@ -249,10 +249,10 @@ exports.getCliTokens = function(request, reply) {
 };
 
 exports.handleCliToken = function(request, reply) {
-  var UserModel = User.new(request);
+  var User = new UserAgent(request.loggedInUser);
 
   if (request.params && request.params.token) {
-    UserModel.logoutCliToken(request.params.token)
+    User.logoutCliToken(request.params.token)
       .then(function() {
         return reply.redirect('/settings/tokens');
       })

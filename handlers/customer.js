@@ -1,7 +1,7 @@
 var customer = module.exports = {};
 var Joi = require('joi');
 var Org = require('../agents/org');
-var User = require('../models/user');
+var User = require('../agents/user');
 var Customer = require('../agents/customer');
 var P = require('bluebird');
 var utils = require('../lib/utils');
@@ -238,7 +238,7 @@ customer.subscribe = function(request, reply) {
             request.logger.info("created subscription: ", planInfo);
           }
 
-          User.new(request).dropCache(request.loggedInUser.name, function(err) {
+          User(request.loggedInUser).dropCache(request.loggedInUser.name, function(err) {
             if (err) {
               request.logger.error(err);
               return reply.view('errors/internal', err);
@@ -303,7 +303,7 @@ customer.subscribe = function(request, reply) {
           }
 
           // org doesn't yet exist, transfer user then create org
-          var start = newUser ? User.new(request).toOrg(loggedInUser, newUser) : P.resolve(null);
+          var start = newUser ? User(request.loggedInUser).toOrg(loggedInUser, newUser) : P.resolve(null);
 
           return start;
         })
@@ -336,7 +336,7 @@ customer.subscribe = function(request, reply) {
           if (typeof subscription === 'string') {
             request.logger.info("created subscription: ", planInfo);
           }
-          var dropCache = P.promisify(User.new(request).dropCache);
+          var dropCache = P.promisify(User(request.loggedInUser).dropCache);
           return dropCache(loggedInUser);
         })
         .then(function(subscription) {

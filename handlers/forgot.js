@@ -1,5 +1,5 @@
 var crypto = require('crypto'),
-  UserModel = require('../models/user'),
+  UserAgent = require('../agents/user'),
   userValidate = require('npm-user-validate'),
   utils = require('../lib/utils');
 
@@ -71,7 +71,7 @@ function processToken(request, reply) {
       name: name
     });
 
-    var User = UserModel.new(request);
+    var User = new UserAgent(request.loggedInUser);
 
     User.save(newAuth, function(err) {
 
@@ -151,7 +151,7 @@ function handle(request, reply) {
 function lookupUserByEmail(email, request, reply) {
   var opts = { };
 
-  UserModel.new(request).lookupEmail(email, function(er, users) {
+  UserAgent(request.loggedInUser).lookupEmail(email, function(er, users) {
     if (er) {
       opts.error = er.message;
 
@@ -191,12 +191,12 @@ function lookupUserByEmail(email, request, reply) {
 function lookupUserByUsername(name, request, reply) {
   var opts = { };
 
-  UserModel.new(request).get(name, function(er, user) {
+  UserAgent(request.loggedInUser).get(name, function(er, user) {
     if (er) {
       if (er.message && String(er.message).match('404')) {
-        opts.error = "Sorry, there's no npm user named " + name
+        opts.error = "Sorry, there's no npm user named " + name;
       } else {
-        opts.error = er.message
+        opts.error = er.message;
       }
       request.timing.page = 'password-recovery-error';
       request.metrics.metric({

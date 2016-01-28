@@ -2,11 +2,8 @@ var P = require('bluebird');
 
 var feature = require('../lib/feature-flags.js');
 var PackageAgent = require('../agents/package');
-<<<<<<< HEAD
 var DownloadAgent = require('../agents/download');
-=======
 var ExplicitInstalls = require("npm-explicit-installs")
->>>>>>> update to async/up-to-date version of npm-explicit-installs
 
 var MINUTE = 60; // seconds
 var MODIFIED_TTL = 1 * MINUTE;

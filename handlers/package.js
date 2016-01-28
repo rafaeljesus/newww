@@ -3,6 +3,7 @@ var P = require('bluebird');
 var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
 var PackageAgent = require("../agents/package");
+var DownloadAgent = require('../agents/download');
 var feature = require('../lib/feature-flags');
 var marketingblob = require('npm-marketing-sidebar-blob');
 
@@ -14,9 +15,7 @@ exports.show = function(request, reply) {
     title: name
   };
   var loggedInUser = request.loggedInUser;
-  var Download = require("../models/download").new({
-    request: request
-  });
+  var Download = new DownloadAgent(request.loggedInUser);
   var Package = PackageAgent(request.loggedInUser);
 
   request.logger.info('get package: ' + name);

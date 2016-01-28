@@ -1,4 +1,4 @@
-var UserAPI = require('../models/user'),
+var UserAPI = require('../agents/user'),
   async = require('async');
 
 module.exports = function(request, reply) {
@@ -11,7 +11,7 @@ module.exports = function(request, reply) {
     title: "@" + name
   };
 
-  var User = UserAPI.new(request);
+  var User = UserAPI(request.loggedInUser);
   var actions = {
     user: function(cb) {
       User.get(name, cb);

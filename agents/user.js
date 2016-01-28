@@ -8,39 +8,27 @@ var mailchimp = require('mailchimp-api');
 var P = require('bluebird');
 var Request = require('../lib/external-request');
 var userValidate = require('npm-user-validate');
+var USER_API = process.env.USER_API || 'https://user-api-example.com';
 var utils = require('../lib/utils');
 var VError = require('verror');
 
 var chimp;
 
-var User = module.exports = function(opts) {
-  _.extend(this, {
-    host: process.env.USER_API || 'https://user-api-example.com',
-    bearer: false
-  }, opts);
+var User = module.exports = function(loggedInUser) {
 
-  if (!this.logger) {
-    this.logger = {
-      error: console.error,
-      info: console.log
-    };
+  if (!(this instanceof User)) {
+    return new User(loggedInUser);
   }
+
+  this.bearer = loggedInUser && loggedInUser.name;
 
   this.get = P.promisify(this._get);
 
   return this;
 };
 
-User.new = function(request) {
-  var bearer = request.loggedInUser && request.loggedInUser.name;
-  return new User({
-    bearer: bearer,
-    logger: request.logger
-  });
-};
-
 User.prototype.confirmEmail = function(user, callback) {
-  var url = fmt('%s/user/%s/verify', this.host, user.name);
+  var url = fmt('%s/user/%s/verify', USER_API, user.name);
 
   return new P(function(resolve, reject) {
     var opts = {
@@ -67,7 +55,7 @@ User.prototype.confirmEmail = function(user, callback) {
 
 User.prototype.generateUserACLOptions = function generateUserACLOptions(name) {
   return {
-    url: fmt('%s/user/%s', this.host, name),
+    url: fmt('%s/user/%s', USER_API, name),
     json: true,
   };
 };
@@ -154,7 +142,7 @@ User.prototype.fetchData = function fetchData(name, callback) {
 
 User.prototype.getPackages = function(name, page, callback) {
   var self = this;
-  var url = fmt('%s/user/%s/package', this.host, name);
+  var url = fmt('%s/user/%s/package', USER_API, name);
 
   if (typeof page === 'function' || typeof page === 'undefined') {
     callback = page;
@@ -217,7 +205,7 @@ User.prototype.getPackages = function(name, page, callback) {
 
 User.prototype.getOwnedPackages = function(name) {
   var self = this;
-  var url = fmt('%s/user/%s/package/owner', this.host, name);
+  var url = fmt('%s/user/%s/package/owner', USER_API, name);
 
   return new P(function(resolve, reject) {
     var PER_PAGE = 9999;
@@ -263,7 +251,7 @@ User.prototype.getOwnedPackages = function(name) {
 
 User.prototype.getStars = function(name, callback) {
   var self = this;
-  var url = fmt('%s/user/%s/stars?format=detailed', this.host, name);
+  var url = fmt('%s/user/%s/stars?format=detailed', USER_API, name);
 
   return new P(function(resolve, reject) {
     var opts = {
@@ -294,7 +282,7 @@ User.prototype.getStars = function(name, callback) {
 };
 
 User.prototype.login = function(loginInfo, callback) {
-  var url = fmt('%s/user/%s/login', this.host, loginInfo.name);
+  var url = fmt('%s/user/%s/login', USER_API, loginInfo.name);
 
   return new P(function(resolve, reject) {
 
@@ -328,17 +316,14 @@ User.prototype.login = function(loginInfo, callback) {
 };
 
 User.prototype.lookupEmail = function(email, callback) {
-  var self = this;
-
   return new P(function(resolve, reject) {
     if (userValidate.email(email)) {
       var err = new Error('email is invalid');
       err.statusCode = 400;
-      self.logger.error(err);
       return reject(err);
     }
 
-    var url = self.host + '/user/' + email;
+    var url = USER_API + '/user/' + email;
 
     Request.get({
       url: url,
@@ -359,7 +344,7 @@ User.prototype.lookupEmail = function(email, callback) {
 };
 
 User.prototype.save = function(user, callback) {
-  var url = this.host + '/user/' + user.name;
+  var url = USER_API + '/user/' + user.name;
 
   return new P(function(resolve, reject) {
     var opts = {
@@ -384,7 +369,6 @@ User.prototype.save = function(user, callback) {
 };
 
 User.prototype.signup = function(user, callback) {
-  var self = this;
 
   if (user.npmweekly === 'on') {
     var mc = this.getMailchimp();
@@ -396,14 +380,14 @@ User.prototype.signup = function(user, callback) {
     }, function() {
       // do nothing on success
     }, function(error) {
-      self.logger.error('Could not register user for npm Weekly: ' + user.email);
+      console.error('Could not register user for npm Weekly: ' + user.email);
       if (error.error) {
-        self.logger.error(error.error);
+        console.error(error.error);
       }
     });
   }
 
-  var url = this.host + '/user';
+  var url = USER_API + '/user';
 
   return new P(function(resolve, reject) {
     var opts = {
@@ -433,7 +417,7 @@ User.prototype.signup = function(user, callback) {
 };
 
 User.prototype.getCliTokens = function getCliTokens(name) {
-  var url = fmt('%s/user/%s/tokens', this.host, name);
+  var url = fmt('%s/user/%s/tokens', USER_API, name);
 
   return new P(function(accept, reject) {
 
@@ -460,7 +444,7 @@ User.prototype.getCliTokens = function getCliTokens(name) {
 };
 
 User.prototype.logoutCliToken = function logoutCliToken(token) {
-  var url = fmt('%s/user/-/logout', this.host);
+  var url = fmt('%s/user/-/logout', USER_API);
 
   var opts = {
     url: url,
@@ -506,7 +490,7 @@ User.prototype.verifyPassword = function(name, password, callback) {
 
 User.prototype.getOrgs = function(name, callback) {
   var self = this;
-  var url = fmt('%s/user/%s/org', this.host, name);
+  var url = fmt('%s/user/%s/org', USER_API, name);
 
   return new P(function(resolve, reject) {
 
@@ -540,7 +524,7 @@ User.prototype.getOrgs = function(name, callback) {
 
 User.prototype.toOrg = function(name, newUsername, callback) {
 
-  var url = fmt('%s/user/%s/to-org', this.host, name);
+  var url = fmt('%s/user/%s/to-org', USER_API, name);
 
   var opts = {
     url: url,

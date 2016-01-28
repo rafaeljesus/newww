@@ -1,10 +1,10 @@
-var User = require('../models/user');
+var User = require('../agents/user');
 
 module.exports = function(request, reply) {
   var name = request.params.name;
   var offset = request.query.offset;
 
-  User.new(request)
+  new User(request.loggedInUser)
     .getPackages(name, offset)
     .then(function(packages) {
       return reply(packages).code(200);

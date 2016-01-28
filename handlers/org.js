@@ -1,6 +1,6 @@
 var Org = require('../agents/org');
 var Team = require('../agents/team');
-var User = require('../models/user');
+var User = require('../agents/user');
 var P = require('bluebird');
 var Joi = require('joi');
 var invalidUserName = require('npm-user-validate').username;
@@ -549,7 +549,7 @@ exports.validateOrgCreation = function(request, reply) {
         .then(reportScopeInUseError)
         .catch(function(err) {
           if (err.statusCode === 404) {
-            return User.new(request)
+            return new User(request.loggedInUser)
               .fetchFromUserACL(planData.orgScope)
               .then(reportScopeInUseError)
               .catch(function(err) {
@@ -630,7 +630,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
       .then(reportScopeInUseError)
       .catch(function(err) {
         if (err.statusCode === 404) {
-          return User.new(request)
+          return new User(request.loggedInUser)
             .fetchFromUserACL(newUser)
             .then(reportScopeInUseError)
             .catch(function(err) {

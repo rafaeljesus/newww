@@ -1,8 +1,9 @@
 var utils = require('../lib/utils'),
-  UserModel = require('../models/user');
+  UserAgent = require('../agents/user');
 
 module.exports = function confirmEmail(request, reply) {
   var opts = {};
+  var User = new UserAgent(request.loggedInUser);
 
   if (!request.params || !request.params.token) {
     request.logger.warn('no token parameter');
@@ -38,8 +39,6 @@ module.exports = function confirmEmail(request, reply) {
 
     var name = cached.name;
     request.logger.warn('Confirming email for user ' + name);
-
-    var User = UserModel.new(request);
 
     User.get(name, function(err, user) {
 

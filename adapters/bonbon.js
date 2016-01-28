@@ -6,7 +6,7 @@ var bole = require('bole'),
   featureFlag = require('../lib/feature-flags.js'),
   toCommonLogFormat = require('hapi-common-log'),
   url = require('url'),
-  UserModel = require('../models/user');
+  User = require('../agents/user');
 
 exports.register = function(server, options, next) {
 
@@ -28,7 +28,7 @@ exports.register = function(server, options, next) {
     };
 
     if (request.auth && request.auth.credentials && !request.path.match(/static\//)) {
-      UserModel.new(request).get(request.auth.credentials.name, function(err, user) {
+      new User(request.auth.credentials).get(request.auth.credentials.name, function(err, user) {
         if (err) {
           request.logger.warn(err);
         }

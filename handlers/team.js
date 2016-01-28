@@ -3,7 +3,7 @@ var P = require('bluebird');
 var Joi = require('joi');
 var Org = require('../agents/org');
 var Team = require('../agents/team');
-var User = require('../models/user');
+var User = require('../agents/user');
 var invalidUserName = require('npm-user-validate').username;
 var validatePackageName = require('validate-npm-package-name');
 var URL = require('url');
@@ -179,7 +179,7 @@ exports.showTeam = function(request, reply) {
           pkg.canWrite = true;
         }
 
-        if(pkg.access === 'restricted') {
+        if (pkg.access === 'restricted') {
           pkg.private = true;
         }
       });
@@ -408,7 +408,7 @@ exports._handleTeamAdditions = function(request, reply, successPage) {
           teamName: opts.teamName
         });
 
-      var personalPackages = User.new(request).getOwnedPackages(loggedInUser);
+      var personalPackages = User(request.loggedInUser).getOwnedPackages(loggedInUser);
 
       return P.all([teamPackages, personalPackages])
         .spread(function(team, personal) {

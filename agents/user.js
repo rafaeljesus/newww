@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var async = require('async');
+var logger = require('bole')('user-agent');
 var cache = require('../lib/cache');
 var decorate = require('../presenters/user');
 var fmt = require('util').format;
@@ -380,9 +381,9 @@ User.prototype.signup = function(user, callback) {
     }, function() {
       // do nothing on success
     }, function(error) {
-      console.error('Could not register user for npm Weekly: ' + user.email);
+      logger.error('Could not register user for npm Weekly: ' + user.email);
       if (error.error) {
-        console.error(error.error);
+        logger.error(error.error);
       }
     });
   }

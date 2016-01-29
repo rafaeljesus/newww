@@ -6,48 +6,23 @@ var Code = require('code'),
   after = lab.after,
   it = lab.test,
   expect = Code.expect,
-  redis = require('redis'),
-  spawn = require('child_process').spawn,
-  redisSessions = require('../../adapters/redis-sessions'),
-  redisProcess;
-
-before(function(done) {
-  redisProcess = spawn('redis-server');
-  done();
-});
-
-after(function(done) {
-  redisProcess.kill('SIGKILL');
-  done();
-});
+  requireInject = require('require-inject'),
+  redis = require('redis-mock'),
+  redisSessions = requireInject('../../adapters/redis-sessions', {
+    redis
+  });
 
 describe('redis-requiring session stuff', function() {
-  var client;
-  var bob1, bob2, alice1;
-  var bobHash, aliceHash;
+  var client = redis.createClient();
+  var bob1 = redisSessions.generateRandomUserHash('bob');
+  var bob2 = redisSessions.generateRandomUserHash('bob');
+  var alice1 = redisSessions.generateRandomUserHash('alice');
+  var bobHash = redisSessions.userPrefixHash('bob');
+  var aliceHash = redisSessions.userPrefixHash('alice');
+
   var prefix = "hapi-cache:%7Csessions:";
 
-  before(function(done) {
-    client = require("redis").createClient();
-    client.flushdb();
-    client.on("error", function(err) {
-      console.log("Error " + err);
-    });
-    done();
-  });
-
-  after('cleans up the db', function(done) {
-    client.flushdb(done);
-  });
-
   it('creates a random hash for each user', function(done) {
-    bob1 = redisSessions.generateRandomUserHash('bob');
-    bob2 = redisSessions.generateRandomUserHash('bob');
-    alice1 = redisSessions.generateRandomUserHash('alice');
-
-    bobHash = redisSessions.userPrefixHash('bob');
-    aliceHash = redisSessions.userPrefixHash('alice');
-
     expect(bob1).to.include(bobHash + '---');
     expect(bob2).to.include(bobHash + '---');
     expect(alice1).to.include(aliceHash + '---');

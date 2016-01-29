@@ -28,45 +28,6 @@ module.exports = function(server) {
       }
     },
 
-    downloads: {
-      getAllDownloads: function(next) {
-        var d = {
-          day: 0,
-          week: 0,
-          month: 0
-        };
-
-        return next(null, d);
-      },
-
-      getAllDownloadsForPackage: function(name, next) {
-        var d = [
-          {
-            day: 32789,
-            week: 268291,
-            month: 1480446
-          },
-          null,
-          {
-            msec: 3,
-            error: null
-          }
-        ];
-
-        return next(null, d);
-      },
-
-      getDownloadsForPackage: function(period, detail, pkg, next) {
-        return next(null, [{
-          day: '2014-07-12',
-          downloads: 0
-        }, {
-          day: '2014-07-13',
-          downloads: 0
-        }]);
-      }
-    },
-
     email: {
       send: function(template, user, redis) {
         assert(typeof redis === 'object', 'whoops need redis');

@@ -1,6 +1,5 @@
 var tap = require('tap');
 var urlOf = require('./lib/url');
-var pass = require('./lib/pass');
 var P = require('bluebird');
 
 require('./lib/sharedNemo').then(function(nemo) {
@@ -9,7 +8,7 @@ require('./lib/sharedNemo').then(function(nemo) {
   }, function(t) {
     return P.resolve(nemo.driver.get(urlOf('/onsite'))).then(function() {
       return P.all([
-        nemo.view.onsite.firstnameWaitVisible().then(pass(t, "form field visible")),
+        nemo.view.onsite.firstnameWaitVisible().then(() => t.pass("form field visible")),
         nemo.view.onsite.firstname().sendKeys("Boops"),
         nemo.view.onsite.lastname().sendKeys("boops"),
         nemo.view.onsite.email().sendKeys("test+" + Date.now() + "@npmjs.com"),
@@ -21,19 +20,19 @@ require('./lib/sharedNemo').then(function(nemo) {
       return nemo.view.onsite.submit().click();
     }).then(function() {
       return P.all([
-        nemo.view.onsite.agreementWaitVisible().then(pass(t, "navigated to second page")),
+        nemo.view.onsite.agreementWaitVisible().then(() => t.pass("navigated to second page")),
         nemo.view.onsite.agreement().sendKeys(" "),
         nemo.view.onsite.submitAgreement().click()
       ]);
     }).then(function() {
       return P.all([
         nemo.view.onsite.h2WaitVisible(),
-        nemo.view.onsite.h2TextEquals('time to check your email').then(pass(t, 'confirmation found'))
+        nemo.view.onsite.h2TextEquals('time to check your email').then(() => t.pass('confirmation found'))
       ]);
     }).then(function() {
       if (!module.parent) {
         return nemo.driver.quit();
       }
-    }).catch(t.error).then(t.end);
+    });
   });
 });

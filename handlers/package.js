@@ -86,8 +86,6 @@ exports.show = function(request, reply) {
       return reply.view('errors/package-not-found', context).code(404);
     }
 
-    request.logger.error(err);
-    err.statusCode = 500;
     return reply(err);
   });
 };

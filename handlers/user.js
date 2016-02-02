@@ -4,17 +4,16 @@ var UserAgent = require('../agents/user'),
   userValidate = require('npm-user-validate'),
   merge = require('lodash').merge,
   P = require('bluebird'),
-  Scope = require('../agents/scope');
+  Scope = require('../agents/scope'),
+  sendEmail = require('../adapters/send-email');
 
 var feature = require('../lib/feature-flags');
-
 
 exports.showSignup = function signup(request, reply) {
 
   var opts = {
     errors: []
   };
-
 
   request.timing.page = 'signup-form';
   request.metrics.metric({
@@ -25,8 +24,7 @@ exports.showSignup = function signup(request, reply) {
 
 exports.handleSignup = function signup(request, reply) {
   var setSession = request.server.methods.user.setSession(request),
-    delSession = request.server.methods.user.delSession(request),
-    sendEmail = request.server.methods.email.send;
+    delSession = request.server.methods.user.delSession(request);
 
   var schema = Joi.object().keys({
     name: Joi.string().required(),

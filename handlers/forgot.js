@@ -1,7 +1,8 @@
 var crypto = require('crypto'),
   UserAgent = require('../agents/user'),
   userValidate = require('npm-user-validate'),
-  utils = require('../lib/utils');
+  utils = require('../lib/utils'),
+  emailIt = require('../adapters/send-email');
 
 module.exports = function(request, reply) {
   var opts = { };
@@ -244,8 +245,6 @@ function lookupUserByUsername(name, request, reply) {
 function sendEmail(request, reply, data) {
 
   var opts = {};
-
-  var emailIt = request.server.methods.email.send;
 
   emailIt('forgot-password', data, request.redis)
     .catch(function(er) {

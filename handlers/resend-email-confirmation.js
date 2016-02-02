@@ -1,7 +1,7 @@
+var sendEmail = require('../adapters/send-email');
 
 module.exports = function resendConfirmation(request, reply) {
-  var sendEmail = request.server.methods.email.send,
-    loggedInUser = request.loggedInUser,
+  var loggedInUser = request.loggedInUser,
     opts = { };
 
   sendEmail('confirm-user-email', loggedInUser, request.redis)

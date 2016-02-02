@@ -1,11 +1,4 @@
-var Boom = require('boom');
-var murmurhash = require('murmurhash');
-var crypto = require('crypto');
 var fixtures = require('../fixtures.js');
-var Promise = require('bluebird');
-var assert = require('assert');
-var sendEmail = require('../../services/email/methods/send');
-var MockTransport = require('nodemailer-mock-transport');
 
 module.exports = function(server) {
   var methods = {
@@ -25,18 +18,6 @@ module.exports = function(server) {
         }
 
         return next(new Error('Not Found'));
-      }
-    },
-
-    email: {
-      send: function(template, user, redis) {
-        assert(typeof redis === 'object', 'whoops need redis');
-
-        if (user.email === 'lolbad@email') {
-          return Promise.reject(new Error('no bueno yo'))
-        }
-
-        return sendEmail(template, user, redis);
       }
     },
 
@@ -150,12 +131,5 @@ module.exports = function(server) {
     }
   };
 
-  sendEmail.mailConfig.mailTransportModule = new MockTransport();
-  methods.email.send.mailConfig = sendEmail.mailConfig;
-
   return methods;
 };
-
-function passHash(auth) {
-  return crypto.pbkdf2Sync(auth.password, fixtures.users[auth.name].salt, fixtures.users[auth.name].iterations, 20).toString('hex');
-}

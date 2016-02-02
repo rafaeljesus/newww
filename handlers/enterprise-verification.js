@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var sendEmail = require('../adapters/send-email');
 
 module.exports = function verifyEnterpriseTrial(request, reply) {
   var verifyTrial = request.server.methods.npme.verifyTrial,
@@ -70,8 +71,6 @@ module.exports = function verifyEnterpriseTrial(request, reply) {
         };
 
         opts = _.extend({}, opts, mail);
-
-        var sendEmail = request.server.methods.email.send;
 
         sendEmail('enterprise-verification', mail, request.redis)
           .catch(function(er) {

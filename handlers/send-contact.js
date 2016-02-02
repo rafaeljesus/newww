@@ -1,3 +1,5 @@
+var sendEmail = require('../adapters/send-email');
+
 var zdClient = require('node-zendesk').createClient({
   username: process.env.ZENDESK_USERNAME,
   token: process.env.ZENDESK_TOKEN,
@@ -28,8 +30,6 @@ module.exports = function showSendContact(request, reply) {
     subject: data.subject + " - FROM: " + '"' + data.name + '" <' + data.email + '>',
     text: data.message
   };
-
-  var sendEmail = request.server.methods.email.send;
 
   sendEmail('contact-support', mail, request.redis)
     .catch(function(er) {

@@ -11,6 +11,12 @@ var generateCrumb = require("../crumb"),
   nock = require('nock'),
   users = require('../../fixtures').users;
 
+var MockTransport = require('nodemailer-mock-transport');
+var sendEmail = require('../../../adapters/send-email');
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+var client = redisMock.createClient();
+
 var server;
 var emailMock;
 
@@ -30,10 +36,12 @@ var postName = function(name_email, crumb) {
 
 
 before(function(done) {
-  require('../../mocks/server')(function(obj) {
+  requireInject.installGlobally('../../mocks/server', {
+    redis: redisMock
+  })(function(obj) {
     server = obj;
-    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
-    server.app.cache._cache.connection.client = {};
+    sendEmail.mailConfig.mailTransportModule = new MockTransport();
+    emailMock = sendEmail.mailConfig.mailTransportModule;
     done();
   });
 });
@@ -44,11 +52,10 @@ afterEach(function(done) {
 });
 
 after(function(done) {
-  delete server.app.cache._cache.connection.client;
   server.stop(done);
 });
 
-function assertEmail () {
+function assertEmail() {
   var expectedName = 'bob';
   var expectedEmail = 'bob@boom.me';
   var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
@@ -57,11 +64,11 @@ function assertEmail () {
 
   var msg = emailMock.sentMail[0];
   expect(msg.data.to).to.equal(expectedTo);
-  expect(msg.message._headers.find(function (header) {
+  expect(msg.message._headers.find(function(header) {
     return header.key === 'To';
   }).value).to.equal(expectedTo);
   expect(msg.data.from).to.equal(expectedFrom);
-  expect(msg.message._headers.find(function (header) {
+  expect(msg.message._headers.find(function(header) {
     return header.key === 'From';
   }).value).to.equal(expectedFrom);
   expect(msg.data.name).to.equal(expectedName);

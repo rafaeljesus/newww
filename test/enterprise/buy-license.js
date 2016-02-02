@@ -10,14 +10,22 @@ var generateCrumb = require("../handlers/crumb.js"),
   expect = Code.expect,
   nock = require('nock'),
   _ = require('lodash'),
+  MockTransport = require('nodemailer-mock-transport'),
+  sendEmail = require('../../adapters/send-email'),
   emailMock,
   server;
 
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+var client = redisMock.createClient();
+
 before(function(done) {
-  require('../mocks/server')(function(obj) {
+  requireInject.installGlobally('../mocks/server', {
+    redis: redisMock
+  })(function(obj) {
     server = obj;
-    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
-    server.app.cache._cache.connection.client = {};
+    sendEmail.mailConfig.mailTransportModule = new MockTransport();
+    emailMock = sendEmail.mailConfig.mailTransportModule;
     done();
   });
 });
@@ -85,7 +93,7 @@ var stripeCustomer = {
   default_source: 'card_15feYq4fnGb60djYJsvT2YGG'
 };
 
-function assertEmail () {
+function assertEmail() {
   var expectedName = 'Boom Bam';
   var expectedEmail = 'exists@bam.com';
   var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
@@ -97,11 +105,11 @@ function assertEmail () {
 
   var msg = emailMock.sentMail[0];
   expect(msg.data.to).to.equal(expectedTo);
-  expect(msg.message._headers.find(function (header) {
+  expect(msg.message._headers.find(function(header) {
     return header.key === 'To';
   }).value).to.equal(expectedTo);
   expect(msg.data.from).to.equal(expectedFrom);
-  expect(msg.message._headers.find(function (header) {
+  expect(msg.message._headers.find(function(header) {
     return header.key === 'From';
   }).value).to.equal(expectedFrom);
   expect(msg.data.license_key).to.equal(expectedLicenseKey);

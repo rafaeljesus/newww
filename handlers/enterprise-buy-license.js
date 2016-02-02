@@ -1,5 +1,6 @@
 var Joi = require('joi');
 var moment = require('moment');
+var sendEmail = require('../adapters/send-email');
 
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 var SUB_TYPE_MONTHLY = 1,
@@ -144,8 +145,6 @@ module.exports = function(request, reply) {
             request.timing.page = 'enterprise-license-created';
 
             // now email them the generated license
-            var sendEmail = request.server.methods.email.send;
-
             var data = {
               requirementsUrl: "https://docs.npmjs.com/enterprise/requirements",
               instructionsUrl: "https://docs.npmjs.com/enterprise/installation",

@@ -6,23 +6,22 @@ var Request = require('../lib/external-request');
 var P = require('bluebird');
 var VError = require('verror');
 
-var Customer = module.exports = function(name, opts) {
+var Customer = module.exports = function(name) {
 
   assert(!_.isObject(name), "Must pass a name to Customer model");
   assert(_.isString(name), "Must pass a name to Customer model");
 
   if (!(this instanceof Customer)) {
-    return new Customer(name, opts);
+    return new Customer(name);
   }
 
-  _.extend(this, {
-    host: LICENSE_API,
-    name: name,
-  }, opts);
+  this.name = name;
+
+  return this;
 };
 
 Customer.prototype.getById = function(id, callback) {
-  var url = this.host + '/customer/' + id;
+  var url = LICENSE_API + '/customer/' + id;
 
   return new P(function(accept, reject) {
     Request.get({
@@ -57,7 +56,7 @@ Customer.prototype.getById = function(id, callback) {
 
 Customer.prototype.getStripeData = function(callback) {
   var self = this;
-  var stripeUrl = this.host + '/customer/' + self.name + '/stripe';
+  var stripeUrl = LICENSE_API + '/customer/' + self.name + '/stripe';
 
   return new P(function(accept, reject) {
     Request.get({
@@ -89,7 +88,7 @@ Customer.prototype.getStripeData = function(callback) {
 };
 
 Customer.prototype.getSubscriptions = function(callback) {
-  var url = this.host + '/customer/' + this.name + '/stripe/subscription';
+  var url = LICENSE_API + '/customer/' + this.name + '/stripe/subscription';
 
   return new P(function(accept, reject) {
     Request.get({
@@ -151,7 +150,7 @@ Customer.prototype.updateBilling = function(body, callback) {
 
     // Create new customer
     if (err && err.statusCode === 404) {
-      url = _this.host + '/customer/stripe';
+      url = LICENSE_API + '/customer/stripe';
       return Request.put({
         url: url,
         json: true,
@@ -165,7 +164,7 @@ Customer.prototype.updateBilling = function(body, callback) {
     }
 
     // Update existing customer
-    url = _this.host + '/customer/' + body.name + '/stripe';
+    url = LICENSE_API + '/customer/' + body.name + '/stripe';
     return Request.post({
       url: url,
       json: true,
@@ -176,7 +175,7 @@ Customer.prototype.updateBilling = function(body, callback) {
 };
 
 Customer.prototype.del = function(callback) {
-  var url = this.host + '/customer/' + this.name + '/stripe';
+  var url = LICENSE_API + '/customer/' + this.name + '/stripe';
   Request.del({
     url: url,
     json: true
@@ -196,7 +195,7 @@ Customer.prototype.del = function(callback) {
 };
 
 Customer.prototype.createSubscription = function(planInfo, callback) {
-  var url = this.host + '/customer/' + this.name + '/stripe/subscription';
+  var url = LICENSE_API + '/customer/' + this.name + '/stripe/subscription';
   return new P(function(accept, reject) {
     Request.put({
       url: url,
@@ -215,7 +214,7 @@ Customer.prototype.createSubscription = function(planInfo, callback) {
 };
 
 Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
-  var url = this.host + '/customer/' + this.name + '/stripe/subscription/' + subscriptionId;
+  var url = LICENSE_API + '/customer/' + this.name + '/stripe/subscription/' + subscriptionId;
   return new P(function(accept, reject) {
     Request.del({
       url: url,
@@ -239,7 +238,7 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
 };
 
 Customer.prototype.getLicenseForOrg = function(orgName, callback) {
-  var url = this.host + '/customer/' + this.name + '/stripe/subscription';
+  var url = LICENSE_API + '/customer/' + this.name + '/stripe/subscription';
 
   return new P(function(accept, reject) {
     Request.get({
@@ -275,7 +274,7 @@ Customer.prototype.getLicenseForOrg = function(orgName, callback) {
 
 // should this go into the org agent instead?
 Customer.prototype.getAllSponsorships = function(licenseId, callback) {
-  var url = this.host + '/sponsorship/' + licenseId;
+  var url = LICENSE_API + '/sponsorship/' + licenseId;
   return new P(function(accept, reject) {
     Request.get({
       url: url,
@@ -301,7 +300,7 @@ Customer.prototype.getAllSponsorships = function(licenseId, callback) {
 };
 
 Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
-  var url = this.host + '/sponsorship/' + licenseId;
+  var url = LICENSE_API + '/sponsorship/' + licenseId;
   return new P(function(accept, reject) {
     Request.put({
       url: url,
@@ -332,7 +331,7 @@ Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
 };
 
 Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
-  var url = this.host + '/sponsorship/' + verificationKey;
+  var url = LICENSE_API + '/sponsorship/' + verificationKey;
   return new P(function(accept, reject) {
     Request.post({
       url: url,
@@ -366,7 +365,7 @@ Customer.prototype.acceptSponsorship = function(verificationKey, callback) {
 };
 
 Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
-  var url = this.host + '/sponsorship/' + licenseId + '/' + npmUser;
+  var url = LICENSE_API + '/sponsorship/' + licenseId + '/' + npmUser;
 
   return new P(function(accept, reject) {
     Request.del({

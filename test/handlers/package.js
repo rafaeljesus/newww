@@ -33,6 +33,7 @@ var redisMock = require('redis-mock');
 describe("package handler", function() {
 
   before(function(done) {
+    redisMock.createClient().flushall()
     requireInject.installGlobally('../mocks/server', {
       redis: redisMock
     })(function(obj) {

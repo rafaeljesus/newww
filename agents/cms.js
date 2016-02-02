@@ -62,11 +62,17 @@ function fetchPromotion(tags) {
   });
 }
 
+function selectPromotion(promos) {
+  const out = {};
+  Object.keys(promos).forEach(k => out[k] = Array.isArray(promos[k]) ? promos[k][Math.floor(Math.random() * promos[k].length)] : promos[k]);
+  return out;
+}
+
 module.exports = {
   getPage: function getPage(slug) {
     return pageCache.get(slug);
   },
   getPromotion: function getPromotion(tags) {
-    return promotionCache.get([].concat(tags));
+    return promotionCache.get([].concat(tags)).then(promos => selectPromotion(promos));
   }
 };

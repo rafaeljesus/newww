@@ -13,6 +13,8 @@ var USER_API = process.env.USER_API || 'https://user-api-example.com';
 var utils = require('../lib/utils');
 var VError = require('verror');
 
+var redis = require('../lib/redis-pool');
+
 var chimp;
 
 var User = module.exports = function(loggedInUser) {
@@ -569,4 +571,24 @@ User.prototype.toOrg = function(name, newUsername, callback) {
     });
 
   }).nodeify(callback);
+};
+
+User.prototype.getPagesSeenThisSession = function(user) {
+  return redis.acquireAsync().then(function(redis) {
+    return redis.getAsync(`pagesSeenThisSession:${user.sid}`).then(function(val) {
+      return Number(val) || 0;
+    });
+  });
+};
+
+User.prototype.incrPagesSeenThisSession = function(user) {
+  if (!user) {
+    return Promise.resolve();
+  }
+  return redis.acquireAsync().then(function(redis) {
+    var key = `pagesSeenThisSession:${user.sid}`;
+    return redis.incrAsync(key).then(function() {
+      return redis.expireAsync(key, 60 * 60 * 3);
+    });
+  });
 };

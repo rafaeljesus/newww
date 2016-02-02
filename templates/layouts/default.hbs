@@ -62,13 +62,15 @@
   <script src="/static/{{m "js/index.min.js"}}"></script>
   {{/if}}
 
+  <meta name="x-npm:ga:id" content="{{ga.id}}">
+  <meta name="x-npm:ga:dimensions" content="{{ga.dimensions}}">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
   <meta itemprop="url" content="https://www.npmjs.com/">
 
   {{#if promotion.aboveChrome}}
-    {{{promotion.aboveChrome.html}}}
+    <div class="promotion" data-promotion-id="{{promotion.aboveChrome.id}}" data-promotion-spot="aboveChrome">{{{promotion.aboveChrome.html}}}</div>
   {{/if}}
 
   {{#unless features.npmo}}
@@ -136,7 +138,7 @@
   </header>
 
   {{#if promotion.belowHeader}}
-    {{{promotion.belowHeader.html}}}
+    <div class="promotion" data-promotion-id="{{promotion.belowHeader.id}}" data-promotion-spot="belowHeader">{{{promotion.belowHeader.html}}}</div>
   {{/if}}
 
   {{#if contentIsFullwidth}}

@@ -5,6 +5,7 @@ var bole = require('bole'),
   humans = require('npm-humans'),
   featureFlag = require('../lib/feature-flags.js'),
   toCommonLogFormat = require('hapi-common-log'),
+  qs = require('qs'),
   url = require('url'),
   User = require('../agents/user');
 
@@ -89,6 +90,10 @@ exports.register = function(server, options, next) {
       env: {
         NPMO_COBRAND: process.env.NPMO_COBRAND,
         CANONICAL_HOST: process.env.CANONICAL_HOST
+      },
+      ga: {
+        dimensions: JSON.stringify(qs.parse(process.env.PROMOTION_GA_DIMENSIONS)),
+        id: process.env.GA_ID
       }
     };
 

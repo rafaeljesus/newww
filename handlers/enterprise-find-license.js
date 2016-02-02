@@ -1,4 +1,5 @@
 var Joi = require('joi');
+var sendEmail = require('../adapters/send-email');
 
 module.exports = function(request, reply) {
 
@@ -116,8 +117,6 @@ module.exports = function(request, reply) {
             msg: "This seems to be due to an internal error."
           });
         }
-
-        var sendEmail = request.server.methods.email.send;
 
         var data = {
           email: customer.email,

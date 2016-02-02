@@ -1,5 +1,6 @@
 var utils = require('../lib/utils');
 var VError = require('verror');
+var sendEmail = require('../adapters/send-email');
 
 // if they agree to the ULA, notify hubspot, create a trial and send verification link
 
@@ -56,8 +57,6 @@ function createTrialAccount(request, reply, customer) {
 function sendVerificationEmail(request, reply, customer, trial) {
 
   var opts = {};
-
-  var sendEmail = request.server.methods.email.send;
 
   var user = {
     name: customer.name,

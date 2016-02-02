@@ -10,13 +10,19 @@ var Code = require('code'),
 
 var server;
 var emailMock;
-
+var MockTransport = require('nodemailer-mock-transport');
+var sendEmail = require('../../adapters/send-email');
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+var client = redisMock.createClient();
 
 before(function(done) {
-  require('../mocks/server')(function(obj) {
+  requireInject.installGlobally('../mocks/server', {
+    redis: redisMock
+  })(function(obj) {
     server = obj;
-    emailMock = server.methods.email.send.mailConfig.mailTransportModule;
-    server.app.cache._cache.connection.client = {};
+    sendEmail.mailConfig.mailTransportModule = new MockTransport();
+    emailMock = sendEmail.mailConfig.mailTransportModule;
     done();
   }, require('../../lib/error-handler'));
 });
@@ -27,11 +33,10 @@ afterEach(function(done) {
 });
 
 after(function(done) {
-  delete server.app.cache._cache.connection.client;
   server.stop(done);
 });
 
-function assertEmail () {
+function assertEmail() {
   var expectedName = 'Boom Bam';
   var expectedEmail = 'exists@bam.com';
   var expectedTo = '"' + expectedName + '" <' + expectedEmail + '>';
@@ -41,11 +46,11 @@ function assertEmail () {
 
   var msg = emailMock.sentMail[0];
   expect(msg.data.to).to.equal(expectedTo);
-  expect(msg.message._headers.find(function (header) {
+  expect(msg.message._headers.find(function(header) {
     return header.key === 'To';
   }).value).to.equal(expectedTo);
   expect(msg.data.from).to.equal(expectedFrom);
-  expect(msg.message._headers.find(function (header) {
+  expect(msg.message._headers.find(function(header) {
     return header.key === 'From';
   }).value).to.equal(expectedFrom);
   expect(msg.data.license_key).to.equal(expectedLicenseKey);

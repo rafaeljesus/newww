@@ -1,7 +1,8 @@
 var userValidate = require('npm-user-validate'),
   crypto = require('crypto'),
   utils = require('../lib/utils'),
-  UserAgent = require('../agents/user');
+  UserAgent = require('../agents/user'),
+  sendEmail = require('../adapters/send-email');
 
 module.exports = function(request, reply) {
   var opts = { };
@@ -83,8 +84,6 @@ function handle(request, reply, emailTo) {
     confToken: crypto.randomBytes(18).toString('hex'),
     revToken: crypto.randomBytes(18).toString('hex')
   };
-
-  var sendEmail = request.server.methods.email.send;
 
   // don't send the confmail until we know the revert mail was sent!
   data.email = data.changeEmailFrom;

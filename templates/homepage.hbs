@@ -41,7 +41,11 @@
 </h2>
 <ul class="columnar">
   {{#each explicit}}
-    <li>{{> package-widget npmo='{{../features.npmo}}'}}</li>
+    {{#if ../features.npmo}}
+      <li>{{> package-widget npmo='true' }}</li>
+    {{else}}
+      <li>{{> package-widget }}</li>
+    {{/if}}
   {{/each}}
 </ul>
 

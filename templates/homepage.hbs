@@ -41,7 +41,11 @@
 </h2>
 <ul class="columnar">
   {{#each explicit}}
-    <li>{{> package-widget}}</li>
+    {{#if ../features.npmo}}
+      <li>{{> package-widget npmo='true' }}</li>
+    {{else}}
+      <li>{{> package-widget }}</li>
+    {{/if}}
   {{/each}}
 </ul>
 
@@ -83,7 +87,11 @@
 </h2>
 <ul class="columnar">
   {{#each modified.results}}
-    <li>{{> package-widget}}</li>
+    {{#if ../features.npmo}}
+      <li>{{> package-widget npmo='true' }}</li>
+    {{else}}
+      <li>{{> package-widget }}</li>
+    {{/if}}
   {{/each}}
 </ul>
 
@@ -92,7 +100,11 @@
 </h2>
 <ul class="columnar packages">
   {{#each dependents.results}}
-    <li>{{> package-widget}}</li>
+    {{#if ../features.npmo}}
+      <li>{{> package-widget npmo='true' }}</li>
+    {{else}}
+      <li>{{> package-widget }}</li>
+    {{/if}}
   {{/each}}
 </ul>
 

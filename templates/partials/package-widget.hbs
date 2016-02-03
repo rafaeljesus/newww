@@ -27,7 +27,7 @@
         <span data-date="{{lastPublishedAt}}" data-date-format="relative">{{lastPublishedAt}}</span>
         by
         {{#if npmo}}
-          <a href="/package/{{name}}">{{publisher.name}}</a>
+          {{publisher.name}}
         {{else}}
           <a href="/~{{publisher.name}}">{{publisher.name}}</a>
         {{/if}}

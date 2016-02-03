@@ -10,6 +10,8 @@ var Code = require('code'),
   expect = Code.expect,
   fixtures = require('../fixtures'),
   nock = require('nock');
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
 
 var server;
 var username1 = 'bob';
@@ -49,7 +51,9 @@ licenseMock = nock('https://license-api-example.com')
   .reply(200, {});
 
 before(function(done) {
-  require('../mocks/server')(function(obj) {
+  requireInject.installGlobally('../mocks/server', {
+    redis: redisMock
+  })(function(obj) {
     server = obj;
     done();
   });

@@ -26,7 +26,11 @@
         published
         <span data-date="{{lastPublishedAt}}" data-date-format="relative">{{lastPublishedAt}}</span>
         by
-        <a href="/~{{publisher.name}}">{{publisher.name}}</a>
+        {{#unless npmo}}
+          <a href="/~{{publisher.name}}">{{publisher.name}}</a>
+        {{else}}
+          <a href="/package/{{name}}">{{publisher.name}}</a>
+        {{/unless}}
       {{/if}} {{/if}}
 
     </p>

@@ -6,7 +6,9 @@ var generateCrumb = require("../handlers/crumb.js"),
   before = lab.before,
   after = lab.after,
   it = lab.test,
-  expect = Code.expect;
+  expect = Code.expect,
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var server;
 
@@ -24,6 +26,15 @@ after(function(done) {
 
 describe('Getting to the ULA page', function() {
   it('creates a new customer when one doesn\'t exist', function(done) {
+
+    var LICENSE_API = "https://license-api-example.com";
+    var hubspotMock = nock(LICENSE_API)
+      .put('/customer', {
+        "email": "new@bam.com",
+        "name": "Blerg Bam",
+        "phone": "123-456-7890"
+      })
+      .reply(200, fixtures.enterprise.newUser);
 
     generateCrumb(server, function(crumb) {
       var opts = {
@@ -45,6 +56,7 @@ describe('Getting to the ULA page', function() {
       };
 
       server.inject(opts, function(resp) {
+        hubspotMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');

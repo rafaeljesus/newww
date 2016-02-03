@@ -1,7 +1,8 @@
 var Hoek = require('hoek'),
   googleLibphonenumber = require('google-libphonenumber'),
   Joi = require('joi'),
-  utils = require('../lib/utils');
+  utils = require('../lib/utils'),
+  CustomerAgent = require('../agents/customer');
 
 module.exports = function createHubspotLead(request, reply) {
   var postToHubspot = request.server.methods.npme.sendData;
@@ -65,8 +66,7 @@ module.exports = function createHubspotLead(request, reply) {
 };
 
 function getOrCreateCustomer(request, reply, data) {
-  var getCustomer = request.server.methods.npme.getCustomer,
-    createCustomer = request.server.methods.npme.createCustomer;
+  var getCustomer = request.server.methods.npme.getCustomer;
 
   var opts = { };
 
@@ -85,7 +85,7 @@ function getOrCreateCustomer(request, reply, data) {
     }
 
     // new customer, needs to be created
-    createCustomer(data, function(err, newCustomer) {
+    new CustomerAgent().createCustomer(data, function(err, newCustomer) {
 
       if (err) {
         request.logger.error('There was an error creating customer ' + data.email);

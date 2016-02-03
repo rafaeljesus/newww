@@ -16,21 +16,24 @@ var CustomerAgent = require("../../agents/customer");
 describe("Customer", function() {
 
   describe("initialization", function() {
-    it("throws if a name is not passed", function(done) {
-      expect(function() {
-        return new CustomerAgent()
-      }).to.throw("Must pass a name to Customer model");
-      done();
-    });
+    // why did we care to throw if a name was not passed?
+    // there are some functions that rely on the logged in user's name, but.... ¯\_(ツ)_/¯
 
-    it("throws if a name is not passed but options are", function(done) {
-      expect(function() {
-        return new CustomerAgent({
-          host: "https://boom.com"
-        })
-      }).to.throw("Must pass a name to Customer model");
-      done();
-    });
+    // it("throws if a name is not passed", function(done) {
+    //   expect(function() {
+    //     return new CustomerAgent()
+    //   }).to.throw("Must pass a name to Customer model");
+    //   done();
+    // });
+
+    // it("throws if a name is not passed but options are", function(done) {
+    //   expect(function() {
+    //     return new CustomerAgent({
+    //       host: "https://boom.com"
+    //     })
+    //   }).to.throw("Must pass a name to Customer model");
+    //   done();
+    // });
 
     it("doesn't break if we forget the `new` keyword", function(done) {
       var Customer = CustomerAgent('bob');
@@ -209,6 +212,68 @@ describe("Customer", function() {
       });
     });
 
+  });
+
+  describe("createCustomer()", function() {
+    describe('creating a customer in hubspot', function() {
+      it('returns a customer when hubspot creates it', function(done) {
+        var Customer = new CustomerAgent('');
+
+        var data = {
+          email: 'boom@bam.com',
+          firstname: 'Boom',
+          lastname: 'Bam',
+          phone: '123-456-7890'
+        };
+
+        var dataIn = {
+          email: data.email,
+          name: data.firstname + ' ' + data.lastname,
+          phone: data.phone
+        };
+
+        var hubspotMock = nock(LICENSE_API)
+          .put('/customer', dataIn)
+          .reply(200, data);
+
+        Customer.createCustomer(data, function(err, customer) {
+          hubspotMock.done();
+          expect(err).to.not.exist();
+          expect(customer).to.deep.equal(data);
+          done();
+        });
+      });
+
+      it('returns an error when hubspot is not successful', function(done) {
+        var Customer = new CustomerAgent('');
+
+        var data = {
+          email: 'boom@bam.com',
+          firstname: 'Boom',
+          lastname: 'Bam',
+          phone: '123-456-7890'
+        };
+
+        var dataIn = {
+          email: data.email,
+          name: data.firstname + ' ' + data.lastname,
+          phone: data.phone
+        };
+
+        var hubspotMock = nock(LICENSE_API)
+          .put('/customer', dataIn)
+          .reply(400, 'unable to create customer');
+
+        Customer.createCustomer(data, function(err, customer) {
+          hubspotMock.done();
+          expect(err).to.exist();
+          expect(err.message).to.equal('unable to create customer');
+          expect(customer).to.not.exist();
+          done();
+        });
+      });
+
+    });
   });
 
   describe("updateBilling()", function() {

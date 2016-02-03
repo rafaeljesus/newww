@@ -22,10 +22,6 @@ module.exports = function(server) {
     },
 
     npme: {
-      createCustomer: function(data, next) {
-        return next(null, fixtures.enterprise.newUser);
-      },
-
       createLicense: function(licenseDetails, callback) {
         return callback(null, fixtures.enterprise.goodLicense[0]);
       },

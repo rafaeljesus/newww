@@ -1,5 +1,5 @@
-var _ = require('lodash');
-var assert = require('assert');
+// var _ = require('lodash');
+// var assert = require('assert');
 var LICENSE_API = process.env.LICENSE_API || "https://license-api-example.com";
 var moment = require('moment');
 var Request = require('../lib/external-request');
@@ -8,8 +8,12 @@ var VError = require('verror');
 
 var Customer = module.exports = function(name) {
 
-  assert(!_.isObject(name), "Must pass a name to Customer model");
-  assert(_.isString(name), "Must pass a name to Customer model");
+  // keeping the following commented out, mostly because
+  // i don't remember why we were asserting them and i'm
+  // hopeful the team will remember :-D
+
+  // assert(!_.isObject(name), "Must pass a name to Customer model");
+  // assert(_.isString(name), "Must pass a name to Customer model");
 
   if (!(this instanceof Customer)) {
     return new Customer(name);
@@ -50,6 +54,36 @@ Customer.prototype.getById = function(id, callback) {
       }
 
       return accept(body);
+    });
+  }).nodeify(callback);
+};
+
+Customer.prototype.createCustomer = function(data, callback) {
+  var url = LICENSE_API + '/customer';
+
+  return new P(function(accept, reject) {
+    Request.put({
+      url: url,
+      json: true,
+      body: {
+        email: data.email,
+        name: data.firstname + ' ' + data.lastname,
+        phone: data.phone
+      }
+    }, function(err, resp, newCustomer) {
+
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(newCustomer);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(newCustomer);
+
     });
   }).nodeify(callback);
 };

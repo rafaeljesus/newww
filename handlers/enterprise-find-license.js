@@ -1,10 +1,10 @@
 var Joi = require('joi');
 var sendEmail = require('../adapters/send-email');
+var CustomerAgent = require('../agents/customer');
 
 module.exports = function(request, reply) {
 
-  var createCustomer = request.server.methods.npme.createCustomer,
-    createTrial = request.server.methods.npme.createTrial,
+  var createTrial = request.server.methods.npme.createTrial,
     getCustomer = request.server.methods.npme.getCustomer,
     getLicense = request.server.methods.npme.getLicense;
 
@@ -85,7 +85,7 @@ module.exports = function(request, reply) {
         } else {
           // no key:
           // create customer
-          createCustomer({
+          new CustomerAgent().createCustomer({
             email: data.email,
             firstname: '',
             lastname: ''

@@ -16,24 +16,6 @@ var CustomerAgent = require("../../agents/customer");
 describe("Customer", function() {
 
   describe("initialization", function() {
-    // why did we care to throw if a name was not passed?
-    // there are some functions that rely on the logged in user's name, but.... ¯\_(ツ)_/¯
-
-    // it("throws if a name is not passed", function(done) {
-    //   expect(function() {
-    //     return new CustomerAgent()
-    //   }).to.throw("Must pass a name to Customer model");
-    //   done();
-    // });
-
-    // it("throws if a name is not passed but options are", function(done) {
-    //   expect(function() {
-    //     return new CustomerAgent({
-    //       host: "https://boom.com"
-    //     })
-    //   }).to.throw("Must pass a name to Customer model");
-    //   done();
-    // });
 
     it("doesn't break if we forget the `new` keyword", function(done) {
       var Customer = CustomerAgent('bob');

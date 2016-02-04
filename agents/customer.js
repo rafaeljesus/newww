@@ -1,5 +1,3 @@
-// var _ = require('lodash');
-// var assert = require('assert');
 var LICENSE_API = process.env.LICENSE_API || "https://license-api-example.com";
 var moment = require('moment');
 var Request = require('../lib/external-request');
@@ -7,13 +5,6 @@ var P = require('bluebird');
 var VError = require('verror');
 
 var Customer = module.exports = function(name) {
-
-  // keeping the following commented out, mostly because
-  // i don't remember why we were asserting them and i'm
-  // hopeful the team will remember :-D
-
-  // assert(!_.isObject(name), "Must pass a name to Customer model");
-  // assert(_.isString(name), "Must pass a name to Customer model");
 
   if (!(this instanceof Customer)) {
     return new Customer(name);

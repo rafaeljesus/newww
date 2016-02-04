@@ -1,11 +1,13 @@
+var LICENSE_API = process.env.LICENSE_API || "https://license-api-example.com";
+
 var request = require('request'),
   log = require('bole')('npme-get-license'),
-  getCustomer = require('./getCustomer');
+  CustomerAgent = require('../../../agents/customer');
 
 module.exports = function(licenseDetails, callback) {
 
   // we need to get customer from billing email
-  getCustomer(licenseDetails.billingEmail, function(er, customer) {
+  new CustomerAgent().getById(licenseDetails.billingEmail, function(er, customer) {
 
     if (er || !customer) {
       log.error("No customer found with that email");
@@ -13,7 +15,7 @@ module.exports = function(licenseDetails, callback) {
       return;
     }
 
-    var licenseEndpoint = process.env.LICENSE_API + '/license';
+    var licenseEndpoint = LICENSE_API + '/license';
 
     request.put({
       url: licenseEndpoint,

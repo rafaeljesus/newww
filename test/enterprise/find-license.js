@@ -1,3 +1,5 @@
+var LICENSE_API = 'https://license-api-example.com';
+
 var generateCrumb = require("../handlers/crumb.js"),
   Code = require('code'),
   Lab = require('lab'),
@@ -130,6 +132,10 @@ describe('Posting to the enterprise license page', function() {
 
   it('has an error if there is a hypothetical issue with hubspot', function(done) {
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/error@boom.com')
+        .reply(500, 'whoops something is broken');
+
       var opts = {
         url: '/enterprise/license',
         method: 'post',
@@ -143,6 +149,7 @@ describe('Posting to the enterprise license page', function() {
       };
 
       server.inject(opts, function(resp) {
+        customerMock.done();
         expect(resp.statusCode).to.equal(500);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/invalid-license');
@@ -154,6 +161,11 @@ describe('Posting to the enterprise license page', function() {
 
   it('renders an error if there is a license but the customer does not yet exist', function(done) {
     generateCrumb(server, function(crumb) {
+
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/new@boom.com')
+        .reply(404, 'no customer found');
+
       var opts = {
         url: '/enterprise/license',
         method: 'post',
@@ -168,6 +180,7 @@ describe('Posting to the enterprise license page', function() {
       };
 
       server.inject(opts, function(resp) {
+        customerMock.done();
         expect(resp.statusCode).to.equal(400);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/invalid-license');
@@ -179,6 +192,10 @@ describe('Posting to the enterprise license page', function() {
 
   it('displays license options page to an existing customer with a valid license', function(done) {
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/exists@boom.com')
+        .reply(200, fixtures.enterprise.existingUser);
+
       var opts = {
         url: '/enterprise/license',
         method: 'post',
@@ -194,6 +211,7 @@ describe('Posting to the enterprise license page', function() {
 
       process.env.STRIPE_PUBLIC_KEY = '12345';
       server.inject(opts, function(resp) {
+        customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/license-options');
@@ -208,6 +226,10 @@ describe('Posting to the enterprise license page', function() {
 
   it('renders an error if the customer exists but the license is invalid', function(done) {
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/badLicense@boom.com')
+        .reply(200, fixtures.enterprise.noLicenseUser);
+
       var opts = {
         url: '/enterprise/license',
         method: 'post',
@@ -222,6 +244,7 @@ describe('Posting to the enterprise license page', function() {
       };
 
       server.inject(opts, function(resp) {
+        customerMock.done();
         expect(resp.statusCode).to.equal(400);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/invalid-license');
@@ -233,6 +256,10 @@ describe('Posting to the enterprise license page', function() {
 
   it('sends an email to an existing user with no license', function(done) {
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/exists@boom.com')
+        .reply(200, fixtures.enterprise.existingUser);
+
       var opts = {
         url: '/enterprise/license',
         method: 'post',
@@ -246,6 +273,7 @@ describe('Posting to the enterprise license page', function() {
       };
 
       server.inject(opts, function(resp) {
+        customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/check-email');

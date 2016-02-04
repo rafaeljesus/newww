@@ -5,8 +5,9 @@ var CustomerAgent = require('../agents/customer');
 module.exports = function(request, reply) {
 
   var createTrial = request.server.methods.npme.createTrial,
-    getCustomer = request.server.methods.npme.getCustomer,
     getLicense = request.server.methods.npme.getLicense;
+
+  var Customer = new CustomerAgent();
 
   var opts = {
     title: 'npm On-Site'
@@ -32,10 +33,10 @@ module.exports = function(request, reply) {
     }
 
     // does this email belong to an existing customer
-    getCustomer(data.email, function(err, customer) {
+    Customer.getById(data.email, function(err, customer) {
 
       // fail on error
-      if (err) {
+      if (err && err.statusCode !== 404) {
         request.logger.error("API error fetching customer " + data.email);
         request.logger.error(err);
         opts.msg = "This looks like an error on our part.";
@@ -77,6 +78,7 @@ module.exports = function(request, reply) {
           return createTrialAndSendPurchaseLink(customer);
         }
       } else {
+
         //   no customer: did they give us a license key?
         if (data.license) {
           // yes key: unknown email/license page, try again
@@ -85,7 +87,7 @@ module.exports = function(request, reply) {
         } else {
           // no key:
           // create customer
-          new CustomerAgent().createCustomer({
+          Customer.createCustomer({
             email: data.email,
             firstname: '',
             lastname: ''

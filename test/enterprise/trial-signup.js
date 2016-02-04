@@ -1,3 +1,5 @@
+var LICENSE_API = 'https://license-api-example.com';
+
 var generateCrumb = require("../handlers/crumb.js"),
   Code = require('code'),
   Lab = require('lab'),
@@ -7,7 +9,9 @@ var generateCrumb = require("../handlers/crumb.js"),
   afterEach = lab.afterEach,
   after = lab.after,
   it = lab.test,
-  expect = Code.expect;
+  expect = Code.expect,
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var MockTransport = require('nodemailer-mock-transport');
 var sendEmail = require('../../adapters/send-email');
@@ -67,6 +71,9 @@ describe('Getting to the thank-you page', function() {
   it('creates a new trial when a customer does not have one yet', function(done) {
 
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/exists@bam.com')
+        .reply(200, fixtures.enterprise.existingUser);
 
       var opts = {
         method: 'post',
@@ -83,6 +90,7 @@ describe('Getting to the thank-you page', function() {
       };
 
       server.inject(opts, function(resp) {
+        customerMock.done();
         var source = resp.request.response.source;
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('enterprise/thanks');
@@ -95,6 +103,10 @@ describe('Getting to the thank-you page', function() {
   it('returns an error if the customer does not exist yet', function(done) {
 
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/new@bam.com')
+        .reply(404, 'user not found');
+
       var opts = {
         method: 'post',
         url: '/enterprise-trial-signup',
@@ -110,6 +122,7 @@ describe('Getting to the thank-you page', function() {
       };
 
       server.inject(opts, function(resp) {
+        customerMock.done();
         expect(resp.statusCode).to.equal(500);
         expect(resp.request.response.source.error).to.exist();
         done();
@@ -120,6 +133,10 @@ describe('Getting to the thank-you page', function() {
   it('returns an error if the given customer id does not match the stored customer id', function(done) {
 
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/new@bam.com')
+        .reply(200, fixtures.enterprise.newLicense[0]);
+
       var opts = {
         method: 'post',
         url: '/enterprise-trial-signup',
@@ -135,6 +152,7 @@ describe('Getting to the thank-you page', function() {
       };
 
       server.inject(opts, function(resp) {
+        customerMock.done();
         expect(resp.statusCode).to.equal(500);
         expect(resp.request.response.source.error).to.exist();
         done();

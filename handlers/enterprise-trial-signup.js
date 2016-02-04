@@ -1,14 +1,12 @@
 var utils = require('../lib/utils');
 var VError = require('verror');
 var sendEmail = require('../adapters/send-email');
+var CustomerAgent = require('../agents/customer');
 
 // if they agree to the ULA, notify hubspot, create a trial and send verification link
 
 module.exports = function trialSignup(request, reply) {
-  var postToHubspot = request.server.methods.npme.sendData,
-    getCustomer = request.server.methods.npme.getCustomer;
-
-  var opts = {};
+  var postToHubspot = request.server.methods.npme.sendData;
 
   var data = {
     hs_context: {
@@ -22,16 +20,16 @@ module.exports = function trialSignup(request, reply) {
   postToHubspot(process.env.HUBSPOT_FORM_NPME_AGREED_ULA, data, function(err) {
 
     if (err) {
-      return reply(new VError(err, "Could not hit ULA notification form on Hubspot"));;
+      return reply(new VError(err, "Could not hit ULA notification form on Hubspot"));
     }
 
-    getCustomer(data.email, function(err, customer) {
+    new CustomerAgent().getById(data.email, function(err, customer) {
 
       if (err) {
         return reply(new VError(err, "Unknown problem with customer record"));
       } else if (!customer) {
         return reply(new VError("Unable to locate customer '%s'", data.email));
-      } else if (customer && String(customer.id) == String(request.payload.customer_id)) {
+      } else if (customer && String(customer.id) === String(request.payload.customer_id)) {
         return createTrialAccount(request, reply, customer);
       } else {
         return reply(new VError("Unable to verify customer record '%s'", data.email));

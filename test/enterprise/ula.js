@@ -1,3 +1,5 @@
+var LICENSE_API = "https://license-api-example.com";
+
 var generateCrumb = require("../handlers/crumb.js"),
   Code = require('code'),
   Lab = require('lab'),
@@ -26,17 +28,17 @@ after(function(done) {
 
 describe('Getting to the ULA page', function() {
   it('creates a new customer when one doesn\'t exist', function(done) {
-
-    var LICENSE_API = "https://license-api-example.com";
-    var hubspotMock = nock(LICENSE_API)
-      .put('/customer', {
-        "email": "new@bam.com",
-        "name": "Blerg Bam",
-        "phone": "123-456-7890"
-      })
-      .reply(200, fixtures.enterprise.newUser);
-
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/new@bam.com')
+        .reply(404)
+        .put('/customer', {
+          "email": "new@bam.com",
+          "name": "Blerg Bam",
+          "phone": "123-456-7890"
+        })
+        .reply(200, fixtures.enterprise.newUser);
+
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -56,7 +58,7 @@ describe('Getting to the ULA page', function() {
       };
 
       server.inject(opts, function(resp) {
-        hubspotMock.done();
+        customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
@@ -151,6 +153,10 @@ describe('Getting to the ULA page', function() {
   it('gets the customer when they already exist', function(done) {
 
     generateCrumb(server, function(crumb) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/exists@bam.com')
+        .reply(200, fixtures.enterprise.existingUser);
+
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -170,6 +176,7 @@ describe('Getting to the ULA page', function() {
       };
 
       server.inject(opts, function(resp) {
+        customerMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');

@@ -66,13 +66,13 @@ module.exports = function createHubspotLead(request, reply) {
 };
 
 function getOrCreateCustomer(request, reply, data) {
-  var getCustomer = request.server.methods.npme.getCustomer;
-
   var opts = { };
 
-  getCustomer(data.email, function(err, customer) {
+  var Customer = new CustomerAgent();
 
-    if (err) {
+  Customer.getById(data.email, function(err, customer) {
+
+    if (err && err.statusCode !== 404) {
       request.logger.error('There was an error with getting customer ' + data.email);
       request.logger.error(err);
       reply.view('errors/internal', opts);
@@ -85,7 +85,7 @@ function getOrCreateCustomer(request, reply, data) {
     }
 
     // new customer, needs to be created
-    new CustomerAgent().createCustomer(data, function(err, newCustomer) {
+    Customer.createCustomer(data, function(err, newCustomer) {
 
       if (err) {
         request.logger.error('There was an error creating customer ' + data.email);

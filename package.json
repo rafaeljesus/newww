@@ -61,7 +61,6 @@
     "is-url": "^1.2.0",
     "joi": "^5.1.0",
     "jquery": "^2.1.4",
-    "leven": "^1.0.1",
     "lodash": "^3.8.0",
     "mailchimp-api": "^2.0.7",
     "malarkey": "^1.3.2",

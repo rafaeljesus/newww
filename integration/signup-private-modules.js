@@ -9,19 +9,25 @@ require('./lib/sharedNemo').then(function(nemo) {
   tap.test('sign up for private modules ', {
     bail: true
   }, function(t) {
-    return P.all([
-      nemo.driver.get(urlOf('/settings/billing/subscribe')),
-      nemo.view.billing.cardNumberWaitVisible().then(pass(t, "card number field is visible")),
-      nemo.view.billing.cardNumber().sendKeys("4242424242424242").then(pass(t, "sent account number")),
-      nemo.view.billing.cardExpMonth().sendKeys("12").then(pass(t, "sent month")),
-      nemo.view.billing.cardExpYear().sendKeys("2016").then(pass(t, "sent year")),
-      nemo.view.billing.cardCVC().sendKeys("513").then(pass(t, "sent cvv")),
-      nemo.view.billing.submit().click().then(pass(t, "submitted form")),
-      nemo.view.billing.noticeWaitVisible().then(pass(t, "found notice"))
-    ]).then(function() {
-      if (!module.parent) {
-        return nemo.driver.quit();
-      }
-    }).catch(t.error).then(t.end);
+    return nemo.driver.get(urlOf('/settings/billing/subscribe'))
+      .then(() => nemo.view.billing.cardNumberWaitVisible())
+      .then(() => t.pass("card number field is visible"))
+      .then(() => nemo.view.billing.cardNumber().sendKeys("4242424242424242"))
+      .then(() => t.pass("sent account number"))
+      .then(() => nemo.view.billing.cardExpMonth().sendKeys("12"))
+      .then(() => t.pass("sent month"))
+      .then(() => nemo.view.billing.cardExpYear().sendKeys("2016"))
+      .then(() => t.pass("sent year"))
+      .then(() => nemo.view.billing.cardCVC().sendKeys("513"))
+      .then(() => t.pass("sent cvv"))
+      .then(() => nemo.view.billing.submit().click())
+      .then(() => t.pass("submitted form"))
+      .then(() => nemo.view.billing.noticeWaitVisible(30000))
+      .then(() => t.pass("found notice"))
+      .then(function() {
+        if (!module.parent) {
+          return nemo.driver.quit();
+        }
+      })
   });
 });

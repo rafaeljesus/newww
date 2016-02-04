@@ -7,6 +7,8 @@ var Code = require('code'),
   it = lab.test,
   expect = Code.expect,
   nock = require("nock"),
+  _ = require('lodash'),
+  moment = require('moment'),
   fixtures = require('../fixtures');
 
 var LICENSE_API = "https://license-api-example.com";
@@ -255,6 +257,76 @@ describe("Customer", function() {
         });
       });
 
+    });
+  });
+
+  describe("creating a license", function() {
+    var licenseData = {
+      "customer_id": 12345,
+      "stripe_subscription_id": "cust_12345",
+      "seats": 5,
+      "begins": "2016-02-04T11:30:36-08:00",
+      "ends": "2017-02-04T11:30:36-08:00"
+    };
+
+    var dataIn = {
+      billingEmail: 'exists@boom.com',
+      seats: 5,
+      stripeId: 'cust_12345',
+      begins: '2016-02-04T11:30:36-08:00',
+      ends: '2017-02-04T11:30:36-08:00'
+    };
+
+    it('returns a license when one is created', function(done) {
+      var Customer = new CustomerAgent();
+
+      var mock = nock(LICENSE_API)
+        .get('/customer/exists@boom.com')
+        .reply(200, fixtures.enterprise.existingUser)
+        .put('/license', licenseData)
+        .reply(200, fixtures.enterprise.goodLicense);
+
+      Customer.createLicense(dataIn, function(err, license) {
+        mock.done();
+        expect(err).to.not.exist();
+        expect(license).to.deep.equal(fixtures.enterprise.goodLicense);
+        done();
+      });
+    });
+
+    it('returns an error when hubspot is not successful', function(done) {
+      var Customer = new CustomerAgent();
+
+      var mock = nock(LICENSE_API)
+        .get('/customer/' + dataIn.billingEmail)
+        .reply(200, fixtures.enterprise.existingUser)
+        .put('/license', licenseData)
+        .reply(400, 'bad request');
+
+      Customer.createLicense(dataIn, function(err, license) {
+        mock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('bad request');
+        expect(err.statusCode).to.equal(400);
+        expect(license).to.not.exist();
+        done();
+      });
+    });
+
+    it('returns an error when a customer is not found', function(done) {
+      var Customer = new CustomerAgent();
+
+      var mock = nock(LICENSE_API)
+        .get('/customer/' + dataIn.billingEmail)
+        .reply(400);
+
+      Customer.createLicense(dataIn, function(err, license) {
+        mock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('could not create license for unknown customer with email ' + dataIn.billingEmail);
+        expect(license).to.not.exist();
+        done();
+      });
     });
   });
 

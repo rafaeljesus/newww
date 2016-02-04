@@ -3,6 +3,7 @@ var moment = require('moment');
 var Request = require('../lib/external-request');
 var P = require('bluebird');
 var VError = require('verror');
+var log = require('bole')('customer-agent');
 
 var Customer = module.exports = function(name) {
 
@@ -79,6 +80,54 @@ Customer.prototype.createCustomer = function(data, callback) {
   }).nodeify(callback);
 };
 
+Customer.prototype.createLicense = function(licenseDetails, callback) {
+  var self = this;
+
+  // we need to get customer from billing email
+  return new P(function(accept, reject) {
+    self.getById(licenseDetails.billingEmail, function(err, customer) {
+
+      if (err || !customer) {
+        log.error("No customer found with that email");
+        return reject(new Error("could not create license for unknown customer with email " + licenseDetails.billingEmail));
+      }
+
+      var url = LICENSE_API + '/license';
+      var body = {
+        product_id: process.env.NPME_PRODUCT_ID,
+        customer_id: customer.id,
+        stripe_subscription_id: licenseDetails.stripeId,
+        seats: licenseDetails.seats,
+        begins: licenseDetails.begins,
+        ends: licenseDetails.ends
+      };
+
+      Request.put({
+        url: url,
+        json: true,
+        body: body
+      }, function(err, resp, newLicense) {
+        console.log(err)
+
+        if (err) {
+          log.error("License creation failed:");
+          log.error(err);
+          return reject(err);
+        }
+
+        if (resp.statusCode >= 400) {
+          err = new Error(newLicense);
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+
+        return accept(newLicense);
+      });
+    });
+
+  }).nodeify(callback);
+};
+
 Customer.prototype.getStripeData = function(callback) {
   var self = this;
   var stripeUrl = LICENSE_API + '/customer/' + self.name + '/stripe';
@@ -150,7 +199,6 @@ Customer.prototype.getSubscriptions = function(callback) {
 };
 
 Customer.prototype.updateBilling = function(body, callback) {
-  var _this = this;
   var url;
   var props = ['name', 'email', 'card'];
 

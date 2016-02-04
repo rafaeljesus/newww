@@ -7,8 +7,7 @@ var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 var SUB_TYPE_MULTI_SEAT = 3;
 
 module.exports = function(request, reply) {
-
-  var createLicense = request.server.methods.npme.createLicense;
+  var Customer = new CustomerAgent();
   var updateCustomer = request.server.methods.npme.updateCustomer;
 
   var schema = Joi.object().keys({
@@ -38,7 +37,7 @@ module.exports = function(request, reply) {
     }
 
     // load the customer by email and make sure the ID matches the one passed in
-    new CustomerAgent().getById(token.email, function(err, customer) {
+    Customer.getById(token.email, function(err, customer) {
 
       if (err && err.statusCode !== 404) {
         request.logger.error('error finding customer; email=' + token.email);
@@ -124,7 +123,7 @@ module.exports = function(request, reply) {
             ends: moment(Date.now()).add(1, 'years').format(), // ends a year from now (webhooks will refresh)
           };
 
-          createLicense(licenseDetails, function(err, license) {
+          Customer.createLicense(licenseDetails, function(err, license) {
 
             if (err) {
               request.logger.error('license creation error; email=' + token.email + ';seats=' + licenseSeats);

@@ -1,3 +1,5 @@
+var LICENSE_API = process.env.LICENSE_API || 'https://license-api-example.com';
+
 var request = require('request'),
   log = require('bole')('npme-create-trial'),
   trial_length = 30,
@@ -5,14 +7,14 @@ var request = require('request'),
 
 module.exports = function(customer, callback) {
 
-  var trialEndpoint = process.env.LICENSE_API + '/trial',
+  var trialEndpoint = LICENSE_API + '/trial',
     productId = process.env.NPME_PRODUCT_ID;
 
   // check if they already have a trial; 1 per customer
   request.get({
     url: trialEndpoint + '/' + productId + '/' + customer.email,
     json: true
-  }, function(er, resp, trial) {
+  }, function(err, resp, trial) {
 
     switch (resp.statusCode) {
       case 200:
@@ -24,17 +26,17 @@ module.exports = function(customer, callback) {
       default:
         var msg = 'Error with getting trial info for ' + customer.email;
         log.error(msg);
-        er = er || new Error(msg);
-        log.error(er);
+        err = err || new Error(msg);
+        log.error(err);
 
-        return callback(er);
+        return callback(err);
     }
   });
 };
 
 function createNewTrial(customer, callback) {
 
-  var trialEndpoint = process.env.LICENSE_API + '/trial',
+  var trialEndpoint = LICENSE_API + '/trial',
     productId = process.env.NPME_PRODUCT_ID,
     trialLength = trial_length,
     trialSeats = trial_seats;

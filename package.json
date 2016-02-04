@@ -128,7 +128,6 @@
     "gulp-stylus": "^1.0.0",
     "gulp-uglify": "^0.3.0",
     "gulp-util": "^3.0.7",
-    "imagemin-pngcrush": "^1.0.0",
     "lab": "^5.18.1",
     "nemo": "^1.0.6",
     "nemo-view": "^1.2.0",

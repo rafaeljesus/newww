@@ -60,7 +60,7 @@ describe('setting and deleting sessions', function() {
     };
   });
 
-  after('cleans up the db', function(done) {
+  after(function(done) {
     client.flushdb(done);
   });
 

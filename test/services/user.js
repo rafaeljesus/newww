@@ -35,7 +35,6 @@ describe('setting and deleting sessions', function() {
     client.on('error', function(err) {
       console.log('Error ' + err);
     });
-    done();
 
     mockedRequest = {
       auth: {
@@ -59,6 +58,8 @@ describe('setting and deleting sessions', function() {
         }
       }
     };
+
+    done();
   });
 
   after(function(done) {

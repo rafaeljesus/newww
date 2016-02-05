@@ -39,7 +39,7 @@ require('./lib/sharedNemo').then(function(nemo) {
       .then(() => nemo.view.createOrg.cardExpYear().sendKeys(new Date().getFullYear() + 3))
       .then(() => t.pass("exp year entered"))
       .then(() => nemo.view.createOrg.paymentFormSubmit().click())
-      .then(() => nemo.view.createOrg.membersTabWaitVisible())
+      .then(() => nemo.view.createOrg.membersTabWaitVisible(30000))
       .then(() => t.pass("Org members page navigated to"))
       .then(() => nemo.view.createOrg.membersTab().click())
       .then(() => nemo.view.createOrg.orgInfoFirstUsernameWaitVisible())

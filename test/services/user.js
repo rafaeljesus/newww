@@ -15,10 +15,7 @@ var server;
 before(function(done) {
 
   server = new Hapi.Server();
-  server.connection({
-    host: 'localhost',
-    port: '6110'
-  });
+  server.connection();
   server.register(userService, function() {
     server.start(done);
   });

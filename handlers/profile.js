@@ -1,3 +1,4 @@
+var filterBlacklistedPackages = require('../lib/filter-blacklisted-packages');
 var UserAPI = require('../agents/user'),
   async = require('async');
 
@@ -60,7 +61,7 @@ module.exports = function(request, reply) {
 
     opts.profile = results.user;
     opts.profile.stars = results.stars;
-    opts.profile.packages = results.packages;
+    opts.profile.packages = filterBlacklistedPackages(results.packages);
     opts.profile.isSelf = loggedInUser && name === loggedInUser.name;
     opts.profile.orgs = results.orgs;
 

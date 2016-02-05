@@ -24,6 +24,8 @@ var server;
 var emailMock;
 
 before(function(done) {
+  process.env.NPME_PRODUCT_ID = '12345-12345-12345';
+
   requireInject.installGlobally('../mocks/server', {
     redis: redisMock
   })(function(obj) {
@@ -40,6 +42,7 @@ afterEach(function(done) {
 });
 
 after(function(done) {
+  delete process.env.NPME_PRODUCT_ID;
   server.stop(done);
 });
 
@@ -73,6 +76,8 @@ describe('Getting to the thank-you page', function() {
     generateCrumb(server, function(crumb) {
       var customerMock = nock(LICENSE_API)
         .get('/customer/exists@bam.com')
+        .reply(200, fixtures.enterprise.existingUser)
+        .get('/trial/' + process.env.NPME_PRODUCT_ID + '/exists@bam.com')
         .reply(200, fixtures.enterprise.existingUser);
 
       var opts = {

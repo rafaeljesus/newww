@@ -4,11 +4,10 @@ var Code = require('code'),
   describe = lab.experiment,
   beforeEach = lab.beforeEach,
   before = lab.before,
+  after = lab.after,
   it = lab.test,
   expect = Code.expect,
   nock = require("nock"),
-  _ = require('lodash'),
-  moment = require('moment'),
   fixtures = require('../fixtures');
 
 var LICENSE_API = "https://license-api-example.com";
@@ -199,8 +198,8 @@ describe("Customer", function() {
   });
 
   describe("createCustomer()", function() {
-    describe('creating a customer in hubspot', function() {
-      it('returns a customer when hubspot creates it', function(done) {
+    describe('creating a customer', function() {
+      it('returns a customer when one is created', function(done) {
         var Customer = new CustomerAgent('');
 
         var data = {
@@ -216,19 +215,19 @@ describe("Customer", function() {
           phone: data.phone
         };
 
-        var hubspotMock = nock(LICENSE_API)
+        var customerMock = nock(LICENSE_API)
           .put('/customer', dataIn)
           .reply(200, data);
 
         Customer.createCustomer(data, function(err, customer) {
-          hubspotMock.done();
+          customerMock.done();
           expect(err).to.not.exist();
           expect(customer).to.deep.equal(data);
           done();
         });
       });
 
-      it('returns an error when hubspot is not successful', function(done) {
+      it('returns an error when creating a customer fails', function(done) {
         var Customer = new CustomerAgent('');
 
         var data = {
@@ -244,12 +243,12 @@ describe("Customer", function() {
           phone: data.phone
         };
 
-        var hubspotMock = nock(LICENSE_API)
+        var customerMock = nock(LICENSE_API)
           .put('/customer', dataIn)
           .reply(400, 'unable to create customer');
 
         Customer.createCustomer(data, function(err, customer) {
-          hubspotMock.done();
+          customerMock.done();
           expect(err).to.exist();
           expect(err.message).to.equal('unable to create customer');
           expect(customer).to.not.exist();
@@ -294,7 +293,7 @@ describe("Customer", function() {
       });
     });
 
-    it('returns an error when hubspot is not successful', function(done) {
+    it('returns an error when license creation fails', function(done) {
       var Customer = new CustomerAgent();
 
       var mock = nock(LICENSE_API)
@@ -325,6 +324,118 @@ describe("Customer", function() {
         expect(err).to.exist();
         expect(err.message).to.equal('could not create license for unknown customer with email ' + dataIn.billingEmail);
         expect(license).to.not.exist();
+        done();
+      });
+    });
+  });
+
+  describe("creating a trial", function() {
+    var productId;
+    var TRIAL_LENGTH = 30;
+    var TRIAL_SEATS = 50;
+
+    before(function(done) {
+      process.env.NPME_PRODUCT_ID = '12345-12345-12345';
+      productId = process.env.NPME_PRODUCT_ID;
+      done();
+    });
+
+    after(function(done) {
+      delete process.env.NPME_PRODUCT_ID;
+      done();
+    });
+
+    it('creates a new trial if one does not exist', function(done) {
+      var customer = {
+        id: '23456',
+        email: 'new@bam.com'
+      };
+
+      var customerMock = nock(LICENSE_API)
+        .get('/trial/' + productId + '/' + customer.email)
+        .reply(404, 'not found')
+        .put('/trial', {
+          customer_id: customer.id,
+          product_id: productId,
+          length: TRIAL_LENGTH,
+          seats: TRIAL_SEATS
+        })
+        .reply(200, {
+          id: '54321'
+        });
+
+      new CustomerAgent().createTrial(customer, function(err, trial) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(trial).to.exist();
+        expect(trial.id).to.equal('54321');
+        done();
+      });
+    });
+
+    it('returns an existing trial if it already exists', function(done) {
+      var customer = {
+        id: '23456',
+        email: 'existing@bam.com'
+      };
+
+      var customerMock = nock(LICENSE_API)
+        .log(console.log)
+        .get('/trial/' + productId + '/' + customer.email)
+        .reply(200, {
+          id: 'abcde'
+        });
+
+      new CustomerAgent().createTrial(customer, function(err, trial) {
+        customerMock.done();
+        expect(err).to.not.exist();
+        expect(trial).to.exist();
+        expect(trial.id).to.equal('abcde');
+        done();
+      });
+    });
+
+    it('returns an error if looking up trial info fails', function(done) {
+      var customer = {
+        id: '23456',
+        email: 'error@bam.com'
+      };
+
+      var customerMock = nock(LICENSE_API)
+        .get('/trial/' + productId + '/' + customer.email)
+        .reply(400, 'bad request');
+
+      new CustomerAgent().createTrial(customer, function(err, trial) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(trial).to.not.exist();
+        expect(err.message).to.equal('bad request');
+        done();
+      });
+    });
+
+    it('returns an error if creating a trial fails', function(done) {
+      var customer = {
+        id: '23456',
+        email: 'error@bam.com'
+      };
+
+      var customerMock = nock(LICENSE_API)
+        .get('/trial/' + productId + '/' + customer.email)
+        .reply(404)
+        .put('/trial', {
+          customer_id: customer.id,
+          product_id: productId,
+          length: TRIAL_LENGTH,
+          seats: TRIAL_SEATS
+        })
+        .reply(400, 'bad request');
+
+      new CustomerAgent().createTrial(customer, function(err, trial) {
+        customerMock.done();
+        expect(err).to.exist();
+        expect(trial).to.not.exist();
+        expect(err.message).to.equal('bad request');
         done();
       });
     });
@@ -443,7 +554,7 @@ describe("Customer", function() {
       var Customer = new CustomerAgent('bob');
       var planInfo = {
         plan: 'npm-paid-individual-user-7'
-      }
+      };
       var customerMock = nock(LICENSE_API)
         .put('/customer/bob/stripe/subscription', planInfo)
         .reply(200, {
@@ -474,7 +585,7 @@ describe("Customer", function() {
       var Customer = new CustomerAgent('bob');
       var planInfo = {
         plan: 'npm-paid-org-7'
-      }
+      };
       var customerMock = nock(LICENSE_API)
         .put('/customer/bob/stripe/subscription', planInfo)
         .reply(200, {

@@ -127,6 +127,75 @@ Customer.prototype.createOnSiteLicense = function(licenseDetails, callback) {
   }).nodeify(callback);
 };
 
+Customer.prototype.createTrial = function(customer, callback) {
+  var trialEndpoint = LICENSE_API + '/trial',
+    productId = process.env.NPME_PRODUCT_ID;
+
+  // check if they already have a trial; 1 per customer
+  return new P(function(accept, reject) {
+    Request.get({
+      url: trialEndpoint + '/' + productId + '/' + customer.email,
+      json: true
+    }, function(err, resp, trial) {
+
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        // do not already have a trial, so create one
+        return createNewTrial(customer);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(trial);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      // they already have a trial
+      return accept(trial);
+    });
+
+
+    function createNewTrial(customer) {
+
+      var TRIAL_LENGTH = 30,
+        TRIAL_SEATS = 50;
+
+      var trialEndpoint = LICENSE_API + '/trial',
+        productId = process.env.NPME_PRODUCT_ID,
+        trialLength = TRIAL_LENGTH,
+        trialSeats = TRIAL_SEATS;
+
+      Request.put({
+        url: trialEndpoint,
+        json: {
+          customer_id: customer.id,
+          product_id: productId,
+          length: trialLength,
+          seats: trialSeats
+        }
+      }, function(err, resp, newTrial) {
+
+        if (err) {
+          return reject(err);
+        }
+
+        if (resp.statusCode >= 400) {
+          err = new Error(newTrial);
+          err.statusCode = resp.statusCode;
+          return reject(err);
+        }
+
+        return accept(newTrial);
+      });
+    }
+
+  }).nodeify(callback);
+
+};
+
 Customer.prototype.getStripeData = function(callback) {
   var self = this;
   var stripeUrl = LICENSE_API + '/customer/' + self.name + '/stripe';

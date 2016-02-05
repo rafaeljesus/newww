@@ -8,8 +8,12 @@ var Code = require('code'),
   expect = Code.expect,
   sinon = require('sinon');
 
-var Hapi = require('hapi'),
-  userService = require('../../services/user');
+var Hapi = require('hapi');
+var requireInject = require('require-inject');
+var redis = require('redis-mock');
+var userService = requireInject('../../services/user', {
+  redis
+});
 var server;
 
 before(function(done) {
@@ -26,7 +30,7 @@ describe('setting and deleting sessions', function() {
   var userSessionId;
 
   before(function(done) {
-    client = require('redis').createClient();
+    client = redis.createClient();
     client.flushdb();
     client.on('error', function(err) {
       console.log('Error ' + err);
@@ -58,7 +62,8 @@ describe('setting and deleting sessions', function() {
   });
 
   after(function(done) {
-    client.flushdb(done);
+    client.flushdb();
+    done()
   });
 
   it('sets a session', function(done) {

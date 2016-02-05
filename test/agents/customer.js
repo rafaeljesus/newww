@@ -9,45 +9,17 @@ var Code = require('code'),
   nock = require("nock"),
   fixtures = require('../fixtures');
 
+var LICENSE_API = "https://license-api-example.com";
+
 var CustomerAgent = require("../../agents/customer");
 
 describe("Customer", function() {
 
   describe("initialization", function() {
-    it("throws if a name is not passed", function(done) {
-      expect(function() {
-        return new CustomerAgent()
-      }).to.throw("Must pass a name to Customer model");
-      done();
-    });
-
-    it("throws if a name is not passed but options are", function(done) {
-      expect(function() {
-        return new CustomerAgent({
-          host: "https://boom.com"
-        })
-      }).to.throw("Must pass a name to Customer model");
-      done();
-    });
-
-    it("defaults to 'https://license-api-example.com' as host", function(done) {
-      expect(new CustomerAgent('bob').host).to.equal('https://license-api-example.com');
-      done();
-    });
-
-    it("accepts a custom host", function(done) {
-      var url = "https://billing-envy.com";
-      var Customer = new CustomerAgent('boom', {
-        host: url,
-      });
-
-      expect(Customer.host).to.equal(url);
-      done();
-    });
 
     it("doesn't break if we forget the `new` keyword", function(done) {
       var Customer = CustomerAgent('bob');
-      expect(Customer.host).to.equal('https://license-api-example.com');
+      expect(Customer.name).to.equal('bob');
       done();
     });
 
@@ -58,7 +30,7 @@ describe("Customer", function() {
     it("makes an external request for /customer/{user}", function(done) {
       var Customer = new CustomerAgent('haxor');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/haxor/stripe')
         .reply(200, fixtures.customers.happy);
 
@@ -72,7 +44,7 @@ describe("Customer", function() {
     it("returns the response body in the callback", function(done) {
       var Customer = new CustomerAgent('zozo');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/zozo/stripe')
         .reply(200, fixtures.customers.happy);
 
@@ -87,7 +59,7 @@ describe("Customer", function() {
     it("returns an error in the callback if customer doesn't exist", function(done) {
       var Customer = new CustomerAgent('foo');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/foo/stripe')
         .reply(404);
 
@@ -103,7 +75,7 @@ describe("Customer", function() {
     it("returns an error if a bad request is sent", function(done) {
       var Customer = new CustomerAgent('ഊ');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/ഊ/stripe')
         .reply(400, 'bad request');
 
@@ -122,7 +94,7 @@ describe("Customer", function() {
     it('returns an empty array if no subscriptions are found', function(done) {
       var Customer = new CustomerAgent('bob');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/bob/stripe/subscription')
         .reply(404);
 
@@ -141,7 +113,7 @@ describe("Customer", function() {
       before(function(done) {
         var Customer = new CustomerAgent('bob');
 
-        var customerMock = nock(Customer.host)
+        var customerMock = nock(LICENSE_API)
           .get('/customer/bob/stripe/subscription')
           .reply(200, fixtures.customers.subscriptions.faultyBob);
 
@@ -179,7 +151,7 @@ describe("Customer", function() {
     it("makes an external request for /customer/{user}", function(done) {
       var Customer = new CustomerAgent('bill');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/316')
         .reply(200, fixtures.customers.bill);
 
@@ -193,7 +165,7 @@ describe("Customer", function() {
     it("returns an error in the callback if customer doesn't exist", function(done) {
       var Customer = new CustomerAgent('bill');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/999')
         .reply(404);
 
@@ -209,7 +181,7 @@ describe("Customer", function() {
     it("returns the response body in the callback", function(done) {
       var Customer = new CustomerAgent('bill');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/316')
         .reply(200, fixtures.customers.bill);
 
@@ -222,6 +194,68 @@ describe("Customer", function() {
       });
     });
 
+  });
+
+  describe("createCustomer()", function() {
+    describe('creating a customer in hubspot', function() {
+      it('returns a customer when hubspot creates it', function(done) {
+        var Customer = new CustomerAgent('');
+
+        var data = {
+          email: 'boom@bam.com',
+          firstname: 'Boom',
+          lastname: 'Bam',
+          phone: '123-456-7890'
+        };
+
+        var dataIn = {
+          email: data.email,
+          name: data.firstname + ' ' + data.lastname,
+          phone: data.phone
+        };
+
+        var hubspotMock = nock(LICENSE_API)
+          .put('/customer', dataIn)
+          .reply(200, data);
+
+        Customer.createCustomer(data, function(err, customer) {
+          hubspotMock.done();
+          expect(err).to.not.exist();
+          expect(customer).to.deep.equal(data);
+          done();
+        });
+      });
+
+      it('returns an error when hubspot is not successful', function(done) {
+        var Customer = new CustomerAgent('');
+
+        var data = {
+          email: 'boom@bam.com',
+          firstname: 'Boom',
+          lastname: 'Bam',
+          phone: '123-456-7890'
+        };
+
+        var dataIn = {
+          email: data.email,
+          name: data.firstname + ' ' + data.lastname,
+          phone: data.phone
+        };
+
+        var hubspotMock = nock(LICENSE_API)
+          .put('/customer', dataIn)
+          .reply(400, 'unable to create customer');
+
+        Customer.createCustomer(data, function(err, customer) {
+          hubspotMock.done();
+          expect(err).to.exist();
+          expect(err.message).to.equal('unable to create customer');
+          expect(customer).to.not.exist();
+          done();
+        });
+      });
+
+    });
   });
 
   describe("updateBilling()", function() {
@@ -242,7 +276,7 @@ describe("Customer", function() {
       });
 
       it("makes an external request for /stripe/{user}", function(done) {
-        var customerMock = nock(Customer.host)
+        var customerMock = nock(LICENSE_API)
           .get('/customer/bob/stripe')
           .reply(404)
           .put('/customer/stripe', billingInfo)
@@ -257,7 +291,7 @@ describe("Customer", function() {
       });
 
       it("gets customer data back in callback body", function(done) {
-        var customerMock = nock(Customer.host)
+        var customerMock = nock(LICENSE_API)
           .get('/customer/bob/stripe')
           .reply(404)
           .put('/customer/stripe', billingInfo)
@@ -300,7 +334,7 @@ describe("Customer", function() {
       });
 
       it("errors if the card is invalid", function(done) {
-        var createCustomerMock = nock(Customer.host)
+        var createCustomerMock = nock(LICENSE_API)
           .get('/customer/bob/stripe')
           .reply(200, {})
           .post('/customer/bob/stripe', billingInfo)
@@ -319,7 +353,7 @@ describe("Customer", function() {
   describe("del()", function() {
     it("cancels a user's subscription", function(done) {
       var Customer = new CustomerAgent('bob');
-      var createCustomerMock = nock(Customer.host)
+      var createCustomerMock = nock(LICENSE_API)
         .delete('/customer/bob/stripe')
         .reply(200, 'customer deleted');
 
@@ -338,7 +372,7 @@ describe("Customer", function() {
       var planInfo = {
         plan: 'npm-paid-individual-user-7'
       }
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .put('/customer/bob/stripe/subscription', planInfo)
         .reply(200, {
           id: 'sub_12345',
@@ -369,7 +403,7 @@ describe("Customer", function() {
       var planInfo = {
         plan: 'npm-paid-org-7'
       }
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .put('/customer/bob/stripe/subscription', planInfo)
         .reply(200, {
           id: 'sub_12346',
@@ -398,7 +432,7 @@ describe("Customer", function() {
   describe("getLicenseForOrg", function() {
     it('returns an error if customer does not exist', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/bob/stripe/subscription?org=bigco')
         .reply(404);
 
@@ -413,7 +447,7 @@ describe("Customer", function() {
 
     it('returns empty array if no license exists for passed org', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/bob/stripe/subscription?org=bigco')
         .reply(200, []);
 
@@ -428,7 +462,7 @@ describe("Customer", function() {
 
     it('gets the license for an org', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/customer/bob/stripe/subscription?org=bigco')
         .reply(200, [{
           "amount": 700,
@@ -458,7 +492,7 @@ describe("Customer", function() {
     //TODO: handle error cases
     it('has error when string is passed for licenseId', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/sponsorship/asdbadbb')
         .reply(500, "invalid input syntax for integer: \"asdbadbb\"");
 
@@ -473,7 +507,7 @@ describe("Customer", function() {
 
     it('gets all sponsorships for an organization', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .get('/sponsorship/123')
         .reply(200, [
           {
@@ -502,7 +536,7 @@ describe("Customer", function() {
   describe("extendSponsorship", function() {
     it("throws an error if licenseId doesn't exist", function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .put('/sponsorship/11111', {
           npm_user: "boomer"
         })
@@ -520,7 +554,7 @@ describe("Customer", function() {
 
     it("creates a sponsorship for a user", function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .put('/sponsorship/123', {
           npm_user: "boomer"
         })
@@ -553,7 +587,7 @@ describe("Customer", function() {
       var verification_key = '4aboom';
 
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .post('/sponsorship/' + verification_key)
         .reply(404);
 
@@ -570,7 +604,7 @@ describe("Customer", function() {
       var verification_key = 'e640f651-ef53-4560-86a6-34cae5a38e20';
 
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .post('/sponsorship/' + verification_key)
         .reply(409, "duplicate key value violates unique constraint \"sponsorships_npm_user\"");
 
@@ -585,7 +619,7 @@ describe("Customer", function() {
       var verification_key = 'e640f651-ef53-4560-86a6-34cae5a38e15';
 
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .post('/sponsorship/' + verification_key)
         .reply(200, {
           "id": 10,
@@ -611,7 +645,7 @@ describe("Customer", function() {
   describe('removeSponsorship', function() {
     it('returns an error if the user is not found', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .delete('/sponsorship/20/notfound')
         .reply(404);
 
@@ -626,7 +660,7 @@ describe("Customer", function() {
 
     it('removes the sponsorship for a valid user', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .delete('/sponsorship/20/boomer')
         .reply(200, {
           "id": 10,
@@ -650,7 +684,7 @@ describe("Customer", function() {
 
     it('is an alias for declineSponsorship', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .delete('/sponsorship/20/boomer')
         .reply(200, {
           "id": 10,
@@ -674,7 +708,7 @@ describe("Customer", function() {
 
     it('is an alias for revokeSponsorship', function(done) {
       var Customer = new CustomerAgent('bob');
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .delete('/sponsorship/20/boomer')
         .reply(200, {
           "id": 10,
@@ -702,7 +736,7 @@ describe("Customer", function() {
     it("makes an external request for /customer/{user}/stripe/subscription/{subscriptionId}", function(done) {
       var Customer = new CustomerAgent('bill');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .delete('/customer/bill/stripe/subscription/sub_123456')
         .reply(200, {
           id: 'sub_12346',
@@ -728,7 +762,7 @@ describe("Customer", function() {
     it("returns an error in the callback if sub doesn't exist", function(done) {
       var Customer = new CustomerAgent('bill');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .delete('/customer/bill/stripe/subscription/sub_2')
         .reply(404);
 
@@ -744,7 +778,7 @@ describe("Customer", function() {
     it("returns the response body in the callback", function(done) {
       var Customer = new CustomerAgent('bill');
 
-      var customerMock = nock(Customer.host)
+      var customerMock = nock(LICENSE_API)
         .delete('/customer/bill/stripe/subscription/sub_123456')
         .reply(200, {
           id: 'sub_12346',

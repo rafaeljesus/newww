@@ -7,7 +7,9 @@ var generateCrumb = require("../handlers/crumb.js"),
   afterEach = lab.afterEach,
   after = lab.after,
   it = lab.test,
-  expect = Code.expect;
+  expect = Code.expect,
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var MockTransport = require('nodemailer-mock-transport');
 var sendEmail = require('../../adapters/send-email');
@@ -255,11 +257,20 @@ describe('Posting to the enterprise license page', function() {
 
   it('sends an email to a new user with no license', function(done) {
     generateCrumb(server, function(crumb) {
+
+      var LICENSE_API = "https://license-api-example.com";
+      var hubspotMock = nock(LICENSE_API)
+        .put('/customer', {
+          email: 'new@bam.com',
+          name: " "
+        })
+        .reply(200, fixtures.enterprise.newUser);
+
       var opts = {
         url: '/enterprise/license',
         method: 'post',
         payload: {
-          email: 'new@boom.com',
+          email: 'new@bam.com',
           crumb: crumb
         },
         headers: {
@@ -268,6 +279,7 @@ describe('Posting to the enterprise license page', function() {
       };
 
       server.inject(opts, function(resp) {
+        hubspotMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/check-email');

@@ -1,8 +1,6 @@
 
 exports.register = function npmE(server, options, next) {
 
-  server.method('npme.createCustomer', require('./methods/createCustomer'));
-
   server.method('npme.createLicense', require('./methods/createLicense'));
 
   server.method('npme.createTrial', require('./methods/createTrial'));

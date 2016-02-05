@@ -61,7 +61,7 @@ describe('GET /~bob for a user other than bob', function() {
 
   it("truncates package names longer than 50 characters", function(done) {
     expect($("a[href='/package/abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz']").text())
-      .to.equal("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx...");
+      .to.equal("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx…");
     done();
   });
 

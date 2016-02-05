@@ -37,10 +37,10 @@
     "blankie": "^1.1.0",
     "bluebird": "^2.10.2",
     "bole": "~2.0.0",
-    "boom": "^2.9.0",
+    "boom": "^3.1.2",
     "catbox-redis": "^1.0.6",
     "chunk": "0.0.2",
-    "crumb": "^4.0.4",
+    "crumb": "^6.0.0",
     "debuglog": "^1.0.1",
     "dotenv": "^1.2.0",
     "elasticsearch": "~9.0.0",
@@ -50,7 +50,7 @@
     "gravatar": "^1.3.1",
     "handlebars": "^2.0.0",
     "handlebars-helper-pluralize": "^1.0.3",
-    "hapi": "^11.1.2",
+    "hapi": "^12.1.0",
     "hapi-auth-cookie": "2.0.0",
     "hapi-common-log": "^1.1.0",
     "hapi-stateless-notifications": "^2.1.0",
@@ -78,6 +78,7 @@
     "nodemailer-ses-transport": "^1.2.0",
     "normalize-license-data": "^1.0.1",
     "normalize-package-data": "^2.3.4",
+    "npm": "^3.6.0",
     "npm-email-templates": "^1.10.1",
     "npm-expansions": "^2.2.3",
     "npm-explicit-installs": "^3.1.1",
@@ -108,7 +109,7 @@
     "truncate": "^1.0.4",
     "validate-npm-package-name": "^2.2.0",
     "verror": "^1.6.1",
-    "vision": "^3.0.0"
+    "vision": "^4.0.1"
   },
   "devDependencies": {
     "bistre": "^1.0.0",

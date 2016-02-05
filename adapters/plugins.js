@@ -10,6 +10,7 @@ module.exports = [
   require('scooter'),
   require('inert'),
   require('vision'),
+  require('./qs'),
   {
     register: require('blankie'),
     options: require('../lib/csp').default

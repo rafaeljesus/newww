@@ -1,9 +1,9 @@
 var Joi = require('joi');
+var CustomerAgent = require('../agents/customer');
 
 module.exports = function(request, reply) {
 
-  var getCustomer = request.server.methods.npme.getCustomer,
-    getLicense = request.server.methods.npme.getLicense,
+  var getLicense = request.server.methods.npme.getLicense,
     verifyTrial = request.server.methods.npme.verifyTrial;
 
   var opts = {
@@ -30,7 +30,7 @@ module.exports = function(request, reply) {
       // get license details from /license/[productkey]/[email]/[licensekey]
       getLicense(process.env.NPME_PRODUCT_ID, data.email, data.license, function(err, license) {
         // fail on error
-        if (err) {
+        if (err && err.statusCode !== 404) {
           request.logger.error("API error fetching license " + data.license + " for email " + data.email);
           request.logger.error(err);
           opts.msg = "This looks like an error on our part.";
@@ -75,10 +75,9 @@ module.exports = function(request, reply) {
     var opts = {};
 
     // get customer details from /customer/[id]
-    getCustomer(customerId, function(err, customer) {
-
+    new CustomerAgent().getById(customerId, function(err, customer) {
       // fail on error
-      if (err) {
+      if (err && err.statusCode !== 404) {
         request.logger.error("API error fetching customer " + customerId);
         request.logger.error(err);
         opts.msg = "This looks like an error on our part.";

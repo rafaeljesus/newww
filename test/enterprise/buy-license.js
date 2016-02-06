@@ -1,3 +1,5 @@
+var LICENSE_API = 'https://license-api-example.com';
+
 var generateCrumb = require("../handlers/crumb.js"),
   Code = require('code'),
   Lab = require('lab'),
@@ -12,6 +14,7 @@ var generateCrumb = require("../handlers/crumb.js"),
   _ = require('lodash'),
   MockTransport = require('nodemailer-mock-transport'),
   sendEmail = require('../../adapters/send-email'),
+  fixtures = require('../fixtures'),
   emailMock,
   server;
 
@@ -154,8 +157,12 @@ describe('Posting to the enterprise license purchase page', function() {
     });
   });
 
-  it('renders an error if we get an error from hubspot', function(done) {
+  it('renders an error if we get an error from the license API', function(done) {
     generateCrumb(server, function(crumb) {
+
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/error@boom.com')
+        .reply(500, 'something went wrong');
 
       var p = _.extend({}, payload, {
         email: 'error@boom.com',
@@ -173,6 +180,7 @@ describe('Posting to the enterprise license purchase page', function() {
 
       server.inject(opts, function(resp) {
         try {
+          customerMock.done();
           expect(resp.statusCode).to.equal(500);
           var source = resp.request.response.source;
           expect(source).to.equal('error loading customer');
@@ -186,6 +194,10 @@ describe('Posting to the enterprise license purchase page', function() {
 
   it('renders an error if the customer is not found', function(done) {
     generateCrumb(server, function(crumb) {
+
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/new@boom.com')
+        .reply(404, 'customer not found');
 
       var p = _.extend({}, payload, {
         email: 'new@boom.com',
@@ -203,7 +215,8 @@ describe('Posting to the enterprise license purchase page', function() {
 
       server.inject(opts, function(resp) {
         try {
-          expect(resp.statusCode).to.equal(500);
+          customerMock.done();
+          expect(resp.statusCode).to.equal(404);
           var source = resp.request.response.source;
           expect(source).to.equal('customer not found');
           done();
@@ -216,6 +229,10 @@ describe('Posting to the enterprise license purchase page', function() {
 
   it('renders an error if the customerID does not match the token customerID', function(done) {
     generateCrumb(server, function(crumb) {
+
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/exists@boom.com')
+        .reply(200, fixtures.enterprise.existingUser);
 
       var p = _.extend({}, payload, {
         customerId: '123',
@@ -233,6 +250,7 @@ describe('Posting to the enterprise license purchase page', function() {
 
       server.inject(opts, function(resp) {
         try {
+          customerMock.done();
           expect(resp.statusCode).to.equal(500);
           var source = resp.request.response.source;
           expect(source).to.equal('error validating customer ID');
@@ -246,6 +264,10 @@ describe('Posting to the enterprise license purchase page', function() {
 
   describe('for a multi-seat license', function() {
     it('sends an email on success', function(done) {
+      var customerMock = nock(LICENSE_API)
+        .get('/customer/exists@boom.com')
+        .reply(200, fixtures.enterprise.existingUser);
+
       var mock = nock('https://api.stripe.com')
         .post('/v1/customers')
         .query({
@@ -276,6 +298,7 @@ describe('Posting to the enterprise license purchase page', function() {
 
         server.inject(opts, function(resp) {
           try {
+            customerMock.done();
             mock.done();
             expect(resp.statusCode).to.equal(200);
             var source = resp.request.response.source;

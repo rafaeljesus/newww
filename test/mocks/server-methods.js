@@ -30,36 +30,6 @@ module.exports = function(server) {
         return next(null, customer);
       },
 
-      getCustomer: function(email, next) {
-        var key = typeof (email) === 'string' ? email.split('@')[0] : email;
-
-        switch (key) {
-          case 'exists':
-          case 123:
-            // user already exists
-            return next(null, fixtures.enterprise.existingUser);
-          case 'new':
-          case 345:
-            // user doesn't exist yet
-            return next(null, null);
-          case 'noLicense':
-            // for license testing
-            return next(null, fixtures.enterprise.noLicenseUser);
-          case 'badLicense':
-            // for license testing
-            return next(null, fixtures.enterprise.noLicenseUser);
-          case 'tooManyLicenses':
-            // for license testing
-            return next(null, fixtures.enterprise.tooManyLicensesUser);
-          case 'licenseBroken':
-            // for license testing
-            return next(null, fixtures.enterprise.licenseBrokenUser);
-          default:
-            // something went wrong with hubspot
-            return next(new Error('something went wrong'));
-        }
-      },
-
       getLicense: function(productId, customerId, licenseId, next) {
         var key = customerId.split('@')[0];
 

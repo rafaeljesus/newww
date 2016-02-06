@@ -1,3 +1,5 @@
+var LICENSE_API = 'https://license-api-example.com';
+
 var Code = require('code'),
   Lab = require('lab'),
   lab = exports.lab = Lab.script(),
@@ -35,7 +37,6 @@ delete licenseData.billingEmail;
 var server;
 
 before(function(done) {
-  process.env.LICENSE_API = "https://billing.website.com"
   server = new Hapi.Server();
   server.connection({
     host: 'localhost',
@@ -48,13 +49,12 @@ before(function(done) {
 });
 
 after(function(done) {
-  delete process.env.LICENSE_API;
   done()
 });
 
 describe('creating a license in hubspot', function() {
   it('returns a license when hubspot creates it', function(done) {
-    var mock = nock('https://billing.website.com')
+    var mock = nock(LICENSE_API)
       .get('/customer/' + dataIn.billingEmail)
       .reply(200, fixtures.existingUser)
       .put('/license', licenseData)
@@ -69,7 +69,7 @@ describe('creating a license in hubspot', function() {
   });
 
   it('returns an error when hubspot is not successful', function(done) {
-    var mock = nock('https://billing.website.com')
+    var mock = nock(LICENSE_API)
       .get('/customer/' + dataIn.billingEmail)
       .reply(200, fixtures.existingUser)
       .put('/license', licenseData)
@@ -85,7 +85,7 @@ describe('creating a license in hubspot', function() {
   });
 
   it('returns an error when a customer is not found', function(done) {
-    var mock = nock('https://billing.website.com')
+    var mock = nock(LICENSE_API)
       .get('/customer/' + dataIn.billingEmail)
       .reply(400);
 

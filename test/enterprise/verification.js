@@ -1,3 +1,5 @@
+var LICENSE_API = 'https://license-api-example.com';
+
 var Code = require('code'),
   Lab = require('lab'),
   lab = exports.lab = Lab.script(),
@@ -6,7 +8,9 @@ var Code = require('code'),
   afterEach = lab.afterEach,
   after = lab.after,
   it = lab.test,
-  expect = Code.expect;
+  expect = Code.expect,
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var server;
 var emailMock;
@@ -64,11 +68,16 @@ function assertEmail() {
 describe('finishing the enterprise signup process', function() {
   it('takes us to the enterprise/complete page if everything goes perfectly', function(done) {
 
+    var customerMock = nock(LICENSE_API)
+      .get('/customer/exists@bam.com')
+      .reply(200, fixtures.enterprise.existingUser);
+
     var opts = {
       url: '/enterprise-verify?v=12345'
     };
 
     server.inject(opts, function(resp) {
+      customerMock.done();
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.template).to.equal('enterprise/complete');
@@ -108,11 +117,16 @@ describe('finishing the enterprise signup process', function() {
 
   it('errors out if the customer could not be found', function(done) {
 
+    var customerMock = nock(LICENSE_API)
+      .get('/customer/boom@bam.com')
+      .reply(404);
+
     var opts = {
       url: '/enterprise-verify?v=23456'
     };
 
     server.inject(opts, function(resp) {
+      customerMock.done();
       expect(resp.statusCode).to.equal(500);
       var source = resp.request.response.source;
       expect(source.template).to.equal('errors/internal');
@@ -121,12 +135,16 @@ describe('finishing the enterprise signup process', function() {
   });
 
   it('errors out if the license server returns an error', function(done) {
+    var customerMock = nock(LICENSE_API)
+      .get('/customer/licenseBroken@bam.com')
+      .reply(200, fixtures.enterprise.licenseBrokenUser);
 
     var opts = {
       url: '/enterprise-verify?v=licenseBroken'
     };
 
     server.inject(opts, function(resp) {
+      customerMock.done();
       expect(resp.statusCode).to.equal(500);
       var source = resp.request.response.source;
       expect(source.template).to.equal('errors/internal');
@@ -136,11 +154,16 @@ describe('finishing the enterprise signup process', function() {
 
   it('errors out if the licenses could not be found', function(done) {
 
+    var customerMock = nock(LICENSE_API)
+      .get('/customer/noLicense@bam.com')
+      .reply(200, fixtures.enterprise.noLicenseUser);
+
     var opts = {
       url: '/enterprise-verify?v=noLicense'
     };
 
     server.inject(opts, function(resp) {
+      customerMock
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('errors/internal');
@@ -150,11 +173,16 @@ describe('finishing the enterprise signup process', function() {
 
   it('errors out if too many licenses are found', function(done) {
 
+    var customerMock = nock(LICENSE_API)
+      .get('/customer/tooManyLicenses@bam.com')
+      .reply(200, fixtures.enterprise.tooManyLicensesUser);
+
     var opts = {
       url: '/enterprise-verify?v=tooManyLicenses'
     };
 
     server.inject(opts, function(resp) {
+      customerMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('errors/internal');

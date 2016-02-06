@@ -1,16 +1,14 @@
 var Joi = require('joi');
 var moment = require('moment');
 var sendEmail = require('../adapters/send-email');
+var CustomerAgent = require('../agents/customer');
 
 var stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-var SUB_TYPE_MONTHLY = 1,
-  SUB_TYPE_ANNUAL = 2,
-  SUB_TYPE_MULTI_SEAT = 3;
+var SUB_TYPE_MULTI_SEAT = 3;
 
 module.exports = function(request, reply) {
 
   var createLicense = request.server.methods.npme.createLicense;
-  var getCustomer = request.server.methods.npme.getCustomer;
   var updateCustomer = request.server.methods.npme.updateCustomer;
 
   var schema = Joi.object().keys({
@@ -40,18 +38,18 @@ module.exports = function(request, reply) {
     }
 
     // load the customer by email and make sure the ID matches the one passed in
-    getCustomer(token.email, function(err, customer) {
+    new CustomerAgent().getById(token.email, function(err, customer) {
 
-      if (err) {
+      if (err && err.statusCode !== 404) {
         request.logger.error('error finding customer; email=' + token.email);
         request.logger.error(err);
-        reply('error loading customer').code(500);
+        reply('error loading customer').code(err.statusCode);
         return;
       }
 
       if (!customer) {
         request.logger.error('no customer found; email=' + token.email);
-        reply('customer not found').code(500);
+        reply('customer not found').code(404);
         return;
       }
 
@@ -88,7 +86,6 @@ module.exports = function(request, reply) {
       }, function(err, stripeCustomer) {
 
         if (err) {
-          console.log(err)
           request.logger.error('internal stripe error; plan=' + stripePlan + ';quantity=' + stripeQuantity + '; email=' + token.email);
           request.logger.error(err);
           reply('internal stripe error').code(500);

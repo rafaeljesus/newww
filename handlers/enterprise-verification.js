@@ -1,9 +1,9 @@
 var _ = require('lodash');
 var sendEmail = require('../adapters/send-email');
+var CustomerAgent = require('../agents/customer');
 
 module.exports = function verifyEnterpriseTrial(request, reply) {
   var verifyTrial = request.server.methods.npme.verifyTrial,
-    getCustomer = request.server.methods.npme.getCustomer,
     getLicenses = request.server.methods.npme.getLicenses;
 
   var opts = { };
@@ -24,7 +24,7 @@ module.exports = function verifyEnterpriseTrial(request, reply) {
       return;
     }
 
-    getCustomer(trial.customer_id, function(err, customer) {
+    new CustomerAgent().getById(trial.customer_id, function(err, customer) {
 
       if (err) {
         request.logger.error('Unable to get customer from hubspot', trial.customer_id);

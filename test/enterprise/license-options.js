@@ -1,3 +1,5 @@
+var LICENSE_API = 'https://license-api-example.com';
+
 var Code = require('code'),
   Lab = require('lab'),
   lab = exports.lab = Lab.script(),
@@ -5,19 +7,24 @@ var Code = require('code'),
   before = lab.before,
   after = lab.after,
   it = lab.test,
-  expect = Code.expect;
+  expect = Code.expect,
+  nock = require('nock'),
+  fixtures = require('../fixtures');
 
 var server;
 
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+var client = redisMock.createClient();
 
 before(function(done) {
-  require('../mocks/server')(function(obj) {
+  process.env.STRIPE_PUBLIC_KEY = '12345';
+  requireInject.installGlobally('../mocks/server', {
+    redis: redisMock
+  })(function(obj) {
     server = obj;
-    server.app.cache._cache.connection.client = {};
     done();
   });
-
-  process.env.STRIPE_PUBLIC_KEY = '12345';
 });
 
 after(function(done) {
@@ -97,11 +104,16 @@ describe('Getting to the enterprise license purchase page', function() {
   });
 
   it('renders an error if the customer is invalid', function(done) {
+    var customerMock = nock(LICENSE_API)
+      .get('/customer/345')
+      .reply(404);
+
     var opts = {
       url: '/enterprise/license-options?email=new@boom.com&license=12ab34cd-a123-4b56-789c-1de2f3ab45cd',
     };
 
     server.inject(opts, function(resp) {
+      customerMock.done();
       expect(resp.statusCode).to.equal(404);
       var source = resp.request.response.source;
       expect(source.template).to.equal('enterprise/invalid-license');
@@ -111,11 +123,16 @@ describe('Getting to the enterprise license purchase page', function() {
   });
 
   it('shows the license options page if the customer and license are valid', function(done) {
+    var customerMock = nock(LICENSE_API)
+      .get('/customer/123')
+      .reply(200, fixtures.enterprise.existingUser);
+
     var opts = {
       url: '/enterprise/license-options?email=exists@boom.com&license=12ab34cd-a123-4b56-789c-1de2f3ab45cd',
     };
 
     server.inject(opts, function(resp) {
+      customerMock.done();
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.template).to.equal('enterprise/license-options');
@@ -127,11 +144,16 @@ describe('Getting to the enterprise license purchase page', function() {
   });
 
   it('shows the license options page if the customer and trial are valid', function(done) {
+    var customerMock = nock(LICENSE_API)
+      .get('/customer/exists@bam.com')
+      .reply(200, fixtures.enterprise.existingUser);
+
     var opts = {
       url: '/enterprise/license-options?email=exists@boom.com&trial=12ab34cd-a123-4b56-789c-1de2f3ab45cd',
     };
 
     server.inject(opts, function(resp) {
+      customerMock.done();
       expect(resp.statusCode).to.equal(200);
       var source = resp.request.response.source;
       expect(source.template).to.equal('enterprise/license-options');

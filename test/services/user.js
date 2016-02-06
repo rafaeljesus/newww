@@ -8,17 +8,18 @@ var Code = require('code'),
   expect = Code.expect,
   sinon = require('sinon');
 
-var Hapi = require('hapi'),
-  userService = require('../../services/user');
+var Hapi = require('hapi');
+var requireInject = require('require-inject');
+var redis = require('redis-mock');
+var userService = requireInject('../../services/user', {
+  redis
+});
 var server;
 
 before(function(done) {
 
   server = new Hapi.Server();
-  server.connection({
-    host: 'localhost',
-    port: '6110'
-  });
+  server.connection();
   server.register(userService, function() {
     server.start(done);
   });
@@ -29,12 +30,11 @@ describe('setting and deleting sessions', function() {
   var userSessionId;
 
   before(function(done) {
-    client = require('redis').createClient();
+    client = redis.createClient();
     client.flushdb();
     client.on('error', function(err) {
       console.log('Error ' + err);
     });
-    done();
 
     mockedRequest = {
       auth: {
@@ -58,10 +58,13 @@ describe('setting and deleting sessions', function() {
         }
       }
     };
+
+    done();
   });
 
-  after('cleans up the db', function(done) {
-    client.flushdb(done);
+  after(function(done) {
+    client.flushdb();
+    done()
   });
 
   it('sets a session', function(done) {

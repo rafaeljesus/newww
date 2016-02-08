@@ -134,7 +134,7 @@ function processReadme(pkg) {
     return P.resolve('');
   }
 
-  var cacheKey = pkg.name + '_readme';
+  var cacheKey = `${pkg.name}@${pkg.version}/readme`;
 
   return new P(function(resolve, reject) {
     cache.getKey(cacheKey, function(err, readme) {
@@ -176,7 +176,7 @@ function processDescription(pkg) {
   }
 
   // Parse description as markdown
-  var cacheKey = pkg.name + '_desc';
+  var cacheKey = `${pkg.name}@${pkg.version}/description`;
 
   return new P(function(resolve, reject) {
     cache.getKey(cacheKey, function(err, description) {

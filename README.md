@@ -145,7 +145,6 @@ If you have any trouble getting the site running locally, please [open an issue]
 * `SESSION_COOKIE`, the cookie name for session IDs
 * `MAIL_ACCESS_KEY_ID`, the access key ID for sending mail
 * `MAIL_SECRET_ACCESS_KEY`, the secret key for sending mail
-* `USE_CACHE`, ???
 
 
 ## Marketing integration

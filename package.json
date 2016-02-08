@@ -118,7 +118,7 @@
     "code": "^1.2.1",
     "esformatter": "^0.8.1",
     "eslint": "^2.0.0-alpha-2",
-    "favicons": "^3.0.2",
+    "favicons": "^4.6.0",
     "gulp": "^3.8.10",
     "gulp-concat": "^2.2.0",
     "gulp-jshint": "^1.9.0",

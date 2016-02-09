@@ -108,7 +108,7 @@ module.exports = function(request, reply) {
 
     // create a trial, mail them with a link to license options
     function createTrialAndSendPurchaseLink(customer) {
-      Customer.createTrial(customer, function(err, trial) {
+      Customer.createOnSiteTrial(customer, function(err, trial) {
         // generic failure
         if (err) {
           request.logger.error("API error creating trial for customer " + customer.id + '; email=' + customer.email);

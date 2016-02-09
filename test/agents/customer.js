@@ -364,7 +364,7 @@ describe("Customer", function() {
           id: '54321'
         });
 
-      new CustomerAgent().createTrial(customer, function(err, trial) {
+      new CustomerAgent().createOnSiteTrial(customer, function(err, trial) {
         customerMock.done();
         expect(err).to.not.exist();
         expect(trial).to.exist();
@@ -386,7 +386,7 @@ describe("Customer", function() {
           id: 'abcde'
         });
 
-      new CustomerAgent().createTrial(customer, function(err, trial) {
+      new CustomerAgent().createOnSiteTrial(customer, function(err, trial) {
         customerMock.done();
         expect(err).to.not.exist();
         expect(trial).to.exist();
@@ -405,7 +405,7 @@ describe("Customer", function() {
         .get('/trial/' + productId + '/' + customer.email)
         .reply(400, 'bad request');
 
-      new CustomerAgent().createTrial(customer, function(err, trial) {
+      new CustomerAgent().createOnSiteTrial(customer, function(err, trial) {
         customerMock.done();
         expect(err).to.exist();
         expect(trial).to.not.exist();
@@ -431,7 +431,7 @@ describe("Customer", function() {
         })
         .reply(400, 'bad request');
 
-      new CustomerAgent().createTrial(customer, function(err, trial) {
+      new CustomerAgent().createOnSiteTrial(customer, function(err, trial) {
         customerMock.done();
         expect(err).to.exist();
         expect(trial).to.not.exist();

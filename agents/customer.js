@@ -127,7 +127,7 @@ Customer.prototype.createOnSiteLicense = function(licenseDetails, callback) {
   }).nodeify(callback);
 };
 
-Customer.prototype.createTrial = function(customer, callback) {
+Customer.prototype.createOnSiteTrial = function(customer, callback) {
   var trialEndpoint = LICENSE_API + '/trial',
     productId = process.env.NPME_PRODUCT_ID;
 

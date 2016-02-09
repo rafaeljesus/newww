@@ -11,7 +11,7 @@ var generateCrumb = require("../handlers/crumb.js"),
   it = lab.test,
   expect = Code.expect,
   nock = require('nock'),
-  _ = require('lodash'),
+  moment = require('moment'),
   MockTransport = require('nodemailer-mock-transport'),
   sendEmail = require('../../adapters/send-email'),
   fixtures = require('../fixtures'),
@@ -41,60 +41,6 @@ afterEach(function(done) {
 after(function(done) {
   server.stop(done);
 });
-
-var payload = {
-  id: 'tok_12345',
-  livemode: 'false',
-  created: '1426198429',
-  used: 'false',
-  object: 'token',
-  type: 'card',
-  card: {},
-  email: 'exists@boom.com',
-  verification_allowed: 'true',
-  client_ip: 'localhost',
-  amount: '2500',
-  subType: '1',
-  quantity: '1',
-  customerId: '12345'
-};
-
-var stripeCustomer = {
-  object: 'customer',
-  created: 1426198433,
-  id: 'cus_123abc',
-  livemode: false,
-  description: 'exists@boom.com npm On-Site Starter Pack',
-  email: 'exists@boom.com',
-  delinquent: false,
-  metadata: {},
-  subscriptions: {
-    object: 'list',
-    total_count: 1,
-    has_more: false,
-    url: '/v1/customers/cus_123abc/subscriptions',
-    data: [[Object]]
-  },
-  discount: null,
-  account_balance: 0,
-  currency: 'usd',
-  cards: {
-    object: 'list',
-    total_count: 1,
-    has_more: false,
-    url: '/v1/customers/cus_123abc/cards',
-    data: [[Object]]
-  },
-  default_card: 'card_15feYq4fnGb60djYJsvT2YGG',
-  sources: {
-    object: 'list',
-    total_count: 1,
-    has_more: false,
-    url: '/v1/customers/cus_123abc/sources',
-    data: [[Object]]
-  },
-  default_source: 'card_15feYq4fnGb60djYJsvT2YGG'
-};
 
 function assertEmail() {
   var expectedName = 'Boom Bam';
@@ -130,7 +76,7 @@ function assertEmail() {
 describe('Posting to the enterprise license purchase page', function() {
   it('errors out if the email sent is invalid', function(done) {
     generateCrumb(server, function(crumb) {
-      var p = _.extend({}, payload, {
+      var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
         email: 'invalid',
         crumb: crumb
       });
@@ -164,7 +110,7 @@ describe('Posting to the enterprise license purchase page', function() {
         .get('/customer/error@boom.com')
         .reply(500, 'something went wrong');
 
-      var p = _.extend({}, payload, {
+      var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
         email: 'error@boom.com',
         crumb: crumb
       });
@@ -186,7 +132,7 @@ describe('Posting to the enterprise license purchase page', function() {
           expect(source).to.equal('error loading customer');
           done();
         } catch (e) {
-          done(e)
+          done(e);
         }
       });
     });
@@ -199,7 +145,7 @@ describe('Posting to the enterprise license purchase page', function() {
         .get('/customer/new@boom.com')
         .reply(404, 'customer not found');
 
-      var p = _.extend({}, payload, {
+      var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
         email: 'new@boom.com',
         crumb: crumb
       });
@@ -221,7 +167,7 @@ describe('Posting to the enterprise license purchase page', function() {
           expect(source).to.equal('customer not found');
           done();
         } catch (e) {
-          done(e)
+          done(e);
         }
       });
     });
@@ -234,7 +180,7 @@ describe('Posting to the enterprise license purchase page', function() {
         .get('/customer/exists@boom.com')
         .reply(200, fixtures.enterprise.existingUser);
 
-      var p = _.extend({}, payload, {
+      var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
         customerId: '123',
         crumb: crumb
       });
@@ -264,9 +210,21 @@ describe('Posting to the enterprise license purchase page', function() {
 
   describe('for a multi-seat license', function() {
     it('sends an email on success', function(done) {
+
+      process.env.NPME_PRODUCT_ID = '12345-12345-12345';
+
       var customerMock = nock(LICENSE_API)
-        .get('/customer/exists@boom.com')
-        .reply(200, fixtures.enterprise.existingUser);
+        .get('/customer/exists@boom.com').twice()
+        .reply(200, fixtures.enterprise.existingUser)
+        .put('/license', {
+          "product_id": "12345-12345-12345",
+          "customer_id": 12345,
+          "stripe_subscription_id": "1234567890",
+          "seats": 20,
+          begins: moment(Date.now()).format(), // starts now
+          ends: moment(Date.now()).add(1, 'years').format(), // ends a year from now (webhooks will refresh)
+        })
+        .reply(200, fixtures.enterprise.goodLicense[0]);
 
       var mock = nock('https://api.stripe.com')
         .post('/v1/customers')
@@ -277,11 +235,11 @@ describe('Posting to the enterprise license purchase page', function() {
           email: 'exists@boom.com',
           description: 'exists@boom.com npm On-Site multi-seat license'
         })
-        .reply(200, stripeCustomer);
+        .reply(200, fixtures.enterprise.stripeCustomer);
 
 
       generateCrumb(server, function(crumb) {
-        var p = _.extend({}, payload, {
+        var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
           subType: 3,
           quantity: 20,
           crumb: crumb
@@ -303,6 +261,7 @@ describe('Posting to the enterprise license purchase page', function() {
             expect(resp.statusCode).to.equal(200);
             var source = resp.request.response.source;
             expect(source).to.equal('License purchase successful');
+            delete process.env.NPME_PRODUCT_ID;
             assertEmail();
             done();
           } catch (e) {

@@ -22,10 +22,6 @@ module.exports = function(server) {
     },
 
     npme: {
-      createLicense: function(licenseDetails, callback) {
-        return callback(null, fixtures.enterprise.goodLicense[0]);
-      },
-
       createTrial: function(customer, next) {
         return next(null, customer);
       },

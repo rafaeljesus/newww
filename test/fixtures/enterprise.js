@@ -124,3 +124,60 @@ exports.tooManyLicenses = [
 ];
 
 exports.noLicense = [];
+
+exports.stripeCustomer = {
+  object: 'customer',
+  created: 1426198433,
+  id: 'cus_123abc',
+  livemode: false,
+  description: 'exists@boom.com npm On-Site Starter Pack',
+  email: 'exists@boom.com',
+  delinquent: false,
+  metadata: {},
+  subscriptions: {
+    object: 'list',
+    total_count: 1,
+    has_more: false,
+    url: '/v1/customers/cus_123abc/subscriptions',
+    data: [{
+      id: '1234567890'
+    }]
+  },
+  discount: null,
+  account_balance: 0,
+  currency: 'usd',
+  cards: {
+    object: 'list',
+    total_count: 1,
+    has_more: false,
+    url: '/v1/customers/cus_123abc/cards',
+    data: [[Object]]
+  },
+  default_card: 'card_15feYq4fnGb60djYJsvT2YGG',
+  sources: {
+    object: 'list',
+    total_count: 1,
+    has_more: false,
+    url: '/v1/customers/cus_123abc/sources',
+    data: [[Object]]
+  },
+  default_source: 'card_15feYq4fnGb60djYJsvT2YGG'
+};
+
+exports.buyLicensePayload = {
+  id: 'tok_12345',
+  livemode: 'false',
+  created: '1426198429',
+  used: 'false',
+  object: 'token',
+  type: 'card',
+  card: {},
+  email: 'exists@boom.com',
+  verification_allowed: 'true',
+  client_ip: 'localhost',
+  amount: '2500',
+  subType: '1',
+  quantity: '1',
+  customerId: '12345'
+};
+

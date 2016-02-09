@@ -1,4 +1,5 @@
 require("./lib/environment")();
+require('newrelic');
 
 var replify = require('replify');
 var bole = require('bole');

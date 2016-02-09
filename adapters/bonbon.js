@@ -6,7 +6,8 @@ var bole = require('bole'),
   featureFlag = require('../lib/feature-flags.js'),
   toCommonLogFormat = require('hapi-common-log'),
   url = require('url'),
-  User = require('../agents/user');
+  User = require('../agents/user'),
+  newrelic = require('newrelic');
 
 exports.register = function(server, options, next) {
 
@@ -84,7 +85,8 @@ exports.register = function(server, options, next) {
       env: {
         NPMO_COBRAND: process.env.NPMO_COBRAND,
         CANONICAL_HOST: process.env.CANONICAL_HOST
-      }
+      },
+      nreum: newrelic.getBrowserTimingHeader()
     };
 
     if (request.response && request.response.variety && request.response.variety.match(/view|plain/)) {

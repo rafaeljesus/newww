@@ -80,7 +80,7 @@ Customer.prototype.createCustomer = function(data, callback) {
   }).nodeify(callback);
 };
 
-Customer.prototype.createLicense = function(licenseDetails, callback) {
+Customer.prototype.createOnSiteLicense = function(licenseDetails, callback) {
   var self = this;
 
   // we need to get customer from billing email
@@ -107,7 +107,6 @@ Customer.prototype.createLicense = function(licenseDetails, callback) {
         json: true,
         body: body
       }, function(err, resp, newLicense) {
-        console.log(err)
 
         if (err) {
           log.error("License creation failed:");

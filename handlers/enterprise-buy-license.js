@@ -123,7 +123,7 @@ module.exports = function(request, reply) {
             ends: moment(Date.now()).add(1, 'years').format(), // ends a year from now (webhooks will refresh)
           };
 
-          Customer.createLicense(licenseDetails, function(err, license) {
+          Customer.createOnSiteLicense(licenseDetails, function(err, license) {
 
             if (err) {
               request.logger.error('license creation error; email=' + token.email + ';seats=' + licenseSeats);

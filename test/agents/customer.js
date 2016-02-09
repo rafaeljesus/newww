@@ -286,7 +286,7 @@ describe("Customer", function() {
         .put('/license', licenseData)
         .reply(200, fixtures.enterprise.goodLicense);
 
-      Customer.createLicense(dataIn, function(err, license) {
+      Customer.createOnSiteLicense(dataIn, function(err, license) {
         mock.done();
         expect(err).to.not.exist();
         expect(license).to.deep.equal(fixtures.enterprise.goodLicense);
@@ -303,7 +303,7 @@ describe("Customer", function() {
         .put('/license', licenseData)
         .reply(400, 'bad request');
 
-      Customer.createLicense(dataIn, function(err, license) {
+      Customer.createOnSiteLicense(dataIn, function(err, license) {
         mock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('bad request');
@@ -320,7 +320,7 @@ describe("Customer", function() {
         .get('/customer/' + dataIn.billingEmail)
         .reply(400);
 
-      Customer.createLicense(dataIn, function(err, license) {
+      Customer.createOnSiteLicense(dataIn, function(err, license) {
         mock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('could not create license for unknown customer with email ' + dataIn.billingEmail);

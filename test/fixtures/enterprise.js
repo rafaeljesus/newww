@@ -73,6 +73,22 @@ exports.goodLicense = [
   }
 ];
 
+exports.onSiteLicense = {
+  details: {
+    id: 619,
+    customer_id: 123,
+    product_id: '12-34-56',
+    plan_id: null,
+    license_key: '9b0ed7f8-ac3a-408a-8821-86be0426ea76',
+    seats: 5,
+    begins: '2015-03-12T17:02:44.000Z',
+    ends: '2016-03-12T17:02:44.000Z',
+    created: '2015-03-13T00:09:48.209Z',
+    updated: '2015-03-13T00:09:48.209Z'
+  },
+  signature: 'some-long-string'
+};
+
 exports.newLicense = [
   {
     id: 609,

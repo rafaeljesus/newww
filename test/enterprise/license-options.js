@@ -19,6 +19,7 @@ var client = redisMock.createClient();
 
 before(function(done) {
   process.env.STRIPE_PUBLIC_KEY = '12345';
+  process.env.NPME_PRODUCT_ID = '12345-12345-12345';
   requireInject.installGlobally('../mocks/server', {
     redis: redisMock
   })(function(obj) {
@@ -28,6 +29,8 @@ before(function(done) {
 });
 
 after(function(done) {
+  delete process.env.STRIPE_PUBLIC_KEY;
+  delete process.env.NPME_PRODUCT_ID;
   server.stop(done);
 });
 
@@ -76,11 +79,16 @@ describe('Getting to the enterprise license purchase page', function() {
   });
 
   it('renders an error if the license is invalid', function(done) {
+    var licenseMock = nock(LICENSE_API)
+      .get('/license/12345-12345-12345/badLicense@boom.com/12ab34cd-a123-4b56-789c-1de2f3ab45cd')
+      .reply(200, null);
+
     var opts = {
       url: '/enterprise/license-options?email=badLicense@boom.com&license=12ab34cd-a123-4b56-789c-1de2f3ab45cd',
     };
 
     server.inject(opts, function(resp) {
+      licenseMock.done();
       expect(resp.statusCode).to.equal(400);
       var source = resp.request.response.source;
       expect(source.template).to.equal('enterprise/invalid-license');
@@ -105,8 +113,10 @@ describe('Getting to the enterprise license purchase page', function() {
 
   it('renders an error if the customer is invalid', function(done) {
     var customerMock = nock(LICENSE_API)
-      .get('/customer/345')
-      .reply(404);
+      .get('/customer/123')
+      .reply(404)
+      .get('/license/12345-12345-12345/new@boom.com/12ab34cd-a123-4b56-789c-1de2f3ab45cd')
+      .reply(200, fixtures.enterprise.onSiteLicense);
 
     var opts = {
       url: '/enterprise/license-options?email=new@boom.com&license=12ab34cd-a123-4b56-789c-1de2f3ab45cd',
@@ -125,7 +135,9 @@ describe('Getting to the enterprise license purchase page', function() {
   it('shows the license options page if the customer and license are valid', function(done) {
     var customerMock = nock(LICENSE_API)
       .get('/customer/123')
-      .reply(200, fixtures.enterprise.existingUser);
+      .reply(200, fixtures.enterprise.existingUser)
+      .get('/license/12345-12345-12345/exists@boom.com/12ab34cd-a123-4b56-789c-1de2f3ab45cd')
+      .reply(200, fixtures.enterprise.onSiteLicense);
 
     var opts = {
       url: '/enterprise/license-options?email=exists@boom.com&license=12ab34cd-a123-4b56-789c-1de2f3ab45cd',

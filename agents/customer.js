@@ -127,6 +127,41 @@ Customer.prototype.createOnSiteLicense = function(licenseDetails, callback) {
   }).nodeify(callback);
 };
 
+Customer.prototype.getOnSiteLicense = function(productId, customerEmailOrId, licenseId, callback) {
+
+  var url = LICENSE_API + '/license/' + productId + '/' + customerEmailOrId + '/' + licenseId;
+
+  return new P(function(accept, reject) {
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, license) {
+
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        return accept(null); // no error, but no license either
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(license);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      if (!license) {
+        return accept(null);
+      }
+
+      return accept(license.details);
+
+    });
+  }).nodeify(callback);
+};
+
+
 Customer.prototype.createOnSiteTrial = function(customer, callback) {
   var trialEndpoint = LICENSE_API + '/trial',
     productId = process.env.NPME_PRODUCT_ID;

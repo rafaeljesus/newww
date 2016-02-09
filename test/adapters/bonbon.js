@@ -12,57 +12,9 @@ var Code = require('code'),
   nock = require('nock');
 var requireInject = require('require-inject');
 var redisMock = require('redis-mock');
+var homepageMock = require('../mocks/homepage-requests');
 
 var server;
-var username1 = 'bob';
-
-var userMock = nock("https://user-api-example.com")
-  .get('/user/bob').times(8)
-  .reply(200, fixtures.users.bob)
-  .get('/user/seldo').times(3)
-  .reply(200, fixtures.users.npmEmployee)
-  .get('/user/constructor')
-  .reply(200, fixtures.users.propName)
-  .get('/user/bob/package?format=mini&per_page=100&page=0').times(10)
-  .reply(200, fixtures.users.packages)
-  .get('/user/bob/stars?format=detailed').times(10)
-  .reply(200, fixtures.users.stars)
-  .get('/user/bob').times(5)
-  .reply(404)
-  .get('/user/seldo')
-  .reply(404)
-  .get('/user/mikeal')
-  .reply(404)
-  .get('/user/bob/org').times(2)
-  .reply(401)
-  .get('/package/-/count')
-  .reply(200, 12345)
-  .get('/package?sort=modified&count=12')
-  .reply(200, fixtures.aggregates.recently_updated_packages)
-  .get('/package?sort=dependents&count=12')
-  .reply(200, fixtures.aggregates.most_depended_upon_packages);
-
-var licenseMock = nock('https://license-api-example.com')
-  .get('/customer/bob/stripe').times(13)
-  .reply(200, {})
-  .get('/customer/mikeal/stripe')
-  .reply(200, {})
-  .get('/customer/seldo/stripe').times(4)
-  .reply(200, {});
-
-var downloadsMock = nock("https://downloads-api-example.com")
-  .get('/point/last-week')
-  .reply(200, fixtures.downloads.all.week)
-  .get('/point/last-month')
-  .reply(200, fixtures.downloads.all.month)
-  .get('/point/last-day')
-  .reply(200, fixtures.downloads.all.day);
-
-// Mock npm-explicit-installs requests
-var registryMock = nock("https://skimdb.npmjs.com")
-  .get(/.*/).times(12)
-  .reply(500, '');
-
 before(function(done) {
   requireInject.installGlobally('../mocks/server', {
     redis: redisMock
@@ -72,15 +24,42 @@ before(function(done) {
   });
 });
 
-after(function(done) {
-  userMock.done();
-  licenseMock.done();
-  downloadsMock.done();
-  registryMock.done();
-  done();
-});
-
 describe("bonbon", function() {
+  var username1 = 'bob';
+  var userMock = nock("https://user-api-example.com")
+    .get('/user/bob').times(8)
+    .reply(200, fixtures.users.bob)
+    .get('/user/seldo').times(3)
+    .reply(200, fixtures.users.npmEmployee)
+    .get('/user/constructor')
+    .reply(200, fixtures.users.propName)
+    .get('/user/bob/package?format=mini&per_page=100&page=0').times(10)
+    .reply(200, fixtures.users.packages)
+    .get('/user/bob/stars?format=detailed').times(10)
+    .reply(200, fixtures.users.stars)
+    .get('/user/bob').times(5)
+    .reply(404)
+    .get('/user/seldo')
+    .reply(404)
+    .get('/user/mikeal')
+    .reply(404)
+    .get('/user/bob/org').times(2)
+    .reply(401)
+
+  var licenseMock = nock('https://license-api-example.com')
+    .get('/customer/bob/stripe').times(13)
+    .reply(200, {})
+    .get('/customer/mikeal/stripe')
+    .reply(200, {})
+    .get('/customer/seldo/stripe').times(4)
+    .reply(200, {});
+
+
+  after(function(done) {
+    userMock.done();
+    licenseMock.done();
+    done();
+  });
 
   beforeEach(function(done) {
     process.env.NODE_ENV = 'production';
@@ -296,13 +275,20 @@ describe("bonbon", function() {
       done();
     });
   });
+});
 
-  describe('headers', function() {
-    it('includes the charset=utf-8 header', function(done) {
-      server.inject('/', function(resp) {
-        expect(resp.headers['content-type']).to.equal('text/html; charset=utf-8');
-        done();
-      });
+describe("bonbon headers", function() {
+  var mock = homepageMock();
+
+  after(function(done) {
+    mock.done();
+    done();
+  });
+
+  it('includes the charset=utf-8 header', function(done) {
+    server.inject('/', function(resp) {
+      expect(resp.headers['content-type']).to.equal('text/html; charset=utf-8');
+      done();
     });
   });
 

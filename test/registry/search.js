@@ -17,7 +17,7 @@ before(function(done) {
   require('../mocks/server')(function(obj) {
     server = obj;
     done();
-  }, require('../../lib/error-handler'));
+  });
 });
 
 after(function(done) {

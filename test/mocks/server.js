@@ -39,7 +39,8 @@ module.exports = function(done, additionalPlugins) {
       require('vision'),
       require('../../adapters/bonbon'),
       hackishMockRedis,
-      require('hapi-stateless-notifications')
+      require('hapi-stateless-notifications'),
+      require('../../lib/error-handler')
     ].concat(additionalPlugins || []), function(err) {
       if (err) {
         throw err;

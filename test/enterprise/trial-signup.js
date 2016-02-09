@@ -129,7 +129,7 @@ describe('Getting to the thank-you page', function() {
       server.inject(opts, function(resp) {
         customerMock.done();
         expect(resp.statusCode).to.equal(500);
-        expect(resp.request.response.source.error).to.exist();
+        expect(resp.request.response.source.context.isBoom).to.be.true();
         done();
       });
     });
@@ -159,7 +159,7 @@ describe('Getting to the thank-you page', function() {
       server.inject(opts, function(resp) {
         customerMock.done();
         expect(resp.statusCode).to.equal(500);
-        expect(resp.request.response.source.error).to.exist();
+        expect(resp.request.response.source.context.isBoom).to.be.true();
         done();
       });
     });

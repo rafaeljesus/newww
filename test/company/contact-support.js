@@ -96,7 +96,7 @@ describe('sending a contact email', function() {
 
     server.inject(opts, function(resp) {
       expect(resp.statusCode).to.equal(403);
-      expect(resp.result.error).to.equal('Forbidden');
+      expect(resp.request.response.source.context.message).to.equal('Forbidden');
       done();
     });
   });

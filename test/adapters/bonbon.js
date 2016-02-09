@@ -16,9 +16,7 @@ var redisMock = require('redis-mock');
 var server;
 var username1 = 'bob';
 
-var userMock, licenseMock;
-
-userMock = nock("https://user-api-example.com")
+var userMock = nock("https://user-api-example.com")
   .get('/user/bob').times(8)
   .reply(200, fixtures.users.bob)
   .get('/user/seldo').times(3)
@@ -42,7 +40,7 @@ userMock = nock("https://user-api-example.com")
   .get('/package?sort=dependents&count=12')
   .reply(200, fixtures.aggregates.most_depended_upon_packages);
 
-licenseMock = nock('https://license-api-example.com')
+var licenseMock = nock('https://license-api-example.com')
   .get('/customer/bob/stripe').times(13)
   .reply(200, {})
   .get('/customer/mikeal/stripe')

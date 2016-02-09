@@ -12,7 +12,6 @@ var generateCrumb = require("../handlers/crumb.js"),
   expect = Code.expect,
   nock = require('nock'),
   moment = require('moment'),
-  _ = require('lodash'),
   MockTransport = require('nodemailer-mock-transport'),
   sendEmail = require('../../adapters/send-email'),
   fixtures = require('../fixtures'),
@@ -77,7 +76,7 @@ function assertEmail() {
 describe('Posting to the enterprise license purchase page', function() {
   it('errors out if the email sent is invalid', function(done) {
     generateCrumb(server, function(crumb) {
-      var p = _.extend({}, fixtures.enterprise.buyLicensePayload, {
+      var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
         email: 'invalid',
         crumb: crumb
       });
@@ -111,7 +110,7 @@ describe('Posting to the enterprise license purchase page', function() {
         .get('/customer/error@boom.com')
         .reply(500, 'something went wrong');
 
-      var p = _.extend({}, fixtures.enterprise.buyLicensePayload, {
+      var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
         email: 'error@boom.com',
         crumb: crumb
       });
@@ -146,7 +145,7 @@ describe('Posting to the enterprise license purchase page', function() {
         .get('/customer/new@boom.com')
         .reply(404, 'customer not found');
 
-      var p = _.extend({}, fixtures.enterprise.buyLicensePayload, {
+      var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
         email: 'new@boom.com',
         crumb: crumb
       });
@@ -181,7 +180,7 @@ describe('Posting to the enterprise license purchase page', function() {
         .get('/customer/exists@boom.com')
         .reply(200, fixtures.enterprise.existingUser);
 
-      var p = _.extend({}, fixtures.enterprise.buyLicensePayload, {
+      var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
         customerId: '123',
         crumb: crumb
       });
@@ -240,7 +239,7 @@ describe('Posting to the enterprise license purchase page', function() {
 
 
       generateCrumb(server, function(crumb) {
-        var p = _.extend({}, fixtures.enterprise.buyLicensePayload, {
+        var p = Object.assign({}, fixtures.enterprise.buyLicensePayload, {
           subType: 3,
           quantity: 20,
           crumb: crumb

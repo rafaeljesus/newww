@@ -18,7 +18,7 @@ exports.register = function(server, options, next) {
     // Generate `request.packageName` for global and scoped package requests
     if (request.params.package || request.params.scope) {
       request.packageName = request.params.package ||
-        request.params.scope + "/" + request.params.project;
+      request.params.scope + "/" + request.params.project;
     }
 
     request.metrics = metrics;

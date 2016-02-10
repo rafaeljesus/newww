@@ -36,16 +36,16 @@
 
 <div class="sidebar">
 
+  {{#with ../promotion.packagePage}}
+    <div class="promotion" data-promotion-id="{{id}}" data-promotion-spot="packagePage">{{{html}}}</div>
+  {{/with}}
+
   {{#if installCommand}}
     <div class="autoselect-wrapper npm-install icon-download">
       <input type="text" value="{{installCommand}}" readonly>
       <p><a href="/package/{{name}}/tutorial">how? learn more</a></p>
     </div>
   {{/if}}
-
-  {{#with ../promotion.packagePage}}
-    <div class="promotion" data-promotion-id="{{id}}" data-promotion-spot="packagePage">{{{html}}}</div>
-  {{/with}}
 
   <ul class="box">
 

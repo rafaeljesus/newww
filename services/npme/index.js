@@ -1,8 +1,6 @@
 
 exports.register = function npmE(server, options, next) {
 
-  server.method('npme.updateCustomer', require('./methods/updateCustomer'));
-
   server.method('npme.verifyTrial', require('./methods/verifyTrial'));
 
   return next();

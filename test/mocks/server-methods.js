@@ -23,10 +23,6 @@ module.exports = function(server) {
 
     npme: {
 
-      updateCustomer: function(customerId, data, callback) {
-        return callback(null);
-      },
-
       verifyTrial: function(verificationKey, next) {
         switch (verificationKey) {
           case '12345':

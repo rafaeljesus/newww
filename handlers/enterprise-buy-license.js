@@ -8,7 +8,6 @@ var SUB_TYPE_MULTI_SEAT = 3;
 
 module.exports = function(request, reply) {
   var Customer = new CustomerAgent();
-  var updateCustomer = request.server.methods.npme.updateCustomer;
 
   var schema = Joi.object().keys({
     id: Joi.string().token(),
@@ -100,7 +99,7 @@ module.exports = function(request, reply) {
         request.timing.page = 'enterprise-license-paymentProcessed';
 
         // license purchased! We need to update the customer record with their stripe customer ID
-        updateCustomer(customer.id, {
+        Customer.updateOnsiteUser(customer.id, {
           stripe_customer_id: stripeCustomer.id
         }, function(err) {
 

@@ -260,6 +260,34 @@ Customer.prototype.createOnSiteTrial = function(customer, callback) {
 
 };
 
+Customer.prototype.updateOnsiteUser = function(customerId, data, callback) {
+  var url = LICENSE_API + '/customer/' + customerId;
+
+  return new P(function(accept, reject) {
+    Request.post({
+      url: url,
+      json: true,
+      body: data
+    }, function(err, resp, customer) {
+
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode >= 400) {
+        err = Object.assign(new Error(customer), {
+          statusCode: resp.statusCode
+        });
+        return reject(err);
+      }
+
+      return accept(customer);
+
+    });
+  }).nodeify(callback);
+
+};
+
 Customer.prototype.getStripeData = function(callback) {
   var self = this;
   var stripeUrl = LICENSE_API + '/customer/' + self.name + '/stripe';

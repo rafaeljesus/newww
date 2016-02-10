@@ -224,7 +224,13 @@ describe('Posting to the enterprise license purchase page', function() {
           begins: moment(Date.now()).format(), // starts now
           ends: moment(Date.now()).add(1, 'years').format(), // ends a year from now (webhooks will refresh)
         })
-        .reply(200, fixtures.enterprise.goodLicense.licenses[0]);
+        .reply(200, fixtures.enterprise.goodLicense.licenses[0])
+        .post('/customer/12345', {
+          "stripe_customer_id": "cus_123abc"
+        })
+        .reply(200, {
+          "stripe_customer_id": "cus_123abc"
+        });
 
       var mock = nock('https://api.stripe.com')
         .post('/v1/customers')

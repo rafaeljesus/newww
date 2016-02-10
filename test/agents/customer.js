@@ -556,6 +556,45 @@ describe("Customer", function() {
     });
   });
 
+  describe("updateOnsiteUser", function() {
+    it('returns the customer if it is successful', function(done) {
+
+      var customerId = 12345;
+      var existingUser = fixtures.enterprise.existingUser;
+
+      var mock = nock(LICENSE_API)
+        .post('/customer/' + customerId, existingUser)
+        .reply(200, existingUser);
+
+      CustomerAgent().updateOnsiteUser(customerId, existingUser, function(err, customer) {
+        mock.done();
+        expect(err).to.not.exist();
+        expect(customer).to.be.an.object();
+        expect(customer.id).to.equal(customerId);
+        done();
+      });
+    });
+
+    it('returns en error if something goes wrong at hubspot', function(done) {
+
+      var customerId = 12345;
+      var existingUser = fixtures.enterprise.existingUser;
+
+      var mock = nock(LICENSE_API)
+        .post('/customer/' + customerId, existingUser)
+        .reply(400, "Bad Request");
+
+      CustomerAgent().updateOnsiteUser(customerId, existingUser, function(err, customer) {
+        mock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('Bad Request');
+        expect(err.statusCode).to.equal(400);
+        expect(customer).to.not.exist();
+        done();
+      });
+    });
+  });
+
   describe("updateBilling()", function() {
 
     describe("new customer", function() {

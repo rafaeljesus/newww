@@ -1,0 +1,30 @@
+.drop-down-menu
+  display none
+  position absolute
+  background-color white
+  border 4px solid gray
+  z-index 99999
+  padding 1em 15px
+
+.drop-down-menu:target
+  display block
+
+.drop-down-menu-container
+  position relative
+
+.drop-down-menu-section
+  border-bottom 1px solid gray
+
+  &:last-child
+    border-bottom 0
+
+.drop-down-menu-overlay
+  display none
+
+.drop-down-menu-overlay.visible
+  position absolute
+  top 0
+  bottom 0
+  left 0
+  right 0
+  background-color green

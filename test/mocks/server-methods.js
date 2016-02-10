@@ -22,9 +22,6 @@ module.exports = function(server) {
     },
 
     npme: {
-      createTrial: function(customer, next) {
-        return next(null, customer);
-      },
 
       getLicense: function(productId, customerId, licenseId, next) {
         var key = customerId.split('@')[0];

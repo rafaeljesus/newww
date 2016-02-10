@@ -4,8 +4,7 @@ var CustomerAgent = require('../agents/customer');
 
 module.exports = function(request, reply) {
 
-  var createTrial = request.server.methods.npme.createTrial,
-    getLicense = request.server.methods.npme.getLicense;
+  var getLicense = request.server.methods.npme.getLicense;
 
   var Customer = new CustomerAgent();
 
@@ -109,8 +108,7 @@ module.exports = function(request, reply) {
 
     // create a trial, mail them with a link to license options
     function createTrialAndSendPurchaseLink(customer) {
-      createTrial(customer, function(err, trial) {
-
+      Customer.createOnSiteTrial(customer, function(err, trial) {
         // generic failure
         if (err) {
           request.logger.error("API error creating trial for customer " + customer.id + '; email=' + customer.email);

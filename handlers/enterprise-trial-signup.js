@@ -40,10 +40,7 @@ module.exports = function trialSignup(request, reply) {
 
 function createTrialAccount(request, reply, customer) {
 
-  var createTrial = request.server.methods.npme.createTrial;
-
-  var opts = {};
-  createTrial(customer, function(err, trial) {
+  new CustomerAgent().createOnSiteTrial(customer, function(err, trial) {
     if (err) {
       return reply(new VError(err, "There was an error with creating a trial for %j", customer.id));
     }

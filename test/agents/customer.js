@@ -387,6 +387,63 @@ describe("Customer", function() {
     });
   });
 
+  describe("getting all on-site licenses", function() {
+    it('returns the licenses if they are found', function(done) {
+
+      var productId = '12-34-56',
+        customerId = '12345';
+
+      var licenseMock = nock(LICENSE_API)
+        .get('/license/' + productId + '/' + customerId)
+        .reply(200, {
+          licenses: ['1234-5678-90']
+        });
+
+      new CustomerAgent().getAllOnSiteLicenses(productId, customerId, function(err, licenses) {
+        licenseMock.done();
+        expect(err).to.not.exist();
+        expect(licenses).to.be.an.array();
+        expect(licenses[0]).to.equal('1234-5678-90');
+        done();
+      });
+    });
+
+    it('returns nothing if they are not found', function(done) {
+
+      var productId = '12-34-56',
+        customerId = '12345';
+
+      var licenseMock = nock(LICENSE_API)
+        .get('/license/' + productId + '/' + customerId)
+        .reply(404);
+
+      new CustomerAgent().getAllOnSiteLicenses(productId, customerId, function(err, licenses) {
+        licenseMock.done();
+        expect(err).to.be.null();
+        expect(licenses).to.be.null();
+        done();
+      });
+    });
+
+    it('returns en error if something goes wrong in the license api', function(done) {
+
+      var productId = '12-34-56',
+        customerId = '12345';
+
+      var licenseMock = nock(LICENSE_API)
+        .get('/license/' + productId + '/' + customerId)
+        .reply(400, 'bad request');
+
+      new CustomerAgent().getAllOnSiteLicenses(productId, customerId, function(err, licenses) {
+        licenseMock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('bad request');
+        expect(licenses).to.not.exist();
+        done();
+      });
+    });
+  });
+
   describe("creating a trial", function() {
     var productId;
     var TRIAL_LENGTH = 30;

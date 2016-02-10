@@ -224,7 +224,7 @@ describe('Posting to the enterprise license purchase page', function() {
           begins: moment(Date.now()).format(), // starts now
           ends: moment(Date.now()).add(1, 'years').format(), // ends a year from now (webhooks will refresh)
         })
-        .reply(200, fixtures.enterprise.goodLicense[0]);
+        .reply(200, fixtures.enterprise.goodLicense.licenses[0]);
 
       var mock = nock('https://api.stripe.com')
         .post('/v1/customers')

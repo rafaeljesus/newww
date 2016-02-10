@@ -21,6 +21,8 @@ var redisMock = require('redis-mock');
 var client = redisMock.createClient();
 
 before(function(done) {
+  process.env.NPME_PRODUCT_ID = '12345-12345-12345';
+
   requireInject.installGlobally('../mocks/server', {
     redis: redisMock
   })(function(obj) {
@@ -37,6 +39,7 @@ afterEach(function(done) {
 });
 
 after(function(done) {
+  delete process.env.NPME_PRODUCT_ID;
   server.stop(done);
 });
 
@@ -70,7 +73,9 @@ describe('finishing the enterprise signup process', function() {
 
     var customerMock = nock(LICENSE_API)
       .get('/customer/exists@bam.com')
-      .reply(200, fixtures.enterprise.existingUser);
+      .reply(200, fixtures.enterprise.existingUser)
+      .get('/license/12345-12345-12345/exists@bam.com')
+      .reply(200, fixtures.enterprise.goodLicense);
 
     var opts = {
       url: '/enterprise-verify?v=12345'
@@ -137,7 +142,9 @@ describe('finishing the enterprise signup process', function() {
   it('errors out if the license server returns an error', function(done) {
     var customerMock = nock(LICENSE_API)
       .get('/customer/licenseBroken@bam.com')
-      .reply(200, fixtures.enterprise.licenseBrokenUser);
+      .reply(200, fixtures.enterprise.licenseBrokenUser)
+      .get('/license/12345-12345-12345/licenseBroken@bam.com')
+      .reply(400, 'brokeneded');
 
     var opts = {
       url: '/enterprise-verify?v=licenseBroken'
@@ -156,7 +163,9 @@ describe('finishing the enterprise signup process', function() {
 
     var customerMock = nock(LICENSE_API)
       .get('/customer/noLicense@bam.com')
-      .reply(200, fixtures.enterprise.noLicenseUser);
+      .reply(200, fixtures.enterprise.noLicenseUser)
+      .get('/license/12345-12345-12345/noLicense@bam.com')
+      .reply(200, fixtures.enterprise.noLicense);
 
     var opts = {
       url: '/enterprise-verify?v=noLicense'
@@ -175,7 +184,9 @@ describe('finishing the enterprise signup process', function() {
 
     var customerMock = nock(LICENSE_API)
       .get('/customer/tooManyLicenses@bam.com')
-      .reply(200, fixtures.enterprise.tooManyLicensesUser);
+      .reply(200, fixtures.enterprise.tooManyLicensesUser)
+      .get('/license/12345-12345-12345/tooManyLicenses@bam.com')
+      .reply(200, fixtures.enterprise.tooManyLicenses);
 
     var opts = {
       url: '/enterprise-verify?v=tooManyLicenses'

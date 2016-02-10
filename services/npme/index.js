@@ -1,8 +1,6 @@
 
 exports.register = function npmE(server, options, next) {
 
-  server.method('npme.getLicenses', require('./methods/getLicenses'));
-
   server.method('npme.sendData', require('./methods/sendData'));
 
   server.method('npme.updateCustomer', require('./methods/updateCustomer'));

@@ -161,6 +161,35 @@ Customer.prototype.getOnSiteLicense = function(productId, customerEmailOrId, lic
   }).nodeify(callback);
 };
 
+Customer.prototype.getAllOnSiteLicenses = function(productId, customerId, callback) {
+
+  var url = LICENSE_API + '/license/' + productId + '/' + customerId;
+
+  return new P(function(accept, reject) {
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+
+      if (err) {
+        return reject(err);
+      }
+
+      if (resp.statusCode === 404) {
+        return accept(null); // no error, but no license either
+      }
+
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
+
+      return accept(body.licenses);
+
+    });
+  }).nodeify(callback);
+};
 
 Customer.prototype.createOnSiteTrial = function(customer, callback) {
   var trialEndpoint = LICENSE_API + '/trial',

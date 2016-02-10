@@ -23,21 +23,6 @@ module.exports = function(server) {
 
     npme: {
 
-      getLicenses: function(productId, customerId, next) {
-        var key = customerId.split('@')[0];
-
-        switch (key) {
-          case 'noLicense':
-            return next(null, fixtures.enterprise.noLicense);
-          case 'tooManyLicenses':
-            return next(null, fixtures.enterprise.tooManyLicenses);
-          case 'exists':
-            return next(null, fixtures.enterprise.goodLicense);
-          default:
-            return next(new Error('license machine brokened'));
-        }
-      },
-
       sendData: function(formID, data, next) {
         if (data.email.indexOf('error') !== -1) {
           return next(new Error('ruh roh broken'));

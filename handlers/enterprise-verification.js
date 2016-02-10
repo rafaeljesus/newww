@@ -3,8 +3,9 @@ var sendEmail = require('../adapters/send-email');
 var CustomerAgent = require('../agents/customer');
 
 module.exports = function verifyEnterpriseTrial(request, reply) {
-  var verifyTrial = request.server.methods.npme.verifyTrial,
-    getLicenses = request.server.methods.npme.getLicenses;
+  var Customer = new CustomerAgent();
+
+  var verifyTrial = request.server.methods.npme.verifyTrial;
 
   var opts = { };
 
@@ -24,20 +25,20 @@ module.exports = function verifyEnterpriseTrial(request, reply) {
       return;
     }
 
-    new CustomerAgent().getById(trial.customer_id, function(err, customer) {
+    Customer.getById(trial.customer_id, function(err, customer) {
 
       if (err) {
-        request.logger.error('Unable to get customer from hubspot', trial.customer_id);
+        request.logger.error('Unable to get customer', trial.customer_id);
         request.logger.error(err);
         err.statusCode = 500;
         reply(err);
         return;
       }
 
-      getLicenses(process.env.NPME_PRODUCT_ID, trial.customer_id, function(err, licenses) {
+      Customer.getAllOnSiteLicenses(process.env.NPME_PRODUCT_ID, trial.customer_id, function(err, licenses) {
 
         if (err) {
-          request.logger.error('Unable to get licenses from hubspot for customer ' + trial.customer_id);
+          request.logger.error('Unable to get licenses for customer ' + trial.customer_id);
           request.logger.error(err);
           err.statusCode = 500;
           reply(err);

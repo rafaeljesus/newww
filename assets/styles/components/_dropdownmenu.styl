@@ -2,21 +2,46 @@
   display none
   position absolute
   background-color white
-  border 4px solid gray
+  border 2px solid gray
+  border-radius 5px
   z-index 99999
   padding 1em 15px
+  right 0
+
+  &:before
+    position absolute
+    top -11px
+    right 18px
+    content '\0020'
+    border-left 2px solid #808080
+    border-top 2px solid #808080
+    background-color white
+    width 20px
+    height 20px
+    display block
+    transform rotate(45deg)
+    z-index 1
 
 .drop-down-menu:target
   display block
 
 .drop-down-menu-container
   position relative
+  display inline-block
 
 .drop-down-menu-section
   border-bottom 1px solid gray
 
   &:last-child
     border-bottom 0
+
+  ul, li
+    list-style none
+    margin 0
+
+  .btn-link
+    padding 0
+
 
 .drop-down-menu-overlay
   display none
@@ -31,6 +56,3 @@
 .drop-down-menu-toggle
   position relative
   z-index 99999
-
-*:focus
-  outline 1px solid blue

@@ -74,18 +74,16 @@
 
     <div class="drop-down-menu-section">
       <ul>
-        <li><a href="#">Your profile</a></li>
-        <li><a href="#">Your stars</a></li>
-        <li><a href="#">Explore</a></li>
-        <li><a href="#">Integrations</a></li>
-        <li><a href="#">Help</a></li>
+        <li><a href="/profile-edit">personal info</a></li>
+        <li><a href="/subscriptions">subscriptions</a></li>
+        <li><a href="/settings/billing">billing</a></li>
+        <li><a href="/settings/tokens">tokens</a></li>
       </ul>
     </div>
 
     <div class="drop-down-menu-section">
       <ul>
-        <li><a href="#">Settings</a></li>
-        <li><a href="#">Sign out</a></li>
+        <li><form method="POST" action="/logout">{{> form_security }}<button type="submit" class="btn-link">logout</button></form></li>
       </ul>
     </div>
   </div>

@@ -23,14 +23,6 @@ module.exports = function(server) {
 
     npme: {
 
-      sendData: function(formID, data, next) {
-        if (data.email.indexOf('error') !== -1) {
-          return next(new Error('ruh roh broken'));
-        }
-
-        return next(null);
-      },
-
       updateCustomer: function(customerId, data, callback) {
         return callback(null);
       },

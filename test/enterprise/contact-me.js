@@ -6,12 +6,15 @@ var generateCrumb = require("../handlers/crumb.js"),
   before = lab.before,
   after = lab.after,
   it = lab.test,
-  expect = Code.expect;
+  expect = Code.expect,
+  nock = require('nock');
 
 var server;
 
-
 before(function(done) {
+  process.env.HUBSPOT_PORTAL_ID = '12345';
+  process.env.HUBSPOT_FORM_NPME_CONTACT_ME = '67890';
+
   require('../mocks/server')(function(obj) {
     server = obj;
     done();
@@ -19,6 +22,8 @@ before(function(done) {
 });
 
 after(function(done) {
+  delete process.env.HUBSPOT_PORTAL_ID;
+  delete process.env.HUBSPOT_FORM_NPME_CONTACT_ME;
   server.stop(done);
 });
 
@@ -26,6 +31,10 @@ describe('Getting to the contact me page', function() {
   it('posts the data and goes straight to the template', function(done) {
 
     generateCrumb(server, function(crumb) {
+      var hubspotMock = nock('https://forms.hubspot.com')
+        .post('/uploads/form/v2/12345/67890')
+        .reply(204);
+
       var opts = {
         method: 'post',
         url: '/enterprise-contact-me',
@@ -40,6 +49,7 @@ describe('Getting to the contact me page', function() {
       };
 
       server.inject(opts, function(resp) {
+        hubspotMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/contact-me');

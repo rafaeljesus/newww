@@ -2,11 +2,11 @@ var utils = require('../lib/utils');
 var VError = require('verror');
 var sendEmail = require('../adapters/send-email');
 var CustomerAgent = require('../agents/customer');
+var sendToHubspot = require('../agents/hubspot')
 
 // if they agree to the ULA, notify hubspot, create a trial and send verification link
 
 module.exports = function trialSignup(request, reply) {
-  var postToHubspot = request.server.methods.npme.sendData;
 
   var data = {
     hs_context: {
@@ -17,7 +17,7 @@ module.exports = function trialSignup(request, reply) {
     email: request.payload.customer_email,
   };
 
-  postToHubspot(process.env.HUBSPOT_FORM_NPME_AGREED_ULA, data, function(err) {
+  sendToHubspot(process.env.HUBSPOT_FORM_NPME_AGREED_ULA, data, function(err) {
 
     if (err) {
       return reply(new VError(err, "Could not hit ULA notification form on Hubspot"));

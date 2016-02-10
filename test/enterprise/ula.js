@@ -14,8 +14,10 @@ var generateCrumb = require("../handlers/crumb.js"),
 
 var server;
 
-
 before(function(done) {
+  process.env.HUBSPOT_PORTAL_ID = '12345';
+  process.env.HUBSPOT_FORM_NPME_SIGNUP = '67890';
+
   require('../mocks/server')(function(obj) {
     server = obj;
     done();
@@ -23,6 +25,9 @@ before(function(done) {
 });
 
 after(function(done) {
+  delete process.env.HUBSPOT_PORTAL_ID;
+  delete process.env.HUBSPOT_FORM_NPME_SIGNUP;
+
   server.stop(done);
 });
 
@@ -38,6 +43,10 @@ describe('Getting to the ULA page', function() {
           "phone": "123-456-7890"
         })
         .reply(200, fixtures.enterprise.newUser);
+
+      var hubspotMock = nock('https://forms.hubspot.com')
+        .post('/uploads/form/v2/12345/67890')
+        .reply(204);
 
       var opts = {
         method: 'post',
@@ -59,6 +68,7 @@ describe('Getting to the ULA page', function() {
 
       server.inject(opts, function(resp) {
         customerMock.done();
+        hubspotMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
@@ -157,6 +167,10 @@ describe('Getting to the ULA page', function() {
         .get('/customer/exists@bam.com')
         .reply(200, fixtures.enterprise.existingUser);
 
+      var hubspotMock = nock('https://forms.hubspot.com')
+        .post('/uploads/form/v2/12345/67890')
+        .reply(204);
+
       var opts = {
         method: 'post',
         url: '/enterprise-start-signup',
@@ -177,6 +191,7 @@ describe('Getting to the ULA page', function() {
 
       server.inject(opts, function(resp) {
         customerMock.done();
+        hubspotMock.done();
         expect(resp.statusCode).to.equal(200);
         var source = resp.request.response.source;
         expect(source.template).to.equal('enterprise/clickThroughAgreement');
@@ -187,7 +202,7 @@ describe('Getting to the ULA page', function() {
     });
   });
 
-  it('renders an error when hubspot errors out when getting a customer', function(done) {
+  it('renders an error when the license api errors out when getting a customer', function(done) {
 
     generateCrumb(server, function(crumb) {
       var opts = {

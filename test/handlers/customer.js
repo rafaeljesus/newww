@@ -651,9 +651,14 @@ describe('subscribing to private modules', function() {
           .post("/customer/bob/stripe")
           .reply(200, fixtures.customers.happy);
 
+        var hubspotMock = nock('https://forms.hubspot.com')
+          .post(/.*/)
+          .reply(204);
+
         server.inject(opts, function(resp) {
           userMock.done();
           licenseMock.done();
+          hubspotMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
@@ -737,6 +742,10 @@ describe('subscribing to private modules', function() {
           })
           .reply(200, fixtures.customers.subscriptions.bob);
 
+        var hubspotMock = nock('https://forms.hubspot.com')
+          .post(/.*/)
+          .reply(204);
+
         var Customer = require('../../agents/customer');
         var oldUpdate = Customer.update;
 
@@ -748,6 +757,7 @@ describe('subscribing to private modules', function() {
         server.inject(opts, function(resp) {
           userMock.done();
           licenseMock.done();
+          hubspotMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           Customer.update = oldUpdate;
@@ -787,9 +797,14 @@ describe('subscribing to private modules', function() {
           })
           .reply(200, fixtures.customers.subscriptions.bob);
 
+        var hubspotMock = nock('https://forms.hubspot.com')
+          .post(/.*/)
+          .reply(204);
+
         server.inject(opts, function(resp) {
           userMock.done();
           licenseMock.done();
+          hubspotMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
@@ -861,9 +876,14 @@ describe('subscribing to private modules', function() {
           })
           .reply(200);
 
+        var hubspotMock = nock('https://forms.hubspot.com')
+          .post(/.*/)
+          .reply(204);
+
         server.inject(opts, function(resp) {
           userMock.done();
           licenseMock.done();
+          hubspotMock.done();
           expect(resp.statusCode).to.equal(302);
           expect(resp.headers.location).to.match(/\/settings\/billing\?updated=1$/);
           done();
@@ -1156,6 +1176,10 @@ describe("subscribing to an org", function() {
         "verified": true
       });
 
+    var hubspotMock = nock('https://forms.hubspot.com')
+      .post(/.*/)
+      .reply(204);
+
     generateCrumb(server, function(crumb) {
 
       var opts = {
@@ -1176,6 +1200,7 @@ describe("subscribing to an org", function() {
       server.inject(opts, function(resp) {
         userMock.done();
         orgMock.done();
+        hubspotMock.done();
         customerMock.done();
         var redirectPath = resp.headers.location;
         var url = URL.parse(redirectPath);

@@ -6,22 +6,13 @@ var Code = require('code'),
   after = lab.after,
   it = lab.test,
   expect = Code.expect,
-  Hapi = require('hapi'),
-  npme = require('../../services/npme'),
-  nock = require('nock'),
-  server;
+  nock = require('nock');
+
+var sendToHubspot = require('../../agents/hubspot');
 
 before(function(done) {
-  process.env.HUBSPOT_PORTAL_ID = "123456"
-  server = new Hapi.Server();
-  server.connection({
-    host: 'localhost',
-    port: '9112'
-  });
-
-  server.register(npme, function() {
-    server.start(done);
-  });
+  process.env.HUBSPOT_PORTAL_ID = "123456";
+  done();
 });
 
 after(function(done) {
@@ -32,13 +23,14 @@ after(function(done) {
 describe('posting a form to hubspot', function() {
   it('is successful when hubspot returns a 204', function(done) {
 
-    var hubspot = nock('https://forms.hubspot.com')
+    var hubspotMock = nock('https://forms.hubspot.com')
       .post('/uploads/form/v2/123456/12345')
-      .reply(204)
+      .reply(204);
 
     var data = {};
 
-    server.methods.npme.sendData('12345', data, function(err) {
+    sendToHubspot('12345', data, function(err) {
+      hubspotMock.done();
       expect(err).to.not.exist();
       done();
     });
@@ -46,13 +38,14 @@ describe('posting a form to hubspot', function() {
 
   it('is successful when hubspot returns a 302', function(done) {
 
-    var hubspot = nock('https://forms.hubspot.com')
+    var hubspotMock = nock('https://forms.hubspot.com')
       .post('/uploads/form/v2/123456/12345')
-      .reply(302)
+      .reply(302);
 
     var data = {};
 
-    server.methods.npme.sendData('12345', data, function(err) {
+    sendToHubspot('12345', data, function(err) {
+      hubspotMock.done();
       expect(err).to.not.exist();
       done();
     });
@@ -60,15 +53,16 @@ describe('posting a form to hubspot', function() {
 
   it('fails when hubspot returns something else', function(done) {
 
-    var hubspot = nock('https://forms.hubspot.com')
+    var hubspotMock = nock('https://forms.hubspot.com')
       .post('/uploads/form/v2/123456/12345')
-      .reply(400)
+      .reply(400);
 
     var data = {};
 
-    server.methods.npme.sendData('12345', data, function(err) {
+    sendToHubspot('12345', data, function(err) {
+      hubspotMock.done();
       expect(err).to.exist();
-      expect(err.message).to.equal("unexpected status code: 400")
+      expect(err.message).to.equal("unexpected status code: 400");
       done();
     });
   });

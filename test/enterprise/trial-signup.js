@@ -25,6 +25,8 @@ var emailMock;
 
 before(function(done) {
   process.env.NPME_PRODUCT_ID = '12345-12345-12345';
+  process.env.HUBSPOT_PORTAL_ID = '12345';
+  process.env.HUBSPOT_FORM_NPME_AGREED_ULA = '67890';
 
   requireInject.installGlobally('../mocks/server', {
     redis: redisMock
@@ -43,6 +45,8 @@ afterEach(function(done) {
 
 after(function(done) {
   delete process.env.NPME_PRODUCT_ID;
+  delete process.env.HUBSPOT_PORTAL_ID;
+  delete process.env.HUBSPOT_FORM_NPME_AGREED_ULA;
   server.stop(done);
 });
 
@@ -80,6 +84,10 @@ describe('Getting to the thank-you page', function() {
         .get('/trial/' + process.env.NPME_PRODUCT_ID + '/exists@bam.com')
         .reply(200, fixtures.enterprise.existingUser);
 
+      var hubspotMock = nock('https://forms.hubspot.com')
+        .post('/uploads/form/v2/12345/67890')
+        .reply(204);
+
       var opts = {
         method: 'post',
         url: '/enterprise-trial-signup',
@@ -96,6 +104,7 @@ describe('Getting to the thank-you page', function() {
 
       server.inject(opts, function(resp) {
         customerMock.done();
+        hubspotMock.done();
         var source = resp.request.response.source;
         expect(resp.statusCode).to.equal(200);
         expect(source.template).to.equal('enterprise/thanks');
@@ -111,6 +120,10 @@ describe('Getting to the thank-you page', function() {
       var customerMock = nock(LICENSE_API)
         .get('/customer/new@bam.com')
         .reply(404, 'user not found');
+
+      var hubspotMock = nock('https://forms.hubspot.com')
+        .post('/uploads/form/v2/12345/67890')
+        .reply(204);
 
       var opts = {
         method: 'post',
@@ -128,6 +141,7 @@ describe('Getting to the thank-you page', function() {
 
       server.inject(opts, function(resp) {
         customerMock.done();
+        hubspotMock.done();
         expect(resp.statusCode).to.equal(500);
         expect(resp.request.response.source.context.isBoom).to.be.true();
         done();
@@ -141,6 +155,10 @@ describe('Getting to the thank-you page', function() {
       var customerMock = nock(LICENSE_API)
         .get('/customer/new@bam.com')
         .reply(200, fixtures.enterprise.newLicense[0]);
+
+      var hubspotMock = nock('https://forms.hubspot.com')
+        .post('/uploads/form/v2/12345/67890')
+        .reply(204);
 
       var opts = {
         method: 'post',
@@ -158,6 +176,7 @@ describe('Getting to the thank-you page', function() {
 
       server.inject(opts, function(resp) {
         customerMock.done();
+        hubspotMock.done();
         expect(resp.statusCode).to.equal(500);
         expect(resp.request.response.source.context.isBoom).to.be.true();
         done();

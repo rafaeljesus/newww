@@ -1,12 +1,11 @@
-var Hoek = require('hoek'),
-  googleLibphonenumber = require('google-libphonenumber'),
-  Joi = require('joi'),
-  utils = require('../lib/utils'),
-  CustomerAgent = require('../agents/customer');
+var Hoek = require('hoek');
+var googleLibphonenumber = require('google-libphonenumber');
+var Joi = require('joi');
+var utils = require('../lib/utils');
+var CustomerAgent = require('../agents/customer');
+var sendToHubspot = require('../agents/hubspot');
 
 module.exports = function createHubspotLead(request, reply) {
-  var postToHubspot = request.server.methods.npme.sendData;
-
   var opts = { };
 
   var schema = Joi.object().keys({
@@ -53,7 +52,7 @@ module.exports = function createHubspotLead(request, reply) {
 
   data = Hoek.applyToDefaults(data, validatedData.value);
 
-  postToHubspot(process.env.HUBSPOT_FORM_NPME_SIGNUP, data, function(er) {
+  sendToHubspot(process.env.HUBSPOT_FORM_NPME_SIGNUP, data, function(er) {
     if (er) {
       request.logger.error('Could not send signup data to hubspot');
       request.logger.error(er);

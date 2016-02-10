@@ -1,12 +1,11 @@
-var Joi = require('joi'),
-  utils = require('../lib/utils');
+var Joi = require('joi');
+var utils = require('../lib/utils');
+var sendToHubspot = require('../agents/hubspot');
 var VError = require('verror');
 
 // if they decide not to agree to the ULA
 // hit the hubspot contact-me form instead, and thank them
 module.exports = function contactMe(request, reply) {
-  var postToHubspot = request.server.methods.npme.sendData;
-
   var opts = { };
 
   // Is email invalid?
@@ -22,7 +21,7 @@ module.exports = function contactMe(request, reply) {
     email: request.payload.contact_customer_email,
   };
 
-  postToHubspot(process.env.HUBSPOT_FORM_NPME_CONTACT_ME, data, function(err) {
+  sendToHubspot(process.env.HUBSPOT_FORM_NPME_CONTACT_ME, data, function(err) {
 
     if (err) {
       return reply(new VError(err, "Could not contact hubspot to register user"));

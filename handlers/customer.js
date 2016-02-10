@@ -7,6 +7,7 @@ var P = require('bluebird');
 var utils = require('../lib/utils');
 var validate = require('validate-npm-package-name');
 var invalidUserName = require('npm-user-validate').username;
+var sendToHubspot = require('../agents/hubspot');
 
 var _ = require('lodash');
 
@@ -102,8 +103,6 @@ customer.getBillingInfo = function(request, reply) {
 };
 
 customer.updateBillingInfo = function(request, reply, callback) {
-  var sendToHubspot = request.server.methods.npme.sendData;
-
   var coupon = request.payload.coupon;
 
   var billingInfo = {

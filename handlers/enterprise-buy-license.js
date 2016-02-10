@@ -102,11 +102,11 @@ module.exports = function(request, reply) {
         // license purchased! We need to update the customer record with their stripe customer ID
         updateCustomer(customer.id, {
           stripe_customer_id: stripeCustomer.id
-        }, function(er) {
+        }, function(err) {
 
-          if (er) {
+          if (err) {
             request.logger.error('customer update error; id=' + customer.id);
-            request.logger.error(er);
+            request.logger.error(err);
             reply('customer update error').code(500);
             return;
           }

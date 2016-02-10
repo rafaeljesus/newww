@@ -20,11 +20,17 @@
 
 .drop-down-menu-overlay
   display none
-
-.drop-down-menu-overlay.visible
   position absolute
   top 0
   bottom 0
   left 0
   right 0
-  background-color green
+  height 100%
+  z-index 1
+
+.drop-down-menu-toggle
+  position relative
+  z-index 99999
+
+*:focus
+  outline 1px solid blue

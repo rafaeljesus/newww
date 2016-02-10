@@ -27,6 +27,7 @@ require("./eloqua-integration")();
 require("./add-users-to-teams")();
 require("./add-packages-to-teams")();
 require("./iconic")();
+require("./drop-down-menu")();
 
 window.github = require("./github")();
 window.star = require("./star")();

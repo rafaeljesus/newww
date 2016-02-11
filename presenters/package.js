@@ -4,6 +4,7 @@ var _ = require('lodash'),
   gh = require('github-url-to-object'),
   marky = require('marky-markdown'),
   metrics = require('../adapters/metrics')(),
+  osiApproved = require('spdx-is-osi'),
   P = require('bluebird'),
   presentCollaborator = require("./collaborator"),
   presentUser = require("./user"),
@@ -31,7 +32,16 @@ module.exports = function(pkg) {
       delete pkg.license;
     } else {
       if (valid.spdx) {
-        pkg.license = {links: spdxToHTML(pkg.license)};
+        var osi
+        try {
+          osi = osiApproved(pkg.license);
+        } catch (e) {
+          osi = false;
+        }
+        pkg.license = {
+          links: spdxToHTML(pkg.license),
+          osi: osi
+        };
       } else if (valid.inFile) {
         pkg.license = {string: 'See license in ' + valid.inFile};
       } else {

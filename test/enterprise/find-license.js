@@ -132,7 +132,7 @@ describe('Posting to the enterprise license page', function() {
     });
   });
 
-  it('has an error if there is a hypothetical issue with hubspot', function(done) {
+  it('has an error if there is a hypothetical issue with the license api', function(done) {
     generateCrumb(server, function(crumb) {
       var customerMock = nock(LICENSE_API)
         .get('/customer/error@boom.com')
@@ -154,8 +154,7 @@ describe('Posting to the enterprise license page', function() {
         customerMock.done();
         expect(resp.statusCode).to.equal(500);
         var source = resp.request.response.source;
-        expect(source.template).to.equal('enterprise/invalid-license');
-        expect(source.context.msg).to.equal('This looks like an error on our part.');
+        expect(source.template).to.equal('errors/internal');
         done();
       });
     });
@@ -196,7 +195,9 @@ describe('Posting to the enterprise license page', function() {
     generateCrumb(server, function(crumb) {
       var customerMock = nock(LICENSE_API)
         .get('/customer/exists@boom.com')
-        .reply(200, fixtures.enterprise.existingUser);
+        .reply(200, fixtures.enterprise.existingUser)
+        .get('/license/12345-12345-12345/exists@boom.com/12ab34cd-a123-4b56-789c-1de2f3ab45cd')
+        .reply(200, fixtures.enterprise.onSiteLicense);
 
       var opts = {
         url: '/enterprise/license',
@@ -230,7 +231,9 @@ describe('Posting to the enterprise license page', function() {
     generateCrumb(server, function(crumb) {
       var customerMock = nock(LICENSE_API)
         .get('/customer/badLicense@boom.com')
-        .reply(200, fixtures.enterprise.noLicenseUser);
+        .reply(200, fixtures.enterprise.noLicenseUser)
+        .get('/license/12345-12345-12345/badLicense@boom.com/12ab34cd-a123-4b56-789c-1de2f3ab45cd')
+        .reply(404, 'license not found');
 
       var opts = {
         url: '/enterprise/license',

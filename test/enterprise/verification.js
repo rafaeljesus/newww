@@ -28,7 +28,7 @@ before(function(done) {
     sendEmail.mailConfig.mailTransportModule = new MockTransport();
     emailMock = sendEmail.mailConfig.mailTransportModule;
     done();
-  }, require('../../lib/error-handler'));
+  });
 });
 
 afterEach(function(done) {

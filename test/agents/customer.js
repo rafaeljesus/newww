@@ -329,6 +329,64 @@ describe("Customer", function() {
     });
   });
 
+  describe("getting an on-site license", function() {
+    it('returns the license if it is found', function(done) {
+
+      var productId = '12-34-56',
+        customerId = '12345',
+        licenseId = fixtures.enterprise.onSiteLicense.details.license_key;
+
+      var mock = nock(LICENSE_API)
+        .get('/license/' + productId + '/' + customerId + '/' + licenseId)
+        .reply(200, fixtures.enterprise.onSiteLicense);
+
+      new CustomerAgent().getOnSiteLicense(productId, customerId, licenseId, function(err, license) {
+        mock.done();
+        expect(err).to.not.exist();
+        expect(license).to.be.an.object();
+        expect(license.license_key).to.equal(licenseId);
+        done();
+      });
+    });
+
+    it('returns nothing if not found', function(done) {
+
+      var productId = '12-34-56',
+        customerId = '12345',
+        licenseId = 'd89355a5-859b-43f4-8d8d-12b661403314';
+
+      var mock = nock(LICENSE_API)
+        .get('/license/' + productId + '/' + customerId + '/' + licenseId)
+        .reply(404);
+
+      new CustomerAgent().getOnSiteLicense(productId, customerId, licenseId, function(err, license) {
+        mock.done();
+        expect(err).to.be.null();
+        expect(license).to.be.null();
+        done();
+      });
+    });
+
+    it('returns en error if something goes wrong in the user-acl', function(done) {
+
+      var productId = '12-34-56',
+        customerId = '12345',
+        licenseId = fixtures.enterprise.onSiteLicense.details.license_key;
+
+      var mock = nock(LICENSE_API)
+        .get('/license/' + productId + '/' + customerId + '/' + licenseId)
+        .reply(400, 'bad request');
+
+      new CustomerAgent().getOnSiteLicense(productId, customerId, licenseId, function(err, license) {
+        mock.done();
+        expect(err).to.exist();
+        expect(err.message).to.equal('bad request');
+        expect(license).to.not.exist();
+        done();
+      });
+    });
+  });
+
   describe("creating a trial", function() {
     var productId;
     var TRIAL_LENGTH = 30;

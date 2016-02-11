@@ -2,9 +2,9 @@ var Joi = require('joi');
 var CustomerAgent = require('../agents/customer');
 
 module.exports = function(request, reply) {
+  var Customer = new CustomerAgent();
 
-  var getLicense = request.server.methods.npme.getLicense,
-    verifyTrial = request.server.methods.npme.verifyTrial;
+  var verifyTrial = request.server.methods.npme.verifyTrial;
 
   var opts = {
     title: 'npm On-Site'
@@ -28,7 +28,8 @@ module.exports = function(request, reply) {
 
     if (data.license) {
       // get license details from /license/[productkey]/[email]/[licensekey]
-      getLicense(process.env.NPME_PRODUCT_ID, data.email, data.license, function(err, license) {
+      Customer.getOnSiteLicense(process.env.NPME_PRODUCT_ID, data.email, data.license, function(err, license) {
+
         // fail on error
         if (err && err.statusCode !== 404) {
           request.logger.error("API error fetching license " + data.license + " for email " + data.email);
@@ -75,7 +76,7 @@ module.exports = function(request, reply) {
     var opts = {};
 
     // get customer details from /customer/[id]
-    new CustomerAgent().getById(customerId, function(err, customer) {
+    Customer.getById(customerId, function(err, customer) {
       // fail on error
       if (err && err.statusCode !== 404) {
         request.logger.error("API error fetching customer " + customerId);

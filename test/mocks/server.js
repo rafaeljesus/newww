@@ -1,6 +1,10 @@
 var path = require('path');
 var Hapi = require('hapi');
 
+var nock = require('nock');
+nock.disableNetConnect();
+
+
 module.exports = function(done, additionalPlugins) {
 
   var metrics = require('../../adapters/metrics')();

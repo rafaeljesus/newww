@@ -16,7 +16,6 @@ var Code = require('code'),
 var User = require("../../agents/user");
 
 before(function(done) {
-  process.env.USE_CACHE = 'true';
   process.env.LICENSE_API = "https://license-api-example.com";
   cache.configure({
     redis: "redis://localhost:6379",
@@ -27,7 +26,6 @@ before(function(done) {
 });
 
 after(function(done) {
-  delete process.env.USE_CACHE;
   cache.disconnect();
   done();
 });

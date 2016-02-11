@@ -101,6 +101,7 @@
     "require-tree": "^1.1.0",
     "schemeless": "^1.1.1",
     "scooter": "^2.0.1",
+    "spdx-is-osi": "^0.1.2",
     "spdx-to-html": "^0.3.1",
     "steeltoe": "^1.0.1",
     "stripe": "^2.9.0",

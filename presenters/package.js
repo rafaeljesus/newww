@@ -4,6 +4,7 @@ var _ = require('lodash'),
   gh = require('github-url-to-object'),
   marky = require('marky-markdown'),
   metrics = require('../adapters/metrics')(),
+  osiApproved = require('spdx-is-osi'),
   P = require('bluebird'),
   presentCollaborator = require("./collaborator"),
   presentUser = require("./user"),
@@ -42,12 +43,21 @@ module.exports = function(pkg) {
       delete pkg.license;
     } else {
       if (valid.spdx) {
+        var osi;
+        try {
+          osi = osiApproved(pkg.license);
+        } catch (e) {
+          osi = false;
+        }
+
         pkg.license = {
-          links: spdxToHTML(pkg.license)
+          links: spdxToHTML(pkg.license),
+          osi
         };
       } else if (valid.inFile) {
         pkg.license = {
-          string: 'See license in ' + valid.inFile
+          string: 'See license in ' + valid.inFile,
+          osi: false
         };
       } else {
         delete pkg.license;
@@ -72,13 +82,13 @@ module.exports = function(pkg) {
   and get super duper rich and become a VC and create LinkedIn for Cats */
 
   pkg.lastPublisherIsACollaborator = Boolean(pkg.publisher) &&
-    Boolean(pkg.publisher.name) &&
-    Boolean(typeof pkg.collaborators === "object") &&
-    Boolean(pkg.collaborators[pkg.publisher.name]);
+  Boolean(pkg.publisher.name) &&
+  Boolean(typeof pkg.collaborators === "object") &&
+  Boolean(pkg.collaborators[pkg.publisher.name]);
 
   pkg.showCollaborators = pkg.collaborators &&
-    Object.keys(pkg.collaborators).length &&
-    pkg.lastPublisherIsACollaborator;
+  Object.keys(pkg.collaborators).length &&
+  pkg.lastPublisherIsACollaborator;
 
   if (pkg.collaborators) {
     Object.keys(pkg.collaborators).forEach(function(name) {

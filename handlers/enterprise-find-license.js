@@ -21,7 +21,7 @@ module.exports = function(request, reply) {
     license: Joi.string().guid().allow('')
   });
 
-  P.promisify(Joi.validate)(request.payload, schema)
+  P.promisify(Joi.validate, {context: Joi})(request.payload, schema)
     .catch(function(err) {
       throw Object.assign(err, {
         statusCode: 400

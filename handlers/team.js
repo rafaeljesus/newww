@@ -10,7 +10,7 @@ var URL = require('url');
 
 var handleUserError = function(request, reply, redirectUrl, message) {
   return request.saveNotifications([
-    P.reject(message)
+    P.reject(new Error(message)),
   ]).then(function(token) {
     var url = URL.parse(redirectUrl);
     var param = token ? "?notice=" + token : "";

@@ -188,7 +188,7 @@ exports.getOrg = function(request, reply) {
         return reply.view('errors/not-found', err).code(404);
       } else if (err.statusCode < 500) {
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/org/' + orgName;
           var param = token ? "?notice=" + token : "";
@@ -243,7 +243,7 @@ exports.addUserToOrg = function(request, reply) {
 
       if (err.statusCode < 500) {
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/org/' + orgName + '/members';
           var param = token ? "?notice=" + token : "";
@@ -287,7 +287,7 @@ exports.removeUserFromOrg = function(request, reply) {
         return reply(err);
       } else {
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/org/' + orgName;
           var param = token ? "?notice=" + token : "";
@@ -345,7 +345,7 @@ exports.updateUserPayStatus = function(request, reply) {
         return reply(err);
       } else {
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/org/' + orgName;
           var param = token ? "?notice=" + token : "";
@@ -376,7 +376,7 @@ exports.updateOrg = function(request, reply) {
       return exports.restartUnlicensedOrg(request, reply);
     default:
       return request.saveNotifications([
-        P.reject("Incorrect updateType passed")
+        P.reject(new Error("Incorrect updateType passed")),
       ]).then(function(token) {
         var url = request.info.referrer || '/org/' + request.params.org;
         var param = token ? "?notice=" + token : "";
@@ -424,7 +424,7 @@ exports.deleteOrg = function(request, reply) {
   if (invalidUserName(orgToDelete)) {
     var err = new Error("Org Scope must be valid name");
     return request.saveNotifications([
-      P.reject(err.message)
+      P.reject(err),
     ]).then(function(token) {
       var url = '/settings/billing';
       var param = token ? "?notice=" + token : "";
@@ -492,7 +492,7 @@ exports.validateOrgCreation = function(request, reply) {
       var err = new Error(opts.msg);
 
       return request.saveNotifications([
-        P.reject(err.message)
+        P.reject(err),
       ]).then(function(token) {
         var url = '/org/create';
         var param = token ? "?notice=" + token : "";
@@ -510,7 +510,7 @@ exports.validateOrgCreation = function(request, reply) {
 
     if (err) {
       return request.saveNotifications([
-        P.reject(err.message)
+        P.reject(err),
       ]).then(function(token) {
         var url = '/org/create';
         var param = token ? "?notice=" + token : "";
@@ -525,7 +525,7 @@ exports.validateOrgCreation = function(request, reply) {
       if (invalidUserName(planData.orgScope)) {
         var err = new Error("Org Scope must be valid name");
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/org/create';
           var param = token ? "?notice=" + token : "";
@@ -581,7 +581,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
     var err = new Error("Org Scope must be a valid entry");
     request.logger.error(err);
     return request.saveNotifications([
-      P.reject(err.message)
+      P.reject(err),
     ]).then(function(token) {
       var url = '/org/create';
       var param = token ? "?notice=" + token : "";
@@ -596,7 +596,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
     var err = new Error("User name must be valid");
     request.logger.error(err);
     return request.saveNotifications([
-      P.reject(err.message)
+      P.reject(err),
     ]).then(function(token) {
       var url = '/org/transfer-user-name';
       var param = token ? "?notice=" + token : "";
@@ -610,7 +610,7 @@ exports.getOrgCreationBillingPage = function(request, reply) {
 
   var reportScopeInUseError = function() {
     return request.saveNotifications([
-      P.reject('The provided username\'s @scope name is already in use')
+      P.reject(new Error('The provided username\'s @scope name is already in use')),
     ]).then(function(token) {
       var url = '/org/transfer-user-name';
       var param = token ? "?notice=" + token : "";
@@ -667,7 +667,7 @@ exports.getTransferPage = function(request, reply) {
     var err = new Error("Org Scope must be a valid entry");
     request.logger.error(err);
     return request.saveNotifications([
-      P.reject(err.message)
+      P.reject(err),
     ]).then(function(token) {
       var url = '/org/create';
       var param = token ? "?notice=" + token : "";
@@ -771,7 +771,7 @@ exports.restartSubscription = function(request, reply) {
   if (invalidUserName(orgName)) {
     var err = new Error("Org Scope must be valid name");
     return request.saveNotifications([
-      P.reject(err.message)
+      P.reject(err),
     ]).then(function(token) {
       var url = '/org/' + orgName;
       var param = token ? "?notice=" + token : "";
@@ -841,7 +841,7 @@ exports.restartSubscription = function(request, reply) {
 
       if (err.statusCode < 500) {
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/settings/billing';
           var param = token ? "?notice=" + token : "";
@@ -897,7 +897,7 @@ exports.restartLicense = function(request, reply) {
 
       if (err.statusCode < 500) {
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/settings/billing';
           var param = token ? "?notice=" + token : "";
@@ -988,7 +988,7 @@ exports.restartUnlicensedOrg = function(request, reply) {
 
       if (err.statusCode < 500) {
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/settings/billing';
           var param = token ? "?notice=" + token : "";
@@ -1066,7 +1066,7 @@ exports.restartOrg = function(request, reply) {
 
       if (err.statusCode < 500) {
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/settings/billing';
           var param = token ? "?notice=" + token : "";

@@ -213,7 +213,7 @@ Org.prototype.addUser = function(name, user, callback) {
 
       return accept(user);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Org.prototype.getInfo = function(name) {

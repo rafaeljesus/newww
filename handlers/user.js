@@ -257,7 +257,7 @@ exports.handleCliToken = function(request, reply) {
       .catch(function(err) {
         err = new Error("Unable to delete token " + request.params.token);
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(errToken) {
           var url = '/settings/tokens';
           var param = errToken ? "?notice=" + errToken : "";

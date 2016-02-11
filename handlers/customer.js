@@ -201,7 +201,7 @@ customer.subscribe = function(request, reply) {
         });
       } else {
         notices = err.details.map(function(e) {
-          return P.reject(e.message);
+          return P.reject(e);
         });
 
         return request.saveNotifications(notices).then(function(token) {
@@ -259,7 +259,7 @@ customer.subscribe = function(request, reply) {
         var err = new Error("User name must be valid");
         request.logger.error(err);
         return request.saveNotifications([
-          P.reject(err.message)
+          P.reject(err),
         ]).then(function(token) {
           var url = '/org/transfer-user-name';
           var param = token ? "?notice=" + token : "";
@@ -309,8 +309,8 @@ customer.subscribe = function(request, reply) {
           return start;
         })
         .then(function(newUserData) {
-          var setSession = P.promisify(request.server.methods.user.setSession(request));
-          var delSession = P.promisify(request.server.methods.user.delSession(request));
+          var setSession = P.promisify(request.server.methods.user.setSession(request), {context: null});
+          var delSession = P.promisify(request.server.methods.user.delSession(request), {context: null});
           loggedInUser = newUserData ? newUser : loggedInUser;
 
           if (newUserData) {
@@ -337,7 +337,8 @@ customer.subscribe = function(request, reply) {
           if (typeof subscription === 'string') {
             request.logger.info("created subscription: ", planInfo);
           }
-          var dropCache = P.promisify(User(request.loggedInUser).dropCache);
+          var user = User(request.loggedInUser);
+          var dropCache = P.promisify(user.dropCache, {context: user});
           return dropCache(loggedInUser);
         })
         .then(function(subscription) {
@@ -452,7 +453,7 @@ customer.subscribe = function(request, reply) {
           if (err.statusCode < 500) {
             request.logger.error(err);
             return request.saveNotifications([
-              P.reject(err.message)
+              P.reject(err),
             ]).then(function(token) {
               var url = '/org/create';
               var param = token ? "?notice=" + token : "";

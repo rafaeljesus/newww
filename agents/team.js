@@ -72,7 +72,7 @@ Team.prototype.get = function(opts, callback) {
 
     return team;
 
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Team.prototype.getUsers = function(opts) {
@@ -206,7 +206,7 @@ Team.prototype.addPackages = function(opts) {
     };
   });
   var url = USER_HOST + '/team/' + opts.scope + '/' + encodeURIComponent(opts.id) + '/package';
-  return P.promisify(Request.put)({
+  return P.promisify(Request.put, {context: Request})({
     url: url,
     json: true,
     body: {
@@ -321,7 +321,7 @@ Team.prototype._addUser = function(opts, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Team.prototype.addUsers = function(opts, callback) {
@@ -343,7 +343,7 @@ Team.prototype.addUsers = function(opts, callback) {
     });
   });
 
-  return P.all(requests).nodeify(callback);
+  return P.all(requests).asCallback(callback);
 };
 
 Team.prototype.removeUser = function(opts) {

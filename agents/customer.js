@@ -47,7 +47,7 @@ Customer.prototype.getById = function(id, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.createCustomer = function(data, callback) {
@@ -77,7 +77,7 @@ Customer.prototype.createCustomer = function(data, callback) {
       return accept(newCustomer);
 
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.createOnSiteLicense = function(licenseDetails, callback) {
@@ -124,7 +124,7 @@ Customer.prototype.createOnSiteLicense = function(licenseDetails, callback) {
       });
     });
 
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.getOnSiteLicense = function(productId, customerEmailOrId, licenseId, callback) {
@@ -158,7 +158,7 @@ Customer.prototype.getOnSiteLicense = function(productId, customerEmailOrId, lic
       return accept(license.details);
 
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 
@@ -227,7 +227,7 @@ Customer.prototype.createOnSiteTrial = function(customer, callback) {
       });
     }
 
-  }).nodeify(callback);
+  }).asCallback(callback);
 
 };
 
@@ -261,7 +261,7 @@ Customer.prototype.getStripeData = function(callback) {
 
       accept(stripeData);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.getSubscriptions = function(callback) {
@@ -410,7 +410,7 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.getLicenseForOrg = function(orgName, callback) {
@@ -472,7 +472,7 @@ Customer.prototype.getAllSponsorships = function(licenseId, callback) {
 
       return accept(body);
     });
-  }).nodeify(callback);
+  }).asCallback(callback);
 };
 
 Customer.prototype.extendSponsorship = function(licenseId, name, callback) {

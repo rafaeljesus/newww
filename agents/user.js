@@ -23,7 +23,7 @@ var User = module.exports = function(loggedInUser) {
 
   this.bearer = loggedInUser && loggedInUser.name;
 
-  this.get = P.promisify(this._get);
+  this.get = P.promisify(this._get, {context: this});
 
   return this;
 };

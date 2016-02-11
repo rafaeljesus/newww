@@ -202,13 +202,16 @@ describe("avatar", function() {
   });
 });
 
-describe("SPDX license links", function () {
-  it("are added to the pkg", function (done) {
+describe("SPDX license links", function() {
+  it("are added to the pkg", function(done) {
     present({
       "versions": ["1.3.0"],
       "name": "hello",
       "version": "1.3.0",
-      "license": "(MIT AND BSD-2-Clause)",
+      "license": {
+        "name": "(MIT AND BSD-2-Clause)",
+        "url": "http://opensource.org/licenses/(MIT AND BSD-2-Clause)"
+      },
       "lastPublishedAt": "2013-06-11T09:36:32.285Z"
     }).then(function(pkg) {
       expect(pkg.license).to.be.an.object();

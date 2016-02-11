@@ -53,7 +53,7 @@
     "hapi": "^12.1.0",
     "hapi-auth-cookie": "2.0.0",
     "hapi-common-log": "^1.1.0",
-    "hapi-stateless-notifications": "^2.1.0",
+    "hapi-stateless-notifications": "^3.0.0",
     "hashchange": "^1.0.0",
     "hbsfy": "^2.4.1",
     "hoek": "^3.0.4",

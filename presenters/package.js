@@ -16,6 +16,11 @@ var MINUTES = 60; // seconds
 var CACHE_TTL = 5 * MINUTES;
 
 module.exports = function(pkg) {
+  // Be aware: pkg object here is the version from registry-relational, not the
+  // raw data in the couchdb registry; this has lots of (sometimes bad)
+  // normalization applied to it, and it's not what normalize-package-data
+  // usually sees. In particular, the license field comes out as an object {
+  // name: 'license name', url: 'some bogus stuff' }
   npd(pkg);
 
   delete pkg.maintainers;
@@ -23,17 +28,27 @@ module.exports = function(pkg) {
   pkg.scoped = pkg.name.charAt(0) === "@";
   pkg.encodedName = pkg.name.replace("/", "%2F");
 
-  if (!pkg.license || typeof pkg.license !== 'string') {
+  if (typeof pkg.license == 'object') {
+    pkg.license = pkg.license.name;
+  }
+
+  if (typeof pkg.license !== 'string') {
     delete pkg.license;
-  } else {
+  }
+
+  if (pkg.license) {
     var valid = validLicense(pkg.license)
     if (!valid.validForOldPackages) {
       delete pkg.license;
     } else {
       if (valid.spdx) {
-        pkg.license = {links: spdxToHTML(pkg.license)};
+        pkg.license = {
+          links: spdxToHTML(pkg.license)
+        };
       } else if (valid.inFile) {
-        pkg.license = {string: 'See license in ' + valid.inFile};
+        pkg.license = {
+          string: 'See license in ' + valid.inFile
+        };
       } else {
         delete pkg.license;
       }

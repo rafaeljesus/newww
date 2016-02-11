@@ -1,3 +1,4 @@
+var filterBlacklistedPackages = require('../lib/filter-blacklisted-packages');
 var User = require('../agents/user');
 
 module.exports = function(request, reply) {
@@ -7,11 +8,10 @@ module.exports = function(request, reply) {
   new User(request.loggedInUser)
     .getPackages(name, offset)
     .then(function(packages) {
-      return reply(packages).code(200);
+      reply((name === 'isaacs') ? filterBlacklistedPackages(packages) : packages).code(200);
     })
     .catch(function(err) {
       request.logger.error(err);
-      return reply('error getting packages').code(500);
+      reply('error getting packages').code(500);
     });
-
 };

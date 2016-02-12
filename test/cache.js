@@ -13,6 +13,7 @@ var Code = require('code'),
 var cache = require('../lib/cache');
 
 before(function(done) {
+  process.env.USE_CACHE = 'true';
   cache.disconnect();
   done();
 });
@@ -416,6 +417,34 @@ describe('lib/cache.js', function() {
       });
     });
 
+    it('does not use redis if process.env.USE_CACHE is unset', function(done) {
+      delete process.env.USE_CACHE;
+
+      var opts = {
+        method: 'get',
+        url: 'https://example.com/no-cache'
+      };
+      var mock = nock('https://example.com')
+        .get('/no-cache')
+        .reply(200, 'blistering barnacles');
+
+      sinon.spy(cache, '_getNoCache');
+      sinon.spy(cache.redis, 'get');
+
+      cache.get(opts, function(err, data) {
+        expect(err).to.not.exist();
+        expect(data).to.equal('blistering barnacles');
+        mock.done();
+        expect(cache.redis.get.called).to.be.false();
+        expect(cache._getNoCache.called).to.be.true();
+
+        cache._getNoCache.restore();
+        cache.redis.get.restore();
+        process.env.USE_CACHE = 'true';
+
+        done();
+      });
+    });
   });
 
   describe('getP()', function() {
@@ -544,6 +573,24 @@ describe('lib/cache.js', function() {
       });
     });
 
+    it('does nothing when USE_CACHE is unset', function(done) {
+      delete process.env.USE_CACHE;
+
+      var opts = {
+        method: 'get',
+        url: 'https://example.com/no-cache'
+      };
+
+      sinon.spy(cache.redis, 'del');
+
+      cache.drop(opts, function() {
+        expect(cache.redis.del.called).to.be.false();
+        cache.redis.del.restore();
+        process.env.USE_CACHE = 'true';
+        done();
+      });
+
+    });
   });
 
   describe('dropP()', function() {
@@ -603,6 +650,7 @@ describe('lib/cache.js', function() {
   });
 
   after(function(done) {
+    delete process.env.USE_CACHE;
     cache.configure({
       redis: 'redis://localhost:6379'
     });

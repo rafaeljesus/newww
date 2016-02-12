@@ -481,7 +481,7 @@ describe("readme", function() {
     }).then(function(pkg) {
       expect(pkg.readme).to.include("<h1 id=\"user-content-heading\"");
       expect(cache.setKey.called).to.be.true();
-      expect(cache.setKey.calledWith('hello_readme')).to.be.true();
+      expect(cache.setKey.calledWith('hello@1.3.0/readme')).to.be.true();
       cache.setKey.restore();
       done();
     });

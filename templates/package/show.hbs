@@ -35,9 +35,10 @@
 </div>
 
 <div class="sidebar">
-  {{#if marketing}}
-    <div class="marketing">{{{marketing}}}</div>
-  {{/if}}
+
+  {{#with ../promotion.packagePage}}
+    <div class="promotion" data-promotion-id="{{id}}" data-promotion-spot="packagePage">{{{html}}}</div>
+  {{/with}}
 
   {{#if installCommand}}
     <div class="autoselect-wrapper npm-install icon-download">
@@ -46,7 +47,8 @@
     </div>
   {{/if}}
 
-	<ul class="box">
+  <ul class="box">
+
     {{#if publisher}}
       <li class="last-publisher">
         {{#unless ../../features.npmo}}
@@ -104,6 +106,7 @@
         {{/if}}
       </li>
     {{/if}}
+
   </ul>
 
   {{#if showCollaborators}}

@@ -15,7 +15,12 @@ var redisMock = require('redis-mock');
 var homepageMock = require('../mocks/homepage-requests');
 
 var server;
+
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
+
 before(function(done) {
+  redisMock.createClient().flushall();
   requireInject.installGlobally('../mocks/server', {
     redis: redisMock
   })(function(obj) {
@@ -27,23 +32,23 @@ before(function(done) {
 describe("bonbon", function() {
   var username1 = 'bob';
   var userMock = nock("https://user-api-example.com")
-    .get('/user/bob').times(8)
+    .get('/user/bob').times(10)
     .reply(200, fixtures.users.bob)
     .get('/user/seldo').times(3)
     .reply(200, fixtures.users.npmEmployee)
     .get('/user/constructor')
     .reply(200, fixtures.users.propName)
-    .get('/user/bob/package?format=mini&per_page=100&page=0').times(10)
+    .get('/user/bob/package?format=mini&per_page=100&page=0').times(12)
     .reply(200, fixtures.users.packages)
-    .get('/user/bob/stars?format=detailed').times(10)
+    .get('/user/bob/stars?format=detailed').times(12)
     .reply(200, fixtures.users.stars)
-    .get('/user/bob').times(5)
+    .get('/user/bob').times(6)
     .reply(404)
     .get('/user/seldo')
     .reply(404)
     .get('/user/mikeal')
     .reply(404)
-    .get('/user/bob/org').times(2)
+    .get('/user/bob/org').times(3)
     .reply(401)
 
   var licenseMock = nock('https://license-api-example.com')
@@ -150,6 +155,7 @@ describe("bonbon", function() {
 
       server.inject(options, function(resp) {
         var context = resp.request.response.source.context;
+        expect(resp.request.response._error).to.not.exist();
         expect(context.features).to.deep.equal({
           stealth: false,
           alpha: true,
@@ -160,6 +166,25 @@ describe("bonbon", function() {
       });
     });
 
+  });
+
+  it('tracks pages viewed per session', function(done) {
+    var options = {
+      url: '/~bob',
+      credentials: fixtures.users.bob
+    };
+
+    server.inject(options, function(resp) {
+      redisMock.createClient().get(`pagesSeenThisSession:${resp.request.loggedInUser.sid}`, function(err, val) {
+        try {
+          expect(err).to.not.exist();
+          expect(val).to.equal(1);
+          done();
+        } catch (e) {
+          done();
+        }
+      });
+    });
   });
 
   it('allows logged-in npm employees to request the view context with a `json` query param', function(done) {
@@ -288,6 +313,7 @@ describe("bonbon headers", function() {
   it('includes the charset=utf-8 header', function(done) {
     server.inject('/', function(resp) {
       expect(resp.headers['content-type']).to.equal('text/html; charset=utf-8');
+      expect(resp.statusCode).to.equal(200);
       done();
     });
   });

@@ -4,8 +4,9 @@ var validate = require('validate-npm-package-name');
 var npa = require('npm-package-arg');
 var PackageAgent = require("../agents/package");
 var DownloadAgent = require('../agents/download');
+var CMS = require("../agents/cms");
 var feature = require('../lib/feature-flags');
-var marketingblob = require('npm-marketing-sidebar-blob');
+var userfacts = require('../lib/user-facts');
 
 var DEPENDENCY_TTL = 5 * 60; // 5 minutes
 
@@ -20,18 +21,21 @@ exports.show = function(request, reply) {
 
   request.logger.info('get package: ' + name);
 
-  P.all([
+  P.join(
     Package.get(name),
     Package.list({
       dependency: name,
       limit: 50
     }, DEPENDENCY_TTL),
     feature('npmo') ? null : Download.getAll(name),
-  ]).spread(function(pkg, dependents, downloads) {
+    userfacts.getFactsForRequest(request).then(CMS.getPromotion).catch(err => (request.logger.error(err), null))
+  ).spread(function(pkg, dependents, downloads, promotion) {
     pkg.dependents = dependents;
     if (pkg.name[0] != '@') {
       pkg.downloads = downloads;
     }
+
+    context.promotion = promotion;
 
     if (pkg && pkg.time && pkg.time.unpublished) {
       request.logger.info('package is unpublished: ' + name);
@@ -51,10 +55,6 @@ exports.show = function(request, reply) {
       && (loggedInUser.name in pkg.collaborators);
 
     pkg.hasStats = pkg.downloads || (pkg.bugs && pkg.bugs.url) || (pkg.pull_requests && pkg.pull_requests.url);
-
-    if (!feature('npmo')) {
-      pkg.marketing = marketingblob(request.query.marketing);
-    }
 
     context.package = pkg;
     return reply.view('package/show', context);
@@ -91,8 +91,6 @@ exports.show = function(request, reply) {
       return reply.view('errors/package-not-found', context).code(404);
     }
 
-    request.logger.error(err);
-    err.statusCode = 500;
     return reply(err);
   });
 };

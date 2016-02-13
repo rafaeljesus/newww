@@ -40,16 +40,38 @@
   <link rel='stylesheet' href='{{this}}'>
   {{/each}}
 
+  {{#if promotion.belowHeader}}
+    <style>
+      {{{promotion.belowHeader.stylesheet}}}
+    </style>
+  {{/if}}
+  {{#if promotion.aboveChrome}}
+    <style>
+      {{{promotion.aboveChrome.stylesheet}}}
+    </style>
+  {{/if}}
+  {{#if promotion.packagePage}}
+    <style>
+      {{{promotion.packagePage.stylesheet}}}
+    </style>
+  {{/if}}
+
   {{#if devEnv}}
   <script src="/static/js/index.js"></script>
   {{else}}
   <script src="/static/{{m "js/index.min.js"}}"></script>
   {{/if}}
 
+  <meta name="x-npm:ga:id" content="{{ga.id}}">
+  <meta name="x-npm:ga:dimensions" content="{{ga.dimensions}}">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebSite" {{#if crumb}}data-crumb="{{crumb}}"{{/if}}>
   <meta itemprop="url" content="https://www.npmjs.com/">
+
+  {{#if promotion.aboveChrome}}
+    <div class="promotion" data-promotion-id="{{promotion.aboveChrome.id}}" data-promotion-spot="aboveChrome">{{{promotion.aboveChrome.html}}}</div>
+  {{/if}}
 
   {{#unless features.npmo}}
     <nav>
@@ -114,6 +136,10 @@
     </form>
 
   </header>
+
+  {{#if promotion.belowHeader}}
+    <div class="promotion" data-promotion-id="{{promotion.belowHeader.id}}" data-promotion-spot="belowHeader">{{{promotion.belowHeader.html}}}</div>
+  {{/if}}
 
   {{#if contentIsFullwidth}}
     {{{ content }}}

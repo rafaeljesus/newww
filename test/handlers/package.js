@@ -14,12 +14,29 @@ var fixtures = require("../fixtures"),
   it = lab.test,
   expect = Code.expect,
   server,
-  feature = require('../../lib/feature-flags');
+  cms_api;
+
+before(function(done) {
+  cms_api = process.env.CMS_API;
+  process.env.CMS_API = 'http://cms-api/npm/v1/';
+  done();
+});
+
+after(function(done) {
+  process.env.CMS_API = cms_api;
+  done();
+});
+
+var requireInject = require('require-inject');
+var redisMock = require('redis-mock');
 
 describe("package handler", function() {
 
   before(function(done) {
-    require('../mocks/server')(function(obj) {
+    redisMock.createClient().flushall()
+    requireInject.installGlobally('../mocks/server', {
+      redis: redisMock
+    })(function(obj) {
       server = obj;
       done();
     });
@@ -36,7 +53,7 @@ describe("package handler", function() {
       url: '/package/browserify'
     };
 
-    before(function(done) {
+    it('runs the request', function(done) {
       var packageMock = nock("https://user-api-example.com")
         .get('/package/browserify')
         .reply(200, fixtures.packages.browserify)
@@ -51,12 +68,21 @@ describe("package handler", function() {
         .get('/point/last-month/browserify')
         .reply(200, fixtures.downloads.browserify.month);
 
+      var promosMock = nock("http://cms-api")
+        .get("/npm/v1/promotions").query(true)
+        .reply(200, fixtures.cms.promotion);
+
       server.inject(options, function(response) {
-        packageMock.done();
-        downloadsMock.done();
         resp = response;
         $ = cheerio.load(resp.result);
-        done();
+        try {
+          promosMock.done();
+          packageMock.done();
+          downloadsMock.done();
+          done();
+        } catch (e) {
+          done(e);
+        }
       });
     });
 
@@ -179,6 +205,7 @@ describe("package handler", function() {
     });
 
     it('renders a private label', function(done) {
+      expect(resp.request.response.source.template).to.equal('package/show');
       expect($('.package-name i').hasClass('icon-private')).to.be.true();
       done();
     });
@@ -805,53 +832,5 @@ describe("package handler", function() {
         done();
       });
     });
-  });
-
-  describe('marketing sidebar blobs', function() {
-    describe('NPMO = true', function() {
-      runTest(true, 'should not show blob for npm On-Site');
-    });
-
-    describe('NPMO = false', function() {
-      runTest(false, 'should show blob for regular www site');
-    });
-
-    function runTest(isNPMO, message) {
-      var $;
-      var resp;
-      var options = {
-        url: '/package/browserify'
-      };
-
-      var isNPMO = false;
-
-      before(function(done) {
-        if (isNPMO) {
-          process.env.FEATURE_NPMO = 'true';
-        } else {
-          delete process.env.FEATURE_NPMO;
-        }
-        feature.calculate('npmo');
-
-        var packageMock = nock("https://user-api-example.com")
-          .get('/package/browserify')
-          .reply(200, fixtures.packages.browserify)
-          .get('/package?dependency=browserify&limit=50')
-          .reply(200, fixtures.dependents);
-
-        server.inject(options, function(response) {
-          packageMock.done();
-          resp = response;
-          $ = cheerio.load(resp.result);
-          expect(response.statusCode).to.equal(200);
-          done();
-        });
-      });
-
-      it(message, function(done) {
-        expect($('.marketing').length).to.equal(isNPMO ? 0 : 1);
-        done();
-      });
-    }
   });
 });

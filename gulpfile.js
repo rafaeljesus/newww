@@ -1,43 +1,43 @@
-var gulp = require('gulp');
-var nib = require('nib');
-var stylus = require('gulp-stylus');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-var browserify = require('browserify');
-var source = require('vinyl-source-stream');
-var streamify = require('gulp-streamify');
-var bistre = require('bistre');
-var nodemon = require('gulp-nodemon');
-var rename = require('gulp-rename');
-var jshint = require('gulp-jshint');
-var RevAll = require('gulp-rev-all');
-var gutil = require('gulp-util');
+const gulp = require('gulp');
+const nib = require('nib');
+const stylus = require('gulp-stylus');
+const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
+const browserify = require('browserify');
+const source = require('vinyl-source-stream');
+const streamify = require('gulp-streamify');
+const bistre = require('bistre');
+const nodemon = require('gulp-nodemon');
+const rename = require('gulp-rename');
+const jshint = require('gulp-jshint');
+const RevAll = require('gulp-rev-all');
+const gutil = require('gulp-util');
 
-var revAll = new RevAll();
-var paths = {
+const revAll = new RevAll();
+const paths = {
   fonts: ['./assets/fonts/*'],
   styles: ['./assets/styles/**/*.styl'],
   images: ['./assets/images/**/*'],
   misc: ['./assets/misc/*'],
   scripts: {
-    browserify: ["./assets/scripts/*.js"],
-    vendor: ["./assets/scripts/vendor/*.js"],
-    tota11y: ["./assets/scripts/tota11y.min.js"]
+    browserify: ['./assets/scripts/*.js'],
+    vendor: ['./assets/scripts/vendor/*.js'],
+    tota11y: ['./assets/scripts/tota11y.min.js']
   },
   templates: ['./assets/templates/*.hbs'],
   lintables: [
-    "./assets/scripts/**/*.js",
-    "./adapters/**/*.js",
-    "./facets/**/*.js",
-    "./lib/**/*.js",
-    "./locales/**/*.js",
-    "./presenters/**/*.js",
-    "./services/**/*.js",
-    "./test/**/*.js",
+    './assets/scripts/**/*.js',
+    './adapters/**/*.js',
+    './facets/**/*.js',
+    './lib/**/*.js',
+    './locales/**/*.js',
+    './presenters/**/*.js',
+    './services/**/*.js',
+    './test/**/*.js',
   ]
 };
 
-gulp.task('watch', ['dev-build'], function() {
+gulp.task('watch', ['dev-build'], () => {
   gulp.watch(paths.fonts, ['fonts']);
   gulp.watch(paths.styles, ['styles']);
   gulp.watch(paths.scripts.browserify, ['browserify']);
@@ -45,7 +45,7 @@ gulp.task('watch', ['dev-build'], function() {
   gulp.watch(paths.scripts.vendor, ['concat']);
 });
 
-gulp.task('styles', function() {
+gulp.task('styles', () => {
   return gulp.src('./assets/styles/index.styl')
     .pipe(stylus({
       use: [nib()]
@@ -54,8 +54,8 @@ gulp.task('styles', function() {
     .pipe(gulp.dest('static/css/'));
 });
 
-gulp.task('browserify', function() {
-  return browserify("./assets/scripts/index.js")
+gulp.task('browserify', () => {
+  return browserify('./assets/scripts/index.js')
     .bundle()
     .pipe(source('index.js'))
     .pipe(gulp.dest('static/js/'))
@@ -64,25 +64,25 @@ gulp.task('browserify', function() {
     .pipe(gulp.dest('static/js/'));
 });
 
-gulp.task('concat', function() {
+gulp.task('concat', () => {
   return gulp.src(paths.scripts.vendor)
     .pipe(uglify())
     .pipe(concat('vendor.min.js'))
     .pipe(gulp.dest('static/js/'))
 });
 
-gulp.task('tota11y', function() {
+gulp.task('tota11y', () => {
   return gulp
     .src(paths.scripts.tota11y)
     .pipe(gulp.dest('static/js/'));
 });
 
-gulp.task('fonts', function() {
+gulp.task('fonts', () => {
   return gulp.src(paths.fonts)
     .pipe(gulp.dest('static/fonts'));
 })
 
-gulp.task('images', function() {
+gulp.task('images', () => {
   return gulp.src(paths.images)
     // .pipe(imagemin({
     //     progressive: true,
@@ -92,7 +92,7 @@ gulp.task('images', function() {
     .pipe(gulp.dest('static/images'));
 })
 
-gulp.task('misc', function() {
+gulp.task('misc', () => {
   return gulp.src(paths.misc)
     .pipe(gulp.dest('static/misc'));
 })
@@ -126,13 +126,13 @@ gulp.task('nodemon', ['dev-build'], function() {
     });
 });
 
-gulp.task('lint', function() {
+gulp.task('lint', () => {
   return gulp.src(paths.lintables)
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
 
-gulp.task('rev', ['browserify', 'styles'], function() {
+gulp.task('rev', ['browserify', 'styles'], () => {
   return gulp.src(['static/js/index.js', 'static/js/index.min.js', 'static/css/index.css', 'static/js/vendor.min.js'])
     .pipe(revAll.revision())
     .pipe(gulp.dest('static'))
